@@ -1,0 +1,215 @@
+<?php
+
+/**
+ * RUJUKAN JURULATIH — Hari 7 S2–S3 (index, new, create, show, download) · Hari 8 S2–S3 ($actions + $history)
+ * Salin ke: app/Controllers/Pas/ApplicationController.php
+ *
+ * Controller NIPIS: terima request → validasi → panggil PassWorkflowService → view/redirect.
+ * Tiada transaksi, tiada move() fail, tiada SQL di sini.
+ */
+
+declare(strict_types=1);
+
+namespace App\Controllers\Pas;
+
+use App\Controllers\BaseController;
+use App\Entities\PassApplication;
+use App\Enums\PassStatus;
+use App\Enums\PassType;
+use App\Models\PassApplicationModel;
+use App\Models\PassDocumentModel;
+use App\Models\VehicleModel;
+use CodeIgniter\Exceptions\PageNotFoundException;
+use CodeIgniter\HTTP\DownloadResponse;
+use CodeIgniter\HTTP\Files\UploadedFile;
+use CodeIgniter\HTTP\RedirectResponse;
+use InvalidArgumentException;
+
+class ApplicationController extends BaseController
+{
+    protected $helpers = ['form', 'url'];
+
+    /** GET /pas/permohonan — "Permohonan Saya" (BR-PAS-04: SENTIASA skop pemilik) */
+    public function index(): string
+    {
+        $requested = $this->request->getGet('status');
+        $status    = PassStatus::tryFrom(is_string($requested) ? $requested : '');   // input asing → null
+
+        $model        = model(PassApplicationModel::class);
+        $applications = $model->ownedBy((int) auth()->id())
+            ->withStatus($status)
+            ->orderBy('pass_applications.created_at', 'DESC')
+            ->paginate(10);
+
+        return view('pas/index', [
+            'applications' => $applications,
+            'pager'        => $model->pager,
+            'status'       => $status,
+        ]);
+    }
+
+    /** GET /pas/permohonan/new — borang */
+    public function new(): string
+    {
+        return view('pas/new', [
+            'types'    => PassType::cases(),
+            'vehicles' => model(VehicleModel::class)
+                ->where('user_id', (int) auth()->id())
+                ->asArray()
+                ->findAll(),
+        ]);
+    }
+
+    /** POST /pas/permohonan — simpan permohonan + dokumen */
+    public function create(): RedirectResponse
+    {
+        // 1. Validasi pelayan (medan + SETIAP fail dalam documents[])
+        if (! $this->validate($this->rules())) {
+            return redirect()->back()->withInput();
+        }
+
+        // 2. Serah kepada Service (bilangan fail, pemilikan kenderaan, transaksi, move())
+        try {
+            $application = service('passWorkflowService')->submit(
+                (int) auth()->id(),
+                $this->request->getPost(['pass_type', 'vehicle_id', 'purpose', 'valid_from', 'valid_until']),
+                $this->uploadedFiles('documents'),
+            );
+        } catch (InvalidArgumentException $e) {
+            // 3. Ralat perniagaan → mesej mesra pengguna, input dikekalkan (fail perlu dipilih semula)
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
+
+        // 4. PRG — Post/Redirect/Get
+        return redirect()->to(url_to('pas.show', $application->id))
+            ->with('message', "Permohonan {$application->ref_no} berjaya dihantar.");
+    }
+
+    /** GET /pas/permohonan/{id} — butiran + dokumen (+ tindakan & sejarah, Hari 8) */
+    public function show(string $id): string
+    {
+        $application = $this->findVisibleOr404((int) $id);
+        $workflow    = service('passWorkflowService');
+        $user        = auth()->user();
+        $status      = $application->statusEnum();
+
+        return view('pas/show', [
+            'application' => $application,
+            'documents'   => model(PassDocumentModel::class)->forApplication($application->id),
+            // --- Hari 8 S3: garis masa dari status_logs ---
+            'history' => $workflow->history($application->id),
+            // --- Hari 8 S2: butang dipapar HANYA jika permission + peralihan sah (UX sahaja;
+            //     penguatkuasaan sebenar = filter laluan + PassWorkflowService::authorize()) ---
+            'actions' => [
+                'review'  => $user->can('pas.review') && $status->canTransitionTo(PassStatus::UnderReview),
+                'approve' => $user->can('pas.approve') && $status->canTransitionTo(PassStatus::Approved),
+                'reject'  => $user->can('pas.review', 'pas.approve') && $status->canTransitionTo(PassStatus::Rejected),
+            ],
+        ]);
+    }
+
+    /** GET /pas/permohonan/dokumen/{id} — muat turun melalui controller (fail TIADA dalam public/) */
+    public function download(string $documentId): DownloadResponse
+    {
+        $document = model(PassDocumentModel::class)->find((int) $documentId);
+
+        if ($document === null) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        // BR-PAS-04 terpakai kepada FAIL juga — bukan sekadar halaman butiran
+        $this->findVisibleOr404((int) $document['application_id']);
+
+        $path = service('passWorkflowService')->documentPath($document);   // semakan path traversal
+
+        // attachment (bukan inline) + nosniff: pelayar tidak "meneka" & merender kandungan
+        return $this->response->download($path, null, true)
+            ->setFileName($document['original_name'])
+            ->setHeader('X-Content-Type-Options', 'nosniff');
+    }
+
+    // -----------------------------------------------------------------
+
+    /** BR-PAS-04 — 404 (bukan 403) supaya kewujudan ID orang lain tidak didedahkan */
+    private function findVisibleOr404(int $id): PassApplication
+    {
+        $application = model(PassApplicationModel::class)->find($id);
+
+        if ($application === null || ! service('passWorkflowService')->canView(auth()->user(), $application)) {
+            throw PageNotFoundException::forPageNotFound();
+        }
+
+        return $application;
+    }
+
+    /**
+     * Rules validasi borang. BR-PAS-02 untuk fail:
+     *  - uploaded : sekurang-kurangnya satu fail yang berjaya dimuat naik oleh PHP
+     *  - max_size : dalam KB → 2048 = 2 MB SETIAP fail
+     *  - ext_in   : (StrictRules CI 4.6) sambungan klien MESTI sama dengan guessExtension() dari kandungan
+     *  - mime_in  : MIME dari kandungan (finfo), BUKAN header Content-Type dari pelayar
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function rules(): array
+    {
+        $rules = [
+            'pass_type' => [
+                'label' => 'Jenis pas',
+                'rules' => 'required|in_list[' . implode(',', PassType::values()) . ']',
+            ],
+            'vehicle_id' => [
+                'label' => 'Kenderaan',
+                'rules' => 'permit_empty|is_natural_no_zero',
+            ],
+            'purpose' => [
+                'label' => 'Tujuan',
+                'rules' => 'required|min_length[10]|max_length[2000]',
+            ],
+            'valid_from' => [
+                'label' => 'Sah dari',
+                'rules' => 'required|valid_date[Y-m-d]',
+            ],
+            'valid_until' => [
+                'label' => 'Sah hingga',
+                'rules' => 'required|valid_date[Y-m-d]',
+            ],
+            'documents' => [
+                'label'  => 'Dokumen sokongan',
+                'rules'  => 'uploaded[documents]'
+                    . '|max_size[documents,2048]'
+                    . '|ext_in[documents,pdf,jpg,png]'
+                    . '|mime_in[documents,application/pdf,image/jpeg,image/png]',
+                'errors' => [
+                    'uploaded' => 'Sila lampirkan sekurang-kurangnya satu dokumen sokongan yang sah.',
+                    'max_size' => 'Setiap fail mestilah tidak melebihi 2 MB.',
+                    'ext_in'   => 'Hanya fail PDF, JPG atau PNG dibenarkan.',
+                    'mime_in'  => 'Kandungan fail bukan PDF/JPG/PNG yang sah.',
+                ],
+            ],
+        ];
+
+        // BR-PAS-06: kenderaan WAJIB hanya untuk pas kenderaan (pemilikan & tarikh disemak dalam Service)
+        $type = PassType::tryFrom((string) $this->request->getPost('pass_type'));
+        if ($type?->requiresVehicle()) {
+            $rules['vehicle_id']['rules'] = 'required|is_natural_no_zero';
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Fail yang BENAR-BENAR dipilih pengguna (buang slot kosong UPLOAD_ERR_NO_FILE).
+     *
+     * @return list<UploadedFile>
+     */
+    private function uploadedFiles(string $field): array
+    {
+        $files = $this->request->getFileMultiple($field) ?? [];
+
+        return array_values(array_filter(
+            $files,
+            static fn (UploadedFile $file): bool => $file->getError() !== UPLOAD_ERR_NO_FILE,
+        ));
+    }
+}

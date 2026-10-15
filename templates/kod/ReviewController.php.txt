@@ -1,0 +1,146 @@
+<?php
+
+/**
+ * RUJUKAN JURULATIH — Hari 8 S1 (tindakan) · Hari 8 S2 (403 bila Service menolak kebenaran)
+ * Salin ke: app/Controllers/Pas/ReviewController.php
+ *
+ * Laluan (lihat Routes-pas.php.txt) — group:reviewer,approver,admin + permission per tindakan.
+ * Butiran permohonan dipapar oleh ApplicationController::show (pegawai dibenarkan lihat semua, BR-PAS-04);
+ * borang tindakan di halaman itu POST ke kaedah di sini.
+ */
+
+declare(strict_types=1);
+
+namespace App\Controllers\Pas;
+
+use App\Controllers\BaseController;
+use App\Enums\PassStatus;
+use App\Models\PassApplicationModel;
+use App\Services\PassWorkflowService;
+use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\Shield\Entities\User;
+use CodeIgniter\Shield\Exceptions\PermissionException;
+use DomainException;
+use InvalidArgumentException;
+
+class ReviewController extends BaseController
+{
+    protected $helpers = ['form', 'url'];
+
+    /** GET /pas/semakan — baris gilir pegawai */
+    public function index(): string
+    {
+        $user      = auth()->user();
+        $requested = $this->request->getGet('status');
+        $status    = PassStatus::tryFrom(is_string($requested) ? $requested : '');
+
+        $model = model(PassApplicationModel::class)->withApplicant();
+
+        if ($status !== null) {
+            $model->withStatus($status);
+        } else {
+            // Lalai: apa yang perlu SAYA ambil tindakan
+            $model->whereIn('pass_applications.status', $this->defaultQueue($user));
+        }
+
+        return view('pas/semakan/index', [
+            'applications' => $model->orderBy('pass_applications.created_at', 'ASC')->paginate(15),
+            'pager'        => $model->pager,
+            'status'       => $status,
+        ]);
+    }
+
+    /** POST /pas/semakan/{id}/review — submitted → under_review */
+    public function review(string $id): ResponseInterface
+    {
+        return $this->act(
+            (int) $id,
+            'Permohonan kini Dalam Semakan.',
+            static fn (PassWorkflowService $wf, User $user) => $wf->startReview((int) $id, $user),
+        );
+    }
+
+    /** POST /pas/semakan/{id}/approve — under_review → approved */
+    public function approve(string $id): ResponseInterface
+    {
+        $remarks = (string) $this->request->getPost('remarks');
+
+        return $this->act(
+            (int) $id,
+            'Permohonan telah Diluluskan.',
+            static fn (PassWorkflowService $wf, User $user) => $wf->approve((int) $id, $user, $remarks),
+        );
+    }
+
+    /** POST /pas/semakan/{id}/reject — under_review → rejected (BR-PAS-03) */
+    public function reject(string $id): ResponseInterface
+    {
+        // Lapisan 1: validasi borang. Lapisan 2: Service menyemak semula (jika dipanggil dari tempat lain).
+        $rules = [
+            'remarks' => [
+                'label'  => 'Catatan penolakan',
+                'rules'  => 'required|min_length[10]|max_length[1000]',
+                'errors' => [
+                    'required'   => 'Catatan penolakan wajib diisi.',
+                    'min_length' => 'Catatan penolakan mestilah sekurang-kurangnya 10 aksara.',
+                ],
+            ],
+        ];
+
+        if (! $this->validate($rules)) {
+            return redirect()->to(url_to('pas.show', (int) $id))
+                ->withInput()
+                ->with('error', $this->validator->getError('remarks'));
+        }
+
+        $remarks = (string) $this->request->getPost('remarks');
+
+        return $this->act(
+            (int) $id,
+            'Permohonan telah Ditolak.',
+            static fn (PassWorkflowService $wf, User $user) => $wf->reject((int) $id, $user, $remarks),
+        );
+    }
+
+    // -----------------------------------------------------------------
+
+    /**
+     * Corak seragam: panggil Service → terjemah exception kepada respons HTTP.
+     *   PermissionException           → 403 (pengguna log masuk tetapi tiada hak)
+     *   DomainException (BR-PAS-01)   → kembali ke butiran + mesej ralat
+     *   InvalidArgumentException      → kembali ke butiran + mesej ralat (BR-PAS-03)
+     *   PageNotFoundException         → dibiar naik → 404
+     */
+    private function act(int $id, string $successMessage, callable $action): ResponseInterface
+    {
+        try {
+            $action(service('passWorkflowService'), auth()->user());
+        } catch (PermissionException $e) {
+            return $this->response
+                ->setStatusCode(403)
+                ->setBody(view('errors/forbidden', ['message' => $e->getMessage()]));
+        } catch (DomainException|InvalidArgumentException $e) {
+            return redirect()->to(url_to('pas.show', $id))->with('error', $e->getMessage());
+        }
+
+        return redirect()->to(url_to('pas.show', $id))->with('message', $successMessage);
+    }
+
+    /**
+     * Status lalai dalam baris gilir ikut permission (bukan nama group).
+     *
+     * @return list<string>
+     */
+    private function defaultQueue(User $user): array
+    {
+        $statuses = [];
+
+        if ($user->can('pas.review')) {
+            $statuses[] = PassStatus::Submitted->value;     // perlu dimulakan semakan
+        }
+
+        $statuses[] = PassStatus::UnderReview->value;       // perlu keputusan (lulus/tolak)
+
+        return $statuses;
+    }
+}

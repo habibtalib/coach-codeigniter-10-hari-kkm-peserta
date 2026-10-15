@@ -1,0 +1,105 @@
+<?php
+
+/**
+ * RUJUKAN JURULATIH — Hari 7 S1 (dicipta) · Hari 8 S1 (digunakan oleh PassWorkflowService)
+ * Salin ke: app/Enums/PassStatus.php
+ *
+ * SPEC §2.2 — satu-satunya sumber kebenaran status permohonan Pas.
+ *
+ *   submitted ──► under_review ──► approved ──► expired
+ *                      │
+ *                      └─────────► rejected
+ *
+ * BR-PAS-01: peralihan status HANYA mengikut jadual di atas — dikuatkuasa oleh canTransitionTo().
+ */
+
+declare(strict_types=1);
+
+namespace App\Enums;
+
+enum PassStatus: string
+{
+    case Submitted   = 'submitted';
+    case UnderReview = 'under_review';
+    case Approved    = 'approved';
+    case Rejected    = 'rejected';
+    case Expired     = 'expired';
+
+    /** Label BM untuk paparan (SPEC §2.2) */
+    public function label(): string
+    {
+        return match ($this) {
+            self::Submitted   => 'Dihantar',
+            self::UnderReview => 'Dalam Semakan',
+            self::Approved    => 'Diluluskan',
+            self::Rejected    => 'Ditolak',
+            self::Expired     => 'Tamat Tempoh',
+        };
+    }
+
+    /** Kelas CSS Bootstrap 5.3 untuk badge — corak sama seperti BookingStatus */
+    public function badge(): string
+    {
+        return match ($this) {
+            self::Submitted   => 'text-bg-secondary',
+            self::UnderReview => 'text-bg-info',
+            self::Approved    => 'text-bg-success',
+            self::Rejected    => 'text-bg-danger',
+            self::Expired     => 'text-bg-dark',
+        };
+    }
+
+    /**
+     * Status seterusnya yang sah dari status semasa.
+     *
+     * @return list<self>
+     */
+    public function allowedTransitions(): array
+    {
+        return match ($this) {
+            self::Submitted   => [self::UnderReview],
+            self::UnderReview => [self::Approved, self::Rejected],
+            self::Approved    => [self::Expired],
+            self::Rejected,
+            self::Expired     => [],               // status akhir
+        };
+    }
+
+    /** BR-PAS-01 — satu-satunya pintu untuk menyemak peralihan */
+    public function canTransitionTo(self $to): bool
+    {
+        return in_array($to, $this->allowedTransitions(), true);
+    }
+
+    /** true jika tiada lagi peralihan yang mungkin (rejected/expired) */
+    public function isFinal(): bool
+    {
+        return $this->allowedTransitions() === [];
+    }
+
+    /**
+     * Nilai mentah untuk in_list[] validasi & whereIn().
+     *
+     * @return list<string>
+     */
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+
+    /**
+     * Pilihan untuk <select>: nilai => label BM.
+     *
+     * @return array<string, string>
+     */
+    public static function options(): array
+    {
+        $options = [];
+
+        foreach (self::cases() as $case) {
+            $options[$case->value] = $case->label();
+        }
+
+        return $options;
+    }
+}

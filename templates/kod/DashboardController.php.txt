@@ -1,0 +1,52 @@
+<?php
+
+// app/Controllers/Statistik/DashboardController.php
+// Hari 10 — Controller NIPIS. Filter laluan: permission:statistik.view (approver, admin).
+//
+//   GET /statistik       → view (kad KPI dirender di pelayan + kanvas kosong)
+//   GET /statistik/data  → JSON untuk Chart.js (fetch)
+//
+// Kedua-duanya memanggil StatisticsService::dashboard() yang sama → data dari cache yang sama.
+//
+// Daftar dalam app/Config/Services.php:
+//
+//     public static function statisticsService(bool $getShared = true): \App\Services\StatisticsService
+//     {
+//         if ($getShared) {
+//             return static::getSharedInstance('statisticsService');
+//         }
+//
+//         return new \App\Services\StatisticsService();
+//     }
+
+declare(strict_types=1);
+
+namespace App\Controllers\Statistik;
+
+use App\Controllers\BaseController;
+use CodeIgniter\HTTP\ResponseInterface;
+
+class DashboardController extends BaseController
+{
+    public function index(): string
+    {
+        $stats = service('statisticsService')->dashboard();
+
+        return view('statistik/dashboard', [
+            'title'       => 'Dashboard Statistik',
+            'kpi'         => $stats['kpi'],
+            'generatedAt' => $stats['generated_at'],
+        ]);
+    }
+
+    public function data(): ResponseInterface
+    {
+        $stats = service('statisticsService')->dashboard();
+
+        // setJSON() → Content-Type: application/json; charset=UTF-8
+        // no-store: pelayar/proksi jangan simpan salinan — cache kita di PELAYAN, bukan klien.
+        return $this->response
+            ->setHeader('Cache-Control', 'no-store')
+            ->setJSON($stats);
+    }
+}

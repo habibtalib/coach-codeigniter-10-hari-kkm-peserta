@@ -1,0 +1,132 @@
+<?php
+// ============================================================================
+// Fail sasaran : app/Services/ReferenceNumberService.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Peserta: cuba tulis sendiri dahulu — guna fail ini untuk SEMAK, bukan salin.
+// ============================================================================
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use CodeIgniter\Database\BaseConnection;
+use CodeIgniter\Database\Exceptions\DatabaseException;
+use RuntimeException;
+use Throwable;
+
+/**
+ * Menjana nombor rujukan berjujukan per prefix per tahun:
+ *   next('TLK') → 'TLK-2026-0001', 'TLK-2026-0002', ...
+ *   next('PAS') → 'PAS-2026-0001', ...
+ *
+ * Selamat untuk permintaan serentak: baris (prefix, year) dalam
+ * reference_sequences dikunci dengan SELECT ... FOR UPDATE dalam transaksi.
+ * Jika dipanggil DALAM transaksi lain (cth BookingService), transaksi CI4
+ * bersarang — kunci dilepaskan hanya apabila transaksi luar commit/rollback,
+ * dan nombor tidak "hilang" jika tempahan gagal.
+ *
+ * Tertib penting (elak deadlock): SELECT ... FOR UPDATE DAHULU. INSERT IGNORE hanya
+ * jika baris tahun itu belum wujud. Jika INSERT IGNORE dijalankan pada baris yang SUDAH
+ * wujud, InnoDB mengambil kunci S (kongsi); dua permintaan serentak yang kemudian meminta
+ * kunci X pada baris sama akan deadlock (ralat 1213).
+ */
+class ReferenceNumberService
+{
+    /** Ralat MySQL/MariaDB: 1213 = deadlock, 1205 = lock wait timeout */
+    private const RETRYABLE = [1213, 1205];
+
+    private const MAX_ATTEMPTS = 3;
+
+    private BaseConnection $db;
+
+    public function __construct(?BaseConnection $db = null)
+    {
+        $this->db = $db ?? db_connect();
+    }
+
+    public function next(string $prefix): string
+    {
+        $prefix = strtoupper(trim($prefix));
+
+        // Cuba semula HANYA jika kita pemilik transaksi (bukan bersarang). Dalam transaksi
+        // luar, deadlock telah me-rollback SEMUA kerja pemanggil — pemanggil mesti mengendalikannya.
+        $ownsTransaction = $this->db->transDepth === 0;
+
+        for ($attempt = 1; ; $attempt++) {
+            try {
+                return $this->allocate($prefix);
+            } catch (DatabaseException $e) {
+                if (! $ownsTransaction || $attempt >= self::MAX_ATTEMPTS || ! in_array($e->getCode(), self::RETRYABLE, true)) {
+                    throw $e;
+                }
+
+                usleep(random_int(5_000, 50_000));   // undur sebentar sebelum cuba semula
+            }
+        }
+    }
+
+    private function allocate(string $prefix): string
+    {
+        $year = (int) date('Y');
+        $now  = date('Y-m-d H:i:s');
+
+        // Ralat query → exception (bukan `false` senyap) supaya transaksi tidak separuh siap.
+        $this->db->transException(true)->transBegin();
+
+        try {
+            // 1. Kunci baris (prefix, year). Permintaan lain untuk prefix+tahun yang sama
+            //    akan MENUNGGU di sini sehingga kita commit.
+            $row = $this->lockSequence($prefix, $year);
+
+            // 2. Tahun baharu: cipta baris (INSERT IGNORE — selamat jika pihak lain
+            //    mendahului kita), kemudian kunci semula.
+            if ($row === null) {
+                $this->db->table('reference_sequences')->ignore(true)->insert([
+                    'prefix'      => $prefix,
+                    'year'        => $year,
+                    'last_number' => 0,
+                    'created_at'  => $now,
+                    'updated_at'  => $now,
+                ]);
+
+                $row = $this->lockSequence($prefix, $year)
+                    ?? throw new RuntimeException("Gagal mencipta jujukan {$prefix}-{$year}.");
+            }
+
+            $number = (int) $row->last_number + 1;
+
+            // 3. Simpan nombor baharu.
+            $updated = $this->db->table('reference_sequences')
+                ->where('id', $row->id)
+                ->update(['last_number' => $number, 'updated_at' => $now]);
+
+            if ($updated === false) {
+                throw new RuntimeException('Gagal mengemas kini jujukan nombor rujukan.');
+            }
+
+            $this->db->transCommit();
+        } catch (Throwable $e) {
+            $this->db->transRollback();
+
+            throw $e;
+        }
+
+        return sprintf('%s-%d-%04d', $prefix, $year, $number);
+    }
+
+    /** SELECT ... FOR UPDATE. Query Builder CI4 tiada lockForUpdate() — guna query binding. */
+    private function lockSequence(string $prefix, int $year): ?object
+    {
+        $table = $this->db->prefixTable('reference_sequences');
+        $query = $this->db->query(
+            "SELECT id, last_number FROM {$table} WHERE prefix = ? AND year = ? FOR UPDATE",
+            [$prefix, $year],
+        );
+
+        if ($query === false) {   // DBDebug = false: query() pulang false, bukan exception
+            throw new RuntimeException('Gagal mengunci jujukan nombor rujukan.');
+        }
+
+        return $query->getRow();
+    }
+}

@@ -1,0 +1,72 @@
+<?php
+// ============================================================================
+// Fail sasaran : app/Entities/SlotBooking.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Peserta: cuba tulis sendiri dahulu — guna fail ini untuk SEMAK, bukan salin.
+// ============================================================================
+
+declare(strict_types=1);
+
+namespace App\Entities;
+
+use App\Enums\BookingStatus;
+use CodeIgniter\Entity\Entity;
+use DateTimeImmutable;
+
+/**
+ * Satu baris slot_bookings.
+ *
+ * start_date/end_date dikekalkan sebagai string 'Y-m-d' (lajur DATE) —
+ * mudah dibanding dan dihantar semula ke borang. decided_at/created_at/
+ * updated_at ditukar kepada CodeIgniter\I18n\Time secara automatik.
+ */
+class SlotBooking extends Entity
+{
+    protected $dates = ['decided_at', 'created_at', 'updated_at'];
+
+    protected $casts = [
+        'id'         => 'integer',
+        'user_id'    => 'integer',
+        'vehicle_id' => 'integer',
+        'slot_id'    => 'integer',
+        'decided_by' => '?integer',
+    ];
+
+    public function statusEnum(): BookingStatus
+    {
+        return BookingStatus::from((string) $this->attributes['status']);
+    }
+
+    public function statusLabel(): string
+    {
+        return $this->statusEnum()->label();
+    }
+
+    public function statusBadge(): string
+    {
+        return $this->statusEnum()->badge();
+    }
+
+    public function isActive(): bool
+    {
+        return in_array($this->attributes['status'], BookingStatus::active(), true);
+    }
+
+    public function isOwnedBy(int $userId): bool
+    {
+        return (int) $this->attributes['user_id'] === $userId;
+    }
+
+    /**
+     * Bilangan hari kalendar yang diliputi, termasuk hari pertama & terakhir
+     * (1 Okt hingga 1 Okt = 1 hari) — untuk paparan. Peraturan 90 hari (BR-TLK-03)
+     * pula mengira (end_date − start_date), lihat BookingService::assertValidPeriod().
+     */
+    public function durationDays(): int
+    {
+        $start = new DateTimeImmutable((string) $this->attributes['start_date']);
+        $end   = new DateTimeImmutable((string) $this->attributes['end_date']);
+
+        return $start->diff($end)->days + 1;
+    }
+}

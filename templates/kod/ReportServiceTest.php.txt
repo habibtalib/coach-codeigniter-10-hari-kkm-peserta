@@ -1,0 +1,271 @@
+<?php
+
+// tests/Services/ReportServiceTest.php — Hari 9 S4
+// Prinsip: "jumlah laporan = jumlah SQL". Setiap ujian membina data SENDIRI (fixture kecil
+// yang kita tahu jawapannya) dan membandingkan output ReportService dengan kiraan terus DB.
+//
+// Jalankan:  composer test -- tests/Services/ReportServiceTest.php
+// Prasyarat: kumpulan DB 'tests' dalam .env menghala ke pangkalan data MySQL/MariaDB
+//            BERASINGAN (kkm_latihan_test) — ujian ini guna DATEDIFF/LEAST/GREATEST (MySQL).
+//   database.tests.hostname = localhost
+//   database.tests.database = kkm_latihan_test
+//   database.tests.username = ...
+//   database.tests.password = ...
+//   database.tests.DBDriver = MySQLi
+//   database.tests.DBPrefix =
+
+declare(strict_types=1);
+
+namespace Tests\Services;
+
+use App\Services\ReportService;
+use CodeIgniter\Test\CIUnitTestCase;
+use CodeIgniter\Test\DatabaseTestTrait;
+
+final class ReportServiceTest extends CIUnitTestCase
+{
+    use DatabaseTestTrait;
+
+    protected $migrate   = true;
+    protected $refresh   = true;   // DB dikosongkan & dimigrate semula → setiap ujian bermula bersih
+    protected $namespace = null;   // null = SEMUA migration (App + Shield: jadual users)
+
+    private ReportService $service;
+
+    /** @var array<string, int> id rekod fixture */
+    private array $id = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->service = new ReportService();
+        $this->seedFixtures();
+    }
+
+    // =====================================================================
+    // RPT-01 — Senarai tempahan TLK
+    // =====================================================================
+
+    public function testRpt01TanpaPenapisSamaDenganJumlahJadual(): void
+    {
+        $f      = $this->service->normaliseFilters('tempahan', []);
+        $result = $this->service->paginate('tempahan', $f, 1);
+
+        $this->assertSame($this->db->table('slot_bookings')->countAllResults(), $result['total']);
+        $this->assertSame(5, $result['total']);
+    }
+
+    public function testRpt01PenapisStatusSamaDenganKiraanSql(): void
+    {
+        $f      = $this->service->normaliseFilters('tempahan', ['status' => 'approved']);
+        $result = $this->service->paginate('tempahan', $f, 1);
+
+        $expected = $this->db->table('slot_bookings')->where('status', 'approved')->countAllResults();
+
+        $this->assertSame($expected, $result['total']);
+        $this->assertSame(3, $result['total']);
+    }
+
+    public function testRpt01JulatTarikhGunaSyaratBertindih(): void
+    {
+        // Jun 2026: tempahan #1, #2 (mula 25/05, tamat 05/06), #3, #4 bertindih. #5 (Julai) tidak.
+        $f      = $this->service->normaliseFilters('tempahan', ['from' => '2026-06-01', 'to' => '2026-06-30']);
+        $result = $this->service->paginate('tempahan', $f, 1);
+
+        $expected = $this->db->table('slot_bookings')
+            ->where('start_date <=', '2026-06-30')
+            ->where('end_date >=', '2026-06-01')
+            ->countAllResults();
+
+        $this->assertSame($expected, $result['total']);
+        $this->assertSame(4, $result['total']);
+    }
+
+    public function testRpt01GabunganZonStatusTarikh(): void
+    {
+        $f = $this->service->normaliseFilters('tempahan', [
+            'zone_id' => (string) $this->id['zoneA'],
+            'status'  => 'approved',
+            'from'    => '2026-06-01',
+            'to'      => '2026-06-30',
+        ]);
+
+        $this->assertSame(2, $this->service->paginate('tempahan', $f, 1)['total']);
+    }
+
+    public function testNilaiPenapisTidakSahDiabaikan(): void
+    {
+        $f = $this->service->normaliseFilters('tempahan', [
+            'status' => 'bogus',
+            'from'   => '2026-02-31',        // tarikh tidak wujud
+            'zone_id' => ['1'],              // array — cubaan manipulasi
+        ]);
+
+        $this->assertNull($f['status']);
+        $this->assertNull($f['from']);
+        $this->assertNull($f['zone_id']);
+        $this->assertSame(5, $this->service->paginate('tempahan', $f, 1)['total']);
+    }
+
+    public function testSusunanDiluarWhitelistJatuhKeLalai(): void
+    {
+        $f = $this->service->normaliseFilters('tempahan', ['sort' => 'b.id; DROP TABLE users', 'dir' => 'sideways']);
+
+        $this->assertSame('start_date', $f['sort']);
+        $this->assertSame('desc', $f['dir']);
+        $this->assertSame(5, $this->service->paginate('tempahan', $f, 1)['total']);
+        $this->assertTrue($this->db->tableExists('users'));
+    }
+
+    public function testPaginationHalamanTerakhir(): void
+    {
+        $f      = $this->service->normaliseFilters('tempahan', []);
+        $result = $this->service->paginate('tempahan', $f, page: 3, perPage: 2);
+
+        $this->assertSame(5, $result['total']);
+        $this->assertCount(1, $result['rows']);   // 2 + 2 + 1
+    }
+
+    public function testEksportSamaJumlahDenganPaparanHtml(): void
+    {
+        $f = $this->service->normaliseFilters('tempahan', ['status' => 'approved']);
+
+        $html   = $this->service->paginate('tempahan', $f, 1)['total'];
+        $export = iterator_to_array($this->service->exportRows('tempahan', $f, 'xlsx'), false);
+
+        $this->assertCount($html, $export);
+        $this->assertSame('Diluluskan', $export[0]['status']); // label BM dari enum
+    }
+
+    // =====================================================================
+    // RPT-02 — Senarai permohonan Pas
+    // =====================================================================
+
+    public function testRpt02HariTerakhirJulatTidakTercicir(): void
+    {
+        // Permohonan pada 30/09 14:00 MESTI termasuk apabila "hingga 30/09".
+        // (Pepijat klasik: where('created_at <=', '2026-09-30') = sehingga 00:00 sahaja.)
+        $f = $this->service->normaliseFilters('pas', ['from' => '2026-09-01', 'to' => '2026-09-30']);
+
+        $this->assertSame(2, $this->service->paginate('pas', $f, 1)['total']);
+    }
+
+    public function testRpt02PenapisJabatanSamaDenganKiraanSql(): void
+    {
+        $f      = $this->service->normaliseFilters('pas', ['department_id' => (string) $this->id['dept2']]);
+        $result = $this->service->paginate('pas', $f, 1);
+
+        $expected = $this->db->table('pass_applications p')
+            ->join('users u', 'u.id = p.user_id')
+            ->where('u.department_id', $this->id['dept2'])
+            ->countAllResults();
+
+        $this->assertSame($expected, $result['total']);
+        $this->assertSame(1, $result['total']);
+    }
+
+    // =====================================================================
+    // RPT-03 — Penggunaan slot mengikut zon
+    // =====================================================================
+
+    public function testRpt03KadarPenggunaanJun2026(): void
+    {
+        $f    = $this->service->normaliseFilters('penggunaan', ['year' => '2026', 'month' => '6']);
+        $rows = array_column($this->service->usageByZone($f), null, 'zone_code');
+
+        // Zon A: 2 slot aktif (slot tidak aktif dikecualikan) × 30 hari = 60 hari-slot.
+        // Ditempah: #1 = 10 hari (01–10/06), #2 = 5 hari (01–05/06). 15 / 60 = 25.0 %
+        $this->assertSame(2, $rows['ZA']['total_slots']);
+        $this->assertSame(2, $rows['ZA']['total_bookings']);
+        $this->assertSame(15, $rows['ZA']['booked_days']);
+        $this->assertSame(60, $rows['ZA']['capacity_days']);
+        $this->assertSame(25.0, $rows['ZA']['utilisation']);
+
+        // Zon B: pending & rejected TIDAK dikira sebagai penggunaan.
+        $this->assertSame(0, $rows['ZB']['booked_days']);
+        $this->assertSame(0.0, $rows['ZB']['utilisation']);
+    }
+
+    // =====================================================================
+    // Fixture — data sintetik yang kita tahu jawapannya
+    // =====================================================================
+
+    private function seedFixtures(): void
+    {
+        $now = '2026-01-01 08:00:00';
+
+        $this->id['dept1'] = $this->insert('departments', ['code' => 'UJI-IT', 'name' => 'Unit Teknologi Maklumat (Ujian)']);
+        $this->id['dept2'] = $this->insert('departments', ['code' => 'UJI-KEW', 'name' => 'Unit Kewangan (Ujian)']);
+
+        $this->id['user1'] = $this->insert('users', [
+            'username' => 'ujian1', 'active' => 1, 'full_name' => 'Pemohon Ujian Satu',
+            'staff_no' => 'U0001', 'department_id' => $this->id['dept1'], 'created_at' => $now,
+        ]);
+        $this->id['user2'] = $this->insert('users', [
+            'username' => 'ujian2', 'active' => 1, 'full_name' => 'Pemohon Ujian Dua',
+            'staff_no' => 'U0002', 'department_id' => $this->id['dept2'], 'created_at' => $now,
+        ]);
+
+        $this->id['veh1'] = $this->insert('vehicles', ['user_id' => $this->id['user1'], 'plate_no' => 'WXX 9001', 'model' => 'Myvi', 'color' => 'Putih']);
+        $this->id['veh2'] = $this->insert('vehicles', ['user_id' => $this->id['user2'], 'plate_no' => 'WXX 9002', 'model' => 'Saga', 'color' => 'Hitam']);
+
+        $this->id['zoneA'] = $this->insert('parking_zones', ['code' => 'ZA', 'name' => 'Zon A Ujian', 'location' => 'Blok A']);
+        $this->id['zoneB'] = $this->insert('parking_zones', ['code' => 'ZB', 'name' => 'Zon B Ujian', 'location' => 'Blok B']);
+
+        $a1 = $this->insert('parking_slots', ['zone_id' => $this->id['zoneA'], 'slot_no' => 'A01', 'category' => 'oku', 'is_active' => 1]);
+        $a2 = $this->insert('parking_slots', ['zone_id' => $this->id['zoneA'], 'slot_no' => 'A02', 'category' => 'oku', 'is_active' => 1]);
+        $this->insert('parking_slots', ['zone_id' => $this->id['zoneA'], 'slot_no' => 'A03', 'category' => 'oku', 'is_active' => 0]);
+        $b1 = $this->insert('parking_slots', ['zone_id' => $this->id['zoneB'], 'slot_no' => 'B01', 'category' => 'pegawai_kanan', 'is_active' => 1]);
+
+        $bookings = [
+            // [slot, user, vehicle, start, end, status]
+            [$a1, 'user1', 'veh1', '2026-06-01', '2026-06-10', 'approved'],  // #1
+            [$a2, 'user2', 'veh2', '2026-05-25', '2026-06-05', 'approved'],  // #2
+            [$b1, 'user1', 'veh1', '2026-06-15', '2026-06-20', 'pending'],   // #3
+            [$b1, 'user2', 'veh2', '2026-06-01', '2026-06-03', 'rejected'],  // #4
+            [$a1, 'user1', 'veh1', '2026-07-01', '2026-07-05', 'approved'],  // #5
+        ];
+
+        foreach ($bookings as $i => [$slot, $user, $veh, $start, $end, $status]) {
+            $this->insert('slot_bookings', [
+                'ref_no'     => sprintf('TLK-2026-%04d', 9001 + $i),
+                'user_id'    => $this->id[$user],
+                'vehicle_id' => $this->id[$veh],
+                'slot_id'    => $slot,
+                'start_date' => $start,
+                'end_date'   => $end,
+                'reason'     => 'Data ujian sintetik',
+                'status'     => $status,
+                'created_at' => $now,
+            ]);
+        }
+
+        $passes = [
+            // [user, created_at, status]
+            ['user1', '2026-09-01 09:00:00', 'submitted'],
+            ['user1', '2026-09-30 14:00:00', 'under_review'],  // hari terakhir julat
+            ['user2', '2026-10-01 00:00:00', 'approved'],      // di luar julat September
+        ];
+
+        foreach ($passes as $i => [$user, $createdAt, $status]) {
+            $this->insert('pass_applications', [
+                'ref_no'      => sprintf('PAS-2026-%04d', 9001 + $i),
+                'user_id'     => $this->id[$user],
+                'pass_type'   => 'kakitangan',
+                'purpose'     => 'Data ujian sintetik',
+                'valid_from'  => '2026-10-01',
+                'valid_until' => '2026-12-31',
+                'status'      => $status,
+                'created_at'  => $createdAt,
+            ]);
+        }
+    }
+
+    private function insert(string $table, array $row): int
+    {
+        $this->db->table($table)->insert($row);
+
+        return (int) $this->db->insertID();
+    }
+}

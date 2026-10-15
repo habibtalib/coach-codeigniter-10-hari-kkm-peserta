@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * RUJUKAN JURULATIH — Hari 7 S1
+ * Fail ini mengandungi DUA kelas. Salin setiap satu ke fail berasingan:
+ *   (1) app/Models/PassApplicationModel.php
+ *   (2) app/Models/PassDocumentModel.php   ← lihat bahagian bawah
+ *
+ * Model = akses data + $validationRules asas (SPEC §5). Logik aliran kerja → PassWorkflowService.
+ */
+
+// =====================================================================
+// (1) app/Models/PassApplicationModel.php
+// =====================================================================
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Entities\PassApplication;
+use App\Enums\PassStatus;
+use App\Enums\PassType;
+use CodeIgniter\Model;
+
+class PassApplicationModel extends Model
+{
+    protected $table          = 'pass_applications';
+    protected $primaryKey     = 'id';
+    protected $returnType     = PassApplication::class;
+    protected $useSoftDeletes = false;          // SPEC §3: tiada deleted_at untuk jadual ini
+    protected $useTimestamps  = true;           // isi created_at / updated_at automatik
+    protected $dateFormat     = 'datetime';
+
+    /** Senarai putih medan — cegah mass assignment (cth pemohon hantar status=approved) */
+    protected $allowedFields = [
+        'ref_no',
+        'user_id',
+        'pass_type',
+        'vehicle_id',
+        'purpose',
+        'valid_from',
+        'valid_until',
+        'status',
+        'reviewed_by',
+        'reviewed_at',
+        'approved_by',
+        'approved_at',
+    ];
+
+    /** Diisi dalam initialize() kerana in_list[] dibina dari enum (bukan ungkapan pemalar) */
+    protected $validationRules = [];
+
+    protected $validationMessages = [
+        'purpose' => [
+            'min_length' => 'Tujuan permohonan mestilah sekurang-kurangnya 10 aksara.',
+        ],
+    ];
+
+    /** Semasa update separa, hanya medan yang dihantar divalidasi (lalai CI4 = true) */
+    protected $cleanValidationRules = true;
+
+    protected function initialize(): void
+    {
+        $this->validationRules = [
+            'ref_no'      => 'required|max_length[20]|is_unique[pass_applications.ref_no]',
+            'user_id'     => 'required|is_natural_no_zero',
+            'pass_type'   => 'required|in_list[' . implode(',', PassType::values()) . ']',
+            'vehicle_id'  => 'permit_empty|is_natural_no_zero',
+            'purpose'     => 'required|min_length[10]|max_length[2000]',
+            'valid_from'  => 'required|valid_date[Y-m-d]',
+            'valid_until' => 'required|valid_date[Y-m-d]',
+            'status'      => 'required|in_list[' . implode(',', PassStatus::values()) . ']',
+        ];
+    }
+
+    // -----------------------------------------------------------------
+    // Skop query — dipanggil secara berantai, cth:
+    //   $model->ownedBy($uid)->withStatus($s)->orderBy(...)->paginate(10)
+    // Model::__call() memajukan where()/join() kepada Query Builder dan pulang $this.
+    // -----------------------------------------------------------------
+
+    /** BR-PAS-04: senarai pemohon — HANYA rekod miliknya */
+    public function ownedBy(int $userId): static
+    {
+        $this->where('pass_applications.user_id', $userId);
+
+        return $this;
+    }
+
+    /** Penapis status pilihan (null = semua) */
+    public function withStatus(?PassStatus $status): static
+    {
+        if ($status !== null) {
+            $this->where('pass_applications.status', $status->value);
+        }
+
+        return $this;
+    }
+
+    /** Sertakan nama pemohon (untuk senarai semakan pegawai) */
+    public function withApplicant(): static
+    {
+        $this->select('pass_applications.*, users.full_name AS applicant_name')
+            ->join('users', 'users.id = pass_applications.user_id');
+
+        return $this;
+    }
+}
+
+// =====================================================================
+// (2) app/Models/PassDocumentModel.php
+//     (buka fail baharu: <?php, declare(strict_types=1); namespace App\Models; use CodeIgniter\Model;)
+// =====================================================================
+
+class PassDocumentModel extends Model
+{
+    protected $table          = 'pass_documents';
+    protected $primaryKey     = 'id';
+    protected $returnType     = 'array';
+    protected $useSoftDeletes = false;
+    protected $useTimestamps  = true;
+    protected $dateFormat     = 'datetime';
+
+    protected $allowedFields = [
+        'application_id',
+        'doc_type',
+        'original_name',
+        'stored_path',     // RELATIF kepada WRITEPATH, cth uploads/pas/1727251200_3f2a9c1e7b.pdf
+        'mime',            // dari getMimeType() (kandungan), BUKAN getClientMimeType()
+        'size_bytes',
+    ];
+
+    protected $validationRules = [
+        'application_id' => 'required|is_natural_no_zero',
+        'doc_type'       => 'required|max_length[30]',
+        'original_name'  => 'required|max_length[255]',
+        'stored_path'    => 'required|max_length[255]',
+        'mime'           => 'required|in_list[application/pdf,image/jpeg,image/png]',
+        'size_bytes'     => 'required|is_natural_no_zero|less_than_equal_to[2097152]',  // 2 MB (BR-PAS-02)
+    ];
+
+    /**
+     * Dokumen bagi satu permohonan.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function forApplication(int $applicationId): array
+    {
+        return $this->where('application_id', $applicationId)
+            ->orderBy('id', 'ASC')
+            ->findAll();
+    }
+}

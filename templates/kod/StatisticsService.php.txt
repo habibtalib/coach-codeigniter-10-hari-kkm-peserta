@@ -1,0 +1,230 @@
+<?php
+
+// app/Services/StatisticsService.php
+// Hari 10 — Modul Statistik (M4). KPI + dataset carta merentas M1 (TLK) & M2 (Pas).
+// Semua data aggregate di-cache 10 minit di bawah SATU kunci: 'stat_dashboard'.
+// Cache dikosongkan oleh BookingService & PassWorkflowService selepas status berubah
+// (lihat hari-10/lab.md S2).
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Enums\BookingStatus;
+use App\Enums\PassStatus;
+use CodeIgniter\Database\BaseConnection;
+use DateTimeImmutable;
+
+class StatisticsService
+{
+    public const CACHE_KEY = 'stat_dashboard';
+
+    public const CACHE_TTL = 600; // saat = 10 minit (SPEC §2.4)
+
+    private const MONTHS_BM = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
+
+    private BaseConnection $db;
+
+    private DateTimeImmutable $now;
+
+    /** $now boleh disuntik dalam ujian supaya keputusan tidak bergantung pada tarikh hari ini. */
+    public function __construct(?BaseConnection $db = null, ?DateTimeImmutable $now = null, private ?ReportService $reports = null)
+    {
+        $this->db      = $db ?? db_connect();
+        $this->now     = $now ?? new DateTimeImmutable();
+        $this->reports ??= new ReportService($this->db);
+    }
+
+    /**
+     * Pintu masuk tunggal untuk controller.
+     * cache()->remember(): jika kunci wujud → pulang cache; jika tidak → jalankan closure,
+     * simpan hasilnya selama TTL, kemudian pulang. (Corak "cache-aside".)
+     *
+     * @return array{generated_at: string, kpi: array<string, int|float|null>, charts: array<string, array>}
+     */
+    public function dashboard(): array
+    {
+        return cache()->remember(self::CACHE_KEY, self::CACHE_TTL, fn (): array => $this->build());
+    }
+
+    /** Kosongkan cache — dipanggil selepas status tempahan/pas berubah. */
+    public static function forget(): void
+    {
+        cache()->delete(self::CACHE_KEY);
+    }
+
+    /** Kira semua data TANPA cache (public supaya boleh diuji terus). */
+    public function build(): array
+    {
+        return [
+            'generated_at' => $this->now->format('d/m/Y H:i:s'),
+            'kpi'          => [
+                'active_bookings'     => $this->activeBookings(),
+                'slot_utilisation'    => $this->slotUtilisationToday(),
+                'pending_passes'      => $this->pendingPasses(),
+                'avg_days_to_approve' => $this->avgDaysToApprove(),
+            ],
+            'charts' => [
+                'bookings_by_month' => $this->bookingsByMonth(),
+                'pass_status'       => $this->passStatus(),
+                'usage_by_zone'     => $this->usageByZone(),
+                'pass_trend'        => $this->passTrend12Months(),
+            ],
+        ];
+    }
+
+    // ------------------------------------------------------------------
+    // KPI
+    // ------------------------------------------------------------------
+
+    /** Tempahan aktif = pending + approved (takrif sama seperti BR-TLK-04). */
+    private function activeBookings(): int
+    {
+        return $this->db->table('slot_bookings')
+            ->whereIn('status', BookingStatus::active())   // ['pending', 'approved']
+            ->countAllResults();
+    }
+
+    /** Kadar penggunaan slot HARI INI (%) = slot berbeza yang diduduki ÷ slot aktif × 100. */
+    private function slotUtilisationToday(): float
+    {
+        $today = $this->now->format('Y-m-d');
+
+        $activeSlots = $this->db->table('parking_slots')
+            ->where('is_active', 1)
+            ->where('deleted_at', null)
+            ->countAllResults();
+
+        if ($activeSlots === 0) {
+            return 0.0;
+        }
+
+        // distinct() + countAllResults() → CI4 membungkus sebagai subquery: COUNT(*) FROM (SELECT DISTINCT slot_id ...)
+        $occupied = $this->db->table('slot_bookings')
+            ->select('slot_id')
+            ->distinct()
+            ->where('status', BookingStatus::Approved->value)
+            ->where('start_date <=', $today)
+            ->where('end_date >=', $today)
+            ->countAllResults();
+
+        return round($occupied / $activeSlots * 100, 1);
+    }
+
+    /** Permohonan pas menunggu tindakan = submitted + under_review. */
+    private function pendingPasses(): int
+    {
+        return $this->db->table('pass_applications')
+            ->whereIn('status', [PassStatus::Submitted->value, PassStatus::UnderReview->value])
+            ->countAllResults();
+    }
+
+    /**
+     * Purata hari untuk lulus pas = AVG(approved_at − created_at).
+     * Guna approved_at IS NOT NULL (bukan status = approved) supaya pas yang kini 'expired'
+     * tetapi pernah diluluskan tetap dikira. Jam ÷ 24 → pecahan hari yang lebih tepat.
+     */
+    private function avgDaysToApprove(): ?float
+    {
+        $row = $this->db->table('pass_applications')
+            ->select('AVG(TIMESTAMPDIFF(HOUR, created_at, approved_at)) / 24 AS avg_days', false)
+            ->where('approved_at IS NOT NULL')
+            ->get()
+            ->getRowArray();
+
+        return isset($row['avg_days']) ? round((float) $row['avg_days'], 1) : null; // null = tiada data lagi
+    }
+
+    // ------------------------------------------------------------------
+    // Dataset carta — format seragam: ['labels' => [...], 'data' => [...]]
+    // ------------------------------------------------------------------
+
+    /** (bar) Tempahan dibuat setiap bulan bagi tahun semasa — Jan..Dis, bulan kosong = 0. */
+    private function bookingsByMonth(): array
+    {
+        $year = (int) $this->now->format('Y');
+
+        $rows = $this->db->table('slot_bookings')
+            ->select('MONTH(created_at) AS m', false)
+            ->selectCount('id', 'total')
+            ->where('created_at >=', "{$year}-01-01 00:00:00")
+            ->where('created_at <', ($year + 1) . '-01-01 00:00:00')
+            ->groupBy('m')
+            ->get()
+            ->getResultArray();
+
+        $byMonth = array_column($rows, 'total', 'm');
+        $data    = [];
+
+        for ($m = 1; $m <= 12; $m++) {
+            $data[] = (int) ($byMonth[$m] ?? 0);  // ISI SIFAR — jika tidak, bar teranjak ke bulan salah
+        }
+
+        return ['labels' => self::MONTHS_BM, 'data' => $data, 'year' => $year];
+    }
+
+    /** (doughnut) Taburan status pas. 'keys' = nilai enum (untuk warna di JS), 'labels' = BM. */
+    private function passStatus(): array
+    {
+        $rows = $this->db->table('pass_applications')
+            ->select('status')
+            ->selectCount('id', 'total')
+            ->groupBy('status')
+            ->get()
+            ->getResultArray();
+
+        $counts = array_column($rows, 'total', 'status');
+        $out    = ['keys' => [], 'labels' => [], 'data' => []];
+
+        // Ikut susunan enum (bukan susunan DB) supaya warna & legenda sentiasa konsisten.
+        foreach (PassStatus::cases() as $status) {
+            $out['keys'][]   = $status->value;
+            $out['labels'][] = $status->label();
+            $out['data'][]   = (int) ($counts[$status->value] ?? 0);
+        }
+
+        return $out;
+    }
+
+    /** (bar mendatar) Penggunaan (%) setiap zon bulan semasa — GUNA SEMULA RPT-03. */
+    private function usageByZone(): array
+    {
+        $rows = $this->reports->usageByZone([
+            'year'  => (int) $this->now->format('Y'),
+            'month' => (int) $this->now->format('n'),
+            'sort'  => 'utilisation',
+            'dir'   => 'desc',
+        ]);
+
+        return [
+            'labels' => array_map(static fn (array $r): string => $r['zone_code'] . ' ' . $r['zone_name'], $rows),
+            'data'   => array_map(static fn (array $r): float => (float) $r['utilisation'], $rows),
+        ];
+    }
+
+    /** (line) Bilangan permohonan pas 12 bulan terakhir (termasuk bulan semasa). */
+    private function passTrend12Months(): array
+    {
+        $firstMonth = $this->now->modify('first day of this month')->modify('-11 months')->setTime(0, 0);
+
+        $rows = $this->db->table('pass_applications')
+            ->select("DATE_FORMAT(created_at, '%Y-%m') AS ym", false)
+            ->selectCount('id', 'total')
+            ->where('created_at >=', $firstMonth->format('Y-m-d H:i:s'))
+            ->groupBy('ym')
+            ->get()
+            ->getResultArray();
+
+        $byMonth = array_column($rows, 'total', 'ym');
+        $labels  = [];
+        $data    = [];
+
+        for ($i = 0; $i < 12; $i++) {
+            $month    = $firstMonth->modify("+{$i} months");
+            $labels[] = self::MONTHS_BM[(int) $month->format('n') - 1] . ' ' . $month->format('y');
+            $data[]   = (int) ($byMonth[$month->format('Y-m')] ?? 0);
+        }
+
+        return ['labels' => $labels, 'data' => $data];
+    }
+}

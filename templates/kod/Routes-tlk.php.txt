@@ -1,0 +1,44 @@
+<?php
+// ============================================================================
+// Fail sasaran : app/Config/Routes.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Peserta: cuba tulis sendiri dahulu — guna fail ini untuk SEMAK, bukan salin.
+// ============================================================================
+
+use CodeIgniter\Router\RouteCollection;
+
+/** @var RouteCollection $routes */
+$routes->get('/', 'Home::index', ['filter' => 'session', 'as' => 'home']);
+
+// Laluan Shield: login, logout, register, ... (ditambah oleh shield:setup)
+service('auth')->routes($routes);
+
+// ---------------------------------------------------------------------
+// M1 — TLK: tempahan (pemohon). Semua perlu log masuk.
+// ---------------------------------------------------------------------
+$routes->group('tlk/tempahan', ['namespace' => 'App\Controllers\Tlk', 'filter' => 'session'], static function (RouteCollection $routes): void {
+    $routes->get('/', 'BookingController::index', ['as' => 'tlk.index']);
+    $routes->get('ketersediaan', 'BookingController::availability', ['as' => 'tlk.availability']);
+    // Mohon: perlu kebenaran tlk.apply (filter permission juga memaksa log masuk)
+    $routes->get('new', 'BookingController::new', ['as' => 'tlk.new', 'filter' => 'permission:tlk.apply']);
+    $routes->post('/', 'BookingController::create', ['as' => 'tlk.create', 'filter' => 'permission:tlk.apply']);
+    $routes->get('(:num)', 'BookingController::show/$1', ['as' => 'tlk.show']);
+    $routes->post('(:num)/cancel', 'BookingController::cancel/$1', ['as' => 'tlk.cancel']);
+});
+
+// M1 — TLK: keputusan (pelulus)
+$routes->group('tlk/keputusan', ['namespace' => 'App\Controllers\Tlk', 'filter' => 'permission:tlk.decide'], static function (RouteCollection $routes): void {
+    $routes->get('/', 'DecisionController::index', ['as' => 'tlk.decision.index']);
+    $routes->post('(:num)/approve', 'DecisionController::approve/$1', ['as' => 'tlk.decision.approve']);
+    $routes->post('(:num)/reject', 'DecisionController::reject/$1', ['as' => 'tlk.decision.reject']);
+});
+
+// Admin — CRUD slot
+$routes->group('admin/slot', ['namespace' => 'App\Controllers\Admin', 'filter' => 'group:admin'], static function (RouteCollection $routes): void {
+    $routes->get('/', 'SlotController::index', ['as' => 'admin.slot.index']);
+    $routes->get('new', 'SlotController::new', ['as' => 'admin.slot.new']);
+    $routes->post('/', 'SlotController::create', ['as' => 'admin.slot.create']);
+    $routes->get('(:num)/edit', 'SlotController::edit/$1', ['as' => 'admin.slot.edit']);
+    $routes->post('(:num)', 'SlotController::update/$1', ['as' => 'admin.slot.update']);
+    $routes->post('(:num)/delete', 'SlotController::delete/$1', ['as' => 'admin.slot.delete']);
+});

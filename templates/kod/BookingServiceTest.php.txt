@@ -1,0 +1,335 @@
+<?php
+// ============================================================================
+// Fail sasaran : tests/tlk/BookingServiceTest.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Peserta: cuba tulis sendiri dahulu — guna fail ini untuk SEMAK, bukan salin.
+// ============================================================================
+
+declare(strict_types=1);
+
+namespace Tests\Tlk;
+
+use App\Enums\BookingStatus;
+use App\Services\BookingService;
+use App\Services\SlotAvailabilityService;
+use CodeIgniter\Test\CIUnitTestCase;
+use CodeIgniter\Test\DatabaseTestTrait;
+use DomainException;
+use PHPUnit\Framework\Attributes\DataProvider;
+
+/**
+ * Ujian BookingService + SlotAvailabilityService (BR-TLK-01/03/04, peralihan status).
+ *
+ * Jalankan: composer test -- tests/tlk
+ * PERLU pangkalan data ujian MySQL/MariaDB (database.tests.* dalam .env) —
+ * SQLite tidak menyokong SELECT ... FOR UPDATE.
+ *
+ * @internal
+ */
+final class BookingServiceTest extends CIUnitTestCase
+{
+    use DatabaseTestTrait;
+
+    protected $migrate   = true;   // jalankan migration sebelum ujian
+    protected $refresh   = true;   // rollback + migrate semula setiap ujian → DB bersih
+    protected $namespace = null;   // null = SEMUA namespace (Shield + App)
+
+    private BookingService $service;
+    private int $applicantId;
+    private int $otherApplicantId;
+    private int $approverId;
+    private int $vehicleId;
+    private int $otherVehicleId;
+    private int $slotId;
+    private int $zoneId;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Fixture minimum — dibina terus (lebih pantas & jelas daripada seeder penuh)
+        $this->applicantId      = $this->makeUser('ujian1', 'Pemohon Ujian Satu');
+        $this->otherApplicantId = $this->makeUser('ujian2', 'Pemohon Ujian Dua');
+        $this->approverId       = $this->makeUser('pelulus_ujian', 'Pelulus Ujian');
+
+        $this->db->table('parking_zones')->insert(['code' => 'T', 'name' => 'Zon Ujian', 'location' => 'Makmal']);
+        $this->zoneId = (int) $this->db->insertID();
+
+        $this->db->table('parking_slots')->insert(['zone_id' => $this->zoneId, 'slot_no' => 'T-01', 'category' => 'oku', 'is_active' => 1]);
+        $this->slotId = (int) $this->db->insertID();
+
+        $this->db->table('vehicles')->insert(['user_id' => $this->applicantId, 'plate_no' => 'WXX 0001', 'model' => 'Proton Saga', 'color' => 'Putih']);
+        $this->vehicleId = (int) $this->db->insertID();
+
+        $this->db->table('vehicles')->insert(['user_id' => $this->otherApplicantId, 'plate_no' => 'WXX 0002', 'model' => 'Perodua Myvi', 'color' => 'Biru']);
+        $this->otherVehicleId = (int) $this->db->insertID();
+
+        $this->service = new BookingService();
+    }
+
+    // ------------------------------------------------------------ cipta
+
+    public function testCreateGeneratesReferencePendingStatusAndLog(): void
+    {
+        $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+
+        $this->assertMatchesRegularExpression('/^TLK-' . date('Y') . '-\d{4}$/', $booking->ref_no);
+        $this->assertSame('TLK-' . date('Y') . '-0001', $booking->ref_no);
+        $this->assertSame(BookingStatus::Pending, $booking->statusEnum());
+
+        $this->seeInDatabase('status_logs', [
+            'module'      => 'TLK',
+            'record_id'   => $booking->id,
+            'from_status' => null,
+            'to_status'   => 'pending',
+            'actor_id'    => $this->applicantId,
+        ]);
+    }
+
+    public function testReferenceNumbersAreSequential(): void
+    {
+        $first  = $this->service->create($this->applicantId, $this->payload(3, 5));
+        $second = $this->service->create($this->otherApplicantId, $this->payload(6, 8, $this->otherVehicleId));
+
+        $this->assertSame('TLK-' . date('Y') . '-0001', $first->ref_no);
+        $this->assertSame('TLK-' . date('Y') . '-0002', $second->ref_no);
+    }
+
+    // ------------------------------------------------------------ BR-TLK-01 pertindihan
+
+    /**
+     * Tempahan sedia ada: hari +10 hingga +20.
+     *
+     * @return array<string, array{int, int, bool}> [mula, tamat, dijangka bertindih?]
+     */
+    public static function rangeProvider(): array
+    {
+        return [
+            'sama tepat'               => [10, 20, true],
+            'bertindih di hujung awal' => [5, 10, true],   // hari +10 dikongsi
+            'bertindih di hujung akhir' => [20, 25, true], // hari +20 dikongsi
+            'di dalam'                 => [12, 15, true],
+            'meliputi keseluruhan'     => [5, 25, true],
+            'sebelum (bersebelahan)'   => [5, 9, false],
+            'selepas (bersebelahan)'   => [21, 25, false],
+        ];
+    }
+
+    #[DataProvider('rangeProvider')]
+    public function testOverlapDetection(int $start, int $end, bool $expected): void
+    {
+        $this->service->create($this->applicantId, $this->payload(10, 20));
+
+        $overlap = (new SlotAvailabilityService())->hasOverlap($this->slotId, $this->day($start), $this->day($end));
+
+        $this->assertSame($expected, $overlap);
+    }
+
+    public function testCreateRejectsOverlappingBooking(): void
+    {
+        $this->service->create($this->applicantId, $this->payload(10, 20));
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('bertindih');
+
+        $this->service->create($this->otherApplicantId, $this->payload(15, 25, $this->otherVehicleId));
+    }
+
+    public function testRejectedBookingFreesTheSlot(): void
+    {
+        $first = $this->service->create($this->applicantId, $this->payload(10, 20));
+        $this->service->reject($first->id, $this->approverId, 'Dokumen sokongan tidak lengkap.');
+
+        // Status 'rejected' bukan aktif → slot boleh ditempah semula
+        $second = $this->service->create($this->otherApplicantId, $this->payload(10, 20, $this->otherVehicleId));
+
+        $this->assertSame(BookingStatus::Pending, $second->statusEnum());
+    }
+
+    public function testAvailableSlotsExcludesBookedSlot(): void
+    {
+        $this->service->create($this->applicantId, $this->payload(10, 20));
+        $availability = new SlotAvailabilityService();
+
+        $this->assertSame([], $availability->availableSlots($this->day(15), $this->day(16)));
+        $this->assertCount(1, $availability->availableSlots($this->day(21), $this->day(22)));
+    }
+
+    // ------------------------------------------------------------ BR-TLK-03 & BR-TLK-04
+
+    public function testMoreThan90DaysIsRejected(): void
+    {
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('90 hari');
+
+        $this->service->create($this->applicantId, $this->payload(1, 92)); // end − start = 91 hari
+    }
+
+    public function testExactly90DaysIsAllowed(): void
+    {
+        $booking = $this->service->create($this->applicantId, $this->payload(1, 91)); // end − start = 90 hari
+
+        $this->assertSame(BookingStatus::Pending, $booking->statusEnum());
+    }
+
+    public function testSingleDayStartingTodayIsAllowed(): void
+    {
+        $booking = $this->service->create($this->applicantId, $this->payload(0, 0));
+
+        $this->assertSame(1, $booking->durationDays());
+    }
+
+    public function testEndBeforeStartIsRejected(): void
+    {
+        $this->expectException(DomainException::class);
+
+        $this->service->create($this->applicantId, $this->payload(10, 5));
+    }
+
+    public function testStartDateInThePastIsRejected(): void
+    {
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('masa lalu');
+
+        $this->service->create($this->applicantId, $this->payload(-1, 5));
+    }
+
+    public function testApplicantCanHaveOnlyOneActiveBooking(): void
+    {
+        $this->db->table('parking_slots')->insert(['zone_id' => $this->zoneId, 'slot_no' => 'T-02', 'category' => 'oku', 'is_active' => 1]);
+        $secondSlot = (int) $this->db->insertID();
+
+        $this->service->create($this->applicantId, $this->payload(10, 20));
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('tempahan aktif');
+
+        $this->service->create($this->applicantId, ['slot_id' => $secondSlot] + $this->payload(30, 40));
+    }
+
+    public function testCannotBookSomeoneElsesVehicle(): void
+    {
+        $this->expectException(DomainException::class);
+
+        $this->service->create($this->applicantId, $this->payload(3, 5, $this->otherVehicleId));
+    }
+
+    // ------------------------------------------------------------ peralihan status
+
+    public function testApproveSetsDecisionFieldsAndLogs(): void
+    {
+        $booking  = $this->service->create($this->applicantId, $this->payload(3, 10));
+        $approved = $this->service->approve($booking->id, $this->approverId);
+
+        $this->assertSame(BookingStatus::Approved, $approved->statusEnum());
+        $this->assertSame($this->approverId, $approved->decided_by);
+        $this->assertNotNull($approved->decided_at);
+        $this->seeInDatabase('status_logs', ['record_id' => $booking->id, 'from_status' => 'pending', 'to_status' => 'approved']);
+    }
+
+    public function testCannotApproveRejectedBooking(): void
+    {
+        $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+        $this->service->reject($booking->id, $this->approverId, 'Kategori slot tidak sepadan.');
+
+        $this->expectException(DomainException::class);
+
+        $this->service->approve($booking->id, $this->approverId);
+    }
+
+    public function testRejectRequiresRemarks(): void
+    {
+        $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+
+        $this->expectException(DomainException::class);
+
+        $this->service->reject($booking->id, $this->approverId, 'tak');
+    }
+
+    public function testFailedTransitionDoesNotWriteLog(): void
+    {
+        $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+
+        try {
+            $this->service->cancel($booking->id, $this->applicantId);   // pending → cancelled TIDAK dibenarkan
+            $this->fail('Sepatutnya DomainException');
+        } catch (DomainException) {
+            // dijangka
+        }
+
+        $this->seeNumRecords(1, 'status_logs', ['record_id' => $booking->id]);   // hanya log 'pending'
+        $this->seeInDatabase('slot_bookings', ['id' => $booking->id, 'status' => 'pending']);
+    }
+
+    public function testOwnerCanCancelApprovedBooking(): void
+    {
+        $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+        $this->service->approve($booking->id, $this->approverId);
+
+        $cancelled = $this->service->cancel($booking->id, $this->applicantId);
+
+        $this->assertSame(BookingStatus::Cancelled, $cancelled->statusEnum());
+        $this->seeNumRecords(3, 'status_logs', ['record_id' => $booking->id]);
+    }
+
+    public function testOtherUserCannotCancelBooking(): void
+    {
+        $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+        $this->service->approve($booking->id, $this->approverId);
+
+        $this->expectException(DomainException::class);
+
+        $this->service->cancel($booking->id, $this->otherApplicantId);
+    }
+
+    public function testAdminCanCancelSomeoneElsesApprovedBooking(): void
+    {
+        $adminId = $this->makeUser('admin_ujian', 'Admin Ujian');
+        auth()->getProvider()->findById($adminId)->addGroup('admin');
+
+        $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+        $this->service->approve($booking->id, $this->approverId);
+
+        $cancelled = $this->service->cancel($booking->id, $adminId, 'Slot diperlukan untuk kerja penyelenggaraan.');
+
+        $this->assertSame(BookingStatus::Cancelled, $cancelled->statusEnum());
+        $this->seeInDatabase('status_logs', ['record_id' => $booking->id, 'to_status' => 'cancelled', 'actor_id' => $adminId]);
+    }
+
+    public function testEnumTransitionTable(): void
+    {
+        $this->assertTrue(BookingStatus::Pending->canTransitionTo(BookingStatus::Approved));
+        $this->assertTrue(BookingStatus::Pending->canTransitionTo(BookingStatus::Rejected));
+        $this->assertTrue(BookingStatus::Approved->canTransitionTo(BookingStatus::Cancelled));
+        $this->assertTrue(BookingStatus::Approved->canTransitionTo(BookingStatus::Expired));
+        $this->assertFalse(BookingStatus::Pending->canTransitionTo(BookingStatus::Cancelled));
+        $this->assertFalse(BookingStatus::Rejected->canTransitionTo(BookingStatus::Approved));
+        $this->assertSame(['pending', 'approved'], BookingStatus::active());
+    }
+
+    // ------------------------------------------------------------ pembantu
+
+    private function makeUser(string $username, string $fullName): int
+    {
+        $this->db->table('users')->insert(['username' => $username, 'full_name' => $fullName, 'active' => 1]);
+
+        return (int) $this->db->insertID();
+    }
+
+    private function day(int $offset): string
+    {
+        return date('Y-m-d', strtotime("{$offset} days"));
+    }
+
+    /** @return array<string, int|string> */
+    private function payload(int $startOffset, int $endOffset, ?int $vehicleId = null): array
+    {
+        return [
+            'vehicle_id' => $vehicleId ?? $this->vehicleId,
+            'slot_id'    => $this->slotId,
+            'start_date' => $this->day($startOffset),
+            'end_date'   => $this->day($endOffset),
+            'reason'     => 'Ujian automatik tempahan slot.',
+        ];
+    }
+}

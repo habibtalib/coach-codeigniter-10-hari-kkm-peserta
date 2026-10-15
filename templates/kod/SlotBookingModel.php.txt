@@ -1,0 +1,62 @@
+<?php
+// ============================================================================
+// Fail sasaran : app/Models/SlotBookingModel.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Peserta: cuba tulis sendiri dahulu — guna fail ini untuk SEMAK, bukan salin.
+// ============================================================================
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use App\Entities\SlotBooking;
+use CodeIgniter\Model;
+
+class SlotBookingModel extends Model
+{
+    protected $table         = 'slot_bookings';
+    protected $returnType    = SlotBooking::class;
+    protected $allowedFields = [
+        'ref_no', 'user_id', 'vehicle_id', 'slot_id',
+        'start_date', 'end_date', 'reason', 'status',
+        'decided_by', 'decided_at',
+    ];
+    protected $useTimestamps = true;
+
+    // Peraturan asas (format & wajib). Peraturan perniagaan (BR-TLK-01/03/04)
+    // disemak dalam borang (BookingRules) dan BookingService.
+    protected $validationRules = [
+        'ref_no'     => 'required|max_length[20]',
+        'user_id'    => 'required|is_natural_no_zero',
+        'vehicle_id' => 'required|is_natural_no_zero',
+        'slot_id'    => 'required|is_natural_no_zero',
+        'start_date' => 'required|valid_date[Y-m-d]',
+        'end_date'   => 'required|valid_date[Y-m-d]',
+        'reason'     => 'required|min_length[10]|max_length[1000]',
+        'status'     => 'required|in_list[pending,approved,rejected,cancelled,expired]',
+    ];
+
+    /**
+     * Query asas senarai: tempahan + slot + zon + kenderaan + nama pemohon.
+     * Guna: $model->listing()->where(...)->paginate(10)
+     */
+    public function listing(): static
+    {
+        return $this->select(
+            'slot_bookings.*, parking_slots.slot_no, parking_slots.category, '
+            . 'parking_zones.code AS zone_code, vehicles.plate_no, users.full_name AS applicant_name',
+        )
+            ->join('parking_slots', 'parking_slots.id = slot_bookings.slot_id')
+            ->join('parking_zones', 'parking_zones.id = parking_slots.zone_id')
+            ->join('vehicles', 'vehicles.id = slot_bookings.vehicle_id')
+            ->join('users', 'users.id = slot_bookings.user_id')
+            ->orderBy('slot_bookings.created_at', 'DESC')
+            ->orderBy('slot_bookings.id', 'DESC');
+    }
+
+    /** Satu tempahan lengkap dengan maklumat paparan (untuk halaman show). */
+    public function findDetailed(int $id): ?SlotBooking
+    {
+        return $this->listing()->where('slot_bookings.id', $id)->first();
+    }
+}

@@ -1,0 +1,62 @@
+<?php
+/**
+ * RUJUKAN JURULATIH — Hari 8 S3
+ * Salin ke: app/Views/partials/status_timeline.php
+ *
+ * Garis masa status dari status_logs (BR-PAS-05). Generik: boleh dipakai TLK juga.
+ *
+ * Guna (dalam app/Views/pas/show.php):
+ *   <?= view('partials/status_timeline', ['history' => $history, 'enum' => \App\Enums\PassStatus::class]) ?>
+ *
+ * @var list<array{actor_name:?string, from_status:?string, to_status:string, remarks:?string, created_at:string}> $history
+ *      dari StatusLogModel::history('PAS', $id) — susunan menaik (paling lama dahulu)
+ * @var class-string<\BackedEnum> $enum  enum yang ada label() & badge(), cth App\Enums\PassStatus::class
+ */
+
+$caseOf = static fn (?string $value) => $value === null ? null : $enum::tryFrom($value);
+
+// PassStatus::badge() memulangkan 'text-bg-info'; BookingStatus::badge() memulangkan 'warning'.
+// Normalkan supaya partial ini benar-benar generik (TLK & PAS); BookingStatus::badge() kekal 'warning' kerana view TLK menambah awalan text-bg- sendiri.
+$badgeClass = static fn (?object $case): string => $case === null
+    ? 'text-bg-light'
+    : (str_starts_with($case->badge(), 'text-bg-') ? $case->badge() : 'text-bg-' . $case->badge());
+?>
+<section class="mt-4" aria-labelledby="sejarah-status">
+    <h2 id="sejarah-status" class="h5 mb-3"><i class="bi bi-clock-history"></i> Sejarah Status</h2>
+
+    <?php if ($history === []): ?>
+        <p class="text-body-secondary fst-italic">Tiada rekod sejarah.</p>
+    <?php else: ?>
+        <ol class="list-group list-group-numbered">
+            <?php foreach ($history as $log): ?>
+                <?php
+                    $from = $caseOf($log['from_status'] ?? null);
+                    $to   = $caseOf($log['to_status']);
+                ?>
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-semibold">
+                            <?php if ($from !== null): ?>
+                                <span class="badge <?= esc($badgeClass($from), 'attr') ?>"><?= esc($from->label()) ?></span>
+                                <i class="bi bi-arrow-right mx-1" aria-hidden="true"></i>
+                                <span class="visually-hidden">kepada</span>
+                            <?php endif ?>
+                            <span class="badge <?= esc($badgeClass($to), 'attr') ?>">
+                                <?= esc($to?->label() ?? $log['to_status']) ?>
+                            </span>
+                        </div>
+                        <small class="text-body-secondary">
+                            oleh <?= esc($log['actor_name'] ?? 'Sistem') ?>
+                        </small>
+                        <?php if (! empty($log['remarks'])): ?>
+                            <div class="mt-1 fst-italic">&ldquo;<?= esc($log['remarks']) ?>&rdquo;</div>
+                        <?php endif ?>
+                    </div>
+                    <small class="text-body-secondary text-nowrap ms-3">
+                        <?= esc(date('d/m/Y H:i', strtotime((string) $log['created_at']))) ?>
+                    </small>
+                </li>
+            <?php endforeach ?>
+        </ol>
+    <?php endif ?>
+</section>

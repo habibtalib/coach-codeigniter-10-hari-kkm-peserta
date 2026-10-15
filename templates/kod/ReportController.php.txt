@@ -1,0 +1,161 @@
+<?php
+
+// app/Controllers/Laporan/ReportController.php
+// Hari 9 — Controller NIPIS: baca request → panggil service → pulang view/muat turun.
+// Akses dikawal oleh filter laluan `permission:laporan.view` (lihat Routes-laporan-statistik.php.txt).
+//
+// Service didaftar dalam app/Config/Services.php (corak sama seperti bookingService, Hari 6):
+//
+//     public static function reportService(bool $getShared = true): \App\Services\ReportService
+//     {
+//         if ($getShared) {
+//             return static::getSharedInstance('reportService');
+//         }
+//
+//         return new \App\Services\ReportService();
+//     }
+//
+//     public static function exportService(bool $getShared = true): \App\Services\ExportService
+//     {
+//         if ($getShared) {
+//             return static::getSharedInstance('exportService');
+//         }
+//
+//         return new \App\Services\ExportService();
+//     }
+
+declare(strict_types=1);
+
+namespace App\Controllers\Laporan;
+
+use App\Controllers\BaseController;
+use App\Services\ExportService;
+use App\Services\ReportService;
+use CodeIgniter\HTTP\ResponseInterface;
+use LengthException;
+
+class ReportController extends BaseController
+{
+    private ReportService $reports;
+    private ExportService $exporter;
+
+    public function __construct()
+    {
+        $this->reports  = service('reportService');
+        $this->exporter = service('exportService');
+    }
+
+    /** GET /laporan/tempahan — RPT-01 */
+    public function bookings(): string|ResponseInterface
+    {
+        return $this->handle('tempahan');
+    }
+
+    /** GET /laporan/pas — RPT-02 */
+    public function passes(): string|ResponseInterface
+    {
+        return $this->handle('pas');
+    }
+
+    /** GET /laporan/penggunaan — RPT-03 */
+    public function usage(): string|ResponseInterface
+    {
+        return $this->handle('penggunaan');
+    }
+
+    /**
+     * Satu aliran untuk ketiga-tiga laporan:
+     *   penapis sama → HTML berpagination  ATAU  ?export=pdf|xlsx
+     */
+    private function handle(string $report): string|ResponseInterface
+    {
+        $filters = $this->reports->normaliseFilters($report, $this->request->getGet() ?? []);
+        $export  = $this->request->getGet('export');
+
+        if ($export === 'pdf' || $export === 'xlsx') {
+            return $this->export($report, $filters, $export);
+        }
+
+        $page   = (int) ($this->request->getGet('page') ?? 1);
+        $result = $this->reports->paginate($report, $filters, $page);
+
+        return view('laporan/index', [
+            'title'    => $this->reports->title($report),
+            'report'   => $report,
+            'filters'  => $filters,
+            'query'    => $this->reports->toQuery($filters),
+            'columns'  => $this->reports->columns($report),
+            'sortable' => $this->reports->sortableColumns($report),
+            'options'  => $this->reports->filterOptions($report),
+            'result'   => $result,
+            'pager'    => service('pager'),
+        ]);
+    }
+
+    private function export(string $report, array $filters, string $format): ResponseInterface
+    {
+        try {
+            $rows = $this->reports->exportRows($report, $filters, $format);
+        } catch (LengthException $e) {
+            // Kembali ke paparan HTML dengan penapis yang SAMA (tanpa ?export=)
+            return redirect()
+                ->to(current_url() . '?' . http_build_query($this->reports->toQuery($filters)))
+                ->with('error', $e->getMessage());
+        }
+
+        $user  = auth()->user();
+        $title = $this->reports->title($report);
+        $meta  = [
+            'filters'      => $this->describeFilters($report, $filters),
+            'user'         => (string) ($user->full_name ?? $user->email ?? '-'),
+            'generated_at' => date('d/m/Y H:i'),
+        ];
+
+        $binary = $format === 'pdf'
+            ? $this->exporter->pdf($title, $this->reports->columns($report), $rows, $meta)
+            : $this->exporter->xlsx($title, $this->reports->columns($report), $rows, $meta);
+
+        $filename = sprintf('laporan-%s-%s.%s', $report, date('Ymd-His'), $format);
+
+        // download(nama, data, setMime=true) → Content-Type diteka dari sambungan fail
+        // (application/pdf, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet)
+        // dan Content-Disposition: attachment.
+        return $this->response->download($filename, $binary, true);
+    }
+
+    /** Ringkasan penapis untuk pengepala PDF/Excel — pembaca tahu data ini ditapis bagaimana. */
+    private function describeFilters(string $report, array $f): string
+    {
+        $parts = [];
+
+        if ($report === 'penggunaan') {
+            [$start, $end] = $this->reports->usagePeriod($f);
+            $parts[]       = 'Tempoh ' . date('d/m/Y', strtotime($start)) . ' – ' . date('d/m/Y', strtotime($end));
+        } else {
+            $parts[] = 'Tarikh ' . ($f['from'] ? date('d/m/Y', strtotime($f['from'])) : '(mula)')
+                . ' – ' . ($f['to'] ? date('d/m/Y', strtotime($f['to'])) : '(kini)');
+        }
+
+        // Tukar nilai id/enum kepada label yang dipaparkan dalam dropdown
+        foreach ($this->reports->filterOptions($report) as $group => $opts) {
+            $key = match ($group) {
+                'zones'       => 'zone_id',
+                'categories'  => 'category',
+                'statuses'    => 'status',
+                'departments' => 'department_id',
+                'pass_types'  => 'pass_type',
+                default       => null,
+            };
+
+            if ($key !== null && ($f[$key] ?? null) !== null) {
+                foreach ($opts as $o) {
+                    if ((string) $o['value'] === (string) $f[$key]) {
+                        $parts[] = $o['label'];
+                    }
+                }
+            }
+        }
+
+        return implode(' · ', $parts);
+    }
+}

@@ -1,0 +1,108 @@
+<?php
+
+/**
+ * RUJUKAN JURULATIH — Hari 8 S4 ⭐ (pilihan)
+ * Salin ke: app/Commands/ExpirePassesCommand.php
+ *
+ * SPEC §2.2: status `expired` diubah oleh SISTEM (Spark command / semasa papar).
+ * Command ini menukar pas approved yang valid_until < hari ini → expired,
+ * MELALUI PassWorkflowService (jadi canTransitionTo() + status_logs tetap terpakai).
+ *
+ *   php spark pas:expire --dry-run        # papar sahaja
+ *   php spark pas:expire                  # laksana (actor = admin pertama)
+ *   php spark pas:expire --actor 5        # laksana dengan actor_id tertentu
+ *
+ * Cron (pelayan Linux, setiap hari 00:10):
+ *   10 0 * * * cd /var/www/kkm-latihan && php spark pas:expire >> writable/logs/pas-expire.log 2>&1
+ *
+ * Task Scheduler (pelayan Windows, setiap hari 00:10; jalankan sekali dalam Command Prompt pentadbir):
+ *   schtasks /create /tn KKM-PasExpire /sc daily /st 00:10 /tr "cmd /c cd /d C:\laragon\www\kkm-latihan && php spark pas:expire >> writable\logs\pas-expire.log 2>&1"
+ */
+
+declare(strict_types=1);
+
+namespace App\Commands;
+
+use CodeIgniter\CLI\BaseCommand;
+use CodeIgniter\CLI\CLI;
+use CodeIgniter\I18n\Time;
+use Throwable;
+
+class ExpirePassesCommand extends BaseCommand
+{
+    protected $group       = 'Pas';
+    protected $name        = 'pas:expire';
+    protected $description = 'Tandakan pas "approved" yang melepasi valid_until sebagai "expired".';
+    protected $usage       = 'pas:expire [--dry-run] [--actor <user_id>]';
+    protected $options     = [
+        '--dry-run' => 'Papar senarai sahaja; tiada perubahan pada DB.',
+        '--actor'   => 'ID pengguna yang direkod sebagai actor_id dalam status_logs (lalai: admin pertama).',
+    ];
+
+    public function run(array $params)
+    {
+        $today    = Time::today()->toDateString();
+        $workflow = service('passWorkflowService');
+        $ids      = $workflow->expirableIds($today);
+
+        if ($ids === []) {
+            CLI::write("Tiada pas untuk ditamatkan (tarikh rujukan {$today}).", 'green');
+
+            return EXIT_SUCCESS;
+        }
+
+        CLI::write(sprintf('%d pas melepasi valid_until sebelum %s: ID %s', count($ids), $today, implode(', ', $ids)));
+
+        if (array_key_exists('dry-run', $params) || CLI::getOption('dry-run') !== null) {
+            CLI::write('--dry-run: tiada perubahan dibuat.', 'yellow');
+
+            return EXIT_SUCCESS;
+        }
+
+        $actorId = $this->resolveActorId($params);
+        if ($actorId <= 0) {
+            CLI::error('Tiada actor sah. Guna --actor <user_id> atau pastikan ada pengguna dalam group admin.');
+
+            return EXIT_ERROR;
+        }
+
+        $ok   = 0;
+        $fail = 0;
+
+        foreach ($ids as $id) {
+            try {
+                $application = $workflow->expire($id, $actorId);   // canTransitionTo() + status_logs
+                CLI::write("  ✔ {$application->ref_no} → Tamat Tempoh", 'green');
+                $ok++;
+            } catch (Throwable $e) {
+                CLI::error("  ✘ ID {$id}: " . $e->getMessage());   // satu gagal tidak menghentikan yang lain
+                $fail++;
+            }
+        }
+
+        CLI::write(sprintf('Selesai: %d ditamatkan, %d gagal.', $ok, $fail), $fail === 0 ? 'green' : 'yellow');
+
+        return $fail === 0 ? EXIT_SUCCESS : EXIT_ERROR;
+    }
+
+    /** @param array<int|string, mixed> $params */
+    private function resolveActorId(array $params): int
+    {
+        $option = $params['actor'] ?? CLI::getOption('actor');
+
+        if (is_string($option) && ctype_digit($option)) {
+            return (int) $option;
+        }
+
+        // Lalai: pengguna pertama dalam group admin (jadual Shield auth_groups_users)
+        $table = config('Auth')->tables['groups_users'];
+        $row   = db_connect()->table($table)
+            ->select('user_id')
+            ->where('group', 'admin')
+            ->orderBy('user_id', 'ASC')
+            ->get(1)
+            ->getRowArray();
+
+        return (int) ($row['user_id'] ?? 0);
+    }
+}

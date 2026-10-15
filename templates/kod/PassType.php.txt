@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * RUJUKAN JURULATIH — Hari 7 S1
+ * Salin ke: app/Enums/PassType.php
+ *
+ * SPEC §2.2 — nilai sah bagi pass_applications.pass_type.
+ */
+
+declare(strict_types=1);
+
+namespace App\Enums;
+
+enum PassType: string
+{
+    case Kenderaan  = 'kenderaan';    // pas kenderaan / pelekat
+    case Kakitangan = 'kakitangan';   // pas akses kakitangan
+    case Kontraktor = 'kontraktor';   // pas kontraktor berjangka
+
+    /** Label BM untuk paparan */
+    public function label(): string
+    {
+        return match ($this) {
+            self::Kenderaan  => 'Pas Kenderaan (Pelekat)',
+            self::Kakitangan => 'Pas Akses Kakitangan',
+            self::Kontraktor => 'Pas Kontraktor Berjangka',
+        };
+    }
+
+    /**
+     * BR-PAS-06: pas kenderaan WAJIB dipautkan kepada kenderaan milik pemohon
+     * (pass_applications.vehicle_id). Jenis lain: vehicle_id = NULL.
+     */
+    public function requiresVehicle(): bool
+    {
+        return $this === self::Kenderaan;
+    }
+
+    /**
+     * Nilai mentah untuk in_list[] validasi.
+     *
+     * @return list<string>
+     */
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+
+    /**
+     * Pilihan untuk <select>: nilai => label BM.
+     *
+     * @return array<string, string>
+     */
+    public static function options(): array
+    {
+        $options = [];
+
+        foreach (self::cases() as $case) {
+            $options[$case->value] = $case->label();
+        }
+
+        return $options;
+    }
+}

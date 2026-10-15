@@ -1,0 +1,75 @@
+<?php
+// ============================================================================
+// Fail sasaran : app/Models/StatusLogModel.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Peserta: cuba tulis sendiri dahulu — guna fail ini untuk SEMAK, bukan salin.
+// ============================================================================
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use CodeIgniter\Model;
+
+/**
+ * Jejak audit peralihan status — SATU jadual untuk modul TLK & PAS.
+ * Rekod hanya ditambah (append-only): tiada update, tiada delete.
+ */
+class StatusLogModel extends Model
+{
+    protected $table         = 'status_logs';
+    protected $returnType    = 'array';
+    protected $allowedFields = ['module', 'record_id', 'from_status', 'to_status', 'actor_id', 'remarks'];
+
+    protected $useTimestamps = true;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = '';            // jadual ini tiada updated_at
+
+    protected $validationRules = [
+        'module'      => 'required|in_list[TLK,PAS]',
+        'record_id'   => 'required|is_natural_no_zero',
+        'from_status' => 'permit_empty|max_length[20]',
+        'to_status'   => 'required|max_length[20]',
+        'actor_id'    => 'required|is_natural_no_zero',
+    ];
+
+    /**
+     * Rekod satu peralihan status.
+     *
+     * @param string      $module   'TLK' atau 'PAS'
+     * @param string|null $from     null apabila rekod baru dicipta
+     */
+    public function record(
+        string $module,
+        int $recordId,
+        ?string $from,
+        string $to,
+        int $actorId,
+        ?string $remarks = null,
+    ): bool {
+        return $this->insert([
+            'module'      => strtoupper($module),
+            'record_id'   => $recordId,
+            'from_status' => $from,
+            'to_status'   => $to,
+            'actor_id'    => $actorId,
+            'remarks'     => $remarks,
+        ]) !== false;
+    }
+
+    /**
+     * Sejarah status satu rekod, lama → baharu, dengan nama pelaku.
+     *
+     * @return list<array<string, mixed>> setiap baris ada 'actor_name'
+     */
+    public function history(string $module, int $recordId): array
+    {
+        return $this->select('status_logs.*, users.full_name AS actor_name')
+            ->join('users', 'users.id = status_logs.actor_id', 'left')
+            ->where('status_logs.module', strtoupper($module))
+            ->where('status_logs.record_id', $recordId)
+            ->orderBy('status_logs.created_at', 'ASC')
+            ->orderBy('status_logs.id', 'ASC')
+            ->findAll();
+    }
+}

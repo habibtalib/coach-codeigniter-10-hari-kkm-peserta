@@ -1,0 +1,376 @@
+<?php
+// ============================================================================
+// Templat rujukan: SEMUA migration jadual SPEC §3 (10 fail, ikut tertib FK).
+// Setiap blok di bawah = SATU fail dalam app/Database/Migrations/.
+// Jana fail kosong dengan: php spark make:migration <NamaKelas>
+// Cap masa pada nama fail menentukan tertib — departments SEBELUM users, dsb.
+// Diuji: php spark migrate && php spark migrate:rollback (CI 4.6+ / MySQL 8).
+// ============================================================================
+
+
+// ----------------------------------------------------------------------------
+// FAIL: app/Database/Migrations/2026-01-05-090001_CreateDepartmentsTable.php
+// ----------------------------------------------------------------------------
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+class CreateDepartmentsTable extends Migration
+{
+    public function up(): void
+    {
+        $this->forge->addField([
+            'id'         => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'code'       => ['type' => 'VARCHAR', 'constraint' => 20],
+            'name'       => ['type' => 'VARCHAR', 'constraint' => 150],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addUniqueKey('code');
+        $this->forge->createTable('departments', false, ['ENGINE' => 'InnoDB']);
+    }
+
+    public function down(): void
+    {
+        $this->forge->dropTable('departments', true);
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+// FAIL: app/Database/Migrations/2026-01-05-090002_AddProfileFieldsToUsers.php
+// ----------------------------------------------------------------------------
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+/**
+ * Jadual `users` dicipta oleh Shield. Kita TIDAK mengubah migration Shield —
+ * kita tambah medan profil melalui migration sendiri.
+ */
+class AddProfileFieldsToUsers extends Migration
+{
+    public function up(): void
+    {
+        $this->forge->addColumn('users', [
+            'full_name'     => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true, 'after' => 'username'],
+            'staff_no'      => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true, 'after' => 'full_name'],
+            'department_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true, 'after' => 'staff_no'],
+            'phone'         => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true, 'after' => 'department_id'],
+        ]);
+
+        // Tambah UNIQUE + FK pada jadual sedia ada: addKey/addForeignKey + processIndexes()
+        $this->forge->addUniqueKey('staff_no', 'users_staff_no_unique');
+        $this->forge->addForeignKey('department_id', 'departments', 'id', 'CASCADE', 'SET NULL', 'users_department_id_fk');
+        $this->forge->processIndexes('users');
+    }
+
+    public function down(): void
+    {
+        $this->forge->dropForeignKey('users', 'users_department_id_fk');
+        $this->forge->dropKey('users', 'users_staff_no_unique', false);
+        $this->forge->dropColumn('users', ['full_name', 'staff_no', 'department_id', 'phone']);
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+// FAIL: app/Database/Migrations/2026-01-05-090003_CreateParkingZonesTable.php
+// ----------------------------------------------------------------------------
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+class CreateParkingZonesTable extends Migration
+{
+    public function up(): void
+    {
+        $this->forge->addField([
+            'id'         => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'code'       => ['type' => 'VARCHAR', 'constraint' => 10],
+            'name'       => ['type' => 'VARCHAR', 'constraint' => 100],
+            'location'   => ['type' => 'VARCHAR', 'constraint' => 150],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addUniqueKey('code');
+        $this->forge->createTable('parking_zones', false, ['ENGINE' => 'InnoDB']);
+    }
+
+    public function down(): void
+    {
+        $this->forge->dropTable('parking_zones', true);
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+// FAIL: app/Database/Migrations/2026-01-05-090004_CreateParkingSlotsTable.php
+// ----------------------------------------------------------------------------
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+class CreateParkingSlotsTable extends Migration
+{
+    public function up(): void
+    {
+        $this->forge->addField([
+            'id'         => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'zone_id'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'slot_no'    => ['type' => 'VARCHAR', 'constraint' => 10],
+            'category'   => ['type' => 'VARCHAR', 'constraint' => 20], // nilai App\Enums\SlotCategory
+            'is_active'  => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 1],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+            'deleted_at' => ['type' => 'DATETIME', 'null' => true], // soft delete
+        ]);
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addUniqueKey(['zone_id', 'slot_no']);
+        $this->forge->addForeignKey('zone_id', 'parking_zones', 'id', 'CASCADE', 'RESTRICT');
+        $this->forge->createTable('parking_slots', false, ['ENGINE' => 'InnoDB']);
+    }
+
+    public function down(): void
+    {
+        $this->forge->dropTable('parking_slots', true);
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+// FAIL: app/Database/Migrations/2026-01-05-090005_CreateVehiclesTable.php
+// ----------------------------------------------------------------------------
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+class CreateVehiclesTable extends Migration
+{
+    public function up(): void
+    {
+        $this->forge->addField([
+            'id'         => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'user_id'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'plate_no'   => ['type' => 'VARCHAR', 'constraint' => 15],
+            'model'      => ['type' => 'VARCHAR', 'constraint' => 80],
+            'color'      => ['type' => 'VARCHAR', 'constraint' => 30],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addUniqueKey('plate_no');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'RESTRICT');
+        $this->forge->createTable('vehicles', false, ['ENGINE' => 'InnoDB']);
+    }
+
+    public function down(): void
+    {
+        $this->forge->dropTable('vehicles', true);
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+// FAIL: app/Database/Migrations/2026-01-05-090006_CreateSlotBookingsTable.php
+// ----------------------------------------------------------------------------
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+class CreateSlotBookingsTable extends Migration
+{
+    public function up(): void
+    {
+        $this->forge->addField([
+            'id'         => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'ref_no'     => ['type' => 'VARCHAR', 'constraint' => 20],
+            'user_id'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'vehicle_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'slot_id'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'start_date' => ['type' => 'DATE'],
+            'end_date'   => ['type' => 'DATE'],
+            'reason'     => ['type' => 'TEXT'],
+            'status'     => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'pending'], // App\Enums\BookingStatus
+            'decided_by' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'decided_at' => ['type' => 'DATETIME', 'null' => true],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addUniqueKey('ref_no');
+        // Index komposit untuk query pertindihan (BR-TLK-01)
+        $this->forge->addKey(['slot_id', 'start_date', 'end_date']);
+        $this->forge->addKey('status');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'RESTRICT');
+        $this->forge->addForeignKey('vehicle_id', 'vehicles', 'id', 'CASCADE', 'RESTRICT');
+        $this->forge->addForeignKey('slot_id', 'parking_slots', 'id', 'CASCADE', 'RESTRICT');
+        $this->forge->addForeignKey('decided_by', 'users', 'id', 'CASCADE', 'SET NULL');
+        $this->forge->createTable('slot_bookings', false, ['ENGINE' => 'InnoDB']);
+    }
+
+    public function down(): void
+    {
+        $this->forge->dropTable('slot_bookings', true);
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+// FAIL: app/Database/Migrations/2026-01-05-090007_CreatePassApplicationsTable.php
+// ----------------------------------------------------------------------------
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+class CreatePassApplicationsTable extends Migration
+{
+    public function up(): void
+    {
+        $this->forge->addField([
+            'id'          => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'ref_no'      => ['type' => 'VARCHAR', 'constraint' => 20],
+            'user_id'     => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'pass_type'   => ['type' => 'VARCHAR', 'constraint' => 20], // App\Enums\PassType
+            'vehicle_id'  => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'purpose'     => ['type' => 'TEXT'],
+            'valid_from'  => ['type' => 'DATE'],
+            'valid_until' => ['type' => 'DATE'],
+            'status'      => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'submitted'], // App\Enums\PassStatus
+            'reviewed_by' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'reviewed_at' => ['type' => 'DATETIME', 'null' => true],
+            'approved_by' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'approved_at' => ['type' => 'DATETIME', 'null' => true],
+            'created_at'  => ['type' => 'DATETIME', 'null' => true],
+            'updated_at'  => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addUniqueKey('ref_no');
+        $this->forge->addKey('status');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'RESTRICT');
+        $this->forge->addForeignKey('vehicle_id', 'vehicles', 'id', 'CASCADE', 'SET NULL');
+        $this->forge->addForeignKey('reviewed_by', 'users', 'id', 'CASCADE', 'SET NULL');
+        $this->forge->addForeignKey('approved_by', 'users', 'id', 'CASCADE', 'SET NULL');
+        $this->forge->createTable('pass_applications', false, ['ENGINE' => 'InnoDB']);
+    }
+
+    public function down(): void
+    {
+        $this->forge->dropTable('pass_applications', true);
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+// FAIL: app/Database/Migrations/2026-01-05-090008_CreatePassDocumentsTable.php
+// ----------------------------------------------------------------------------
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+class CreatePassDocumentsTable extends Migration
+{
+    public function up(): void
+    {
+        $this->forge->addField([
+            'id'             => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'application_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'doc_type'       => ['type' => 'VARCHAR', 'constraint' => 30],
+            'original_name'  => ['type' => 'VARCHAR', 'constraint' => 255],
+            'stored_path'    => ['type' => 'VARCHAR', 'constraint' => 255], // path dalam writable/uploads/pas/
+            'mime'           => ['type' => 'VARCHAR', 'constraint' => 80],
+            'size_bytes'     => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'created_at'     => ['type' => 'DATETIME', 'null' => true],
+            'updated_at'     => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addForeignKey('application_id', 'pass_applications', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->createTable('pass_documents', false, ['ENGINE' => 'InnoDB']);
+    }
+
+    public function down(): void
+    {
+        $this->forge->dropTable('pass_documents', true);
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+// FAIL: app/Database/Migrations/2026-01-05-090009_CreateStatusLogsTable.php
+// ----------------------------------------------------------------------------
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+/**
+ * Satu jadual audit untuk kedua-dua modul (TLK & PAS).
+ * Rekod audit tidak dikemas kini — hanya `created_at`.
+ */
+class CreateStatusLogsTable extends Migration
+{
+    public function up(): void
+    {
+        $this->forge->addField([
+            'id'          => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'module'      => ['type' => 'VARCHAR', 'constraint' => 5],  // 'TLK' | 'PAS'
+            'record_id'   => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'from_status' => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true],
+            'to_status'   => ['type' => 'VARCHAR', 'constraint' => 20],
+            'actor_id'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+            'remarks'     => ['type' => 'TEXT', 'null' => true],
+            'created_at'  => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addKey(['module', 'record_id']);
+        $this->forge->addForeignKey('actor_id', 'users', 'id', 'CASCADE', 'RESTRICT');
+        $this->forge->createTable('status_logs', false, ['ENGINE' => 'InnoDB']);
+    }
+
+    public function down(): void
+    {
+        $this->forge->dropTable('status_logs', true);
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+// FAIL: app/Database/Migrations/2026-01-05-090010_CreateReferenceSequencesTable.php
+// ----------------------------------------------------------------------------
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+class CreateReferenceSequencesTable extends Migration
+{
+    public function up(): void
+    {
+        $this->forge->addField([
+            'id'          => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+            'prefix'      => ['type' => 'VARCHAR', 'constraint' => 5],   // 'TLK' | 'PAS'
+            'year'        => ['type' => 'SMALLINT', 'unsigned' => true],
+            'last_number' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
+            'created_at'  => ['type' => 'DATETIME', 'null' => true],
+            'updated_at'  => ['type' => 'DATETIME', 'null' => true],
+        ]);
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addUniqueKey(['prefix', 'year']);
+        $this->forge->createTable('reference_sequences', false, ['ENGINE' => 'InnoDB']);
+    }
+
+    public function down(): void
+    {
+        $this->forge->dropTable('reference_sequences', true);
+    }
+}

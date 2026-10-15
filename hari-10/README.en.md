@@ -1,0 +1,555 @@
+# Day 10 — Statistics Module (M4) & Capstone
+
+[← Schedule](../JADUAL.md) · [SPEC Canon](../SPEC-KURSUS.md) · [🧪 Day 10 Lab](./lab.md) · [📋 Capstone Rubric](../docs/rubrik-capstone.md) · [← Day 9](../hari-9/README.md)
+
+> **The last day.** Morning: we build a dashboard that summarises M1 & M2 and learn one performance concept that is often misused — **cache**. Afternoon: we stop building and start **proving** — UAT, disciplined bug fixing, a security review, and a demo to the system owner.
+
+---
+
+## 🎯 Learning Objectives
+
+By the end of today, participants can:
+
+| # | Objective (measurable) | Session |
+|---|-------------------------|------|
+| O1 | **Write** a `StatisticsService` that calculates 4 KPIs and 4 chart datasets (SPEC §2.4) using Query Builder aggregates, including filling empty months with zero. | S1 |
+| O2 | **Build** a `/statistik` dashboard with KPI cards and 4 Chart.js 4 charts (bar, doughnut, horizontal bar, line) that take their data from the JSON endpoint `/statistik/data`. | S1 |
+| O3 | **Use** `cache()->remember('stat_dashboard', 600, …)` and **add** `cache()->delete('stat_dashboard')` after every status change in `BookingService` & `PassWorkflowService`, and **explain** the *tradeoffs* of cache invalidation. | S2 |
+| O4 | **Run** a UAT script across the 4 modules by role and record the results in the UAT template. | S3 |
+| O5 | **Fix** bugs using the *reproduce → failing test → fix → passing test* cycle, and **verify** the final security checklist (CSRF, `esc()`, `.env`, uploads outside `public/`, route filters). | S3 |
+| O6 | **Demo** the system end-to-end in 15 minutes, **explain** the line of code chosen by the panel, and **contribute** to a Start/Stop/Continue retrospective. | S4 |
+
+---
+
+## 📅 Today's Schedule
+
+| Time | Session | Activity | Objectives |
+|------|------|----------|----------|
+| 08:30–09:00 | — | Day 9 recap (reports & export) | — |
+| 09:00–10:30 | **S1** | Statistics dashboard (charts, cross-module summary) | O1, O2 |
+| 10:30–10:45 | — | Morning break | — |
+| 10:45–12:30 | **S2** | Aggregate queries & basic caching | O3 |
+| 12:30–14:00 | — | Lunch | — |
+| 14:00–15:30 | **S3** | Final system testing & bug fixing | O4, O5 |
+| 15:30–15:45 | — | Afternoon break | — |
+| 15:45–17:00 | **S4** | Capstone demo to the system owner & closing | O6 |
+
+---
+
+## 🧭 Why today matters
+
+Reports (Day 9) answer "*what are the records?*". A dashboard answers "*how do things stand right now?*" — in 5 seconds, without filtering anything. A director who opens `/statistik` on Monday morning wants to know: how many active bookings there are, whether the slots are full, how many passes are outstanding, and how long applicants wait.
+
+But the dashboard is the page that is **opened most often** and is the **most expensive to compute** (8 aggregate queries across all tables). This is where cache comes in — and this is where many developers create the sneakiest bug: *"I've approved it, why does the dashboard still show Pending?"*
+
+After lunch, the focus changes. Code that has never been tested by real users is not *done* yet. We will run UAT as the system owner, fix bugs with discipline, and finally demo the complete system — **4 modules, 4 roles, one flow**.
+
+```mermaid
+flowchart LR
+    subgraph Pagi[Morning — build]
+        A[S1 Dashboard<br/>KPI + 4 charts] --> B[S2 Cache<br/>remember + delete]
+    end
+    subgraph Petang[Afternoon — prove]
+        C[S3 UAT + bugs<br/>+ security] --> D[S4 Capstone demo<br/>+ retrospective]
+    end
+    B --> C
+```
+
+---
+
+## S1 · Statistics dashboard (09:00–10:30)
+
+### 1.1 KPI definitions — write the definition first, SQL later
+
+A KPI that is not precisely defined will be disputed in the first meeting. Every KPI must have a **Malay definition** that the system owner can read and a **formula** that can be tested.
+
+| KPI | Definition (Malay) | Formula / source |
+|-----|-------------|----------------|
+| **Active bookings** | Bookings that are still Pending or Approved | `COUNT(*) FROM slot_bookings WHERE status IN ('pending','approved')` — the same definition as BR-TLK-04 (`BookingStatus::active()`) |
+| **Slot utilisation rate (%)** | Percentage of active slots that are occupied today | **distinct** slots with an `approved` booking covering today ÷ active slots (`is_active = 1`, not deleted) × 100 |
+| **Pass applications pending** | Applications not yet decided | `status IN ('submitted','under_review')` |
+| **Average days to approve a pass** | Average time from submission to approval | `AVG(TIMESTAMPDIFF(HOUR, created_at, approved_at)) / 24` for `approved_at IS NOT NULL` |
+
+> 💡 **Tip — why `approved_at IS NOT NULL` and not `status = 'approved'`?** A pass approved last month that is now `expired` was still approved *at some point*. If we filter by the current status, the average changes every time `pas:expire` runs — even without any new approvals. Use a **historical fact** (`approved_at`), not the current state.
+
+> ⚠️ **Common mistake — averages in whole days.** `TIMESTAMPDIFF(DAY, ...)` rounds down: an application approved after 23 hours = 0 days. Calculate in **hours** and then divide by 24 for an honest fraction (e.g. 1.4 days).
+
+### 1.2 Choose the right chart for the right question
+
+| Question | Chart | Why |
+|--------|-------|--------|
+| How many bookings each month this year? | **Bar** (vertical) | Comparison of ordered categories (Jan..Dec) |
+| How are pass statuses distributed? | **Doughnut** | Parts of a whole, ≤ 5 categories |
+| Which zone is the busiest this month? | **Horizontal bar** (`indexAxis: 'y'`) | Long zone labels; easy to sort from highest |
+| Are pass applications increasing? | **Line** | Continuous time trend (12 months) |
+
+> ⚠️ **Common mistake — pie/doughnut for a time trend**, or a line for categories without an order (zones). The shape of a chart carries meaning; the wrong shape misleads even when the data is correct.
+
+### 1.3 Architecture: view + JSON endpoint
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant C as DashboardController
+    participant S as StatisticsService
+    participant K as Cache (file)
+    participant D as MySQL
+    B->>C: GET /statistik
+    C->>S: dashboard()
+    S->>K: remember('stat_dashboard', 600, build)
+    K-->>S: (hit) cached data
+    C-->>B: HTML + KPI cards + 4 empty <canvas>
+    B->>C: fetch('/statistik/data')
+    C->>S: dashboard()
+    S->>K: remember(...) — hit again
+    C-->>B: JSON {kpi, charts}
+    B->>B: Chart.js draws 4 charts
+```
+
+Why **two** routes?
+
+- **KPI cards** are rendered on the server → they appear immediately, work even if JavaScript fails, and are easy to test with `FeatureTestTrait`.
+- **Charts** need JavaScript. The JSON endpoint (`setJSON()`) separates *data* from *presentation* — the same endpoint can be reused (e.g. for a TV screen in the operations room).
+- Both call `StatisticsService::dashboard()` → **the same cache**, the same numbers.
+
+### 1.4 Data contract — one shape for every chart
+
+```json
+{
+  "generated_at": "25/09/2026 09:15:02",
+  "kpi": { "active_bookings": 12, "slot_utilisation": 37.5, "pending_passes": 4, "avg_days_to_approve": 1.8 },
+  "charts": {
+    "bookings_by_month": { "labels": ["Jan", "Feb", "…", "Dis"], "data": [3, 5, 0, "…"], "year": 2026 },
+    "pass_status":       { "keys": ["submitted", "…"], "labels": ["Dihantar", "…"], "data": [2, 2, 7, 1, 0] },
+    "usage_by_zone":     { "labels": ["ZA Zon A", "ZB Zon B"], "data": [42.3, 10.0] },
+    "pass_trend":        { "labels": ["Okt 25", "…", "Sep 26"], "data": [0, 1, "…"] }
+  }
+}
+```
+
+Three design decisions:
+
+1. **Fill empty months with zero.** `GROUP BY MONTH(...)` does not return months without records. Without the zeros, the data `[3, 5, 2]` would be drawn as Jan–Mar even though it is really Jan, Feb, **Jun**.
+   ```php
+   $byMonth = array_column($rows, 'total', 'm');          // [1 => 3, 2 => 5, 6 => 2]
+   for ($m = 1; $m <= 12; $m++) {
+       $data[] = (int) ($byMonth[$m] ?? 0);               // [3, 5, 0, 0, 0, 2, 0, ...]
+   }
+   ```
+2. **`keys` (enum values) separate from `labels` (Malay).** JavaScript maps colours by `keys` — if a Malay label is changed, the colours don't break.
+3. **Reuse RPT-03.** `usage_by_zone` calls `ReportService::usageByZone()` — the dashboard and the report **must not** differ.
+
+### 1.5 Chart.js 4 — the minimum you need to understand
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+```
+
+```js
+function draw(canvasId, config) {
+    const canvas = document.getElementById(canvasId);
+    Chart.getChart(canvas)?.destroy();          // avoid "Canvas is already in use"
+    return new Chart(canvas, config);
+}
+
+draw('chartUsageByZone', {
+    type: 'bar',
+    data: { labels: charts.usage_by_zone.labels,
+            datasets: [{ label: 'Penggunaan (%)', data: charts.usage_by_zone.data }] },
+    options: { indexAxis: 'y',                   // ← this is the "horizontal bar" in Chart.js 4
+               responsive: true, maintainAspectRatio: false,
+               scales: { x: { beginAtZero: true, max: 100 } } },
+});
+```
+
+> 💡 **Tip:** Wrap every `<canvas>` in a `<div style="position: relative; height: 280px">` and set `maintainAspectRatio: false`. Without this, a chart inside a Bootstrap grid can "grow forever" or lose its height.
+
+> ⚠️ **Common mistake — `res.json()` fails with `Unexpected token '<'`.** The session expired → the Shield filter redirects to the login page (HTML) → the JSON parser chokes. Check `res.ok` and `Content-Type` before `res.json()`, and show a friendly message.
+
+### 🎯 Quiz S1
+
+1. The KPI "Average days to approve a pass" is calculated for applications with `approved_at IS NOT NULL`, not `status = 'approved'`. Why?
+   - [ ] `status` has no index
+   - [ ] `status = 'approved'` cannot be combined with `AVG()` in MySQL 8 because of `ONLY_FULL_GROUP_BY`, so the filter must be on a date field
+   - [x] A pass that is now `expired` was still approved *at some point*; filtering by the current status makes the average change every time `pas:expire` runs, even without any new approvals
+   - [ ] Because `rejected` applications also have an `approved_at`
+   > Use a historical fact (`approved_at`), not the current state. A rejection does not set `approved_at` (Day 8), so it does not pollute this KPI.
+
+2. A `GROUP BY MONTH(created_at)` query returns `$rows` for Jan (3), Feb (5) and Jun (2) only. What is `$data` after this code?
+   ```php
+   $byMonth = array_column($rows, 'total', 'm');   // [1 => 3, 2 => 5, 6 => 2]
+   $data = [];
+   for ($m = 1; $m <= 12; $m++) {
+       $data[] = (int) ($byMonth[$m] ?? 0);
+   }
+   ```
+   - [ ] `[3, 5, 2]`
+   - [x] `[3, 5, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0]`
+   - [ ] `[3, 5, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0]`
+   - [ ] `[1 => 3, 2 => 5, 6 => 2]`
+   > Months without records are filled with zero so that every value lines up with the labels Jan..Dec. Without it, `[3, 5, 2]` would be drawn as Jan–Mar.
+
+---
+
+## S2 · Aggregate queries & basic caching (10:45–12:30)
+
+### 2.1 Why cache?
+
+Without a cache, every reload of `/statistik` = 2 requests × 8 aggregate queries = **16 queries** that scan `slot_bookings` and `pass_applications`. With 30 officers opening the dashboard every morning, that is ~500 queries that return **the same answer**.
+
+### 2.2 The *cache-aside* pattern with `remember()`
+
+```php
+public const CACHE_KEY = 'stat_dashboard';
+public const CACHE_TTL = 600;   // 10 minutes (SPEC §2.4)
+
+public function dashboard(): array
+{
+    return cache()->remember(self::CACHE_KEY, self::CACHE_TTL, fn (): array => $this->build());
+}
+```
+
+`remember()` = three steps in one call:
+
+```mermaid
+flowchart TD
+    A[remember key, ttl, fn] --> B{Key exists<br/>& not expired?}
+    B -->|Yes — HIT| C[Return cached data<br/>0 DB queries]
+    B -->|No — MISS| D[Run fn → build<br/>8 queries]
+    D --> E[Store the result for the TTL]
+    E --> F[Return data]
+```
+
+### 2.3 The real problem: *stale* data
+
+A 10-minute TTL means: an approver approves a booking at 09:01, but the dashboard still shows the 09:00 figures until 09:10. For a management dashboard, that *might* be acceptable. For an approver who has just clicked "Lulus" (Approve) and immediately opens the dashboard — it looks like a **bug**.
+
+The SPEC §2.4 solution: **clear the cache when a status changes**.
+
+```php
+// In BookingService::transition() and create(); PassWorkflowService::transition() and submit()
+$this->db->transCommit();
+cache()->delete(StatisticsService::CACHE_KEY);   // ← AFTER commit, not before
+```
+
+### 2.4 Why **after** commit?
+
+```mermaid
+sequenceDiagram
+    participant P as Approver (req A)
+    participant X as Director (req B)
+    participant K as Cache
+    participant D as DB
+    Note over P,D: ❌ WRONG — delete BEFORE commit
+    P->>D: BEGIN → UPDATE status='approved'
+    P->>K: delete('stat_dashboard')
+    X->>K: remember() → MISS
+    X->>D: SELECT … (does not see the UPDATE yet — transaction A not committed)
+    X->>K: stores OLD data for 10 minutes 😱
+    P->>D: COMMIT
+```
+
+If the cache is cleared before `COMMIT`, another request can rebuild the cache from old data in that millisecond gap — and that old data stays for 10 minutes. After the commit, any rebuild is sure to see the new data. If the transaction **fails** (rollback), nothing changed, so there is nothing to clear — one more reason to put it after `transCommit()`.
+
+### 2.5 *Tradeoffs* of invalidation strategies
+
+| Strategy | Advantages | Disadvantages | Suitable when |
+|----------|-----------|-----------|-------------|
+| **No cache** | Always accurate; no extra code | High DB load; slow when data is large | Small data, few users |
+| **TTL only** (remember 600) | Simplest; one line | Stale for up to 10 minutes | A management dashboard that is not time-critical |
+| **TTL + delete on write** ✅ (our choice) | Fresh after a change; TTL as a safety net | Must remember every place that writes; miss one = stale | Rare writes, frequent reads (our case) |
+| **Update the cache on write** (*write-through*) | No MISS after a write | Complex; risk of wrong counts; duplicated logic | Rarely needed for departmental applications |
+
+> 💡 **Tip — "There are two hard things in computer science: cache invalidation and naming things."** We make both easier: **one** key (`StatisticsService::CACHE_KEY`), and invalidation in **one** place per service (the private `transition()` method + the create method).
+
+> ⚠️ **Common mistakes:**
+> - Typing `'stat_dashboard'` in 5 places → one is misspelt (`'stats_dashboard'`) → no error, just stale data. Use a **constant**.
+> - Caching **per-user** data under a global key. Our dashboard is the same for every `approver`/`admin`, so one key is safe. If later there is data by the user's department, the key must contain the department id (`stat_dashboard_dept_3`) — otherwise department A's data leaks to department B.
+> - Forgetting other write paths: `pas:expire` (Spark) also changes statuses — but because it goes through `PassWorkflowService::transition()`, it is covered automatically. This is the reward of "one door for status changes" from Days 6 & 8.
+
+### 2.6 How do we know the cache works?
+
+| Evidence | How |
+|-------|------|
+| HIT | Reload `/statistik` → Debug Toolbar *Database* tab: **0** aggregate queries; "Data dijana" (data generated) does not change |
+| Cache file exists | `ls writable/cache/` → a `stat_dashboard` file |
+| Invalidation | Approve one booking → reload the dashboard → "Data dijana" = the current time; the KPI changes |
+| Automated | `StatisticsCacheTest` (S2 lab): fill the cache → `approve()` → `assertNull(cache()->get(...))` |
+
+### 🎯 Quiz S2
+
+1. In `BookingService::transition()`, where should `cache()->delete(StatisticsService::CACHE_KEY)` be called?
+   - [ ] Before `transBegin()`
+   - [ ] After the `UPDATE` but before `transCommit()`
+   - [ ] In the `catch` block after `transRollback()`
+   - [x] After `transCommit()`
+   > Call `StatisticsService::forget()` (= `cache()->delete(CACHE_KEY)`) after the commit. If it is cleared before the commit, another request can rebuild the cache from old data and keep it for 10 minutes. If the transaction rolls back, nothing changed, so there is nothing to clear.
+
+2. A service calls `cache()->delete('stats_dashboard')` (misspelt). What is the symptom?
+   - [x] No error — the `stat_dashboard` cache is not cleared, so the dashboard stays stale until the 600 s TTL expires
+   - [ ] A `CacheException` is thrown immediately because `delete()` first checks that the `stats_dashboard` key exists
+   - [ ] The dashboard shows a blank page because `remember()` returns `null` after the failed `delete()`
+   - [ ] The whole application cache is cleared because the `file` handler wipes all of `writable/cache/` when the key is missing
+   > `delete()` on a key that does not exist does not produce an error. That is why the key is written as the constant `StatisticsService::CACHE_KEY`, not a string typed in many places.
+
+---
+
+## S3 · Final system testing & bug fixing (14:00–15:30)
+
+### 3.1 UAT — testing as a user, not as a developer
+
+UAT (*User Acceptance Testing*) answers the system owner's question: "*Does this system do what we agreed in the URS?*" It is **not** a unit test. It is run through the browser, by role, with synthetic data.
+
+Two templates (written on Day 2, used today):
+
+- [`templates/dokumen/kes-ujian-templat.md`](../templates/dokumen/kes-ujian-templat.md) — detailed test cases (TC-…) + a **bug log**.
+- [`templates/dokumen/uat-signoff-templat.md`](../templates/dokumen/uat-signoff-templat.md) — scenarios UAT-01..10 + the acceptance decision + signatures.
+
+### 3.2 UAT script across the 4 modules by role
+
+Run it **in order** — each step prepares the data for the next step. Use a separate *incognito* window for each role.
+
+| # | Role (log in) | Action | Expected result | UAT |
+|---|---------------------|----------|----------------|-----|
+| 1 | `pemohon1@latihan.test` | Apply for a TLK (Special Vehicle Parking) slot (tomorrow's date, 5 days) | `TLK-2026-####` generated; status **Menunggu** (Pending) | UAT-01 |
+| 2 | `pemohon2@latihan.test` | Apply for the **same** slot, overlapping dates | Rejected: slot not available | UAT-02 |
+| 3 | `pemohon1@latihan.test` | Try to apply for a second booking | Rejected: already has an active booking | UAT-03 |
+| 4 | `pelulus@latihan.test` | Open `/statistik` — note the "Active bookings" KPI & the generation time | Dashboard displayed | UAT-10 |
+| 5 | `pelulus@latihan.test` | `/tlk/keputusan` → Approve the booking from step 1 | Status **Diluluskan** (Approved); log recorded | UAT-01 |
+| 6 | `pelulus@latihan.test` | Reload `/statistik` | "Data dijana" = the current time (proof that the cache was cleared even though 10 minutes have not passed) | UAT-10 |
+| 7 | `pemohon1@latihan.test` | Apply for a `kenderaan` Pass + 2 documents (PDF, PNG) | `PAS-2026-####`; **Dihantar** (Submitted) | UAT-04 |
+| 8 | `pemohon1@latihan.test` | Upload a `.docx` / a 3 MB file | Rejected with a clear message | UAT-05 |
+| 9 | `pemohon2@latihan.test` | Open `/pas/permohonan/{id milik pemohon1}` (pemohon1's id) directly | 404/403 | UAT-07 |
+| 10 | `penyemak@latihan.test` | Take it for review; try to reject with the note "Tidak ok" | **Dalam Semakan** (Under Review); rejection blocked (< 10 characters) | UAT-04, UAT-06 |
+| 11 | `pelulus@latihan.test` | Approve the pass → open `/statistik` | **Diluluskan** (Approved); timeline has 3 entries; the "Passes pending" KPI drops by 1 **immediately** | UAT-04, UAT-10 |
+| 12 | `pemohon1@latihan.test` | Open `/tlk/keputusan`, `/laporan/tempahan`, `/statistik` directly | All **blocked** | UAT-08 |
+| 13 | `penyemak@latihan.test` | Open `/statistik` | **Blocked** (reviewer has no `statistik.view`) | UAT-08 |
+| 14 | `penyemak@latihan.test` | RPT-02 filter status Approved → export PDF & Excel | Screen total = PDF = Excel = `COUNT(*)` | UAT-09 |
+| 15 | `admin@latihan.test` | RPT-03 for the current month; compare with the "Utilisation by zone" chart | **Same** percentage | UAT-09, UAT-10 |
+
+> 💡 **Tip:** One person *drives* (clicks), the other *records* (fills in "Actual result" and the ✅/❌ status) in the template. Don't fix bugs during UAT — **record first**, fix later by severity.
+
+### 3.3 The bug-fixing cycle (KOLABORASI §3)
+
+```mermaid
+flowchart LR
+    R[1 Reproduce<br/>exact steps + data] --> T[2 FAILING test<br/>PHPUnit red]
+    T --> F[3 Fix<br/>minimal change]
+    F --> P[4 Test PASSES<br/>+ all other tests green]
+    P --> C[5 Commit<br/>FIX: … BUG-00N]
+```
+
+**Worked example — BUG-007: "RPT-02 does not show applications on the last day of the range"**
+
+1. **Reproduce.** Log in as `penyemak`. Submit a pass application today at 14:00 (as an applicant). RPT-02 → From: 01/09/2026, To: *today* → the application just submitted is **missing**.
+2. **Failing test** — write a test that describes the **correct** behaviour:
+   ```php
+   public function testRpt02HariTerakhirJulatTidakTercicir(): void
+   {
+       // fixture: an application at '2026-09-30 14:00:00'
+       $f = $this->service->normaliseFilters('pas', ['from' => '2026-09-01', 'to' => '2026-09-30']);
+       $this->assertSame(2, $this->service->paginate('pas', $f, 1)['total']);
+   }
+   ```
+   `composer test -- --filter testRpt02HariTerakhirJulatTidakTercicir` → **red** (got 1, expected 2). This failing test **proves** you understand the cause.
+3. **Fix** — a minimal change:
+   ```diff
+   - ->when($f['to'] ?? null, static fn ($q, $to) => $q->where('p.created_at <=', $to))
+   + ->when($f['to'] ?? null, static fn ($q, $to) => $q->where(
+   +     'p.created_at <', (new DateTimeImmutable($to))->modify('+1 day')->format('Y-m-d 00:00:00')))
+   ```
+4. **Pass** — the test is now green **and** `composer test` (all tests) is green.
+5. **Commit** — `git commit -m "FIX: RPT-02 julat tarikh separuh-terbuka (BUG-007)"`; update the bug log → *Closed*.
+
+> ⚠️ **Common mistake — fix first, write the test later.** A test written after the fix almost always passes — it proves nothing. A test must be **seen failing** at least once.
+
+### 3.4 Final security checklist
+
+In-depth reference: [`nota/11-keselamatan-aplikasi-web.md`](../nota/11-keselamatan-aplikasi-web.md).
+
+| # | Item | How to check (evidence) |
+|---|---------|--------------------|
+| K1 | **CSRF** enabled globally | `app/Config/Filters.php` → `$globals['before']` contains `'csrf'`; every `<form method="post">` has `<?= csrf_field() ?>`; submit a form with the token deleted (DevTools) → rejected |
+| K2 | **Output escaped** with `esc()` | `grep -rnF '<?= $' app/Views \| grep -vF 'esc(' \| grep -vF '$this->'` — every remaining line must be justified (e.g. an integer `$n`, `$pager->makeLinks()`); ignore `app/Views/errors/` (framework files) |
+| K3 | **`.env` not in Git** | `git ls-files \| grep -E "(^\|/)\.env$"` → no output; `git log --all --oneline -- .env` → nothing |
+| K4 | **Uploads outside `public/`** | Files are in `writable/uploads/pas/` with random names; `ls public/` has no uploads folder; downloads only through a controller with an ownership check |
+| K5 | **Route filters** on every group | `php spark routes` — the *Filters* column for `/tlk/keputusan`, `/admin/slot`, `/pas/semakan`, `/laporan/*`, `/statistik*`; `MSYS_NO_PATHCONV=1 php spark filter:check GET /statistik` (Git Bash) |
+| K6 | **Ownership check** in the service | UAT step 9 (pemohon2 → pemohon1's application) = blocked |
+| K7 | **No raw SQL concatenated with input** | `grep -rn -e '->query(' app/` — every hit must use `?` bindings (justified exception: `EXPLAIN` in `ReportExplain` — SQL compiled by the Query Builder, CLI only) |
+| K8 | **Whitelisted sorting/filters** in reports | `/laporan/tempahan?sort=(SELECT 1)` → falls back to the default sort order |
+| K9 | **Synthetic data only** | No real names/IC numbers/plates in seeders, fixtures, demo screenshots |
+| K10 | **Production mode** for staging | `CI_ENVIRONMENT = production` → no Debug Toolbar, no error traces displayed |
+
+### 🎯 Quiz S3
+
+1. During UAT, BUG-007 is found: RPT-02 does not show applications on the last day of the range. What is the correct order of steps?
+   - [ ] Fix the code → write a test → commit
+   - [ ] Fix the code → test manually again in the browser following the UAT script → commit → write a PHPUnit test if time allows
+   - [x] Reproduce → write a failing test → fix (minimal change) → that test and all other tests pass → commit
+   - [ ] Write a test → commit → fix later
+   > A test written after the fix almost always passes and proves nothing. A test must be seen failing at least once.
+
+2. In the UAT script, `penyemak@latihan.test` opens `/statistik` directly. What is the expected result, and why?
+   - [ ] The dashboard is displayed because the reviewer's `laporan.view` covers `/statistik` — both are read-only modules that read M1 and M2 data
+   - [x] Blocked — the `reviewer` group has no `statistik.view`; the route is protected by `permission:statistik.view`
+   - [ ] The dashboard is displayed without charts
+   - [ ] 404 because the route does not exist for the reviewer
+   > According to SPEC §4, `statistik.view` is only for `approver` and `admin` (through `statistik.*`). `laporan.view` does not give access to the dashboard.
+
+---
+
+## S4 · Capstone demo to the system owner & closing (15:45–17:00)
+
+### 4.1 Demo format — 15 minutes per pair
+
+| Minute | Segment | What the panel wants to see |
+|-------|--------|---------------------------|
+| 0–1 | **Introduction** | Pair names, Git branch/tag (`v1.0-capstone`), one sentence on "what we built" |
+| 1–4 | **M1 TLK** | Applicant applies → overlap rejected → approver approves → `TLK-2026-####` |
+| 4–7 | **M2 Pass** | Application + documents → reviewer → approver → `status_logs` timeline |
+| 7–9 | **M3 Reports** | Filter RPT-01/02 → page 2 keeps the filters → PDF & Excel with the same totals |
+| 9–11 | **M4 Statistics** | 4 KPIs + 4 charts; approve one pass application → the "Passes pending" KPI changes immediately (invalidation) |
+| 11–13 | **Explain the code** | The panel picks **one file + one line**; any member of the pair explains it |
+| 13–15 | **Q&A & marking** | The panel fills in the rubric; the next pair gets ready |
+
+Full rubric & mark sheet: [`docs/rubrik-capstone.md`](../docs/rubrik-capstone.md). Summary of weightings:
+
+| Criterion | Marks |
+|----------|--------|
+| A. Functionality of the 4 modules (TLK 8 · Pass 8 · Reports 7 · Statistics 7) | 30 |
+| B. Security & access control | 20 |
+| C. Code quality & architecture (including business rules in services) | 20 |
+| D. Automated tests | 15 |
+| E. Demo & explanation | 15 |
+| **Total** | **100** |
+
+There are also 5 **critical gates** (e.g. an applicant must not be able to see other people's records, `.env` not in Git) — one failed gate limits the result to *Conditional pass*.
+
+> 💡 **Demo tip:** Prepare the **demo data** before you start (`migrate:refresh` + seed), open a browser tab for each role, and write a 1-page script. A demo that fails is almost always because of "yesterday's data" or a "forgotten password", not because of the code.
+
+### 4.2 Retrospective — Start / Stop / Continue
+
+Every participant writes at least one card for each column. The purpose is **improvement**, not individual assessment.
+
+| 🟢 **Start** (start doing) | 🔴 **Stop** (stop doing) | 🔵 **Continue** (keep doing) |
+|--------------------------|-----------------------------|----------------------------|
+| Practices we should start in real projects | Practices that waste time/quality | Practices that have proven effective |
+| e.g. "Write a failing test before fixing" | e.g. "Commit directly to `main`" | e.g. "Specification cards before SQL" |
+
+### 4.3 Course completion certificate criteria
+
+The **course completion** certificate is issued to participants who meet **all** of the following criteria (subject to the organiser's rules):
+
+| # | Criterion | Evidence |
+|---|----------|-------|
+| 1 | Attendance **≥ 80 %** of sessions (≥ 32 of 40 sessions S1–S4) | Daily attendance list |
+| 2 | Modules **M1–M4** demoed in the capstone by the participant's pair | Rubric mark sheet |
+| 3 | The pair's capstone mark is **≥ 60 / 100** and there is **no** unfixed critical *gate* failure | [`rubrik-capstone.md`](../docs/rubrik-capstone.md) |
+| 4 | The participant **personally** explains at least one line of code correctly during the demo (segment 11–13) | Panel notes |
+| 5 | Repo handed over: tag `v1.0-capstone`, `composer test` green, no `.env`/real data | Repo link / zip archive |
+
+Participants who do not meet criteria 2–5 but attend ≥ 80 % receive a **certificate of participation** and a follow-up action plan (one module to complete within 2 weeks, reviewed by the trainer).
+
+### 🎯 Quiz S4
+
+1. A pair scores 78/100 on the capstone rubric, but during the demo the panel finds that `pemohon2` can open `pemohon1`'s application. What is the effect?
+   - [ ] None — the mark is above 60, so it is a full pass
+   - [x] It is a critical *gate* failure — the result is limited to *Conditional pass* until it is fixed
+   - [ ] Only the marks for criterion B (Security & access control) are reduced; the result stays a full pass because the total is still ≥ 60
+   - [ ] The pair fails the course outright with no chance to fix it
+   > There are 5 critical gates (e.g. an applicant must not be able to see other people's records, `.env` not in Git). The course completion certificate requires no unfixed critical gate failures. The "only criterion B marks are reduced" option is wrong because a critical gate limits the result whatever the total mark.
+
+2. A participant attended 30 of 40 sessions. Their pair scored 85/100 with no gate failures, and they personally explained one line of code correctly. Are they eligible for the **course completion certificate**?
+   - [ ] Yes, because the capstone mark is above 60
+   - [ ] Yes, because they explained the code correctly
+   - [x] No — 75 % attendance is below the ≥ 80 % requirement (≥ 32 of 40 sessions)
+   - [ ] Yes, if the repo is tagged `v1.0-capstone` and `composer test` is green, because the repo criteria override the attendance requirement
+   > The course completion certificate requires **all** criteria to be met. A high mark does not replace the ≥ 80 % attendance requirement.
+
+---
+
+## 📦 Deliverables — Today's Output
+
+- [ ] `app/Services/StatisticsService.php` — 4 KPIs, 4 datasets, 10-minute `remember()`, `CACHE_KEY` constant
+- [ ] `service('statisticsService')` registered in `app/Config/Services.php`
+- [ ] `app/Controllers/Statistik/DashboardController.php` — `index()` + `data()` (JSON)
+- [ ] `app/Views/statistik/dashboard.php` — KPI cards + 4 Chart.js 4 charts
+- [ ] `cache()->delete(StatisticsService::CACHE_KEY)` after `transCommit()` in `BookingService` & `PassWorkflowService`
+- [ ] `tests/Services/StatisticsCacheTest.php` — green (and **was** red without invalidation)
+- [ ] `docs/UAT-signoff.md` filled in; bug log with ≥ 1 bug closed through the failing-test cycle
+- [ ] Security checklist K1–K10 ticked
+- [ ] Tag `v1.0-capstone`; 15-minute demo; mark sheet signed → **M4 done** · **System complete** 🎓
+
+---
+
+## 🧠 Self-check
+
+**1. Why does the dashboard separate the KPI cards (server-rendered) from the charts (JSON endpoint)?**
+<details><summary>Answer</summary>
+
+The KPI cards appear immediately and work without JavaScript, and they are easy to test with `FeatureTestTrait`. The charts need JavaScript; the JSON endpoint separates data from presentation and can be reused. Both call `StatisticsService::dashboard()`, so the numbers come from the same cache.
+</details>
+
+**2. `bookings_by_month` returns `[3, 5, 2]` for Jan, Feb, Jun. What is wrong with the chart and how do you fix it?**
+<details><summary>Answer</summary>
+
+`GROUP BY` does not return months without records, so Chart.js draws those 3 values as Jan, Feb, **Mar**. Fix it by mapping the results by month number (`array_column($rows, 'total', 'm')`) and filling the 12 months with `?? 0`.
+</details>
+
+**3. Explain why `cache()->delete('stat_dashboard')` must be placed after `transCommit()`, not before.**
+<details><summary>Answer</summary>
+
+If it is cleared before the commit, another request can rebuild the cache in the gap before the commit and only see the old data (the transaction is not visible yet) — that old data then stays until the TTL expires (10 minutes). After the commit, any rebuild is sure to see the new data. If the transaction rolls back, nothing changed, so no invalidation is needed.
+</details>
+
+**4. Give one advantage and one disadvantage of the "TTL + delete on write" strategy compared with "TTL only".**
+<details><summary>Answer</summary>
+
+Advantage: the dashboard is fresh immediately after a status change (no "I approved it but nothing changed" confusion). Disadvantage: developers must remember every write path — missing one (e.g. the create method) causes silently stale data until the TTL expires. Mitigation: one door for status changes (`transition()`), the `CACHE_KEY` constant, and automated tests.
+</details>
+
+**5. During UAT you find a bug. List the 5 steps of the fixing cycle and explain why step 2 cannot be skipped.**
+<details><summary>Answer</summary>
+
+(1) Reproduce with exact steps & data; (2) write a **failing** test; (3) fix with a minimal change; (4) that test and all other tests pass; (5) commit `FIX:` and update the bug log. Step 2 proves the test really detects the bug — a test that has never been seen failing may not test anything, and it becomes a regression guard forever.
+</details>
+
+---
+
+## ➡️ Next steps after the course
+
+Congratulations — you have built a 4-module system from requirements to demo. This system is for **training**: don't put real data into it until it has gone through your department's official process.
+
+### A. To a *staging* environment (not production)
+
+| # | Step | Command / note |
+|---|---------|---------------|
+| 1 | A PHP 8.2+ server with `intl`, `mbstring`, `mysqlnd`, `gd`, `zip`, `xml`, `curl` | `php -m` |
+| 2 | *Document root* points to **`public/`** only | Not the project root — otherwise `.env` & `writable/` can be reached from the web |
+| 3 | Install dependencies without dev packages | `composer install --no-dev --optimize-autoloader` |
+| 4 | Staging `.env` (not in Git) | `CI_ENVIRONMENT = production` · `app.baseURL` · `database.default.*` · `php spark key:generate` |
+| 5 | Migrations | `php spark migrate --all` |
+| 6 | Reference data only | Seed departments/zones/slots; **don't** run the synthetic `UserSeeder` (`Latihan@2026`) on staging — create real accounts through the official process |
+| 7 | Folder permissions | `writable/` writable by the web server user; `public/` read-only |
+| 8 | Optimise | `php spark optimize` (CI 4.5+: caches config & file locations) |
+| 9 | HTTPS | `app.forceGlobalSecureRequests = true`; TLS certificate from the infrastructure team |
+| 10 | Scheduled tasks | daily cron: `php spark pas:expire` (Windows server: Task Scheduler / `schtasks /sc daily`) |
+| 11 | Cache | Single server: `file` is enough. Multiple servers: switch to Redis/Memcached so `cache()->delete()` takes effect on every server |
+| 12 | Logs & backups | Rotate `writable/logs/`; daily DB backup + restore test |
+| 13 | Security review | Rerun K1–K10; `composer audit`; follow the department's ICT security assessment procedure before production |
+
+### B. Further learning
+
+- **CodeIgniter 4 User Guide** — the *Testing*, *Caching*, *Events* chapters (challenge: replace the `cache()->delete()` calls with `Events::trigger('status_changed')`) — <https://codeigniter.com/user_guide/>
+- **CodeIgniter Shield** — *Authorization*, *Magic Link*, password policies — <https://shield.codeigniter.com/>
+- **OWASP Top 10** — compare each risk with checklist K1–K10 — <https://owasp.org/Top10/>
+- **Chart.js 4** — accessibility & the *datalabels* plugin — <https://www.chartjs.org/docs/latest/>
+- Full references: [`docs/pautan-rujukan.md`](../docs/pautan-rujukan.md)
+
+### C. Practices to take home
+
+1. **Requirements → AC → tests** before code.
+2. **One door** for status changes (service + enum + `status_logs`).
+3. The **server** enforces access — not hidden buttons.
+4. **Failing test first** for every bug.
+5. **Understand first, accept later** — including AI suggestions.

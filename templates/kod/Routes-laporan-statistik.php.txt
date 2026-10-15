@@ -1,0 +1,40 @@
+<?php
+
+// Tampal ke dalam app/Config/Routes.php (selepas laluan TLK & Pas).
+// Hari 9: kumpulan /laporan · Hari 10: kumpulan /statistik
+//
+// Filter `permission:` disediakan oleh Shield (didaftar automatik melalui Registrar Shield).
+// Ia (1) memaksa log masuk dan (2) menyemak auth()->user()->can('laporan.view').
+// admin lulus kerana mempunyai 'laporan.*' / 'statistik.*' (wildcard) dalam AuthGroups::$matrix.
+//
+// Semak selepas tampal:  php spark routes | grep -E "laporan|statistik"
+
+use CodeIgniter\Router\RouteCollection;
+
+/** @var RouteCollection $routes */
+
+// ---------------------------------------------------------------------------
+// M3 — Laporan (reviewer, approver, admin)
+// Eksport guna URL yang SAMA + ?export=pdf|xlsx → penapis sama dibawa melalui query string.
+// ---------------------------------------------------------------------------
+$routes->group('laporan', [
+    'namespace' => 'App\Controllers\Laporan',
+    'filter'    => 'permission:laporan.view',
+], static function (RouteCollection $routes): void {
+    $routes->get('tempahan', 'ReportController::bookings', ['as' => 'laporan.tempahan']);   // RPT-01
+    $routes->get('pas', 'ReportController::passes', ['as' => 'laporan.pas']);               // RPT-02
+    $routes->get('penggunaan', 'ReportController::usage', ['as' => 'laporan.penggunaan']);  // RPT-03
+});
+
+// ---------------------------------------------------------------------------
+// M4 — Statistik (approver, admin)
+// /statistik       → HTML (kad KPI + kanvas carta)
+// /statistik/data  → JSON untuk Chart.js (fetch)
+// ---------------------------------------------------------------------------
+$routes->group('statistik', [
+    'namespace' => 'App\Controllers\Statistik',
+    'filter'    => 'permission:statistik.view',
+], static function (RouteCollection $routes): void {
+    $routes->get('/', 'DashboardController::index', ['as' => 'statistik']);
+    $routes->get('data', 'DashboardController::data', ['as' => 'statistik.data']);
+});

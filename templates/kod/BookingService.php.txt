@@ -1,0 +1,278 @@
+<?php
+// ============================================================================
+// Fail sasaran : app/Services/BookingService.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Peserta: cuba tulis sendiri dahulu — guna fail ini untuk SEMAK, bukan salin.
+// ============================================================================
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Entities\SlotBooking;
+use App\Enums\BookingStatus;
+use App\Models\SlotBookingModel;
+use App\Models\StatusLogModel;
+use App\Models\VehicleModel;
+use CodeIgniter\Database\BaseConnection;
+use DateTimeImmutable;
+use DomainException;
+use RuntimeException;
+use Throwable;
+
+/**
+ * Logik perniagaan tempahan TLK. Controller HANYA memanggil kaedah di sini.
+ *
+ *  - BR-TLK-01 tiada pertindihan (SlotAvailabilityService::hasOverlap)
+ *  - BR-TLK-03 (end_date − start_date) ≤ 90 hari, end >= start, start bukan masa lalu (hari ini dibenarkan)
+ *  - BR-TLK-04 maksimum 1 tempahan aktif seorang
+ *  - BR-TLK-05 semakan + tulis dalam SATU transaksi dengan SELECT ... FOR UPDATE
+ *  - BR-TLK-06 hanya 'approved' boleh dibatalkan, oleh pemilik atau admin
+ *
+ * Semua pelanggaran peraturan → DomainException (mesej BM, selamat dipapar).
+ */
+class BookingService
+{
+    public const MODULE   = 'TLK';
+    public const MAX_DAYS = 90;
+
+    private BaseConnection $db;
+
+    public function __construct(
+        private readonly SlotBookingModel $bookings = new SlotBookingModel(),
+        private readonly VehicleModel $vehicles = new VehicleModel(),
+        private readonly StatusLogModel $logs = new StatusLogModel(),
+        private readonly SlotAvailabilityService $availability = new SlotAvailabilityService(),
+        private readonly ReferenceNumberService $refNumbers = new ReferenceNumberService(),
+        ?BaseConnection $db = null,
+    ) {
+        $this->db = $db ?? db_connect();
+    }
+
+    /**
+     * Cipta tempahan baharu berstatus 'pending'.
+     *
+     * @param array{vehicle_id:int|string, slot_id:int|string, start_date:string, end_date:string, reason:string} $data
+     *
+     * @throws DomainException jika mana-mana peraturan perniagaan dilanggar
+     */
+    public function create(int $userId, array $data): SlotBooking
+    {
+        $slotId    = (int) $data['slot_id'];
+        $vehicleId = (int) $data['vehicle_id'];
+        $start     = (string) $data['start_date'];
+        $end       = (string) $data['end_date'];
+
+        $this->assertValidPeriod($start, $end);           // BR-TLK-03 (pertahanan berlapis)
+        $this->assertVehicleOwnedBy($vehicleId, $userId);
+
+        $this->db->transException(true)->transBegin();   // ralat query → exception, bukan `false` senyap
+
+        try {
+            // Susunan kunci TETAP (pengguna → slot) untuk elak deadlock.
+            $this->lockRow('users', $userId);              // BR-TLK-04: serialkan per pemohon
+            $slot = $this->lockRow('parking_slots', $slotId, 'id, is_active, deleted_at');  // BR-TLK-05
+
+            if ($slot === null || $slot->deleted_at !== null || (int) $slot->is_active !== 1) {
+                throw new DomainException('Slot yang dipilih tidak wujud atau tidak aktif.');
+            }
+
+            if ($this->countActiveForUser($userId) > 0) {
+                throw new DomainException('Anda sudah mempunyai satu tempahan aktif (Menunggu/Diluluskan). Hanya 1 dibenarkan.');
+            }
+
+            if ($this->availability->hasOverlap($slotId, $start, $end)) {
+                throw new DomainException('Slot ini sudah ditempah bagi tarikh yang bertindih. Sila pilih slot atau tarikh lain.');
+            }
+
+            $refNo = $this->refNumbers->next(self::MODULE);   // transaksi bersarang
+
+            $id = $this->bookings->insert([
+                'ref_no'     => $refNo,
+                'user_id'    => $userId,
+                'vehicle_id' => $vehicleId,
+                'slot_id'    => $slotId,
+                'start_date' => $start,
+                'end_date'   => $end,
+                'reason'     => trim((string) $data['reason']),
+                'status'     => BookingStatus::Pending->value,
+            ]);
+
+            if ($id === false) {
+                throw new DomainException(implode(' ', $this->bookings->errors()));
+            }
+
+            if (! $this->logs->record(self::MODULE, (int) $id, null, BookingStatus::Pending->value, $userId)) {
+                throw new RuntimeException('Gagal merekod log status.');
+            }
+
+            $this->db->transCommit();
+        } catch (Throwable $e) {
+            $this->db->transRollback();
+
+            throw $e;
+        }
+
+        return $this->bookings->find($id);
+    }
+
+    /** Pelulus meluluskan tempahan: pending → approved. */
+    public function approve(int $bookingId, int $actorId, ?string $remarks = null): SlotBooking
+    {
+        return $this->transition($bookingId, BookingStatus::Approved, $actorId, $remarks);
+    }
+
+    /** Pelulus menolak tempahan: pending → rejected. Sebab wajib. */
+    public function reject(int $bookingId, int $actorId, string $remarks): SlotBooking
+    {
+        if (mb_strlen(trim($remarks)) < 10) {
+            throw new DomainException('Sebab penolakan wajib diisi (sekurang-kurangnya 10 aksara).');
+        }
+
+        return $this->transition($bookingId, BookingStatus::Rejected, $actorId, $remarks);
+    }
+
+    /**
+     * BR-TLK-06: batal tempahan yang telah DILULUSKAN: approved → cancelled.
+     * Dibenarkan untuk pemilik tempahan atau admin. 'pending' TIDAK boleh dibatalkan
+     * (BookingStatus::canTransitionTo menolaknya).
+     */
+    public function cancel(int $bookingId, int $actorId, ?string $remarks = null): SlotBooking
+    {
+        $booking = $this->bookings->find($bookingId);
+
+        if ($booking === null || (! $booking->isOwnedBy($actorId) && ! $this->isAdmin($actorId))) {
+            // Mesej sama untuk "tiada" & "bukan milik anda" — jangan dedahkan kewujudan rekod.
+            throw new DomainException('Tempahan tidak dijumpai.');
+        }
+
+        return $this->transition($bookingId, BookingStatus::Cancelled, $actorId, $remarks);
+    }
+
+    /**
+     * BR-TLK-03. Awam supaya boleh diuji terus.
+     *
+     * @throws DomainException
+     */
+    public function assertValidPeriod(string $start, string $end): void
+    {
+        $startDate = DateTimeImmutable::createFromFormat('!Y-m-d', $start);
+        $endDate   = DateTimeImmutable::createFromFormat('!Y-m-d', $end);
+
+        if ($startDate === false || $endDate === false) {
+            throw new DomainException('Format tarikh tidak sah (YYYY-MM-DD).');
+        }
+
+        if ($startDate < new DateTimeImmutable('today')) {
+            throw new DomainException('Tarikh mula tidak boleh pada masa lalu.');
+        }
+
+        if ($endDate < $startDate) {
+            throw new DomainException('Tarikh tamat mesti sama atau selepas tarikh mula.');
+        }
+
+        // Kanun: (end_date − start_date) ≤ 90 hari. Tempahan satu hari (end = start) → 0, dibenarkan.
+        if ($startDate->diff($endDate)->days > self::MAX_DAYS) {
+            throw new DomainException('Tarikh tamat tidak boleh melebihi ' . self::MAX_DAYS . ' hari selepas tarikh mula.');
+        }
+    }
+
+    // ------------------------------------------------------------------
+
+    private function transition(int $bookingId, BookingStatus $to, int $actorId, ?string $remarks): SlotBooking
+    {
+        $this->db->transException(true)->transBegin();   // ralat query → exception, bukan `false` senyap
+
+        try {
+            // Kunci baris tempahan: dua pelulus serentak tidak boleh memutuskan rekod sama.
+            $locked = $this->lockRow('slot_bookings', $bookingId, 'id, slot_id, status, start_date, end_date');
+
+            if ($locked === null) {
+                throw new DomainException('Tempahan tidak dijumpai.');
+            }
+
+            $from = BookingStatus::from($locked->status);
+
+            if (! $from->canTransitionTo($to)) {
+                throw new DomainException(sprintf(
+                    'Status "%s" tidak boleh ditukar kepada "%s".',
+                    $from->label(),
+                    $to->label(),
+                ));
+            }
+
+            if ($to === BookingStatus::Approved) {
+                $this->lockRow('parking_slots', (int) $locked->slot_id);
+
+                // Pertahanan berlapis BR-TLK-01: semak semula ketika lulus.
+                if ($this->availability->hasOverlap((int) $locked->slot_id, $locked->start_date, $locked->end_date, $bookingId)) {
+                    throw new DomainException('Tidak boleh lulus: terdapat tempahan aktif lain yang bertindih.');
+                }
+            }
+
+            $update = ['status' => $to->value];
+
+            if (in_array($to, [BookingStatus::Approved, BookingStatus::Rejected], true)) {
+                $update['decided_by'] = $actorId;
+                $update['decided_at'] = date('Y-m-d H:i:s');
+            }
+
+            // Semak SETIAP tulisan: tiada log tanpa perubahan status, tiada perubahan tanpa log (BR-PAS-05 corak sama)
+            if (! $this->bookings->update($bookingId, $update)) {
+                throw new RuntimeException('Gagal mengemas kini tempahan: ' . implode(' ', $this->bookings->errors()));
+            }
+
+            if (! $this->logs->record(self::MODULE, $bookingId, $from->value, $to->value, $actorId, $remarks)) {
+                throw new RuntimeException('Gagal merekod log status.');
+            }
+
+            $this->db->transCommit();
+        } catch (Throwable $e) {
+            $this->db->transRollback();
+
+            throw $e;
+        }
+
+        return $this->bookings->find($bookingId);
+    }
+
+    /**
+     * SELECT ... FOR UPDATE pada satu baris (id). Query Builder CI4 tiada
+     * kaedah lockForUpdate(), jadi kita guna query dengan binding (?) —
+     * nama jadual dari kod kita sendiri, BUKAN input pengguna.
+     */
+    private function lockRow(string $table, int $id, string $columns = 'id'): ?object
+    {
+        $sql = sprintf('SELECT %s FROM %s WHERE id = ? FOR UPDATE', $columns, $this->db->prefixTable($table));
+
+        $query = $this->db->query($sql, [$id]);
+
+        if ($query === false) {   // DBDebug = false: query() pulang false, bukan exception
+            throw new RuntimeException("Gagal mengunci baris {$table}#{$id}.");
+        }
+
+        return $query->getRow();
+    }
+
+    private function isAdmin(int $userId): bool
+    {
+        return auth()->getProvider()->findById($userId)?->inGroup('admin') ?? false;
+    }
+
+    private function countActiveForUser(int $userId): int
+    {
+        return $this->bookings->builder()
+            ->where('user_id', $userId)
+            ->whereIn('status', BookingStatus::active())
+            ->countAllResults();
+    }
+
+    private function assertVehicleOwnedBy(int $vehicleId, int $userId): void
+    {
+        $owned = $this->vehicles->where('id', $vehicleId)->where('user_id', $userId)->countAllResults() > 0;
+
+        if (! $owned) {
+            throw new DomainException('Kenderaan yang dipilih bukan milik anda.');
+        }
+    }
+}

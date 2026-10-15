@@ -1,0 +1,410 @@
+<?php
+
+/**
+ * RUJUKAN JURULATIH — Hari 7 S3 (submit, documentPath, canView) · Hari 8 S1–S2 (peralihan + kebenaran)
+ * Salin ke: app/Services/PassWorkflowService.php
+ *
+ * Daftar dalam app/Config/Services.php (corak sama seperti bookingService, Hari 6):
+ *
+ *     public static function passWorkflowService(bool $getShared = true): \App\Services\PassWorkflowService
+ *     {
+ *         if ($getShared) {
+ *             return static::getSharedInstance('passWorkflowService');
+ *         }
+ *
+ *         return new \App\Services\PassWorkflowService(
+ *             db_connect(),
+ *             new \App\Services\ReferenceNumberService(db_connect()),
+ *         );
+ *     }
+ *
+ * Peraturan yang dikuatkuasa di sini: BR-PAS-01 (canTransitionTo), BR-PAS-02 (fail),
+ * BR-PAS-03 (catatan penolakan), BR-PAS-04 (canView), BR-PAS-05 (status_logs),
+ * BR-PAS-06 (kenderaan wajib hanya untuk pas kenderaan; valid_until >= valid_from, tiada had maksimum).
+ */
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Entities\PassApplication;
+use App\Enums\PassStatus;
+use App\Enums\PassType;
+use App\Models\PassApplicationModel;
+use App\Models\PassDocumentModel;
+use App\Models\StatusLogModel;
+use App\Models\VehicleModel;
+use CodeIgniter\Database\ConnectionInterface;
+use CodeIgniter\Exceptions\PageNotFoundException;
+use CodeIgniter\HTTP\Files\UploadedFile;
+use CodeIgniter\I18n\Time;
+use CodeIgniter\Shield\Entities\User;
+use CodeIgniter\Shield\Exceptions\PermissionException;
+use DomainException;
+use InvalidArgumentException;
+use RuntimeException;
+use Throwable;
+
+class PassWorkflowService
+{
+    public const MODULE        = 'PAS';            // status_logs.module
+    public const UPLOAD_DIR    = 'uploads/pas/';   // relatif kepada WRITEPATH (BR-PAS-02)
+    public const MAX_FILES     = 3;                // BR-PAS-02
+    public const MAX_BYTES     = 2_097_152;        // BR-PAS-02: 2 MB setiap fail
+    public const ALLOWED_EXT   = ['pdf', 'jpg', 'png'];
+    public const REMARKS_MIN   = 10;               // BR-PAS-03
+    public const STAFF_GROUPS  = ['reviewer', 'approver', 'admin'];
+
+    private readonly PassApplicationModel $applications;
+    private readonly PassDocumentModel $documents;
+    private readonly StatusLogModel $statusLogs;
+
+    public function __construct(
+        private readonly ConnectionInterface $db,
+        private readonly ReferenceNumberService $refs,
+    ) {
+        // Model dibina dengan sambungan YANG SAMA → semua tulisan berada dalam transaksi yang sama
+        $this->applications = new PassApplicationModel($db);
+        $this->documents    = new PassDocumentModel($db);
+        $this->statusLogs   = new StatusLogModel($db);
+    }
+
+    // =================================================================
+    // HARI 7 — cipta permohonan (null → submitted)
+    // =================================================================
+
+    /**
+     * @param array{pass_type:string, vehicle_id?:int|string|null, purpose:string, valid_from:string, valid_until:string} $data
+     * @param list<UploadedFile> $files fail yang SUDAH lulus rules validasi controller
+     *
+     * @throws InvalidArgumentException ralat perniagaan — mesej BM, selamat dipapar kepada pengguna
+     */
+    public function submit(int $userId, array $data, array $files): PassApplication
+    {
+        $type      = PassType::from((string) $data['pass_type']);
+        $vehicleId = empty($data['vehicle_id']) ? null : (int) $data['vehicle_id'];
+
+        // --- Semakan perniagaan SEBELUM menyentuh cakera atau DB --------------
+        // BR-PAS-06
+        $this->assertDates((string) $data['valid_from'], (string) $data['valid_until']);
+        $this->assertVehicle($type, $vehicleId, $userId);
+        $this->assertFiles($files);
+
+        $stored        = [];
+        $inTransaction = false;
+
+        try {
+            // 1) Pindah fail dahulu. Fail sistem TIDAK ikut rollback DB — kita bersihkan sendiri di catch.
+            foreach ($files as $file) {
+                $stored[] = $this->storeFile($file);
+            }
+
+            // 2) Semua tulisan DB dalam SATU transaksi: permohonan + dokumen + log
+            $this->db->transException(true)->transBegin();   // ralat query → exception
+            $inTransaction = true;
+
+            $refNo = $this->refs->next('PAS');   // PAS-2026-0001 — mesti dalam transaksi (FOR UPDATE)
+
+            $id = $this->applications->insert([
+                'ref_no'      => $refNo,
+                'user_id'     => $userId,
+                'pass_type'   => $type->value,
+                'vehicle_id'  => $type->requiresVehicle() ? $vehicleId : null,
+                'purpose'     => trim((string) $data['purpose']),
+                'valid_from'  => (string) $data['valid_from'],
+                'valid_until' => (string) $data['valid_until'],
+                'status'      => PassStatus::Submitted->value,   // BUKAN dari input pengguna
+            ], true);
+
+            if ($id === false) {
+                throw new RuntimeException('Gagal menyimpan permohonan: ' . implode(' ', $this->applications->errors()));
+            }
+
+            foreach ($stored as $doc) {
+                if ($this->documents->insert($doc + ['application_id' => (int) $id]) === false) {
+                    throw new RuntimeException('Gagal menyimpan dokumen: ' . implode(' ', $this->documents->errors()));
+                }
+            }
+
+            // BR-PAS-05: log penciptaan (from_status = NULL)
+            if (! $this->statusLogs->record(self::MODULE, (int) $id, null, PassStatus::Submitted->value, $userId, 'Permohonan dihantar.')) {
+                throw new RuntimeException('Gagal merekod log status.');
+            }
+
+            $this->db->transCommit();
+        } catch (Throwable $e) {
+            if ($inTransaction) {
+                $this->db->transRollback();
+            }
+            $this->deleteStoredFiles($stored);   // tiada fail "yatim" di cakera
+
+            throw $e;
+        }
+
+        return $this->applications->find((int) $id);
+    }
+
+    /**
+     * BR-PAS-04 — siapa boleh LIHAT permohonan (dan dokumennya).
+     * Pemilik, atau pegawai (reviewer/approver/admin).
+     */
+    public function canView(User $user, PassApplication $application): bool
+    {
+        return $application->isOwnedBy((int) $user->id)
+            || $user->inGroup(...self::STAFF_GROUPS);
+    }
+
+    /**
+     * Path mutlak dokumen yang selamat untuk dimuat turun.
+     * Pertahanan path traversal: path sebenar MESTI berada di dalam writable/uploads/pas/.
+     *
+     * @param array<string, mixed> $document baris pass_documents
+     */
+    public function documentPath(array $document): string
+    {
+        $base = realpath(WRITEPATH . self::UPLOAD_DIR);
+        $path = realpath(WRITEPATH . (string) $document['stored_path']);
+
+        if ($base === false || $path === false || ! is_file($path)
+            || ! str_starts_with($path, $base . DIRECTORY_SEPARATOR)) {
+            throw PageNotFoundException::forPageNotFound('Dokumen tidak dijumpai.');
+        }
+
+        return $path;
+    }
+
+    // =================================================================
+    // HARI 8 — aliran kelulusan
+    // =================================================================
+
+    /** submitted → under_review (reviewer) */
+    public function startReview(int $applicationId, User $actor): PassApplication
+    {
+        $this->authorize($actor, 'pas.review');
+
+        return $this->transition($applicationId, PassStatus::UnderReview, (int) $actor->id, null, [
+            'reviewed_by' => (int) $actor->id,
+            'reviewed_at' => Time::now()->toDateTimeString(),
+        ]);
+    }
+
+    /** under_review → approved (approver). Catatan pilihan. */
+    public function approve(int $applicationId, User $actor, ?string $remarks = null): PassApplication
+    {
+        $this->authorize($actor, 'pas.approve');
+
+        $remarks = $remarks === null ? null : trim($remarks);
+
+        return $this->transition($applicationId, PassStatus::Approved, (int) $actor->id, $remarks === '' ? null : $remarks, [
+            'approved_by' => (int) $actor->id,
+            'approved_at' => Time::now()->toDateTimeString(),
+        ]);
+    }
+
+    /** under_review → rejected (reviewer ATAU approver). BR-PAS-03: catatan wajib ≥ 10 aksara. */
+    public function reject(int $applicationId, User $actor, string $remarks): PassApplication
+    {
+        $this->authorize($actor, 'pas.review', 'pas.approve');   // can() = mana-mana satu (OR)
+
+        $remarks = trim($remarks);
+        if (mb_strlen($remarks) < self::REMARKS_MIN) {
+            throw new InvalidArgumentException('Catatan penolakan wajib diisi (sekurang-kurangnya 10 aksara).');
+        }
+
+        return $this->transition($applicationId, PassStatus::Rejected, (int) $actor->id, $remarks);
+    }
+
+    /**
+     * approved → expired (SISTEM — dipanggil oleh Spark `pas:expire`).
+     * Tiada semakan kebenaran: tiada laluan HTTP memanggil kaedah ini.
+     */
+    public function expire(int $applicationId, int $systemActorId): PassApplication
+    {
+        return $this->transition(
+            $applicationId,
+            PassStatus::Expired,
+            $systemActorId,
+            'Tamat tempoh automatik (pas:expire).',
+        );
+    }
+
+    /**
+     * ID permohonan approved yang valid_until < $today (Y-m-d).
+     *
+     * @return list<int>
+     */
+    public function expirableIds(string $today): array
+    {
+        $ids = $this->applications
+            ->where('status', PassStatus::Approved->value)
+            ->where('valid_until <', $today)
+            ->orderBy('id', 'ASC')
+            ->findColumn('id') ?? [];
+
+        return array_map('intval', $ids);
+    }
+
+    /**
+     * Garis masa status (BR-PAS-05) — dari status_logs.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function history(int $applicationId): array
+    {
+        return $this->statusLogs->history(self::MODULE, $applicationId);
+    }
+
+    // =================================================================
+    // Dalaman
+    // =================================================================
+
+    /**
+     * Satu-satunya tempat status berubah selepas penciptaan.
+     *
+     * @param array<string, mixed> $extra medan tambahan (reviewed_by, approved_at, …)
+     */
+    private function transition(
+        int $applicationId,
+        PassStatus $to,
+        int $actorId,
+        ?string $remarks = null,
+        array $extra = [],
+    ): PassApplication {
+        $this->db->transException(true)->transBegin();   // ralat query → exception
+
+        try {
+            // Kunci baris: jika dua pegawai klik "Lulus" serentak, yang kedua MENUNGGU di sini,
+            // kemudian membaca status baharu dan gagal canTransitionTo(). Binding ? — tiada SQL injection.
+            $query = $this->db->query(
+                sprintf('SELECT id, status FROM %s WHERE id = ? FOR UPDATE', $this->db->prefixTable('pass_applications')),
+                [$applicationId],
+            );
+
+            if ($query === false) {
+                throw new RuntimeException('Gagal mengunci permohonan.');
+            }
+
+            $row = $query->getRowArray();
+
+            if ($row === null) {
+                throw PageNotFoundException::forPageNotFound('Permohonan tidak dijumpai.');
+            }
+
+            $from = PassStatus::from((string) $row['status']);
+
+            // BR-PAS-01
+            if (! $from->canTransitionTo($to)) {
+                throw new DomainException(sprintf(
+                    'Peralihan status "%s" → "%s" tidak dibenarkan.',
+                    $from->label(),
+                    $to->label(),
+                ));
+            }
+
+            if (! $this->applications->update($applicationId, ['status' => $to->value] + $extra)) {
+                throw new RuntimeException('Gagal mengemas kini permohonan: ' . implode(' ', $this->applications->errors()));
+            }
+
+            // BR-PAS-05 — dalam transaksi yang SAMA: tiada perubahan status tanpa log
+            if (! $this->statusLogs->record(self::MODULE, $applicationId, $from->value, $to->value, $actorId, $remarks)) {
+                throw new RuntimeException('Gagal merekod log status.');
+            }
+
+            $this->db->transCommit();
+        } catch (Throwable $e) {
+            $this->db->transRollback();
+
+            throw $e;
+        }
+
+        return $this->applications->find($applicationId);
+    }
+
+    /** Lapisan kedua selepas filter laluan (defence in depth) */
+    private function authorize(User $actor, string ...$permissions): void
+    {
+        if (! $actor->can(...$permissions)) {
+            throw new PermissionException('Anda tidak mempunyai kebenaran untuk tindakan ini.');
+        }
+    }
+
+    /** BR-PAS-06: valid_until >= valid_from (tiada had tempoh maksimum untuk Pas) */
+    private function assertDates(string $from, string $until): void
+    {
+        if ($until < $from) {   // format Y-m-d → perbandingan string = perbandingan tarikh
+            throw new InvalidArgumentException('Tarikh "Sah hingga" mesti sama atau selepas "Sah dari".');
+        }
+    }
+
+    /** BR-PAS-06: pas kenderaan → kenderaan wajib DAN mesti milik pemohon (cegah IDOR melalui medan borang) */
+    private function assertVehicle(PassType $type, ?int $vehicleId, int $userId): void
+    {
+        if (! $type->requiresVehicle()) {
+            return;
+        }
+
+        $owned = $vehicleId !== null && model(VehicleModel::class)
+            ->where('id', $vehicleId)
+            ->where('user_id', $userId)
+            ->countAllResults() === 1;
+
+        if (! $owned) {
+            throw new InvalidArgumentException('Sila pilih kenderaan anda yang berdaftar untuk pas kenderaan.');
+        }
+    }
+
+    /** @param list<UploadedFile> $files */
+    private function assertFiles(array $files): void
+    {
+        if ($files === [] || count($files) > self::MAX_FILES) {
+            throw new InvalidArgumentException('Sila lampirkan 1 hingga 3 dokumen sokongan.');
+        }
+
+        foreach ($files as $file) {
+            // guessExtension() diterbitkan dari MIME sebenar (finfo) — lapisan kedua selepas ext_in/mime_in.
+            // Sambungan nama fail MESTI sama dengan kandungan (cth PNG bernama .pdf ditolak).
+            $guessed = $file->guessExtension();
+
+            if (! $file->isValid()
+                || ! in_array($guessed, self::ALLOWED_EXT, true)
+                || strtolower($file->getClientExtension()) !== $guessed) {
+                throw new InvalidArgumentException('Dokumen tidak sah. Hanya PDF, JPG atau PNG dibenarkan.');
+            }
+
+            if ((int) $file->getSize() > self::MAX_BYTES) {
+                throw new InvalidArgumentException('Setiap fail mestilah tidak melebihi 2 MB.');
+            }
+        }
+    }
+
+    /**
+     * @return array{doc_type:string, original_name:string, mime:string, size_bytes:int, stored_path:string}
+     */
+    private function storeFile(UploadedFile $file): array
+    {
+        // Baca metadata SEBELUM move() — selepas dipindah, fail sementara sudah tiada
+        $meta = [
+            'doc_type'      => 'sokongan',
+            'original_name' => mb_substr($file->getClientName(), 0, 255),   // untuk paparan SAHAJA
+            'mime'          => $file->getMimeType(),                         // dari kandungan (finfo)
+            'size_bytes'    => (int) $file->getSize(),
+        ];
+
+        $newName = $file->getRandomName();                 // cth 1727251200_3f2a9c1e7b0d4a5c6e81.pdf
+        $file->move(WRITEPATH . self::UPLOAD_DIR, $newName); // HTTPException jika gagal
+
+        return $meta + ['stored_path' => self::UPLOAD_DIR . $newName];
+    }
+
+    /** @param list<array{stored_path:string}> $stored */
+    private function deleteStoredFiles(array $stored): void
+    {
+        foreach ($stored as $doc) {
+            $path = WRITEPATH . $doc['stored_path'];
+
+            if (is_file($path)) {
+                unlink($path);
+            }
+        }
+    }
+}

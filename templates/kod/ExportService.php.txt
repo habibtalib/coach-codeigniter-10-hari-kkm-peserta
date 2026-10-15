@@ -1,0 +1,139 @@
+<?php
+
+// app/Services/ExportService.php
+// Hari 9 S3 — Jana PDF (Dompdf) & Excel .xlsx (PhpSpreadsheet).
+// Prasyarat: composer require dompdf/dompdf phpoffice/phpspreadsheet
+//
+// Service ini TIDAK tahu tentang laporan tertentu. Ia menerima:
+//   $title   — tajuk laporan
+//   $columns — ['kunci' => 'Label Lajur', ...]   (dari ReportService::columns())
+//   $rows    — iterable baris berkunci sama       (dari ReportService::exportRows())
+//   $meta    — ['filters' => 'ringkasan penapis', 'user' => 'nama', 'generated_at' => 'd/m/Y H:i']
+// dan memulangkan kandungan fail (string binari). Controller yang menghantar respons.
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+class ExportService
+{
+    /**
+     * @param array<string, string>            $columns
+     * @param iterable<array<string, mixed>>   $rows
+     * @param array{filters: string, user: string, generated_at: string} $meta
+     */
+    public function pdf(string $title, array $columns, iterable $rows, array $meta): string
+    {
+        // 1) HTML dijana oleh view biasa CI4 — esc() tetap digunakan di dalam view.
+        $html = view('laporan/pdf', [
+            'title'   => $title,
+            'columns' => $columns,
+            'rows'    => $rows,
+            'meta'    => $meta,
+        ]);
+
+        // 2) Pilihan keselamatan & fon
+        $options = new Options();
+        $options->setDefaultFont('DejaVu Sans');       // fon Unicode terbina dalam Dompdf (UTF-8 selamat)
+        $options->setIsRemoteEnabled(false);          // JANGAN muat URL luar (SSRF / lambat)
+        $options->setIsPhpEnabled(false);             // jangan laksana <script type="text/php">
+        $options->setTempDir(WRITEPATH . 'cache');    // folder boleh tulis
+        $options->setChroot([FCPATH]);                // fail tempatan (cth logo) hanya dari public/
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html, 'UTF-8');
+        $dompdf->setPaper('A4', 'landscape');         // laporan berlajur banyak → landskap
+        $dompdf->render();
+
+        // 3) Nombor muka surat — hanya diketahui SELEPAS render(), jadi ditulis pada canvas.
+        //    A4 landskap = 841.89 × 595.28 pt. Koordinat (x, y) dari bucu kiri atas.
+        $canvas = $dompdf->getCanvas();
+        $font   = $dompdf->getFontMetrics()->getFont('DejaVu Sans');
+        $canvas->page_text(760, 572, 'Muka {PAGE_NUM} / {PAGE_COUNT}', $font, 8, [0.3, 0.3, 0.3]);
+
+        return $dompdf->output();
+    }
+
+    /**
+     * @param array<string, string>            $columns
+     * @param iterable<array<string, mixed>>   $rows
+     * @param array{filters: string, user: string, generated_at: string} $meta
+     */
+    public function xlsx(string $title, array $columns, iterable $rows, array $meta): string
+    {
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->getProperties()
+            ->setCreator($meta['user'])
+            ->setTitle($title);
+
+        $sheet = $spreadsheet->getActiveSheet();
+        // Nama sheet: maks 31 aksara, tiada : \ / ? * [ ]
+        $sheet->setTitle(mb_substr(preg_replace('/[:\\\\\/?*\[\]]/', '', $title) ?? 'Laporan', 0, 31));
+
+        $colCount = count($columns);
+        $lastCol  = Coordinate::stringFromColumnIndex($colCount);
+
+        // Baris 1–3: tajuk & metadata (jejak audit: siapa & bila)
+        $sheet->setCellValue('A1', $title);
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet->setCellValue('A2', 'Penapis: ' . $meta['filters']);
+        $sheet->setCellValue('A3', 'Dijana pada ' . $meta['generated_at'] . ' oleh ' . $meta['user']);
+
+        // Baris 5: pengepala lajur — tebal + latar
+        $headerRow = 5;
+        $sheet->fromArray(array_values($columns), null, "A{$headerRow}");
+        $headerStyle = $sheet->getStyle("A{$headerRow}:{$lastCol}{$headerRow}");
+        $headerStyle->getFont()->setBold(true);
+        $headerStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('DDEBF7');
+
+        // Baris data. Nombor kekal nombor (boleh dijumlah dalam Excel);
+        // teks ditulis EKSPLISIT sebagai string supaya "001234" tidak jadi 1234
+        // dan teks bermula "=" tidak dianggap formula (formula injection).
+        $r = $headerRow + 1;
+        foreach ($rows as $row) {
+            $c = 1;
+            foreach (array_keys($columns) as $key) {
+                $value = $row[$key] ?? '';
+                $coord = Coordinate::stringFromColumnIndex($c) . $r;
+
+                if (is_int($value) || is_float($value)) {
+                    $sheet->setCellValue($coord, $value);
+                } else {
+                    $sheet->setCellValueExplicit($coord, (string) $value, DataType::TYPE_STRING);
+                }
+                $c++;
+            }
+            $r++;
+        }
+        $lastRow = max($headerRow, $r - 1);
+
+        // Lebar lajur automatik
+        for ($i = 1; $i <= $colCount; $i++) {
+            $sheet->getColumnDimension(Coordinate::stringFromColumnIndex($i))->setAutoSize(true);
+        }
+
+        // Beku pengepala: sel kiri-atas kawasan boleh skrol = baris selepas pengepala
+        $sheet->freezePane('A' . ($headerRow + 1));
+        $sheet->setAutoFilter("A{$headerRow}:{$lastCol}{$lastRow}");
+
+        // Tulis ke memori (bukan fail sementara) dan pulangkan string binari
+        $writer = new Xlsx($spreadsheet);
+        ob_start();
+        $writer->save('php://output');
+        $binary = (string) ob_get_clean();
+
+        // Bebaskan memori — objek Spreadsheet mempunyai rujukan kitaran
+        $spreadsheet->disconnectWorksheets();
+        unset($spreadsheet, $writer);
+
+        return $binary;
+    }
+}

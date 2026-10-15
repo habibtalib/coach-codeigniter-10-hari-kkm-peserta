@@ -1,0 +1,202 @@
+<?php
+/**
+ * app/Views/laporan/index.php — Hari 9
+ * Satu view untuk RPT-01/02/03. Borang penapis GET + jadual berpagination + butang eksport.
+ *
+ * Pembolehubah dari ReportController::handle():
+ * @var string                          $title    dipapar sebagai <h1> oleh layouts/main.php
+ * @var string                          $report   tempahan|pas|penggunaan
+ * @var array<string, int|string|null>  $filters  penapis BERSIH (normaliseFilters)
+ * @var array<string, int|string>       $query    penapis tanpa nilai kosong (untuk pautan)
+ * @var array<string, string>           $columns
+ * @var list<string>                    $sortable
+ * @var array<string, list<array>>      $options
+ * @var array{rows: list<array>, total: int, page: int, perPage: int} $result
+ * @var \CodeIgniter\Pager\Pager        $pager
+ */
+
+// Pembantu kecil untuk <select>: tanda pilihan yang sedang aktif.
+$selected = static fn ($current, $value): string => (string) $current === (string) $value ? 'selected' : '';
+?>
+<?= $this->extend('layouts/main') ?>
+
+<?php // Tajuk <h1> & mesej flash (cth ralat had eksport) dipapar oleh layouts/main.php daripada $title & partials/flash. ?>
+<?= $this->section('content') ?>
+<div class="mb-3">
+    <!-- Tab laporan -->
+    <ul class="nav nav-pills">
+        <?php foreach (['tempahan' => 'RPT-01 Tempahan', 'pas' => 'RPT-02 Pas', 'penggunaan' => 'RPT-03 Penggunaan'] as $key => $label): ?>
+            <li class="nav-item">
+                <a class="nav-link <?= $key === $report ? 'active' : '' ?>" href="<?= site_url('laporan/' . $key) ?>"><?= esc($label) ?></a>
+            </li>
+        <?php endforeach ?>
+    </ul>
+</div>
+
+<!-- ============ BORANG PENAPIS (GET) ============
+     method="get": URL boleh ditanda buku/dikongsi; tiada CSRF diperlukan (GET tidak ubah data).
+     Nilai diisi semula dari $filters (bukan old()) kerana tiada redirect berlaku. -->
+<form method="get" action="<?= current_url() ?>" class="card card-body mb-3">
+    <div class="row g-2 align-items-end">
+
+        <?php if ($report === 'penggunaan'): ?>
+            <div class="col-sm-3 col-md-2">
+                <label for="year" class="form-label">Tahun</label>
+                <input type="number" id="year" name="year" class="form-control" min="2020" max="2100"
+                       value="<?= esc((string) $filters['year'], 'attr') ?>">
+            </div>
+            <div class="col-sm-3 col-md-2">
+                <label for="month" class="form-label">Bulan</label>
+                <select id="month" name="month" class="form-select">
+                    <option value="">Setahun</option>
+                    <?php foreach (['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'] as $i => $m): ?>
+                        <option value="<?= $i + 1 ?>" <?= $selected($filters['month'], $i + 1) ?>><?= esc($m) ?></option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+        <?php else: ?>
+            <div class="col-sm-6 col-md-2">
+                <label for="from" class="form-label">Dari tarikh</label>
+                <input type="date" id="from" name="from" class="form-control" value="<?= esc((string) $filters['from'], 'attr') ?>">
+            </div>
+            <div class="col-sm-6 col-md-2">
+                <label for="to" class="form-label">Hingga tarikh</label>
+                <input type="date" id="to" name="to" class="form-control" value="<?= esc((string) $filters['to'], 'attr') ?>">
+            </div>
+        <?php endif ?>
+
+        <?php if ($report === 'tempahan'): ?>
+            <div class="col-sm-4 col-md-2">
+                <label for="zone_id" class="form-label">Zon</label>
+                <select id="zone_id" name="zone_id" class="form-select">
+                    <option value="">Semua</option>
+                    <?php foreach ($options['zones'] as $o): ?>
+                        <option value="<?= esc((string) $o['value'], 'attr') ?>" <?= $selected($filters['zone_id'], $o['value']) ?>><?= esc($o['label']) ?></option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+            <div class="col-sm-4 col-md-2">
+                <label for="category" class="form-label">Kategori</label>
+                <select id="category" name="category" class="form-select">
+                    <option value="">Semua</option>
+                    <?php foreach ($options['categories'] as $o): ?>
+                        <option value="<?= esc($o['value'], 'attr') ?>" <?= $selected($filters['category'], $o['value']) ?>><?= esc($o['label']) ?></option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+        <?php endif ?>
+
+        <?php if ($report === 'pas'): ?>
+            <div class="col-sm-4 col-md-2">
+                <label for="department_id" class="form-label">Jabatan</label>
+                <select id="department_id" name="department_id" class="form-select">
+                    <option value="">Semua</option>
+                    <?php foreach ($options['departments'] as $o): ?>
+                        <option value="<?= esc((string) $o['value'], 'attr') ?>" <?= $selected($filters['department_id'], $o['value']) ?>><?= esc($o['label']) ?></option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+            <div class="col-sm-4 col-md-2">
+                <label for="pass_type" class="form-label">Jenis pas</label>
+                <select id="pass_type" name="pass_type" class="form-select">
+                    <option value="">Semua</option>
+                    <?php foreach ($options['pass_types'] as $o): ?>
+                        <option value="<?= esc($o['value'], 'attr') ?>" <?= $selected($filters['pass_type'], $o['value']) ?>><?= esc($o['label']) ?></option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+        <?php endif ?>
+
+        <?php if ($report !== 'penggunaan'): ?>
+            <div class="col-sm-4 col-md-2">
+                <label for="status" class="form-label">Status</label>
+                <select id="status" name="status" class="form-select">
+                    <option value="">Semua</option>
+                    <?php foreach ($options['statuses'] as $o): ?>
+                        <option value="<?= esc($o['value'], 'attr') ?>" <?= $selected($filters['status'], $o['value']) ?>><?= esc($o['label']) ?></option>
+                    <?php endforeach ?>
+                </select>
+            </div>
+        <?php endif ?>
+
+        <!-- Kekalkan susunan semasa apabila penapis dihantar semula -->
+        <input type="hidden" name="sort" value="<?= esc((string) $filters['sort'], 'attr') ?>">
+        <input type="hidden" name="dir" value="<?= esc((string) $filters['dir'], 'attr') ?>">
+
+        <div class="col-md-auto d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Tapis</button>
+            <a href="<?= current_url() ?>" class="btn btn-outline-secondary">Set semula</a>
+        </div>
+    </div>
+</form>
+
+<!-- ============ RINGKASAN + EKSPORT ============
+     Pautan eksport dibina dari $query (penapis BERSIH) + export=... → data eksport = data skrin. -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
+    <div class="text-muted">
+        Jumlah rekod: <strong><?= number_format($result['total']) ?></strong>
+    </div>
+    <div class="btn-group">
+        <a class="btn btn-outline-danger btn-sm"
+           href="<?= current_url() . '?' . esc(http_build_query($query + ['export' => 'pdf']), 'attr') ?>">
+            <i class="bi bi-filetype-pdf"></i> Eksport PDF
+        </a>
+        <a class="btn btn-outline-success btn-sm"
+           href="<?= current_url() . '?' . esc(http_build_query($query + ['export' => 'xlsx']), 'attr') ?>">
+            <i class="bi bi-file-earmark-excel"></i> Eksport Excel
+        </a>
+    </div>
+</div>
+
+<!-- ============ JADUAL ============ -->
+<div class="table-responsive">
+    <table class="table table-sm table-striped table-hover align-middle">
+        <thead class="table-light">
+        <tr>
+            <th scope="col">#</th>
+            <?php foreach ($columns as $key => $label): ?>
+                <th scope="col">
+                    <?php if (in_array($key, $sortable, true)): ?>
+                        <?php
+                        // Klik lajur yang sama → terbalikkan arah; lajur lain → mula dengan asc
+                        $isCurrent = $filters['sort'] === $key;
+                        $nextDir   = $isCurrent && $filters['dir'] === 'asc' ? 'desc' : 'asc';
+                        $href      = current_url() . '?' . http_build_query(['sort' => $key, 'dir' => $nextDir] + $query);
+                        ?>
+                        <a href="<?= esc($href, 'attr') ?>" class="link-dark text-decoration-none">
+                            <?= esc($label) ?>
+                            <?php if ($isCurrent): ?>
+                                <i class="bi bi-caret-<?= $filters['dir'] === 'asc' ? 'up' : 'down' ?>-fill"></i>
+                            <?php endif ?>
+                        </a>
+                    <?php else: ?>
+                        <?= esc($label) ?>
+                    <?php endif ?>
+                </th>
+            <?php endforeach ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php if ($result['rows'] === []): ?>
+            <tr>
+                <td colspan="<?= count($columns) + 1 ?>" class="text-center text-muted py-4">
+                    Tiada rekod sepadan dengan penapis.
+                </td>
+            </tr>
+        <?php endif ?>
+
+        <?php foreach ($result['rows'] as $i => $row): ?>
+            <tr>
+                <td><?= ($result['page'] - 1) * $result['perPage'] + $i + 1 ?></td>
+                <?php foreach (array_keys($columns) as $key): ?>
+                    <td><?= esc((string) ($row[$key] ?? '')) ?></td>
+                <?php endforeach ?>
+            </tr>
+        <?php endforeach ?>
+        </tbody>
+    </table>
+</div>
+
+<!-- Pager CI4 mengekalkan query string semasa ($_GET) secara automatik: ?status=approved&page=2 -->
+<?= $pager->makeLinks($result['page'], $result['perPage'], $result['total']) ?>
+<?= $this->endSection() ?>

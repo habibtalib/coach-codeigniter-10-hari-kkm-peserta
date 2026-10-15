@@ -1,0 +1,63 @@
+{
+  "code": "CI-KKM-10",
+  "labDetails": [
+    {
+      "key": "wifi",
+      "label": { "ms": "Wi-Fi bilik kuliah", "en": "Classroom Wi-Fi" },
+      "description": { "ms": "Nama rangkaian dan kata laluan Wi-Fi; jurulatih mengisinya pada halaman kohort.", "en": "Wi-Fi network name and password; the trainer fills it in on the cohort page." },
+      "scope": "cohort"
+    },
+    {
+      "key": "base_url",
+      "label": "app.baseURL",
+      "description": { "ms": "Tampal dalam .env sebagai app.baseURL (mesti berakhir dengan /).", "en": "Paste into .env as app.baseURL (must end with /)." },
+      "env": "app.baseURL",
+      "default": "http://localhost:8080/",
+      "scope": "cohort",
+      "days": [4, 5, 6, 7, 8, 9, 10]
+    },
+    {
+      "key": "db_host",
+      "label": { "ms": "Hos DB", "en": "DB host" },
+      "description": { "ms": "Tampal dalam .env sebagai database.default.hostname.", "en": "Paste into .env as database.default.hostname." },
+      "env": "database.default.hostname",
+      "default": "localhost",
+      "scope": "cohort",
+      "days": [4, 5, 6, 7, 8, 9, 10]
+    },
+    {
+      "key": "db_name",
+      "label": { "ms": "Nama DB", "en": "DB name" },
+      "description": { "ms": "Tampal dalam .env sebagai database.default.database.", "en": "Paste into .env as database.default.database." },
+      "env": "database.default.database",
+      "default": "kkm_latihan",
+      "scope": "cohort",
+      "days": [4, 5, 6, 7, 8, 9, 10]
+    },
+    {
+      "key": "db_user",
+      "label": { "ms": "Pengguna DB", "en": "DB user" },
+      "description": { "ms": "Tampal dalam .env sebagai database.default.username.", "en": "Paste into .env as database.default.username." },
+      "env": "database.default.username",
+      "default": "kkm_dev",
+      "scope": "cohort",
+      "days": [4, 5, 6, 7, 8, 9, 10]
+    },
+    {
+      "key": "db_test_name",
+      "label": { "ms": "Nama DB ujian", "en": "Test DB name" },
+      "description": { "ms": "Tampal dalam .env sebagai database.tests.database (PHPUnit; jangan halakan ke kkm_latihan).", "en": "Paste into .env as database.tests.database (PHPUnit; never point it at kkm_latihan)." },
+      "env": "database.tests.database",
+      "default": "kkm_latihan_test",
+      "scope": "cohort",
+      "days": [4, 5, 6, 8, 9, 10]
+    },
+    {
+      "key": "git_remote",
+      "label": { "ms": "Repo Git pasangan", "en": "Pair's Git repo" },
+      "description": { "ms": "URL repo GitHub/GitLab pasangan anda. Guna dengan git remote add origin …", "en": "Your pair's GitHub/GitLab repo URL. Use with git remote add origin …" },
+      "scope": "trainee",
+      "days": [4, 5, 6, 7, 8, 9, 10]
+    }
+  ]
+}

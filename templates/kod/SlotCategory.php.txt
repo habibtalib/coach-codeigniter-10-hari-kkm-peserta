@@ -1,0 +1,63 @@
+<?php
+// ============================================================================
+// Fail sasaran : app/Enums/SlotCategory.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Peserta: cuba tulis sendiri dahulu — guna fail ini untuk SEMAK, bukan salin.
+// ============================================================================
+
+declare(strict_types=1);
+
+namespace App\Enums;
+
+/**
+ * Kategori slot letak kenderaan khas (parking_slots.category).
+ */
+enum SlotCategory: string
+{
+    case Oku            = 'oku';
+    case Mengandung     = 'mengandung';
+    case PegawaiKanan   = 'pegawai_kanan';
+    case KenderaanRasmi = 'kenderaan_rasmi';
+    case PelawatVip     = 'pelawat_vip';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::Oku            => 'OKU',
+            self::Mengandung     => 'Ibu Mengandung',
+            self::PegawaiKanan   => 'Pegawai Kanan',
+            self::KenderaanRasmi => 'Kenderaan Rasmi',
+            self::PelawatVip     => 'Pelawat VIP',
+        };
+    }
+
+    /** Ikon Bootstrap Icons untuk paparan. */
+    public function icon(): string
+    {
+        return match ($this) {
+            self::Oku            => 'bi-person-wheelchair',
+            self::Mengandung     => 'bi-heart-pulse',
+            self::PegawaiKanan   => 'bi-person-badge',
+            self::KenderaanRasmi => 'bi-car-front',
+            self::PelawatVip     => 'bi-star',
+        };
+    }
+
+    /** @return array<string, string> ['oku' => 'OKU', ...] */
+    public static function options(): array
+    {
+        $options = [];
+
+        foreach (self::cases() as $case) {
+            $options[$case->value] = $case->label();
+        }
+
+        return $options;
+    }
+
+    /** Untuk peraturan validasi: 'in_list[oku,mengandung,...]' */
+    public static function inList(): string
+    {
+        return 'in_list[' . implode(',', array_column(self::cases(), 'value')) . ']';
+    }
+}

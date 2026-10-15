@@ -1,0 +1,62 @@
+<?php
+// ============================================================================
+// Fail sasaran : app/Database/Seeds/UserSeeder.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Peserta: cuba tulis sendiri dahulu — guna fail ini untuk SEMAK, bukan salin.
+// ============================================================================
+
+namespace App\Database\Seeds;
+
+use CodeIgniter\Database\Seeder;
+use CodeIgniter\Shield\Entities\User;
+
+/**
+ * Pengguna sintetik (SPEC §4). Kata laluan semua: Latihan@2026
+ * Bergantung pada DepartmentSeeder (department_id).
+ */
+class UserSeeder extends Seeder
+{
+    public const PASSWORD = 'Latihan@2026';
+
+    public function run(): void
+    {
+        /** @var \App\Models\UserModel $users */
+        $users = auth()->getProvider();   // = App\Models\UserModel (Config\Auth::$userProvider)
+
+        $deptId = fn (string $code): ?int => ($row = $this->db->table('departments')->where('code', $code)->get()->getRow())
+            ? (int) $row->id
+            : null;
+
+        $people = [
+            ['email' => 'pemohon1@latihan.test', 'username' => 'pemohon1', 'full_name' => 'Aminah binti Latihan', 'staff_no' => 'LT0001', 'dept' => 'BTM', 'phone' => '012-0000001', 'group' => 'applicant'],
+            ['email' => 'pemohon2@latihan.test', 'username' => 'pemohon2', 'full_name' => 'Badrul bin Contoh',    'staff_no' => 'LT0002', 'dept' => 'BKW', 'phone' => '012-0000002', 'group' => 'applicant'],
+            ['email' => 'penyemak@latihan.test', 'username' => 'penyemak', 'full_name' => 'Chong Mei Ling',       'staff_no' => 'LT0003', 'dept' => 'BPA', 'phone' => '012-0000003', 'group' => 'reviewer'],
+            ['email' => 'pelulus@latihan.test',  'username' => 'pelulus',  'full_name' => 'Dr. Devi a/p Sampel',  'staff_no' => 'LT0004', 'dept' => 'BPA', 'phone' => '012-0000004', 'group' => 'approver'],
+            ['email' => 'admin@latihan.test',    'username' => 'admin',    'full_name' => 'Encik Admin Sistem',   'staff_no' => 'LT0005', 'dept' => 'BTM', 'phone' => '012-0000005', 'group' => 'admin'],
+        ];
+
+        foreach ($people as $p) {
+            // Idempoten: langkau jika e-mel sudah wujud
+            if ($users->findByCredentials(['email' => $p['email']]) !== null) {
+                continue;
+            }
+
+            $user = new User([
+                'username'      => $p['username'],
+                'email'         => $p['email'],        // disimpan ke auth_identities oleh Shield
+                'password'      => self::PASSWORD,     // di-hash oleh Shield (password_hash)
+                'active'        => 1,
+                'full_name'     => $p['full_name'],
+                'staff_no'      => $p['staff_no'],
+                'department_id' => $deptId($p['dept']),
+                'phone'         => $p['phone'],
+            ]);
+
+            $users->save($user);
+
+            // Dapatkan semula dengan ID, kemudian tambah ke group Shield
+            $user = $users->findById($users->getInsertID());
+            $user->addGroup($p['group']);
+        }
+    }
+}

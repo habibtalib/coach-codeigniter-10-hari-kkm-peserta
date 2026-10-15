@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * RUJUKAN JURULATIH — Hari 8 S2 (disemak/dilengkapkan; asas dicipta semasa pasang Shield, Hari 4)
+ * Salin ke: app/Config/AuthGroups.php
+ *
+ * Tepat seperti SPEC §4. Jangan tambah group/permission tanpa kemas kini SPEC dahulu.
+ *
+ * Selepas mengubah fail ini: TIADA migration diperlukan — groups/permissions/matrix dibaca
+ * dari konfigurasi. Hanya KEAHLIAN group (auth_groups_users) disimpan dalam DB (UserSeeder).
+ */
+
+declare(strict_types=1);
+
+namespace Config;
+
+use CodeIgniter\Shield\Config\AuthGroups as ShieldAuthGroups;
+
+class AuthGroups extends ShieldAuthGroups
+{
+    /** Pengguna baharu (cth daftar sendiri) terus menjadi pemohon */
+    public string $defaultGroup = 'applicant';
+
+    /**
+     * Groups (peranan). Kunci = nama group yang digunakan dalam filter `group:` dan inGroup().
+     */
+    public array $groups = [
+        'applicant' => [
+            'title'       => 'Pemohon',
+            'description' => 'Kakitangan pemohon',
+        ],
+        'reviewer' => [
+            'title'       => 'Penyemak',
+            'description' => 'Pegawai penyemak pas',
+        ],
+        'approver' => [
+            'title'       => 'Pelulus',
+            'description' => 'Pegawai pelulus pas & tempahan TLK',
+        ],
+        'admin' => [
+            'title'       => 'Pentadbir',
+            'description' => 'Pentadbir sistem',
+        ],
+    ];
+
+    /**
+     * SETIAP permission mesti diisytihar di sini. Format: "skop.tindakan".
+     * (admin.access ialah wakil keluarga admin.* — digunakan oleh modul pentadbir.)
+     */
+    public array $permissions = [
+        'admin.access'   => 'Akses modul pentadbir (slot, zon, pengguna)',
+        'tlk.apply'      => 'Memohon tempahan TLK',
+        'tlk.decide'     => 'Meluluskan / menolak tempahan TLK',
+        'pas.apply'      => 'Memohon pas',
+        'pas.review'     => 'Menyemak permohonan pas',
+        'pas.approve'    => 'Meluluskan permohonan pas',
+        'laporan.view'   => 'Melihat & mengeksport laporan',
+        'statistik.view' => 'Melihat dashboard statistik',
+    ];
+
+    /**
+     * Matriks group → permission (SPEC §4). `skop.*` = semua permission dalam skop itu.
+     *
+     * Kesan untuk Modul Pas:
+     *   applicant : pas.apply                → mohon, lihat milik sendiri
+     *   reviewer  : pas.review               → submitted → under_review, tolak
+     *   approver  : pas.approve              → under_review → approved, tolak
+     *   admin     : pas.*                    → semua di atas
+     */
+    public array $matrix = [
+        'applicant' => ['tlk.apply', 'pas.apply'],
+        'reviewer'  => ['pas.review', 'laporan.view'],
+        'approver'  => ['tlk.decide', 'pas.approve', 'laporan.view', 'statistik.view'],
+        'admin'     => ['admin.*', 'tlk.*', 'pas.*', 'laporan.*', 'statistik.*'],
+    ];
+}

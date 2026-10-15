@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * RUJUKAN JURULATIH — Hari 7 S2 (kumpulan pas/permohonan) · Hari 8 S1–S2 (kumpulan pas/semakan + filter)
+ * Tampal dalam app/Config/Routes.php SELEPAS:  service('auth')->routes($routes);
+ *
+ * SPEC §6:
+ *   Pas         /pas/permohonan (index, new, create, show, dokumen/{id})  filter: session
+ *   Pas semakan /pas/semakan (index, review, approve, reject)             filter: group:reviewer,approver,admin
+ *
+ * CI 4.5+ MENGGABUNGKAN filter group dengan filter laluan (kedua-duanya mesti lulus).
+ * Contoh: POST /pas/semakan/5/approve → session-check + group:reviewer,approver,admin + permission:pas.approve.
+ * Sahkan dengan:  php spark routes   (lajur "Before Filters")
+ *
+ * @var \CodeIgniter\Router\RouteCollection $routes
+ */
+
+// --- Permohonan Pas (semua pengguna log masuk; pemilikan disemak dalam controller/service) ---
+$routes->group('pas/permohonan', ['namespace' => 'App\Controllers\Pas', 'filter' => 'session'], static function ($routes): void {
+    $routes->get('/', 'ApplicationController::index', ['as' => 'pas.index']);
+
+    // Hari 8 S2: hanya pemegang pas.apply boleh mohon (SPEC §4 — applicant, admin melalui pas.*)
+    $routes->get('new', 'ApplicationController::new', ['as' => 'pas.new', 'filter' => 'permission:pas.apply']);
+    $routes->post('/', 'ApplicationController::create', ['as' => 'pas.create', 'filter' => 'permission:pas.apply']);
+
+    $routes->get('(:num)', 'ApplicationController::show/$1', ['as' => 'pas.show']);
+    $routes->get('dokumen/(:num)', 'ApplicationController::download/$1', ['as' => 'pas.dokumen']);
+});
+
+// --- Semakan & kelulusan (Hari 8) ---
+$routes->group('pas/semakan', ['namespace' => 'App\Controllers\Pas', 'filter' => 'group:reviewer,approver,admin'], static function ($routes): void {
+    $routes->get('/', 'ReviewController::index', ['as' => 'pas.semakan']);
+
+    // Filter permission per tindakan — tanpanya, reviewer boleh POST ke /approve (group sahaja tidak cukup)
+    $routes->post('(:num)/review', 'ReviewController::review/$1', ['as' => 'pas.review', 'filter' => 'permission:pas.review']);
+    $routes->post('(:num)/approve', 'ReviewController::approve/$1', ['as' => 'pas.approve', 'filter' => 'permission:pas.approve']);
+    $routes->post('(:num)/reject', 'ReviewController::reject/$1', ['as' => 'pas.reject', 'filter' => 'permission:pas.review,pas.approve']);
+});

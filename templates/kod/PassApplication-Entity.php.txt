@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * RUJUKAN JURULATIH — Hari 7 S1
+ * Salin ke: app/Entities/PassApplication.php
+ *
+ * Entity = satu baris pass_applications sebagai objek dengan tingkah laku kecil.
+ * Getter status menggunakan nama statusEnum() (bukan getStatus()) supaya
+ * $application->status kekal string mentah dari DB — sama seperti SlotBooking (Hari 5).
+ */
+
+declare(strict_types=1);
+
+namespace App\Entities;
+
+use App\Enums\PassStatus;
+use App\Enums\PassType;
+use CodeIgniter\Entity\Entity;
+use CodeIgniter\I18n\Time;
+
+class PassApplication extends Entity
+{
+    /** Medan ini ditukar kepada CodeIgniter\I18n\Time secara automatik */
+    protected $dates = [
+        'valid_from',
+        'valid_until',
+        'reviewed_at',
+        'approved_at',
+        'created_at',
+        'updated_at',
+    ];
+
+    /** '?integer' = boleh NULL (FK pilihan) */
+    protected $casts = [
+        'id'          => 'integer',
+        'user_id'     => 'integer',
+        'vehicle_id'  => '?integer',
+        'reviewed_by' => '?integer',
+        'approved_by' => '?integer',
+    ];
+
+    /** Status sebagai enum — ValueError jika DB mengandungi nilai asing (petanda data rosak) */
+    public function statusEnum(): PassStatus
+    {
+        return PassStatus::from((string) $this->attributes['status']);
+    }
+
+    public function typeEnum(): PassType
+    {
+        return PassType::from((string) $this->attributes['pass_type']);
+    }
+
+    /** BR-PAS-04 — asas semakan pemilikan */
+    public function isOwnedBy(int $userId): bool
+    {
+        return (int) $this->attributes['user_id'] === $userId;
+    }
+
+    /**
+     * SPEC §2.2: expired ditetapkan oleh sistem "(Spark command / semasa papar)".
+     * Semasa papar: pas approved yang valid_until sudah lepas dipaparkan sebagai Tamat Tempoh,
+     * walaupun Spark `pas:expire` belum dijalankan. Nilai DB TIDAK diubah di sini.
+     */
+    public function displayStatus(): PassStatus
+    {
+        $status     = $this->statusEnum();
+        $validUntil = $this->valid_until;   // Time (lihat $dates)
+
+        if ($status === PassStatus::Approved
+            && $validUntil instanceof Time
+            && $validUntil->isBefore(Time::today())) {
+            return PassStatus::Expired;
+        }
+
+        return $status;
+    }
+}

@@ -1,0 +1,7 @@
+.DS_Store
+.env
+projek/
+/vendor/
+node_modules/
+writable/
+*.log

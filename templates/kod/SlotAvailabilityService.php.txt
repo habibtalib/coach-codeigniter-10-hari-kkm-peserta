@@ -1,0 +1,79 @@
+<?php
+// ============================================================================
+// Fail sasaran : app/Services/SlotAvailabilityService.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Peserta: cuba tulis sendiri dahulu — guna fail ini untuk SEMAK, bukan salin.
+// ============================================================================
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Enums\BookingStatus;
+use App\Models\ParkingSlotModel;
+use App\Models\SlotBookingModel;
+use CodeIgniter\Database\BaseBuilder;
+
+/**
+ * Semakan ketersediaan slot (BR-TLK-01).
+ *
+ * Dua julat [A_start, A_end] dan [B_start, B_end] BERTINDIH jika:
+ *     A_start <= B_end  AND  A_end >= B_start
+ * (tarikh inklusif — hari terakhir tempahan masih dikira digunakan).
+ */
+class SlotAvailabilityService
+{
+    public function __construct(
+        private readonly SlotBookingModel $bookings = new SlotBookingModel(),
+        private readonly ParkingSlotModel $slots = new ParkingSlotModel(),
+    ) {
+    }
+
+    /**
+     * Adakah slot ini sudah ada tempahan aktif (pending/approved) yang bertindih?
+     *
+     * @param int|null $excludeBookingId abaikan tempahan ini (guna semasa lulus)
+     */
+    public function hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool
+    {
+        $builder = $this->bookings->builder()
+            ->where('slot_id', $slotId)
+            ->whereIn('status', BookingStatus::active())
+            ->where('start_date <=', $end)     // sedia ada bermula sebelum/pada julat baharu tamat
+            ->where('end_date >=', $start);    // sedia ada tamat selepas/pada julat baharu bermula
+
+        if ($excludeBookingId !== null) {
+            $builder->where('id !=', $excludeBookingId);
+        }
+
+        return $builder->countAllResults() > 0;
+    }
+
+    /**
+     * Slot aktif yang TIADA tempahan aktif bertindih dalam julat [start, end].
+     *
+     * @return list<array<string, mixed>> baris parking_slots + zone_code, zone_name
+     */
+    public function availableSlots(string $start, string $end, ?string $category = null, ?int $zoneId = null): array
+    {
+        $query = $this->slots->withZone()
+            ->where('parking_slots.is_active', 1)
+            // Subquery: slot yang SIBUK dalam julat → kecualikan
+            ->whereNotIn('parking_slots.id', static fn (BaseBuilder $sub) => $sub
+                ->select('slot_id')
+                ->from('slot_bookings')
+                ->whereIn('status', BookingStatus::active())
+                ->where('start_date <=', $end)
+                ->where('end_date >=', $start));
+
+        if ($category !== null && $category !== '') {
+            $query->where('parking_slots.category', $category);
+        }
+
+        if ($zoneId !== null) {
+            $query->where('parking_slots.zone_id', $zoneId);
+        }
+
+        return $query->findAll();
+    }
+}

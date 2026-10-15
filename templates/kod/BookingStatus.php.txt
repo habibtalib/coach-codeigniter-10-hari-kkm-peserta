@@ -1,0 +1,102 @@
+<?php
+// ============================================================================
+// Fail sasaran : app/Enums/BookingStatus.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Peserta: cuba tulis sendiri dahulu — guna fail ini untuk SEMAK, bukan salin.
+// ============================================================================
+
+declare(strict_types=1);
+
+namespace App\Enums;
+
+/**
+ * Status tempahan slot TLK (slot_bookings.status).
+ * SATU-SATUNYA sumber kebenaran untuk nilai, label BM, warna badge & peralihan.
+ *
+ *   pending ──► approved ──► cancelled
+ *      │            └──────► expired
+ *      └──────► rejected
+ */
+enum BookingStatus: string
+{
+    case Pending   = 'pending';
+    case Approved  = 'approved';
+    case Rejected  = 'rejected';
+    case Cancelled = 'cancelled';
+    case Expired   = 'expired';
+
+    /** Label Bahasa Melayu untuk paparan UI. */
+    public function label(): string
+    {
+        return match ($this) {
+            self::Pending   => 'Menunggu',
+            self::Approved  => 'Diluluskan',
+            self::Rejected  => 'Ditolak',
+            self::Cancelled => 'Dibatalkan',
+            self::Expired   => 'Tamat Tempoh',
+        };
+    }
+
+    /** Warna kontekstual Bootstrap 5.3 — guna sebagai `text-bg-{badge}`. */
+    public function badge(): string
+    {
+        return match ($this) {
+            self::Pending   => 'warning',
+            self::Approved  => 'success',
+            self::Rejected  => 'danger',
+            self::Cancelled => 'secondary',
+            self::Expired   => 'dark',
+        };
+    }
+
+    /**
+     * Status yang dibenarkan selepas status semasa.
+     *
+     * @return list<self>
+     */
+    public function allowedTransitions(): array
+    {
+        return match ($this) {
+            self::Pending  => [self::Approved, self::Rejected],
+            self::Approved => [self::Cancelled, self::Expired],
+            // Status akhir (terminal) — tiada peralihan lagi
+            self::Rejected, self::Cancelled, self::Expired => [],
+        };
+    }
+
+    public function canTransitionTo(self $to): bool
+    {
+        return in_array($to, $this->allowedTransitions(), true);
+    }
+
+    public function isFinal(): bool
+    {
+        return $this->allowedTransitions() === [];
+    }
+
+    /**
+     * Status yang dikira "aktif" untuk BR-TLK-01 (pertindihan) & BR-TLK-04 (had 1 aktif).
+     *
+     * @return list<string> ['pending', 'approved']
+     */
+    public static function active(): array
+    {
+        return [self::Pending->value, self::Approved->value];
+    }
+
+    /**
+     * Untuk dropdown penapis: ['pending' => 'Menunggu', ...]
+     *
+     * @return array<string, string>
+     */
+    public static function options(): array
+    {
+        $options = [];
+
+        foreach (self::cases() as $case) {
+            $options[$case->value] = $case->label();
+        }
+
+        return $options;
+    }
+}

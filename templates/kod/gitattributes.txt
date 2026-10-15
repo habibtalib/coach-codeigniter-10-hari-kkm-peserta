@@ -1,0 +1,16 @@
+# Simpan sebagai .gitattributes di akar projek CI4 (Lab 4.2 langkah 1).
+# Hujung baris LF dalam repo DAN salinan kerja di Windows/macOS/Linux; .bat kekal CRLF.
+# Selepas menambah: git add --renormalize .
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.xlsx binary
+*.zip binary
+*.woff binary
+*.woff2 binary
+*.ttf binary

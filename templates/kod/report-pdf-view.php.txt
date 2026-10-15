@@ -1,0 +1,89 @@
+<?php
+/**
+ * app/Views/laporan/pdf.php — Hari 9 S3
+ * HTML ringkas KHUSUS untuk Dompdf (bukan layout Bootstrap):
+ *  - Dompdf menyokong CSS 2.1 + sebahagian CSS3 → TIADA flexbox/grid; guna jadual & position:fixed.
+ *  - Elemen position:fixed diulang pada SETIAP muka surat → pengepala & pengaki.
+ *  - <thead> diulang secara automatik apabila jadual merentas muka surat.
+ *  - Nombor muka surat ditambah oleh ExportService::pdf() melalui $canvas->page_text().
+ *
+ * @var string                          $title
+ * @var array<string, string>           $columns
+ * @var iterable<array<string, mixed>>  $rows
+ * @var array{filters: string, user: string, generated_at: string} $meta
+ */
+?>
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <title><?= esc($title) ?></title>
+    <style>
+        /* Margin muka surat memberi ruang untuk pengepala (atas) & pengaki (bawah) */
+        @page { margin: 85px 28px 50px 28px; }
+
+        body { font-family: "DejaVu Sans", sans-serif; font-size: 8.5pt; color: #222; }
+
+        header { position: fixed; top: -70px; left: 0; right: 0; height: 60px;
+                 border-bottom: 1px solid #999; }
+        header .agency { font-size: 8pt; color: #555; }
+        header h1 { font-size: 13pt; margin: 2px 0; }
+        header .filters { font-size: 8pt; color: #555; }
+
+        footer { position: fixed; bottom: -35px; left: 0; right: 0; height: 20px;
+                 border-top: 1px solid #999; font-size: 7.5pt; color: #555; padding-top: 3px; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead { display: table-header-group; }          /* ulang pengepala setiap muka */
+        tr { page-break-inside: avoid; }                /* jangan pecah satu baris */
+        th { background: #DDEBF7; text-align: left; }
+        th, td { border: 1px solid #bbb; padding: 3px 4px; vertical-align: top; }
+        td.num { text-align: right; }
+        .empty { text-align: center; color: #777; padding: 20px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="agency">Sistem TLK &amp; Pas — Latihan CI-KKM-10 (DATA SINTETIK)</div>
+    <h1><?= esc($title) ?></h1>
+    <div class="filters">Penapis: <?= esc($meta['filters']) ?></div>
+</header>
+
+<footer>
+    Dijana pada <?= esc($meta['generated_at']) ?> oleh <?= esc($meta['user']) ?>
+    <!-- "Muka X / Y" dilukis di bucu kanan oleh page_text() -->
+</footer>
+
+<table>
+    <thead>
+    <tr>
+        <th style="width: 3%">#</th>
+        <?php foreach ($columns as $label): ?>
+            <th><?= esc($label) ?></th>
+        <?php endforeach ?>
+    </tr>
+    </thead>
+    <tbody>
+    <?php $n = 0; ?>
+    <?php foreach ($rows as $row): ?>
+        <?php $n++; ?>
+        <tr>
+            <td class="num"><?= $n ?></td>
+            <?php foreach (array_keys($columns) as $key): ?>
+                <?php $value = $row[$key] ?? ''; ?>
+                <td class="<?= is_int($value) || is_float($value) ? 'num' : '' ?>"><?= esc((string) $value) ?></td>
+            <?php endforeach ?>
+        </tr>
+    <?php endforeach ?>
+
+    <?php if ($n === 0): ?>
+        <tr><td colspan="<?= count($columns) + 1 ?>" class="empty">Tiada rekod sepadan dengan penapis.</td></tr>
+    <?php endif ?>
+    </tbody>
+</table>
+
+<p style="margin-top: 8px; font-size: 8pt;">Jumlah rekod: <strong><?= number_format($n) ?></strong></p>
+
+</body>
+</html>

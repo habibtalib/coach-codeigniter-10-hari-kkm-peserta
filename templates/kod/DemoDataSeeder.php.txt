@@ -1,0 +1,296 @@
+<?php
+// ============================================================================
+// Fail sasaran : app/Database/Seeds/DemoDataSeeder.php
+// Templat rujukan jurulatih CI-KKM-10 (CodeIgniter 4.6+ / PHP 8.2+). Telah diuji.
+// Data demo untuk Laporan (Hari 9) & Statistik (Hari 10) — SALIN terus (bukan latihan menulis).
+// ============================================================================
+
+declare(strict_types=1);
+
+namespace App\Database\Seeds;
+
+use App\Enums\BookingStatus;
+use App\Enums\PassStatus;
+use App\Enums\PassType;
+use CodeIgniter\Database\Seeder;
+use DateTimeImmutable;
+
+/**
+ * Data demo SINTETIK untuk Laporan (Hari 9) & Statistik (Hari 10):
+ * 22 tempahan TLK + 18 permohonan Pas merentas 12 bulan, pelbagai status, dengan status_logs
+ * dan satu dokumen PDF sintetik setiap permohonan.
+ *
+ * Direka supaya skrip UAT Hari 10 (README §3.2) boleh dijalankan terus:
+ *  - pemohon1 & pemohon2 TIADA tempahan aktif (BR-TLK-04) — langkah 1–3 UAT berfungsi;
+ *  - tempahan aktif hanya milik admin & pelulus (slot C-01, C-02 → KPI penggunaan hari ini > 0).
+ *
+ * Idempoten: dilangkau jika slot_bookings atau pass_applications sudah berisi.
+ * Tarikh relatif kepada HARI INI, jadi carta sentiasa ada data apabila di-seed semula.
+ */
+class DemoDataSeeder extends Seeder
+{
+    private DateTimeImmutable $today;
+
+    /** @var array<string, int> e-mel → user_id */
+    private array $users = [];
+
+    /** @var array<int, list<int>> user_id → vehicle ids */
+    private array $vehicles = [];
+
+    /** @var array<string, int> "PREFIX-YEAR" → nombor terakhir */
+    private array $sequences = [];
+
+    public function run(): void
+    {
+        if ($this->db->table('slot_bookings')->countAllResults() > 0
+            || $this->db->table('pass_applications')->countAllResults() > 0) {
+            echo "DemoDataSeeder: data tempahan/pas sudah wujud — dilangkau.\n";
+
+            return;
+        }
+
+        $this->today = new DateTimeImmutable('today');
+
+        foreach (['pemohon1', 'pemohon2', 'penyemak', 'pelulus', 'admin'] as $name) {
+            $user = auth()->getProvider()->findByCredentials(['email' => "{$name}@latihan.test"]);
+
+            if ($user === null) {
+                echo "DemoDataSeeder: jalankan UserSeeder dahulu.\n";
+
+                return;
+            }
+
+            $this->users[$name] = (int) $user->id;
+        }
+
+        foreach ($this->db->table('vehicles')->select('id, user_id')->orderBy('id')->get()->getResultArray() as $v) {
+            $this->vehicles[(int) $v['user_id']][] = (int) $v['id'];
+        }
+
+        $this->db->transStart();
+        $this->seedBookings();
+        $this->seedPasses();
+        $this->saveSequences();
+        $this->db->transComplete();
+    }
+
+    // ------------------------------------------------------------------ TLK
+
+    private function seedBookings(): void
+    {
+        $slots   = array_column($this->db->table('parking_slots')->select('id, slot_no')->where('deleted_at', null)->orderBy('slot_no')->get()->getResultArray(), 'id', 'slot_no');
+        $slotIds = array_values($slots);
+        $owners  = ['pemohon1', 'pemohon2', 'admin', 'pelulus'];
+        $final   = [BookingStatus::Expired, BookingStatus::Rejected, BookingStatus::Cancelled, BookingStatus::Expired];
+        $rows    = [];
+
+        // 20 tempahan sejarah (status akhir sahaja) — 10 bulan lepas, 2 setiap bulan
+        for ($i = 0; $i < 20; $i++) {
+            $created = $this->today->modify('first day of this month')->modify('-' . (10 - intdiv($i, 2)) . ' months')->modify('+' . (2 + ($i % 2) * 10) . ' days')->setTime(9, 15);
+            $start   = $created->modify('+3 days');
+            $owner   = $owners[$i % 4];
+
+            $rows[] = [
+                'owner'   => $owner,
+                'slot_id' => $slotIds[$i % 12],
+                'created' => $created,
+                'start'   => $start,
+                'end'     => $start->modify('+' . (2 + $i % 9) . ' days'),
+                'status'  => $final[$i % 4],
+                'reason'  => 'Tempahan demo sintetik #' . ($i + 1) . ' (data latihan).',
+            ];
+        }
+
+        // 2 tempahan AKTIF (approved) yang meliputi hari ini — bukan milik pemohon1/pemohon2
+        $rows[] = ['owner' => 'admin', 'slot_id' => $slots['C-01'] ?? $slotIds[8], 'created' => $this->today->modify('-5 days')->setTime(10, 0),
+            'start' => $this->today->modify('-2 days'), 'end' => $this->today->modify('+20 days'), 'status' => BookingStatus::Approved,
+            'reason' => 'Kenderaan rasmi pentadbir (data demo sintetik).'];
+        $rows[] = ['owner' => 'pelulus', 'slot_id' => $slots['C-02'] ?? $slotIds[9], 'created' => $this->today->modify('-4 days')->setTime(11, 30),
+            'start' => $this->today->modify('-1 day'), 'end' => $this->today->modify('+10 days'), 'status' => BookingStatus::Approved,
+            'reason' => 'Mesyuarat jawatankuasa mingguan (data demo sintetik).'];
+
+        usort($rows, static fn (array $a, array $b): int => $a['created'] <=> $b['created']);
+
+        foreach ($rows as $r) {
+            $userId  = $this->users[$r['owner']];
+            $decided = $r['created']->modify('+1 day')->setTime(14, 0);
+            $status  = $r['status'];
+
+            $this->db->table('slot_bookings')->insert([
+                'ref_no'     => $this->nextRef('TLK', $r['created']),
+                'user_id'    => $userId,
+                'vehicle_id' => $this->vehicles[$userId][0],
+                'slot_id'    => $r['slot_id'],
+                'start_date' => $r['start']->format('Y-m-d'),
+                'end_date'   => $r['end']->format('Y-m-d'),
+                'reason'     => $r['reason'],
+                'status'     => $status->value,
+                'decided_by' => $this->users['pelulus'],
+                'decided_at' => $decided->format('Y-m-d H:i:s'),
+                'created_at' => $r['created']->format('Y-m-d H:i:s'),
+                'updated_at' => $decided->format('Y-m-d H:i:s'),
+            ]);
+            $id = (int) $this->db->insertID();
+
+            $this->log('TLK', $id, null, 'pending', $userId, null, $r['created']);
+
+            if ($status === BookingStatus::Rejected) {
+                $this->log('TLK', $id, 'pending', 'rejected', $this->users['pelulus'], 'Kategori slot tidak sepadan dengan kelayakan (demo).', $decided);
+
+                continue;
+            }
+
+            $this->log('TLK', $id, 'pending', 'approved', $this->users['pelulus'], null, $decided);
+
+            if ($status === BookingStatus::Cancelled) {
+                $this->log('TLK', $id, 'approved', 'cancelled', $userId, 'Tidak lagi diperlukan (demo).', $decided->modify('+1 day'));
+            } elseif ($status === BookingStatus::Expired) {
+                $this->log('TLK', $id, 'approved', 'expired', $this->users['admin'], 'Tamat tempoh tempahan (demo).', $r['end']->modify('+1 day')->setTime(0, 10));
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------ PAS
+
+    private function seedPasses(): void
+    {
+        $owners = ['pemohon1', 'pemohon2', 'admin'];
+        $types  = [PassType::Kakitangan, PassType::Kenderaan, PassType::Kontraktor];
+        $rows   = [];
+
+        for ($j = 0; $j < 18; $j++) {
+            $created = $this->today->modify('-' . ($j * 20 + 1) . ' days')->setTime(8 + $j % 8, 30);
+
+            $status = match (true) {
+                $j < 3  => PassStatus::Submitted,
+                $j < 5  => PassStatus::UnderReview,
+                default => [PassStatus::Approved, PassStatus::Rejected, PassStatus::Approved, PassStatus::Expired][$j % 4],
+            };
+
+            $rows[] = ['owner' => $owners[$j % 3], 'type' => $types[$j % 3], 'created' => $created, 'status' => $status];
+        }
+
+        usort($rows, static fn (array $a, array $b): int => $a['created'] <=> $b['created']);
+
+        foreach ($rows as $n => $r) {
+            $userId     = $this->users[$r['owner']];
+            $created    = $r['created'];
+            $status     = $r['status'];
+            $reviewedAt = $created->modify('+1 day')->setTime(10, 0);
+            $approvedAt = $created->modify('+' . (2 + $n % 4) . ' days')->setTime(15, 0);
+            $validFrom  = $created->modify('+7 days');
+            $validUntil = $status === PassStatus::Expired ? $validFrom->modify('+30 days') : $validFrom->modify('+1 year');
+
+            $reviewed = $status !== PassStatus::Submitted;
+            $approved = in_array($status, [PassStatus::Approved, PassStatus::Expired], true);
+
+            $this->db->table('pass_applications')->insert([
+                'ref_no'      => $this->nextRef('PAS', $created),
+                'user_id'     => $userId,
+                'pass_type'   => $r['type']->value,
+                'vehicle_id'  => $r['type']->requiresVehicle() ? $this->vehicles[$userId][0] : null,
+                'purpose'     => $r['type']->label() . ' — permohonan demo sintetik #' . ($n + 1) . '.',
+                'valid_from'  => $validFrom->format('Y-m-d'),
+                'valid_until' => $validUntil->format('Y-m-d'),
+                'status'      => $status->value,
+                'reviewed_by' => $reviewed ? $this->users['penyemak'] : null,
+                'reviewed_at' => $reviewed ? $reviewedAt->format('Y-m-d H:i:s') : null,
+                'approved_by' => $approved ? $this->users['pelulus'] : null,
+                'approved_at' => $approved ? $approvedAt->format('Y-m-d H:i:s') : null,
+                'created_at'  => $created->format('Y-m-d H:i:s'),
+                'updated_at'  => $created->format('Y-m-d H:i:s'),
+            ]);
+            $id = (int) $this->db->insertID();
+
+            $this->storeDocument($id, $created);
+            $this->log('PAS', $id, null, 'submitted', $userId, 'Permohonan dihantar.', $created);
+
+            if (! $reviewed) {
+                continue;
+            }
+
+            $this->log('PAS', $id, 'submitted', 'under_review', $this->users['penyemak'], null, $reviewedAt);
+
+            if ($status === PassStatus::Rejected) {
+                $this->log('PAS', $id, 'under_review', 'rejected', $this->users['penyemak'], 'Salinan dokumen sokongan tidak jelas (demo).', $approvedAt);
+            } elseif ($approved) {
+                $this->log('PAS', $id, 'under_review', 'approved', $this->users['pelulus'], 'Dokumen lengkap (demo).', $approvedAt);
+            }
+
+            if ($status === PassStatus::Expired) {
+                $this->log('PAS', $id, 'approved', 'expired', $this->users['admin'], 'Tamat tempoh automatik (pas:expire).', $validUntil->modify('+1 day')->setTime(0, 10));
+            }
+        }
+    }
+
+    /** Satu PDF sintetik kecil dalam writable/uploads/pas/ (nama rawak, sama seperti storeFile()). */
+    private function storeDocument(int $applicationId, DateTimeImmutable $created): void
+    {
+        $dir = WRITEPATH . 'uploads/pas/';
+
+        if (! is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
+
+        $name    = $created->getTimestamp() . '_' . bin2hex(random_bytes(10)) . '.pdf';
+        $content = "%PDF-1.4\n% Dokumen sintetik latihan KKM (DemoDataSeeder)\n";
+        file_put_contents($dir . $name, $content);
+
+        $this->db->table('pass_documents')->insert([
+            'application_id' => $applicationId,
+            'doc_type'       => 'sokongan',
+            'original_name'  => 'surat-sokongan-demo.pdf',
+            'stored_path'    => 'uploads/pas/' . $name,
+            'mime'           => 'application/pdf',
+            'size_bytes'     => strlen($content),
+            'created_at'     => $created->format('Y-m-d H:i:s'),
+            'updated_at'     => $created->format('Y-m-d H:i:s'),
+        ]);
+    }
+
+    // ------------------------------------------------------------------ pembantu
+
+    private function log(string $module, int $recordId, ?string $from, string $to, int $actorId, ?string $remarks, DateTimeImmutable $at): void
+    {
+        $this->db->table('status_logs')->insert([
+            'module'      => $module,
+            'record_id'   => $recordId,
+            'from_status' => $from,
+            'to_status'   => $to,
+            'actor_id'    => $actorId,
+            'remarks'     => $remarks,
+            'created_at'  => $at->format('Y-m-d H:i:s'),
+        ]);
+    }
+
+    /** Nombor rujukan ikut TAHUN rekod dicipta (format sama seperti ReferenceNumberService). */
+    private function nextRef(string $prefix, DateTimeImmutable $created): string
+    {
+        $year = (int) $created->format('Y');
+        $key  = "{$prefix}-{$year}";
+
+        $this->sequences[$key] = ($this->sequences[$key] ?? 0) + 1;
+
+        return sprintf('%s-%d-%04d', $prefix, $year, $this->sequences[$key]);
+    }
+
+    /** Selaraskan reference_sequences supaya ReferenceNumberService menyambung nombor seterusnya. */
+    private function saveSequences(): void
+    {
+        $now = date('Y-m-d H:i:s');
+
+        foreach ($this->sequences as $key => $last) {
+            [$prefix, $year] = explode('-', $key);
+
+            $existing = $this->db->table('reference_sequences')->where('prefix', $prefix)->where('year', (int) $year)->get()->getRowArray();
+
+            if ($existing === null) {
+                $this->db->table('reference_sequences')->insert([
+                    'prefix' => $prefix, 'year' => (int) $year, 'last_number' => $last, 'created_at' => $now, 'updated_at' => $now,
+                ]);
+            } elseif ((int) $existing['last_number'] < $last) {
+                $this->db->table('reference_sequences')->where('id', $existing['id'])->update(['last_number' => $last, 'updated_at' => $now]);
+            }
+        }
+    }
+}

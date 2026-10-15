@@ -1,0 +1,560 @@
+<?php
+
+// app/Services/ReportService.php
+// Hari 9 — Modul Laporan (M3). Satu sumber kebenaran untuk RPT-01, RPT-02, RPT-03:
+// paparan HTML, eksport PDF dan eksport Excel SEMUANYA memanggil builder yang sama
+// supaya jumlah rekod sentiasa konsisten.
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Enums\BookingStatus;
+use App\Enums\PassStatus;
+use App\Enums\PassType;
+use App\Enums\SlotCategory;
+use CodeIgniter\Database\BaseBuilder;
+use CodeIgniter\Database\BaseConnection;
+use DateTimeImmutable;
+use Generator;
+use InvalidArgumentException;
+use LengthException;
+
+class ReportService
+{
+    public const REPORTS = ['tempahan', 'pas', 'penggunaan'];
+
+    public const PER_PAGE = 20;
+
+    /** Had eksport — Dompdf perlahan untuk jadual besar; PhpSpreadsheet guna ~1 KB memori/sel. */
+    public const EXPORT_LIMIT = ['pdf' => 2000, 'xlsx' => 10000];
+
+    /**
+     * WHITELIST lajur susunan: kunci URL (?sort=) => lajur SQL sebenar.
+     * Input pengguna TIDAK PERNAH dihantar terus ke orderBy().
+     */
+    private const SORTABLE = [
+        'tempahan' => [
+            'ref_no'     => 'b.ref_no',
+            'zone'       => 'z.code',
+            'start_date' => 'b.start_date',
+            'end_date'   => 'b.end_date',
+            'status'     => 'b.status',
+        ],
+        'pas' => [
+            'ref_no'     => 'p.ref_no',
+            'department' => 'd.name',
+            'pass_type'  => 'p.pass_type',
+            'status'     => 'p.status',
+            'created_at' => 'p.created_at',
+        ],
+        // RPT-03 disusun dalam PHP (data aggregate kecil, satu baris per zon).
+        'penggunaan' => [
+            'zone_code'   => 'zone_code',
+            'utilisation' => 'utilisation',
+        ],
+    ];
+
+    private const DEFAULT_SORT = [
+        'tempahan'   => ['start_date', 'desc'],
+        'pas'        => ['created_at', 'desc'],
+        'penggunaan' => ['zone_code', 'asc'],
+    ];
+
+    private BaseConnection $db;
+
+    public function __construct(?BaseConnection $db = null)
+    {
+        $this->db = $db ?? db_connect();
+    }
+
+    // ------------------------------------------------------------------
+    // 1. Penapis: terima $_GET mentah → pulang array bersih (whitelist)
+    // ------------------------------------------------------------------
+
+    /**
+     * Semua nilai dipulangkan sebagai skalar (string/int/null) supaya boleh
+     * dibina semula ke query string untuk pagination & butang eksport.
+     *
+     * @param array<string, mixed> $input biasanya $this->request->getGet()
+     *
+     * @return array<string, int|string|null>
+     */
+    public function normaliseFilters(string $report, array $input): array
+    {
+        $this->assertReport($report);
+
+        $f = [];
+
+        if ($report === 'penggunaan') {
+            $year  = (int) ($this->str($input, 'year') ?? date('Y'));
+            $month = (int) ($this->str($input, 'month') ?? 0);
+
+            $f['year']  = ($year >= 2020 && $year <= 2100) ? $year : (int) date('Y');
+            $f['month'] = ($month >= 1 && $month <= 12) ? $month : null; // null = setahun
+        } else {
+            $f['from'] = $this->validDate($this->str($input, 'from'));
+            $f['to']   = $this->validDate($this->str($input, 'to'));
+
+            // Pengguna terbalikkan julat? Tukar semula, jangan pulang kosong secara senyap.
+            if ($f['from'] !== null && $f['to'] !== null && $f['from'] > $f['to']) {
+                [$f['from'], $f['to']] = [$f['to'], $f['from']];
+            }
+        }
+
+        if ($report === 'tempahan') {
+            $zoneId        = (int) ($this->str($input, 'zone_id') ?? 0);
+            $f['zone_id']  = $zoneId > 0 ? $zoneId : null;
+            $f['category'] = SlotCategory::tryFrom($this->str($input, 'category') ?? '')?->value;
+            $f['status']   = BookingStatus::tryFrom($this->str($input, 'status') ?? '')?->value;
+        }
+
+        if ($report === 'pas') {
+            $deptId             = (int) ($this->str($input, 'department_id') ?? 0);
+            $f['department_id'] = $deptId > 0 ? $deptId : null;
+            $f['pass_type']     = PassType::tryFrom($this->str($input, 'pass_type') ?? '')?->value;
+            $f['status']        = PassStatus::tryFrom($this->str($input, 'status') ?? '')?->value;
+        }
+
+        // Susunan: hanya kunci dalam whitelist diterima.
+        [$defaultSort, $defaultDir] = self::DEFAULT_SORT[$report];
+        $sort     = $this->str($input, 'sort');
+        $dir      = strtolower($this->str($input, 'dir') ?? '');
+        $f['sort'] = array_key_exists((string) $sort, self::SORTABLE[$report]) ? $sort : $defaultSort;
+        $f['dir']  = in_array($dir, ['asc', 'desc'], true) ? $dir : $defaultDir;
+
+        return $f;
+    }
+
+    /**
+     * Penapis bersih → query string (buang nilai kosong). Guna untuk pautan eksport/susun.
+     *
+     * @param array<string, int|string|null> $filters
+     *
+     * @return array<string, int|string>
+     */
+    public function toQuery(array $filters): array
+    {
+        return array_filter($filters, static fn ($v): bool => $v !== null && $v !== '');
+    }
+
+    // ------------------------------------------------------------------
+    // 2. Metadata laporan: tajuk, lajur, pilihan dropdown
+    // ------------------------------------------------------------------
+
+    public function title(string $report): string
+    {
+        $this->assertReport($report);
+
+        return match ($report) {
+            'tempahan'   => 'RPT-01 Senarai Tempahan TLK',
+            'pas'        => 'RPT-02 Senarai Permohonan Pas',
+            'penggunaan' => 'RPT-03 Penggunaan Slot Mengikut Zon',
+        };
+    }
+
+    /**
+     * Lajur yang SAMA untuk HTML, PDF dan Excel. Kunci = kunci baris selepas formatRow().
+     *
+     * @return array<string, string>
+     */
+    public function columns(string $report): array
+    {
+        $this->assertReport($report);
+
+        return match ($report) {
+            'tempahan' => [
+                'ref_no'     => 'No. Rujukan',
+                'full_name'  => 'Pemohon',
+                'plate_no'   => 'No. Plat',
+                'zone'       => 'Zon',
+                'slot_no'    => 'Slot',
+                'category'   => 'Kategori',
+                'start_date' => 'Tarikh Mula',
+                'end_date'   => 'Tarikh Tamat',
+                'status'     => 'Status',
+            ],
+            'pas' => [
+                'ref_no'      => 'No. Rujukan',
+                'full_name'   => 'Pemohon',
+                'staff_no'    => 'No. Pekerja',
+                'department'  => 'Jabatan',
+                'pass_type'   => 'Jenis Pas',
+                'valid_from'  => 'Sah Dari',
+                'valid_until' => 'Sah Hingga',
+                'status'      => 'Status',
+                'created_at'  => 'Tarikh Mohon',
+            ],
+            'penggunaan' => [
+                'zone_code'      => 'Kod Zon',
+                'zone_name'      => 'Nama Zon',
+                'total_slots'    => 'Bil. Slot Aktif',
+                'total_bookings' => 'Bil. Tempahan',
+                'booked_days'    => 'Hari-Slot Ditempah',
+                'capacity_days'  => 'Kapasiti (Hari-Slot)',
+                'utilisation'    => 'Penggunaan (%)',
+            ],
+        };
+    }
+
+    /** @return list<string> kunci lajur yang boleh disusun (untuk pautan pengepala jadual) */
+    public function sortableColumns(string $report): array
+    {
+        $this->assertReport($report);
+
+        return array_keys(self::SORTABLE[$report]);
+    }
+
+    /**
+     * Pilihan dropdown borang penapis.
+     *
+     * @return array<string, list<array{value: int|string, label: string}>>
+     */
+    public function filterOptions(string $report): array
+    {
+        $this->assertReport($report);
+
+        $enumOptions = static fn (array $cases): array => array_map(
+            static fn ($c): array => ['value' => $c->value, 'label' => $c->label()],
+            $cases,
+        );
+
+        return match ($report) {
+            'tempahan' => [
+                'zones' => array_map(
+                    static fn (array $z): array => ['value' => (int) $z['id'], 'label' => $z['code'] . ' — ' . $z['name']],
+                    $this->db->table('parking_zones')->select('id, code, name')->orderBy('code')->get()->getResultArray(),
+                ),
+                'categories' => $enumOptions(SlotCategory::cases()),
+                'statuses'   => $enumOptions(BookingStatus::cases()),
+            ],
+            'pas' => [
+                'departments' => array_map(
+                    static fn (array $d): array => ['value' => (int) $d['id'], 'label' => $d['code'] . ' — ' . $d['name']],
+                    $this->db->table('departments')->select('id, code, name')->orderBy('name')->get()->getResultArray(),
+                ),
+                'pass_types' => $enumOptions(PassType::cases()),
+                'statuses'   => $enumOptions(PassStatus::cases()),
+            ],
+            'penggunaan' => [],
+        };
+    }
+
+    // ------------------------------------------------------------------
+    // 3. Paparan HTML berpagination
+    // ------------------------------------------------------------------
+
+    /**
+     * @param array<string, int|string|null> $filters hasil normaliseFilters()
+     *
+     * @return array{rows: list<array<string, mixed>>, total: int, page: int, perPage: int}
+     */
+    public function paginate(string $report, array $filters, int $page, int $perPage = self::PER_PAGE): array
+    {
+        $this->assertReport($report);
+        $page = max(1, $page);
+
+        if ($report === 'penggunaan') {
+            // Aggregate kecil (satu baris per zon) — potong dalam PHP.
+            $all = $this->usageByZone($filters);
+
+            return [
+                'rows'    => array_slice($all, ($page - 1) * $perPage, $perPage),
+                'total'   => count($all),
+                'page'    => $page,
+                'perPage' => $perPage,
+            ];
+        }
+
+        $builder = $this->builder($report, $filters);
+
+        // countAllResults(false) = kira TANPA reset builder; join/where kekal untuk get().
+        $total = $builder->countAllResults(false);
+
+        $rows = $this->applySort($builder, $report, $filters)
+            ->limit($perPage, ($page - 1) * $perPage)
+            ->get()
+            ->getResultArray();
+
+        return [
+            'rows'    => array_map(fn (array $r): array => $this->formatRow($report, $r), $rows),
+            'total'   => $total,
+            'page'    => $page,
+            'perPage' => $perPage,
+        ];
+    }
+
+    // ------------------------------------------------------------------
+    // 4. Eksport: semua baris (tanpa pagination) tetapi berhad
+    // ------------------------------------------------------------------
+
+    /**
+     * BUKAN fungsi generator — supaya semakan had (LengthException) berlaku SERTA-MERTA
+     * apabila dipanggil, bukan tertangguh sehingga baris pertama dibaca.
+     *
+     * @return iterable<array<string, mixed>>
+     *
+     * @throws LengthException jika melebihi EXPORT_LIMIT
+     */
+    public function exportRows(string $report, array $filters, string $format): iterable
+    {
+        $this->assertReport($report);
+        $limit = self::EXPORT_LIMIT[$format] ?? throw new InvalidArgumentException("Format tidak sah: {$format}");
+
+        if ($report === 'penggunaan') {
+            return $this->usageByZone($filters); // paling banyak beberapa puluh zon
+        }
+
+        $builder = $this->builder($report, $filters);
+        $total   = $builder->countAllResults(false);
+
+        if ($total > $limit) {
+            throw new LengthException(sprintf(
+                'Terlalu banyak rekod (%s) untuk eksport %s. Had: %s. Sila kecilkan julat penapis.',
+                number_format($total),
+                strtoupper($format),
+                number_format($limit),
+            ));
+        }
+
+        return $this->streamRows($report, $this->applySort($builder, $report, $filters));
+    }
+
+    /** Baca baris satu demi satu — elak membina array PHP gergasi. */
+    private function streamRows(string $report, BaseBuilder $builder): Generator
+    {
+        $query = $builder->get();
+
+        // fetch_assoc() pulang null (tamat) atau false (ralat) — kedua-duanya hentikan gelung.
+        while (is_array($row = $query->getUnbufferedRow('array'))) {
+            yield $this->formatRow($report, $row);
+        }
+
+        $query->freeResult();
+    }
+
+    // ------------------------------------------------------------------
+    // 5. Builder — SATU tempat untuk join + penapis dinamik
+    // ------------------------------------------------------------------
+
+    /** Dibuat public supaya S4 boleh jalankan EXPLAIN pada SQL yang sama. */
+    public function builder(string $report, array $f): BaseBuilder
+    {
+        return match ($report) {
+            'tempahan' => $this->bookingsBuilder($f),
+            'pas'      => $this->passesBuilder($f),
+            default    => throw new InvalidArgumentException("Laporan {$report} tiada builder SQL."),
+        };
+    }
+
+    /** RPT-01 — Senarai tempahan TLK */
+    private function bookingsBuilder(array $f): BaseBuilder
+    {
+        return $this->db->table('slot_bookings b')
+            ->select('b.id, b.ref_no, b.start_date, b.end_date, b.status, b.created_at')
+            ->select('u.full_name, v.plate_no, s.slot_no, s.category, z.code AS zone_code, z.name AS zone_name')
+            ->join('users u', 'u.id = b.user_id')
+            ->join('vehicles v', 'v.id = b.vehicle_id')
+            ->join('parking_slots s', 's.id = b.slot_id') // termasuk slot soft-deleted: sejarah kekal
+            ->join('parking_zones z', 'z.id = s.zone_id')
+            // Julat tarikh = tempahan yang AKTIF dalam julat (syarat bertindih BR-TLK-01):
+            //   start_date <= :to AND end_date >= :from
+            ->when($f['to'] ?? null, static fn (BaseBuilder $q, string $to) => $q->where('b.start_date <=', $to))
+            ->when($f['from'] ?? null, static fn (BaseBuilder $q, string $from) => $q->where('b.end_date >=', $from))
+            ->when($f['zone_id'] ?? null, static fn (BaseBuilder $q, int $id) => $q->where('s.zone_id', $id))
+            ->when($f['category'] ?? null, static fn (BaseBuilder $q, string $c) => $q->where('s.category', $c))
+            ->when($f['status'] ?? null, static fn (BaseBuilder $q, string $s) => $q->where('b.status', $s));
+    }
+
+    /** RPT-02 — Senarai permohonan Pas */
+    private function passesBuilder(array $f): BaseBuilder
+    {
+        return $this->db->table('pass_applications p')
+            ->select('p.id, p.ref_no, p.pass_type, p.valid_from, p.valid_until, p.status, p.created_at, p.approved_at')
+            ->select('u.full_name, u.staff_no, d.code AS dept_code, d.name AS dept_name')
+            ->join('users u', 'u.id = p.user_id')
+            ->join('departments d', 'd.id = u.department_id', 'left') // department_id boleh NULL
+            // created_at ialah DATETIME → julat SEPARUH-TERBUKA [from 00:00, to+1 hari 00:00)
+            // supaya rekod pada hari terakhir (cth 30/09 14:00) TIDAK tercicir.
+            ->when($f['from'] ?? null, static fn (BaseBuilder $q, string $from) => $q->where('p.created_at >=', $from . ' 00:00:00'))
+            ->when($f['to'] ?? null, static fn (BaseBuilder $q, string $to) => $q->where(
+                'p.created_at <',
+                (new DateTimeImmutable($to))->modify('+1 day')->format('Y-m-d 00:00:00'),
+            ))
+            ->when($f['department_id'] ?? null, static fn (BaseBuilder $q, int $id) => $q->where('u.department_id', $id))
+            ->when($f['pass_type'] ?? null, static fn (BaseBuilder $q, string $t) => $q->where('p.pass_type', $t))
+            ->when($f['status'] ?? null, static fn (BaseBuilder $q, string $s) => $q->where('p.status', $s));
+    }
+
+    private function applySort(BaseBuilder $builder, string $report, array $f): BaseBuilder
+    {
+        $column = self::SORTABLE[$report][$f['sort']] ?? self::SORTABLE[$report][self::DEFAULT_SORT[$report][0]];
+        $dir    = $f['dir'] === 'asc' ? 'ASC' : 'DESC';
+        $idCol  = $report === 'tempahan' ? 'b.id' : 'p.id';
+
+        // Susunan kedua (id) → susunan STABIL; tanpa ini rekod boleh "melompat" antara halaman.
+        return $builder->orderBy($column, $dir)->orderBy($idCol, $dir);
+    }
+
+    // ------------------------------------------------------------------
+    // 6. RPT-03 — Penggunaan slot mengikut zon (aggregate)
+    // ------------------------------------------------------------------
+
+    /**
+     * Penggunaan (%) = hari-slot ditempah ÷ (bil. slot aktif × bil. hari dalam tempoh) × 100
+     *
+     * @return list<array<string, int|float|string>>
+     */
+    public function usageByZone(array $f): array
+    {
+        [$start, $end] = $this->usagePeriod($f);
+        $days          = (new DateTimeImmutable($start))->diff(new DateTimeImmutable($end))->days + 1;
+
+        // (a) Bil. slot aktif setiap zon. LEFT JOIN → zon tanpa slot tetap muncul (0).
+        //     escape=false kerana syarat ON mengandungi literal (1, IS NULL) — tiada input pengguna di sini.
+        $zones = $this->db->table('parking_zones z')
+            ->select('z.id, z.code, z.name')
+            ->selectCount('s.id', 'total_slots')
+            ->join('parking_slots s', 's.zone_id = z.id AND s.is_active = 1 AND s.deleted_at IS NULL', 'left', false)
+            ->groupBy(['z.id', 'z.code', 'z.name'])
+            ->get()
+            ->getResultArray();
+
+        // (b) Tempahan yang digunakan (approved/expired) & bertindih dengan tempoh.
+        //     Hari bertindih = DATEDIFF(LEAST(end, :end), GREATEST(start, :start)) + 1
+        //     $start/$end dijana oleh kita (bukan teks pengguna) DAN di-escape().
+        $startQ = $this->db->escape($start);
+        $endQ   = $this->db->escape($end);
+
+        $usage = $this->db->table('slot_bookings b')
+            ->select('s.zone_id')
+            ->selectCount('b.id', 'total_bookings')
+            ->select("SUM(DATEDIFF(LEAST(b.end_date, {$endQ}), GREATEST(b.start_date, {$startQ})) + 1) AS booked_days", false)
+            ->join('parking_slots s', 's.id = b.slot_id')
+            ->whereIn('b.status', [BookingStatus::Approved->value, BookingStatus::Expired->value])
+            ->where('b.start_date <=', $end)
+            ->where('b.end_date >=', $start)
+            ->groupBy('s.zone_id')
+            ->get()
+            ->getResultArray();
+
+        $byZone = array_column($usage, null, 'zone_id');
+        $rows   = [];
+
+        foreach ($zones as $z) {
+            $slots    = (int) $z['total_slots'];
+            $booked   = (int) ($byZone[$z['id']]['booked_days'] ?? 0);
+            $capacity = $slots * $days;
+
+            $rows[] = [
+                'zone_code'      => $z['code'],
+                'zone_name'      => $z['name'],
+                'total_slots'    => $slots,
+                'total_bookings' => (int) ($byZone[$z['id']]['total_bookings'] ?? 0),
+                'booked_days'    => $booked,
+                'capacity_days'  => $capacity,
+                'utilisation'    => $capacity > 0 ? round($booked / $capacity * 100, 1) : 0.0,
+            ];
+        }
+
+        $key = $f['sort'] ?? 'zone_code';
+        $dir = ($f['dir'] ?? 'asc') === 'desc' ? -1 : 1;
+        usort($rows, static fn (array $a, array $b): int => ($a[$key] <=> $b[$key]) * $dir);
+
+        return $rows;
+    }
+
+    /** @return array{0: string, 1: string} [Y-m-d mula, Y-m-d tamat] */
+    public function usagePeriod(array $f): array
+    {
+        $year = (int) ($f['year'] ?? date('Y'));
+
+        if (! empty($f['month'])) {
+            $first = new DateTimeImmutable(sprintf('%04d-%02d-01', $year, (int) $f['month']));
+
+            return [$first->format('Y-m-d'), $first->format('Y-m-t')];
+        }
+
+        return ["{$year}-01-01", "{$year}-12-31"];
+    }
+
+    // ------------------------------------------------------------------
+    // 7. Format baris — label BM daripada enum, tarikh d/m/Y
+    // ------------------------------------------------------------------
+
+    /** @return array<string, mixed> kunci sepadan columns($report) */
+    private function formatRow(string $report, array $r): array
+    {
+        return match ($report) {
+            'tempahan' => [
+                'ref_no'     => $r['ref_no'],
+                'full_name'  => $r['full_name'],
+                'plate_no'   => $r['plate_no'],
+                'zone'       => $r['zone_code'],
+                'slot_no'    => $r['slot_no'],
+                'category'   => SlotCategory::tryFrom((string) $r['category'])?->label() ?? $r['category'],
+                'start_date' => $this->dmy($r['start_date']),
+                'end_date'   => $this->dmy($r['end_date']),
+                'status'     => BookingStatus::tryFrom((string) $r['status'])?->label() ?? $r['status'],
+            ],
+            'pas' => [
+                'ref_no'      => $r['ref_no'],
+                'full_name'   => $r['full_name'],
+                'staff_no'    => $r['staff_no'] ?? '-',
+                'department'  => $r['dept_name'] ?? '-',
+                'pass_type'   => PassType::tryFrom((string) $r['pass_type'])?->label() ?? $r['pass_type'],
+                'valid_from'  => $this->dmy($r['valid_from']),
+                'valid_until' => $this->dmy($r['valid_until']),
+                'status'      => PassStatus::tryFrom((string) $r['status'])?->label() ?? $r['status'],
+                'created_at'  => $this->dmy($r['created_at'], withTime: true),
+            ],
+            default => $r,
+        };
+    }
+
+    // ------------------------------------------------------------------
+    // Pembantu
+    // ------------------------------------------------------------------
+
+    private function assertReport(string $report): void
+    {
+        if (! in_array($report, self::REPORTS, true)) {
+            throw new InvalidArgumentException("Laporan tidak dikenali: {$report}");
+        }
+    }
+
+    /** Ambil nilai string yang dipangkas; tolak array (cth ?status[]=x) dan string kosong. */
+    private function str(array $input, string $key): ?string
+    {
+        $v = $input[$key] ?? null;
+
+        if (! is_string($v) && ! is_int($v)) {
+            return null;
+        }
+
+        $v = trim((string) $v);
+
+        return $v === '' ? null : $v;
+    }
+
+    /** Terima Y-m-d yang BENAR-BENAR sah sahaja (tolak 2026-02-31). */
+    private function validDate(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $d = DateTimeImmutable::createFromFormat('!Y-m-d', $value);
+
+        return ($d !== false && $d->format('Y-m-d') === $value) ? $value : null;
+    }
+
+    private function dmy(?string $value, bool $withTime = false): string
+    {
+        if ($value === null || $value === '') {
+            return '-';
+        }
+
+        return (new DateTimeImmutable($value))->format($withTime ? 'd/m/Y H:i' : 'd/m/Y');
+    }
+}
