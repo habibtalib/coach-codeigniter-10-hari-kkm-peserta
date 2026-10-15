@@ -2,7 +2,7 @@
 
 [📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [📖 README Hari 1](./README.md)
 
-> Semua lab hari ini menghasilkan **dokumen Markdown**, bukan kod (kecuali Lab 1.5 pilihan: CI4 asas). Kerja berpasangan (driver menaip, navigator menyemak terhadap SPEC) — tukar peranan setiap lab.
+> Semua lab hari ini menghasilkan **dokumen Markdown**, bukan kod (kecuali Lab 1.5 dalam S4: CI4 asas di Laragon). Kerja berpasangan (driver menaip, navigator menyemak terhadap SPEC) — tukar peranan setiap lab.
 
 | Lab | Sesi | Hasil |
 |-----|------|-------|
@@ -10,7 +10,7 @@
 | [Lab 1.2](#lab-12--temu-bual-berstruktur-modul-tlk) | S2 | `docs/temubual-tlk.md` |
 | [Lab 1.3](#lab-13--temu-bual-modul-pas) | S3 | `docs/temubual-pas.md` |
 | [Lab 1.4](#lab-14--senarai-awal-fr--nfr--moscow) | S4 | `docs/keperluan-awal.md`, `docs/soalan-terbuka.md` |
-| [Lab 1.5](#lab-15--ci4-asas-di-laptop-pilihan-selepas-kelas) | Selepas kelas (pilihan) | Projek latihan `~/latihan/ci4-asas` + laluan `/hello` |
+| [Lab 1.5](#lab-15--ci4-asas-di-laptop-dalam-kelas-s4) | S4 | Projek latihan `~/latihan/ci4-asas` + laluan `/hello` |
 
 ---
 
@@ -265,7 +265,7 @@ Bina **matriks jejak** ringkas: baris = BR (12 baris), lajur = FR yang menjejakn
 
 ---
 
-## Lab 1.5 — CI4 asas di laptop (pilihan, selepas kelas)
+## Lab 1.5 — CI4 asas di laptop (dalam kelas, S4)
 
 ### 🎯 Objektif
 Menjalankan projek CodeIgniter 4 kosong di laptop Windows dan membina satu laluan MVC (`/hello`) supaya Hari 4 tidak bermula dengan masalah persekitaran.

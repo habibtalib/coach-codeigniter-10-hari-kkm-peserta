@@ -36,6 +36,8 @@ Di akhir hari ini, peserta boleh:
 
 ## 🧭 Kenapa hari ini penting
 
+> ⏱️ **Belum siap Hari 1?** Sesi S1 mengesahkan FR anda, jadi sekurang-kurangnya `docs/keperluan-awal.md` dan `docs/soalan-terbuka.md` ([Lab 1.4](../hari-1/lab.md#lab-14--senarai-awal-fr--nfr--moscow)) mesti ada sebelum 09:00 — siapkan bersama pasangan semasa recap. Lab 1.1–1.3 boleh disiapkan semasa rehat; [Lab 1.5](../hari-1/lab.md#lab-15--ci4-asas-di-laptop-dalam-kelas-s4) sebelum Hari 4.
+
 Senarai FR Hari 1 masih **draf pembangun** — belum dipersetujui sesiapa. Tanpa pengesahan:
 
 - Anda mungkin membina ciri yang pemilik sistem **tidak mahu** (membazir Hari 5–8).

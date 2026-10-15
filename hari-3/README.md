@@ -551,7 +551,7 @@ Diedarkan hari ini, disemak **Hari 4 S1 (09:00)**. Butiran penuh & rubrik: [`doc
 
 | # | Tugasan | Anggaran masa |
 |---|---------|---------------|
-| T1 | Pasang persekitaran (PHP 8.2+, Composer, MySQL/MariaDB, Git) mengikut senarai semak | 1–2 jam |
+| T1 | Lengkapkan persekitaran mengikut senarai semak: PHP 8.2+ & Composer sudah disediakan dalam [Lab 1.5](../hari-1/lab.md#lab-15--ci4-asas-di-laptop-dalam-kelas-s4) Hari 1 — tambah MySQL/MariaDB & Git (belum buat Lab 1.5? buat dahulu) | 30 minit–1 jam |
 | T2 | Siapkan tutorial rasmi CI4 *Build Your First Application* (aplikasi berita) | 2–3 jam |
 | T3 | Perhalusi ERD pasangan anda berdasarkan semakan hari ini | 30 minit |
 | T4 | Tulis 3 acceptance criteria baharu (Given/When/Then) | 30 minit |

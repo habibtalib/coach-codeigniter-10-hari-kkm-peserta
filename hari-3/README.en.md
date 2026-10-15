@@ -551,7 +551,7 @@ Handed out today, reviewed on **Day 4 S1 (09:00)**. Full details & rubric: [`doc
 
 | # | Task | Estimated time |
 |---|---------|---------------|
-| T1 | Install the environment (PHP 8.2+, Composer, MySQL/MariaDB, Git) following the checklist | 1–2 hours |
+| T1 | Complete the environment following the checklist: PHP 8.2+ & Composer were set up in Day 1 [Lab 1.5](../hari-1/lab.en.md#lab-15--ci4-basics-on-your-laptop-in-class-s4) — add MySQL/MariaDB & Git (haven't done Lab 1.5? do it first) | 30 minutes–1 hour |
 | T2 | Complete the official CI4 tutorial *Build Your First Application* (news app) | 2–3 hours |
 | T3 | Refine your pair's ERD based on today's review | 30 minutes |
 | T4 | Write 3 new acceptance criteria (Given/When/Then) | 30 minutes |

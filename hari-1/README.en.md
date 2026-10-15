@@ -18,6 +18,7 @@ By the end of today, participants can:
 | O4 | **Gather** the Pass Module requirements, including the types of supporting documents and the two approval levels | S3 | `docs/temubual-pas.md` |
 | O5 | **Write** at least 16 functional requirements (FR: ≥ 8 `FR-TLK`, ≥ 6 `FR-PAS`, ≥ 1 `FR-RPT`, ≥ 1 `FR-STAT`) and 5 non-functional requirements (NFR) with IDs (`FR-TLK-01`, `NFR-01`), each with MoSCoW | S4 | `docs/keperluan-awal.md` |
 | O6 | **Classify** each requirement with MoSCoW and **trace** it to a business rule (`BR-TLK-xx` / `BR-PAS-xx`) | S4 | MoSCoW + BR columns in `docs/keperluan-awal.md` |
+| O7 | **Run** an empty CodeIgniter 4 project on Laragon and build one MVC route (`/hello`) | S4 | The 3 checkpoints of [Lab 1.5](./lab.en.md#lab-15--ci4-basics-on-your-laptop-in-class-s4) |
 
 ---
 
@@ -31,7 +32,7 @@ By the end of today, participants can:
 | 10:45–12:30 | S2 | Requirement deep-dive — **TLK Module** | Gather TLK requirements through a structured interview; record *pain points* |
 | 12:30–14:30 | — | Lunch | — |
 | 14:30–16:00 | S3 | Requirement deep-dive — **Pass Module** | Gather Pass requirements, including documents & approval levels |
-| 16:00–17:00 | S4 | Initial list of functional & non-functional requirements; wrap-up | Write FR/NFR with IDs (`FR-TLK-01`) & classify with MoSCoW |
+| 16:00–17:00 | S4 | Initial list of functional & non-functional requirements; local CI4 setup (Laragon) & an overview of the existing system's ERD; wrap-up | Write FR/NFR with IDs (`FR-TLK-01`) & classify with MoSCoW; run CI4 on your laptop |
 
 ---
 
@@ -500,9 +501,9 @@ Save in the `docs/` folder of your team repo (committed with the `SETUP:` prefix
 
 ---
 
-## ⭐ After class (optional): CodeIgniter 4 basics on your laptop
+## 💻 Local CI4 setup (Laragon) — S4
 
-Days 1–3 write no code, but you can try CI4 tonight so Day 4 does not start with environment problems. Every step is for **Windows** (Laragon + Git Bash). Full steps: [Skeleton tutorial — Part A](../docs/tutorial-rangka.en.md#part-a--ci4-basics-on-your-laptop-day-1).
+Days 1–3 write no system code, but the environment is set up today in S4 ([Lab 1.5](./lab.en.md#lab-15--ci4-basics-on-your-laptop-in-class-s4)) so Day 4 does not start with environment problems. Not finished in class? Finish it before Day 4. Every step is for **Windows** (Laragon + Git Bash). Full steps: [Skeleton tutorial — Part A](../docs/tutorial-rangka.en.md#part-a--ci4-basics-on-your-laptop-day-1).
 
 1. Check your environment ([`docs/persediaan.en.md`](../docs/persediaan.en.md) §1–§6): `php -v` (8.2+), `composer -V`, `where php` points to `C:\laragon\bin\php\...`.
 2. Create a **practice** project (not the pair repo) and run it:
@@ -517,7 +518,7 @@ Days 1–3 write no code, but you can try CI4 tonight so Day 4 does not start wi
 3. Open <http://localhost:8080>. The *Welcome to CodeIgniter* page means PHP, Composer and CI4 work.
 4. A first taste of MVC: one route `/hello` → controller `Hello` → view `hello.php` (Part A of the tutorial).
 
-> `ci4-asas` is a practice project only and can be deleted. The real project is created inside the `sistem-tlk-pas` repo on Day 4, Lab 4.2. Does not count towards progress.
+> `ci4-asas` is a practice project only and can be deleted. The real project is created inside the `sistem-tlk-pas` repo on Day 4, Lab 4.2. The 3 Lab 1.5 checkpoints count towards Day 1 progress.
 
 ---
 

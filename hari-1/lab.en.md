@@ -2,7 +2,7 @@
 
 [📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../SPEC-KURSUS.md) · [📖 Day 1 README](./README.md)
 
-> Every lab today produces **Markdown documents**, not code (except optional Lab 1.5: CI4 basics). Work in pairs (the driver types, the navigator checks against the SPEC) — swap roles every lab.
+> Every lab today produces **Markdown documents**, not code (except Lab 1.5 in S4: CI4 basics on Laragon). Work in pairs (the driver types, the navigator checks against the SPEC) — swap roles every lab.
 
 | Lab | Session | Output |
 |-----|---------|--------|
@@ -10,7 +10,7 @@
 | [Lab 1.2](#lab-12--structured-interview-tlk-module) | S2 | `docs/temubual-tlk.md` |
 | [Lab 1.3](#lab-13--pass-module-interview) | S3 | `docs/temubual-pas.md` |
 | [Lab 1.4](#lab-14--initial-fr--nfr-list--moscow) | S4 | `docs/keperluan-awal.md`, `docs/soalan-terbuka.md` |
-| [Lab 1.5](#lab-15--ci4-basics-on-your-laptop-optional-after-class) | After class (optional) | Practice project `~/latihan/ci4-asas` + route `/hello` |
+| [Lab 1.5](#lab-15--ci4-basics-on-your-laptop-in-class-s4) | S4 | Practice project `~/latihan/ci4-asas` + route `/hello` |
 
 ---
 
@@ -265,7 +265,7 @@ Build a short **traceability matrix**: rows = BRs (12 rows), columns = the FRs t
 
 ---
 
-## Lab 1.5 — CI4 basics on your laptop (optional, after class)
+## Lab 1.5 — CI4 basics on your laptop (in class, S4)
 
 ### 🎯 Objective
 Run an empty CodeIgniter 4 project on a Windows laptop and build one MVC route (`/hello`), so Day 4 does not start with environment problems.

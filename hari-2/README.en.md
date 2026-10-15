@@ -36,6 +36,8 @@ By the end of today, participants can:
 
 ## 🧭 Why today matters
 
+> ⏱️ **Day 1 not finished?** Session S1 validates your FRs, so at least `docs/keperluan-awal.md` and `docs/soalan-terbuka.md` ([Lab 1.4](../hari-1/lab.en.md#lab-14--initial-fr--nfr-list--moscow)) must exist before 09:00 — finish them with your partner during the recap. Labs 1.1–1.3 can be finished during the breaks; [Lab 1.5](../hari-1/lab.en.md#lab-15--ci4-basics-on-your-laptop-in-class-s4) before Day 4.
+
 The Day 1 FR list is still a **developer draft** — nobody has agreed to it yet. Without sign-off:
 
 - You may build features the system owner **does not want** (wasting Days 5–8).

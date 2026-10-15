@@ -568,7 +568,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div><i>S1</i>Taklimat projek &amp; skop; pasukan &amp; pemilik sistem</div>
     <div><i>S2</i>Requirement deep-dive — Modul TLK</div>
     <div><i>S3</i>Requirement deep-dive — Modul Pas</div>
-    <div><i>S4</i>Senarai awal FR &amp; NFR; wrap-up</div>
+    <div><i>S4</i>Senarai awal FR &amp; NFR; persediaan CI4 (Laragon); wrap-up</div>
   </div>
   <div class="dayrail"><span class="now"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="daynum">01</div>
@@ -582,7 +582,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span><em>S1</em>Menyatakan matlamat, skop &amp; had keempat-empat modul serta mengenal pasti pihak berkepentingan.</span></li>
     <li><span><em>S2</em>Mengumpul keperluan TLK melalui temu bual berstruktur dan merekod <i>pain point</i>.</span></li>
     <li><span><em>S3</em>Mengumpul keperluan Pas termasuk dokumen sokongan &amp; peringkat kelulusan.</span></li>
-    <li><span><em>S4</em>Menulis FR/NFR berformat ID (<code>FR-TLK-01</code>) dan mengelaskannya dengan MoSCoW.</span></li>
+    <li><span><em>S4</em>Menulis FR/NFR berformat ID (<code>FR-TLK-01</code>) dan mengelaskannya dengan MoSCoW; menjalankan CI4 di laptop (Lab 1.5).</span></li>
   </ul>
   <aside class="notes"><p>Baca objektif dengan kuat. Minta setiap pasangan menulis objektif ini di kertas — kita tanda semula pada sesi wrap-up S4.</p></aside>
 </section>
@@ -689,6 +689,19 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 </section>
 
 <section class="slide">
+  <div class="eyebrow">Hari 1 · S4 — Lab 1.5</div>
+  <h2>Persediaan CI4 tempatan (Laragon)</h2>
+  <div class="split l">
+    <ol class="steps tight"><li><div><b>Laragon: PHP 8.3</b><span><i>Menu → PHP → Version</i>; <i>Extensions</i> → tanda <code>intl</code> &amp; <code>zip</code>.</span></div></li><li><div><b>Add Laragon to Path</b><span><i>Menu → Tools → Path</i>, kemudian tutup &amp; buka semula VS Code.</span></div></li><li><div><b>Semak dalam Git Bash</b><span><code>which php</code> → <code>/c/laragon/bin/php/…</code> · <code>php -m | grep intl</code>.</span></div></li><li><div><b>Projek latihan</b><span><code>composer create-project codeigniter4/appstarter ci4-asas</code></span></div></li><li><div><b>Jalankan</b><span><code>php spark serve</code> → <code>localhost:8080</code> → laluan <code>/hello</code>.</span></div></li></ol>
+    <div class="stack">
+      <div class="callout warn"><span class="i">⚠️</span><div><code>composer: command not found</code>? Tambah alias sekali: <code>alias composer="php /c/laragon/bin/composer/composer.phar"</code> dalam <code>~/.bashrc</code>.</div></div>
+      <div class="callout tip"><span class="i">💡</span><div><code>ci4-asas</code> ialah projek latihan sahaja. Projek sebenar <code>sistem-tlk-pas</code> dicipta pada Hari 4 Lab 4.2. 3 checkpoint Lab 1.5 dikira dalam kemajuan.</div></div>
+    </div>
+  </div>
+  <aside class="notes"><p>Jalankan bersama selepas Lab 1.4. MySQL dan Apache belum diperlukan — php spark serve cukup. Masalah paling kerap: intl tidak ditanda, terminal lama memegang PATH lama (tutup VS Code sepenuhnya), composer tiada dalam PATH (guna alias). Yang tidak siap: sebelum Hari 4, semak pada halaman kemajuan kohort. ±20 minit.</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Hari 1 · Hasil hari ini</div>
   <h2>Semak sebelum pulang</h2>
   <ul class="checks done">
@@ -697,6 +710,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span>Senarai awal FR &amp; NFR berformat ID (<code>FR-TLK-xx</code>, <code>FR-PAS-xx</code>, <code>NFR-xx</code>).</span></li>
     <li><span>Setiap keperluan dikelaskan dengan MoSCoW.</span></li>
     <li><span>Soalan terbuka disenaraikan untuk pengesahan pemilik sistem esok.</span></li>
+    <li><span>CI4 berjalan di laptop: <code>localhost:8080/hello</code> (Lab 1.5).</span></li>
   </ul>
   <aside class="notes"><p>Semak senarai FR setiap pasangan secara rawak. Soalan terbuka ialah input utama Hari 2 S1 — pastikan ia ditulis, bukan diingat.</p></aside>
 </section>

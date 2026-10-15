@@ -20,7 +20,7 @@
 | 09:00–10:30 | S1 | Project briefing & scope of work; meet the team & the system owner | State the goals, scope & limits of the 4 modules; identify the stakeholders |
 | 10:45–12:30 | S2 | Requirement deep-dive — **TLK module** | Gather TLK (Special Vehicle Parking) requirements through structured interviews; record *pain points* |
 | 14:30–16:00 | S3 | Requirement deep-dive — **Pass module** | Gather Pass requirements, including documents & approval stages |
-| 16:00–17:00 | S4 | Initial list of functional & non-functional requirements; wrap-up | Write FR/NFR with ID format (`FR-TLK-01`) & classify them with MoSCoW |
+| 16:00–17:00 | S4 | Initial list of functional & non-functional requirements; local CI4 setup (Laragon) & an overview of the existing system's ERD; wrap-up | Write FR/NFR with ID format (`FR-TLK-01`) & classify them with MoSCoW; run CI4 on your laptop (Lab 1.5) |
 
 ## Day 2 — Requirement Finalization & Process Flow · [notes](./hari-2/README.md)
 

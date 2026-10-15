@@ -18,6 +18,7 @@ Di akhir hari ini, peserta boleh:
 | O4 | **Mengumpul** keperluan Modul Pas termasuk jenis dokumen sokongan dan dua peringkat kelulusan | S3 | `docs/temubual-pas.md` |
 | O5 | **Menulis** sekurang-kurangnya 16 keperluan fungsian (FR: ≥ 8 `FR-TLK`, ≥ 6 `FR-PAS`, ≥ 1 `FR-RPT`, ≥ 1 `FR-STAT`) dan 5 bukan fungsian (NFR) berformat ID (`FR-TLK-01`, `NFR-01`), setiap satu dengan MoSCoW | S4 | `docs/keperluan-awal.md` |
 | O6 | **Mengelaskan** setiap keperluan mengikut MoSCoW dan **menjejakkannya** kepada peraturan perniagaan (`BR-TLK-xx` / `BR-PAS-xx`) | S4 | Lajur MoSCoW + BR dalam `docs/keperluan-awal.md` |
+| O7 | **Menjalankan** projek CodeIgniter 4 kosong di Laragon dan membina satu laluan MVC (`/hello`) | S4 | 3 checkpoint [Lab 1.5](./lab.md#lab-15--ci4-asas-di-laptop-dalam-kelas-s4) |
 
 ---
 
@@ -31,7 +32,7 @@ Di akhir hari ini, peserta boleh:
 | 10:45–12:30 | S2 | Requirement deep-dive — **Modul TLK** | Mengumpul keperluan TLK melalui temu bual berstruktur; merekod *pain point* |
 | 12:30–14:30 | — | Makan tengah hari | — |
 | 14:30–16:00 | S3 | Requirement deep-dive — **Modul Pas** | Mengumpul keperluan Pas termasuk dokumen & peringkat kelulusan |
-| 16:00–17:00 | S4 | Senarai awal keperluan fungsian & bukan fungsian; wrap-up | Menulis FR/NFR berformat ID (`FR-TLK-01`) & mengelaskan MoSCoW |
+| 16:00–17:00 | S4 | Senarai awal keperluan fungsian & bukan fungsian; persediaan CI4 tempatan (Laragon) & gambaran ERD sistem sedia ada; wrap-up | Menulis FR/NFR berformat ID (`FR-TLK-01`) & mengelaskan MoSCoW; menjalankan CI4 di laptop |
 
 ---
 
@@ -500,9 +501,9 @@ Simpan dalam folder `docs/` repo pasukan anda (dicommit dengan prefix `SETUP:` �
 
 ---
 
-## ⭐ Selepas kelas (pilihan): CodeIgniter 4 asas di laptop
+## 💻 Persediaan CI4 tempatan (Laragon) — S4
 
-Hari 1–3 tidak menulis kod, tetapi anda boleh mencuba CI4 malam ini supaya Hari 4 tidak bermula dengan masalah persekitaran. Semua langkah untuk **Windows** (Laragon + Git Bash). Langkah penuh: [Tutorial rangka — Bahagian A](../docs/tutorial-rangka.md#bahagian-a--ci4-asas-di-laptop-hari-1).
+Hari 1–3 tidak menulis kod sistem, tetapi persekitaran disediakan hari ini dalam S4 ([Lab 1.5](./lab.md#lab-15--ci4-asas-di-laptop-dalam-kelas-s4)) supaya Hari 4 tidak bermula dengan masalah persekitaran. Belum siap dalam kelas? Siapkan sebelum Hari 4. Semua langkah untuk **Windows** (Laragon + Git Bash). Langkah penuh: [Tutorial rangka — Bahagian A](../docs/tutorial-rangka.md#bahagian-a--ci4-asas-di-laptop-hari-1).
 
 1. Semak persekitaran ([`docs/persediaan.md`](../docs/persediaan.md) §1–§6): `php -v` (8.2+), `composer -V`, `where php` menunjuk ke `C:\laragon\bin\php\...`.
 2. Cipta projek **latihan** (bukan repo pasangan) dan jalankan:
@@ -517,7 +518,7 @@ Hari 1–3 tidak menulis kod, tetapi anda boleh mencuba CI4 malam ini supaya Har
 3. Buka <http://localhost:8080> — halaman *Welcome to CodeIgniter* bermaksud PHP, Composer dan CI4 berfungsi.
 4. Rasa MVC kali pertama: satu laluan `/hello` → *controller* `Hello` → *view* `hello.php` (Bahagian A tutorial).
 
-> `ci4-asas` ialah projek latihan sahaja dan boleh dipadam. Projek sebenar dicipta dalam repo `sistem-tlk-pas` pada Hari 4 Lab 4.2. Tidak dikira dalam kemajuan.
+> `ci4-asas` ialah projek latihan sahaja dan boleh dipadam. Projek sebenar dicipta dalam repo `sistem-tlk-pas` pada Hari 4 Lab 4.2. 3 checkpoint Lab 1.5 dikira dalam kemajuan Hari 1.
 
 ---
 
