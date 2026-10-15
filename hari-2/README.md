@@ -28,10 +28,9 @@ Di akhir hari ini, peserta boleh:
 | 09:00–10:30 | S1 | Semakan & pengesahan keperluan bersama pemilik sistem | Mengesahkan/menolak setiap FR; merekod keputusan & soalan terbuka |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | S2 | Pemetaan proses as-is vs to-be (carta alir) | Melukis carta alir as-is & to-be (Mermaid) dan menanda titik penambahbaikan |
-| 12:30–14:00 | — | Makan tengah hari | — |
-| 14:00–15:30 | S3 | Acceptance criteria setiap keperluan utama | Menulis AC Given/When/Then yang boleh diuji |
-| 15:30–15:45 | — | Rehat petang | — |
-| 15:45–17:00 | S4 | Muktamadkan URS & carta alir; wrap-up | Menghasilkan URS v1.0 bertandatangan (templat) |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–16:00 | S3 | Acceptance criteria setiap keperluan utama | Menulis AC Given/When/Then yang boleh diuji |
+| 16:00–17:00 | S4 | Muktamadkan URS & carta alir; wrap-up | Menghasilkan URS v1.0 bertandatangan (templat) |
 
 ---
 
@@ -276,7 +275,7 @@ flowchart TB
 
 ---
 
-## S3 — Acceptance Criteria Given/When/Then (14:00–15:30)
+## S3 — Acceptance Criteria Given/When/Then (14:30–16:00)
 
 ### 3.1 Anatomi AC
 
@@ -432,7 +431,7 @@ Senario: Pemohon tidak boleh lihat permohonan orang lain
 
 ---
 
-## S4 — Muktamadkan URS v1.0 (15:45–17:00)
+## S4 — Muktamadkan URS v1.0 (16:00–17:00)
 
 ### 4.1 Apa itu URS
 

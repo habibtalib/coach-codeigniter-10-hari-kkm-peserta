@@ -29,10 +29,9 @@ By the end of today, participants can:
 | 09:00–10:30 | **S1** | Statistics dashboard (charts, cross-module summary) | O1, O2 |
 | 10:30–10:45 | — | Morning break | — |
 | 10:45–12:30 | **S2** | Aggregate queries & basic caching | O3 |
-| 12:30–14:00 | — | Lunch | — |
-| 14:00–15:30 | **S3** | Final system testing & bug fixing | O4, O5 |
-| 15:30–15:45 | — | Afternoon break | — |
-| 15:45–17:00 | **S4** | Capstone demo to the system owner & closing | O6 |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–16:00 | **S3** | Final system testing & bug fixing | O4, O5 |
+| 16:00–17:00 | **S4** | Capstone demo to the system owner & closing | O6 |
 
 ---
 
@@ -294,7 +293,7 @@ If the cache is cleared before `COMMIT`, another request can rebuild the cache f
 
 ---
 
-## S3 · Final system testing & bug fixing (14:00–15:30)
+## S3 · Final system testing & bug fixing (14:30–16:00)
 
 ### 3.1 UAT — testing as a user, not as a developer
 
@@ -398,7 +397,7 @@ In-depth reference: [`nota/11-keselamatan-aplikasi-web.md`](../nota/11-keselamat
 
 ---
 
-## S4 · Capstone demo to the system owner & closing (15:45–17:00)
+## S4 · Capstone demo to the system owner & closing (16:00–17:00)
 
 ### 4.1 Demo format — 15 minutes per pair
 

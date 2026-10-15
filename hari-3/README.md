@@ -29,10 +29,9 @@ Di akhir hari ini, peserta boleh:
 | 09:00–10:30 | S1 | ERD keseluruhan sistem | Mengenal pasti entiti & kardinaliti; melukis ERD Mermaid |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | S2 | Jadual, medan & hubungan | Menulis kamus data (jenis, null, index, FK) & menormalkan ke 3NF |
-| 12:30–14:00 | — | Makan tengah hari | — |
-| 14:00–15:30 | S3 | Wireframe/mockup UI/UX skrin utama | Melakar wireframe 6 skrin utama mengikut aliran pengguna |
-| 15:30–15:45 | — | Rehat petang | — |
-| 15:45–17:00 | S4 | Semakan ERD & wireframe bersama jurulatih; wrap-up | Membetulkan reka bentuk berdasarkan semakan; menerima **tugasan persediaan** |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–16:00 | S3 | Wireframe/mockup UI/UX skrin utama | Melakar wireframe 6 skrin utama mengikut aliran pengguna |
+| 16:00–17:00 | S4 | Semakan ERD & wireframe bersama jurulatih; wrap-up | Membetulkan reka bentuk berdasarkan semakan; menerima **tugasan persediaan** |
 
 ---
 
@@ -400,7 +399,7 @@ flowchart LR
 
 ---
 
-## S3 — Wireframe UI/UX Skrin Utama (14:00–15:30)
+## S3 — Wireframe UI/UX Skrin Utama (14:30–16:00)
 
 ### 3.1 Wireframe kesetiaan rendah (low-fidelity)
 
@@ -520,7 +519,7 @@ flowchart LR
 
 ---
 
-## S4 — Semakan Reka Bentuk & Tugasan Persediaan (15:45–17:00)
+## S4 — Semakan Reka Bentuk & Tugasan Persediaan (16:00–17:00)
 
 ### 4.1 Senarai semak semakan ERD
 
@@ -557,7 +556,7 @@ Diedarkan hari ini, disemak **Hari 4 S1 (09:00)**. Butiran penuh & rubrik: [`doc
 | T3 | Perhalusi ERD pasangan anda berdasarkan semakan hari ini | 30 minit |
 | T4 | Tulis 3 acceptance criteria baharu (Given/When/Then) | 30 minit |
 
-> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Test](../docs/trek-design-thinking.md): buat *hallway test* wireframe dengan seorang rakan. [GitHub](../docs/trek-github.md): akaun, kunci SSH, repo *private* dan `main` dilindungi. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
+> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Test](../docs/trek-design-thinking.md): buat *hallway test* wireframe dengan seorang rakan. [GitLab](../docs/trek-gitlab.md): log masuk, kunci SSH, projek *private* dan MR pertama. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
 
 ### 🎯 Kuiz S4
 

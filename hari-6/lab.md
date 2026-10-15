@@ -8,8 +8,8 @@
 |-----|------|--------|-------|
 | 6.1 | S1 09:00–10:30 | `feat/tlk-ketersediaan` | `SlotAvailabilityService` + paparan slot kosong |
 | 6.2 | S2 10:45–12:30 | `feat/tlk-keputusan` | `BookingService` v2 + `status_logs` + lulus/tolak/batal |
-| 6.3 | S3 14:00–15:30 | `feat/tlk-ujian` | `BookingServiceTest` + `DecisionAccessTest` hijau |
-| 6.4 | S4 15:45–17:00 | `main` | UI digilap, demo M1, tag `m1-siap` |
+| 6.3 | S3 14:30–16:00 | `feat/tlk-ujian` | `BookingServiceTest` + `DecisionAccessTest` hijau |
+| 6.4 | S4 16:00–17:00 | `main` | UI digilap, demo M1, tag `m1-siap` |
 
 ---
 

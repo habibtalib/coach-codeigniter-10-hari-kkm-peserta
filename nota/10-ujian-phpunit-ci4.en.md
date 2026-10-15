@@ -69,8 +69,8 @@ CREATE DATABASE kkm_latihan_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_c
 # .env  (DO NOT commit)
 database.tests.hostname = localhost
 database.tests.database = kkm_latihan_test
-database.tests.username = root
-database.tests.password =
+database.tests.username = kkm_dev
+database.tests.password = Latihan@2026
 database.tests.DBDriver = MySQLi
 database.tests.DBPrefix =
 database.tests.port = 3306
@@ -85,8 +85,8 @@ Alternative: set it in `phpunit.xml.dist` (copy it to `phpunit.xml` if you want 
     <env name="CI_ENVIRONMENT" value="testing"/>
     <env name="database.tests.hostname" value="localhost"/>
     <env name="database.tests.database" value="kkm_latihan_test"/>
-    <env name="database.tests.username" value="root"/>
-    <env name="database.tests.password" value=""/>
+    <env name="database.tests.username" value="kkm_dev"/>
+    <env name="database.tests.password" value="Latihan@2026"/>
     <env name="database.tests.DBDriver" value="MySQLi"/>
     <env name="database.tests.DBPrefix" value=""/>
 </php>

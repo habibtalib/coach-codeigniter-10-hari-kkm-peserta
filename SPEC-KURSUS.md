@@ -202,7 +202,7 @@ Setiap `hari-N/`:
 - `lab.md` — hands-on: setiap lab **🎯 Objektif → Prasyarat → langkah bernombor → ✅ Checkpoint → 🧯 Masalah lazim → ⭐ Cabaran tambahan**.
 - `nota-penceramah.md` — pecahan masa minit-demi-minit, mesej utama, soalan untuk ditanya, salah faham lazim, kriteria "siap" sebelum bergerak.
 
-Rentak harian tetap (dari tentatif): 08:30–09:00 recap · S1 09:00–10:30 · rehat 10:30–10:45 · S2 10:45–12:30 · makan 12:30–14:00 · S3 14:00–15:30 · rehat 15:30–15:45 · S4 15:45–17:00.
+Rentak harian tetap (dari tentatif): 08:30–09:00 recap · S1 09:00–10:30 · rehat 10:30–10:45 · S2 10:45–12:30 · makan 12:30–14:30 · S3 14:30–16:00 · S4 16:00–17:00.
 
 ## 9. Butiran tambahan (dikunci semasa penyediaan bahan)
 

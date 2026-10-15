@@ -9,8 +9,8 @@
 | 8.0 | Early S1 | 10 min | Branch + demo data + 3 role accounts confirmed |
 | 8.1 | S1 | 09:10–10:30 | Transition service + `ReviewController` + queue + action panel |
 | 8.2 | S2 | 10:45–12:30 | `AuthGroups`, `permission:` filter, `authorize()`, 403 |
-| 8.3 | S3 | 14:00–15:30 | `status_logs` timeline + green `PassAccessTest` |
-| 8.4 | S4 | 15:45–17:00 | 3-role demo, DoD, merge into `main` · ⭐ `pas:expire` |
+| 8.3 | S3 | 14:30–16:00 | `status_logs` timeline + green `PassAccessTest` |
+| 8.4 | S4 | 16:00–17:00 | 3-role demo, DoD, merge into `main` · ⭐ `pas:expire` |
 
 ---
 

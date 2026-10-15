@@ -4,7 +4,7 @@
 
 | Item | Value |
 |---------|-------|
-| Handed out | Day 3, S4 (15:45–17:00) |
+| Handed out | Day 3, S4 (16:00–17:00) |
 | Deadline | **Day 4, 08:30** |
 | Reviewed | Day 4, S1 (09:00–10:30) — 3-minute demo per pair + random questions |
 | Work | Task **T1** individual (every laptop must work); **T2–T4** in pairs |

@@ -202,7 +202,7 @@ Each `hari-N/`:
 - `lab.md` — hands-on: each lab is **🎯 Objective → Prerequisites → numbered steps → ✅ Checkpoint → 🧯 Troubleshooting → ⭐ Extra challenge**.
 - `nota-penceramah.md` — minute-by-minute time breakdown, key messages, questions to ask, common misconceptions, "done" criteria before moving on.
 
-Fixed daily rhythm (from the tentative schedule): 08:30–09:00 recap · S1 09:00–10:30 · break 10:30–10:45 · S2 10:45–12:30 · lunch 12:30–14:00 · S3 14:00–15:30 · break 15:30–15:45 · S4 15:45–17:00.
+Fixed daily rhythm (from the tentative schedule): 08:30–09:00 recap · S1 09:00–10:30 · break 10:30–10:45 · S2 10:45–12:30 · lunch 12:30–14:30 · S3 14:30–16:00 · S4 16:00–17:00.
 
 ## 9. Additional details (locked while preparing the material)
 

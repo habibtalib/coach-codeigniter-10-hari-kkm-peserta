@@ -29,10 +29,9 @@ By the end of today, participants can:
 | 09:00–10:30 | S1 | Approval flow apply → review → approve/reject | Implement `PassWorkflowService` with `PassStatus::canTransitionTo()` |
 | 10:30–10:45 | — | Morning break | — |
 | 10:45–12:30 | S2 | Role-based access control | Configure Shield groups/permissions + route filters + ownership check |
-| 12:30–14:00 | — | Lunch | — |
-| 14:00–15:30 | S3 | Status log/history & functional tests | Display the `status_logs` timeline; positive & negative access tests |
-| 15:30–15:45 | — | Afternoon break | — |
-| 15:45–17:00 | S4 | Pass Module wrap-up | Full 3-role flow demo; **M2 done** |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–16:00 | S3 | Status log/history & functional tests | Display the `status_logs` timeline; positive & negative access tests |
+| 16:00–17:00 | S4 | Pass Module wrap-up | Full 3-role flow demo; **M2 done** |
 
 ---
 
@@ -326,7 +325,7 @@ Hiding buttons avoids confusion — but it does **not** stop an attacker who sen
 
 ---
 
-## S3 — Status History & Functional Tests (14:00–15:30)
+## S3 — Status History & Functional Tests (14:30–16:00)
 
 ### 3.1 Timeline from `status_logs`
 
@@ -427,7 +426,7 @@ public function testPenyemakTidakBolehLuluskan(): void
 
 ---
 
-## S4 — Pass Module Wrap-up: 3-Role Demo (15:45–17:00)
+## S4 — Pass Module Wrap-up: 3-Role Demo (16:00–17:00)
 
 ### 4.1 Demo script (5 minutes per pair)
 

@@ -29,10 +29,9 @@ Di akhir hari ini, peserta boleh:
 | 09:00–10:30 | S1 | Taklimat projek & skop kerja; perkenalan pasukan & pemilik sistem | Menyatakan matlamat, skop & had 4 modul; mengenal pasti pihak berkepentingan |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | S2 | Requirement deep-dive — **Modul TLK** | Mengumpul keperluan TLK melalui temu bual berstruktur; merekod *pain point* |
-| 12:30–14:00 | — | Makan tengah hari | — |
-| 14:00–15:30 | S3 | Requirement deep-dive — **Modul Pas** | Mengumpul keperluan Pas termasuk dokumen & peringkat kelulusan |
-| 15:30–15:45 | — | Rehat petang | — |
-| 15:45–17:00 | S4 | Senarai awal keperluan fungsian & bukan fungsian; wrap-up | Menulis FR/NFR berformat ID (`FR-TLK-01`) & mengelaskan MoSCoW |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–16:00 | S3 | Requirement deep-dive — **Modul Pas** | Mengumpul keperluan Pas termasuk dokumen & peringkat kelulusan |
+| 16:00–17:00 | S4 | Senarai awal keperluan fungsian & bukan fungsian; wrap-up | Menulis FR/NFR berformat ID (`FR-TLK-01`) & mengelaskan MoSCoW |
 
 ---
 
@@ -271,7 +270,7 @@ stateDiagram-v2
 
 ---
 
-## S3 — Requirement Deep-Dive: Modul Pas (14:00–15:30)
+## S3 — Requirement Deep-Dive: Modul Pas (14:30–16:00)
 
 ### 3.1 Apa yang berbeza tentang Pas
 
@@ -356,7 +355,7 @@ Siapa boleh menukar ke status mana (SPEC §2.2) — jadual ini akan menjadi `Pas
 
 ---
 
-## S4 — Senarai Awal FR & NFR; MoSCoW (15:45–17:00)
+## S4 — Senarai Awal FR & NFR; MoSCoW (16:00–17:00)
 
 ### 4.1 FR vs NFR
 
@@ -498,6 +497,27 @@ Simpan dalam folder `docs/` repo pasukan anda (dicommit dengan prefix `SETUP:` �
 
 5. Kenapa kita merekod keperluan "Won't" dalam MoSCoW?
    <details><summary>Jawapan</summary>Untuk mengawal skop secara bertulis — ia bukti pemilik sistem bersetuju sesuatu tidak dibuat dalam fasa ini, jadi ia tidak "muncul semula" semasa demo Hari 10.</details>
+
+---
+
+## ⭐ Selepas kelas (pilihan): CodeIgniter 4 asas di laptop
+
+Hari 1–3 tidak menulis kod, tetapi anda boleh mencuba CI4 malam ini supaya Hari 4 tidak bermula dengan masalah persekitaran. Semua langkah untuk **Windows** (Laragon + Git Bash). Langkah penuh: [Tutorial rangka — Bahagian A](../docs/tutorial-rangka.md#bahagian-a--ci4-asas-di-laptop-hari-1).
+
+1. Semak persekitaran ([`docs/persediaan.md`](../docs/persediaan.md) §1–§6): `php -v` (8.2+), `composer -V`, `where php` menunjuk ke `C:\laragon\bin\php\...`.
+2. Cipta projek **latihan** (bukan repo pasangan) dan jalankan:
+
+   ```bash
+   mkdir -p ~/latihan && cd ~/latihan
+   composer create-project codeigniter4/appstarter ci4-asas
+   cd ci4-asas
+   php spark serve
+   ```
+
+3. Buka <http://localhost:8080> — halaman *Welcome to CodeIgniter* bermaksud PHP, Composer dan CI4 berfungsi.
+4. Rasa MVC kali pertama: satu laluan `/hello` → *controller* `Hello` → *view* `hello.php` (Bahagian A tutorial).
+
+> `ci4-asas` ialah projek latihan sahaja dan boleh dipadam. Projek sebenar dicipta dalam repo `sistem-tlk-pas` pada Hari 4 Lab 4.2. Tidak dikira dalam kemajuan.
 
 ---
 

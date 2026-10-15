@@ -29,10 +29,9 @@ By the end of today, participants can:
 | 09:00–10:30 | S1 | Pass application migration & Model | Write the `PassApplication` & `PassDocument` Model/Entity |
 | 10:30–10:45 | — | Morning break | — |
 | 10:45–12:30 | S2 | Basic CRUD Controller & View | Build the list (owner scope) & detail view |
-| 12:30–14:00 | — | Lunch | — |
-| 14:00–15:30 | S3 | Form, validation & document upload | Secure file upload (type/size/random name/outside `public`) |
-| 15:30–15:45 | — | Afternoon break | — |
-| 15:45–17:00 | S4 | Manual testing & review; wrap-up | Test upload & validation boundary cases |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–16:00 | S3 | Form, validation & document upload | Secure file upload (type/size/random name/outside `public`) |
+| 16:00–17:00 | S4 | Manual testing & review; wrap-up | Test upload & validation boundary cases |
 
 ---
 
@@ -354,7 +353,7 @@ public function index(): string
 
 ---
 
-## S3 — Form, Validation & Document Upload (14:00–15:30)
+## S3 — Form, Validation & Document Upload (14:30–16:00)
 
 ### 3.1 File upload risks (OWASP)
 
@@ -524,7 +523,7 @@ We want the PHP limits to be **larger** than the application limits, so that our
 
 ---
 
-## S4 — Manual Boundary Case Testing (15:45–17:00)
+## S4 — Manual Boundary Case Testing (16:00–17:00)
 
 ### 4.1 Technique: equivalence partitioning + boundary values
 

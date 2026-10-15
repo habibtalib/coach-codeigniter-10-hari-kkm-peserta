@@ -11,7 +11,7 @@
 | 10.1 | S1 | 75 min | `StatisticsService` (tanpa cache) · `/statistik` + `/statistik/data` · 4 KPI · 4 carta |
 | 10.2 | S2 | 90 min | `remember()` · invalidasi dalam `BookingService` & `PassWorkflowService` · `StatisticsCacheTest` |
 | 10.3 | S3 | 85 min | UAT diisi · ≥ 1 pepijat dibaiki melalui ujian gagal · senarai semak keselamatan · tag `v1.0-capstone` |
-| 10.4 | S4 | 75 min | Demo 15 minit · retrospektif |
+| 10.4 | S4 | 60 min | Demo 15 minit · retrospektif |
 
 ---
 

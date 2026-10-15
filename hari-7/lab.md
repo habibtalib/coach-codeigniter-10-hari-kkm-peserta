@@ -9,8 +9,8 @@
 | 7.0 | Awal S1 | 10 min | Cabang Git + `php.ini` sedia untuk muat naik |
 | 7.1 | S1 | 09:10–10:30 | Enum, Entity, 2 Model |
 | 7.2 | S2 | 10:45–12:30 | Laluan, Service (`canView`), senarai & butiran |
-| 7.3 | S3 | 14:00–15:30 | Borang + validasi + muat naik + muat turun |
-| 7.4 | S4 | 15:45–17:00 | 17 kes ujian sempadan direkod |
+| 7.3 | S3 | 14:30–16:00 | Borang + validasi + muat naik + muat turun |
+| 7.4 | S4 | 16:00–17:00 | 17 kes ujian sempadan direkod |
 
 ---
 

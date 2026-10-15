@@ -7,6 +7,7 @@
 | File | Contents | When to use |
 |------|-----------|-----------|
 | [`persediaan.md`](./persediaan.md) | Environment checklist: PHP 8.2+ & extensions, Composer 2, MySQL/MariaDB, Git, VS Code; verification commands & troubleshooting table | **Before Day 1** (must be ready before Day 4) |
+| [`tutorial-rangka.md`](./tutorial-rangka.md) | Step-by-step CI4 app skeleton tutorial (Windows): A — CI4 basics (`ci4-asas`, Day 1); B–G — project in the pair repo, `.env`, Shield, layout, migration + seeder, `composer test` | Day 1 (Part A) · before Day 4 (B–G) |
 | [`tugasan-persediaan.md`](./tugasan-persediaan.md) | Preparation assignment handed out on Day 3 and reviewed on Day 4 S1 | Day 3 → Day 4 |
 | [`pustaka-prompt.md`](./pustaka-prompt.md) | Claude Code / AI prompt library for **learning** (explain errors, check logic, suggest tests, explain code line by line, upload security review) | Day 4–10, when stuck |
 | [`pautan-rujukan.md`](./pautan-rujukan.md) | Official documentation links organised by day | Throughout the course |
@@ -16,13 +17,13 @@
 
 ## Side tracks (optional)
 
-Not counted in progress or assessment. Finish before Day 4; the last Jira & GitHub steps (*sprint*, first *push*) happen in Day 4 S4.
+Not counted in progress or assessment. Finish before Day 4; the last Jira & GitLab steps (*sprint*, CI4 project MR) happen in Day 4 S4.
 
 | File | Contents | When to use |
 |------|-----------|-----------|
 | [`trek-design-thinking.md`](./trek-design-thinking.md) | Design Thinking on the TLK & Pass requirements: Empathize → Define → Ideate → Prototype → Test | Day 1–3 · finish before Day 4 |
 | [`trek-jira.md`](./trek-jira.md) | Free Jira Cloud: *backlog* from the requirements, *stories* with AC, *sprint* planning | Day 1–4 · finish before Day 4 |
-| [`trek-github.md`](./trek-github.md) | GitHub: account, SSH key, *private* repo, protected `main`, first *push* & PR flow | Day 3–4 · finish before Day 4 |
+| [`trek-gitlab.md`](./trek-gitlab.md) | KKM GitLab: log in, SSH key, *private* project, first MR | Day 3–4 · finish before Day 4 |
 
 ## `templates/` — document templates & reference code
 

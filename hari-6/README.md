@@ -29,10 +29,9 @@ Di akhir hari ini, peserta boleh:
 | 09:00–10:30 | S1 | Logik semakan ketersediaan slot | Menulis query pertindihan julat tarikh & paparan slot kosong |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | S2 | Kawalan pertindihan & status (menunggu/diluluskan/ditolak) | Menguatkuasa BR-TLK-01/04/05 dalam transaksi; peralihan status + log |
-| 12:30–14:00 | — | Makan tengah hari | — |
-| 14:00–15:30 | S3 | Ujian fungsian modul | Menulis ujian PHPUnit untuk pertindihan & peralihan status |
-| 15:30–15:45 | — | Rehat petang | — |
-| 15:45–17:00 | S4 | Penambahbaikan UI; wrap-up modul | Menambah badge status, flash message, pengesahan; **M1 siap** |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–16:00 | S3 | Ujian fungsian modul | Menulis ujian PHPUnit untuk pertindihan & peralihan status |
+| 16:00–17:00 | S4 | Penambahbaikan UI; wrap-up modul | Menambah badge status, flash message, pengesahan; **M1 siap** |
 
 ---
 
@@ -418,7 +417,7 @@ Laluan `tlk/keputusan` dilindungi `permission:tlk.decide` (pelulus & admin). Tia
 
 ---
 
-## S3 — Ujian Fungsian Modul (14:00–15:30)
+## S3 — Ujian Fungsian Modul (14:30–16:00)
 
 ### 3.1 Piramid ujian untuk M1
 
@@ -562,7 +561,7 @@ CSRF dihidupkan secara global — dalam `setUp()` ujian fungsian kita **menyahak
 
 ---
 
-## S4 — Penambahbaikan UI & Wrap-up M1 (15:45–17:00)
+## S4 — Penambahbaikan UI & Wrap-up M1 (16:00–17:00)
 
 ### 4.1 Senarai penambahbaikan
 

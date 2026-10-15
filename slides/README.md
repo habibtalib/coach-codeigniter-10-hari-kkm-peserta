@@ -4,7 +4,7 @@ Dek slaid kursus **Coaching Pembangunan Aplikasi Menggunakan CodeIgniter** (10 h
 
 | Fail | Keterangan |
 |------|------------|
-| `ci-kkm-10.html` | Dek penuh (109 slaid), **satu fail self-contained**: CSS + JavaScript inline, fon sistem, tiada CDN. Berfungsi **tanpa internet**. |
+| `ci-kkm-10.html` | Dek penuh (117 slaid), **satu fail self-contained**: CSS + JavaScript inline, fon sistem, tiada CDN. Berfungsi **tanpa internet**. |
 
 Kandungan patuh [`../SPEC-KURSUS.md`](../SPEC-KURSUS.md) dan [`../JADUAL.md`](../JADUAL.md). Jika SPEC berubah (nama jadual, enum, kelas, laluan), kemas kini slaid yang berkaitan.
 
@@ -45,7 +45,7 @@ Pautan terus: tambah `#n` pada URL, cth `ci-kkm-10.html#56` membuka slaid 56 (Ha
 1. Buka dek dalam **Chrome/Edge** → `Ctrl/Cmd + P`.
 2. Destinasi: **Save as PDF**. Saiz kertas **A4**, orientasi **Landskap**, margin **Tiada**.
 3. Hidupkan **Background graphics**.
-4. Simpan. Hasil: satu slaid bagi setiap halaman A4 landskap (109 halaman), nombor halaman di penjuru, **nota penceramah tidak dicetak**.
+4. Simpan. Hasil: satu slaid bagi setiap halaman A4 landskap (117 halaman), nombor halaman di penjuru, **nota penceramah tidak dicetak**.
 
 ## Cara mengedit
 

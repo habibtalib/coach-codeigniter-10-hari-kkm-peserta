@@ -7,6 +7,7 @@
 | Fail | Kandungan | Bila guna |
 |------|-----------|-----------|
 | [`persediaan.md`](./persediaan.md) | Senarai semak persekitaran: PHP 8.2+ & sambungan, Composer 2, MySQL/MariaDB, Git, VS Code; arahan pengesahan & jadual penyelesaian masalah | **Sebelum Hari 1** (wajib siap sebelum Hari 4) |
+| [`tutorial-rangka.md`](./tutorial-rangka.md) | Tutorial rangka aplikasi CI4 langkah demi langkah (Windows): A — CI4 asas (`ci4-asas`, Hari 1); B–G — projek dalam repo pasangan, `.env`, Shield, layout, migration + seeder, `composer test` | Hari 1 (Bahagian A) · sebelum Hari 4 (B–G) |
 | [`tugasan-persediaan.md`](./tugasan-persediaan.md) | Tugasan persediaan yang diedar pada Hari 3 dan disemak pada Hari 4 S1 | Hari 3 → Hari 4 |
 | [`pustaka-prompt.md`](./pustaka-prompt.md) | Pustaka prompt Claude Code / AI untuk **belajar** (terang ralat, semak logik, cadang ujian, terang kod baris demi baris, semakan keselamatan muat naik) | Hari 4–10, bila tersekat |
 | [`pautan-rujukan.md`](./pautan-rujukan.md) | Pautan dokumentasi rasmi disusun ikut hari | Sepanjang kursus |
@@ -16,13 +17,13 @@
 
 ## Trek sampingan (pilihan)
 
-Tidak dikira dalam kemajuan atau penilaian. Siapkan sebelum Hari 4; langkah akhir Jira & GitHub (*sprint*, *push* pertama) dibuat pada Hari 4 S4.
+Tidak dikira dalam kemajuan atau penilaian. Siapkan sebelum Hari 4; langkah akhir Jira & GitLab (*sprint*, MR projek CI4) dibuat pada Hari 4 S4.
 
 | Fail | Kandungan | Bila guna |
 |------|-----------|-----------|
 | [`trek-design-thinking.md`](./trek-design-thinking.md) | Design Thinking pada keperluan TLK & Pas: Empathize → Define → Ideate → Prototype → Test | Hari 1–3 · siap sebelum Hari 4 |
 | [`trek-jira.md`](./trek-jira.md) | Jira Cloud percuma: *backlog* daripada keperluan, *story* dengan AC, perancangan *sprint* | Hari 1–4 · siap sebelum Hari 4 |
-| [`trek-github.md`](./trek-github.md) | GitHub: akaun, kunci SSH, repo *private*, `main` dilindungi, *push* pertama & aliran PR | Hari 3–4 · siap sebelum Hari 4 |
+| [`trek-gitlab.md`](./trek-gitlab.md) | GitLab KKM: log masuk, kunci SSH, projek *private*, MR pertama | Hari 3–4 · siap sebelum Hari 4 |
 
 ## `templates/` — templat dokumen & kod rujukan
 

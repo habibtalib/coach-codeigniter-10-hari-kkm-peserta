@@ -28,10 +28,9 @@ By the end of today, participants can:
 | 09:00–10:30 | S1 | Requirement review & sign-off with the system owner | Confirm/reject every FR; record decisions & open questions |
 | 10:30–10:45 | — | Morning break | — |
 | 10:45–12:30 | S2 | As-is vs to-be process mapping (flowcharts) | Draw as-is & to-be flowcharts (Mermaid) and mark improvement points |
-| 12:30–14:00 | — | Lunch | — |
-| 14:00–15:30 | S3 | Acceptance criteria for every main requirement | Write testable Given/When/Then AC |
-| 15:30–15:45 | — | Afternoon break | — |
-| 15:45–17:00 | S4 | Finalise the URS & flowcharts; wrap-up | Produce a signed URS v1.0 (template) |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–16:00 | S3 | Acceptance criteria for every main requirement | Write testable Given/When/Then AC |
+| 16:00–17:00 | S4 | Finalise the URS & flowcharts; wrap-up | Produce a signed URS v1.0 (template) |
 
 ---
 
@@ -276,7 +275,7 @@ flowchart TB
 
 ---
 
-## S3 — Acceptance Criteria Given/When/Then (14:00–15:30)
+## S3 — Acceptance Criteria Given/When/Then (14:30–16:00)
 
 ### 3.1 Anatomy of an AC
 
@@ -432,7 +431,7 @@ Scenario: An applicant cannot view someone else's application
 
 ---
 
-## S4 — Finalise URS v1.0 (15:45–17:00)
+## S4 — Finalise URS v1.0 (16:00–17:00)
 
 ### 4.1 What is a URS
 

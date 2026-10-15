@@ -8,8 +8,8 @@
 |-----|------|--------|-------|
 | 5.1 | S1 09:00–10:30 | `feat/tlk-model` | Enum, Entity, 5 Model, ujian unit |
 | 5.2 | S2 10:45–12:30 | `feat/tlk-crud` | CRUD slot admin + senarai tempahan berpagination |
-| 5.3 | S3 14:00–15:30 | `feat/tlk-borang-tempahan` | Borang + validasi + `TLK-2026-0001` |
-| 5.4 | S4 15:45–17:00 | — | `docs/ujian-manual-tlk.md` |
+| 5.3 | S3 14:30–16:00 | `feat/tlk-borang-tempahan` | Borang + validasi + `TLK-2026-0001` |
+| 5.4 | S4 16:00–17:00 | — | `docs/ujian-manual-tlk.md` |
 
 ---
 

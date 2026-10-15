@@ -29,10 +29,9 @@ Di akhir hari ini, peserta boleh:
 | 09:00–10:30 | S1 | Migration & Model kenderaan/slot/tempahan | Menulis Model dengan `$allowedFields`, `$validationRules`, Entity & enum |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | S2 | Controller & View CRUD asas | Membina CRUD slot (admin) & senarai tempahan dengan pagination |
-| 12:30–14:00 | — | Makan tengah hari | — |
-| 14:00–15:30 | S3 | Borang permohonan & validasi input | Membina borang tempahan dengan validasi pelayan + nombor rujukan `TLK-` |
-| 15:30–15:45 | — | Rehat petang | — |
-| 15:45–17:00 | S4 | Ujian manual & semakan; wrap-up | Melaksanakan senarai ujian manual & merekod pepijat |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–16:00 | S3 | Borang permohonan & validasi input | Membina borang tempahan dengan validasi pelayan + nombor rujukan `TLK-` |
+| 16:00–17:00 | S4 | Ujian manual & semakan; wrap-up | Melaksanakan senarai ujian manual & merekod pepijat |
 
 ---
 
@@ -376,7 +375,7 @@ Dalam view: `<?= $pager->links() ?>` menghasilkan pautan `?page=2` (gaya Bootstr
 
 ---
 
-## S3 — Borang Tempahan, Validasi & Nombor Rujukan (14:00–15:30)
+## S3 — Borang Tempahan, Validasi & Nombor Rujukan (14:30–16:00)
 
 ### 3.1 Dua lapis validasi
 
@@ -624,7 +623,7 @@ public static function bookingService(bool $getShared = true): BookingService
 
 ---
 
-## S4 — Ujian Manual & Merekod Pepijat (15:45–17:00)
+## S4 — Ujian Manual & Merekod Pepijat (16:00–17:00)
 
 ### 4.1 Kenapa ujian manual dahulu?
 

@@ -4,7 +4,7 @@
 
 | Perkara | Nilai |
 |---------|-------|
-| Diedarkan | Hari 3, S4 (15:45–17:00) |
+| Diedarkan | Hari 3, S4 (16:00–17:00) |
 | Tarikh akhir | **Hari 4, 08:30** |
 | Disemak | Hari 4, S1 (09:00–10:30) — demo 3 minit setiap pasangan + soalan rawak |
 | Kerja | Tugasan **T1** individu (setiap laptop mesti berfungsi); **T2–T4** berpasangan |

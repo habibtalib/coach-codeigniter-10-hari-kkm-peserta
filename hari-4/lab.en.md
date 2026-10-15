@@ -8,8 +8,8 @@
 |-----|------|------|-------|
 | 4.1 | S1 | 09:00–10:30 | Assignment demo + request lifecycle trace |
 | 4.2 | S2 | 10:45–12:30 | CI4 project + `.env` + Shield + layout |
-| 4.3 | S3 | 14:00–15:30 | 10 migrations + 5 seeders + login |
-| 4.4 | S4 | 15:45–17:00 | Work plan, Git branches, `SETUP:` commit |
+| 4.3 | S3 | 14:30–16:00 | 10 migrations + 5 seeders + login |
+| 4.4 | S4 | 16:00–17:00 | Work plan, Git branches, `SETUP:` commit |
 
 ---
 
@@ -143,7 +143,9 @@ Create a CI4 project in the pair's repo, configure `.env`, install Shield with t
    composer run-script --list
    ```
 
-   The list must contain `test`. The appstarter `composer.json` already has `"scripts": { "test": "phpunit" }`; if it is missing, add that block. This course runs the tests with `composer test` (the same as `vendor/bin/phpunit`, and it works in Git Bash, PowerShell and macOS/Linux). PHPUnit arguments go after `--`: `composer test -- --filter BookingStatusTest`.
+   The list must contain `test`. The appstarter `composer.json` already has `"scripts": { "test": "phpunit" }`; if it is missing, add that block. This course runs the tests with `composer test` (the same as `vendor/bin/phpunit`, and it works in Git Bash and the Windows Command Prompt). PHPUnit arguments go after `--`: `composer test -- --filter BookingStatusTest`.
+
+   **Remove the coverage block.** Course laptops have no Xdebug/PCOV, and the appstarter `phpunit.dist.xml` asks for a coverage report with `failOnWarning="true"`. Without this step `composer test` prints *No code coverage driver available* and exits with code 1 even when every test passes. In VS Code, open `phpunit.dist.xml` and delete the whole `<coverage …> … </coverage>` block (keep `<source>`, `<testsuites>` and `<php>`). Check: `composer test` → `OK (…)`, exit code 0 (`echo $?` → `0`).
 
 2. Verify:
 
@@ -350,7 +352,7 @@ Create a CI4 project in the pair's repo, configure `.env`, install Shield with t
     }
     ```
 
-16. `app/Config/Routes.php` — protect the home page:
+16. `app/Config/Routes.php` — protect the home page. Change the `/` line only; `php spark shield:setup` already added `service('auth')->routes($routes);` — do not add it a second time (duplicate routes):
 
     ```php
     $routes->get('/', 'Home::index', ['filter' => 'session', 'as' => 'home']);
@@ -591,7 +593,7 @@ Produce the pair's work plan and push a clean `SETUP:` commit to `main`.
 2. Commit in stages (meaningful messages, `SETUP:` prefix):
 
    ```bash
-   git add composer.json composer.lock spark env public app/Config app/Controllers app/Views builds preload.php phpunit*.dist* tests writable .gitignore
+   git add composer.json composer.lock spark env public app/Config app/Controllers app/Views builds preload.php phpunit*.dist* tests writable .gitignore LICENSE
    git commit -m "SETUP: projek CI4 + Shield + layout Bootstrap"
    git add app
    git commit -m "SETUP: 10 migration SPEC §3 + 5 seeder sintetik"

@@ -1,7 +1,7 @@
 # Trek Jira — Backlog & Sprint Pasangan (Pilihan)
 
 > **Trek sampingan pilihan.** Halaman ini menunjukkan cara pasangan menguruskan kerja 10 hari dalam **Jira Cloud** (pelan Free): backlog daripada keperluan Hari 1–2, sprint yang dipadankan dengan modul M1–M4, dan pautan antara kad Jira dengan cabang dan commit Git. Ia **tidak menggantikan** mana-mana deliverable kursus: `docs/keperluan-awal.md`, `docs/acceptance-criteria.md` dan `docs/pelan-kerja.md` kekal sebagai sumber kebenaran. Jira ialah paparan penjejakan di atasnya.
-> Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Jadual: [`JADUAL.md`](../JADUAL.md) · Kontrak kerja: [`KOLABORASI.md`](../KOLABORASI.md) · Trek berkaitan: [`trek-github.md`](./trek-github.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
+> Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Jadual: [`JADUAL.md`](../JADUAL.md) · Kontrak kerja: [`KOLABORASI.md`](../KOLABORASI.md) · Trek berkaitan: [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
 
 > ⚠️ **Siap sebelum Hari 4.** Kod bermula Hari 4. Persediaan dan backlog dibuat Hari 1–2, story dengan acceptance criteria Hari 2, dan sprint planning Hari 4 S4 sebelum baris kod pertama modul.
 
@@ -328,32 +328,31 @@ git push -u origin feat/TLKPAS-12-borang-tempahan
 
 Tulis kunci dalam **huruf besar** (`TLKPAS-12`, bukan `tlkpas-12`). Letakkan kunci yang sama dalam tajuk merge request / PR.
 
-### 8.2 Panel Development (GitHub for Jira)
+### 8.2 Panel Development (GitLab for Jira Cloud)
 
-Jika repo pasangan di GitHub ([`trek-github.md`](./trek-github.md)), pemilik site boleh memasang aplikasi **GitHub for Jira** dari Atlassian Marketplace. Selepas disambung, panel **Development** pada setiap work item memaparkan cabang, commit dan PR yang menyebut kuncinya. Ini **pilihan** — peraturan §8.1 tetap berguna tanpa aplikasi itu kerana kunci dalam sejarah Git boleh dicari.
+Jika repo pasangan di GitLab KKM ([`trek-gitlab.md`](./trek-gitlab.md)), aplikasi **GitLab for Jira Cloud** boleh memaparkan cabang, commit dan MR yang menyebut kunci dalam panel **Development** setiap work item. Ini **pilihan; tanya jurulatih / IT KKM** — peraturan §8.1 tetap berguna tanpa aplikasi itu kerana kunci dalam sejarah Git boleh dicari.
 
-- Kunci perlu ada dalam nama cabang, mesej commit atau tajuk PR; sesuatu mesti di-push selepas sambungan supaya Jira menyegerak.
-- Lakukan selepas trek GitHub siap, bukan sebelum Hari 4 S4.
-- Repo GitLab dalaman memerlukan integrasi lain; tanya jurulatih.
+- GitLab self-managed perlu boleh dicapai dari internet melalui HTTPS (GitLab 15.7+), dan **admin GitLab** KKM mesti mencipta aplikasi OAuth. Pasangan tidak boleh memasangnya sendiri.
+- Kunci perlu ada dalam nama cabang, mesej commit atau tajuk MR; sesuatu mesti di-push selepas sambungan supaya Jira menyegerak.
+- Lakukan selepas trek GitLab siap, bukan sebelum Hari 4 S4.
 
-## 9. Pemetaan GitHub ↔ Jira
+## 9. Pemetaan GitLab ↔ Jira
 
-Bagi pasangan yang biasa dengan GitHub Issues/Projects ([`trek-github.md`](./trek-github.md)):
+Bagi pasangan yang biasa dengan GitLab Issues/Boards ([`trek-gitlab.md`](./trek-gitlab.md)):
 
-| GitHub Issues / Projects | Jira | Nota |
-|--------------------------|------|------|
+| GitLab Issues / Boards | Jira | Nota |
+|------------------------|------|------|
 | Issue | Work item (Story / Task / Bug) | Jira ada work type yang lebih tegas |
-| Sub-issue / task list | Subtask | |
+| Task / task list | Subtask | |
 | Issue induk / label modul | **Epic** (parent) | Hierarki Jira terbina |
 | Label | Label | |
-| Milestone | Sprint (atau Release/Version) | Jira memisahkan sprint dan versi |
-| Medan *Iteration* dalam Projects | Sprint | |
-| Medan *Estimate* tersuai | Story point estimate | |
-| Papan Projects | Board Scrum / Kanban | |
+| Milestone / Iteration | Sprint (atau Release/Version) | Jira memisahkan sprint dan versi |
+| *Weight* | Story point estimate | |
+| Issue board | Board Scrum / Kanban | |
 | Assignee | Assignee | |
-| `Closes #14` dalam PR | `TLKPAS-12` dalam cabang, commit, tajuk PR | Panel Development perlu GitHub for Jira |
+| `Closes #14` dalam MR | `TLKPAS-12` dalam cabang, commit, tajuk MR | Panel Development perlu GitLab for Jira Cloud |
 
-> Pilih **satu** alat sebagai sumber kebenaran backlog. Jika pasangan guna kedua-dua trek, GitHub mengurus kod dan PR; Jira mengurus backlog dan sprint.
+> Pilih **satu** alat sebagai sumber kebenaran backlog. Jika pasangan guna kedua-dua trek, GitLab mengurus kod dan MR; Jira mengurus backlog dan sprint.
 
 ## 10. Tiga kesilapan lazim
 
@@ -361,7 +360,7 @@ Bagi pasangan yang biasa dengan GitHub Issues/Projects ([`trek-github.md`](./tre
 |-----------|--------------|----------|
 | Story ditulis sebagai tugas teknikal (`Bina BookingService`) | Tiada nilai pengguna; tidak boleh diuji dengan AC | Tulis semula sebagai *Sebagai … saya mahu … supaya …*; pindah kerja teknikal ke Task |
 | Kad diseret ke Done sebaik kod berjalan | Done tanpa DoD menyembunyikan ujian dan semakan akses yang belum dibuat | Kad ke In Review dahulu; Done hanya selepas semua item DoD bertanda dan digabung ke `main` |
-| Dua backlog berbeza (Jira + `pelan-kerja.md` + GitHub Issues) | Kad dan fail tidak selari; pasangan tidak tahu mana yang betul | Satu sumber kebenaran; `pelan-kerja.md` merujuk kunci Jira, bukan senarai kerja berasingan |
+| Dua backlog berbeza (Jira + `pelan-kerja.md` + GitLab Issues) | Kad dan fail tidak selari; pasangan tidak tahu mana yang betul | Satu sumber kebenaran; `pelan-kerja.md` merujuk kunci Jira, bukan senarai kerja berasingan |
 
 ## Semakan — Siap sebelum Hari 4
 
@@ -381,7 +380,7 @@ Bagi pasangan yang biasa dengan GitHub Issues/Projects ([`trek-github.md`](./tre
 
 - Kursus: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · [`JADUAL.md`](../JADUAL.md) · [`KOLABORASI.md`](../KOLABORASI.md)
 - Hari: [`hari-1/lab.md`](../hari-1/lab.md) (Lab 1.4 FR/NFR + MoSCoW) · [`hari-2/README.md`](../hari-2/README.md) (S3 acceptance criteria) · [`hari-2/lab.md`](../hari-2/lab.md) · [`hari-4/lab.md`](../hari-4/lab.md) (Lab 4.4 pelan kerja) · [`hari-10/lab.md`](../hari-10/lab.md) (Lab 10.4 retrospektif)
-- Docs: [`README.md`](./README.md) · [`senarai-semak-modul.md`](./senarai-semak-modul.md) · [`trek-github.md`](./trek-github.md) · [`trek-design-thinking.md`](./trek-design-thinking.md) · [`glosari.md`](./glosari.md)
+- Docs: [`README.md`](./README.md) · [`senarai-semak-modul.md`](./senarai-semak-modul.md) · [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md) · [`glosari.md`](./glosari.md)
 
 ## Sumber
 
@@ -393,4 +392,4 @@ Fakta Jira disemak pada **2026-10-15**:
 - Tambah orang ke space team-managed: <https://support.atlassian.com/jira-software-cloud/docs/add-people-to-team-managed-projects/>
 - Import CSV: <https://support.atlassian.com/jira-cloud-administration/docs/import-data-from-a-csv-file/>
 - Kunci dalam cabang/commit/PR: <https://support.atlassian.com/jira-software-cloud/docs/reference-issues-in-your-development-work/>
-- GitHub for Jira: <https://support.atlassian.com/jira-cloud-administration/docs/use-the-github-for-jira-app/>
+- GitLab for Jira Cloud (disemak 2026-10-15): <https://docs.gitlab.com/integration/jira/connect-app/> · self-managed: <https://docs.gitlab.com/administration/settings/jira_cloud_app/>

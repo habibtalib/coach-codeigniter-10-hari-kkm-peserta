@@ -24,7 +24,7 @@ Experience from past courses: **the first 30–60 minutes of Day 4 are lost** be
 | 7 | Modern browser | latest Chrome/Edge/Firefox | — | **Day 1** | [ ] |
 | 8 | Windows: **Laragon** + **Git Bash** as the VS Code default terminal · macOS (optional): Herd | Laragon 8 | §2, §5 | Git Bash: **Day 1** · Laragon/Herd: Day 4 | [ ] |
 | 9 | Smoke test: empty CI4 project runs | CI **4.6+** | §6 | Day 4 | [ ] |
-| 10 | *Optional* — [GitHub track](./trek-github.md): GitHub account + SSH key | — | `ssh -T git@github.com` | Day 4 | — |
+| 10 | *Optional* — [GitLab track](./trek-gitlab.md): KKM GitLab account (from KKM IT) + SSH key | — | `ssh -T git@<gitlab-kkm>` | Day 4 | — |
 | 11 | *Optional* — [Jira track](./trek-jira.md): Jira Cloud account (email) | — | sign in to `*.atlassian.net` | Day 4 | — |
 
 ### Why is each PHP extension needed?

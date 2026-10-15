@@ -29,10 +29,9 @@ By the end of today, participants can:
 | 09:00–10:30 | S1 | Project briefing & scope of work; meet the team & the system owner | State the goal, scope & constraints of the 4 modules; identify stakeholders |
 | 10:30–10:45 | — | Morning break | — |
 | 10:45–12:30 | S2 | Requirement deep-dive — **TLK Module** | Gather TLK requirements through a structured interview; record *pain points* |
-| 12:30–14:00 | — | Lunch | — |
-| 14:00–15:30 | S3 | Requirement deep-dive — **Pass Module** | Gather Pass requirements, including documents & approval levels |
-| 15:30–15:45 | — | Afternoon break | — |
-| 15:45–17:00 | S4 | Initial list of functional & non-functional requirements; wrap-up | Write FR/NFR with IDs (`FR-TLK-01`) & classify with MoSCoW |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–16:00 | S3 | Requirement deep-dive — **Pass Module** | Gather Pass requirements, including documents & approval levels |
+| 16:00–17:00 | S4 | Initial list of functional & non-functional requirements; wrap-up | Write FR/NFR with IDs (`FR-TLK-01`) & classify with MoSCoW |
 
 ---
 
@@ -271,7 +270,7 @@ stateDiagram-v2
 
 ---
 
-## S3 — Requirement Deep-Dive: Pass Module (14:00–15:30)
+## S3 — Requirement Deep-Dive: Pass Module (14:30–16:00)
 
 ### 3.1 What is different about Pass
 
@@ -356,7 +355,7 @@ Who can change to which status (SPEC §2.2) — this table becomes `PassStatus::
 
 ---
 
-## S4 — Initial FR & NFR List; MoSCoW (15:45–17:00)
+## S4 — Initial FR & NFR List; MoSCoW (16:00–17:00)
 
 ### 4.1 FR vs NFR
 
@@ -498,6 +497,27 @@ Save in the `docs/` folder of your team repo (committed with the `SETUP:` prefix
 
 5. Why do we record "Won't" requirements in MoSCoW?
    <details><summary>Answer</summary>To control scope in writing — it is proof that the system owner agreed something is not done in this phase, so it does not "come back" during the Day 10 demo.</details>
+
+---
+
+## ⭐ After class (optional): CodeIgniter 4 basics on your laptop
+
+Days 1–3 write no code, but you can try CI4 tonight so Day 4 does not start with environment problems. Every step is for **Windows** (Laragon + Git Bash). Full steps: [Skeleton tutorial — Part A](../docs/tutorial-rangka.en.md#part-a--ci4-basics-on-your-laptop-day-1).
+
+1. Check your environment ([`docs/persediaan.en.md`](../docs/persediaan.en.md) §1–§6): `php -v` (8.2+), `composer -V`, `where php` points to `C:\laragon\bin\php\...`.
+2. Create a **practice** project (not the pair repo) and run it:
+
+   ```bash
+   mkdir -p ~/latihan && cd ~/latihan
+   composer create-project codeigniter4/appstarter ci4-asas
+   cd ci4-asas
+   php spark serve
+   ```
+
+3. Open <http://localhost:8080>. The *Welcome to CodeIgniter* page means PHP, Composer and CI4 work.
+4. A first taste of MVC: one route `/hello` → controller `Hello` → view `hello.php` (Part A of the tutorial).
+
+> `ci4-asas` is a practice project only and can be deleted. The real project is created inside the `sistem-tlk-pas` repo on Day 4, Lab 4.2. Does not count towards progress.
 
 ---
 

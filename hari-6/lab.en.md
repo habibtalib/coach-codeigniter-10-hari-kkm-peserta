@@ -8,8 +8,8 @@
 |-----|------|--------|-------|
 | 6.1 | S1 09:00–10:30 | `feat/tlk-ketersediaan` | `SlotAvailabilityService` + free-slot view |
 | 6.2 | S2 10:45–12:30 | `feat/tlk-keputusan` | `BookingService` v2 + `status_logs` + approve/reject/cancel |
-| 6.3 | S3 14:00–15:30 | `feat/tlk-ujian` | `BookingServiceTest` + `DecisionAccessTest` green |
-| 6.4 | S4 15:45–17:00 | `main` | Polished UI, M1 demo, tag `m1-siap` |
+| 6.3 | S3 14:30–16:00 | `feat/tlk-ujian` | `BookingServiceTest` + `DecisionAccessTest` green |
+| 6.4 | S4 16:00–17:00 | `main` | Polished UI, M1 demo, tag `m1-siap` |
 
 ---
 

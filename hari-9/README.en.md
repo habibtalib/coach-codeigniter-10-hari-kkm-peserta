@@ -29,10 +29,9 @@ By the end of today, participants can:
 | 09:00–10:30 | **S1** | Report design (types, search/filter criteria) | O1, O2 |
 | 10:30–10:45 | — | Morning break | — |
 | 10:45–12:30 | **S2** | Aggregate queries & data search | O3 |
-| 12:30–14:00 | — | Lunch | — |
-| 14:00–15:30 | **S3** | PDF/Excel export | O4, O6 |
-| 15:30–15:45 | — | Afternoon break | — |
-| 15:45–17:00 | **S4** | Testing the reports module; wrap-up — **M3 done** | O5, O6 |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–16:00 | **S3** | PDF/Excel export | O4, O6 |
+| 16:00–17:00 | **S4** | Testing the reports module; wrap-up — **M3 done** | O5, O6 |
 
 ---
 
@@ -284,7 +283,7 @@ In the view: `<?= $pager->makeLinks($result['page'], $result['perPage'], $result
 
 ---
 
-## S3 · PDF/Excel export (14:00–15:30)
+## S3 · PDF/Excel export (14:30–16:00)
 
 ### 3.1 Architecture: one dataset, three presentations
 
@@ -395,7 +394,7 @@ public function exportRows(string $report, array $filters, string $format): iter
 
 ---
 
-## S4 · Testing the reports module & performance (15:45–17:00)
+## S4 · Testing the reports module & performance (16:00–17:00)
 
 ### 4.1 "Report total = SQL total"
 

@@ -1,7 +1,7 @@
 # Jira Track — Pair Backlog & Sprints (Optional)
 
 > **Optional side track.** This page shows how a pair manages the 10 days of work in **Jira Cloud** (Free plan): a backlog from the Day 1–2 requirements, sprints matched to modules M1–M4, and links between Jira cards and Git branches and commits. It **does not replace** any course deliverable: `docs/keperluan-awal.md`, `docs/acceptance-criteria.md` and `docs/pelan-kerja.md` stay the source of truth. Jira is a tracking view on top of them.
-> Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Schedule: [`JADUAL.md`](../JADUAL.md) · Working agreement: [`KOLABORASI.md`](../KOLABORASI.md) · Related tracks: [`trek-github.md`](./trek-github.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
+> Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Schedule: [`JADUAL.md`](../JADUAL.md) · Working agreement: [`KOLABORASI.md`](../KOLABORASI.md) · Related tracks: [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
 
 > ⚠️ **Finish before Day 4.** Coding starts on Day 4. Setup and the backlog happen on Days 1–2, stories with acceptance criteria on Day 2, and sprint planning on Day 4 S4 before the first line of module code.
 
@@ -328,32 +328,31 @@ git push -u origin feat/TLKPAS-12-borang-tempahan
 
 Write the key in **uppercase** (`TLKPAS-12`, not `tlkpas-12`). Put the same key in the merge request / PR title.
 
-### 8.2 Development panel (GitHub for Jira)
+### 8.2 Development panel (GitLab for Jira Cloud)
 
-If the pair's repo is on GitHub ([`trek-github.md`](./trek-github.md)), the site owner can install the **GitHub for Jira** app from the Atlassian Marketplace. Once connected, the **Development** panel on each work item shows the branches, commits and PRs that mention its key. This is **optional** — the §8.1 rule is still useful without the app, because the keys in the Git history are searchable.
+If the pair's repo is on KKM's GitLab ([`trek-gitlab.md`](./trek-gitlab.md)), the **GitLab for Jira Cloud** app can show the branches, commits and MRs that mention a key in the **Development** panel of each work item. This is **optional; ask the trainer / KKM IT** — the §8.1 rule is still useful without the app, because the keys in the Git history are searchable.
 
-- The key must be in the branch name, the commit message or the PR title; something must be pushed after connecting so that Jira syncs.
-- Do this after the GitHub track is done, not before Day 4 S4.
-- An internal GitLab repo needs a different integration; ask the trainer.
+- A self-managed GitLab must be reachable from the internet over HTTPS (GitLab 15.7+), and KKM's **GitLab admin** must create an OAuth application. The pair can't install it themselves.
+- The key must be in the branch name, the commit message or the MR title; something must be pushed after connecting so that Jira syncs.
+- Do this after the GitLab track is done, not before Day 4 S4.
 
-## 9. GitHub ↔ Jira mapping
+## 9. GitLab ↔ Jira mapping
 
-For pairs who know GitHub Issues/Projects ([`trek-github.md`](./trek-github.md)):
+For pairs who know GitLab Issues/Boards ([`trek-gitlab.md`](./trek-gitlab.md)):
 
-| GitHub Issues / Projects | Jira | Notes |
-|--------------------------|------|------|
+| GitLab Issues / Boards | Jira | Notes |
+|------------------------|------|------|
 | Issue | Work item (Story / Task / Bug) | Jira has stricter work types |
-| Sub-issue / task list | Subtask | |
+| Task / task list | Subtask | |
 | Parent issue / module label | **Epic** (parent) | Built-in Jira hierarchy |
 | Label | Label | |
-| Milestone | Sprint (or Release/Version) | Jira separates sprints and versions |
-| *Iteration* field in Projects | Sprint | |
-| Custom *Estimate* field | Story point estimate | |
-| Projects board | Scrum / Kanban board | |
+| Milestone / Iteration | Sprint (or Release/Version) | Jira separates sprints and versions |
+| *Weight* | Story point estimate | |
+| Issue board | Scrum / Kanban board | |
 | Assignee | Assignee | |
-| `Closes #14` in a PR | `TLKPAS-12` in the branch, commit, PR title | The Development panel needs GitHub for Jira |
+| `Closes #14` in an MR | `TLKPAS-12` in the branch, commit, MR title | The Development panel needs GitLab for Jira Cloud |
 
-> Choose **one** tool as the backlog's source of truth. If the pair uses both tracks, GitHub manages code and PRs; Jira manages the backlog and sprints.
+> Choose **one** tool as the backlog's source of truth. If the pair uses both tracks, GitLab manages code and MRs; Jira manages the backlog and sprints.
 
 ## 10. Three common mistakes
 
@@ -361,7 +360,7 @@ For pairs who know GitHub Issues/Projects ([`trek-github.md`](./trek-github.md))
 |-----------|--------------|----------|
 | A Story written as a technical task (`Bina BookingService`) | No user value; can't be tested with AC | Rewrite it as *As a … I want … so that …*; move the technical work into a Task |
 | A card dragged to Done as soon as the code runs | Done without the DoD hides tests and access checks not yet done | Move the card to In Review first; Done only after every DoD item is ticked and it is merged into `main` |
-| Two different backlogs (Jira + `pelan-kerja.md` + GitHub Issues) | Cards and files drift apart; the pair doesn't know which is right | One source of truth; `pelan-kerja.md` refers to Jira keys, not a separate work list |
+| Two different backlogs (Jira + `pelan-kerja.md` + GitLab Issues) | Cards and files drift apart; the pair doesn't know which is right | One source of truth; `pelan-kerja.md` refers to Jira keys, not a separate work list |
 
 ## Checklist — Done before Day 4
 
@@ -381,7 +380,7 @@ For pairs who know GitHub Issues/Projects ([`trek-github.md`](./trek-github.md))
 
 - Course: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · [`JADUAL.md`](../JADUAL.md) · [`KOLABORASI.md`](../KOLABORASI.md)
 - Days: [`hari-1/lab.md`](../hari-1/lab.md) (Lab 1.4 FR/NFR + MoSCoW) · [`hari-2/README.md`](../hari-2/README.md) (S3 acceptance criteria) · [`hari-2/lab.md`](../hari-2/lab.md) · [`hari-4/lab.md`](../hari-4/lab.md) (Lab 4.4 work plan) · [`hari-10/lab.md`](../hari-10/lab.md) (Lab 10.4 retrospective)
-- Docs: [`README.md`](./README.md) · [`senarai-semak-modul.md`](./senarai-semak-modul.md) · [`trek-github.md`](./trek-github.md) · [`trek-design-thinking.md`](./trek-design-thinking.md) · [`glosari.md`](./glosari.md)
+- Docs: [`README.md`](./README.md) · [`senarai-semak-modul.md`](./senarai-semak-modul.md) · [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md) · [`glosari.md`](./glosari.md)
 
 ## Sources
 
@@ -393,4 +392,4 @@ Jira facts checked on **2026-10-15**:
 - Adding people to a team-managed space: <https://support.atlassian.com/jira-software-cloud/docs/add-people-to-team-managed-projects/>
 - CSV import: <https://support.atlassian.com/jira-cloud-administration/docs/import-data-from-a-csv-file/>
 - Keys in branches/commits/PRs: <https://support.atlassian.com/jira-software-cloud/docs/reference-issues-in-your-development-work/>
-- GitHub for Jira: <https://support.atlassian.com/jira-cloud-administration/docs/use-the-github-for-jira-app/>
+- GitLab for Jira Cloud (checked 2026-10-15): <https://docs.gitlab.com/integration/jira/connect-app/> · self-managed: <https://docs.gitlab.com/administration/settings/jira_cloud_app/>

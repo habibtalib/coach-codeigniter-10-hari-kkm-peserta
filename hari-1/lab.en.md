@@ -2,7 +2,7 @@
 
 [📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../SPEC-KURSUS.md) · [📖 Day 1 README](./README.md)
 
-> Every lab today produces **Markdown documents**, not code. Work in pairs (the driver types, the navigator checks against the SPEC) — swap roles every lab.
+> Every lab today produces **Markdown documents**, not code (except optional Lab 1.5: CI4 basics). Work in pairs (the driver types, the navigator checks against the SPEC) — swap roles every lab.
 
 | Lab | Session | Output |
 |-----|---------|--------|
@@ -10,6 +10,7 @@
 | [Lab 1.2](#lab-12--structured-interview-tlk-module) | S2 | `docs/temubual-tlk.md` |
 | [Lab 1.3](#lab-13--pass-module-interview) | S3 | `docs/temubual-pas.md` |
 | [Lab 1.4](#lab-14--initial-fr--nfr-list--moscow) | S4 | `docs/keperluan-awal.md`, `docs/soalan-terbuka.md` |
+| [Lab 1.5](#lab-15--ci4-basics-on-your-laptop-optional-after-class) | After class (optional) | Practice project `~/latihan/ci4-asas` + route `/hello` |
 
 ---
 
@@ -261,6 +262,81 @@ Turn the interview results into a list of requirements with IDs, classified with
 
 ### ⭐ Bonus challenge
 Build a short **traceability matrix**: rows = BRs (12 rows), columns = the FRs that trace them. Identify any BR traced by more than one FR and explain why that is acceptable.
+
+---
+
+## Lab 1.5 — CI4 basics on your laptop (optional, after class)
+
+### 🎯 Objective
+Run an empty CodeIgniter 4 project on a Windows laptop and build one MVC route (`/hello`), so Day 4 does not start with environment problems.
+
+### Prerequisites
+- Windows with **Laragon** (PHP 8.2+, Composer) and **Git Bash**: [`docs/persediaan.en.md`](../docs/persediaan.en.md) §1–§6.
+- Type every command below in **Git Bash** (not PowerShell).
+
+### Steps
+1. Check your environment:
+   ```bash
+   php -v          # PHP 8.2 or newer
+   composer -V     # Composer 2.x
+   where php       # C:\laragon\bin\php\...
+   ```
+2. Create a **practice** project in `C:\Users\<name>\latihan\ci4-asas` (not the `sistem-tlk-pas` repo):
+   ```bash
+   mkdir -p ~/latihan && cd ~/latihan
+   composer create-project codeigniter4/appstarter ci4-asas
+   cd ci4-asas
+   php spark serve
+   ```
+   If Windows Defender asks, allow *Private* network access. Open <http://localhost:8080>.
+3. Turn on development mode. Stop the server (`Ctrl+C`), then:
+   ```bash
+   cp env .env     # Command Prompt: copy env .env
+   code .
+   ```
+   In `.env`, remove the `#` and set `CI_ENVIRONMENT = development`. Run `php spark serve` again and reload the page: the *Debug Toolbar* icon appears in the bottom-right corner.
+4. Build your first MVC route. Add to `app/Config/Routes.php`:
+   ```php
+   $routes->get('hello', 'Hello::index');
+   ```
+   Create `app/Controllers/Hello.php`:
+   ```php
+   <?php
+
+   namespace App\Controllers;
+
+   class Hello extends BaseController
+   {
+       public function index(): string
+       {
+           return view('hello', ['nama' => 'Peserta KKM']);
+       }
+   }
+   ```
+   Create `app/Views/hello.php`:
+   ```php
+   <h1>Hello, <?= esc($nama) ?>!</h1>
+   ```
+   Open <http://localhost:8080/hello>.
+5. Explain the request flow to your pair partner: **Routes → Controller → View**. Full steps and explanation: [Skeleton tutorial — Part A](../docs/tutorial-rangka.en.md#part-a--ci4-basics-on-your-laptop-day-1).
+
+> `ci4-asas` is a practice project only and can be deleted. The real project is created inside the `sistem-tlk-pas` repo on Day 4, Lab 4.2.
+
+### ✅ Checkpoint
+- [ ] `php spark serve` runs and <http://localhost:8080> shows the *Welcome to CodeIgniter* page.
+- [ ] `.env` sets `CI_ENVIRONMENT = development` and the *Debug Toolbar* is visible.
+- [ ] <http://localhost:8080/hello> shows "Hello, Peserta KKM!" through `Hello::index` and `app/Views/hello.php`.
+
+> ⏱️ No time tonight? Finish it before Day 4; the trainer helps during breaks.
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `composer: command not found` in Git Bash | Git Bash does not run Laragon's `composer.bat` | Add the alias from [`docs/persediaan.en.md`](../docs/persediaan.en.md) §2 step 5, open a new Git Bash |
+| `requires ext-intl` during `create-project` | The `intl` extension is off | Laragon → *Menu → PHP → Extensions* → tick `intl`; open a new terminal |
+| `Failed to listen on localhost:8080` | Port 8080 is in use | `php spark serve --port 8081`, open <http://localhost:8081> |
+| `/hello` → *404 Can't find a route* | Route not saved or class name misspelt | Check `Routes.php` is saved and the file name `Hello.php` matches the class name |
+| No *Debug Toolbar* | `.env` still has the `#`, or the server was not restarted | Remove the `#`, `Ctrl+C`, `php spark serve` again |
 
 ---
 

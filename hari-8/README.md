@@ -29,10 +29,9 @@ Di akhir hari ini, peserta boleh:
 | 09:00–10:30 | S1 | Aliran kelulusan mohon → semak → lulus/tolak | Melaksanakan `PassWorkflowService` dengan `PassStatus::canTransitionTo()` |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | S2 | Kawalan akses ikut peranan | Mengkonfigur Shield groups/permissions + filter laluan + semakan pemilikan |
-| 12:30–14:00 | — | Makan tengah hari | — |
-| 14:00–15:30 | S3 | Log status/sejarah & ujian fungsian | Memaparkan garis masa `status_logs`; ujian akses positif & negatif |
-| 15:30–15:45 | — | Rehat petang | — |
-| 15:45–17:00 | S4 | Wrap-up Modul Pas | Demo aliran penuh 3 peranan; **M2 siap** |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–16:00 | S3 | Log status/sejarah & ujian fungsian | Memaparkan garis masa `status_logs`; ujian akses positif & negatif |
+| 16:00–17:00 | S4 | Wrap-up Modul Pas | Demo aliran penuh 3 peranan; **M2 siap** |
 
 ---
 
@@ -326,7 +325,7 @@ Menyembunyikan butang mengelakkan kekeliruan — tetapi **tidak** menghalang pen
 
 ---
 
-## S3 — Sejarah Status & Ujian Fungsian (14:00–15:30)
+## S3 — Sejarah Status & Ujian Fungsian (14:30–16:00)
 
 ### 3.1 Garis masa dari `status_logs`
 
@@ -427,7 +426,7 @@ public function testPenyemakTidakBolehLuluskan(): void
 
 ---
 
-## S4 — Wrap-up Modul Pas: Demo 3 Peranan (15:45–17:00)
+## S4 — Wrap-up Modul Pas: Demo 3 Peranan (16:00–17:00)
 
 ### 4.1 Skrip demo (5 minit setiap pasangan)
 

@@ -24,7 +24,7 @@ Pengalaman kursus lepas: **30–60 minit pertama Hari 4 hilang** kerana sambunga
 | 7 | Pelayar moden | Chrome/Edge/Firefox terkini | — | **Hari 1** | [ ] |
 | 8 | Windows: **Laragon** + **Git Bash** sebagai terminal lalai VS Code · macOS (opsyenal): Herd | Laragon 8 | §2, §5 | Git Bash: **Hari 1** · Laragon/Herd: Hari 4 | [ ] |
 | 9 | Ujian asap: projek CI4 kosong berjalan | CI **4.6+** | §6 | Hari 4 | [ ] |
-| 10 | *Pilihan* — [trek GitHub](./trek-github.md): akaun GitHub + kunci SSH | — | `ssh -T git@github.com` | Hari 4 | — |
+| 10 | *Pilihan* — [trek GitLab](./trek-gitlab.md): akaun GitLab KKM (daripada IT KKM) + kunci SSH | — | `ssh -T git@<gitlab-kkm>` | Hari 4 | — |
 | 11 | *Pilihan* — [trek Jira](./trek-jira.md): akaun Jira Cloud (e-mel) | — | log masuk `*.atlassian.net` | Hari 4 | — |
 
 ### Kenapa setiap sambungan PHP diperlukan?

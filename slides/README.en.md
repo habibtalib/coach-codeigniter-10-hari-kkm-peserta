@@ -4,7 +4,7 @@ Slide deck for the course **Application Development Coaching with CodeIgniter** 
 
 | File | Description |
 |------|------------|
-| `ci-kkm-10.html` | Full deck (109 slides), **one self-contained file**: inline CSS + JavaScript, system fonts, no CDN. Works **without internet**. |
+| `ci-kkm-10.html` | Full deck (117 slides), **one self-contained file**: inline CSS + JavaScript, system fonts, no CDN. Works **without internet**. |
 
 The content follows [`../SPEC-KURSUS.md`](../SPEC-KURSUS.md) and [`../JADUAL.md`](../JADUAL.md). If the SPEC changes (table names, enums, classes, routes), update the related slides.
 
@@ -38,14 +38,14 @@ The slide stage is fixed at 1280×720 (16:9) and scales automatically to the win
 
 Mouse & touch: click the **left half** = previous, the **right half** = next. On a tablet, **swipe** left/right.
 
-Direct links: add `#n` to the URL, e.g. `ci-kkm-10.html#57` opens slide 57 (Day 5). The URL updates as you move.
+Direct links: add `#n` to the URL, e.g. `ci-kkm-10.html#65` opens slide 65 (Day 5). The URL updates as you move.
 
 ## Print to PDF
 
 1. Open the deck in **Chrome/Edge** → `Ctrl/Cmd + P`.
 2. Destination: **Save as PDF**. Paper size **A4**, orientation **Landscape**, margins **None**.
 3. Turn on **Background graphics**.
-4. Save. Result: one slide per landscape A4 page (109 pages), page numbers in the corner, **speaker notes are not printed**.
+4. Save. Result: one slide per landscape A4 page (117 pages), page numbers in the corner, **speaker notes are not printed**.
 
 ## How to edit
 

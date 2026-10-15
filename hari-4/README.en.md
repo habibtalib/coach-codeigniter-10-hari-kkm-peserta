@@ -29,10 +29,9 @@ By the end of today, participants can:
 | 09:00–10:30 | S1 | Review of participants' preparation assignment | Demo the assignment; explain the CI4 MVC request flow |
 | 10:30–10:45 | — | Morning break | — |
 | 10:45–12:30 | S2 | CI4 environment (project structure, `.env`) + Shield | Create the project, configure `.env`, install Shield & the Bootstrap layout |
-| 12:30–14:00 | — | Lunch | — |
-| 14:00–15:30 | S3 | Initial migrations from the ERD | Convert the ERD into migrations + seeders; `php spark migrate` succeeds |
-| 15:30–15:45 | — | Afternoon break | — |
-| 15:45–17:00 | S4 | Division of tasks/modules; wrap-up | Receive module tasks, Git branches & the Definition of Done |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–16:00 | S3 | Initial migrations from the ERD | Convert the ERD into migrations + seeders; `php spark migrate` succeeds |
+| 16:00–17:00 | S4 | Division of tasks/modules; wrap-up | Receive module tasks, Git branches & the Definition of Done |
 
 ---
 
@@ -314,7 +313,7 @@ Full reference layout: [`templates/kod/layout-main.php.txt`](../templates/kod/la
 
 ---
 
-## S3 — Initial Migrations from the ERD (14:00–15:30)
+## S3 — Initial Migrations from the ERD (14:30–16:00)
 
 ### 3.1 Why migrations, not SQL scripts?
 
@@ -502,7 +501,7 @@ Password for all: **`Latihan@2026`**. Full file: [`templates/kod/UserSeeder.php.
 
 ---
 
-## S4 — Division of Tasks, Git Branches & Definition of Done (15:45–17:00)
+## S4 — Division of Tasks, Git Branches & Definition of Done (16:00–17:00)
 
 ### 4.1 How pairs work
 
@@ -546,7 +545,7 @@ A feature is "done" only when **all seven** boxes are ticked: AC passed in manua
 
 > 💡 **Tip — AI discipline:** Claude Code can explain an `errno: 150` error or suggest an index name. It does **not** generate whole modules for you to copy. Quick test: can the navigator explain that line without looking at the AI screen?
 
-> ⭐ **Side track (optional):** [Jira](../docs/trek-jira.md): plan the first *sprint* before you start coding. [GitHub](../docs/trek-github.md): first *push* and the *pull request* flow. Not counted in progress; this is the last step of the track.
+> ⭐ **Side track (optional):** [Jira](../docs/trek-jira.md): plan the first *sprint* before you start coding. [GitLab](../docs/trek-gitlab.md): the CI4 project through the first *merge request*. Not counted in progress; this is the last step of the track.
 
 ### 🎯 Quiz S4
 

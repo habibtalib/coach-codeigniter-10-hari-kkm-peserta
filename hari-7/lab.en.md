@@ -9,8 +9,8 @@
 | 7.0 | Start of S1 | 10 min | Git branch + `php.ini` ready for uploads |
 | 7.1 | S1 | 09:10–10:30 | Enums, Entity, 2 Models |
 | 7.2 | S2 | 10:45–12:30 | Routes, Service (`canView`), list & detail |
-| 7.3 | S3 | 14:00–15:30 | Form + validation + upload + download |
-| 7.4 | S4 | 15:45–17:00 | 17 boundary test cases recorded |
+| 7.3 | S3 | 14:30–16:00 | Form + validation + upload + download |
+| 7.4 | S4 | 16:00–17:00 | 17 boundary test cases recorded |
 
 ---
 

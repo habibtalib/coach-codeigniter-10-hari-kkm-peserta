@@ -29,10 +29,9 @@ Di akhir hari ini, peserta boleh:
 | 09:00–10:30 | S1 | Migration & Model permohonan pas | Menulis Model/Entity `PassApplication` & `PassDocument` |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran |
-| 12:30–14:00 | — | Makan tengah hari | — |
-| 14:00–15:30 | S3 | Borang, validasi & muat naik dokumen | Muat naik fail selamat (jenis/saiz/nama rawak/luar `public`) |
-| 15:30–15:45 | — | Rehat petang | — |
-| 15:45–17:00 | S4 | Ujian manual & semakan; wrap-up | Menguji kes sempadan muat naik & validasi |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–16:00 | S3 | Borang, validasi & muat naik dokumen | Muat naik fail selamat (jenis/saiz/nama rawak/luar `public`) |
+| 16:00–17:00 | S4 | Ujian manual & semakan; wrap-up | Menguji kes sempadan muat naik & validasi |
 
 ---
 
@@ -354,7 +353,7 @@ public function index(): string
 
 ---
 
-## S3 — Borang, Validasi & Muat Naik Dokumen (14:00–15:30)
+## S3 — Borang, Validasi & Muat Naik Dokumen (14:30–16:00)
 
 ### 3.1 Risiko muat naik fail (OWASP)
 
@@ -524,7 +523,7 @@ Kita mahu had PHP **lebih besar** daripada had aplikasi, supaya mesej validasi B
 
 ---
 
-## S4 — Ujian Manual Kes Sempadan (15:45–17:00)
+## S4 — Ujian Manual Kes Sempadan (16:00–17:00)
 
 ### 4.1 Teknik: partition kesetaraan + nilai sempadan
 

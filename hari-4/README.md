@@ -29,10 +29,9 @@ Di akhir hari ini, peserta boleh:
 | 09:00–10:30 | S1 | Semakan tugasan persediaan peserta | Mendemokan tugasan; menjelaskan aliran request MVC CI4 |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | S2 | Persekitaran CI4 (struktur projek, `.env`) + Shield | Mencipta projek, konfigur `.env`, memasang Shield & layout Bootstrap |
-| 12:30–14:00 | — | Makan tengah hari | — |
-| 14:00–15:30 | S3 | Migration awal daripada ERD | Menukar ERD kepada migration + seeder; `php spark migrate` berjaya |
-| 15:30–15:45 | — | Rehat petang | — |
-| 15:45–17:00 | S4 | Pembahagian tugas/modul; wrap-up | Menerima tugasan modul, cabang Git & Definition of Done |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–16:00 | S3 | Migration awal daripada ERD | Menukar ERD kepada migration + seeder; `php spark migrate` berjaya |
+| 16:00–17:00 | S4 | Pembahagian tugas/modul; wrap-up | Menerima tugasan modul, cabang Git & Definition of Done |
 
 ---
 
@@ -314,7 +313,7 @@ Layout rujukan lengkap: [`templates/kod/layout-main.php.txt`](../templates/kod/l
 
 ---
 
-## S3 — Migration Awal daripada ERD (14:00–15:30)
+## S3 — Migration Awal daripada ERD (14:30–16:00)
 
 ### 3.1 Kenapa migration, bukan skrip SQL?
 
@@ -502,7 +501,7 @@ Kata laluan semua: **`Latihan@2026`**. Fail penuh: [`templates/kod/UserSeeder.ph
 
 ---
 
-## S4 — Pembahagian Tugas, Cabang Git & Definition of Done (15:45–17:00)
+## S4 — Pembahagian Tugas, Cabang Git & Definition of Done (16:00–17:00)
 
 ### 4.1 Cara pasangan bekerja
 
@@ -546,7 +545,7 @@ Satu ciri "siap" hanya apabila **ketujuh-tujuh** kotak ditanda: AC lulus diuji m
 
 > 💡 **Tip — disiplin AI:** Claude Code boleh menerangkan ralat `errno: 150` atau mencadang nama index. Ia **tidak** menjana modul penuh untuk anda salin. Ujian cepat: bolehkah navigator menerangkan baris itu tanpa melihat skrin AI?
 
-> ⭐ **Trek sampingan (pilihan):** [Jira](../docs/trek-jira.md): rancang *sprint* pertama sebelum mula menulis kod. [GitHub](../docs/trek-github.md): *push* pertama dan aliran *pull request*. Tidak dikira dalam kemajuan; ini langkah akhir trek.
+> ⭐ **Trek sampingan (pilihan):** [Jira](../docs/trek-jira.md): rancang *sprint* pertama sebelum mula menulis kod. [GitLab](../docs/trek-gitlab.md): projek CI4 melalui *merge request* pertama. Tidak dikira dalam kemajuan; ini langkah akhir trek.
 
 ### 🎯 Kuiz S4
 

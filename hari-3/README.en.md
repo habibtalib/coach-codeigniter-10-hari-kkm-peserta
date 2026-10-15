@@ -29,10 +29,9 @@ By the end of today, participants can:
 | 09:00–10:30 | S1 | Whole-system ERD | Identify entities & cardinality; draw a Mermaid ERD |
 | 10:30–10:45 | — | Morning break | — |
 | 10:45–12:30 | S2 | Tables, fields & relationships | Write the data dictionary (type, null, index, FK) & normalise to 3NF |
-| 12:30–14:00 | — | Lunch | — |
-| 14:00–15:30 | S3 | UI/UX wireframes/mockups of the main screens | Sketch wireframes of the 6 main screens following the user flow |
-| 15:30–15:45 | — | Afternoon break | — |
-| 15:45–17:00 | S4 | ERD & wireframe review with the trainer; wrap-up | Correct the design based on the review; receive the **preparation assignment** |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–16:00 | S3 | UI/UX wireframes/mockups of the main screens | Sketch wireframes of the 6 main screens following the user flow |
+| 16:00–17:00 | S4 | ERD & wireframe review with the trainer; wrap-up | Correct the design based on the review; receive the **preparation assignment** |
 
 ---
 
@@ -400,7 +399,7 @@ flowchart LR
 
 ---
 
-## S3 — UI/UX Wireframes of the Main Screens (14:00–15:30)
+## S3 — UI/UX Wireframes of the Main Screens (14:30–16:00)
 
 ### 3.1 Low-fidelity wireframes
 
@@ -520,7 +519,7 @@ flowchart LR
 
 ---
 
-## S4 — Design Review & Preparation Assignment (15:45–17:00)
+## S4 — Design Review & Preparation Assignment (16:00–17:00)
 
 ### 4.1 ERD review checklist
 
@@ -557,7 +556,7 @@ Handed out today, reviewed on **Day 4 S1 (09:00)**. Full details & rubric: [`doc
 | T3 | Refine your pair's ERD based on today's review | 30 minutes |
 | T4 | Write 3 new acceptance criteria (Given/When/Then) | 30 minutes |
 
-> ⭐ **Side track (optional):** [Design Thinking — Test](../docs/trek-design-thinking.md): run a *hallway test* of your wireframes with one colleague. [GitHub](../docs/trek-github.md): account, SSH key, *private* repo and protected `main`. Not counted in progress; finish before Day 4.
+> ⭐ **Side track (optional):** [Design Thinking — Test](../docs/trek-design-thinking.md): run a *hallway test* of your wireframes with one colleague. [GitLab](../docs/trek-gitlab.md): log in, SSH key, *private* project and first MR. Not counted in progress; finish before Day 4.
 
 ### 🎯 Quiz S4
 

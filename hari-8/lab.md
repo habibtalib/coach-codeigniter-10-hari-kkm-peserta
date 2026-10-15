@@ -9,8 +9,8 @@
 | 8.0 | Awal S1 | 10 min | Cabang + data demo + 3 akaun peranan disahkan |
 | 8.1 | S1 | 09:10–10:30 | Service peralihan + `ReviewController` + baris gilir + panel tindakan |
 | 8.2 | S2 | 10:45–12:30 | `AuthGroups`, filter `permission:`, `authorize()`, 403 |
-| 8.3 | S3 | 14:00–15:30 | Garis masa `status_logs` + `PassAccessTest` hijau |
-| 8.4 | S4 | 15:45–17:00 | Demo 3 peranan, DoD, gabung ke `main` · ⭐ `pas:expire` |
+| 8.3 | S3 | 14:30–16:00 | Garis masa `status_logs` + `PassAccessTest` hijau |
+| 8.4 | S4 | 16:00–17:00 | Demo 3 peranan, DoD, gabung ke `main` · ⭐ `pas:expire` |
 
 ---
 

@@ -29,10 +29,9 @@ Di akhir hari ini, peserta boleh:
 | 09:00–10:30 | **S1** | Dashboard statistik (carta, ringkasan merentas modul) | O1, O2 |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | **S2** | Aggregate query & caching asas | O3 |
-| 12:30–14:00 | — | Makan tengah hari | — |
-| 14:00–15:30 | **S3** | Ujian akhir sistem & pembetulan pepijat | O4, O5 |
-| 15:30–15:45 | — | Rehat petang | — |
-| 15:45–17:00 | **S4** | Demo capstone kepada pemilik sistem & penutup | O6 |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–16:00 | **S3** | Ujian akhir sistem & pembetulan pepijat | O4, O5 |
+| 16:00–17:00 | **S4** | Demo capstone kepada pemilik sistem & penutup | O6 |
 
 ---
 
@@ -294,7 +293,7 @@ Jika cache dikosongkan sebelum `COMMIT`, permintaan lain boleh membina semula ca
 
 ---
 
-## S3 · Ujian akhir sistem & pembetulan pepijat (14:00–15:30)
+## S3 · Ujian akhir sistem & pembetulan pepijat (14:30–16:00)
 
 ### 3.1 UAT — menguji sebagai pengguna, bukan sebagai pembangun
 
@@ -398,7 +397,7 @@ Rujukan mendalam: [`nota/11-keselamatan-aplikasi-web.md`](../nota/11-keselamatan
 
 ---
 
-## S4 · Demo capstone kepada pemilik sistem & penutup (15:45–17:00)
+## S4 · Demo capstone kepada pemilik sistem & penutup (16:00–17:00)
 
 ### 4.1 Format demo — 15 minit setiap pasangan
 

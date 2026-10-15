@@ -29,10 +29,9 @@ By the end of today, participants can:
 | 09:00–10:30 | S1 | Slot availability check logic | Write the date-range overlap query & the free-slot view |
 | 10:30–10:45 | — | Morning break | — |
 | 10:45–12:30 | S2 | Overlap control & status (pending/approved/rejected) | Enforce BR-TLK-01/04/05 in a transaction; status transitions + log |
-| 12:30–14:00 | — | Lunch | — |
-| 14:00–15:30 | S3 | Module functional testing | Write PHPUnit tests for overlap & status transitions |
-| 15:30–15:45 | — | Afternoon break | — |
-| 15:45–17:00 | S4 | UI improvements; module wrap-up | Add status badges, flash messages, confirmation; **M1 complete** |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–16:00 | S3 | Module functional testing | Write PHPUnit tests for overlap & status transitions |
+| 16:00–17:00 | S4 | UI improvements; module wrap-up | Add status badges, flash messages, confirmation; **M1 complete** |
 
 ---
 
@@ -418,7 +417,7 @@ The `tlk/keputusan` routes are protected by `permission:tlk.decide` (approver & 
 
 ---
 
-## S3 — Module Functional Testing (14:00–15:30)
+## S3 — Module Functional Testing (14:30–16:00)
 
 ### 3.1 The test pyramid for M1
 
@@ -562,7 +561,7 @@ CSRF is enabled globally — in the functional tests' `setUp()` we **disable it 
 
 ---
 
-## S4 — UI Improvements & M1 Wrap-up (15:45–17:00)
+## S4 — UI Improvements & M1 Wrap-up (16:00–17:00)
 
 ### 4.1 List of improvements
 

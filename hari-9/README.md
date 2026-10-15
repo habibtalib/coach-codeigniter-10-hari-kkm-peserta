@@ -29,10 +29,9 @@ Di akhir hari ini, peserta boleh:
 | 09:00–10:30 | **S1** | Reka bentuk laporan (jenis, kriteria carian/penapis) | O1, O2 |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | **S2** | Query aggregate & carian data | O3 |
-| 12:30–14:00 | — | Makan tengah hari | — |
-| 14:00–15:30 | **S3** | Eksport PDF/Excel | O4, O6 |
-| 15:30–15:45 | — | Rehat petang | — |
-| 15:45–17:00 | **S4** | Ujian modul laporan; wrap-up — **M3 siap** | O5, O6 |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–16:00 | **S3** | Eksport PDF/Excel | O4, O6 |
+| 16:00–17:00 | **S4** | Ujian modul laporan; wrap-up — **M3 siap** | O5, O6 |
 
 ---
 
@@ -284,7 +283,7 @@ Dalam view: `<?= $pager->makeLinks($result['page'], $result['perPage'], $result[
 
 ---
 
-## S3 · Eksport PDF/Excel (14:00–15:30)
+## S3 · Eksport PDF/Excel (14:30–16:00)
 
 ### 3.1 Seni bina: satu data, tiga persembahan
 
@@ -395,7 +394,7 @@ public function exportRows(string $report, array $filters, string $format): iter
 
 ---
 
-## S4 · Ujian modul laporan & prestasi (15:45–17:00)
+## S4 · Ujian modul laporan & prestasi (16:00–17:00)
 
 ### 4.1 "Jumlah laporan = jumlah SQL"
 

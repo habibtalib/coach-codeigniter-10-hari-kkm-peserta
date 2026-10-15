@@ -55,7 +55,7 @@
     {
       "key": "git_remote",
       "label": { "ms": "Repo Git pasangan", "en": "Pair's Git repo" },
-      "description": { "ms": "URL repo GitHub/GitLab pasangan anda. Guna dengan git remote add origin …", "en": "Your pair's GitHub/GitLab repo URL. Use with git remote add origin …" },
+      "description": { "ms": "URL projek GitLab KKM pasangan anda. Guna dengan git remote add origin …", "en": "Your pair's KKM GitLab project URL. Use with git remote add origin …" },
       "scope": "trainee",
       "days": [4, 5, 6, 7, 8, 9, 10]
     }

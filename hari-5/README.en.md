@@ -29,10 +29,9 @@ By the end of today, participants can:
 | 09:00–10:30 | S1 | Migrations & Models for vehicle/slot/booking | Write Models with `$allowedFields`, `$validationRules`, Entity & enum |
 | 10:30–10:45 | — | Morning break | — |
 | 10:45–12:30 | S2 | Basic CRUD Controller & View | Build slot CRUD (admin) & a booking list with pagination |
-| 12:30–14:00 | — | Lunch | — |
-| 14:00–15:30 | S3 | Application form & input validation | Build the booking form with server-side validation + `TLK-` reference number |
-| 15:30–15:45 | — | Afternoon break | — |
-| 15:45–17:00 | S4 | Manual testing & review; wrap-up | Carry out the manual test list & record bugs |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–16:00 | S3 | Application form & input validation | Build the booking form with server-side validation + `TLK-` reference number |
+| 16:00–17:00 | S4 | Manual testing & review; wrap-up | Carry out the manual test list & record bugs |
 
 ---
 
@@ -376,7 +375,7 @@ In the view: `<?= $pager->links() ?>` produces `?page=2` links (Bootstrap stylin
 
 ---
 
-## S3 — Booking Form, Validation & Reference Number (14:00–15:30)
+## S3 — Booking Form, Validation & Reference Number (14:30–16:00)
 
 ### 3.1 Two layers of validation
 
@@ -624,7 +623,7 @@ public static function bookingService(bool $getShared = true): BookingService
 
 ---
 
-## S4 — Manual Testing & Recording Bugs (15:45–17:00)
+## S4 — Manual Testing & Recording Bugs (16:00–17:00)
 
 ### 4.1 Why manual testing first?
 

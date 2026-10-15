@@ -8,8 +8,8 @@
 |-----|------|--------|-------|
 | 5.1 | S1 09:00–10:30 | `feat/tlk-model` | Enums, Entity, 5 Models, unit tests |
 | 5.2 | S2 10:45–12:30 | `feat/tlk-crud` | Admin slot CRUD + paginated booking list |
-| 5.3 | S3 14:00–15:30 | `feat/tlk-borang-tempahan` | Form + validation + `TLK-2026-0001` |
-| 5.4 | S4 15:45–17:00 | — | `docs/ujian-manual-tlk.md` |
+| 5.3 | S3 14:30–16:00 | `feat/tlk-borang-tempahan` | Form + validation + `TLK-2026-0001` |
+| 5.4 | S4 16:00–17:00 | — | `docs/ujian-manual-tlk.md` |
 
 ---
 

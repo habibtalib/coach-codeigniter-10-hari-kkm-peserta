@@ -8,8 +8,8 @@
 |-----|------|------|-------|
 | 4.1 | S1 | 09:00–10:30 | Demo tugasan + jejak kitaran request |
 | 4.2 | S2 | 10:45–12:30 | Projek CI4 + `.env` + Shield + layout |
-| 4.3 | S3 | 14:00–15:30 | 10 migration + 5 seeder + log masuk |
-| 4.4 | S4 | 15:45–17:00 | Pelan kerja, cabang Git, commit `SETUP:` |
+| 4.3 | S3 | 14:30–16:00 | 10 migration + 5 seeder + log masuk |
+| 4.4 | S4 | 16:00–17:00 | Pelan kerja, cabang Git, commit `SETUP:` |
 
 ---
 
@@ -143,7 +143,9 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
    composer run-script --list
    ```
 
-   Senarai mesti mengandungi `test`. `composer.json` appstarter sudah ada `"scripts": { "test": "phpunit" }`; jika tiada, tambah blok itu. Kursus ini menjalankan ujian dengan `composer test` (sama dengan `vendor/bin/phpunit`, dan berfungsi di Git Bash, PowerShell dan macOS/Linux). Argumen PHPUnit diletak selepas `--`: `composer test -- --filter BookingStatusTest`.
+   Senarai mesti mengandungi `test`. `composer.json` appstarter sudah ada `"scripts": { "test": "phpunit" }`; jika tiada, tambah blok itu. Kursus ini menjalankan ujian dengan `composer test` (sama dengan `vendor/bin/phpunit`, dan berfungsi dalam Git Bash dan Command Prompt Windows). Argumen PHPUnit diletak selepas `--`: `composer test -- --filter BookingStatusTest`.
+
+   **Buang blok coverage.** Laptop kursus tiada Xdebug/PCOV, dan `phpunit.dist.xml` appstarter meminta laporan coverage dengan `failOnWarning="true"` — tanpa langkah ini `composer test` mencetak *No code coverage driver available* dan keluar dengan kod 1 walaupun semua ujian lulus. Dalam VS Code, buka `phpunit.dist.xml` dan padam seluruh blok `<coverage …> … </coverage>` (biarkan `<source>`, `<testsuites>` dan `<php>`). Semak: `composer test` → `OK (…)`, kod keluar 0 (`echo $?` → `0`).
 
 2. Sahkan:
 
@@ -350,7 +352,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
     }
     ```
 
-16. `app/Config/Routes.php` — lindungi halaman utama:
+16. `app/Config/Routes.php` — lindungi halaman utama. Tukar baris `/` sahaja; `php spark shield:setup` sudah menambah `service('auth')->routes($routes);` — jangan tambah kali kedua (laluan pendua):
 
     ```php
     $routes->get('/', 'Home::index', ['filter' => 'session', 'as' => 'home']);
@@ -591,7 +593,7 @@ Menghasilkan pelan kerja pasangan dan menolak commit `SETUP:` yang bersih ke `ma
 2. Commit berperingkat (mesej bermakna, prefix `SETUP:`):
 
    ```bash
-   git add composer.json composer.lock spark env public app/Config app/Controllers app/Views builds preload.php phpunit*.dist* tests writable .gitignore
+   git add composer.json composer.lock spark env public app/Config app/Controllers app/Views builds preload.php phpunit*.dist* tests writable .gitignore LICENSE
    git commit -m "SETUP: projek CI4 + Shield + layout Bootstrap"
    git add app
    git commit -m "SETUP: 10 migration SPEC §3 + 5 seeder sintetik"
