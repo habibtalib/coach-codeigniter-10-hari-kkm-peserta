@@ -275,13 +275,24 @@ Run an empty CodeIgniter 4 project on a Windows laptop and build one MVC route (
 - Type every command below in **Git Bash** (not PowerShell).
 
 ### Steps
-1. Check your environment:
+1. **Set up Laragon (once).** Laragon is installed in `C:\laragon` (not yet? [`docs/persediaan.en.md`](../docs/persediaan.en.md) §2 steps 1–2). In Laragon:
+   - *Menu → PHP → Version* → choose **8.3.x** (or 8.2.x).
+   - *Menu → PHP → Extensions* → tick **`intl`** (required by CI4) and **`zip`** (faster Composer).
+   - *Menu → Tools → Path → Add Laragon to Path*, then **close VS Code completely** and reopen it (old terminals keep the old `PATH`).
+   - MySQL and Apache are **not** needed for this lab: `php spark serve` serves the app. MySQL is used from Day 4.
+
+   Open a new Git Bash. If `composer -V` gives `command not found`, add an alias once:
    ```bash
-   php -v          # PHP 8.2 or newer
-   composer -V     # Composer 2.x
-   where php       # C:\laragon\bin\php\...
+   echo 'alias composer="php /c/laragon/bin/composer/composer.phar"' >> ~/.bashrc && source ~/.bashrc
    ```
-2. Create a **practice** project in `C:\Users\<name>\latihan\ci4-asas` (not the `sistem-tlk-pas` repo):
+2. Check your environment:
+   ```bash
+   php -v              # PHP 8.2 or newer
+   composer -V         # Composer 2.x
+   which php           # /c/laragon/bin/php/...
+   php -m | grep intl  # intl
+   ```
+3. Create a **practice** project in `C:\Users\<name>\latihan\ci4-asas` (not the `sistem-tlk-pas` repo):
    ```bash
    mkdir -p ~/latihan && cd ~/latihan
    composer create-project codeigniter4/appstarter ci4-asas
@@ -289,13 +300,13 @@ Run an empty CodeIgniter 4 project on a Windows laptop and build one MVC route (
    php spark serve
    ```
    If Windows Defender asks, allow *Private* network access. Open <http://localhost:8080>.
-3. Turn on development mode. Stop the server (`Ctrl+C`), then:
+4. Turn on development mode. Stop the server (`Ctrl+C`), then:
    ```bash
    cp env .env     # Command Prompt: copy env .env
    code .
    ```
    In `.env`, remove the `#` and set `CI_ENVIRONMENT = development`. Run `php spark serve` again and reload the page: the *Debug Toolbar* icon appears in the bottom-right corner.
-4. Build your first MVC route. Add to `app/Config/Routes.php`:
+5. Build your first MVC route. Add to `app/Config/Routes.php`:
    ```php
    $routes->get('hello', 'Hello::index');
    ```
@@ -318,7 +329,7 @@ Run an empty CodeIgniter 4 project on a Windows laptop and build one MVC route (
    <h1>Hello, <?= esc($nama) ?>!</h1>
    ```
    Open <http://localhost:8080/hello>.
-5. Explain the request flow to your pair partner: **Routes → Controller → View**. Full steps and explanation: [Skeleton tutorial — Part A](../docs/tutorial-rangka.en.md#part-a--ci4-basics-on-your-laptop-day-1).
+6. Explain the request flow to your pair partner: **Routes → Controller → View**. Full steps and explanation: [Skeleton tutorial — Part A](../docs/tutorial-rangka.en.md#part-a--ci4-basics-on-your-laptop-day-1).
 
 > `ci4-asas` is a practice project only and can be deleted. The real project is created inside the `sistem-tlk-pas` repo on Day 4, Lab 4.2.
 
@@ -332,6 +343,7 @@ Run an empty CodeIgniter 4 project on a Windows laptop and build one MVC route (
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
 |---------|-------|-----|
+| `php: command not found` / `which php` is empty | Laragon is not in `PATH`, or the terminal was opened before *Add Laragon to Path* | Laragon → *Menu → Tools → Path → Add Laragon to Path*; close VS Code completely and reopen it |
 | `composer: command not found` in Git Bash | Git Bash does not run Laragon's `composer.bat` | Add the alias from [`docs/persediaan.en.md`](../docs/persediaan.en.md) §2 step 5, open a new Git Bash |
 | `requires ext-intl` during `create-project` | The `intl` extension is off | Laragon → *Menu → PHP → Extensions* → tick `intl`; open a new terminal |
 | `Failed to listen on localhost:8080` | Port 8080 is in use | `php spark serve --port 8081`, open <http://localhost:8081> |

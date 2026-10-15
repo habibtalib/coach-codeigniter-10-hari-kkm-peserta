@@ -1,5 +1,6 @@
 {
   "code": "CI-KKM-10",
+  "sideTracks": ["docs/trek-gitlab.md", "docs/trek-jira.md"],
   "labDetails": [
     {
       "key": "wifi",

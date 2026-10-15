@@ -275,13 +275,24 @@ Menjalankan projek CodeIgniter 4 kosong di laptop Windows dan membina satu lalua
 - Semua arahan di bawah ditaip dalam **Git Bash** (bukan PowerShell).
 
 ### Langkah
-1. Semak persekitaran:
+1. **Sediakan Laragon (sekali sahaja).** Laragon dipasang di `C:\laragon` (belum? [`docs/persediaan.md`](../docs/persediaan.md) §2 langkah 1–2). Dalam Laragon:
+   - *Menu → PHP → Version* → pilih **8.3.x** (atau 8.2.x).
+   - *Menu → PHP → Extensions* → tanda **`intl`** (wajib untuk CI4) dan **`zip`** (Composer lebih pantas).
+   - *Menu → Tools → Path → Add Laragon to Path*, kemudian **tutup VS Code sepenuhnya** dan buka semula (terminal lama memegang `PATH` lama).
+   - MySQL dan Apache **tidak** diperlukan untuk lab ini — `php spark serve` menghidangkan aplikasi. MySQL digunakan mulai Hari 4.
+
+   Buka Git Bash baharu. Jika `composer -V` memberi `command not found`, tambah alias sekali sahaja:
    ```bash
-   php -v          # PHP 8.2 atau lebih baharu
-   composer -V     # Composer 2.x
-   where php       # C:\laragon\bin\php\...
+   echo 'alias composer="php /c/laragon/bin/composer/composer.phar"' >> ~/.bashrc && source ~/.bashrc
    ```
-2. Cipta projek **latihan** di `C:\Users\<nama>\latihan\ci4-asas` (bukan repo `sistem-tlk-pas`):
+2. Semak persekitaran:
+   ```bash
+   php -v              # PHP 8.2 atau lebih baharu
+   composer -V         # Composer 2.x
+   which php           # /c/laragon/bin/php/...
+   php -m | grep intl  # intl
+   ```
+3. Cipta projek **latihan** di `C:\Users\<nama>\latihan\ci4-asas` (bukan repo `sistem-tlk-pas`):
    ```bash
    mkdir -p ~/latihan && cd ~/latihan
    composer create-project codeigniter4/appstarter ci4-asas
@@ -289,13 +300,13 @@ Menjalankan projek CodeIgniter 4 kosong di laptop Windows dan membina satu lalua
    php spark serve
    ```
    Jika Windows Defender bertanya, benarkan akses rangkaian *Private*. Buka <http://localhost:8080>.
-3. Hidupkan mod pembangunan. Hentikan pelayan (`Ctrl+C`), kemudian:
+4. Hidupkan mod pembangunan. Hentikan pelayan (`Ctrl+C`), kemudian:
    ```bash
    cp env .env     # Command Prompt: copy env .env
    code .
    ```
    Dalam `.env`, buang `#` dan tetapkan `CI_ENVIRONMENT = development`. Jalankan semula `php spark serve` dan muat semula halaman — ikon *Debug Toolbar* muncul di penjuru kanan bawah.
-4. Bina laluan MVC pertama. Tambah dalam `app/Config/Routes.php`:
+5. Bina laluan MVC pertama. Tambah dalam `app/Config/Routes.php`:
    ```php
    $routes->get('hello', 'Hello::index');
    ```
@@ -318,7 +329,7 @@ Menjalankan projek CodeIgniter 4 kosong di laptop Windows dan membina satu lalua
    <h1>Hello, <?= esc($nama) ?>!</h1>
    ```
    Buka <http://localhost:8080/hello>.
-5. Terangkan kepada rakan pasangan aliran request: **Routes → Controller → View**. Langkah penuh dan penerangan: [Tutorial rangka — Bahagian A](../docs/tutorial-rangka.md#bahagian-a--ci4-asas-di-laptop-hari-1).
+6. Terangkan kepada rakan pasangan aliran request: **Routes → Controller → View**. Langkah penuh dan penerangan: [Tutorial rangka — Bahagian A](../docs/tutorial-rangka.md#bahagian-a--ci4-asas-di-laptop-hari-1).
 
 > `ci4-asas` ialah projek latihan sahaja dan boleh dipadam. Projek sebenar dicipta dalam repo `sistem-tlk-pas` pada Hari 4 Lab 4.2.
 
@@ -332,6 +343,7 @@ Menjalankan projek CodeIgniter 4 kosong di laptop Windows dan membina satu lalua
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
+| `php: command not found` / `which php` kosong | Laragon belum dalam `PATH`, atau terminal dibuka sebelum *Add Laragon to Path* | Laragon → *Menu → Tools → Path → Add Laragon to Path*; tutup VS Code sepenuhnya dan buka semula |
 | `composer: command not found` dalam Git Bash | Git Bash tidak menjalankan `composer.bat` Laragon | Tambah alias seperti [`docs/persediaan.md`](../docs/persediaan.md) §2 langkah 5, buka Git Bash baharu |
 | `requires ext-intl` semasa `create-project` | Sambungan `intl` belum dihidupkan | Laragon → *Menu → PHP → Extensions* → tanda `intl`; buka terminal baharu |
 | `Failed to listen on localhost:8080` | Port 8080 sedang digunakan | `php spark serve --port 8081`, buka <http://localhost:8081> |
