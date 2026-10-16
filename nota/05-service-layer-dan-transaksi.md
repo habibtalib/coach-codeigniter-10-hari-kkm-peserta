@@ -449,7 +449,7 @@ Kenapa `year` dalam kunci? Supaya nombor bermula semula dari `0001` setiap tahun
 
 ## 5. Menguji kod bertransaksi
 
-- Pangkalan data ujian lalai `codeigniter4/appstarter` ialah **SQLite3 `:memory:`**. SQLite **tidak menyokong** `SELECT … FOR UPDATE` dan `INSERT IGNORE` — query akan gagal. Guna **pangkalan data ujian MySQL berasingan** (cth `kkm_latihan_test`) dalam `.env` (`database.tests.*`). Butiran: [nota 10](./10-ujian-phpunit-ci4.md).
+- Database ujian lalai `codeigniter4/appstarter` ialah **SQLite3 `:memory:`**. SQLite **tidak menyokong** `SELECT … FOR UPDATE` dan `INSERT IGNORE` — query akan gagal. Guna **database ujian MySQL berasingan** (cth `kkm_latihan_test`) dalam `.env` (`database.tests.*`). Butiran: [nota 10](./10-ujian-phpunit-ci4.md).
 - Ujian unit Service boleh terus memanggil `service('bookingService', false)->create(...)` tanpa HTTP.
 - Kes minimum: (a) tempahan tidak bertindih → berjaya; (b) julat bertindih dengan `pending` → `BookingConflictException`; (c) bertindih dengan `rejected` → berjaya; (d) pemohon ada tempahan aktif → ditolak; (e) `status_logs` bertambah 1 baris.
 - Perlumbaan sebenar sukar diuji dalam PHPUnit (satu proses). Demonstrasikan secara manual dengan **dua tetingkap `mysql`**: `BEGIN; SELECT … FOR UPDATE;` di tetingkap 1, kemudian cuba perkara sama di tetingkap 2 dan perhatikan ia menunggu.

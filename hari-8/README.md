@@ -14,8 +14,8 @@ Di akhir hari ini, peserta boleh:
 |---|------------------------|------|-------|
 | O1 | **Melaksanakan** `PassWorkflowService` (`startReview`, `approve`, `reject`) yang menguatkuasa BR-PAS-01 melalui `PassStatus::canTransitionTo()` dalam transaksi berkunci `FOR UPDATE`, menetapkan `reviewed_by/at` & `approved_by/at`, dan merekod `status_logs` | S1 | Permohonan bergerak `submitted → under_review → approved`; 3 baris `status_logs` |
 | O2 | **Menguatkuasa** BR-PAS-03: penolakan tanpa catatan ≥ 10 aksara ditolak di borang **dan** di Service | S1 | Tolak dengan "tak ok" → status tidak berubah |
-| O3 | **Mengkonfigur** `Config\AuthGroups` (groups, permissions, `$matrix`) tepat SPEC §4 dan filter laluan `group:` / `permission:` | S2 | `php spark routes` menunjukkan filter gabungan pada `/pas/semakan/(:num)/approve` |
-| O4 | **Menerangkan** perbezaan pengesahan (*authentication*) vs kebenaran (*authorization*) dan **membina** tiga lapisan pertahanan: filter laluan → `authorize()` dalam Service → semakan pemilikan | S2 | Penyemak POST ke `/approve` → ditolak; memanggil Service terus → `PermissionException` |
+| O3 | **Mengkonfigur** `Config\AuthGroups` (groups, permissions, `$matrix`) tepat SPEC §4 dan filter route `group:` / `permission:` | S2 | `php spark routes` menunjukkan filter gabungan pada `/pas/semakan/(:num)/approve` |
+| O4 | **Menerangkan** perbezaan pengesahan (authentication) vs kebenaran (authorization) dan **membina** tiga lapisan pertahanan: filter route → `authorize()` dalam Service → semakan pemilikan | S2 | Penyemak POST ke `/approve` → ditolak; memanggil Service terus → `PermissionException` |
 | O5 | **Memaparkan** garis masa sejarah status dari `status_logs` (siapa, bila, dari→ke, catatan) | S3 | Halaman butiran menunjukkan 3 entri berbadge |
 | O6 | **Menulis** ujian feature positif & negatif bagi setiap peranan (pemohon tidak boleh lulus, penyemak tidak boleh lulus, pelulus boleh) dan **mendemokan** aliran penuh 3 peranan | S3–S4 | `PassAccessTest` ≥ 13 ujian hijau; demo 5 minit lulus DoD |
 
@@ -28,7 +28,7 @@ Di akhir hari ini, peserta boleh:
 | 08:30–09:00 | — | Recap Hari 7 | — |
 | 09:00–10:30 | S1 | Aliran kelulusan mohon → semak → lulus/tolak | Melaksanakan `PassWorkflowService` dengan `PassStatus::canTransitionTo()` |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | S2 | Kawalan akses ikut peranan | Mengkonfigur Shield groups/permissions + filter laluan + semakan pemilikan |
+| 10:45–12:30 | S2 | Kawalan akses ikut peranan | Mengkonfigur Shield groups/permissions + filter route + semakan pemilikan |
 | 12:30–14:30 | — | Makan tengah hari | — |
 | 14:30–16:00 | S3 | Log status/sejarah & ujian fungsian | Memaparkan garis masa `status_logs`; ujian akses positif & negatif |
 | 16:00–17:00 | S4 | Wrap-up Modul Pas | Demo aliran penuh 3 peranan; **M2 siap** |
@@ -40,7 +40,7 @@ Di akhir hari ini, peserta boleh:
 Sistem kelulusan kerajaan hidup atau mati pada tiga soalan audit:
 
 1. **Siapa yang meluluskan ini?** → `approved_by`, `status_logs.actor_id`
-2. **Adakah dia berhak?** → Shield groups/permissions + semakan di pelayan
+2. **Adakah dia berhak?** → Shield groups/permissions + semakan di server
 3. **Bolehkah ia berlaku dua kali, atau langkau peringkat?** → `canTransitionTo()` + transaksi berkunci
 
 Jika mana-mana satu gagal, laporan audit akan menandakan sistem sebagai **tidak boleh dipercayai** — walaupun antara mukanya cantik. Hari ini kita menutup ketiga-tiga lubang, dan membina **ujian automatik** yang akan menjerit jika seseorang membukanya semula enam bulan akan datang.
@@ -200,7 +200,7 @@ Borang tindakan diletakkan pada halaman **butiran sedia ada** (`/pas/permohonan/
 > ⚠️ **Kesilapan lazim**
 > - Menyemak status **sebelum** `transBegin()`/`FOR UPDATE` → keadaan perlumbaan kembali.
 > - `$model->update($id, ['status' => $request->getPost('status')])` — status dari input pengguna! Status hanya dari enum dalam Service.
-> - Lupa `transRollback()` dalam `catch` → sambungan kekal dalam transaksi terbuka; permintaan seterusnya dalam proses yang sama bertindih.
+> - Lupa `transRollback()` dalam `catch` → connection kekal dalam transaksi terbuka; permintaan seterusnya dalam proses yang sama bertindih.
 > - Menetapkan `approved_at` semasa **menolak** → statistik "purata hari untuk lulus" (Hari 10) tercemar. Penolakan direkod dalam `status_logs` sahaja.
 
 ### 🎯 Kuiz S1
@@ -228,7 +228,7 @@ Borang tindakan diletakkan pada halaman **butiran sedia ada** (`/pas/permohonan/
 
 ### 2.1 Pengesahan vs kebenaran
 
-| | Pengesahan (*authentication*) | Kebenaran (*authorization*) |
+| | Pengesahan (authentication) | Kebenaran (authorization) |
 |--|------------------------------|-----------------------------|
 | Soalan | **Siapa** anda? | **Apa** yang anda boleh buat? |
 | Bukti | E-mel + kata laluan → sesi | Group, permission, pemilikan rekod |
@@ -272,7 +272,7 @@ $routes->group('pas/semakan', ['namespace' => 'App\Controllers\Pas', 'filter' =>
 ```
 
 - `group:reviewer,approver,admin` — **mana-mana** satu group (OR). `permission:pas.review,pas.approve` — mana-mana satu permission (OR).
-- **CI 4.5.4+ menggabungkan** filter kumpulan dengan filter laluan: `/approve` mesti lulus `group:…` **dan** `permission:pas.approve`. Sahkan dengan `php spark routes` (lajur *Before Filters*).
+- **CI 4.5.4+ menggabungkan** filter kumpulan dengan filter route: `/approve` mesti lulus `group:…` **dan** `permission:pas.approve`. Sahkan dengan `php spark routes` (lajur *Before Filters*).
 - Kenapa filter group sahaja tidak cukup? Ia membenarkan `reviewer` mencapai `/approve`. Nota 06 menyebutnya secara jelas: *lapisan kedua mesti menolaknya*.
 - `/pas/permohonan/new` dan `POST /pas/permohonan` turut diberi `permission:pas.apply` — SPEC §4 memberi `pas.apply` kepada `applicant` (dan `admin` melalui `pas.*`) sahaja.
 
@@ -282,10 +282,10 @@ $routes->group('pas/semakan', ['namespace' => 'App\Controllers\Pas', 'filter' =>
 |----------------------|----------|--------|
 | Filter `session` (belum log masuk) | Redirect ke `/login` | Pengesahan |
 | Filter `group:` / `permission:` (Shield) | Redirect ke `Config\Auth::$redirects['group_denied' / 'permission_denied']` (lalai `/`) dengan flash `error` (teks lalai Shield dalam Bahasa Inggeris: *"You do not have the necessary permission…"* — terjemahan ⭐ Lab 8.2) | Tingkah laku lalai Shield — mesra pengguna |
-| `authorize()` dalam Service | **403** + `errors/forbidden` | Tidak sepatutnya berlaku jika filter betul — jika berlaku, ia petanda laluan tersalah konfigur; 403 jelas dalam log |
+| `authorize()` dalam Service | **403** + `errors/forbidden` | Tidak sepatutnya berlaku jika filter betul — jika berlaku, ia petanda route tersalah konfigur; 403 jelas dalam log |
 | `canView()` (rekod orang lain) | **404** | Jangan dedahkan kewujudan ID (Hari 7) |
 
-> 💡 **Tip:** Mahu filter Shield juga memulangkan halaman yang jelas? Tukar `permission_denied` dan `group_denied` dalam `app/Config/Auth.php` kepada laluan yang memaparkan mesej, cth `'/akses-ditolak'`. Jangan ubah fail dalam `vendor/`.
+> 💡 **Tip:** Mahu filter Shield juga memulangkan halaman yang jelas? Tukar `permission_denied` dan `group_denied` dalam `app/Config/Auth.php` kepada route yang memaparkan mesej, cth `'/akses-ditolak'`. Jangan ubah fail dalam `vendor/`.
 
 ### 2.5 Butang: UX, bukan keselamatan
 
@@ -309,12 +309,12 @@ Menyembunyikan butang mengelakkan kekeliruan — tetapi **tidak** menghalang pen
 
 ### 🎯 Kuiz S2
 
-1. `penyemak` menghantar `POST /pas/semakan/5/approve` menggunakan curl. Laluan itu dalam kumpulan `group:reviewer,approver,admin` dan mempunyai filter `permission:pas.approve`. Apakah yang berlaku?
-   - [ ] Berjaya — penyemak lulus filter `group:reviewer,approver,admin`, dan filter kumpulan mengatasi filter pada laluan individu
+1. `penyemak` menghantar `POST /pas/semakan/5/approve` menggunakan curl. Route itu dalam kumpulan `group:reviewer,approver,admin` dan mempunyai filter `permission:pas.approve`. Apakah yang berlaku?
+   - [ ] Berjaya — penyemak lulus filter `group:reviewer,approver,admin`, dan filter kumpulan mengatasi filter pada route individu
    - [ ] 404 kerana penyemak tidak boleh melihat permohonan
    - [ ] Status berubah tetapi tiada log
    - [x] Ditolak — kedua-dua filter dijalankan; penyemak lulus `group:` tetapi gagal `permission:pas.approve`
-   > Filter group sahaja tidak cukup kerana ia membenarkan `reviewer` mencapai `/approve`. Filter kumpulan tidak mengatasi filter laluan: kedua-duanya digabung dan dijalankan, jadi `permission:pas.approve` tetap menolak penyemak. Lapisan kedua, `authorize()` dalam Service, juga akan menolak jika filter terlepas.
+   > Filter group sahaja tidak cukup kerana ia membenarkan `reviewer` mencapai `/approve`. Filter kumpulan tidak mengatasi filter route: kedua-duanya digabung dan dijalankan, jadi `permission:pas.approve` tetap menolak penyemak. Lapisan kedua, `authorize()` dalam Service, juga akan menolak jika filter terlepas.
 
 2. Kenapa kod meluluskan pas menyemak `$user->can('pas.approve')` dan bukan `$user->inGroup('approver')`?
    - [ ] `inGroup()` tidak wujud dalam Shield
@@ -396,7 +396,7 @@ public function testPenyemakTidakBolehLuluskan(): void
 - 404 dalam ujian: CI4 membaling semula `PageNotFoundException` → guna `expectException()`.
 
 > ⚠️ **Kesilapan lazim**
-> - Menguji hanya laluan gembira (*happy path*). Pepijat kawalan akses hampir **selalu** dalam ujian negatif yang tidak ditulis.
+> - Menguji hanya happy path. Pepijat kawalan akses hampir **selalu** dalam ujian negatif yang tidak ditulis.
 > - `assertRedirect()` sahaja untuk ujian negatif — lulus walaupun Service sudah mengubah status sebelum redirect. Tambah semakan DB.
 > - Berkongsi pengguna antara ujian dengan `$migrateOnce`/`$refresh = false` → ujian bergantung pada susunan.
 
@@ -415,7 +415,7 @@ public function testPenyemakTidakBolehLuluskan(): void
    - [ ] `actingAs()` patut dipanggil selepas `post()` supaya sesi penyemak tidak menjejaskan ujian lain dalam kelas yang sama
    - [x] Redirect sahaja tidak membuktikan tiada kesan sampingan — tambah semakan DB seperti `$this->assertStatusIs($id, PassStatus::UnderReview)`
    - [ ] Ujian negatif tidak perlu untuk kawalan akses
-   > Laluan berjaya pun memulangkan redirect. Ujian negatif mesti menyemak respons ditolak **dan** DB tidak berubah.
+   > Happy path pun memulangkan redirect. Ujian negatif mesti menyemak respons ditolak **dan** DB tidak berubah.
 
 2. Kenapa partial `status_timeline` menggunakan `$enum::tryFrom($value)` dan bukan `$enum::from($value)`?
    - [ ] `from()` tidak wujud untuk backed enum
@@ -437,7 +437,7 @@ Tiga tetingkap pelayar (biasa, inkognito, pelayar kedua) — satu untuk setiap p
 | 1 | `pemohon1` | Mohon pas kakitangan + 2 dokumen | `PAS-2026-000N`, badge **Dihantar**, garis masa 1 entri |
 | 2 | `pemohon1` | Cuba buka `/pas/semakan` | Ditolak dengan mesej |
 | 3 | `penyemak` | `/pas/semakan` → buka permohonan → muat turun dokumen → **Mula Semakan** | Badge **Dalam Semakan**; tiada butang *Lulus* |
-| 4 | `penyemak` | (curl/DevTools) POST ke `/approve` | Ditolak — "butang tiada ≠ keselamatan; pelayan menolak" |
+| 4 | `penyemak` | (curl/DevTools) POST ke `/approve` | Ditolak — "butang tiada ≠ keselamatan; server menolak" |
 | 5 | `pelulus` | Buka permohonan → **Lulus** dengan catatan | Badge **Diluluskan**; garis masa 3 entri dengan nama & masa |
 | 6 | `pelulus` | Klik **Lulus** sekali lagi (tab lama) | "Peralihan status … tidak dibenarkan" (BR-PAS-01) |
 | 7 | `penyemak` | Permohonan kedua → Mula Semakan → **Tolak** "tak ok" → kemudian catatan penuh | Ralat catatan, kemudian **Ditolak** (BR-PAS-03) |
@@ -448,8 +448,8 @@ Tiga tetingkap pelayar (biasa, inkognito, pelayar kedua) — satu untuk setiap p
 Semak terhadap [KOLABORASI §2](../KOLABORASI.md):
 
 - [ ] Acceptance criteria URS Pas (Hari 2) lulus diuji manual (`docs/ujian-manual-pas.md` + demo).
-- [ ] Validasi di pelayan: borang (Hari 7), catatan penolakan (hari ini), fail (BR-PAS-02).
-- [ ] Akses dikawal di pelayan: filter laluan + `authorize()` + `canView()`.
+- [ ] Validasi di server: borang (Hari 7), catatan penolakan (hari ini), fail (BR-PAS-02).
+- [ ] Akses dikawal di server: filter route + `authorize()` + `canView()`.
 - [ ] Setiap peralihan direkod dalam `status_logs` (BR-PAS-05) — termasuk penciptaan.
 - [ ] `composer test` lulus.
 - [ ] Tiada `.env`/rahsia; data sintetik sahaja.
@@ -475,7 +475,7 @@ foreach ($ids as $id) {
 }
 ```
 
-`status_logs.actor_id` wajib (FK), jadi command menggunakan `--actor <id>` atau admin pertama. Pada pelayan sebenar ia dijadualkan dengan cron (`10 0 * * * cd /var/www/app && php spark pas:expire`). Pelayan Windows: Task Scheduler, dalam Command Prompt sebagai pentadbir — bukan Git Bash (`schtasks /create /tn KKM-PasExpire /sc daily /st 00:10 /tr "cmd /c cd /d C:\laragon\www\app && php spark pas:expire"`). Rujukan: [`ExpirePassesCommand.php.txt`](../templates/kod/ExpirePassesCommand.php.txt).
+`status_logs.actor_id` wajib (FK), jadi command menggunakan `--actor <id>` atau admin pertama. Pada server sebenar ia dijadualkan dengan cron (`10 0 * * * cd /var/www/app && php spark pas:expire`). Server Windows: Task Scheduler, dalam Command Prompt sebagai pentadbir — bukan Git Bash (`schtasks /create /tn KKM-PasExpire /sc daily /st 00:10 /tr "cmd /c cd /d C:\laragon\www\app && php spark pas:expire"`). Rujukan: [`ExpirePassesCommand.php.txt`](../templates/kod/ExpirePassesCommand.php.txt).
 
 ### 🎯 Kuiz S4
 
@@ -489,7 +489,7 @@ foreach ($ids as $id) {
 2. Kenapa Spark command `pas:expire` memanggil `$workflow->expire($id, $actorId)` dan bukan terus `UPDATE pass_applications SET status = 'expired'`?
    - [x] Supaya peralihan melalui `transition()` — `canTransitionTo()` dikuatkuasa dan `status_logs` direkod (BR-PAS-05)
    - [ ] Kerana Spark command tidak boleh menggunakan Query Builder
-   - [ ] Supaya command boleh dijalankan tanpa pangkalan data
+   - [ ] Supaya command boleh dijalankan tanpa database
    - [ ] Kerana `expired` hanya boleh ditetapkan oleh `approver`, jadi command mesti bertindak sebagai pelulus melalui Service
    > Satu pintu perubahan status untuk semua pemanggil (controller, command, ujian). `status_logs.actor_id` wajib, jadi command menggunakan `--actor <id>` atau admin pertama.
 
@@ -500,10 +500,10 @@ foreach ($ids as $id) {
 - [ ] `PassWorkflowService`: `startReview`, `approve`, `reject`, `expire`, `history`, `transition`, `authorize`
 - [ ] `app/Controllers/Pas/ReviewController.php` (`index`, `review`, `approve`, `reject`)
 - [ ] `app/Config/AuthGroups.php` tepat SPEC §4
-- [ ] Laluan `pas/semakan` + `permission:` per tindakan; `permission:pas.apply` untuk mohon
+- [ ] Route `pas/semakan` + `permission:` per tindakan; `permission:pas.apply` untuk mohon
 - [ ] `app/Views/pas/semakan/index.php`, `app/Views/errors/forbidden.php`, `app/Views/partials/status_timeline.php`; `pas/show.php` dengan panel tindakan + garis masa
 - [ ] `tests/feature/Pas/PassAccessTest.php` — 13 ujian hijau
-- [ ] Demo 3 peranan lulus; cabang `feat/pas-kelulusan` digabung ke `main` — **M2 siap**
+- [ ] Demo 3 peranan lulus; branch `feat/pas-kelulusan` digabung ke `main` — **M2 siap**
 - [ ] ⭐ `app/Commands/ExpirePassesCommand.php`
 
 Rujukan penuh jurulatih: [`templates/kod/`](../templates/kod/) — `PassWorkflowService`, `ReviewController`, `AuthGroups`, `Routes-pas`, `status-timeline-view`, `PassAccessTest`, `ExpirePassesCommand`. Nota topikal: [06 Shield auth & RBAC](../nota/06-shield-auth-dan-rbac.md) · [05 Service & transaksi](../nota/05-service-layer-dan-transaksi.md) · [10 Ujian PHPUnit](../nota/10-ujian-phpunit-ci4.md).
@@ -512,11 +512,11 @@ Rujukan penuh jurulatih: [`templates/kod/`](../templates/kod/) — `PassWorkflow
 
 ## 🧠 Semakan Kendiri
 
-1. Laluan `/pas/semakan` sudah ada `group:reviewer,approver,admin`. Kenapa `/pas/semakan/{id}/approve` masih memerlukan `permission:pas.approve`, **dan** `authorize()` dalam Service?
+1. Route `/pas/semakan` sudah ada `group:reviewer,approver,admin`. Kenapa `/pas/semakan/{id}/approve` masih memerlukan `permission:pas.approve`, **dan** `authorize()` dalam Service?
 
 <details><summary>Jawapan</summary>
 
-Filter group membenarkan `reviewer` masuk — tanpa filter permission, penyemak boleh POST ke `/approve`. `permission:pas.approve` menutup lubang itu di Lapisan 1. `authorize()` dalam Service ialah Lapisan 2: jika suatu hari laluan baharu (API, Spark command, controller lain) memanggil `approve()` tanpa filter yang betul, Service tetap menolak. Pertahanan berlapis bermaksud satu kesilapan konfigurasi tidak terus menjadi pelanggaran.
+Filter group membenarkan `reviewer` masuk — tanpa filter permission, penyemak boleh POST ke `/approve`. `permission:pas.approve` menutup lubang itu di Lapisan 1. `authorize()` dalam Service ialah Lapisan 2: jika suatu hari route baharu (API, Spark command, controller lain) memanggil `approve()` tanpa filter yang betul, Service tetap menolak. Pertahanan berlapis bermaksud satu kesilapan konfigurasi tidak terus menjadi pelanggaran.
 </details>
 
 2. Pelulus A dan B menekan **Lulus** serentak pada permohonan yang sama. Terangkan apa yang berlaku dalam `transition()` langkah demi langkah.
@@ -551,9 +551,9 @@ Satu `UPDATE` pukal akan memintas BR-PAS-01 (boleh menukar `rejected` kepada `ex
 
 ## ➡️ Persediaan untuk esok
 
-Hari 9 — **Modul Laporan (M3)**: RPT-01 (tempahan TLK) dan **RPT-02 (permohonan Pas)** dengan penapis, aggregate dan eksport PDF/Excel.
+Hari 9 — **Modul Laporan (M3)**: RPT-01 (tempahan TLK) dan **RPT-02 (permohonan Pas)** dengan filter, aggregate dan eksport PDF/Excel.
 
 - Pastikan `main` mengandungi M1 **dan** M2 (gabung `feat/pas-kelulusan`).
 - Cipta sekurang-kurangnya **8 permohonan Pas** dengan status berbeza (`submitted`, `under_review`, `approved`, `rejected`) dan tarikh berlainan — laporan esok perlu data untuk ditapis. Sertakan sekurang-kurangnya satu daripada setiap `pass_type`.
 - Semak `composer show dompdf/dompdf phpoffice/phpspreadsheet` — jika belum dipasang, lihat [`docs/persediaan.md`](../docs/persediaan.md).
-- Soalan untuk difikirkan: *Siapa yang patut boleh melihat RPT-02 — dan filter laluan apa yang akan anda gunakan?* (Petunjuk: SPEC §6.)
+- Soalan untuk difikirkan: *Siapa yang patut boleh melihat RPT-02 — dan filter route apa yang akan anda gunakan?* (Petunjuk: SPEC §6.)

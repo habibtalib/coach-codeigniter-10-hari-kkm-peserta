@@ -1,13 +1,13 @@
 # Persediaan Persekitaran — sebelum Hari 1 & Hari 4
 
 > **Dua tarikh akhir:**
-> - **Sebelum Hari 1:** Git, VS Code (+ sambungan **Markdown Preview Mermaid Support**), pelayar moden; Windows: Git Bash sebagai terminal lalai VS Code (§5). Lab Hari 1 menggunakan Git dan pratonton Mermaid.
-> - **Sebelum Hari 4** (Development Kickoff): stack PHP — PHP 8.2+, sambungan PHP, Composer, MySQL/MariaDB, Laragon/Herd dan ujian asap CI4 (§6). Hari 1–3 tidak menulis kod, jadi gunakan masa itu untuk membetulkan persekitaran — jangan tunggu pagi Hari 4.
+> - **Sebelum Hari 1:** Git, VS Code (+ extension **Markdown Preview Mermaid Support**), pelayar moden; Windows: Git Bash sebagai terminal lalai VS Code (§5). Lab Hari 1 menggunakan Git dan pratonton Mermaid.
+> - **Sebelum Hari 4** (Development Kickoff): stack PHP — PHP 8.2+, PHP extension, Composer, MySQL/MariaDB, Laragon/Herd dan ujian asap CI4 (§6). Hari 1–3 tidak menulis kod, jadi gunakan masa itu untuk membetulkan persekitaran — jangan tunggu pagi Hari 4.
 > Kanun stack: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) §1.
 
 ## Kenapa perlu disediakan awal?
 
-Pengalaman kursus lepas: **30–60 minit pertama Hari 4 hilang** kerana sambungan PHP tidak aktif, port MySQL bertembung, atau Composer tersekat di belakang proksi. Setiap minit itu diambil daripada masa membina migration. Senarai semak ini memastikan anda tiba dengan persekitaran yang **disahkan**, bukan "rasanya dah install".
+Pengalaman kursus lepas: **30–60 minit pertama Hari 4 hilang** kerana PHP extension tidak aktif, port MySQL bertembung, atau Composer tersekat di belakang proksi. Setiap minit itu diambil daripada masa membina migration. Senarai semak ini memastikan anda tiba dengan persekitaran yang **disahkan**, bukan "rasanya dah install".
 
 ---
 
@@ -16,11 +16,11 @@ Pengalaman kursus lepas: **30–60 minit pertama Hari 4 hilang** kerana sambunga
 | # | Perkara | Versi minimum | Arahan semak | Siap sebelum | ✅ |
 |---|---------|---------------|--------------|--------------|----|
 | 1 | PHP (CLI) | **8.2** | `php -v` | Hari 4 | [ ] |
-| 2 | Sambungan PHP | `intl`, `mbstring`, `mysqlnd`, `mysqli`, `gd`, `zip`, `curl`, `xml` (+ `dom`, `fileinfo`, `json`) | `php -m` | Hari 4 | [ ] |
+| 2 | PHP extension | `intl`, `mbstring`, `mysqlnd`, `mysqli`, `gd`, `zip`, `curl`, `xml` (+ `dom`, `fileinfo`, `json`) | `php -m` | Hari 4 | [ ] |
 | 3 | Composer | **2.x** | `composer -V` | Hari 4 | [ ] |
 | 4 | MySQL / MariaDB | **MySQL 8.0** / **MariaDB 10.6** | `mysql --version` | Hari 4 | [ ] |
 | 5 | Git | 2.30+ | `git --version` | **Hari 1** | [ ] |
-| 6 | VS Code + sambungan (termasuk Mermaid) | terkini | lihat §5 | **Hari 1** (Intelephense: Hari 4) | [ ] |
+| 6 | VS Code + extension (termasuk Mermaid) | terkini | lihat §5 | **Hari 1** (Intelephense: Hari 4) | [ ] |
 | 7 | Pelayar moden | Chrome/Edge/Firefox terkini | — | **Hari 1** | [ ] |
 | 8 | Windows: **Laragon** + **Git Bash** sebagai terminal lalai VS Code · macOS (opsyenal): Herd | Laragon 8 | §2, §5 | Git Bash: **Hari 1** · Laragon/Herd: Hari 4 | [ ] |
 | 9 | Ujian asap: projek CI4 kosong berjalan | CI **4.6+** | §6 | Hari 4 | [ ] |
@@ -29,14 +29,14 @@ Pengalaman kursus lepas: **30–60 minit pertama Hari 4 hilang** kerana sambunga
 
 ### Kenapa setiap sambungan PHP diperlukan?
 
-| Sambungan | Digunakan oleh | Gejala jika tiada |
+| Extension | Digunakan oleh | Gejala jika tiada |
 |-----------|---------------|-------------------|
 | `intl` | Teras CI4 (`Time`, `number_to_currency`, lokaliti) | `composer create-project` gagal: *requires ext-intl* |
 | `mbstring` | Teras CI4, Dompdf, PhpSpreadsheet (teks UTF-8 BM) | Ralat fatal `mb_strlen()` tidak wujud |
 | `mysqlnd` / `mysqli` | Pemacu DB `MySQLi` CI4 | `Unable to connect to the database` / `Call to undefined function mysqli_init()` |
 | `gd` | Imej dalam PDF (Dompdf), PhpSpreadsheet | Logo tidak keluar dalam PDF; ralat semasa eksport Excel |
 | `zip` | PhpSpreadsheet (fail `.xlsx` = arkib ZIP), Composer | `composer require phpoffice/phpspreadsheet` gagal |
-| `curl` | Composer, permintaan HTTP keluar | Composer lambat/gagal muat turun pakej |
+| `curl` | Composer, permintaan HTTP keluar | Composer lambat/gagal muat turun package |
 | `xml` (`dom`, `xmlwriter`, `simplexml`) | PhpSpreadsheet, Dompdf, PHPUnit | Eksport Excel/PDF gagal; laporan liputan PHPUnit gagal |
 | `fileinfo` | `UploadedFile::getMimeType()` (Hari 7), PhpSpreadsheet | Semakan jenis fail muat naik tidak boleh dipercayai |
 
@@ -71,13 +71,13 @@ Pengalaman kursus lepas: **30–60 minit pertama Hari 4 hilang** kerana sambunga
 
    Ketiga-tiga arahan mesti menunjuk ke `/c/laragon/bin/...`. Jika `mysql` tiada: *Menu → Tools → Path → Manage Path* → tambah folder `C:\laragon\bin\mysql\mysql-8.4.x-winx64\bin` (ikut nama folder sebenar), kemudian buka semula VS Code.
 
-   Jika `which composer` tidak mencetak apa-apa: Laragon membawa `composer.bat` + `composer.phar`, dan Git Bash tidak menjalankan `composer.bat` apabila anda menaip `composer`. Tambah alias sekali sahaja (tukar laluan jika Laragon dipasang di folder lain):
+   Jika `which composer` tidak mencetak apa-apa: Laragon membawa `composer.bat` + `composer.phar`, dan Git Bash tidak menjalankan `composer.bat` apabila anda menaip `composer`. Tambah alias sekali sahaja (tukar path jika Laragon dipasang di folder lain):
 
    ```bash
    echo 'alias composer="php /c/laragon/bin/composer/composer.phar"' >> ~/.bashrc && source ~/.bashrc
    composer --version
    ```
-6. **Hidupkan sambungan & had muat naik.** *Menu → PHP → php.ini* membuka fail yang betul (sama untuk CLI dan web). Pastikan baris ini wujud **tanpa** `;` di hadapan, dan tetapkan had muat naik:
+6. **Hidupkan extension & had muat naik.** *Menu → PHP → php.ini* membuka fail yang betul (sama untuk CLI dan web). Pastikan baris ini wujud **tanpa** `;` di hadapan, dan tetapkan had muat naik:
 
    ```ini
    extension=intl
@@ -91,7 +91,7 @@ Pengalaman kursus lepas: **30–60 minit pertama Hari 4 hilang** kerana sambunga
    date.timezone = Asia/Kuala_Lumpur
    ```
 
-   (Sambungan juga boleh ditanda melalui *Menu → PHP → Extensions*.) Simpan → buka terminal baharu (PHP CLI membaca `php.ini` setiap kali dijalankan; Laragon tidak perlu dimulakan semula; hentikan & jalankan semula `php spark serve` yang sedang berjalan). Sahkan dengan `php --ini` (fail di bawah `C:\laragon\bin\php\...`) dan semakan 10 sambungan di bawah.
+   (Extension juga boleh ditanda melalui *Menu → PHP → Extensions*.) Simpan → buka terminal baharu (PHP CLI membaca `php.ini` setiap kali dijalankan; Laragon tidak perlu dimulakan semula; hentikan & jalankan semula `php spark serve` yang sedang berjalan). Sahkan dengan `php --ini` (fail di bawah `C:\laragon\bin\php\...`) dan semakan 10 extension di bawah.
 7. **MySQL.** Laragon mencipta pengguna `root` **tanpa kata laluan**: log masuk dengan `mysql -u root`, kemudian jalankan SQL §4. Klien GUI: butang **Database** Laragon (HeidiSQL, tidak perlu Apache). phpMyAdmin memerlukan Apache (**Start All**).
 
 ### Sahkan
@@ -172,7 +172,7 @@ PHP version 8.3.12 (/path/to/php)
 composer diagnose      # semua baris patut "OK" (amaran proksi boleh diabaikan jika tiada proksi)
 ```
 
-**Di belakang proksi pejabat?** Tetapkan pemboleh ubah persekitaran sebelum `composer`:
+**Di belakang proksi pejabat?** Tetapkan environment variable sebelum `composer`:
 
 ```bash
 export HTTPS_PROXY=http://proksi.contoh.test:8080   # macOS/Linux/Git Bash
@@ -224,7 +224,7 @@ mysql  Ver 8.4.3 for Win64 on x86_64 (MySQL Community Server - GPL)   # Laragon
 mysql  Ver 8.0.39 for macos14 on arm64 (Homebrew)
 ```
 
-Cipta **dua** pangkalan data — satu untuk pembangunan, satu khusus untuk ujian PHPUnit (jadual di dalamnya akan **dipadam semula** setiap kali ujian dijalankan):
+Cipta **dua** database — satu untuk pembangunan, satu khusus untuk ujian PHPUnit (jadual di dalamnya akan **dipadam semula** setiap kali ujian dijalankan):
 
 ```sql
 -- log masuk: mysql -u root -p   (Laragon: mysql -u root — tiada kata laluan)
@@ -307,16 +307,16 @@ Terminal lalai VS Code di Windows ialah PowerShell. Kebanyakan arahan kursus (`&
 
    Baris kosong, atau `$SHELL` dicetak semula? Anda masih dalam PowerShell/Command Prompt — ulang langkah 1–2.
 
-> Laluan dalam Git Bash: `C:\Users\ali\latihan` ditulis `/c/Users/ali/latihan`, dan `~` = `C:\Users\ali`.
+> Path dalam Git Bash: `C:\Users\ali\latihan` ditulis `/c/Users/ali/latihan`, dan `~` = `C:\Users\ali`.
 
 ### VS Code — sambungan wajib & disyorkan
 
-| Sambungan | ID | Kenapa |
+| Extension | ID | Kenapa |
 |-----------|----|--------|
 | **PHP Intelephense** | `bmewburn.vscode-intelephense-client` | Autolengkap, *go to definition* untuk kelas CI4 & Shield, amaran jenis |
 | **Markdown Preview Mermaid Support** | `bierner.markdown-mermaid` | Papar carta skop, carta alir dan ERD Mermaid dalam pratonton Markdown (**dari Hari 1**). Tiada internet/sambungan? Lakar di kertas atau tulis sebagai jadual dahulu, pratonton kemudian |
 | EditorConfig | `EditorConfig.EditorConfig` | Inden konsisten antara pasangan |
-| GitLens (opsyenal) | `eamodio.gitlens` | Lihat sejarah baris & cabang |
+| GitLens (opsyenal) | `eamodio.gitlens` | Lihat sejarah baris & branch |
 | Claude Code (opsyenal) | — | Pembantu AI mengikut [`pustaka-prompt.md`](./pustaka-prompt.md) |
 
 Pasang melalui terminal:
@@ -327,7 +327,7 @@ code --install-extension bierner.markdown-mermaid
 code --install-extension EditorConfig.EditorConfig
 ```
 
-> Nyahaktifkan sambungan PHP terbina VS Code (*PHP Language Features*) jika Intelephense memaparkan cadangan berganda.
+> Nyahaktifkan extension PHP terbina VS Code (*PHP Language Features*) jika Intelephense memaparkan cadangan berganda.
 
 ---
 
@@ -359,7 +359,7 @@ Buka <http://localhost:8080> → halaman *Welcome to CodeIgniter 4.6.x*. ✅
 
 > 🪟 **Windows:** cipta `.env` dengan `cp env .env` dalam Git Bash — **jangan** dengan Notepad (ia boleh menyimpan `.env.txt`). Hidupkan *File Explorer → View → Show → File name extensions* supaya nama penuh `.env` kelihatan. Sunting kandungannya dalam VS Code.
 
-Sambungan DB — sunting `.env`:
+DB connection — sunting `.env`:
 
 ```ini
 CI_ENVIRONMENT = development
@@ -376,7 +376,7 @@ database.default.port = 3306
 php spark db:table --show
 ```
 
-Output dijangka: senarai jadual kosong **tanpa ralat** sambungan (contoh: `No tables found` atau jadual kosong). Ralat `Unable to connect` → lihat §8.
+Output dijangka: senarai jadual kosong **tanpa ralat** connection (contoh: `No tables found` atau jadual kosong). Ralat `Unable to connect` → lihat §8.
 
 Selesai? Padam folder `ujian-asap/` — projek sebenar dicipta pada Hari 4.
 
@@ -386,7 +386,7 @@ Selesai? Padam folder `ujian-asap/` — projek sebenar dicipta pada Hari 4.
 
 | Alat | Kelebihan | Perhatian |
 |------|-----------|-----------|
-| **Laragon** | **Stack Windows kursus ini** (§2). Satu klik: PHP + MySQL 8.4 + Composer + HeidiSQL (butang **Database**); *pretty URL* `http://projek.test` perlu Apache + *Auto virtual hosts* (tidak digunakan dalam kursus) | Aktifkan sambungan melalui *Menu → PHP → Extensions*; mulakan semula Laragon selepas menukar versi PHP; tetingkap peringatan lesen tanpa lesen (§2 langkah 2) |
+| **Laragon** | **Stack Windows kursus ini** (§2). Satu klik: PHP + MySQL 8.4 + Composer + HeidiSQL (butang **Database**); *pretty URL* `http://projek.test` perlu Apache + *Auto virtual hosts* (tidak digunakan dalam kursus) | Aktifkan extension melalui *Menu → PHP → Extensions*; mulakan semula Laragon selepas menukar versi PHP; tetingkap peringatan lesen tanpa lesen (§2 langkah 2) |
 | **Herd** | PHP pantas, bertukar versi mudah, `*.test` automatik | Herd **tidak** membawa MySQL dalam edisi percuma — pasang MySQL/DBngin berasingan. Folder mesti "Parked" untuk `*.test`. |
 
 Windows: guna Laragon (§2). macOS: Herd **tidak wajib** — `php spark serve` sudah memadai untuk kursus ini.
@@ -399,24 +399,24 @@ Windows: guna Laragon (§2). macOS: Herd **tidak wajib** — `php spark serve` s
 |--------|-------------|--------------|
 | `php` bukan arahan dikenali / `bash: php: command not found` | PHP tiada dalam `PATH` | Laragon: *Menu → Tools → Path → Add Laragon to Path*, kemudian tutup & buka semula VS Code |
 | `bash: mysql: command not found` (Git Bash) | Folder `bin` MySQL Laragon tiada dalam `PATH` | *Menu → Tools → Path → Manage Path* → tambah `C:\laragon\bin\mysql\mysql-8.4.x-winx64\bin`; buka semula VS Code |
-| `bash: composer: command not found` (Git Bash) | Laragon hanya membawa `composer.bat`/`composer.phar`; Git Bash tidak menjalankan `.bat` tanpa sambungan | `echo 'alias composer="php /c/laragon/bin/composer/composer.phar"' >> ~/.bashrc && source ~/.bashrc` (§2 langkah 5) |
+| `bash: composer: command not found` (Git Bash) | Laragon hanya membawa `composer.bat`/`composer.phar`; Git Bash tidak menjalankan `.bat` tanpa extension | `echo 'alias composer="php /c/laragon/bin/composer/composer.phar"' >> ~/.bashrc && source ~/.bashrc` (§2 langkah 5) |
 | `mysql -p` / `php spark shield:user create` tergantung tanpa prompt | Tetingkap Git Bash berasingan (mintty) tanpa konsol Windows | Jalankan dalam terminal VS Code, atau tambah `winpty` di hadapan: `winpty mysql -u kkm_dev -p` |
 | Arahan `&&`, `grep`, `head` gagal di Windows | Terminal VS Code masih PowerShell | §5: *Terminal: Select Default Profile → Git Bash*; `echo $SHELL` → `/usr/bin/bash` |
 | `php -v` tunjuk 7.x/8.0/8.1 | Beberapa PHP dipasang | `which -a php` / `where php`; susun semula `PATH` atau guna versi Herd/Laragon |
 | `requires ext-intl * -> it is missing` | `intl` tidak aktif | `php.ini`: buang `;` pada `extension=intl`; Linux: `sudo apt install php8.3-intl` |
-| Sambungan dah diaktifkan tapi masih tiada | Sunting `php.ini` yang salah | `php --ini` untuk fail sebenar CLI (CLI & web boleh guna `php.ini` berbeza) |
+| Extension dah diaktifkan tapi masih tiada | Sunting `php.ini` yang salah | `php --ini` untuk fail sebenar CLI (CLI & web boleh guna `php.ini` berbeza) |
 | `Unable to connect to the database` | Kelayakan/port salah, MySQL tidak berjalan | Semak `.env`; `mysql -u kkm_dev -p`; guna `127.0.0.1` jika `localhost` gagal (soket) |
 | `SQLSTATE[HY000] [1045] Access denied` | Kata laluan/pengguna salah | Ulang langkah `CREATE USER` di §4 |
 | `The server requested authentication method unknown to the client` | MySQL 8 `caching_sha2_password` dengan klien PHP lama | Naik taraf PHP ke 8.2+ (`mysqlnd` menyokong `caching_sha2_password`) — **jangan** tukar kaedah pengesahan. `ALTER USER … IDENTIFIED WITH mysql_native_password …` hanya untuk MariaDB / MySQL ≤ 8.0; ia gagal pada MySQL 8.4 (Laragon) kerana plugin itu dimatikan |
 | Port 8080 sedang digunakan | Aplikasi lain | `php spark serve --port 8081` **dan** `app.baseURL = 'http://localhost:8081/'` dalam `.env` (jika tidak, pautan & redirect masih menuju `:8080`) |
-| Port 3306 sedang digunakan / MySQL Laragon tidak mahu mula | Pelayan MySQL lain berjalan (cth XAMPP lama, servis Windows `MySQL80`) | Git Bash: `netstat -ano \| findstr :3306` → nombor terakhir ialah PID. Hentikan proses itu: Task Manager → *Details* → cari PID → *End task*, atau `taskkill //PID <pid> //F` (Git Bash perlu `//`). Servis Windows: `services.msc` → hentikan & set *Manual*. Atau tukar port MySQL Laragon (*Menu → Preferences → Services & Ports* → MySQL `3307`) **dan** `database.default.port = 3307` dalam `.env` |
+| Port 3306 sedang digunakan / MySQL Laragon tidak mahu mula | MySQL server lain berjalan (cth XAMPP lama, servis Windows `MySQL80`) | Git Bash: `netstat -ano \| findstr :3306` → nombor terakhir ialah PID. Hentikan proses itu: Task Manager → *Details* → cari PID → *End task*, atau `taskkill //PID <pid> //F` (Git Bash perlu `//`). Servis Windows: `services.msc` → hentikan & set *Manual*. Atau tukar port MySQL Laragon (*Menu → Preferences → Services & Ports* → MySQL `3307`) **dan** `database.default.port = 3307` dalam `.env` |
 | Composer: `curl error 60 SSL certificate` / `SSL certificate problem: unable to get local issuer certificate` | Rangkaian pejabat memeriksa SSL (*SSL inspection*) dengan sijil CA sendiri | Lihat *Rangkaian pejabat dengan SSL inspection* di §3; **jangan** matikan `secure-http` |
 | Git: `SSL certificate problem: unable to get local issuer certificate` | Sama (SSL inspection) | Windows: `git config --global http.sslBackend schannel` (guna stor sijil Windows) |
 | Composer sangat lambat | Rangkaian | `composer config -g repos.packagist composer https://repo.packagist.org`; cuba rangkaian lain |
 | `composer install`/`create-project` tersekat lama / `The process exceeded the timeout` (Windows) | Windows Defender/antivirus mengimbas setiap fail dalam `vendor/` | `composer config --global process-timeout 900`; `composer install --prefer-dist`; jalankan ujian asap §6 seawal mungkin (sebelum Hari 3, apabila Tugasan Persediaan diedarkan) supaya cache Composer sudah penuh. Jika dibenarkan unit ICT: kecualikan `C:\laragon` dan folder latihan daripada imbasan masa nyata |
 | `writable/` tidak boleh ditulis (macOS/Linux) | Kebenaran folder | `chmod -R 775 writable` |
 | Halaman `Whoops!` tanpa butiran | `CI_ENVIRONMENT` bukan `development` | Pastikan fail bernama `.env` (bukan `env`) dan `CI_ENVIRONMENT = development` |
-| Mermaid tidak dipapar dalam VS Code | Sambungan tiada | Pasang `bierner.markdown-mermaid`, buka pratonton `Ctrl+Shift+V`. Tiada internet: lakar di kertas atau tulis sebagai jadual, pratonton kemudian (atau <https://mermaid.live>) |
+| Mermaid tidak dipapar dalam VS Code | Extension tiada | Pasang `bierner.markdown-mermaid`, buka pratonton `Ctrl+Shift+V`. Tiada internet: lakar di kertas atau tulis sebagai jadual, pratonton kemudian (atau <https://mermaid.live>) |
 
 Masih tersekat? Catat **arahan + output penuh** dan hantar kepada jurulatih sebelum Hari 4. Anda juga boleh guna prompt **AI-01 Terangkan ralat** dalam [`pustaka-prompt.md`](./pustaka-prompt.md).
 

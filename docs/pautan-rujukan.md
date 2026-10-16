@@ -49,7 +49,7 @@
 
 | Topik | Pautan |
 |-------|--------|
-| Keperluan pelayan CI4 | <https://codeigniter.com/user_guide/intro/requirements.html> |
+| Keperluan server CI4 | <https://codeigniter.com/user_guide/intro/requirements.html> |
 | Pasang melalui Composer (`appstarter`) | <https://codeigniter.com/user_guide/installation/installing_composer.html> |
 | Struktur aplikasi | <https://codeigniter.com/user_guide/concepts/structure.html> |
 | MVC dalam CI4 | <https://codeigniter.com/user_guide/concepts/mvc.html> |
@@ -88,7 +88,7 @@
 | MySQL — *locking reads* (`SELECT … FOR UPDATE`) | <https://dev.mysql.com/doc/refman/8.0/en/innodb-locking-reads.html> |
 | Services (`app/Config/Services.php`) | <https://codeigniter.com/user_guide/concepts/services.html> |
 | Ujian — gambaran | <https://codeigniter.com/user_guide/testing/overview.html> |
-| Ujian — pangkalan data | <https://codeigniter.com/user_guide/testing/database.html> |
+| Ujian — database | <https://codeigniter.com/user_guide/testing/database.html> |
 | PHPUnit 10 | <https://docs.phpunit.de/en/10.5/> |
 
 ## Hari 7 — Modul Pas (1)

@@ -2,12 +2,12 @@
 
 [← README Hari 9](./README.md) · [Kanun SPEC](../SPEC-KURSUS.md) · [Jadual](../JADUAL.md)
 
-> **Cabang kerja:** `git switch main && git pull && git switch -c feat/laporan`
+> **Branch kerja:** `git switch main && git pull && git switch -c feat/laporan`
 > **Prefix commit:** `RPT:` · **Kod rujukan jurulatih:** [`templates/kod/`](../templates/kod/) (guna untuk **semak**, bukan salin bulat-bulat — anda mesti boleh menerangkan setiap baris).
 
 | Lab | Sesi | Tempoh | Hasil |
 |-----|------|--------|-------|
-| 9.1 | S1 | 70 min | Kad spesifikasi RPT-01..03 · laluan · controller rangka · borang penapis GET |
+| 9.1 | S1 | 70 min | Kad spesifikasi RPT-01..03 · route · controller rangka · borang filter GET |
 | 9.2 | S2 | 90 min | `ReportService` penuh · jadual berpagination untuk 3 laporan |
 | 9.3 | S3 | 75 min | `ExportService` · butang Eksport PDF & Excel berfungsi |
 | 9.4 | S4 | 60 min | `ReportServiceTest` hijau · EXPLAIN · **M3 siap** |
@@ -18,8 +18,8 @@
 
 ### 🎯 Objektif
 - Menulis kad spesifikasi untuk RPT-01, RPT-02, RPT-03.
-- Membina laluan `/laporan/*` yang dilindungi `permission:laporan.view`.
-- Membina borang penapis `GET` yang mengekalkan nilai selepas dihantar.
+- Membina route `/laporan/*` yang dilindungi `permission:laporan.view`.
+- Membina borang filter `GET` yang mengekalkan nilai selepas dihantar.
 
 ### Prasyarat
 - 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
@@ -60,7 +60,7 @@ php spark db:seed DatabaseSeeder
 | Siapa boleh lihat (permission) | | | |
 ```
 
-**2. Tambah laluan.** Buka `app/Config/Routes.php` dan tambah kumpulan laporan (rujuk [`Routes-laporan-statistik.php.txt`](../templates/kod/Routes-laporan-statistik.php.txt)):
+**2. Tambah route.** Buka `app/Config/Routes.php` dan tambah kumpulan laporan (rujuk [`Routes-laporan-statistik.php.txt`](../templates/kod/Routes-laporan-statistik.php.txt)):
 
 ```php
 $routes->group('laporan', [
@@ -85,7 +85,7 @@ php spark make:controller Laporan/ReportController
 
 Buat sementara `bookings()`, `passes()`, `usage()` yang memulangkan `view('laporan/index', [...])` dengan data kosong. Controller penuh dibina dalam Lab 9.2.
 
-**4. Bina view borang penapis** `app/Views/laporan/index.php`. Perkara wajib:
+**4. Bina view borang filter** `app/Views/laporan/index.php`. Perkara wajib:
 
 - `<form method="get" action="<?= current_url() ?>">` — **tiada** `csrf_field()` (GET).
 - Setiap input diisi semula dari `$filters`:
@@ -108,13 +108,13 @@ Rujukan penuh: [`report-filter-view.php.txt`](../templates/kod/report-filter-vie
 <?php endif ?>
 ```
 
-> Menyembunyikan menu hanyalah **kemudahan UI**. Kawalan sebenar ialah filter laluan di langkah 2.
+> Menyembunyikan menu hanyalah **kemudahan UI**. Kawalan sebenar ialah filter route di langkah 2.
 
 **6. Commit.** `git add -A && git commit -m "RPT: laluan, controller rangka & borang penapis GET"`
 
 ### ✅ Checkpoint 9.1
-- [ ] `php spark routes | grep laporan` menunjukkan 3 laluan dengan filter `permission:laporan.view`.
-- [ ] Log masuk sebagai `pemohon1@latihan.test` → `/laporan/tempahan` **ditolak** (filter Shield me-*redirect*, tiada data dipapar). Sebagai `penyemak@latihan.test` → dibenarkan.
+- [ ] `php spark routes | grep laporan` menunjukkan 3 route dengan filter `permission:laporan.view`.
+- [ ] Log masuk sebagai `pemohon1@latihan.test` → `/laporan/tempahan` **ditolak** (filter Shield redirect, tiada data dipapar). Sebagai `penyemak@latihan.test` → dibenarkan.
 - [ ] Pilih status + tarikh → klik **Tapis** → URL mengandungi `?from=...&status=...` dan dropdown **masih** menunjukkan pilihan tadi.
 - [ ] Kad spesifikasi lengkap untuk 3 laporan dan disemak jurulatih.
 
@@ -137,7 +137,7 @@ Rujukan penuh: [`report-filter-view.php.txt`](../templates/kod/report-filter-vie
 - Menulis `normaliseFilters()` dengan whitelist tarikh, enum, id dan susunan.
 - Menulis builder RPT-01/RPT-02 dengan `join()` + `when()`.
 - Menulis aggregate RPT-03 dengan `selectCount()` + `groupBy()`.
-- Memaparkan jadual berpagination yang mengekalkan penapis.
+- Memaparkan jadual berpagination yang mengekalkan filter.
 
 ### Prasyarat
 - Lab 9.1 siap.
@@ -308,7 +308,7 @@ private function handle(string $report): string|ResponseInterface
 - [ ] `/laporan/pas?to=<hari ini>` memaparkan permohonan yang anda hantar **hari ini** (bukti julat separuh-terbuka).
 - [ ] `/laporan/tempahan?sort=nonsense` tidak ralat — jatuh ke susunan lalai.
 - [ ] `/laporan/penggunaan?year=2026&month=6` menunjukkan setiap zon (termasuk zon tanpa tempahan = 0.0 %).
-- [ ] Controller nipis: setiap kaedah hanya baca penapis → panggil `ReportService` → view/eksport (tiada query, join atau kiraan); tiada `$this->db` dalam controller.
+- [ ] Controller nipis: setiap kaedah hanya baca filter → panggil `ReportService` → view/eksport (tiada query, join atau kiraan); tiada `$this->db` dalam controller.
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
@@ -320,10 +320,10 @@ private function handle(string $report): string|ResponseInterface
 | `Table 'db_parking_slots' doesn't exist` | `DBPrefix` diset; join dengan `escape=false` tidak ditambah prefix | Pastikan `database.default.DBPrefix =` kosong (seperti Hari 4) |
 | Rekod sama muncul di halaman 1 dan 2 | Susunan tidak stabil | Tambah `->orderBy('b.id', $dir)` |
 | `TypeError: ... must be of type string, array given` | `?status[]=x` dihantar terus ke `tryFrom()` | Guna pembantu `str()` yang menolak array |
-| Pautan pagination tanpa gaya Bootstrap | Templat `default_full` CI4 tiada kelas `page-item` | Terima buat masa ini, atau ⭐ cabaran di bawah |
+| Pautan pagination tanpa gaya Bootstrap | Template `default_full` CI4 tiada kelas `page-item` | Terima buat masa ini, atau ⭐ cabaran di bawah |
 
 ### ⭐ Cabaran tambahan
-- Cipta templat pager Bootstrap `app/Views/pager/bootstrap.php` (salin `system/Pager/Views/default_full.php`, tambah `page-item`/`page-link`), daftar dalam `app/Config/Pager.php` → `$templates['bootstrap']`, dan guna `makeLinks(..., 'bootstrap')`.
+- Cipta template pager Bootstrap `app/Views/pager/bootstrap.php` (salin `system/Pager/Views/default_full.php`, tambah `page-item`/`page-link`), daftar dalam `app/Config/Pager.php` → `$templates['bootstrap']`, dan guna `makeLinks(..., 'bootstrap')`.
 - Tambah baris **jumlah** di bawah RPT-03 (jumlah slot, jumlah hari-slot, purata penggunaan berwajaran).
 
 ---
@@ -338,7 +338,7 @@ private function handle(string $report): string|ResponseInterface
 
 ### Prasyarat
 - Lab 9.2 siap; butang eksport dalam view sudah dibina dari `$query`.
-- Sambungan PHP: `ext-dom`, `ext-mbstring`, `ext-gd`, `ext-zip`, `ext-xml` (`php -m` untuk semak).
+- Extension PHP: `ext-dom`, `ext-mbstring`, `ext-gd`, `ext-zip`, `ext-xml` (`php -m` untuk semak).
 
 ### Langkah
 
@@ -443,7 +443,7 @@ mysql -u kkm_dev -p -e "UPDATE users SET staff_no = '001234' WHERE username = 'p
 | Logo tidak muncul dalam PDF | `isRemoteEnabled=false` menyekat URL `http://…` | Guna path fail tempatan dalam `public/` (dibenarkan oleh `setChroot([FCPATH])`) atau data URI base64 |
 | Susun atur PDF bersepah | Guna flexbox/grid/Bootstrap | Dompdf = CSS 2.1: guna `<table>`, `position: fixed`, `float` |
 | `Class "Dompdf\Dompdf" not found` | `composer require` dijalankan dalam folder lain / `vendor/` tidak dikemas kini | Jalankan di akar projek; `composer dump-autoload` |
-| `ZipArchive not found` semasa `.xlsx` | Sambungan `ext-zip` tidak aktif | Aktifkan dalam `php.ini` (`extension=zip`) dan mulakan semula pelayan |
+| `ZipArchive not found` semasa `.xlsx` | Extension `ext-zip` tidak aktif | Aktifkan dalam `php.ini` (`extension=zip`) dan mulakan semula server |
 
 ### ⭐ Cabaran tambahan
 - Tambah butang **Pratonton PDF** yang membuka PDF dalam tab baharu (inline) menggunakan:
@@ -465,7 +465,7 @@ mysql -u kkm_dev -p -e "UPDATE users SET staff_no = '001234' WHERE username = 'p
 
 ### Prasyarat
 - Lab 9.2 & 9.3 siap.
-- Pangkalan data ujian berasingan wujud:
+- Database ujian berasingan wujud:
   ```sql
   CREATE DATABASE IF NOT EXISTS kkm_latihan_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
   ```
@@ -599,7 +599,7 @@ php spark laporan:explain tempahan approved 2026-06-01 2026-06-30
 php spark laporan:explain pas "" 2026-09-01 2026-09-30
 ```
 
-**7. Rekod pemerhatian** dalam `docs/laporan-spec.md` → bahagian "Prestasi": untuk setiap query, catat `type`, `key`, `rows` bagi jadual utama (`b` / `p`). Jawab: *query mana yang tiada index untuk penapis utamanya?*
+**7. Rekod pemerhatian** dalam `docs/laporan-spec.md` → bahagian "Prestasi": untuk setiap query, catat `type`, `key`, `rows` bagi jadual utama (`b` / `p`). Jawab: *query mana yang tiada index untuk filter utamanya?*
 
 **8. Commit & merge.**
 
@@ -612,7 +612,7 @@ git push -u origin feat/laporan    # buka PR → semakan rakan → merge ke main
 - [ ] `composer test -- tests/Services/ReportServiceTest.php` → semua hijau (≥ 7 ujian).
 - [ ] Mutasi di langkah 5 menyebabkan tepat **satu** ujian gagal; dipulihkan.
 - [ ] Output `laporan:explain tempahan approved` menunjukkan `key = status` (atau index lain) untuk jadual `b` — bukan `type = ALL`.
-- [ ] Anda boleh menerangkan kepada jurulatih: kenapa RPT-02 dengan penapis tarikh sahaja menunjukkan `type = ALL` pada `p`.
+- [ ] Anda boleh menerangkan kepada jurulatih: kenapa RPT-02 dengan filter tarikh sahaja menunjukkan `type = ALL` pada `p`.
 - [ ] DoD KOLABORASI §2 ditanda untuk M3.
 
 ### 🧯 Masalah lazim
@@ -623,10 +623,10 @@ git push -u origin feat/laporan    # buka PR → semakan rakan → merge ke main
 | `Duplicate entry 'WXX 9001' for key 'plate_no'` | Data kekal dari ujian lepas | `protected $refresh = true;` |
 | Ujian lulus di mesin A, gagal di B (tarikh) | Fixture bergantung pada `date('Y-m-d')` | Guna tarikh tetap (Jun 2026) dalam fixture |
 | Output EXPLAIN satu lajur berbentuk pokok (`-> Nested loop ...`) | MySQL 9 menukar format lalai EXPLAIN | Guna `'EXPLAIN FORMAT=TRADITIONAL ' . $sql` |
-| `getCompiledSelect()` kemudian `get()` pulang semua baris tanpa penapis | `getCompiledSelect()` (lalai) **reset** builder | Guna builder baharu, atau `getCompiledSelect(false)` |
+| `getCompiledSelect()` kemudian `get()` pulang semua baris tanpa filter | `getCompiledSelect()` (lalai) **reset** builder | Guna builder baharu, atau `getCompiledSelect(false)` |
 
 ### ⭐ Cabaran tambahan
-- Jana 50,000 tempahan sintetik (seeder berasingan `BulkBookingSeeder`, guna `insertBatch()` berkelompok 1,000), ukur masa RPT-02 dengan penapis tarikh sahaja, kemudian cadangkan (dalam migration **baharu**, bukan ubah yang lama) `INDEX(created_at)` pada `pass_applications`. Jalankan `laporan:explain` sebelum/selepas dan bentangkan perbezaan `type`/`rows`. Catat sebagai cadangan kepada pemilik sistem — perubahan skema mesti direkod dalam kamus data.
+- Jana 50,000 tempahan sintetik (seeder berasingan `BulkBookingSeeder`, guna `insertBatch()` berkelompok 1,000), ukur masa RPT-02 dengan filter tarikh sahaja, kemudian cadangkan (dalam migration **baharu**, bukan ubah yang lama) `INDEX(created_at)` pada `pass_applications`. Jalankan `laporan:explain` sebelum/selepas dan bentangkan perbezaan `type`/`rows`. Catat sebagai cadangan kepada pemilik sistem — perubahan skema mesti direkod dalam kamus data.
 - Tambah ujian `testEksportMelebihiHadDitolak`: jadikan had sebagai parameter constructor (`?array $exportLimit = null`), cipta service dengan had `['pdf' => 2, 'xlsx' => 2]`, dan `expectException(\LengthException::class)`. (Kenapa subclass yang mengatasi `const EXPORT_LIMIT` tidak berkesan jika kod memanggil `self::EXPORT_LIMIT`? Petunjuk: `self::` vs `static::`.)
 
 ---
@@ -640,8 +640,8 @@ git status --short                                                # tiada output
 git log --oneline -5                                              # commit RPT: hari ini
 ```
 
-- [ ] `/laporan/tempahan`, `/laporan/pas` dan `/laporan/penggunaan` dimuat dengan penapis GET; "Jumlah rekod" RPT-01 `status=approved` = `COUNT(*)` SQL.
+- [ ] `/laporan/tempahan`, `/laporan/pas` dan `/laporan/penggunaan` dimuat dengan filter GET; "Jumlah rekod" RPT-01 `status=approved` = `COUNT(*)` SQL.
 - [ ] `?export=pdf` dan `?export=xlsx` memuat turun fail yang boleh dibuka bagi ketiga-tiga laporan; `pemohon1@latihan.test` ditolak.
 - [ ] `composer test` hijau, termasuk `tests/Services/ReportServiceTest.php` (≥ 7 ujian).
 - [ ] `php spark laporan:explain tempahan approved 2026-06-01 2026-06-30` menunjukkan `key` bukan `NULL` untuk jadual `b`.
-- [ ] `git status --short` kosong dan cabang `feat/laporan` sudah di-push (PR dibuka).
+- [ ] `git status --short` kosong dan branch `feat/laporan` sudah di-push (PR dibuka).

@@ -2,7 +2,7 @@
 
 [← README Hari 10](./README.md) · [Kanun SPEC](../SPEC-KURSUS.md) · [Jadual](../JADUAL.md) · [Rubrik Capstone](../docs/rubrik-capstone.md)
 
-> **Cabang kerja:** `git switch main && git pull && git switch -c feat/statistik`
+> **Branch kerja:** `git switch main && git pull && git switch -c feat/statistik`
 > **Prefix commit:** `STAT:` (dashboard/cache) · `FIX:` (pembetulan pepijat UAT)
 > **Kod rujukan jurulatih:** [`templates/kod/`](../templates/kod/) — `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt`.
 
@@ -30,7 +30,7 @@
 
 ### Langkah
 
-**1. Laluan.** Tambah dalam `app/Config/Routes.php`:
+**1. Route.** Tambah dalam `app/Config/Routes.php`:
 
 ```php
 $routes->group('statistik', [
@@ -168,7 +168,7 @@ public function data(): ResponseInterface
 
 **6. Semak JSON dahulu, carta kemudian.** Log masuk sebagai `pelulus@latihan.test` dan buka `http://localhost:8080/statistik/data`. Semak: 12 nilai dalam `charts.bookings_by_month.data`, 5 dalam `charts.pass_status.data`, 12 dalam `charts.pass_trend.data`.
 
-**7. View** `app/Views/statistik/dashboard.php`. **Jimat masa (disyorkan):** amali S1 hanya ~30 minit — cipta fail ini dan salin kandungan templat `templates/kod/dashboard-view.php.txt` (jurulatih akan kongsi) sebagai titik mula, kemudian baca dan sesuaikan; tumpukan masa menulis `StatisticsService`. Pastikan view anda memenuhi senarai ini:
+**7. View** `app/Views/statistik/dashboard.php`. **Jimat masa (disyorkan):** amali S1 hanya ~30 minit — cipta fail ini dan salin kandungan template `templates/kod/dashboard-view.php.txt` (jurulatih akan kongsi) sebagai titik mula, kemudian baca dan sesuaikan; tumpukan masa menulis `StatisticsService`. Pastikan view anda memenuhi senarai ini:
 - 4 kad KPI (Bootstrap `card`, `col-sm-6 col-xl-3`) dirender dari `$kpi` dengan `esc()`.
 - 4 `<canvas>` masing-masing dalam `<div style="position: relative; height: 280px">`.
 - Dalam `<?= $this->section('scripts') ?>`: `<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>` (versi **dipin** — jangan `@4` terbuka; atau salinan tempatan `base_url('assets/vendor/chartjs/chart.umd.min.js')`, lihat 🧯) dan skrip `fetch('<?= site_url('statistik/data') ?>')`.
@@ -322,7 +322,7 @@ Jangkaan: `testKelulusanTempahanMengosongkanCache` **GAGAL** — *"Cache mesti d
             cache()->delete(StatisticsService::CACHE_KEY);   // Hari 10: invalidasi SELEPAS commit
 ```
 
-Tempat yang mesti ada (dalam templat rujukan Hari 5–6):
+Tempat yang mesti ada (dalam template rujukan Hari 5–6):
 
 | Kaedah | Peralihan | Kenapa |
 |--------|-----------|--------|
@@ -352,7 +352,7 @@ composer test                                                # SEMUA hijau — t
 ### ✅ Checkpoint 10.2
 - [ ] Muat semula kedua `/statistik` → 0 query aggregate dalam Debug Toolbar.
 - [ ] `StatisticsCacheTest` **pernah merah** (langkah 5) dan kini **hijau** (langkah 8) — tunjuk kepada jurulatih dalam sejarah terminal.
-- [ ] `grep -n "CACHE_KEY" app/Services/*.php` → sekurang-kurangnya 4 hit di `BookingService`/`PassWorkflowService` (2 setiap satu) dan **tiada** rentetan `'stat_dashboard'` bertaip di luar `StatisticsService`.
+- [ ] `grep -n "CACHE_KEY" app/Services/*.php` → sekurang-kurangnya 4 hit di `BookingService`/`PassWorkflowService` (2 setiap satu) dan **tiada** string `'stat_dashboard'` bertaip di luar `StatisticsService`.
 - [ ] Setiap `cache()->delete(...)` berada **selepas** `transCommit()`.
 - [ ] Anda boleh menerangkan 1 kelebihan & 1 kelemahan "TTL + delete" berbanding "TTL sahaja".
 
@@ -362,7 +362,7 @@ composer test                                                # SEMUA hijau — t
 | `Cache unable to write to "…/writable/cache/"` | Kebenaran folder | `chmod -R 775 writable/cache` (Linux/macOS); Windows: pastikan folder tidak baca-sahaja |
 | Ujian lulus walaupun tanpa invalidasi | Cache kosong dari awal → `assertNotNull` tidak disemak, atau ujian tidak mengisi cache | Pastikan `dashboard()` dipanggil & `assertNotNull` sebelum `approve()` |
 | Ujian lain tiba-tiba gagal dengan angka lama | Fail cache dari ujian sebelumnya kekal (handler `file` dikongsi) | `cache()->delete(...)` dalam `setUp()`; atau `php spark cache:clear` |
-| Dashboard masih basi selepas lulus | `delete()` diletak dalam controller lain / terlepas satu laluan / tersalah eja kunci | Guna `StatisticsService::CACHE_KEY`; letak dalam `transition()` service |
+| Dashboard masih basi selepas lulus | `delete()` diletak dalam controller lain / terlepas satu path / tersalah eja kunci | Guna `StatisticsService::CACHE_KEY`; letak dalam `transition()` service |
 | `Class "App\Services\StatisticsService" not found` dalam BookingService | Salah namespace | Kedua-dua dalam `App\Services` — tiada `use` diperlukan; semak ejaan |
 | `Serialization of 'Closure' is not allowed` | Menyimpan objek/closure dalam data cache | `build()` mesti pulang **array skalar** sahaja |
 
@@ -383,7 +383,7 @@ composer test                                                # SEMUA hijau — t
 - Lab 10.1 & 10.2 siap dan di-merge ke `main`.
 - Cipta fail `docs/UAT-signoff.md` dan salin kandungan templat `templates/dokumen/uat-signoff-templat.md` (jurulatih akan kongsi).
 - Cipta fail `docs/kes-ujian-akhir.md` dan salin kandungan templat `templates/dokumen/kes-ujian-templat.md` (jurulatih akan kongsi).
-- Pangkalan data bersih: `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder`.
+- Database bersih: `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder`.
 
 ### Langkah
 
@@ -504,7 +504,7 @@ Tulis **skrip demo 1 halaman** (ikut format README §4.1) dan pastikan kedua-dua
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| `php spark serve` gagal: *Address already in use* | Pelayan lain di port 8080 | `php spark serve --port 8081` dan `app.baseURL = 'http://localhost:8081/'` dalam `.env` |
+| `php spark serve` gagal: *Address already in use* | Server lain di port 8080 | `php spark serve --port 8081` dan `app.baseURL = 'http://localhost:8081/'` dalam `.env` |
 | Carta kosong semasa demo | Tiada internet untuk CDN | Salinan tempatan `chart.umd.min.js` (Lab 10.1 🧯) — sediakan sebelum demo |
 | Terlupa kata laluan akaun sintetik | — | `Latihan@2026` (SPEC §4) |
 | Masa tamat sebelum M4 | Terlalu lama pada M1 | Ikut skrip; jika lewat pada minit 7, lompat terus ke Laporan |

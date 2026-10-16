@@ -14,11 +14,11 @@ Di akhir hari ini, peserta boleh:
 |---|------------------------|------|-------|
 | O1 | **Menyatakan** matlamat, skop dan had keempat-empat modul (TLK, Pas, Laporan, Statistik) dalam satu carta skop | S1 | `docs/carta-skop.md` |
 | O2 | **Mengenal pasti** sekurang-kurangnya 5 pihak berkepentingan dan memetakan setiap satu kepada peranan Shield (`applicant`, `reviewer`, `approver`, `admin`) | S1 | Jadual pihak berkepentingan |
-| O3 | **Mengendalikan** temu bual berstruktur dengan pemilik sistem untuk Modul TLK dan **merekod** sekurang-kurangnya 5 *pain point* | S2 | `docs/temubual-tlk.md` |
+| O3 | **Mengendalikan** temu bual berstruktur dengan pemilik sistem untuk Modul TLK dan **merekod** sekurang-kurangnya 5 pain point | S2 | `docs/temubual-tlk.md` |
 | O4 | **Mengumpul** keperluan Modul Pas termasuk jenis dokumen sokongan dan dua peringkat kelulusan | S3 | `docs/temubual-pas.md` |
 | O5 | **Menulis** sekurang-kurangnya 16 keperluan fungsian (FR: ≥ 8 `FR-TLK`, ≥ 6 `FR-PAS`, ≥ 1 `FR-RPT`, ≥ 1 `FR-STAT`) dan 5 bukan fungsian (NFR) berformat ID (`FR-TLK-01`, `NFR-01`), setiap satu dengan MoSCoW | S4 | `docs/keperluan-awal.md` |
 | O6 | **Mengelaskan** setiap keperluan mengikut MoSCoW dan **menjejakkannya** kepada peraturan perniagaan (`BR-TLK-xx` / `BR-PAS-xx`) | S4 | Lajur MoSCoW + BR dalam `docs/keperluan-awal.md` |
-| O7 | **Menjalankan** projek CodeIgniter 4 kosong di Laragon dan membina satu laluan MVC (`/hello`) | S4 | 3 checkpoint [Lab 1.5](./lab.md#lab-15--ci4-asas-di-laptop-dalam-kelas-s4) |
+| O7 | **Menjalankan** projek CodeIgniter 4 kosong di Laragon dan membina satu route MVC (`/hello`) | S4 | 3 checkpoint [Lab 1.5](./lab.md#lab-15--ci4-asas-di-laptop-dalam-kelas-s4) |
 
 ---
 
@@ -29,7 +29,7 @@ Di akhir hari ini, peserta boleh:
 | 08:30–09:00 | — | Pendaftaran / pengenalan | — |
 | 09:00–10:30 | S1 | Taklimat projek & skop kerja; perkenalan pasukan & pemilik sistem | Menyatakan matlamat, skop & had 4 modul; mengenal pasti pihak berkepentingan |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | S2 | Requirement deep-dive — **Modul TLK** | Mengumpul keperluan TLK melalui temu bual berstruktur; merekod *pain point* |
+| 10:45–12:30 | S2 | Requirement deep-dive — **Modul TLK** | Mengumpul keperluan TLK melalui temu bual berstruktur; merekod pain point |
 | 12:30–14:30 | — | Makan tengah hari | — |
 | 14:30–16:00 | S3 | Requirement deep-dive — **Modul Pas** | Mengumpul keperluan Pas termasuk dokumen & peringkat kelulusan |
 | 16:00–17:00 | S4 | Senarai awal keperluan fungsian & bukan fungsian; persediaan CI4 tempatan (Laragon) & gambaran ERD sistem sedia ada; wrap-up | Menulis FR/NFR berformat ID (`FR-TLK-01`) & mengelaskan MoSCoW; menjalankan CI4 di laptop |
@@ -57,7 +57,7 @@ flowchart LR
     G -. "setiap ujian menjejak<br/>kembali ke satu FR" .-> B
 ```
 
-Setiap ujian PHPUnit yang anda tulis pada Hari 6 dan Hari 8 akan menjejak kembali ke **satu FR yang ditulis hari ini**. Itulah maksud *traceability*.
+Setiap ujian PHPUnit yang anda tulis pada Hari 6 dan Hari 8 akan menjejak kembali ke **satu FR yang ditulis hari ini**. Itulah maksud traceability.
 
 ---
 
@@ -78,7 +78,7 @@ Satu aplikasi web **CodeIgniter 4.6+** untuk sebuah fasiliti KKM (rekaan) yang m
 
 ### 1.2 Carta skop — Dalam skop vs Luar skop
 
-Skop yang tidak ditulis akan **membesar sendiri** (*scope creep*). Tulis kedua-dua senarai — *apa yang kita buat* dan *apa yang kita TIDAK buat*.
+Skop yang tidak ditulis akan **membesar sendiri** (scope creep). Tulis kedua-dua senarai — *apa yang kita buat* dan *apa yang kita TIDAK buat*.
 
 ```mermaid
 flowchart TB
@@ -104,7 +104,7 @@ flowchart TB
 | Masa | 10 hari; M1 siap Hari 6, M2 Hari 8, M3 Hari 9, M4 Hari 10 |
 | Teknologi | CI4 4.6+, PHP 8.2+, MySQL 8/MariaDB 10.6+, Shield, Bootstrap 5.3 (lihat SPEC §1) |
 | Data | **Sintetik sahaja** — e-mel `@latihan.test`, plat rekaan `WXX 1234` |
-| Persekitaran | Pembangunan tempatan (`php spark serve`); tiada pelaksanaan ke pelayan pengeluaran |
+| Persekitaran | Pembangunan tempatan (`php spark serve`); tiada pelaksanaan ke server production |
 
 ⚠️ **Kesilapan lazim:** Menulis "Luar skop: tiada". Setiap projek ada sesuatu yang di luar skop. Jika pemilik sistem menyebut ciri yang tiada dalam SPEC (cth "boleh hantar SMS?"), rekodkan dalam **Luar skop** atau **Soalan terbuka** — jangan diam-diam menambahnya.
 
@@ -182,7 +182,7 @@ Temu bual berstruktur = senarai soalan disediakan **sebelum** berjumpa, disusun 
 | Fasa | Tujuan | Contoh soalan TLK |
 |------|--------|-------------------|
 | 1. Konteks | Faham proses semasa | "Boleh puan ceritakan bagaimana kakitangan mendapat slot OKU hari ini?" |
-| 2. Masalah | Cari *pain point* | "Apa yang paling kerap menyebabkan aduan?" |
+| 2. Masalah | Cari pain point | "Apa yang paling kerap menyebabkan aduan?" |
 | 3. Butiran | Kumpul peraturan, data, pengecualian | "Berapa lama maksimum seseorang boleh memegang slot?" |
 | 4. Pengesahan | Ulang semula faham anda | "Jadi, saya faham seorang pemohon hanya boleh ada satu tempahan aktif — betul?" |
 
@@ -194,7 +194,7 @@ Temu bual berstruktur = senarai soalan disediakan **sebelum** berjumpa, disusun 
 | Soalan tertutup | Fasa 3–4, sahkan fakta | "Adakah slot pegawai kanan boleh ditempah oleh kakitangan biasa?" |
 | 5W1H | Lengkapkan satu langkah proses | Siapa lulus? Bila? Di mana direkod? Bagaimana dimaklumkan? |
 | "Tunjukkan saya" | Bila ada borang/buku log sedia ada | "Boleh saya lihat buku log slot?" |
-| "Bagaimana jika…?" | Cari pengecualian (*edge case*) | "Bagaimana jika dua orang mohon slot yang sama pada hari yang sama?" |
+| "Bagaimana jika…?" | Cari pengecualian (edge case) | "Bagaimana jika dua orang mohon slot yang sama pada hari yang sama?" |
 | 5 Kenapa | Cari punca sebenar | "Kenapa slot OKU diguna orang lain?" → … → "Tiada rekod tempoh sah" |
 
 > 💡 **Tip:** Soalan "Bagaimana jika…?" ialah soalan paling bernilai dalam temu bual. Hampir setiap peraturan perniagaan dalam SPEC (BR-TLK-01 hingga 06) boleh ditemui dengan soalan jenis ini.
@@ -211,7 +211,7 @@ Berdasarkan persona pemilik sistem (lihat nota penceramah), proses semasa kira-k
 
 ### 2.3 Merekod *pain point*
 
-*Pain point* = masalah sebenar yang dialami pengguna dalam proses semasa. Setiap pain point yang baik ada **4 elemen**:
+Pain point = masalah sebenar yang dialami pengguna dalam proses semasa. Setiap pain point yang baik ada **4 elemen**:
 
 | ID | Siapa terkesan | Masalah | Kesan | Keperluan yang mungkin menyelesaikan |
 |----|----------------|---------|-------|---------------------------------------|
@@ -251,7 +251,7 @@ stateDiagram-v2
 
 > 💡 **Tip:** Perhatikan — mengikut SPEC, tempahan `pending` **tidak** boleh terus menjadi `cancelled`. Jika pemilik sistem berkata "pemohon boleh batal bila-bila masa", itu **percanggahan** yang mesti dicatat sebagai soalan terbuka untuk Hari 2.
 
-> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Empathize](../docs/trek-design-thinking.md): bina persona dan *empathy map* daripada nota temu bual TLK anda. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
+> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Empathize](../docs/trek-design-thinking.md): bina persona dan empathy map daripada nota temu bual TLK anda. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
 
 ### 🎯 Kuiz S2
 
@@ -426,7 +426,7 @@ Konvensyen ID:
 
 | ID | Kategori | Keperluan |
 |----|----------|-----------|
-| NFR-01 | Keselamatan | Semua halaman kecuali log masuk memerlukan pengesahan (Shield `session`); akses peranan dikuatkuasa di pelayan, bukan dengan menyembunyikan butang. |
+| NFR-01 | Keselamatan | Semua halaman kecuali log masuk memerlukan pengesahan (Shield `session`); akses peranan dikuatkuasa di server, bukan dengan menyembunyikan butang. |
 | NFR-02 | Keselamatan | Fail muat naik disimpan di luar `public/` dengan nama rawak; dimuat turun hanya melalui controller yang menyemak pemilikan. |
 | NFR-03 | Audit | Setiap peralihan status direkod (siapa, bila, dari, ke, catatan) dan tidak boleh diubah melalui UI. |
 | NFR-04 | Kebolehgunaan | Antara muka dalam Bahasa Melayu; responsif (Bootstrap 5.3) dari lebar 360 px. |
@@ -448,7 +448,7 @@ Konvensyen ID:
 
 ⚠️ **Kesilapan lazim:** Membiarkan lajur "Won't" kosong. "Won't" ialah alat paling berkuasa untuk mengawal skop — ia merekod secara bertulis bahawa pemilik sistem **bersetuju** sesuatu tidak dibuat.
 
-> ⭐ **Trek sampingan (pilihan):** [Jira](../docs/trek-jira.md): buka tapak Jira Cloud percuma dan bina *backlog* daripada `keperluan-awal.md`. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
+> ⭐ **Trek sampingan (pilihan):** [Jira](../docs/trek-jira.md): buka tapak Jira Cloud percuma dan bina backlog daripada `keperluan-awal.md`. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
 
 ### 🎯 Kuiz S4
 
@@ -516,7 +516,7 @@ Hari 1–3 tidak menulis kod sistem, tetapi persekitaran disediakan hari ini dal
    ```
 
 3. Buka <http://localhost:8080> — halaman *Welcome to CodeIgniter* bermaksud PHP, Composer dan CI4 berfungsi.
-4. Rasa MVC kali pertama: satu laluan `/hello` → *controller* `Hello` → *view* `hello.php` (Bahagian A tutorial).
+4. Rasa MVC kali pertama: satu route `/hello` → controller `Hello` → view `hello.php` (Bahagian A tutorial).
 
 > `ci4-asas` ialah projek latihan sahaja dan boleh dipadam. Projek sebenar dicipta dalam repo `sistem-tlk-pas` pada Hari 4 Lab 4.2. 3 checkpoint Lab 1.5 dikira dalam kemajuan Hari 1.
 
@@ -527,4 +527,4 @@ Hari 1–3 tidak menulis kod sistem, tetapi persekitaran disediakan hari ini dal
 - Baca semula `docs/keperluan-awal.md` pasangan anda — tandakan mana-mana FR yang **tidak** anda yakin boleh diuji.
 - Lengkapkan `docs/soalan-terbuka.md`: sekurang-kurangnya 3 soalan untuk pemilik sistem (Hari 2 S1 bermula dengan sesi pengesahan).
 - Imbas sintaks Mermaid `flowchart` di <https://mermaid.js.org/syntax/flowchart.html> — esok kita lukis carta alir as-is dan to-be.
-- Pastikan anda boleh mempratonton Mermaid (VS Code + sambungan *Markdown Preview Mermaid Support*, atau <https://mermaid.live>).
+- Pastikan anda boleh mempratonton Mermaid (VS Code + extension Markdown Preview Mermaid Support, atau <https://mermaid.live>).

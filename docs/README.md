@@ -6,7 +6,7 @@
 
 | Fail | Kandungan | Bila guna |
 |------|-----------|-----------|
-| [`persediaan.md`](./persediaan.md) | Senarai semak persekitaran: PHP 8.2+ & sambungan, Composer 2, MySQL/MariaDB, Git, VS Code; arahan pengesahan & jadual penyelesaian masalah | **Sebelum Hari 1** (wajib siap sebelum Hari 4) |
+| [`persediaan.md`](./persediaan.md) | Senarai semak persekitaran: PHP 8.2+ & extension, Composer 2, MySQL/MariaDB, Git, VS Code; arahan pengesahan & jadual penyelesaian masalah | **Sebelum Hari 1** (wajib siap sebelum Hari 4) |
 | [`tutorial-rangka.md`](./tutorial-rangka.md) | Tutorial rangka aplikasi CI4 langkah demi langkah (Windows): A — CI4 asas (`ci4-asas`, Hari 1); B–G — projek dalam repo pasangan, `.env`, Shield, layout, migration + seeder, `composer test` | Hari 1 (Bahagian A) · sebelum Hari 4 (B–G) |
 | [`tugasan-persediaan.md`](./tugasan-persediaan.md) | Tugasan persediaan yang diedar pada Hari 3 dan disemak pada Hari 4 S1 | Hari 3 → Hari 4 |
 | [`pustaka-prompt.md`](./pustaka-prompt.md) | Pustaka prompt Claude Code / AI untuk **belajar** (terang ralat, semak logik, cadang ujian, terang kod baris demi baris, semakan keselamatan muat naik) | Hari 4–10, bila tersekat |

@@ -4,8 +4,8 @@
 
 ## Objektif nota
 
-- **Mencipta** cabang ciri, membuat commit kecil bermesej jelas mengikut prefix kursus, dan menggabungkannya ke `main`.
-- **Menerangkan** kenapa satu ciri = satu cabang mengurangkan risiko semasa kerja berpasangan.
+- **Mencipta** branch ciri, membuat commit kecil bermesej jelas mengikut prefix kursus, dan menggabungkannya ke `main`.
+- **Menerangkan** kenapa satu ciri = satu branch mengurangkan risiko semasa kerja berpasangan.
 - **Menyelesaikan** konflik merge asas (cth dalam `app/Config/Routes.php`) tanpa kehilangan kerja rakan.
 - **Memulihkan** keadaan jika `.env` atau rahsia ter-commit.
 
@@ -18,7 +18,7 @@ Sepanjang Hari 4–10 anda membina 4 modul berpasangan (driver/navigator). Tanpa
 - Sukar mengesan **bila** pepijat masuk dan **siapa** mengubahnya.
 - Tiada cara mudah "undur" satu ciri tanpa menjejaskan yang lain.
 
-**Satu ciri = satu cabang** memastikan `main` sentiasa boleh dijalankan, dan setiap ciri boleh disemak (review) sebelum masuk.
+**Satu ciri = satu branch** memastikan `main` sentiasa boleh dijalankan, dan setiap ciri boleh disemak (review) sebelum masuk.
 
 ```mermaid
 gitGraph
@@ -167,13 +167,13 @@ git branch -d feat/tlk-borang-tempahan     # buang cabang setempat yang sudah di
 
 ### Tentang `rebase`
 
-`git rebase main` menulis semula sejarah cabang anda supaya kelihatan lurus. Berguna, tetapi **berbahaya** jika cabang sudah di-push dan digunakan orang lain (memerlukan `push --force`). Peraturan kursus: **jangan rebase cabang yang telah dikongsi**. Jika ragu, guna `merge`.
+`git rebase main` menulis semula sejarah branch anda supaya kelihatan lurus. Berguna, tetapi **berbahaya** jika branch sudah di-push dan digunakan orang lain (memerlukan `push --force`). Peraturan kursus: **jangan rebase branch yang telah dikongsi**. Jika ragu, guna `merge`.
 
 ---
 
 ## 7. Menyelesaikan konflik — contoh `Routes.php`
 
-Situasi: Pasangan A menambah laluan TLK, Pasangan B menambah laluan Pas, kedua-duanya pada baris yang sama dalam `app/Config/Routes.php`.
+Situasi: Pasangan A menambah route TLK, Pasangan B menambah route Pas, kedua-duanya pada baris yang sama dalam `app/Config/Routes.php`.
 
 ```bash
 git switch main && git pull
@@ -201,8 +201,8 @@ $routes->group('pas/permohonan', ['filter' => 'session'], static function ($rout
 
 | Penanda | Maksud |
 |---------|--------|
-| `<<<<<<< HEAD` hingga `=======` | Versi dalam cabang semasa (`main`) |
-| `=======` hingga `>>>>>>> feat/…` | Versi dari cabang yang digabung |
+| `<<<<<<< HEAD` hingga `=======` | Versi dalam branch semasa (`main`) |
+| `=======` hingga `>>>>>>> feat/…` | Versi dari branch yang digabung |
 
 **Langkah penyelesaian:**
 
@@ -243,7 +243,7 @@ Jika keliru dan mahu mula semula: `git merge --abort`.
 |---------|--------|
 | Buang perubahan belum di-stage pada satu fail | `git restore app/Views/tlk/index.php` |
 | Keluarkan fail dari staging (kekal perubahan) | `git restore --staged <fail>` |
-| Simpan kerja sementara untuk tukar cabang | `git stash push -m "separuh borang"` → `git switch …` → kembali → `git stash pop` |
+| Simpan kerja sementara untuk tukar branch | `git stash push -m "separuh borang"` → `git switch …` → kembali → `git stash pop` |
 | Betulkan mesej commit terakhir (belum push) | `git commit --amend` |
 | Terperangkap dalam Vim (skrin `~` selepas `git commit`/`git pull`) | `Esc` → taip `:wq` → `Enter`; kemudian `git config --global core.editor "code --wait"` |
 | Undur commit yang sudah di-push (selamat) | `git revert <hash>` |
@@ -293,14 +293,14 @@ Semak: `git log --all --oneline -- .env` sepatutnya kosong untuk repo yang bersi
 | Merge tanpa `git pull` dahulu | Push ditolak / konflik lebih besar | `git switch main && git pull` sebelum merge |
 | Penanda `<<<<<<<` tertinggal dalam fail | Ralat sintaks PHP | `php -l`, `git diff --check` sebelum commit |
 | Sunting migration lama yang sudah dijalankan | Skema pasangan tidak sepadan | Cipta migration baharu |
-| `push --force` pada cabang dikongsi | Kerja rakan hilang | Jangan; guna `git revert`/merge |
+| `push --force` pada branch dikongsi | Kerja rakan hilang | Jangan; guna `git revert`/merge |
 | `.env` di-commit | Rahsia bocor | `git rm --cached .env` + rotate rahsia |
 
 ---
 
 ## Rujukan rasmi
 
-- Pro Git (percuma, ada bab cabang & merge): <https://git-scm.com/book/en/v2>
+- Pro Git (percuma, ada bab branch & merge): <https://git-scm.com/book/en/v2>
 - Git — Basic Branching and Merging: <https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging>
 - Git — `git merge` (conflict): <https://git-scm.com/docs/git-merge#_how_conflicts_are_presented>
 - Git — `git stash`: <https://git-scm.com/docs/git-stash> · `git restore`: <https://git-scm.com/docs/git-restore>
@@ -308,4 +308,4 @@ Semak: `git log --all --oneline -- .env` sepatutnya kosong untuk repo yang bersi
 - Mermaid — gitGraph: <https://mermaid.js.org/syntax/gitgraph.html>
 
 ---
-**Digunakan pada Hari 4** (S4 — pembahagian tugas, cabang Git & Definition of Done) **dan sepanjang Hari 5–10** (setiap ciri modul TLK, Pas, Laporan, Statistik). Nota berkaitan: [11 · Keselamatan Aplikasi Web](./11-keselamatan-aplikasi-web.md) · [10 · Ujian PHPUnit](./10-ujian-phpunit-ci4.md) · [02 · Migration, Seeder & Query Builder](./02-migration-seeder-dan-query-builder.md)
+**Digunakan pada Hari 4** (S4 — pembahagian tugas, branch Git & Definition of Done) **dan sepanjang Hari 5–10** (setiap ciri modul TLK, Pas, Laporan, Statistik). Nota berkaitan: [11 · Keselamatan Aplikasi Web](./11-keselamatan-aplikasi-web.md) · [10 · Ujian PHPUnit](./10-ujian-phpunit-ci4.md) · [02 · Migration, Seeder & Query Builder](./02-migration-seeder-dan-query-builder.md)

@@ -5,7 +5,7 @@
 ## Objektif nota
 
 - **Membezakan** ujian unit dan ujian ciri (feature) serta memilih jenis yang sesuai untuk setiap peraturan perniagaan (BR-*).
-- **Mengkonfigur** pangkalan data ujian MySQL yang berasingan dan **menerangkan** kenapa SQLite tidak sesuai untuk BR-TLK-05.
+- **Mengkonfigur** database ujian MySQL yang berasingan dan **menerangkan** kenapa SQLite tidak sesuai untuk BR-TLK-05.
 - **Menulis** ujian menggunakan `DatabaseTestTrait`, `FeatureTestTrait` dan `actingAs()` (Shield) untuk pertindihan tempahan, peralihan status dan kawalan akses.
 - **Mengamalkan** kitaran *reproduce → ujian gagal → baiki → ujian lulus* apabila membetulkan pepijat.
 
@@ -362,7 +362,7 @@ public function testApplicantCannotViewOthersApplication(): void
 }
 ```
 
-> **Kenapa `expectException` dan bukan `assertStatus(404)`?** Tanpa `set404Override()` dalam `Routes.php`, CI4 membaling semula `PageNotFoundException` dari `run()` — jadi ujian menangkap exception. Jika projek anda menetapkan 404 override, tukar kepada `->assertStatus(404)`. Laluan POST dalam contoh (`/pas/semakan/1/review`) juga contoh — padankan dengan `Routes.php` anda.
+> **Kenapa `expectException` dan bukan `assertStatus(404)`?** Tanpa `set404Override()` dalam `Routes.php`, CI4 membaling semula `PageNotFoundException` dari `run()` — jadi ujian menangkap exception. Jika projek anda menetapkan 404 override, tukar kepada `->assertStatus(404)`. Route POST dalam contoh (`/pas/semakan/1/review`) juga contoh — padankan dengan `Routes.php` anda.
 
 Kaedah TestResponse yang kerap digunakan: `assertStatus(403)`, `assertOK()`, `assertRedirect()`, `assertRedirectTo('/path')`, `assertSee('teks')`, `assertDontSee('teks')`, `assertSessionHas('message')`, `assertJSONFragment([...])`.
 
@@ -406,7 +406,7 @@ flowchart LR
 | Kekal SQLite `:memory:` | `FOR UPDATE`/`DATEDIFF` ralat; ujian tidak mencerminkan MySQL | `database.tests.DBDriver = MySQLi` |
 | Lupa `$namespace = null` | Jadual Shield tiada → `actingAs()` / `addGroup()` ralat | Tetapkan `$namespace = null` |
 | POST dalam ujian gagal dengan `SecurityException` | Keliru — sangka controller rosak | Nyahaktif CSRF dalam ujian logik; kekalkan satu ujian CSRF |
-| Hanya uji laluan "gembira" | Pepijat akses (pemohon buka `/pas/semakan`) terlepas | Setiap ciri: satu ujian positif + satu negatif |
+| Hanya uji "happy path" | Pepijat akses (pemohon buka `/pas/semakan`) terlepas | Setiap ciri: satu ujian positif + satu negatif |
 | Ujian bergantung pada susunan/data ujian lain | Lulus seorang diri, gagal bila dijalan bersama | `$refresh = true`, cipta data dalam setiap ujian |
 | Tarikh ditaip relatif kepada "hari ini" tanpa kawalan | Ujian gagal bulan depan | Guna tarikh tetap; jika kod guna `Time::now()`, tetapkan `Time::setTestNow('2026-03-01')` |
 | Guna data sebenar/emel sebenar | Pelanggaran data | `@latihan.test`, plat rekaan sahaja |

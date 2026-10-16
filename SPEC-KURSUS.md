@@ -1,6 +1,6 @@
 # SPEC-KURSUS — Kanun Tunggal (CI-KKM-10)
 
-> **Kanun tunggal.** Semua bahan (README hari, lab, nota penceramah, slaid, templat kod) **mesti** patuh fail ini. Jangan tukar nama jadual, medan, status, peranan, prefix atau nama kelas tanpa mengemas kini fail ini dahulu.
+> **Kanun tunggal.** Semua bahan (README hari, lab, nota penceramah, slaid, template kod) **mesti** patuh fail ini. Jangan tukar nama jadual, medan, status, peranan, prefix atau nama kelas tanpa mengemas kini fail ini dahulu.
 
 Kursus: **Coaching Pembangunan Aplikasi Menggunakan CodeIgniter** · 10 hari · Kementerian Kesihatan Malaysia (KKM) · Disediakan oleh **RH Dynamic Resources**.
 
@@ -12,7 +12,7 @@ Kursus: **Coaching Pembangunan Aplikasi Menggunakan CodeIgniter** · 10 hari · 
 |---------|-------|
 | Rangka | **CodeIgniter 4.6+** (`codeigniter4/appstarter`) |
 | Bahasa | **PHP 8.2+** (backed enum, `readonly`, named arguments) |
-| Pangkalan data | **MySQL 8 / MariaDB 10.6+** (InnoDB, `utf8mb4`) |
+| Database | **MySQL 8 / MariaDB 10.6+** (InnoDB, `utf8mb4`) |
 | Pengesahan & peranan | **CodeIgniter Shield** (`codeigniter4/shield`) — groups + permissions |
 | Antara muka | **Bootstrap 5.3** + Bootstrap Icons (layout `app/Views/layouts/main.php`) |
 | Carta | **Chart.js 4** |
@@ -20,7 +20,7 @@ Kursus: **Coaching Pembangunan Aplikasi Menggunakan CodeIgniter** · 10 hari · 
 | Cache | CodeIgniter Cache (`file` handler semasa latihan) |
 | Ujian | **PHPUnit** + CodeIgniter Testing (`FeatureTestTrait`, `DatabaseTestTrait`) |
 | CLI | **Spark** (`migrate`, `db:seed`, `make:*`, `routes`, `serve`) |
-| Kawalan versi | **Git** (satu cabang per modul/ciri) |
+| Kawalan versi | **Git** (satu branch per modul/ciri) |
 | Diagram | **Mermaid** (ERD, carta alir, carta status) · **draw.io/Excalidraw** (wireframe) |
 | Pembantu AI (opsyenal) | **Claude Code** — penjelas & pencadang, bukan penjana modul |
 | Bahasa | Nota/UI **Bahasa Melayu** · kod, nama kelas & istilah teknikal **Bahasa Inggeris** |
@@ -98,13 +98,13 @@ submitted ──► under_review ──► approved ──► expired
 
 ### 2.3 M3 — Laporan
 
-| Kod | Laporan | Penapis |
+| Kod | Laporan | Filter |
 |-----|---------|---------|
 | `RPT-01` | Senarai tempahan TLK | julat tarikh, zon, kategori, status |
 | `RPT-02` | Senarai permohonan Pas | julat tarikh, jenis pas, jabatan, status |
 | `RPT-03` | Penggunaan slot mengikut zon (aggregate) | bulan/tahun |
 
-Setiap laporan: paparan HTML berpagination + butang **Eksport PDF** + **Eksport Excel** (penapis sama dibawa melalui query string).
+Setiap laporan: paparan HTML berpagination + butang **Eksport PDF** + **Eksport Excel** (filter sama dibawa melalui query string).
 
 ### 2.4 M4 — Statistik
 
@@ -139,7 +139,7 @@ Semua jadual: `id` INT UNSIGNED AUTO_INCREMENT PK, `created_at`, `updated_at` (D
 | `approver` | Pegawai pelulus pas & tempahan TLK | `tlk.decide`, `pas.approve`, `laporan.view`, `statistik.view` |
 | `admin` | Pentadbir sistem | `admin.*`, `tlk.*`, `pas.*`, `laporan.*`, `statistik.*` |
 
-Akses dikuatkuasa di **pelayan** melalui Shield filters (`group:`/`permission:`) pada `app/Config/Routes.php` **dan** semakan pemilikan dalam controller/service — tidak cukup sekadar sembunyi butang.
+Akses dikuatkuasa di **server** melalui Shield filters (`group:`/`permission:`) pada `app/Config/Routes.php` **dan** semakan pemilikan dalam controller/service — tidak cukup sekadar sembunyi butang.
 
 Pengguna sintetik (seeder `UserSeeder`, kata laluan `Latihan@2026`): `pemohon1@latihan.test`, `pemohon2@latihan.test`, `penyemak@latihan.test`, `pelulus@latihan.test`, `admin@latihan.test`.
 
@@ -192,7 +192,7 @@ Prinsip: **Controller nipis** (terima request → panggil service → pulang vie
 | 6 | TLK (2) | Semakan ketersediaan · anti-pertindihan dalam transaksi · lulus/tolak · ujian · **M1 siap** |
 | 7 | Pas (1) | CRUD permohonan · borang + muat naik dokumen selamat |
 | 8 | Pas (2) | Aliran kelulusan · RBAC Shield · `status_logs` · ujian akses · **M2 siap** |
-| 9 | Laporan | RPT-01..03 · penapis · aggregate · eksport PDF/Excel · **M3 siap** |
+| 9 | Laporan | RPT-01..03 · filter · aggregate · eksport PDF/Excel · **M3 siap** |
 | 10 | Statistik & Capstone | Dashboard Chart.js + cache · ujian akhir · **demo capstone** kepada pemilik sistem |
 
 ## 8. Format bahan setiap hari
@@ -213,7 +213,7 @@ Rentak harian tetap (dari tentatif): 08:30–09:00 recap · S1 09:00–10:30 · 
 | Enum | Kes PascalCase (`BookingStatus::Approved`, `PassStatus::UnderReview`); `label()`, `badge()`, `canTransitionTo()`, `static values()`/`active()` |
 | Ralat peraturan perniagaan | `\DomainException` dengan mesej BM (TLK; peralihan status Pas yang tidak sah). Ralat input borang Pas (`submit()`, catatan penolakan) → `\InvalidArgumentException`; `ReviewController` menangkap kedua-duanya. Kegagalan teknikal (query/simpan) → `\RuntimeException`; akses ditolak dalam service → 403 `app/Views/errors/forbidden.php`; filter Shield → redirect |
 | Kebenaran konkrit | `admin.access` (di bawah `admin.*`) |
-| Laluan tambahan | `/tlk/tempahan/ketersediaan` (paparan slot kosong); `new`/`create` TLK & Pas turut `permission:tlk.apply` / `pas.apply` |
+| Route tambahan | `/tlk/tempahan/ketersediaan` (paparan slot kosong); `new`/`create` TLK & Pas turut `permission:tlk.apply` / `pas.apply` |
 | Tolak tempahan TLK | `remarks` wajib min 10 aksara (selari BR-PAS-03) |
 | Fail sokongan | `app/Validation/BookingRules.php` · `app/Views/pager/bootstrap_full.php` · `app/Views/partials/status_timeline.php` · partial flash dalam layout |
 | Dokumen Pas | `doc_type = 'sokongan'`; medan borang `documents[]` |

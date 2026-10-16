@@ -1,7 +1,27 @@
 # Glosari BM ↔ English
 
-> Istilah yang digunakan sepanjang kursus CI-KKM-10. Konvensyen: prosa **Bahasa Melayu**, kod & istilah teknikal **English**. Dalam nota, istilah English yang tidak diterjemah ditulis *condong* atau dalam `kod`.
+> Istilah yang digunakan sepanjang kursus CI-KKM-10. Konvensyen: prosa **Bahasa Melayu**, kod & istilah teknikal **English**. Dalam prosa, istilah teknikal ditulis dalam English biasa (lihat jadual di bawah); nama dalam kod ditulis dalam `kod`.
 > Nama domain (jadual, enum, status) mengikut [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) dan **tidak diterjemah dalam kod**.
+
+## Istilah teknikal dalam prosa
+
+Tulis seperti pembangun KKM bercakap di pejabat: ayat Bahasa Melayu, istilah teknikal English. Istilah biasa ditulis biasa (tanpa *condong*); nama dalam kod ditulis dalam `kod`.
+
+| Jangan tulis | Tulis | Kekal Bahasa Melayu jika maksudnya… |
+|--------------|-------|-------------------------------------|
+| laluan | route | path fail (*path*), laluan kejar (catch-up) |
+| penapis | filter | |
+| pelayan | server | |
+| cawangan / cabang (Git) | branch | |
+| sambungan | extension (PHP/VS Code), connection (DB) | sambungan cerita/ayat |
+| pengawal | controller | |
+| paparan (dalam kod) | view | paparan skrin kepada pengguna |
+| templat (kod/view) | template | label "Templat & Rujukan", folder `templates/` |
+| pangkalan data | database | |
+| pemboleh ubah / tatasusunan / rentetan | variable / array / string | |
+| kebergantungan / pakej | dependency / package | |
+
+Kekal Bahasa Melayu: ralat, sesi (sesi kelas), pengesahan (oleh pemilik sistem), ujian, semakan, keperluan.
 
 ## A. Domain kursus
 

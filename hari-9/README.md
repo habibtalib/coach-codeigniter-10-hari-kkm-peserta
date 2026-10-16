@@ -12,10 +12,10 @@ Di akhir hari ini, peserta boleh:
 
 | # | Objektif (boleh diukur) | Sesi |
 |---|-------------------------|------|
-| O1 | **Menulis** spesifikasi laporan RPT-01, RPT-02 dan RPT-03 (tujuan, pengguna, lajur, penapis, susunan lalai, siapa boleh lihat) dalam format kad laporan. | S1 |
-| O2 | **Membina** borang penapis `method="get"` yang mengekalkan nilai penapis selepas dihantar dan membawa query string yang sama ke pagination & butang eksport. | S1 |
-| O3 | **Menulis** `ReportService` dengan Query Builder: `join()`, penapis dinamik `when()`, julat tarikh yang betul, `groupBy()` + `selectCount()`, dan **whitelist** lajur susunan. | S2 |
-| O4 | **Menjana** fail PDF (Dompdf, A4 landskap, pengepala/pengaki + nombor muka) dan `.xlsx` (PhpSpreadsheet, pengepala tebal, lebar automatik, baris beku) daripada penapis yang **sama** dengan paparan HTML. | S3 |
+| O1 | **Menulis** spesifikasi laporan RPT-01, RPT-02 dan RPT-03 (tujuan, pengguna, lajur, filter, susunan lalai, siapa boleh lihat) dalam format kad laporan. | S1 |
+| O2 | **Membina** borang filter `method="get"` yang mengekalkan nilai filter selepas dihantar dan membawa query string yang sama ke pagination & butang eksport. | S1 |
+| O3 | **Menulis** `ReportService` dengan Query Builder: `join()`, filter dinamik `when()`, julat tarikh yang betul, `groupBy()` + `selectCount()`, dan **whitelist** lajur susunan. | S2 |
+| O4 | **Menjana** fail PDF (Dompdf, A4 landskap, pengepala/pengaki + nombor muka) dan `.xlsx` (PhpSpreadsheet, pengepala tebal, lebar automatik, baris beku) daripada filter yang **sama** dengan paparan HTML. | S3 |
 | O5 | **Menguji** bahawa jumlah laporan = kiraan SQL terus melalui ujian PHPUnit, dan **menganalisis** pelan query dengan `EXPLAIN` untuk mencadangkan index. | S4 |
 | O6 | **Menerangkan** risiko memori/masa bagi eksport besar dan cara mengawalnya (had rekod, penstriman baris). | S3, S4 |
 
@@ -26,7 +26,7 @@ Di akhir hari ini, peserta boleh:
 | Masa | Sesi | Aktiviti | Objektif |
 |------|------|----------|----------|
 | 08:30–09:00 | — | Recap Hari 8 (aliran Pas + RBAC) | — |
-| 09:00–10:30 | **S1** | Reka bentuk laporan (jenis, kriteria carian/penapis) | O1, O2 |
+| 09:00–10:30 | **S1** | Reka bentuk laporan (jenis, kriteria carian/filter) | O1, O2 |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | **S2** | Query aggregate & carian data | O3 |
 | 12:30–14:30 | — | Makan tengah hari | — |
@@ -37,12 +37,12 @@ Di akhir hari ini, peserta boleh:
 
 ## 🧭 Kenapa hari ini penting
 
-Pemilik sistem jarang membuka skrin "cipta tempahan". Yang mereka buka setiap minggu ialah **laporan** — dan yang mereka bawa ke mesyuarat ialah **PDF/Excel**. Jika laporan menunjukkan 47 tempahan diluluskan tetapi pangkalan data sebenarnya ada 52, kepercayaan terhadap *seluruh* sistem runtuh, walaupun modul TLK dan Pas berfungsi sempurna.
+Pemilik sistem jarang membuka skrin "cipta tempahan". Yang mereka buka setiap minggu ialah **laporan** — dan yang mereka bawa ke mesyuarat ialah **PDF/Excel**. Jika laporan menunjukkan 47 tempahan diluluskan tetapi database sebenarnya ada 52, kepercayaan terhadap *seluruh* sistem runtuh, walaupun modul TLK dan Pas berfungsi sempurna.
 
 Maka hari ini ada tiga prinsip yang kita pegang:
 
 1. **Satu sumber kebenaran** — HTML, PDF dan Excel mesti memanggil *builder yang sama*. Tiada query "salinan" untuk eksport.
-2. **Penapis ialah input pengguna** — ia mesti divalidasi dan di-whitelist, sama seperti borang POST.
+2. **Filter ialah input pengguna** — ia mesti divalidasi dan di-whitelist, sama seperti borang POST.
 3. **Nombor mesti boleh dibuktikan** — ujian automatik membandingkan jumlah laporan dengan `COUNT(*)` terus.
 
 ```mermaid
@@ -69,7 +69,7 @@ Sebelum menulis satu baris kod, jawab lima soalan untuk setiap laporan:
 | **Siapa** membaca? | Pegawai pelulus TLK, pentadbir |
 | **Keputusan apa** yang dibuat daripadanya? | Adakah slot OKU zon B cukup? Siapa yang masih menunggu keputusan? |
 | **Lajur** apa yang perlu? | No. rujukan, pemohon, plat, zon, slot, kategori, tarikh mula/tamat, status |
-| **Penapis** apa? | Julat tarikh, zon, kategori, status (SPEC §2.3) |
+| **Filter** apa? | Julat tarikh, zon, kategori, status (SPEC §2.3) |
 | **Susunan lalai**? | Tarikh mula terbaru dahulu |
 
 ### 1.2 Kad spesifikasi RPT-01..03 (ikut SPEC §2.3)
@@ -79,7 +79,7 @@ Sebelum menulis satu baris kod, jawab lima soalan untuk setiap laporan:
 | URL | `/laporan/tempahan` | `/laporan/pas` | `/laporan/penggunaan` |
 | Jenis | Senarai (baris = 1 tempahan) | Senarai (baris = 1 permohonan) | **Aggregate** (baris = 1 zon) |
 | Lajur | No. Rujukan, Pemohon, No. Plat, Zon, Slot, Kategori, Tarikh Mula, Tarikh Tamat, Status | No. Rujukan, Pemohon, No. Pekerja, Jabatan, Jenis Pas, Sah Dari, Sah Hingga, Status, Tarikh Mohon | Kod Zon, Nama Zon, Bil. Slot Aktif, Bil. Tempahan, Hari-Slot Ditempah, Kapasiti, Penggunaan (%) |
-| Penapis | `from`, `to`, `zone_id`, `category`, `status` | `from`, `to`, `department_id`, `pass_type`, `status` | `year`, `month` (kosong = setahun) |
+| Filter | `from`, `to`, `zone_id`, `category`, `status` | `from`, `to`, `department_id`, `pass_type`, `status` | `year`, `month` (kosong = setahun) |
 | Makna julat tarikh | Tempahan **aktif** dalam julat (bertindih) | Tarikh **mohon** (`created_at`) | Tempoh bulan/tahun |
 | Susunan lalai | `start_date` DESC | `created_at` DESC | `zone_code` ASC |
 | Boleh susun | ref_no, zon, tarikh mula/tamat, status | ref_no, jabatan, jenis, status, tarikh mohon | kod zon, penggunaan |
@@ -97,7 +97,7 @@ Sebelum menulis satu baris kod, jawab lima soalan untuk setiap laporan:
 |---|---|
 | URL boleh ditanda buku & dikongsi: `/laporan/pas?status=approved&department_id=3` | URL sama untuk semua carian |
 | Butang *Back* pelayar berfungsi | "Confirm form resubmission" |
-| Pagination & eksport hanya perlu tambah `&page=2` / `&export=pdf` | Perlu simpan penapis dalam sesi — rumit |
+| Pagination & eksport hanya perlu tambah `&page=2` / `&export=pdf` | Perlu simpan filter dalam sesi — rumit |
 | Tidak mengubah data → tiada CSRF diperlukan | Perlu token CSRF |
 
 Peraturan am: **GET untuk membaca, POST untuk mengubah.** Laporan hanya membaca.
@@ -115,8 +115,8 @@ flowchart TD
 ```
 
 1. **Borang tidak diisi semula** → guna `value="<?= esc($filters['from'], 'attr') ?>"` dan `selected` untuk `<option>`. (Bukan `old()` — `old()` untuk redirect selepas POST.)
-2. **Pagination membuang penapis** → Pager CI4 **sudah** menyalin query string semasa. Jangan bina pautan halaman sendiri.
-3. **Eksport tidak membawa penapis** → bina pautan daripada penapis **bersih** + `export=pdf`:
+2. **Pagination membuang filter** → Pager CI4 **sudah** menyalin query string semasa. Jangan bina pautan halaman sendiri.
+3. **Eksport tidak membawa filter** → bina pautan daripada filter **bersih** + `export=pdf`:
 
 ```php
 // dalam view — $query = ReportService::toQuery($filters) (nilai kosong dibuang)
@@ -127,12 +127,12 @@ flowchart TD
 
 ### 🎯 Kuiz S1
 
-1. Kenapa borang penapis laporan menggunakan `GET` dan bukan `POST`?
+1. Kenapa borang filter laporan menggunakan `GET` dan bukan `POST`?
    - [ ] `GET` lebih selamat untuk data sulit
    - [x] Laporan hanya membaca data: URL boleh ditanda buku dan dikongsi, butang *Back* berfungsi, dan pagination/eksport cuma menambah `&page=2` atau `&export=pdf`
    - [ ] CI4 tidak menyokong pagination untuk `POST`
    - [ ] `GET` tidak perlu disemak oleh filter `permission:laporan.view`, jadi pemohon juga boleh membuka laporan tanpa konfigurasi tambahan pada Routes
-   > Peraturan am: GET untuk membaca, POST untuk mengubah. Filter `permission:laporan.view` tetap dikenakan pada laluan laporan.
+   > Peraturan am: GET untuk membaca, POST untuk mengubah. Filter `permission:laporan.view` tetap dikenakan pada route laporan.
 
 2. Zon B ada 3 slot aktif. Bagi bulan Jun 2026 (30 hari), tempahan `approved` meliputi 18 hari-slot dan tempahan `pending` meliputi 12 hari-slot. Berapakah Penggunaan (%) RPT-03?
    - [ ] 33.3 %
@@ -165,7 +165,7 @@ private const SORTABLE = ['tempahan' => ['ref_no' => 'b.ref_no', 'zone' => 'z.co
 
 ### 2.2 Langkah 2 — builder dengan `join()` + penapis dinamik `when()`
 
-`when($syarat, $callback)` (CI 4.3+) menjalankan callback **hanya jika** syarat *truthy*. Ini menggantikan timbunan `if`:
+`when($syarat, $callback)` (CI 4.3+) menjalankan callback **hanya jika** syarat truthy. Ini menggantikan timbunan `if`:
 
 ```php
 private function bookingsBuilder(array $f): BaseBuilder
@@ -274,7 +274,7 @@ Dalam view: `<?= $pager->makeLinks($result['page'], $result['perPage'], $result[
    - [ ] Masalahnya hanya prestasi kerana tiada index
    > Input seperti `sort=(SELECT SLEEP(5))` boleh lolos atau menghasilkan ralat SQL yang membocorkan struktur. Kunci yang tiada dalam whitelist jatuh ke susunan lalai.
 
-2. Pengguna menapis RPT-02 dengan `to = 2026-09-30`. Permohonan dihantar pada `2026-09-30 14:00:00`. Penapis manakah yang **memasukkan** permohonan itu dengan betul dan tidak menghalang penggunaan index (jika ditambah)?
+2. Pengguna menapis RPT-02 dengan `to = 2026-09-30`. Permohonan dihantar pada `2026-09-30 14:00:00`. Filter manakah yang **memasukkan** permohonan itu dengan betul dan tidak menghalang penggunaan index (jika ditambah)?
    - [ ] `->where('p.created_at <=', '2026-09-30')`
    - [x] `->where('p.created_at <', '2026-10-01 00:00:00')`
    - [ ] `->where('DATE(p.created_at) <=', '2026-09-30')`
@@ -351,7 +351,7 @@ $sheet->setAutoFilter("A5:{$lastCol}{$lastRow}");                          // pe
 | Kenapa `setCellValueExplicit(... TYPE_STRING)`? | |
 |---|---|
 | No. pekerja `001234` | Tanpa explicit → nombor `1234` (sifar hilang) |
-| Teks bermula `=` (cth `=HYPERLINK(...)`) | Tanpa explicit → Excel anggap **formula** (*CSV/formula injection*) |
+| Teks bermula `=` (cth `=HYPERLINK(...)`) | Tanpa explicit → Excel anggap **formula** (CSV/formula injection) |
 | Nombor sebenar (`total_slots`, `utilisation`) | Kekal nombor — boleh dijumlah dalam Excel |
 
 ### 3.4 Memori & masa untuk eksport besar
@@ -374,12 +374,12 @@ public function exportRows(string $report, array $filters, string $format): iter
 }
 ```
 
-> ⚠️ **Kesilapan lazim — "naikkan sahaja `memory_limit` ke -1".** Itu menangguhkan masalah sehingga pelayan pengeluaran jatuh. Had yang jelas + mesej "kecilkan julat penapis" ialah reka bentuk yang jujur. Untuk data > 10,000 baris, cadangkan CSV (penstriman sebenar) atau kerja latar belakang — ⭐ cabaran.
+> ⚠️ **Kesilapan lazim — "naikkan sahaja `memory_limit` ke -1".** Itu menangguhkan masalah sehingga server pengeluaran jatuh. Had yang jelas + mesej "kecilkan julat filter" ialah reka bentuk yang jujur. Untuk data > 10,000 baris, cadangkan CSV (penstriman sebenar) atau kerja latar belakang — ⭐ cabaran.
 
 ### 🎯 Kuiz S3
 
 1. Kenapa `ExportService` menulis No. Pekerja dengan `setCellValueExplicit(..., DataType::TYPE_STRING)`?
-   - [x] Supaya `001234` kekal teks (sifar di hadapan tidak hilang) dan teks bermula `=` tidak dianggap formula (*formula injection*)
+   - [x] Supaya `001234` kekal teks (sifar di hadapan tidak hilang) dan teks bermula `=` tidak dianggap formula (formula injection)
    - [ ] Supaya lajur No. Pekerja boleh dijumlahkan dan diisih sebagai nombor dalam Excel tanpa amaran "Number stored as text"
    - [ ] Kerana PhpSpreadsheet tidak menyokong nombor
    - [ ] Supaya fail `.xlsx` lebih kecil
@@ -387,10 +387,10 @@ public function exportRows(string $report, array $filters, string $format): iter
 
 2. Eksport Excel RPT-01 gagal dengan `Allowed memory size … exhausted` untuk 50,000 baris. Apakah reka bentuk yang disyorkan?
    - [ ] Tetapkan `memory_limit = -1` dalam `php.ini` dan `set_time_limit(0)` dalam `ReportController` supaya eksport besar sentiasa berjaya tanpa had baris
-   - [x] Kuatkuasa had (`EXPORT_LIMIT['xlsx'] = 10000`) dengan `LengthException` dan mesej "kecilkan julat penapis"; baris distrim melalui Generator
+   - [x] Kuatkuasa had (`EXPORT_LIMIT['xlsx'] = 10000`) dengan `LengthException` dan mesej "kecilkan julat filter"; baris distrim melalui Generator
    - [ ] Tukar kepada PDF kerana Dompdf lebih jimat memori
    - [ ] Buang `countAllResults()` supaya query lebih cepat
-   > Menaikkan `memory_limit` hanya menangguhkan masalah sehingga pelayan pengeluaran jatuh. Had PDF lebih rendah (2,000) kerana Dompdf perlahan untuk ribuan baris.
+   > Menaikkan `memory_limit` hanya menangguhkan masalah sehingga server pengeluaran jatuh. Had PDF lebih rendah (2,000) kerana Dompdf perlahan untuk ribuan baris.
 
 ---
 
@@ -419,8 +419,8 @@ Kes minimum untuk M3 siap (semua ada dalam [`templates/kod/ReportServiceTest.php
 
 | Kes | Membuktikan |
 |-----|-------------|
-| Tanpa penapis = `COUNT(*)` jadual | Tiada JOIN yang membuang baris |
-| Penapis status / zon / jabatan | `where` betul |
+| Tanpa filter = `COUNT(*)` jadual | Tiada JOIN yang membuang baris |
+| Filter status / zon / jabatan | `where` betul |
 | Julat tarikh bertindih (RPT-01) | Syarat BR-TLK-01 diguna semula |
 | Hari terakhir julat tidak tercicir (RPT-02) | Julat separuh-terbuka DATETIME |
 | Nilai tidak sah diabaikan; `sort` asing jatuh ke lalai | Whitelist berfungsi |
@@ -444,7 +444,7 @@ Cara membaca lajur utama:
 | `rows` | kecil berbanding saiz jadual | ≈ jumlah baris jadual |
 | `Extra` | `Using index`, `Using where` | `Using filesort`, `Using temporary` (pada jadual besar) |
 
-SPEC §3 sudah menyediakan `INDEX(status)` dan `INDEX(slot_id, start_date, end_date)` pada `slot_bookings`, serta `INDEX(status)` pada `pass_applications`. Penapis RPT-02 mengikut `created_at` **tiada** index — pada 500 baris latihan ia tidak ketara, pada 500,000 baris ia ketara. Lab S4 menunjukkan cara mengukur sebelum memutuskan.
+SPEC §3 sudah menyediakan `INDEX(status)` dan `INDEX(slot_id, start_date, end_date)` pada `slot_bookings`, serta `INDEX(status)` pada `pass_applications`. Filter RPT-02 mengikut `created_at` **tiada** index — pada 500 baris latihan ia tidak ketara, pada 500,000 baris ia ketara. Lab S4 menunjukkan cara mengukur sebelum memutuskan.
 
 > 💡 **Tip:** Index mempercepat `SELECT` tetapi memperlahankan `INSERT/UPDATE` dan memakan ruang. **Ukur dahulu** (EXPLAIN + Debug Toolbar → tab *Database*), baru tambah. Index tambahan ialah keputusan reka bentuk — rekod dalam kamus data.
 
@@ -468,24 +468,24 @@ SPEC §3 sudah menyediakan `INDEX(status)` dan `INDEX(slot_id, start_date, end_d
 
 ## 📦 Hasil Hari Ini
 
-- [ ] `app/Services/ReportService.php` — penapis whitelist, 2 builder (RPT-01/02), aggregate RPT-03, pagination, `exportRows()` berhad
+- [ ] `app/Services/ReportService.php` — filter whitelist, 2 builder (RPT-01/02), aggregate RPT-03, pagination, `exportRows()` berhad
 - [ ] `app/Services/ExportService.php` — `pdf()` (A4 landskap, header/footer, nombor muka) & `xlsx()` (tebal, autosize, beku, autofilter)
 - [ ] `service('reportService')` & `service('exportService')` didaftar dalam `app/Config/Services.php`
 - [ ] `app/Controllers/Laporan/ReportController.php` — nipis; `bookings()`, `passes()`, `usage()`
 - [ ] `app/Views/laporan/index.php` (borang GET + jadual + eksport) & `app/Views/laporan/pdf.php`
-- [ ] Laluan `/laporan/{tempahan|pas|penggunaan}` dengan `permission:laporan.view`
+- [ ] Route `/laporan/{tempahan|pas|penggunaan}` dengan `permission:laporan.view`
 - [ ] `tests/Services/ReportServiceTest.php` — hijau
 - [ ] Nota EXPLAIN (1 perenggan) dalam README projek
-- [ ] Commit `RPT: ...` dalam cabang `feat/laporan` → **M3 siap** ✅
+- [ ] Commit `RPT: ...` dalam branch `feat/laporan` → **M3 siap** ✅
 
 ---
 
 ## 🧠 Semakan Kendiri
 
-**1. Kenapa borang penapis laporan menggunakan `method="get"`, dan adakah ia perlu token CSRF?**
+**1. Kenapa borang filter laporan menggunakan `method="get"`, dan adakah ia perlu token CSRF?**
 <details><summary>Jawapan</summary>
 
-GET menjadikan penapis sebahagian daripada URL — boleh ditanda buku, dikongsi, butang *Back* berfungsi, dan pagination/eksport hanya perlu menambah parameter. GET tidak mengubah data, jadi **tidak** perlu CSRF. CSRF melindungi permintaan yang **mengubah keadaan** (POST/PUT/DELETE).
+GET menjadikan filter sebahagian daripada URL — boleh ditanda buku, dikongsi, butang *Back* berfungsi, dan pagination/eksport hanya perlu menambah parameter. GET tidak mengubah data, jadi **tidak** perlu CSRF. CSRF melindungi permintaan yang **mengubah keadaan** (POST/PUT/DELETE).
 </details>
 
 **2. Pengguna menapis `to=2026-09-30` pada RPT-02, tetapi permohonan yang dihantar 30/09 jam 14:00 tidak muncul. Apakah puncanya dan pembetulannya?**
@@ -509,8 +509,8 @@ Zon tanpa slot aktif tetap menghasilkan satu baris dengan `s.id = NULL` (sifat L
 **5. Eksport Excel 50,000 baris gagal dengan "Allowed memory size exhausted". Beri dua tindakan yang betul dan satu yang salah.**
 <details><summary>Jawapan</summary>
 
-Betul: (a) kuatkuasa had rekod dengan mesej "kecilkan julat penapis" (`EXPORT_LIMIT`); (b) untuk keperluan data besar, tawarkan CSV berstrim atau kerja latar belakang yang menjana fail dan memaklumkan pengguna. Juga baik: penstriman baris dengan Generator, `disconnectWorksheets()`.
-Salah: `ini_set('memory_limit', '-1')` — menangguhkan masalah sehingga pelayan jatuh.
+Betul: (a) kuatkuasa had rekod dengan mesej "kecilkan julat filter" (`EXPORT_LIMIT`); (b) untuk keperluan data besar, tawarkan CSV berstrim atau kerja latar belakang yang menjana fail dan memaklumkan pengguna. Juga baik: penstriman baris dengan Generator, `disconnectWorksheets()`.
+Salah: `ini_set('memory_limit', '-1')` — menangguhkan masalah sehingga server jatuh.
 </details>
 
 ---

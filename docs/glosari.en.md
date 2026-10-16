@@ -1,7 +1,27 @@
 # Glossary Malay ↔ English
 
-> Terms used throughout the CI-KKM-10 course. Convention: prose in **Malay**, code and technical terms in **English**. In the notes, English terms that are not translated are written in *italics* or as `kod` (code).
+> Terms used throughout the CI-KKM-10 course. Convention: prose in **Malay**, code and technical terms in **English**. In prose, technical terms are written in plain English (see the table below); names from code are written as `code`.
 > Domain names (tables, enums, statuses) follow [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) and are **not translated in code**.
+
+## Technical terms in prose
+
+Write the way KKM developers talk at work: Malay sentences, English technical terms. Common terms are written plainly (not in *italics*); names from code are written as `code`.
+
+| Don't write | Write | Keep the Malay word when it means… |
+|-------------|-------|------------------------------------|
+| laluan | route | a file path (*path*), the catch-up track |
+| penapis | filter | |
+| pelayan | server | |
+| cawangan / cabang (Git) | branch | |
+| sambungan | extension (PHP/VS Code), connection (DB) | a continuation |
+| pengawal | controller | |
+| paparan (in code) | view | a screen shown to the user |
+| templat (code/view) | template | the "Templat & Rujukan" label, the `templates/` folder |
+| pangkalan data | database | |
+| pemboleh ubah / tatasusunan / rentetan | variable / array / string | |
+| kebergantungan / pakej | dependency / package | |
+
+Stay in Malay: ralat (error), sesi (class session), pengesahan (owner sign-off), ujian (testing), semakan (review), keperluan (requirements).
 
 ## A. Course domain
 

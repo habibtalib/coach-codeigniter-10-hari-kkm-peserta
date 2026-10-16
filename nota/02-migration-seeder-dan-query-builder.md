@@ -16,7 +16,7 @@
 | Fail `.sql` dikongsi | Migration CI4 |
 |----------------------|---------------|
 | Tiada rekod siapa sudah jalankan apa | Jadual `migrations` merekod setiap fail yang dijalankan |
-| Rakan terlepas satu perubahan → pangkalan data berbeza | `php spark migrate` menjalankan **hanya** yang belum |
+| Rakan terlepas satu perubahan → database berbeza | `php spark migrate` menjalankan **hanya** yang belum |
 | Sukar undur | `down()` + `php spark migrate:rollback` |
 | Tidak disemak dalam PR | Kod PHP — disemak dalam Git seperti kod lain |
 
@@ -26,7 +26,7 @@ Migration ialah **sejarah skema dalam bentuk kod**. Setiap pasangan boleh bina s
 
 ## 2. Susunan migration ikut ERD
 
-Kunci asing (FK) hanya boleh dicipta jika jadual induk **sudah wujud**. Jadi susunan fail (ikut cap masa nama fail) mesti mengikut kebergantungan:
+Kunci asing (FK) hanya boleh dicipta jika jadual induk **sudah wujud**. Jadi susunan fail (ikut cap masa nama fail) mesti mengikut dependency:
 
 ```text
 2026-01-01-000001_CreateDepartments.php
@@ -219,7 +219,7 @@ php spark db:seed DatabaseSeeder
 
 ## 5. Query Builder — kenapa, bukan SQL mentah
 
-Query Builder menjana SQL dan **mengikat (bind)** nilai secara automatik, jadi input pengguna tidak boleh mengubah struktur query (SQL injection). Ia juga lebih mudah dibaca dan boleh dibina sedikit demi sedikit (penapis dinamik).
+Query Builder menjana SQL dan **mengikat (bind)** nilai secara automatik, jadi input pengguna tidak boleh mengubah struktur query (SQL injection). Ia juga lebih mudah dibaca dan boleh dibina sedikit demi sedikit (filter dinamik).
 
 ```php
 // ❌ JANGAN — input dicantum terus ke SQL
@@ -334,7 +334,7 @@ Atau buka tab **Database** pada Debug Toolbar (persekitaran `development`).
 | Kesilapan | Akibat | Betulkan |
 |-----------|--------|----------|
 | FK `zone_id` jenis `INT` tetapi `id` induk `INT UNSIGNED` | `errno: 150 Foreign key constraint is incorrectly formed` | Padankan jenis & `unsigned` |
-| Migration anak dijalankan sebelum induk | FK gagal dicipta | Susun nama fail ikut kebergantungan ERD |
+| Migration anak dijalankan sebelum induk | FK gagal dicipta | Susun nama fail ikut dependency ERD |
 | Sunting migration yang sudah di-*merge* & dijalankan rakan | DB rakan tidak berubah | Cipta migration **baharu** untuk perubahan |
 | `down()` kosong | `migrate:rollback` tidak mengundur | Tulis `dropTable`/`dropColumn` yang sepadan |
 | Syarat pertindihan `start_date BETWEEN …` sahaja | Terlepas kes julat baharu merangkumi julat lama | Guna `start_date <= :end AND end_date >= :start` |
@@ -354,7 +354,7 @@ Atau buka tab **Database** pada Debug Toolbar (persekitaran `development`).
 
 Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021 (CodeIgniter 4.1). `hlm.` = nombor halaman yang tercetak di kaki halaman buku.
 
-- Sambungan pangkalan data & `.env` — hlm. 27
+- Database connection & `.env` — hlm. 27
 - Migration pertama (*Creating the Schema*) — hlm. 28–30
 - Seeder data demo — hlm. 33–35
 - Migration & seeder projek blog — hlm. 36–42

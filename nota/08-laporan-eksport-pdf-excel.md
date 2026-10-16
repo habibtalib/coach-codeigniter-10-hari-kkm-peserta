@@ -4,16 +4,16 @@
 
 ## Objektif nota
 
-- **Membina** `ReportService` yang menjadi **satu sumber** penapis untuk paparan HTML, PDF dan Excel (RPT-01..03).
-- **Menulis** borang penapis GET yang disenarai putih dan disahkan, dengan pagination yang mengekalkan query string.
+- **Membina** `ReportService` yang menjadi **satu sumber** filter untuk paparan HTML, PDF dan Excel (RPT-01..03).
+- **Menulis** borang filter GET yang disenarai putih dan disahkan, dengan pagination yang mengekalkan query string.
 - **Menjana** PDF dengan Dompdf dan `.xlsx` dengan PhpSpreadsheet, serta **mengelak** *formula injection* dalam Excel.
-- **Mengesahkan** bahawa jumlah baris laporan sama dengan jumlah dalam pangkalan data.
+- **Mengesahkan** bahawa jumlah baris laporan sama dengan jumlah dalam database.
 
 ---
 
 ## 1. Satu penapis, tiga output — kenapa?
 
-Masalah biasa: paparan HTML menapis `status = approved`, tetapi kod eksport PDF ditulis semula secara berasingan dan terlupa penapis zon. Pengguna mencetak PDF yang **tidak sama** dengan skrin — dan laporan itu dibawa ke mesyuarat.
+Masalah biasa: paparan HTML menapis `status = approved`, tetapi kod eksport PDF ditulis semula secara berasingan dan terlupa filter zon. Pengguna mencetak PDF yang **tidak sama** dengan skrin — dan laporan itu dibawa ke mesyuarat.
 
 Penyelesaian: **satu** kaedah dalam `ReportService` membina query bertapis. Controller hanya memilih output.
 
@@ -26,7 +26,7 @@ flowchart LR
     S -->|export=xlsx| X["findAll() → PhpSpreadsheet"]
 ```
 
-| Kod | Laporan | Penapis (SPEC §2.3) |
+| Kod | Laporan | Filter (SPEC §2.3) |
 |-----|---------|---------------------|
 | `RPT-01` | Senarai tempahan TLK | julat tarikh, zon, kategori, status |
 | `RPT-02` | Senarai permohonan Pas | julat tarikh, jenis pas, jabatan, status |
@@ -36,7 +36,7 @@ flowchart LR
 
 ## 2. Borang penapis — GET, bukan POST
 
-Laporan **membaca** data, jadi guna `GET`: URL boleh ditanda buku, dikongsi, dan butang eksport boleh membawa penapis yang sama. (CSRF tidak diperlukan untuk GET yang tidak mengubah data.)
+Laporan **membaca** data, jadi guna `GET`: URL boleh ditanda buku, dikongsi, dan butang eksport boleh membawa filter yang sama. (CSRF tidak diperlukan untuk GET yang tidak mengubah data.)
 
 ```php
 <form method="get" action="<?= site_url('laporan/tempahan') ?>" class="row g-2 mb-3">
@@ -69,7 +69,7 @@ Laporan **membaca** data, jadi guna `GET`: URL boleh ditanda buku, dikongsi, dan
 
 ## 3. `ReportService` — membina query bertapis
 
-Service memulangkan **Model yang telah dikonfigurasi** (belum dilaksana). Pemanggil memilih `paginate()` untuk HTML atau `findAll()` untuk eksport — penapis tidak pernah ditulis dua kali.
+Service memulangkan **Model yang telah dikonfigurasi** (belum dilaksana). Pemanggil memilih `paginate()` untuk HTML atau `findAll()` untuk eksport — filter tidak pernah ditulis dua kali.
 
 ```php
 <?php
@@ -187,9 +187,9 @@ class ReportController extends BaseController
 }
 ```
 
-Dalam view HTML: `<?= $pager->links() ?>` — Pager CI4 membina pautan dari URL semasa, jadi parameter penapis dalam query string **dikekalkan** apabila bertukar halaman. Sahkan dengan klik ke halaman 2 dan lihat URL. Jumlah keseluruhan: `$pager->getTotal()`.
+Dalam view HTML: `<?= $pager->links() ?>` — Pager CI4 membina pautan dari URL semasa, jadi parameter filter dalam query string **dikekalkan** apabila bertukar halaman. Sahkan dengan klik ke halaman 2 dan lihat URL. Jumlah keseluruhan: `$pager->getTotal()`.
 
-`findAll(5000)` — had baris untuk eksport. PDF 50,000 baris akan menghabiskan `memory_limit` dan masa. Jika melebihi had, beritahu pengguna untuk menyempitkan penapis.
+`findAll(5000)` — had baris untuk eksport. PDF 50,000 baris akan menghabiskan `memory_limit` dan masa. Jika melebihi had, beritahu pengguna untuk menyempitkan filter.
 
 ---
 
@@ -329,7 +329,7 @@ $direct = db_connect()->table('slot_bookings')
 $this->assertSame($direct, $report);
 ```
 
-Semak juga secara manual: jumlah dalam HTML (`$pager->getTotal()`) = bilangan baris dalam Excel = "Jumlah" dalam PDF, bagi penapis yang sama. Perhatikan `INNER JOIN`: tempahan yang kenderaannya telah dipadam akan **hilang** dari laporan — kenal pasti sama ada itu dikehendaki.
+Semak juga secara manual: jumlah dalam HTML (`$pager->getTotal()`) = bilangan baris dalam Excel = "Jumlah" dalam PDF, bagi filter yang sama. Perhatikan `INNER JOIN`: tempahan yang kenderaannya telah dipadam akan **hilang** dari laporan — kenal pasti sama ada itu dikehendaki.
 
 ---
 
@@ -338,11 +338,11 @@ Semak juga secara manual: jumlah dalam HTML (`$pager->getTotal()`) = bilangan ba
 | Kesilapan | Akibat | Betulkan |
 |-----------|--------|----------|
 | Query eksport ditulis berasingan dari query HTML | PDF/Excel tidak sama dengan skrin | Satu kaedah `ReportService` untuk ketiga-tiga |
-| Borang penapis guna POST | Pagination & eksport kehilangan penapis | GET + `http_build_query()` pada butang eksport |
+| Borang filter guna POST | Pagination & eksport kehilangan filter | GET + `http_build_query()` pada butang eksport |
 | `$this->request->getGet()` tanpa senarai putih/validasi | Parameter liar, ralat SQL, nilai status palsu | `getGet([...])` + `validateData()` |
 | Cantum `$_GET` ke dalam `select()`/`where()` mentah | SQL injection | Binding Query Builder; cantum hanya nilai yang dijana dari integer |
 | `isRemoteEnabled = true` pada Dompdf | SSRF / muat URL luaran, lambat | Kekal `false`; guna CSS inline |
-| Tiada had baris eksport | `Allowed memory size exhausted`, timeout | `findAll(5000)` + mesej sempitkan penapis |
+| Tiada had baris eksport | `Allowed memory size exhausted`, timeout | `findAll(5000)` + mesej sempitkan filter |
 | Tulis nilai teks terus ke Excel | Formula injection (`=cmd…`, `=HYPERLINK`) | `safeCell()` atau `setCellValueExplicit(..., DataType::TYPE_STRING)` |
 | Lupa `esc()` dalam view HTML/PDF | XSS dalam laporan | `esc()` setiap nilai |
 
@@ -365,4 +365,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Dompdf dan PhpSpreadsheet tiada dalam buku; ikut nota ini.
 
 ---
-**Digunakan pada Hari 9** — S1 (spesifikasi RPT-01..03 & borang penapis GET), S2 (`ReportService`: join, `groupBy`, penapis dinamik), S3 (eksport Dompdf & PhpSpreadsheet), S4 (jumlah laporan = jumlah DB). Nota berkaitan: [02 Query Builder](./02-migration-seeder-dan-query-builder.md) · [09 Statistik & cache](./09-statistik-chartjs-dan-cache.md) · [10 Ujian](./10-ujian-phpunit-ci4.md)
+**Digunakan pada Hari 9** — S1 (spesifikasi RPT-01..03 & borang filter GET), S2 (`ReportService`: join, `groupBy`, filter dinamik), S3 (eksport Dompdf & PhpSpreadsheet), S4 (jumlah laporan = jumlah DB). Nota berkaitan: [02 Query Builder](./02-migration-seeder-dan-query-builder.md) · [09 Statistik & cache](./09-statistik-chartjs-dan-cache.md) · [10 Ujian](./10-ujian-phpunit-ci4.md)

@@ -19,8 +19,8 @@ Prefix commit: `TLK:` · `PAS:` · `RPT:` · `STAT:` · `SETUP:` · `FIX:`.
 Satu ciri "siap" hanya apabila:
 
 - [ ] Acceptance criteria (Given/When/Then) dari URS **lulus** diuji manual.
-- [ ] Validasi di **pelayan** (Model rules / Validation) — bukan JavaScript sahaja.
-- [ ] Akses dikawal di pelayan (filter + semakan pemilikan).
+- [ ] Validasi di **server** (Model rules / Validation) — bukan JavaScript sahaja.
+- [ ] Akses dikawal di server (filter + semakan pemilikan).
 - [ ] Peralihan status direkod dalam `status_logs` (jika berkaitan).
 - [ ] Ujian PHPUnit berkaitan lulus (`vendor/bin/phpunit`).
 - [ ] Tiada `.env`/rahsia dalam commit; data sintetik sahaja.

@@ -19,13 +19,13 @@
 | 03 | [`03-model-entity-dan-enum.md`](./03-model-entity-dan-enum.md) | `Model` (`$allowedFields`, `$validationRules`, callbacks, soft delete), `Entity`, backed enum dengan `label()`/`badge()` | 5, 7 |
 | 04 | [`04-validasi-dan-borang.md`](./04-validasi-dan-borang.md) | Peraturan validasi, peraturan tersuai, `old()`, paparan ralat, CSRF | 5, 7 |
 | 05 | [`05-service-layer-dan-transaksi.md`](./05-service-layer-dan-transaksi.md) | Controller nipis, lapisan Service, transaksi DB, `SELECT … FOR UPDATE`, *race condition* | 6, 8 |
-| 06 | [`06-shield-auth-dan-rbac.md`](./06-shield-auth-dan-rbac.md) | Authentication vs authorization, Shield groups/permissions/matrix, filter laluan, semakan pemilikan | 4, 8 |
+| 06 | [`06-shield-auth-dan-rbac.md`](./06-shield-auth-dan-rbac.md) | Authentication vs authorization, Shield groups/permissions/matrix, filter route, semakan pemilikan | 4, 8 |
 | 07 | [`07-muat-naik-fail-selamat.md`](./07-muat-naik-fail-selamat.md) | Risiko muat naik (OWASP), API `UploadedFile`, simpanan di `writable/`, muat turun bersemak | 7 |
-| 08 | [`08-laporan-eksport-pdf-excel.md`](./08-laporan-eksport-pdf-excel.md) | `ReportService`, penapis GET, pagination, Dompdf, PhpSpreadsheet | 9 |
+| 08 | [`08-laporan-eksport-pdf-excel.md`](./08-laporan-eksport-pdf-excel.md) | `ReportService`, filter GET, pagination, Dompdf, PhpSpreadsheet | 9 |
 | 09 | [`09-statistik-chartjs-dan-cache.md`](./09-statistik-chartjs-dan-cache.md) | `StatisticsService`, endpoint JSON, Chart.js 4, `cache()->remember()` & invalidasi | 10 |
 | 10 | [`10-ujian-phpunit-ci4.md`](./10-ujian-phpunit-ci4.md) | Ujian unit vs ciri, `DatabaseTestTrait`, `FeatureTestTrait`, `actingAs()` Shield, DB ujian | 6, 8, 10 |
 | 11 | [`11-keselamatan-aplikasi-web.md`](./11-keselamatan-aplikasi-web.md) | OWASP Top 10 dipetakan kepada ciri CI4 + senarai semak pra-demo | 4, 7, 8, 10 |
-| 12 | [`12-git-aliran-kerja.md`](./12-git-aliran-kerja.md) | Cabang per ciri, mesej commit, merge, menyelesaikan konflik | 4 → 10 |
+| 12 | [`12-git-aliran-kerja.md`](./12-git-aliran-kerja.md) | Branch per ciri, mesej commit, merge, menyelesaikan konflik | 4 → 10 |
 
 ## Peta nota ikut hari
 

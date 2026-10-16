@@ -6,7 +6,7 @@ Dek slaid kursus **Coaching Pembangunan Aplikasi Menggunakan CodeIgniter** (10 h
 |------|------------|
 | `ci-kkm-10.html` | Dek penuh (117 slaid), **satu fail self-contained**: CSS + JavaScript inline, fon sistem, tiada CDN. Berfungsi **tanpa internet**. |
 
-Kandungan patuh [`../SPEC-KURSUS.md`](../SPEC-KURSUS.md) dan [`../JADUAL.md`](../JADUAL.md). Jika SPEC berubah (nama jadual, enum, kelas, laluan), kemas kini slaid yang berkaitan.
+Kandungan patuh [`../SPEC-KURSUS.md`](../SPEC-KURSUS.md) dan [`../JADUAL.md`](../JADUAL.md). Jika SPEC berubah (nama jadual, enum, kelas, route), kemas kini slaid yang berkaitan.
 
 ## Susunan dek
 
@@ -89,12 +89,12 @@ Setiap slaid ialah satu `<section class="slide">` di dalam `<div class="stage">`
 ```
 
 - Lepaskan aksara HTML dalam kod: `<` → `&lt;`, `>` → `&gt;`, `&` → `&amp;`.
-- Warna sintaks ialah `<span>` manual: `.k` kata kunci, `.s` rentetan, `.c` komen, `.f` fungsi, `.t` jenis/kelas, `.v` pembolehubah, `.n` nombor, `.o` operator. Span ini **pilihan**. Kod tanpa span tetap dipaparkan dengan betul (teks terang atas latar gelap).
+- Warna sintaks ialah `<span>` manual: `.k` kata kunci, `.s` string, `.c` komen, `.f` fungsi, `.t` jenis/kelas, `.v` variable, `.n` nombor, `.o` operator. Span ini **pilihan**. Kod tanpa span tetap dipaparkan dengan betul (teks terang atas latar gelap).
 - Kod mesti sah untuk **CodeIgniter 4.6+ / PHP 8.2+** dan guna nama tepat seperti SPEC.
 
 ## Token tema
 
-Semua warna dan fon ditakrif sebagai pemboleh ubah CSS dalam `:root` di bahagian atas `<style>`. Ubah di situ sahaja.
+Semua warna dan fon ditakrif sebagai CSS variable dalam `:root` di bahagian atas `<style>`. Ubah di situ sahaja.
 
 | Token | Nilai | Kegunaan |
 |-------|-------|----------|

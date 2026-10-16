@@ -2,7 +2,7 @@
 
 [🛠️ Persediaan](./persediaan.md) · [🧪 Lab Hari 4](../hari-4/lab.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🤝 KOLABORASI](../KOLABORASI.md) · [🧪 Nota 10 · Ujian](../nota/10-ujian-phpunit-ci4.md)
 
-> **Pilihan, bukan wajib.** Hari 1–3 hanya keperluan (URS, carta alir, ERD). Binaan sebenar bermula pada Hari 4 ([Lab 4.2](../hari-4/lab.md) dan [Lab 4.3](../hari-4/lab.md)). Halaman ini memberi anda **permulaan awal**: Bahagian A ialah projek latihan CI4 asas pada Hari 1; Bahagian B–G membina rangka aplikasi sebenar dalam repo pasangan, dengan nama, arahan, kunci `.env`, nama DB dan laluan fail **sama** dengan Lab 4.2/4.3.
+> **Pilihan, bukan wajib.** Hari 1–3 hanya keperluan (URS, carta alir, ERD). Binaan sebenar bermula pada Hari 4 ([Lab 4.2](../hari-4/lab.md) dan [Lab 4.3](../hari-4/lab.md)). Halaman ini memberi anda **permulaan awal**: Bahagian A ialah projek latihan CI4 asas pada Hari 1; Bahagian B–G membina rangka aplikasi sebenar dalam repo pasangan, dengan nama, arahan, kunci `.env`, nama DB dan path fail **sama** dengan Lab 4.2/4.3.
 
 **Platform kursus: Windows + Laragon + Git Bash** ([`persediaan.md`](./persediaan.md) §2, §5). Taip semua blok `bash` dalam terminal **Git Bash** VS Code (`echo $SHELL` → `/usr/bin/bash`). Jika arahan berbeza dalam Command Prompt, bentuk `bat` diberi di sebelahnya. Dalam Git Bash, `~` = `C:\Users\<nama>`, dan `C:\Users\<nama>\latihan` ditulis `/c/Users/<nama>/latihan`.
 
@@ -10,15 +10,15 @@ Arahan CI4 dan Shield disahkan dengan CodeIgniter **4.7.5** + Shield **1.4.1** p
 
 | Bahagian | Apa | Folder | Bila | Minit |
 |----------|-----|--------|------|-------|
-| A | CI4 asas: welcome page, `.env`, laluan → controller → view | `~/latihan/ci4-asas` (latihan) | Hari 1, selepas kelas | ±40 |
+| A | CI4 asas: welcome page, `.env`, route → controller → view | `~/latihan/ci4-asas` (latihan) | Hari 1 (Lab 1.5); projek sebenar `kelas-ci-<nama>` bermula Hari 2 (Lab 2.2–2.4) | ±40 |
 | B | Projek CI4 dalam repo pasangan + struktur folder | `~/latihan/sistem-tlk-pas` | Sebelum Hari 4 | 20 |
-| C | `.env` pangkalan data | `~/latihan/sistem-tlk-pas` | Selepas [`persediaan.md`](./persediaan.md) §4 | 10 |
+| C | `.env` database | `~/latihan/sistem-tlk-pas` | Selepas [`persediaan.md`](./persediaan.md) §4 | 10 |
 | D | Pasang Shield | `~/latihan/sistem-tlk-pas` | Selepas C | 20 |
-| E | Laluan → controller `Home` → view dengan layout | `~/latihan/sistem-tlk-pas` | Selepas D | 20 |
+| E | Route → controller `Home` → view dengan layout | `~/latihan/sistem-tlk-pas` | Selepas D | 20 |
 | F | Migration pertama + seeder (satu jadual) | `~/latihan/sistem-tlk-pas` | Selepas E | 20 |
 | G | Ujian asap `composer test` | `~/latihan/sistem-tlk-pas` | Selepas F | 10 |
 
-> **Dua folder, dua tujuan.** `ci4-asas` ialah projek **latihan sahaja** — bukan repo Git, tidak dibawa ke Hari 4, dan boleh dipadam bila-bila masa. Rangka sebenar dibina dalam repo pasangan `sistem-tlk-pas` (Lab 1.0). Kedua-dua folder tidak perlu berada dalam `C:\laragon\www`: kursus menghidangkan aplikasi dengan `php spark serve`, bukan Apache Laragon.
+> **Dua folder, dua tujuan.** `ci4-asas` ialah projek **latihan sahaja** untuk Hari 1 — bukan repo Git dan boleh dipadam bila-bila masa. Projek sebenar ialah `kelas-ci-<nama>` di GitLab, dicipta dalam Lab 2.2 Hari 2. Rangka sebenar dibina dalam repo pasangan `sistem-tlk-pas` (Lab 1.0). Kedua-dua folder tidak perlu berada dalam `C:\laragon\www`: kursus menghidangkan aplikasi dengan `php spark serve`, bukan Apache Laragon.
 
 ---
 
@@ -26,7 +26,7 @@ Arahan CI4 dan Shield disahkan dengan CodeIgniter **4.7.5** + Shield **1.4.1** p
 
 ### 🎯 Matlamat
 
-Menjalankan projek latihan `ci4-asas` di <http://localhost:8080>, menghidupkan Debug Toolbar dengan `.env`, dan membina aliran MVC pertama: laluan `hello` → controller `Hello` → view `hello.php` dengan satu pemboleh ubah `esc()`.
+Menjalankan projek latihan `ci4-asas` di <http://localhost:8080>, menghidupkan Debug Toolbar dengan `.env`, dan membina aliran MVC pertama: route `hello` → controller `Hello` → view `hello.php` dengan satu variable `esc()`.
 
 ### Langkah
 
@@ -39,11 +39,11 @@ Menjalankan projek latihan `ci4-asas` di <http://localhost:8080>, menghidupkan D
    composer -V | head -1
    ```
 
-   Command Prompt: `where php`, `php -v`, `composer -V` sama; `php -m` menyenaraikan sambungan (cari `intl`, `mbstring`, `mysqli`).
+   Command Prompt: `where php`, `php -v`, `composer -V` sama; `php -m` menyenaraikan extension (cari `intl`, `mbstring`, `mysqli`).
 
    - `where php` menunjuk folder lain dahulu (cth XAMPP lama)? Laragon → *Menu → Tools → Path → Add Laragon to Path*, kemudian tutup dan buka semula VS Code.
    - Versi salah? Laragon → *Menu → PHP → Version* → pilih **8.3.x** (atau 8.2.x).
-   - Sambungan tiada? Laragon → *Menu → PHP → Extensions* → tanda `intl` / `mbstring` / `mysqli`.
+   - Extension tiada? Laragon → *Menu → PHP → Extensions* → tanda `intl` / `mbstring` / `mysqli`.
    - `composer: command not found` dalam Git Bash? Laragon membawa `composer.bat`, yang Git Bash tidak jalankan apabila anda menaip `composer`. Tambah alias sekali ([`persediaan.md`](./persediaan.md) §2 langkah 5). Command Prompt menjalankan `composer.bat` terus.
 
 2. **Cipta projek latihan:**
@@ -68,7 +68,7 @@ Menjalankan projek latihan `ci4-asas` di <http://localhost:8080>, menghidupkan D
 
    > 🛡️ `composer create-project` lambat atau `The process exceeded the timeout`? Windows Defender mengimbas setiap fail dalam `vendor/`. Lihat [`persediaan.md`](./persediaan.md) §8 (`composer config --global process-timeout 900`, pengecualian imbasan jika dibenarkan unit ICT).
 
-3. **Jalankan pelayan:**
+3. **Jalankan server:**
 
    ```bash
    php spark serve
@@ -78,7 +78,7 @@ Menjalankan projek latihan `ci4-asas` di <http://localhost:8080>, menghidupkan D
 
    > 🛡️ Kali pertama, **Windows Defender Firewall** mungkin bertanya sama ada `php.exe` dibenarkan pada rangkaian. Tanda **Private networks** sahaja → *Allow access*. Jika anda pilih *Cancel*, `localhost` masih berfungsi; hanya komputer lain tidak dapat sambung.
 
-4. **`.env` untuk pembangunan.** Salin templat:
+4. **`.env` untuk pembangunan.** Salin template:
 
    ```bash
    cp env .env
@@ -94,7 +94,7 @@ Menjalankan projek latihan `ci4-asas` di <http://localhost:8080>, menghidupkan D
 
    Jalankan semula `php spark serve` dan muat semula halaman — ikon 🔥 **Debug Toolbar** muncul di penjuru kanan bawah.
 
-5. **Laluan.** `app/Config/Routes.php` — tambah satu baris di bawah laluan `/`:
+5. **Route.** `app/Config/Routes.php` — tambah satu baris di bawah route `/`:
 
    ```php
    $routes->get('hello', 'Hello::index');
@@ -149,7 +149,7 @@ Menjalankan projek latihan `ci4-asas` di <http://localhost:8080>, menghidupkan D
     MSYS_NO_PATHCONV=1 php spark filter:check GET /hello
     ```
 
-    > **`MSYS_NO_PATHCONV=1`:** Git Bash menukar argumen yang bermula dengan `/` kepada laluan Windows (`/hello` → `C:/Program Files/Git/hello`). Awalan ini mematikan penukaran untuk satu arahan. Command Prompt tidak perlu: `php spark filter:check GET /hello`.
+    > **`MSYS_NO_PATHCONV=1`:** Git Bash menukar argumen yang bermula dengan `/` kepada path Windows (`/hello` → `C:/Program Files/Git/hello`). Awalan ini mematikan penukaran untuk satu arahan. Command Prompt tidak perlu: `php spark filter:check GET /hello`.
 
 ### Anda patut nampak
 
@@ -170,14 +170,14 @@ CodeIgniter v4.7.5 Command Line Tool - Server Time: 2026-10-15 11:59:57 UTC+00:0
 | `Failed to listen on localhost:8080` | Port 8080 sedang digunakan | `php spark serve --port 8081`, buka <http://localhost:8081> |
 | `bash: composer: command not found` | Git Bash tidak menjalankan `composer.bat` | Alias dalam `~/.bashrc` ([`persediaan.md`](./persediaan.md) §2 langkah 5), atau guna Command Prompt |
 | Halaman lain (bukan CI4) di `:8080` | Aplikasi lain guna port 8080 | Cari PID: `netstat -ano \| findstr :8080`; atau guna port 8081 seperti baris di atas |
-| Debug Toolbar tidak muncul | Fail bernama `env` atau `.env.txt`, atau `#` belum dipadam | Nama mesti `.env` (semak di File Explorer dengan sambungan nama fail kelihatan); baris `CI_ENVIRONMENT = development` tanpa `#` |
-| `404 - Can't find a route for 'GET: hello'` | Laluan belum disimpan, atau nama fail tidak sama dengan nama kelas | Semak `Routes.php` disimpan dan fail bernama `Hello.php` (kelas `Hello`); `php spark routes` |
+| Debug Toolbar tidak muncul | Fail bernama `env` atau `.env.txt`, atau `#` belum dipadam | Nama mesti `.env` (semak di File Explorer dengan extension nama fail kelihatan); baris `CI_ENVIRONMENT = development` tanpa `#` |
+| `404 - Can't find a route for 'GET: hello'` | Route belum disimpan, atau nama fail tidak sama dengan nama kelas | Semak `Routes.php` disimpan dan fail bernama `Hello.php` (kelas `Hello`); `php spark routes` |
 | `Invalid file: "hello.php"` | View di folder salah | Mesti `app/Views/hello.php` |
-| `filter:check` gagal mencari laluan, atau laluan dipapar sebagai `C:/Program Files/Git/hello` | Git Bash menukar `/hello` | Awalan `MSYS_NO_PATHCONV=1` (langkah 10) |
+| `filter:check` gagal mencari route, atau route dipapar sebagai `C:/Program Files/Git/hello` | Git Bash menukar `/hello` | Awalan `MSYS_NO_PATHCONV=1` (langkah 10) |
 
 ### Commit
 
-Tiada — `ci4-asas` ialah projek latihan, bukan repo Git. Selepas selesai, anda boleh memadamnya:
+Tiada — `ci4-asas` ialah projek latihan, bukan repo Git. Repo anda ialah `kelas-ci-<nama>` ([Lab 2.2](../hari-2/lab.md#lab-22--projek-ci-anda-di-gitlab-s2)). Anda boleh memadam `ci4-asas`:
 
 ```bash
 rm -rf ~/latihan/ci4-asas
@@ -186,7 +186,7 @@ rm -rf ~/latihan/ci4-asas
 Command Prompt: `rmdir /s /q %USERPROFILE%\latihan\ci4-asas`.
 
 - [ ] `/hello` memaparkan "Hello, Peserta KKM!" melalui `Hello::index` dan `app/Views/hello.php`.
-- [ ] Anda boleh menerangkan fail mana yang dibaca untuk laluan, controller dan view `/hello`.
+- [ ] Anda boleh menerangkan fail mana yang dibaca untuk route, controller dan view `/hello`.
 
 ---
 
@@ -212,7 +212,7 @@ Repo `~/latihan/sistem-tlk-pas` (`C:\Users\<nama>\latihan\sistem-tlk-pas`) dari 
    php spark --version
    ```
 
-2. **Kebersihan projek.** Cipta `.gitattributes` dan `.editorconfig` di akar projek dalam VS Code (*File → New File*). Kandungannya ada dalam Lab 4.2 langkah 1 (templat: [`gitattributes.txt`](../templates/kod/gitattributes.txt), [`editorconfig.txt`](../templates/kod/editorconfig.txt)). `* text=auto eol=lf` memastikan fail di-commit dengan hujung baris LF walaupun Git Windows anda `core.autocrlf true`. Kemudian:
+2. **Kebersihan projek.** Cipta `.gitattributes` dan `.editorconfig` di akar projek dalam VS Code (*File → New File*). Kandungannya ada dalam Lab 4.2 langkah 1 (template: [`gitattributes.txt`](../templates/kod/gitattributes.txt), [`editorconfig.txt`](../templates/kod/editorconfig.txt)). `* text=auto eol=lf` memastikan fail di-commit dengan hujung baris LF walaupun Git Windows anda `core.autocrlf true`. Kemudian:
 
    ```bash
    git add .gitattributes .editorconfig
@@ -293,16 +293,16 @@ SETUP: projek CI4 appstarter
 
 ### 🎯 Matlamat
 
-Menyambung projek ke pangkalan data `kkm_latihan` dengan pengguna `kkm_dev`, seperti Lab 4.2 langkah 3–5.
+Menyambung projek ke database `kkm_latihan` dengan pengguna `kkm_dev`, seperti Lab 4.2 langkah 3–5.
 
 ### Prasyarat
 
-- Pangkalan data `kkm_latihan` & `kkm_latihan_test` + pengguna `kkm_dev` sudah dicipta ([`persediaan.md`](./persediaan.md) §4).
+- Database `kkm_latihan` & `kkm_latihan_test` + pengguna `kkm_dev` sudah dicipta ([`persediaan.md`](./persediaan.md) §4).
 - MySQL Laragon berjalan: **Start All** (Apache dinyahtanda, §2 langkah 3) atau *Menu → MySQL → Start MySQL*.
 
 ### Langkah
 
-1. Salin templat (Command Prompt: `copy env .env`), kemudian buka `.env` dalam VS Code:
+1. Salin template (Command Prompt: `copy env .env`), kemudian buka `.env` dalam VS Code:
 
    ```bash
    cp env .env
@@ -330,7 +330,7 @@ Menyambung projek ke pangkalan data `kkm_latihan` dengan pengguna `kkm_dev`, sep
 
    > Port 8080 sibuk? Tukar **dua-dua** tempat: `app.baseURL = 'http://localhost:8081/'` dan `php spark serve --port 8081`.
 
-3. Sahkan `.env` diabaikan Git dan sambungan berfungsi:
+3. Sahkan `.env` diabaikan Git dan connection berfungsi:
 
    ```bash
    git status --short | grep -c "\.env$"     # mesti 0
@@ -353,7 +353,7 @@ Database has no tables!
 |--------|-------|--------------|
 | `Unable to connect to the database` | MySQL Laragon tidak berjalan / `.env` salah | Laragon → **Start All**; cuba `hostname = 127.0.0.1` |
 | `SQLSTATE[HY000] [1045] Access denied` | Pengguna/kata laluan salah | Ulang `CREATE USER` di [`persediaan.md`](./persediaan.md) §4 (butang **Database** Laragon → HeidiSQL) |
-| MySQL Laragon tidak mahu mula / port 3306 sibuk | Pelayan MySQL lain (XAMPP lama, servis `MySQL80`) | [`persediaan.md`](./persediaan.md) §8: `netstat -ano \| findstr :3306` |
+| MySQL Laragon tidak mahu mula / port 3306 sibuk | MySQL server lain (XAMPP lama, servis `MySQL80`) | [`persediaan.md`](./persediaan.md) §8: `netstat -ano \| findstr :3306` |
 | `db:table` menunjukkan `ci4` / `root` | Baris masih berkomen `#` | Padam `#` di hadapan setiap baris `database.default.*` |
 
 ### Commit
@@ -429,7 +429,7 @@ php spark routes | grep -E "login|logout"
 php spark db:table --show
 ```
 
-- Laluan `login` (GET & POST) dan `logout` wujud.
+- Route `login` (GET & POST) dan `logout` wujud.
 - Jadual `users`, `auth_identities`, `auth_groups_users`, `settings`, `migrations` wujud.
 
 ### 🧯 Masalah lazim
@@ -454,7 +454,7 @@ git commit -m "SETUP: pasang Shield + UserModel + Auth/Filters"
 
 ### 🎯 Matlamat
 
-Membina aliran **laluan → controller → view** dengan satu layout Bootstrap 5.3 (`$this->extend` / `$this->section`), dan melindungi `/` dengan filter `session` (Lab 4.2 langkah 12–16).
+Membina aliran **route → controller → view** dengan satu layout Bootstrap 5.3 (`$this->extend` / `$this->section`), dan melindungi `/` dengan filter `session` (Lab 4.2 langkah 12–16).
 
 ### Langkah
 
@@ -492,7 +492,7 @@ Membina aliran **laluan → controller → view** dengan satu layout Bootstrap 5
    }
    ```
 
-5. **Laluan** — `app/Config/Routes.php`. Baris `service('auth')->routes($routes);` sudah ditambah oleh `shield:setup`; ubah baris `/` sahaja:
+5. **Route** — `app/Config/Routes.php`. Baris `service('auth')->routes($routes);` sudah ditambah oleh `shield:setup`; ubah baris `/` sahaja:
 
    ```php
    $routes->get('/', 'Home::index', ['filter' => 'session', 'as' => 'home']);
@@ -520,8 +520,8 @@ Membina aliran **laluan → controller → view** dengan satu layout Bootstrap 5
 | URL mengandungi `/index.php/login` | `app.indexPage` belum dikosongkan | `.env`: `app.indexPage = ''` |
 | `Invalid file: "layouts/main.php"` | Fail di folder salah | Mesti `app/Views/layouts/main.php` |
 | Halaman putih / CSS tiada | Tiada internet ke CDN | Salinan tempatan dalam `public/assets/` (Lab 4.2 langkah 13) |
-| `/` masih memaparkan *Welcome to CodeIgniter* | `Home::index` masih `view('welcome_message')`, atau laluan tanpa `'filter' => 'session'` | Semak langkah 4 dan 5 |
-| `filter:check` gagal mencari laluan, atau laluan dipapar sebagai `C:/Program Files/Git/` | Git Bash menukar `/` | Awalan `MSYS_NO_PATHCONV=1` (langkah 6) |
+| `/` masih memaparkan *Welcome to CodeIgniter* | `Home::index` masih `view('welcome_message')`, atau route tanpa `'filter' => 'session'` | Semak langkah 4 dan 5 |
+| `filter:check` gagal mencari route, atau route dipapar sebagai `C:/Program Files/Git/` | Git Bash menukar `/` | Awalan `MSYS_NO_PATHCONV=1` (langkah 6) |
 
 ### Commit
 
@@ -600,7 +600,7 @@ git commit -m "SETUP: migration departments + DepartmentSeeder"
 
 ### 🎯 Matlamat
 
-Menjalankan ujian contoh appstarter pada pangkalan data **ujian** MySQL, bukan DB pembangunan.
+Menjalankan ujian contoh appstarter pada database **ujian** MySQL, bukan DB pembangunan.
 
 ### Langkah
 
@@ -616,7 +616,7 @@ Menjalankan ujian contoh appstarter pada pangkalan data **ujian** MySQL, bukan D
    database.tests.port = 3306
    ```
 
-   Tanpa blok ini, kumpulan `tests` appstarter guna SQLite, dan Laragon tidak menghidupkan sambungan `sqlite3`.
+   Tanpa blok ini, kumpulan `tests` appstarter guna SQLite, dan Laragon tidak menghidupkan extension `sqlite3`.
 
 2. Jalankan:
 
@@ -672,7 +672,7 @@ Tiada — perubahan hanya dalam `.env`. Sahkan `git status --short` kosong.
 
 Semua disemak 2026-10-15:
 
-- Keperluan pelayan (PHP 8.2+, `intl`, `mbstring`; dokumentasi 4.7.5): <https://codeigniter.com/user_guide/intro/requirements.html>
+- Keperluan server (PHP 8.2+, `intl`, `mbstring`; dokumentasi 4.7.5): <https://codeigniter.com/user_guide/intro/requirements.html>
 - Pasang dengan Composer (`composer create-project codeigniter4/appstarter`): <https://codeigniter.com/user_guide/installation/installing_composer.html>
 - Menjalankan aplikasi (`php spark serve`, port 8080, `CI_ENVIRONMENT`): <https://codeigniter.com/user_guide/installation/running.html>
 - Pasang Shield (`composer require codeigniter4/shield`, `php spark shield:setup`): <https://shield.codeigniter.com/latest/getting_started/install/>

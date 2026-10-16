@@ -27,12 +27,12 @@ Hari 4 S2 terus mencipta projek CI4 sebenar, memasang Shield dan menulis migrati
 
 | # | Perisian | Versi minimum | Semak dengan | Nota |
 |---|----------|---------------|--------------|------|
-| 1 | PHP | **8.2** | `php -v` | Windows: **Laragon** ([`persediaan.md`](./persediaan.md) §2) · macOS: Homebrew atau Laravel Herd · Linux: pakej `php8.2` |
-| 2 | Sambungan PHP | `intl`, `mbstring`, `mysqlnd`/`mysqli`, `curl`, `json`, `fileinfo`, `gd`, `zip`, `xml`, `dom` | `php -m` | `intl` dan `mbstring` **wajib** untuk CI4; `fileinfo` untuk semakan MIME muat naik (BR-PAS-02); `gd`, `zip`, `xml` untuk PhpSpreadsheet/Dompdf (Hari 9) |
+| 1 | PHP | **8.2** | `php -v` | Windows: **Laragon** ([`persediaan.md`](./persediaan.md) §2) · macOS: Homebrew atau Laravel Herd · Linux: package `php8.2` |
+| 2 | PHP extension | `intl`, `mbstring`, `mysqlnd`/`mysqli`, `curl`, `json`, `fileinfo`, `gd`, `zip`, `xml`, `dom` | `php -m` | `intl` dan `mbstring` **wajib** untuk CI4; `fileinfo` untuk semakan MIME muat naik (BR-PAS-02); `gd`, `zip`, `xml` untuk PhpSpreadsheet/Dompdf (Hari 9) |
 | 3 | Composer | **2.x** | `composer -V` | <https://getcomposer.org/download/> |
 | 4 | MySQL / MariaDB | **MySQL 8** atau **MariaDB 10.6+** | `mysql --version` | Windows: MySQL 8.4 Laragon. XAMPP (MariaDB 10.4) terlalu lama — nyahpasang. Ingat nama pengguna & kata laluan root — **jangan** commit |
 | 5 | Git | 2.x | `git --version` | Tetapkan `git config --global user.name` dan `user.email` |
-| 6 | Editor | VS Code (disyorkan) | — | Sambungan: *PHP Intelephense*, *Markdown Preview Mermaid Support* |
+| 6 | Editor | VS Code (disyorkan) | — | Extension: *PHP Intelephense*, *Markdown Preview Mermaid Support* |
 | 7 | Klien DB (pilihan) | HeidiSQL / DBeaver (phpMyAdmin perlu Apache Laragon) | — | Untuk melihat jadual |
 | 8 | Terminal (Windows) | **Git Bash** sebagai terminal lalai VS Code | `echo $SHELL` → `/usr/bin/bash` | *Terminal: Select Default Profile → Git Bash* ([`persediaan.md`](./persediaan.md) §5). Semua arahan `bash` kursus dijalankan di sini |
 
@@ -46,7 +46,7 @@ mysql --version
 git --version
 ```
 
-**macOS / Linux / Windows Git Bash** — semak sambungan sekali gus:
+**macOS / Linux / Windows Git Bash** — semak extension sekali gus:
 ```bash
 for e in intl mbstring mysqli mysqlnd curl json fileinfo gd zip xml dom; do
   php -m | grep -qi "^$e$" && echo "OK    $e" || echo "TIADA $e"
@@ -64,7 +64,7 @@ done
 
 ### Bukti
 
-Simpan output kelima-lima arahan + semakan sambungan ke `docs/tugasan/T1-persekitaran.txt` dalam repo dokumen pasangan anda (satu fail setiap ahli: `T1-persekitaran-<nama>.txt`).
+Simpan output kelima-lima arahan + semakan extension ke `docs/tugasan/T1-persekitaran.txt` dalam repo dokumen pasangan anda (satu fail setiap ahli: `T1-persekitaran-<nama>.txt`).
 
 ---
 
@@ -85,7 +85,7 @@ Anda akan membina aplikasi **berita** kecil yang menggunakan corak yang sama den
 
 ### Nota persediaan
 
-1. Cipta pangkalan data:
+1. Cipta database:
    ```sql
    CREATE DATABASE ci4tutorial CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
    ```
@@ -179,7 +179,7 @@ Setiap AC: ID `AC-…`, Given (data konkrit dari *Data ujian asas*), satu When, 
 
 | Tugasan | Kriteria | Cemerlang | Memuaskan | Perlu bantuan | Markah |
 |---------|----------|-----------|-----------|---------------|--------|
-| **T1** Persekitaran | Versi & sambungan | PHP ≥ 8.2, semua 11 sambungan OK, Composer 2, MySQL 8/MariaDB 10.6+, Git dikonfigur (Windows: Git Bash terminal lalai) — **(20)** | Semua perisian ada; 1–2 sambungan bukan-wajib tiada (`gd`/`zip`) — **(14)** | PHP < 8.2, atau `intl`/`mbstring` tiada, atau MySQL tidak berjalan — **(0–7)** | /20 |
+| **T1** Persekitaran | Versi & extension | PHP ≥ 8.2, semua 11 extension OK, Composer 2, MySQL 8/MariaDB 10.6+, Git dikonfigur (Windows: Git Bash terminal lalai) — **(20)** | Semua perisian ada; 1–2 extension bukan-wajib tiada (`gd`/`zip`) — **(14)** | PHP < 8.2, atau `intl`/`mbstring` tiada, atau MySQL tidak berjalan — **(0–7)** | /20 |
 | **T2** Tutorial CI4 | 2a–2d berfungsi | Keempat-empat berfungsi dalam demo langsung; validasi & CSRF berfungsi — **(20)** | 2a–2c berfungsi; 2d separa — **(13)** | Hanya 2a/2b — **(0–6)** | /20 |
 | | Refleksi & kefahaman | 5 soalan dijawab tepat; boleh menerangkan baris rawak dengan yakin — **(20)** | 3–4 soalan tepat; penerangan baris dengan sedikit bantuan — **(13)** | < 3 soalan; tidak dapat menerangkan baris — **(0–6)** | /20 |
 | **T3** ERD | Ketepatan & urutan migration | ERD 100% sepadan SPEC §3; urutan migration betul; perubahan direkod — **(20)** | 1–2 ralat kecil (ejaan medan, kardinaliti); urutan hampir betul — **(13)** | Jadual/medan hilang atau `users.role` masih ada; tiada urutan — **(0–6)** | /20 |
@@ -202,7 +202,7 @@ Setiap AC: ID `AC-…`, Given (data konkrit dari *Data ujian asas*), satu When, 
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| `Class "Locale" not found` / ralat `intl` | Sambungan `intl` tidak dihidupkan | Hidupkan `extension=intl` dalam `php.ini`; buka semula terminal |
+| `Class "Locale" not found` / ralat `intl` | Extension `intl` tidak dihidupkan | Hidupkan `extension=intl` dalam `php.ini`; buka semula terminal |
 | `composer: command not found` | Composer tiada dalam PATH | Pasang semula dengan pemasang rasmi; Laragon: *Menu → Tools → Path → Add Laragon to Path*, kemudian buka semula VS Code |
 | `Unable to connect to the database` | `.env` salah atau MySQL tidak berjalan | Semak `database.default.*`; mulakan servis MySQL; cuba `mysql -u root -p` |
 | Halaman `/news` papar "Whoops!" tanpa butiran | `CI_ENVIRONMENT` bukan `development` | Tetapkan `CI_ENVIRONMENT = development` dalam `.env` |

@@ -5,9 +5,9 @@
 ## Objektif nota
 
 - **Menerangkan** perjalanan satu request HTTP dalam CI4 — dari `public/index.php` hingga respons dihantar — dengan merujuk diagram jujukan.
-- **Menulis** laluan (routes) berkumpulan dengan filter Shield menggunakan sintaks `[Controller::class, 'method']`.
+- **Menulis** route group dengan filter Shield menggunakan sintaks `[Controller::class, 'method']`.
 - **Membina** controller nipis yang memulangkan view dengan layout `app/Views/layouts/main.php`.
-- **Membezakan** peranan filter *before* dan *after*, dan menerangkan kenapa kawalan akses mesti di pelayan.
+- **Membezakan** peranan filter *before* dan *after*, dan menerangkan kenapa kawalan akses mesti di server.
 
 ---
 
@@ -69,8 +69,8 @@ sequenceDiagram
 
 Perkara penting yang ditunjukkan diagram:
 
-1. **Semua request masuk melalui satu pintu** — `public/index.php`. Sebab itu *document root* pelayan web mesti menghala ke `public/`, bukan ke akar projek (jika tidak, `.env` dan `writable/` boleh dicapai terus).
-2. **`Boot::bootWeb()`** (CI 4.5+) memuat `.env`, pemalar laluan (`APPPATH`, `WRITEPATH`), autoloader Composer dan konfigurasi.
+1. **Semua request masuk melalui satu pintu** — `public/index.php`. Sebab itu document root web server mesti menghala ke `public/`, bukan ke akar projek (jika tidak, `.env` dan `writable/` boleh dicapai terus).
+2. **`Boot::bootWeb()`** (CI 4.5+) memuat `.env`, pemalar path (`APPPATH`, `WRITEPATH`), autoloader Composer dan konfigurasi.
 3. **Router** memadankan URI **dan** HTTP verb. `GET /tlk/tempahan` dan `POST /tlk/tempahan` boleh pergi ke method berbeza.
 4. **Filter before** boleh **memintas** request (contoh: pulang redirect ke `/login`). Controller tidak dipanggil langsung — ini sebab kawalan akses di filter adalah kukuh.
 5. **Filter after** mengubah respons (header keselamatan, debug toolbar) sebelum dihantar.
@@ -79,7 +79,7 @@ Perkara penting yang ditunjukkan diagram:
 
 ## 3. Routes — peta URL aplikasi
 
-Projek ini **mematikan auto-routing** (lalai CI 4.6: `$autoRoute = false` dalam `app/Config/Routing.php`). Kenapa? Auto-routing membuka setiap method `public` dalam controller sebagai URL — termasuk method yang tidak sepatutnya boleh dicapai. Dengan laluan eksplisit, apa yang tidak ditulis dalam `Routes.php` **tidak wujud**.
+Projek ini **mematikan auto-routing** (lalai CI 4.6: `$autoRoute = false` dalam `app/Config/Routing.php`). Kenapa? Auto-routing membuka setiap method `public` dalam controller sebagai URL — termasuk method yang tidak sepatutnya boleh dicapai. Dengan route eksplisit, apa yang tidak ditulis dalam `Routes.php` **tidak wujud**.
 
 ```php
 <?php
@@ -123,7 +123,7 @@ Catatan:
 
 - `(:num)` menangkap segmen nombor dan menghantarnya sebagai argumen method: `show(int $id)`.
 - Tindakan yang **mengubah data** (batal, lulus, tolak) guna `POST`, bukan `GET` — supaya ia dilindungi CSRF dan tidak boleh dicetuskan oleh pautan `<img src=…>`.
-- Semak semua laluan dengan:
+- Semak semua route dengan:
 
 ```bash
 php spark routes
@@ -133,7 +133,7 @@ php spark routes
 # ...
 ```
 
-Lajur **Before Filters** ialah cara paling cepat untuk mengesahkan laluan anda benar-benar dilindungi.
+Lajur **Before Filters** ialah cara paling cepat untuk mengesahkan route anda benar-benar dilindungi.
 
 ---
 
@@ -242,7 +242,7 @@ Filter ialah kelas yang dijalankan **sebelum** atau **selepas** controller. Dua 
 | Jenis | Di mana | Contoh |
 |-------|---------|--------|
 | **Global** | `app/Config/Filters.php` → `$globals` | `csrf` (before), `toolbar` (after) |
-| **Laluan** | `['filter' => '…']` dalam `Routes.php` | `session`, `group:admin`, `permission:tlk.decide` |
+| **Route** | `['filter' => '…']` dalam `Routes.php` | `session`, `group:admin`, `permission:tlk.decide` |
 
 ```php
 // app/Config/Filters.php (petikan)
@@ -257,7 +257,7 @@ public array $globals = [
 ];
 ```
 
-Filter Shield (`session`, `group`, `permission`) didaftarkan secara automatik oleh pakej Shield. Argumen selepas titik bertindih dihantar kepada filter: `group:reviewer,approver,admin` bermaksud "mana-mana satu daripada group ini".
+Filter Shield (`session`, `group`, `permission`) didaftarkan secara automatik oleh package Shield. Argumen selepas titik bertindih dihantar kepada filter: `group:reviewer,approver,admin` bermaksud "mana-mana satu daripada group ini".
 
 **Kenapa filter tidak mencukupi seorang diri?** Filter menjawab soalan *"boleh akses URL ini?"*. Ia **tidak** menjawab *"boleh akses rekod #42 ini?"*. Pemohon A dan B sama-sama lulus filter `session` pada `/pas/permohonan/42` — semakan pemilikan dalam controller/service (BR-PAS-04) yang menghalang A melihat permohonan B. Lihat [`06-shield-auth-dan-rbac.md`](./06-shield-auth-dan-rbac.md).
 
@@ -283,10 +283,10 @@ kkm-latihan/
 | Kesilapan | Akibat | Betulkan |
 |-----------|--------|----------|
 | Document root menghala ke akar projek | `.env` & `writable/` boleh dimuat turun | Halakan ke `public/` (atau guna `php spark serve`) |
-| Hidupkan auto-routing untuk "jimat masa" | Method dalaman terdedah sebagai URL | Kekalkan `$autoRoute = false`; tulis laluan eksplisit |
+| Hidupkan auto-routing untuk "jimat masa" | Method dalaman terdedah sebagai URL | Kekalkan `$autoRoute = false`; tulis route eksplisit |
 | Tindakan ubah data melalui `GET` (`/tlk/tempahan/5/batal`) | Tiada perlindungan CSRF; boleh dicetus oleh pautan | Guna `POST` + borang dengan `csrf_field()` |
 | Query & peraturan perniagaan dalam controller | Tidak boleh diuji/diguna semula | Pindah ke Service (nota 05) |
-| Hanya sembunyi butang "Lulus" dalam view | Pengguna panggil URL terus → berjaya | Filter laluan **dan** semakan dalam controller/service |
+| Hanya sembunyi butang "Lulus" dalam view | Pengguna panggil URL terus → berjaya | Filter route **dan** semakan dalam controller/service |
 | Lupa `esc()` dalam view | XSS | `<?= esc($nilai) ?>` untuk setiap data dinamik |
 | Tertinggal `use` untuk kelas controller dalam `Routes.php` | `Class not found` | Tambah `use App\Controllers\…;` atau guna nama penuh |
 

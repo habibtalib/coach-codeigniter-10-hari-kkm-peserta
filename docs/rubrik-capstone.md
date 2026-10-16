@@ -14,7 +14,7 @@
 | 0–1 | Pengenalan: pasangan, tag `v1.0-capstone`, satu ayat skop | E |
 | 1–4 | **M1 TLK**: mohon → pertindihan ditolak → lulus → `TLK-2026-####` | A1 |
 | 4–7 | **M2 Pas**: mohon + dokumen → semak → lulus/tolak → garis masa | A2, B |
-| 7–9 | **M3 Laporan**: tapis → pagination kekal penapis → PDF & Excel sama jumlah | A3 |
+| 7–9 | **M3 Laporan**: tapis → pagination kekal filter → PDF & Excel sama jumlah | A3 |
 | 9–11 | **M4 Statistik**: 4 KPI + 4 carta → ubah status → dashboard dikemas kini | A4 |
 | 11–13 | **Terangkan kod**: panel pilih fail + baris; ahli pasangan menerangkan | C, E (+ catatan individu) |
 | 13–15 | Soal jawab + bukti ujian (`vendor/bin/phpunit`) + akses negatif | B, D, E |
@@ -30,10 +30,10 @@ Sebarang **❌** di bawah menghadkan keputusan kepada **"Lulus bersyarat"** (mak
 | # | Gate | Cara panel menyemak |
 |---|------|---------------------|
 | G1 | Pengguna `applicant` **tidak** boleh membuka rekod milik pemohon lain (BR-PAS-04) | Minta pasangan tukar id dalam URL sebagai `pemohon2` |
-| G2 | Laluan dilindungi di **pelayan**: `applicant` tidak boleh buka `/tlk/keputusan`, `/pas/semakan`, `/laporan/*`, `/statistik` | Taip URL terus |
+| G2 | Route dilindungi di **server**: `applicant` tidak boleh buka `/tlk/keputusan`, `/pas/semakan`, `/laporan/*`, `/statistik` | Taip URL terus |
 | G3 | Tiada `.env`, kata laluan atau data sebenar dalam repo | `git ls-files \| grep -E "(^\|/)\.env$"` → kosong |
 | G4 | Fail muat naik **tidak** dalam `public/` | `ls public/` / `find public -name "*.pdf"` |
-| G5 | Tiada SQL mentah bercantum input pengguna | Soal: "Tunjukkan di mana input penapis masuk ke query" |
+| G5 | Tiada SQL mentah bercantum input pengguna | Soal: "Tunjukkan di mana input filter masuk ke query" |
 
 ---
 
@@ -48,20 +48,20 @@ Setiap kriteria dinilai **Tahap 1–4**. Markah kriteria = (Tahap ÷ 4) × Pembe
 |-----|---------------------|----------------|----------------|-----------------|
 | **A1 TLK** (8) | Aliran penuh + `TLK-{YYYY}-{0000}` + pertindihan (BR-TLK-01) & had 1 tempahan aktif (BR-TLK-04) ditolak dengan mesej jelas + batal | Aliran penuh; satu peraturan tidak ditunjuk | Cipta & lulus sahaja; tiada semakan pertindihan ditunjuk | Tidak berfungsi / tidak ditunjuk |
 | **A2 Pas** (8) | Mohon + 1–3 dokumen sah → `under_review` → lulus/tolak (catatan wajib, BR-PAS-03) → garis masa `status_logs` | Aliran penuh; garis masa tiada/tidak lengkap | Mohon & lulus sahaja; tiada dokumen atau semakan dua peringkat | Tidak berfungsi |
-| **A3 Laporan** (7) | RPT-01..03 dengan penapis SPEC §2.3; pagination kekal penapis; PDF (A4 landskap, header/footer) & Excel dengan jumlah **sama** | 3 laporan; satu isu kecil (cth PDF potret, satu penapis tiada) | 1–2 laporan atau eksport tidak konsisten dengan skrin | Tidak berfungsi |
+| **A3 Laporan** (7) | RPT-01..03 dengan filter SPEC §2.3; pagination kekal filter; PDF (A4 landskap, header/footer) & Excel dengan jumlah **sama** | 3 laporan; satu isu kecil (cth PDF potret, satu filter tiada) | 1–2 laporan atau eksport tidak konsisten dengan skrin | Tidak berfungsi |
 | **A4 Statistik** (7) | 4 KPI + 4 carta (bar, doughnut, bar mendatar, line) dari `/statistik/data`; cache + invalidasi ditunjukkan | Semua KPI & carta; invalidasi tidak ditunjuk/tidak berfungsi | ≤ 2 carta atau KPI salah takrif | Tidak berfungsi |
 
 ### B. Keselamatan & kawalan akses — 20 markah
 
 | Tahap 4 | Tahap 3 | Tahap 2 | Tahap 1 |
 |---------|---------|---------|---------|
-| G1–G5 lulus; CSRF global; `esc()` konsisten; filter `group:`/`permission:` pada setiap kumpulan laluan **dan** semakan pemilikan dalam service; muat naik selamat (BR-PAS-02); senarai semak K1–K10 dengan bukti | G1–G5 lulus; 1–2 item K tidak dibuktikan | Satu gate gagal tetapi dikenal pasti oleh pasangan sendiri | Lebih daripada satu gate gagal |
+| G1–G5 lulus; CSRF global; `esc()` konsisten; filter `group:`/`permission:` pada setiap route group **dan** semakan pemilikan dalam service; muat naik selamat (BR-PAS-02); senarai semak K1–K10 dengan bukti | G1–G5 lulus; 1–2 item K tidak dibuktikan | Satu gate gagal tetapi dikenal pasti oleh pasangan sendiri | Lebih daripada satu gate gagal |
 
 ### C. Kualiti kod & seni bina — 20 markah
 
 | Tahap 4 | Tahap 3 | Tahap 2 | Tahap 1 |
 |---------|---------|---------|---------|
-| Controller nipis; logik & peraturan perniagaan (BR-TLK-01..06, BR-PAS-01..06) dalam `Services/` dengan transaksi + `FOR UPDATE`; setiap peralihan melalui enum `canTransitionTo()` dan direkod dalam `status_logs`; service didaftar dalam `Config/Services.php`; nama jadual/medan/kelas/laluan tepat ikut SPEC; Query Builder; commit kecil berprefix | Satu dua controller "gemuk" atau satu BR di luar service; nama majoritinya ikut SPEC | Logik perniagaan banyak dalam controller/view; status sebagai rentetan bertaip; nama menyimpang | Struktur tidak dapat diikuti |
+| Controller nipis; logik & peraturan perniagaan (BR-TLK-01..06, BR-PAS-01..06) dalam `Services/` dengan transaksi + `FOR UPDATE`; setiap peralihan melalui enum `canTransitionTo()` dan direkod dalam `status_logs`; service didaftar dalam `Config/Services.php`; nama jadual/medan/kelas/route tepat ikut SPEC; Query Builder; commit kecil berprefix | Satu dua controller "gemuk" atau satu BR di luar service; nama majoritinya ikut SPEC | Logik perniagaan banyak dalam controller/view; status sebagai string bertaip; nama menyimpang | Struktur tidak dapat diikuti |
 
 ### D. Ujian automatik — 15 markah
 

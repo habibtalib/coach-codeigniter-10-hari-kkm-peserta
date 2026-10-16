@@ -22,6 +22,7 @@ Demo the news application from the pre-course assignment and explain the 7 steps
 - 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
 - Assignments T1–T4 ([`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md)) complete
 - News application running: `php spark serve` → `http://localhost:8080/news`
+- `~/latihan/kelas-ci-<nama>` with the `/daftar` form ([Lab 2.4](../hari-2/lab.en.md#lab-24--form-validation--csrf-s4)) — a 1-minute demo together with the news app
 
 ### Steps
 
@@ -76,6 +77,7 @@ Create a CI4 project in the pair's repo, configure `.env`, install Shield with t
 
 ### Prerequisites
 - Repo `~/latihan/sistem-tlk-pas` (from Day 1, contains `docs/`)
+- Routes, controllers, a layout view, a form, validation and CSRF are already done in `kelas-ci-<nama>` (Labs 2.2–2.4). This lab adds a database, Shield and Bootstrap to the same project.
 - Databases `kkm_latihan` & `kkm_latihan_test` + user `kkm_dev` ([`docs/persediaan.md`](../docs/persediaan.md) §4)
 - PHP ≥ 8.2 with `intl`, `mbstring`, `mysqli` (`php -m`)
 - `php.ini` (for Pass document uploads, Day 7): `upload_max_filesize = 8M` and `post_max_size = 16M` or more. Check: `php -i | grep -E "upload_max_filesize|post_max_size"`. Find the file with `php --ini`; restart `php spark serve` after changing it.

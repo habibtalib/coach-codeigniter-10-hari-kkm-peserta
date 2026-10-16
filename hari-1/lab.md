@@ -10,7 +10,7 @@
 | [Lab 1.2](#lab-12--temu-bual-berstruktur-modul-tlk) | S2 | `docs/temubual-tlk.md` |
 | [Lab 1.3](#lab-13--temu-bual-modul-pas) | S3 | `docs/temubual-pas.md` |
 | [Lab 1.4](#lab-14--senarai-awal-fr--nfr--moscow) | S4 | `docs/keperluan-awal.md`, `docs/soalan-terbuka.md` |
-| [Lab 1.5](#lab-15--ci4-asas-di-laptop-dalam-kelas-s4) | S4 | Projek latihan `~/latihan/ci4-asas` + laluan `/hello` |
+| [Lab 1.5](#lab-15--ci4-asas-di-laptop-dalam-kelas-s4) | S4 | Projek latihan `~/latihan/ci4-asas` + route `/hello` |
 
 ---
 
@@ -25,14 +25,14 @@
    git add . && git commit -m "SETUP: mula repo dokumen"
    ```
    > Masih dalam PowerShell? `&&` gagal dalam Windows PowerShell 5.1, dan `>` menulis `README.md` sebagai UTF-16 (Git dan GitLab memaparkannya sebagai teks rosak). Tukar ke Git Bash, padam `README.md`, ulang.
-2. Buka folder dalam VS Code. Pasang sambungan **Markdown Preview Mermaid Support** (atau guna <https://mermaid.live>).
+2. Buka folder dalam VS Code. Pasang extension **Markdown Preview Mermaid Support** (atau guna <https://mermaid.live>).
 
 ✅ **Checkpoint:** `git log --oneline` menunjukkan satu commit `SETUP: mula repo dokumen`.
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| Commit pertama gagal: `Author identity unknown` / *"Please tell me who you are"* | Identiti Git belum ditetapkan pada komputer ini | Jalankan `git config --global user.name "Aminah Rahim"`, `git config --global user.email "aminah@latihan.test"` dan `git config --global init.defaultBranch main` (Hari 4 membuat `git push` cawangan `main`), kemudian ulang `git commit` (guna nama dan e-mel anda sendiri) |
+| Commit pertama gagal: `Author identity unknown` / *"Please tell me who you are"* | Identiti Git belum ditetapkan pada komputer ini | Jalankan `git config --global user.name "Aminah Rahim"`, `git config --global user.email "aminah@latihan.test"` dan `git config --global init.defaultBranch main` (Hari 4 membuat `git push` branch `main`), kemudian ulang `git commit` (guna nama dan e-mel anda sendiri) |
 | `git branch` menunjukkan `master`, bukan `main` | Repo dicipta sebelum `init.defaultBranch main` ditetapkan | `git branch -m master main` |
 
 ---
@@ -87,7 +87,7 @@ Menghasilkan carta skop yang menyatakan matlamat, 4 modul, dalam/luar skop, had 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
 | Mermaid papar "Syntax error" | Label mengandungi `(`, `)` atau `:` tanpa tanda petik | Balut label dengan `["..."]` |
-| Pratonton tidak papar diagram | Sambungan Mermaid belum dipasang | Pasang sambungan atau tampal kod ke mermaid.live |
+| Pratonton tidak papar diagram | Extension Mermaid belum dipasang | Pasang extension atau tampal kod ke mermaid.live |
 | Luar skop kosong | Tidak tanya pemilik sistem | Guna README §1.2 sebagai titik mula, sahkan dengan jurulatih |
 
 ### ⭐ Cabaran tambahan
@@ -268,7 +268,7 @@ Bina **matriks jejak** ringkas: baris = BR (12 baris), lajur = FR yang menjejakn
 ## Lab 1.5 — CI4 asas di laptop (dalam kelas, S4)
 
 ### 🎯 Objektif
-Menjalankan projek CodeIgniter 4 kosong di laptop Windows dan membina satu laluan MVC (`/hello`) supaya Hari 4 tidak bermula dengan masalah persekitaran.
+Menjalankan projek CodeIgniter 4 kosong di laptop Windows dan membina satu route MVC (`/hello`) supaya Hari 4 tidak bermula dengan masalah persekitaran.
 
 ### Prasyarat
 - Windows dengan **Laragon** (PHP 8.2+, Composer) dan **Git Bash** — [`docs/persediaan.md`](../docs/persediaan.md) §1–§6.
@@ -300,13 +300,13 @@ Menjalankan projek CodeIgniter 4 kosong di laptop Windows dan membina satu lalua
    php spark serve
    ```
    Jika Windows Defender bertanya, benarkan akses rangkaian *Private*. Buka <http://localhost:8080>.
-4. Hidupkan mod pembangunan. Hentikan pelayan (`Ctrl+C`), kemudian:
+4. Hidupkan mod pembangunan. Hentikan server (`Ctrl+C`), kemudian:
    ```bash
    cp env .env     # Command Prompt: copy env .env
    code .
    ```
-   Dalam `.env`, buang `#` dan tetapkan `CI_ENVIRONMENT = development`. Jalankan semula `php spark serve` dan muat semula halaman — ikon *Debug Toolbar* muncul di penjuru kanan bawah.
-5. Bina laluan MVC pertama. Tambah dalam `app/Config/Routes.php`:
+   Dalam `.env`, buang `#` dan tetapkan `CI_ENVIRONMENT = development`. Jalankan semula `php spark serve` dan muat semula halaman — ikon Debug Toolbar muncul di penjuru kanan bawah.
+5. Bina route MVC pertama. Tambah dalam `app/Config/Routes.php`:
    ```php
    $routes->get('hello', 'Hello::index');
    ```
@@ -345,10 +345,10 @@ Menjalankan projek CodeIgniter 4 kosong di laptop Windows dan membina satu lalua
 |--------|-------|--------------|
 | `php: command not found` / `which php` kosong | Laragon belum dalam `PATH`, atau terminal dibuka sebelum *Add Laragon to Path* | Laragon → *Menu → Tools → Path → Add Laragon to Path*; tutup VS Code sepenuhnya dan buka semula |
 | `composer: command not found` dalam Git Bash | Git Bash tidak menjalankan `composer.bat` Laragon | Tambah alias seperti [`docs/persediaan.md`](../docs/persediaan.md) §2 langkah 5, buka Git Bash baharu |
-| `requires ext-intl` semasa `create-project` | Sambungan `intl` belum dihidupkan | Laragon → *Menu → PHP → Extensions* → tanda `intl`; buka terminal baharu |
+| `requires ext-intl` semasa `create-project` | Extension `intl` belum dihidupkan | Laragon → *Menu → PHP → Extensions* → tanda `intl`; buka terminal baharu |
 | `Failed to listen on localhost:8080` | Port 8080 sedang digunakan | `php spark serve --port 8081`, buka <http://localhost:8081> |
-| `/hello` → *404 Can't find a route* | Laluan tidak disimpan atau salah eja kelas | Semak `Routes.php` disimpan dan nama fail `Hello.php` sama dengan nama kelas |
-| Tiada *Debug Toolbar* | `.env` masih bertanda `#` atau pelayan belum dimulakan semula | Buang `#`, `Ctrl+C`, `php spark serve` semula |
+| `/hello` → *404 Can't find a route* | Route tidak disimpan atau salah eja kelas | Semak `Routes.php` disimpan dan nama fail `Hello.php` sama dengan nama kelas |
+| Tiada Debug Toolbar | `.env` masih bertanda `#` atau server belum dimulakan semula | Buang `#`, `Ctrl+C`, `php spark serve` semula |
 
 ---
 

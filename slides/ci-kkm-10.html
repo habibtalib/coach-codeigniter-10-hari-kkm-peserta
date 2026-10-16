@@ -435,9 +435,9 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <h2>Di akhir 10 hari, setiap peserta boleh…</h2>
   <div class="grid c2" style="gap:14px">
     <div class="card side"><h3>1 · Menulis URS</h3><p>FR/NFR berformat ID (<code>FR-TLK-01</code>) + acceptance criteria Given/When/Then yang boleh diuji.</p></div>
-    <div class="card side"><h3>2 · Mereka bentuk pangkalan data</h3><p>ERD 3NF → migration + seeder CI4 yang lulus <code>php spark migrate</code>.</p></div>
-    <div class="card side"><h3>3 · Membina modul transaksi</h3><p>TLK &amp; Pas dengan validasi pelayan, enum status dan logik dalam Service.</p></div>
-    <div class="card side"><h3>4 · Menguatkuasa akses</h3><p>Shield groups/permissions + filter laluan + semakan pemilikan di pelayan.</p></div>
+    <div class="card side"><h3>2 · Mereka bentuk database</h3><p>ERD 3NF → migration + seeder CI4 yang lulus <code>php spark migrate</code>.</p></div>
+    <div class="card side"><h3>3 · Membina modul transaksi</h3><p>TLK &amp; Pas dengan validasi server, enum status dan logik dalam Service.</p></div>
+    <div class="card side"><h3>4 · Menguatkuasa akses</h3><p>Shield groups/permissions + filter route + semakan pemilikan di server.</p></div>
     <div class="card side"><h3>5 · Melapor &amp; memapar</h3><p>Laporan bertapis dengan eksport PDF/Excel dan dashboard Chart.js ber-cache.</p></div>
     <div class="card side"><h3>6 · Menguji &amp; mendemo</h3><p>Ujian PHPUnit lulus dan demo hujung-ke-hujung kepada pemilik sistem.</p></div>
   </div>
@@ -531,8 +531,8 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div class="card flat"><span class="k">EKSPORT</span><h3>Dompdf · PhpSpreadsheet</h3><p>PDF · .xlsx</p></div>
     <div class="card flat"><span class="k">UJIAN</span><h3>PHPUnit</h3><p>FeatureTestTrait · DatabaseTestTrait</p></div>
   </div>
-  <p class="small muted mt16">Diagram: Mermaid (ERD, carta alir, status) · Wireframe: draw.io / Excalidraw · Git satu cabang per ciri · Claude Code opsyenal sebagai penjelas.</p>
-  <aside class="notes"><p>Stack ini dikunci dalam SPEC-KURSUS.md. Jangan tukar versi atau pakej tanpa perbincangan — semua lab dan templat kod bergantung padanya.</p></aside>
+  <p class="small muted mt16">Diagram: Mermaid (ERD, carta alir, status) · Wireframe: draw.io / Excalidraw · Git satu branch per ciri · Claude Code opsyenal sebagai penjelas.</p>
+  <aside class="notes"><p>Stack ini dikunci dalam SPEC-KURSUS.md. Jangan tukar versi atau package tanpa perbincangan — semua lab dan template kod bergantung padanya.</p></aside>
 </section>
 
 <section class="slide">
@@ -540,13 +540,13 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <h2>Git, Definition of Done &amp; disiplin AI</h2>
   <div class="grid c3">
     <div class="card top m-a">
-      <span class="k">GIT</span><h3>Satu ciri = satu cabang</h3>
+      <span class="k">GIT</span><h3>Satu ciri = satu branch</h3>
       <p><code>feat/tlk-borang-tempahan</code> · commit kecil &amp; kerap.</p>
       <p class="mt8">Prefix: <code>TLK:</code> <code>PAS:</code> <code>RPT:</code> <code>STAT:</code> <code>SETUP:</code> <code>FIX:</code></p>
     </div>
     <div class="card top m-tlk">
       <span class="k">DEFINITION OF DONE</span><h3>“Siap” bermaksud…</h3>
-      <ul><li>AC lulus diuji manual</li><li>Validasi &amp; akses di pelayan</li><li>Status direkod dalam <code>status_logs</code></li><li>PHPUnit lulus · tiada <code>.env</code> dicommit</li><li>Boleh terangkan setiap baris</li></ul>
+      <ul><li>AC lulus diuji manual</li><li>Validasi &amp; akses di server</li><li>Status direkod dalam <code>status_logs</code></li><li>PHPUnit lulus · tiada <code>.env</code> dicommit</li><li>Boleh terangkan setiap baris</li></ul>
     </div>
     <div class="card top m-stat">
       <span class="k">DISIPLIN AI</span><h3>Faham dahulu, terima kemudian</h3>
@@ -681,7 +681,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <tr><td><code>FR-TLK-02</code></td><td>Sistem mesti menjana nombor rujukan unik <code>TLK-{YYYY}-{0000}</code>.</td><td><b>Must</b></td></tr>
     <tr><td><code>FR-PAS-03</code></td><td>Sistem mesti menjana nombor rujukan <code>PAS-{YYYY}-{0000}</code>.</td><td><b>Must</b></td></tr>
     <tr><td><code>FR-TLK-08</code></td><td>Pemohon boleh membatalkan tempahan sendiri yang berstatus <span class="st approved">approved</span>.</td><td>Should</td></tr>
-    <tr><td><code>NFR-01</code></td><td>Semua halaman kecuali log masuk memerlukan pengesahan; akses peranan dikuatkuasa di pelayan.</td><td><b>Must</b></td></tr>
+    <tr><td><code>NFR-01</code></td><td>Semua halaman kecuali log masuk memerlukan pengesahan; akses peranan dikuatkuasa di server.</td><td><b>Must</b></td></tr>
     <tr><td><code>NFR-05</code></td><td>Senarai berpagination (20 rekod/halaman) dimuat &lt; 2 saat dengan 10,000 rekod.</td><td>Should</td></tr>
   </table>
   <div class="callout tip mt16"><span class="i">💡</span><div>Satu keperluan = satu ayat yang <b>boleh diuji</b>. “Mesra pengguna” bukan keperluan; “borang ≤ 5 medan wajib” ialah keperluan.</div></div>
@@ -692,7 +692,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <div class="eyebrow">Hari 1 · S4 — Lab 1.5</div>
   <h2>Persediaan CI4 tempatan (Laragon)</h2>
   <div class="split l">
-    <ol class="steps tight"><li><div><b>Laragon: PHP 8.3</b><span><i>Menu → PHP → Version</i>; <i>Extensions</i> → tanda <code>intl</code> &amp; <code>zip</code>.</span></div></li><li><div><b>Add Laragon to Path</b><span><i>Menu → Tools → Path</i>, kemudian tutup &amp; buka semula VS Code.</span></div></li><li><div><b>Semak dalam Git Bash</b><span><code>which php</code> → <code>/c/laragon/bin/php/…</code> · <code>php -m | grep intl</code>.</span></div></li><li><div><b>Projek latihan</b><span><code>composer create-project codeigniter4/appstarter ci4-asas</code></span></div></li><li><div><b>Jalankan</b><span><code>php spark serve</code> → <code>localhost:8080</code> → laluan <code>/hello</code>.</span></div></li></ol>
+    <ol class="steps tight"><li><div><b>Laragon: PHP 8.3</b><span><i>Menu → PHP → Version</i>; <i>Extensions</i> → tanda <code>intl</code> &amp; <code>zip</code>.</span></div></li><li><div><b>Add Laragon to Path</b><span><i>Menu → Tools → Path</i>, kemudian tutup &amp; buka semula VS Code.</span></div></li><li><div><b>Semak dalam Git Bash</b><span><code>which php</code> → <code>/c/laragon/bin/php/…</code> · <code>php -m | grep intl</code>.</span></div></li><li><div><b>Projek latihan</b><span><code>composer create-project codeigniter4/appstarter ci4-asas</code></span></div></li><li><div><b>Jalankan</b><span><code>php spark serve</code> → <code>localhost:8080</code> → route <code>/hello</code>.</span></div></li></ol>
     <div class="stack">
       <div class="callout warn"><span class="i">⚠️</span><div><code>composer: command not found</code>? Tambah alias sekali: <code>alias composer="php /c/laragon/bin/composer/composer.phar"</code> dalam <code>~/.bashrc</code>.</div></div>
       <div class="callout tip"><span class="i">💡</span><div><code>ci4-asas</code> ialah projek latihan sahaja. Projek sebenar <code>sistem-tlk-pas</code> dicipta pada Hari 4 Lab 4.2. 3 checkpoint Lab 1.5 dikira dalam kemajuan.</div></div>
@@ -820,6 +820,19 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 </section>
 
 <section class="slide">
+  <div class="eyebrow">Hari 2 · S2–S4 — Lab 2.2–2.4</div>
+  <h2>Projek anda: <code>kelas-ci-&lt;nama&gt;</code></h2>
+  <div class="split l">
+    <ol class="steps tight"><li><div><b>Lab 2.2 · GitLab</b><span>GitLab KKM → <i>Create blank project</i>, Private, <b>tanpa</b> README; jurulatih = Reporter.</span></div></li><li><div><b>Projek CI4</b><span><code>composer create-project codeigniter4/appstarter kelas-ci-&lt;nama&gt;</code>, <code>.env</code>, <code>.gitattributes</code>.</span></div></li><li><div><b>Push pertama</b><span><code>git init --initial-branch=main</code> → <code>remote add</code> → <code>push -u origin main</code>.</span></div></li><li><div><b>Lab 2.3 · MVC</b><span><code>/hello</code>, <code>hello/(:segment)</code>, layout, <code>php spark routes</code>.</span></div></li><li><div><b>Lab 2.4 · Borang</b><span><code>/daftar</code>: validation, PRG + flash, CSRF global.</span></div></li></ol>
+    <div class="stack">
+      <div class="callout warn"><span class="i">⚠️</span><div><code>.env</code> dan <code>vendor/</code> tidak boleh kelihatan di GitLab. Push selepas setiap langkah.</div></div>
+      <div class="callout tip"><span class="i">💡</span><div>Checkpoint Lab 2.2–2.4 ditanda apabila <b>Kuiz hari</b> lulus — soalannya hanya boleh dijawab dengan menjalankan kod.</div></div>
+    </div>
+  </div>
+  <aside class="notes"><p>Mulai S2 kursus hands-on. Demo langsung cipta projek kosong (buang tanda README!) dan tambah jurulatih sebagai Reporter. Push pertama membuka Git Credential Manager; SSO/2FA menolak kata laluan → Personal Access Token write_repository. Semakan rawak: buka 3 projek peserta di projektor. Jawapan kuiz: ?? env sahaja; 400 disallowed characters; hello/([^/]+); The Nama field is required.; 403.</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Hari 2 · Hasil hari ini</div>
   <h2>Semak sebelum pulang</h2>
   <ul class="checks done">
@@ -943,7 +956,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
       <li><div><b>Betulkan ERD &amp; wireframe</b><span>Ikut catatan semakan jurulatih hari ini.</span></div></li>
       <li><div><b>Sediakan demo 5 minit</b><span>Tunjukkan projek berjalan + ERD akhir pada Hari 4 S1.</span></div></li>
     </ol>
-    <div class="callout warn"><span class="i">⚠️</span><div>Semak sambungan PHP: <code>intl</code>, <code>mbstring</code>, <code>mysqlnd</code>, <code>gd</code>, <code>zip</code>. Tanpa <code>intl</code>, CI4 tidak akan berjalan.</div></div>
+    <div class="callout warn"><span class="i">⚠️</span><div>Semak PHP extension: <code>intl</code>, <code>mbstring</code>, <code>mysqlnd</code>, <code>gd</code>, <code>zip</code>. Tanpa <code>intl</code>, CI4 tidak akan berjalan.</div></div>
   </div>
   <aside class="notes"><p>Tugasan ini disemak pada Hari 4 S1. Pasangan yang gagal memasang persekitaran perlu dibantu awal pagi — jangan biarkan mereka ketinggalan pada hari pertama pembangunan.</p></aside>
 </section>
@@ -1161,9 +1174,9 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <section class="slide">
   <div class="eyebrow">Pra-syarat · Merge request</div>
-  <h2 class="wide">Cabang → MR → semakan → merge, dengan <code>main</code> dilindungi</h2>
+  <h2 class="wide">Branch → MR → semakan → merge, dengan <code>main</code> dilindungi</h2>
   <div class="flow">
-    <div class="node"><span class="k">01</span><b>Cabang</b><span><code>feat/TLKPAS-12-…</code></span></div><div class="arr">→</div>
+    <div class="node"><span class="k">01</span><b>Branch</b><span><code>feat/TLKPAS-12-…</code></span></div><div class="arr">→</div>
     <div class="node"><span class="k">02</span><b>Push</b><span><code>git push -u origin …</code></span></div><div class="arr">→</div>
     <div class="node"><span class="k">03</span><b>MR</b><span>Merge request di GitLab</span></div><div class="arr">→</div>
     <div class="node hot"><span class="k">04</span><b>Semakan</b><span>rakan semak ikut DoD</span></div><div class="arr">→</div>
@@ -1174,7 +1187,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div class="card side m-tlk"><h3>Penulis tidak merge</h3><p>Rakan semak dan klik Merge. Peraturan approval ialah ciri Premium.</p></div>
     <div class="card side m-rpt"><h3>Sama dengan lab</h3><p>Lab guna <code>git merge --no-ff</code> tempatan. Kaedah lalai GitLab, <i>Merge commit</i>, menghasilkan commit merge yang sama.</p></div>
   </div>
-  <div class="callout warn mt16"><span class="i">⚠️</span><div>Jangan push <code>main</code> selepas merge tempatan, walaupun Maintainer dibenarkan. Push cabang, merge melalui MR, kemudian <code>git switch main &amp;&amp; git pull</code>.</div></div>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Jangan push <code>main</code> selepas merge tempatan, walaupun Maintainer dibenarkan. Push branch, merge melalui MR, kemudian <code>git switch main &amp;&amp; git pull</code>.</div></div>
   <aside class="notes"><p>Dalam pasangan, rakan anda ialah penyemak — dia mesti boleh menerangkan kod sebelum klik Merge (disiplin "faham dahulu"). Pada GitLab Free, peraturan approval ialah ciri Premium, jadi peraturan kursus ialah disiplin: penulis tidak pernah merge MR sendiri. Tanya: "Kenapa penulis tidak merge MR sendiri?" ±5 minit.</p></aside>
 </section>
 
@@ -1185,11 +1198,11 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div class="node"><span class="k">HARI 1</span><b>Design Thinking</b><span>persona + pain</span></div><div class="arr">→</div>
     <div class="node"><span class="k">HARI 1–2</span><b>URS / FR + AC</b><span>FR-TLK-03</span></div><div class="arr">→</div>
     <div class="node"><span class="k">JIRA</span><b>Story</b><span>TLKPAS-12</span></div><div class="arr">→</div>
-    <div class="node hot"><span class="k">GIT</span><b>Cabang + commit</b><span>feat/TLKPAS-12-semak-pertindihan</span></div><div class="arr">→</div>
+    <div class="node hot"><span class="k">GIT</span><b>Branch + commit</b><span>feat/TLKPAS-12-semak-pertindihan</span></div><div class="arr">→</div>
     <div class="node"><span class="k">GITLAB</span><b>MR → Done</b><span>DoD lulus</span></div>
   </div>
   <div class="split mt24">
-    <div class="codewrap"><div class="codebar">Git Bash · kunci isu dalam cabang &amp; commit<span class="lang">bash</span></div>
+    <div class="codewrap"><div class="codebar">Git Bash · kunci isu dalam branch &amp; commit<span class="lang">bash</span></div>
 <pre class="code sm" data-lang="bash"><span class="f">git</span> switch <span class="n">-c</span> feat/TLKPAS-12-semak-pertindihan
 <span class="f">git</span> commit <span class="n">-m</span> <span class="s">"TLKPAS-12 TLK: tolak tempahan bertindih"</span>
 
@@ -1243,7 +1256,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span><em>S1</em>Mendemokan tugasan persediaan dan menjelaskan aliran request MVC CI4.</span></li>
     <li><span><em>S2</em>Mencipta projek, mengkonfigur <code>.env</code>, memasang Shield &amp; layout Bootstrap.</span></li>
     <li><span><em>S3</em>Menukar ERD kepada migration + seeder dan menjalankan <code>php spark migrate</code> dengan berjaya.</span></li>
-    <li><span><em>S4</em>Menerima tugasan modul, cabang Git &amp; Definition of Done.</span></li>
+    <li><span><em>S4</em>Menerima tugasan modul, branch Git &amp; Definition of Done.</span></li>
   </ul>
   <aside class="notes"><p>S1 bermula dengan demo 5 minit setiap pasangan. Kenal pasti pasangan yang bermasalah dengan persekitaran dan pasangkan mereka dengan pasangan yang sudah siap.</p></aside>
 </section>
@@ -1300,7 +1313,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
       <div class="callout warn"><span class="i">⚠️</span><div><code>.env</code> mesti dalam <code>.gitignore</code>. Kongsi <code>env</code> contoh, bukan rahsia.</div></div>
     </div>
   </div>
-  <aside class="notes"><p>Tunjukkan bahawa hanya folder public/ didedahkan kepada pelayan web. Ini sebab fail muat naik nanti disimpan di writable/, bukan public/. Salin fail <code>env</code> kepada <code>.env</code> dan isi nilai setempat.</p></aside>
+  <aside class="notes"><p>Tunjukkan bahawa hanya folder public/ didedahkan kepada web server. Ini sebab fail muat naik nanti disimpan di writable/, bukan public/. Salin fail <code>env</code> kepada <code>.env</code> dan isi nilai setempat.</p></aside>
 </section>
 
 <section class="slide codey">
@@ -1330,10 +1343,10 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
         ]],
     ],
 ];</pre></div>
-      <div class="callout tip"><span class="i">💡</span><div>CSRF dan <code>session</code> global: setiap halaman perlu log masuk kecuali laluan Shield sendiri.</div></div>
+      <div class="callout tip"><span class="i">💡</span><div>CSRF dan <code>session</code> global: setiap halaman perlu log masuk kecuali route Shield sendiri.</div></div>
     </div>
   </div>
-  <aside class="notes"><p><code>shield:setup</code> menyalin konfigurasi Auth dan AuthGroups ke app/Config serta menambah laluan auth. Jalankan <code>php spark routes</code> selepas setiap perubahan laluan untuk mengesahkan filter.</p></aside>
+  <aside class="notes"><p><code>shield:setup</code> menyalin konfigurasi Auth dan AuthGroups ke app/Config serta menambah route auth. Jalankan <code>php spark routes</code> selepas setiap perubahan route untuk mengesahkan filter.</p></aside>
 </section>
 
 <section class="slide codey">
@@ -1406,12 +1419,12 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <section class="slide">
   <div class="eyebrow">Hari 4 · S4 — Pembahagian tugas</div>
-  <h2>Pasangan, cabang &amp; checkpoint</h2>
+  <h2>Pasangan, branch &amp; checkpoint</h2>
   <div class="split">
     <ol class="steps tight">
       <li><div><b>Bentuk pasangan</b><span>Driver menaip, navigator menyemak — tukar setiap sesi.</span></div></li>
       <li><div><b>Satu repo setiap pasangan</b><span>Semua pasangan membina keempat-empat modul.</span></div></li>
-      <li><div><b>Satu ciri = satu cabang</b><span><code>git switch -c feat/tlk-borang-tempahan</code></span></div></li>
+      <li><div><b>Satu ciri = satu branch</b><span><code>git switch -c feat/tlk-borang-tempahan</code></span></div></li>
       <li><div><b>Semakan jurulatih</b><span>Di setiap ✅ checkpoint lab sebelum merge ke <code>main</code>.</span></div></li>
     </ol>
     <div class="stack">
@@ -1423,7 +1436,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
       <div class="callout tip"><span class="i">⭐</span><div>Pasangan yang cepat mengambil <b>cabaran tambahan</b> dalam lab — bukan modul seterusnya.</div></div>
     </div>
   </div>
-  <aside class="notes"><p>Tunjukkan semula Definition of Done dari slaid cara kerja. Pastikan setiap pasangan sudah push cabang pertama sebelum pulang — ini membuktikan akses Git berfungsi.</p></aside>
+  <aside class="notes"><p>Tunjukkan semula Definition of Done dari slaid cara kerja. Pastikan setiap pasangan sudah push branch pertama sebelum pulang — ini membuktikan akses Git berfungsi.</p></aside>
 </section>
 
 <section class="slide">
@@ -1434,7 +1447,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span>Shield dipasang; log masuk berfungsi untuk 5 akaun sintetik dengan group betul.</span></li>
     <li><span><b>Semua migration + seeder</b> berjaya: <code>php spark migrate</code> &amp; <code>db:seed DatabaseSeeder</code>.</span></li>
     <li><span>Layout Bootstrap <code>app/Views/layouts/main.php</code> dengan navigasi mengikut peranan.</span></li>
-    <li><span>Cabang Git pertama di-push; DoD difahami.</span></li>
+    <li><span>Branch Git pertama di-push; DoD difahami.</span></li>
   </ul>
   <aside class="notes"><p>Checkpoint penting: jalankan <code>php spark migrate:refresh --all</code> dan seed semula pada mesin setiap pasangan. Jika ia gagal, betulkan malam ini — Hari 5 bergantung sepenuhnya pada skema ini.</p></aside>
 </section>
@@ -1462,7 +1475,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <ul class="checks">
     <li><span><em>S1</em>Menulis Model dengan <code>$allowedFields</code>, <code>$validationRules</code>, Entity &amp; enum.</span></li>
     <li><span><em>S2</em>Membina CRUD slot (admin) &amp; senarai tempahan dengan pagination.</span></li>
-    <li><span><em>S3</em>Membina borang tempahan dengan validasi pelayan + nombor rujukan <code>TLK-2026-0001</code>.</span></li>
+    <li><span><em>S3</em>Membina borang tempahan dengan validasi server + nombor rujukan <code>TLK-2026-0001</code>.</span></li>
     <li><span><em>S4</em>Melaksanakan senarai ujian manual dan merekod pepijat.</span></li>
   </ul>
   <aside class="notes"><p>Hasil yang boleh diukur: satu tempahan berjaya disimpan dengan nombor rujukan TLK-2026-0001 dan kelihatan dalam senarai pemohon.</p></aside>
@@ -1509,7 +1522,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 <span class="v">$s</span> = <span class="t">BookingStatus</span>::<span class="f">from</span>(<span class="v">$booking</span>-&gt;status);
 <span class="v">$s</span>-&gt;<span class="f">label</span>();                                <span class="c">// 'Menunggu'</span>
 <span class="v">$s</span>-&gt;<span class="f">canTransitionTo</span>(<span class="t">BookingStatus</span>::<span class="t">Approved</span>); <span class="c">// true</span></pre></div>
-      <div class="callout tip"><span class="i">💡</span><div>Tiada rentetan <code>'approved'</code> bertaburan dalam kod — sentiasa <code>BookingStatus::Approved-&gt;value</code>.</div></div>
+      <div class="callout tip"><span class="i">💡</span><div>Tiada string <code>'approved'</code> bertaburan dalam kod — sentiasa <code>BookingStatus::Approved-&gt;value</code>.</div></div>
     </div>
   </div>
   <aside class="notes"><p>Backed enum PHP 8.1+ memberi kita jenis yang selamat. label() untuk paparan BM, canTransitionTo() untuk peraturan peralihan. Pada Hari 8 kita ulang corak ini untuk PassStatus.</p></aside>
@@ -1599,7 +1612,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
       <div class="callout warn"><span class="i">⚠️</span><div><code>FOR UPDATE</code> dahulu, <code>INSERT IGNORE</code> hanya jika baris tiada. Terbalik → kunci S + X → deadlock (1213).</div></div>
     </div>
   </div>
-  <aside class="notes"><p>Query mentah di sini selamat kerana menggunakan binding (?), bukan cantuman input. Servis yang sama digunakan untuk PAS-2026-0001 pada Hari 7. Transaksi bersarang dalam CI4 selamat — hanya transaksi paling luar yang commit. Tekankan tertib: FOR UPDATE dahulu; INSERT IGNORE pada baris sedia ada mengambil kunci S dan dua request serentak akan deadlock. Templat penuh ada cuba semula untuk ralat 1213/1205.</p></aside>
+  <aside class="notes"><p>Query mentah di sini selamat kerana menggunakan binding (?), bukan cantuman input. Servis yang sama digunakan untuk PAS-2026-0001 pada Hari 7. Transaksi bersarang dalam CI4 selamat — hanya transaksi paling luar yang commit. Tekankan tertib: FOR UPDATE dahulu; INSERT IGNORE pada baris sedia ada mengambil kunci S dan dua request serentak akan deadlock. Template penuh ada cuba semula untuk ralat 1213/1205.</p></aside>
 </section>
 
 <section class="slide codey">
@@ -1636,11 +1649,11 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <ul class="checks done">
     <li><span>Enum <code>BookingStatus</code> &amp; <code>SlotCategory</code>, Entity <code>SlotBooking</code> dan Model dengan validasi.</span></li>
     <li><span>CRUD slot &amp; zon untuk <code>admin</code> di <code>/admin/slot</code> (soft delete slot).</span></li>
-    <li><span>Borang <code>/tlk/tempahan/new</code> dengan validasi pelayan dan mesej ralat BM.</span></li>
+    <li><span>Borang <code>/tlk/tempahan/new</code> dengan validasi server dan mesej ralat BM.</span></li>
     <li><span>Tempahan pertama disimpan sebagai <code>TLK-2026-0001</code>; senarai pemohon berpagination.</span></li>
     <li><span>Ujian manual dijalankan: tarikh kosong, tarikh lampau, &gt; 90 hari, sebab terlalu pendek — pepijat direkod.</span></li>
   </ul>
-  <aside class="notes"><p>Semak rawak: minta satu pasangan cuba menghantar borang dengan end_date sebelum start_date. Ralat mesti dari pelayan, bukan hanya JavaScript.</p></aside>
+  <aside class="notes"><p>Semak rawak: minta satu pasangan cuba menghantar borang dengan end_date sebelum start_date. Ralat mesti dari server, bukan hanya JavaScript.</p></aside>
 </section>
 
 <!-- ============================ HARI 6 ============================ -->
@@ -1742,7 +1755,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div class="tm">t5</div><div class="a"></div><div class="bad"><code>ROLLBACK</code> · “Slot telah diluluskan untuk tempahan lain.”</div>
   </div>
   <div class="callout warn mt16"><span class="i">⚠️</span><div>Tanpa kunci, A dan B boleh sama-sama melihat “tiada pertindihan” pada t2 dan <b>kedua-duanya diluluskan</b>. InnoDB diperlukan — ujian yang menyentuh <code>FOR UPDATE</code> perlu MySQL, bukan SQLite.</div></div>
-  <aside class="notes"><p>Main peranan: dua peserta sebagai Pelulus A dan B, seorang sebagai pangkalan data yang memegang "kunci" (pen marker). Ini menjadikan konsep perlumbaan (race condition) konkrit.</p></aside>
+  <aside class="notes"><p>Main peranan: dua peserta sebagai Pelulus A dan B, seorang sebagai database yang memegang "kunci" (pen marker). Ini menjadikan konsep perlumbaan (race condition) konkrit.</p></aside>
 </section>
 
 <section class="slide">
@@ -1844,7 +1857,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
         <span class="v">$this</span>-&gt;<span class="f">assertFalse</span>(<span class="t">BookingStatus</span>::<span class="t">Rejected</span>-&gt;<span class="f">canTransitionTo</span>(<span class="t">BookingStatus</span>::<span class="t">Approved</span>));
     }
 }</pre></div>
-  <aside class="notes"><p>Jalankan dengan <code>composer test -- --filter BookingRulesTest</code>. DatabaseTestTrait menjalankan migration dan seeder pada pangkalan data ujian (group <code>tests</code>) — jangan sekali-kali pangkalan data pembangunan. Tunjukkan ujian gagal dahulu (ubah syarat), kemudian lulus.</p></aside>
+  <aside class="notes"><p>Jalankan dengan <code>composer test -- --filter BookingRulesTest</code>. DatabaseTestTrait menjalankan migration dan seeder pada database ujian (group <code>tests</code>) — jangan sekali-kali database pembangunan. Tunjukkan ujian gagal dahulu (ubah syarat), kemudian lulus.</p></aside>
 </section>
 
 <section class="slide">
@@ -1960,7 +1973,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <span class="k">return</span> <span class="v">$this</span>-&gt;response-&gt;<span class="f">download</span>(<span class="t">WRITEPATH</span> . <span class="v">$doc</span>[<span class="s">'stored_path'</span>], <span class="k">null</span>)
         -&gt;<span class="f">setFileName</span>(<span class="v">$doc</span>[<span class="s">'original_name'</span>]);
 }</pre></div>
-  <div class="callout warn mt16"><span class="i">⚠️</span><div>Menyembunyikan pautan <b>bukan</b> kawalan akses. Cuba tukar ID dalam URL — pelayan mesti menolak.</div></div>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Menyembunyikan pautan <b>bukan</b> kawalan akses. Cuba tukar ID dalam URL — server mesti menolak.</div></div>
   <aside class="notes"><p>Demo serangan IDOR: log masuk sebagai pemohon2, buka /pas/permohonan/1 milik pemohon1. Tanpa semakan pemilikan, data bocor. findOwned() ditunjukkan penuh pada Hari 8.</p></aside>
 </section>
 
@@ -2022,12 +2035,12 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     ]);
 }</pre></div>
   </div>
-  <aside class="notes"><p>getMimeType() membaca kandungan sebenar fail, bukan sambungan. Ambil mime dan saiz sebelum move(). submit() dalam PassWorkflowService menjana PAS-2026-0001, menyimpan status submitted dan menulis log pertama.</p></aside>
+  <aside class="notes"><p>getMimeType() membaca kandungan sebenar fail, bukan extension. Ambil mime dan saiz sebelum move(). submit() dalam PassWorkflowService menjana PAS-2026-0001, menyimpan status submitted dan menulis log pertama.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 7 · S4 — Kes sempadan</div>
-  <h2>Uji kes sempadan, bukan hanya laluan gembira</h2>
+  <h2>Uji kes sempadan, bukan hanya happy path</h2>
   <table class="t">
     <tr><th>Kes</th><th>Input</th><th>Jangkaan</th></tr>
     <tr><td>Fail sah</td><td><code>surat.pdf</code> · 300 KB</td><td><span class="st approved">diterima</span> nama rawak dalam <code>writable/uploads/pas/</code></td></tr>
@@ -2075,7 +2088,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <h2>Pada akhir hari ini, anda boleh…</h2>
   <ul class="checks">
     <li><span><em>S1</em>Melaksanakan <code>PassWorkflowService</code> dengan <code>PassStatus::canTransitionTo()</code>.</span></li>
-    <li><span><em>S2</em>Mengkonfigur Shield groups/permissions + filter laluan + semakan pemilikan.</span></li>
+    <li><span><em>S2</em>Mengkonfigur Shield groups/permissions + filter route + semakan pemilikan.</span></li>
     <li><span><em>S3</em>Memaparkan garis masa <code>status_logs</code> dan menulis ujian akses positif &amp; negatif.</span></li>
     <li><span><em>S4</em>Mendemokan aliran penuh tiga peranan — <b>M2 siap</b>.</span></li>
   </ul>
@@ -2142,7 +2155,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <span class="v">$db</span>-&gt;<span class="f">transComplete</span>();
     <span class="t">StatisticsService</span>::<span class="f">forget</span>();
 }</pre></div>
-  <aside class="notes"><p>Controller ReviewController hanya memanggil transition() dengan status sasaran. Semakan kebenaran (siapa boleh ke status apa) dibuat di controller dengan <code>auth()-&gt;user()-&gt;can('pas.approve')</code> sebelum memanggil service, di samping filter laluan.</p></aside>
+  <aside class="notes"><p>Controller ReviewController hanya memanggil transition() dengan status sasaran. Semakan kebenaran (siapa boleh ke status apa) dibuat di controller dengan <code>auth()-&gt;user()-&gt;can('pas.approve')</code> sebelum memanggil service, di samping filter route.</p></aside>
 </section>
 
 <section class="slide">
@@ -2177,7 +2190,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <section class="slide codey">
   <div class="eyebrow">Hari 8 · S2 — Filter &amp; pemilikan</div>
-  <h2>Dua lapisan di pelayan: laluan + rekod</h2>
+  <h2>Dua lapisan di server: route + rekod</h2>
   <div class="codewrap"><div class="codebar">app/Config/Routes.php<span class="lang">php</span></div>
 <pre class="code sm" data-lang="php"><span class="v">$routes</span>-&gt;<span class="f">group</span>(<span class="s">'tlk/keputusan'</span>, [<span class="s">'filter'</span> =&gt; <span class="s">'permission:tlk.decide'</span>], <span class="k">static</span> <span class="k">function</span> (<span class="v">$routes</span>) {
     <span class="v">$routes</span>-&gt;<span class="f">get</span>(<span class="s">'/'</span>, <span class="s">'Tlk\DecisionController::index'</span>);
@@ -2201,7 +2214,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     }
     <span class="k">return</span> <span class="v">$app</span>;
 }</pre></div>
-  <aside class="notes"><p>Filter laluan menghalang peranan yang salah daripada memasuki kumpulan URL. Semakan pemilikan menghalang pemohon membuka rekod pemohon lain dalam URL yang dibenarkan. Kedua-duanya diperlukan. Jalankan <code>php spark routes</code> untuk melihat filter pada setiap laluan.</p></aside>
+  <aside class="notes"><p>Filter route menghalang peranan yang salah daripada memasuki kumpulan URL. Semakan pemilikan menghalang pemohon membuka rekod pemohon lain dalam URL yang dibenarkan. Kedua-duanya diperlukan. Jalankan <code>php spark routes</code> untuk melihat filter pada setiap route.</p></aside>
 </section>
 
 <section class="slide codey">
@@ -2274,7 +2287,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <h2>M2 siap — semak DoD</h2>
   <ul class="checks done">
     <li><span><code>PassWorkflowService</code> menguatkuasa BR-PAS-01 &amp; BR-PAS-03 melalui enum.</span></li>
-    <li><span>Shield groups/permissions dikonfigur; filter pada setiap kumpulan laluan.</span></li>
+    <li><span>Shield groups/permissions dikonfigur; filter pada setiap route group.</span></li>
     <li><span>Semakan pemilikan: pemohon hanya nampak permohonan &amp; dokumen sendiri.</span></li>
     <li><span>Garis masa <code>status_logs</code> pada halaman butiran; ujian akses positif &amp; negatif lulus.</span></li>
     <li><span>Demo aliran penuh: pemohon1 → penyemak → pelulus — <b>Modul Pas siap</b> 🎉</span></li>
@@ -2290,49 +2303,49 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <h1>Modul Laporan</h1>
   <div><span class="chip m-rpt">M3 · RPT-01 · RPT-02 · RPT-03</span></div>
   <div class="sessions">
-    <div><i>S1</i>Reka bentuk laporan: jenis &amp; kriteria penapis</div>
+    <div><i>S1</i>Reka bentuk laporan: jenis &amp; kriteria filter</div>
     <div><i>S2</i>Query aggregate &amp; carian data</div>
     <div><i>S3</i>Eksport PDF / Excel</div>
     <div><i>S4</i>Ujian modul laporan — <b>M3 siap</b></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span></div>
   <div class="daynum">09</div>
-  <aside class="notes"><p>Laporan membaca data TLK dan Pas. Prinsip utama: satu set penapis, tiga output (HTML, PDF, Excel) — semua mesti menunjukkan jumlah yang sama.</p></aside>
+  <aside class="notes"><p>Laporan membaca data TLK dan Pas. Prinsip utama: satu set filter, tiga output (HTML, PDF, Excel) — semua mesti menunjukkan jumlah yang sama.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 9 · Objektif hari ini</div>
   <h2>Pada akhir hari ini, anda boleh…</h2>
   <ul class="checks">
-    <li><span><em>S1</em>Menentukan spesifikasi RPT-01..03 dan borang penapis GET.</span></li>
-    <li><span><em>S2</em>Menulis <code>ReportService</code> dengan join, <code>groupBy</code>, <code>selectCount</code> &amp; penapis dinamik.</span></li>
-    <li><span><em>S3</em>Menjana PDF (Dompdf) &amp; <code>.xlsx</code> (PhpSpreadsheet) daripada penapis yang sama.</span></li>
+    <li><span><em>S1</em>Menentukan spesifikasi RPT-01..03 dan borang filter GET.</span></li>
+    <li><span><em>S2</em>Menulis <code>ReportService</code> dengan join, <code>groupBy</code>, <code>selectCount</code> &amp; filter dinamik.</span></li>
+    <li><span><em>S3</em>Menjana PDF (Dompdf) &amp; <code>.xlsx</code> (PhpSpreadsheet) daripada filter yang sama.</span></li>
     <li><span><em>S4</em>Mengesahkan jumlah laporan = jumlah DB — <b>M3 siap</b>.</span></li>
   </ul>
-  <aside class="notes"><p>Pasang pakej di awal S3: <code>composer require dompdf/dompdf phpoffice/phpspreadsheet</code>. Lakukan semasa rehat pagi jika rangkaian perlahan.</p></aside>
+  <aside class="notes"><p>Pasang package di awal S3: <code>composer require dompdf/dompdf phpoffice/phpspreadsheet</code>. Lakukan semasa rehat pagi jika rangkaian perlahan.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 9 · S1 — Spesifikasi</div>
   <h2 class="wide">Tiga laporan, satu corak</h2>
   <table class="t">
-    <tr><th style="width:110px">Kod</th><th>Laporan</th><th>Penapis</th><th style="width:210px">Laluan</th></tr>
+    <tr><th style="width:110px">Kod</th><th>Laporan</th><th>Filter</th><th style="width:210px">Route</th></tr>
     <tr><td><code>RPT-01</code></td><td>Senarai tempahan TLK</td><td>julat tarikh · zon · kategori · status</td><td><code>/laporan/tempahan</code></td></tr>
     <tr><td><code>RPT-02</code></td><td>Senarai permohonan Pas</td><td>julat tarikh · jenis pas · jabatan · status</td><td><code>/laporan/pas</code></td></tr>
     <tr><td><code>RPT-03</code></td><td>Penggunaan slot mengikut zon (aggregate)</td><td>bulan / tahun</td><td><code>/laporan/penggunaan</code></td></tr>
   </table>
   <div class="flow mt24">
-    <div class="node"><span class="k">GET</span><b>Borang penapis</b><span><code>?from=…&amp;status=…</code></span></div><div class="arr">→</div>
+    <div class="node"><span class="k">GET</span><b>Borang filter</b><span><code>?from=…&amp;status=…</code></span></div><div class="arr">→</div>
     <div class="node hot"><span class="k">SERVICE</span><b>ReportService</b><span>satu query builder</span></div><div class="arr">→</div>
     <div class="node"><span class="k">HTML</span><b>Jadual berpagination</b><span>paparan skrin</span></div><div class="arr">·</div>
     <div class="node"><span class="k">?export=pdf</span><b>Dompdf</b><span>A4 landskap</span></div><div class="arr">·</div>
     <div class="node"><span class="k">?export=xlsx</span><b>PhpSpreadsheet</b><span>.xlsx</span></div>
   </div>
-  <aside class="notes"><p>Semua laporan dilindungi <code>permission:laporan.view</code>. Penapis dibawa melalui query string supaya pautan eksport menggunakan penapis yang sama dengan paparan — pengguna boleh menandabuku laporan bertapis.</p></aside>
+  <aside class="notes"><p>Semua laporan dilindungi <code>permission:laporan.view</code>. Filter dibawa melalui query string supaya pautan eksport menggunakan filter yang sama dengan paparan — pengguna boleh menandabuku laporan bertapis.</p></aside>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 9 · S1–S2 — Penapis dinamik</div>
+  <div class="eyebrow">Hari 9 · S1–S2 — Filter dinamik</div>
   <h2>Borang GET → query builder bersyarat</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">app/Views/laporan/tempahan.php<span class="lang">php</span></div>
@@ -2374,7 +2387,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <span class="k">return</span> <span class="v">$q</span>-&gt;<span class="f">orderBy</span>(<span class="s">'b.start_date'</span>, <span class="s">'DESC'</span>);
 }</pre></div>
   </div>
-  <aside class="notes"><p>Service memulangkan builder, bukan hasil — supaya controller boleh memilih: paginate untuk HTML, get() penuh untuk eksport. <code>$statuses = BookingStatus::cases()</code> dihantar dari controller. Semua nilai penapis melalui Query Builder — tiada cantuman rentetan.</p></aside>
+  <aside class="notes"><p>Service memulangkan builder, bukan hasil — supaya controller boleh memilih: paginate untuk HTML, get() penuh untuk eksport. <code>$statuses = BookingStatus::cases()</code> dihantar dari controller. Semua nilai filter melalui Query Builder — tiada cantuman string.</p></aside>
 </section>
 
 <section class="slide codey">
@@ -2419,7 +2432,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <section class="slide codey">
   <div class="eyebrow">Hari 9 · S3 — Eksport</div>
-  <h2>Penapis sama, dua format fail</h2>
+  <h2>Filter sama, dua format fail</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">ExportService::pdf()<span class="lang">php</span></div>
 <pre class="code sm" data-lang="php"><span class="k">use</span> <span class="t">Dompdf</span>\<span class="t">Dompdf</span>;
@@ -2480,19 +2493,19 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
       <li><div><b>Tapis di skrin</b><span>Rekod jumlah baris.</span></div></li>
       <li><div><b>Semak terus DB</b><span><code>COUNT(*)</code> dengan syarat sama.</span></div></li>
       <li><div><b>Buka PDF &amp; Excel</b><span>Bilangan baris mesti sepadan.</span></div></li>
-      <li><div><b>Kes sempadan</b><span>Penapis kosong, julat tanpa data.</span></div></li>
+      <li><div><b>Kes sempadan</b><span>Filter kosong, julat tanpa data.</span></div></li>
     </ol>
   </div>
-  <aside class="notes"><p>Pepijat laporan yang paling lazim: join yang menggandakan baris, atau penapis yang tidak dibawa ke eksport. Ujian jumlah ini menangkap kedua-duanya.</p></aside>
+  <aside class="notes"><p>Pepijat laporan yang paling lazim: join yang menggandakan baris, atau filter yang tidak dibawa ke eksport. Ujian jumlah ini menangkap kedua-duanya.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 9 · Hasil hari ini</div>
   <h2>M3 siap — semak DoD</h2>
   <ul class="checks done">
-    <li><span>Spesifikasi RPT-01..03 dan borang penapis GET.</span></li>
-    <li><span><code>ReportService</code> dengan penapis dinamik, join dan aggregate <code>selectCount</code>/<code>groupBy</code>.</span></li>
-    <li><span>Eksport PDF (Dompdf) &amp; Excel (PhpSpreadsheet) membawa penapis yang sama.</span></li>
+    <li><span>Spesifikasi RPT-01..03 dan borang filter GET.</span></li>
+    <li><span><code>ReportService</code> dengan filter dinamik, join dan aggregate <code>selectCount</code>/<code>groupBy</code>.</span></li>
+    <li><span>Eksport PDF (Dompdf) &amp; Excel (PhpSpreadsheet) membawa filter yang sama.</span></li>
     <li><span>Laporan dilindungi <code>permission:laporan.view</code>.</span></li>
     <li><span>Jumlah laporan = jumlah DB disahkan — <b>Modul Laporan siap</b> 🎉</span></li>
   </ul>
@@ -2549,7 +2562,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <section class="slide codey">
   <div class="eyebrow">Hari 10 · S1 — Endpoint JSON + Chart.js</div>
-  <h2>Pelayan mengira, pelayar melukis</h2>
+  <h2>Server mengira, pelayar melukis</h2>
   <div class="split r">
     <div class="codewrap"><div class="codebar">Statistik/DashboardController.php<span class="lang">php</span></div>
 <pre class="code sm" data-lang="php"><span class="k">public</span> <span class="k">function</span> <span class="f">index</span>()
@@ -2693,7 +2706,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
       <li><span>Muat naik di <code>writable/uploads/</code>, disemak mime &amp; saiz.</span></li>
     </ul>
     <ul class="checks done sm">
-      <li><span>Filter <code>group:</code>/<code>permission:</code> + semakan pemilikan di pelayan.</span></li>
+      <li><span>Filter <code>group:</code>/<code>permission:</code> + semakan pemilikan di server.</span></li>
       <li><span>Kata laluan di-hash oleh Shield; tiada rahsia dalam Git.</span></li>
       <li><span><code>CI_ENVIRONMENT = production</code> — ralat terperinci disembunyikan.</span></li>
       <li><span>Setiap peralihan status dalam <code>status_logs</code>.</span></li>

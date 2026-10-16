@@ -6,9 +6,9 @@
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
-| 7.0 | Awal S1 | 10 min | Cabang Git + `php.ini` sedia untuk muat naik |
+| 7.0 | Awal S1 | 10 min | Branch Git + `php.ini` sedia untuk muat naik |
 | 7.1 | S1 | 09:10–10:30 | Enum, Entity, 2 Model |
-| 7.2 | S2 | 10:45–12:30 | Laluan, Service (`canView`), senarai & butiran |
+| 7.2 | S2 | 10:45–12:30 | Route, Service (`canView`), senarai & butiran |
 | 7.3 | S3 | 14:30–16:00 | Borang + validasi + muat naik + muat turun |
 | 7.4 | S4 | 16:00–17:00 | 17 kes ujian sempadan direkod |
 
@@ -16,14 +16,14 @@
 
 ## Lab 7.0 — Persediaan (10 minit, awal S1)
 
-1. Cabang baharu dari `main` yang terkini:
+1. Branch baharu dari `main` yang terkini:
 
    ```bash
    git switch main && git pull
    git switch -c feat/pas-permohonan
    ```
 
-2. Semak had muat naik PHP dan sambungan `fileinfo`:
+2. Semak had muat naik PHP dan extension `fileinfo`:
 
    ```bash
    php --ini                                   # lokasi php.ini yang dimuatkan
@@ -116,7 +116,7 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
 6. **Cipta `app/Models/PassDocumentModel.php`** (`$returnType = 'array'`, rule `mime` `in_list[...]`, `size_bytes` `less_than_equal_to[2097152]`, kaedah `forApplication()`).
    Rujukan kedua-dua model: [`PassApplicationModel.php.txt`](../templates/kod/PassApplicationModel.php.txt) (fail mengandungi dua kelas — pisahkan).
 
-7. **Uji validasi Model** melalui laluan sementara (buang selepas checkpoint). Tambah dalam `app/Config/Routes.php`:
+7. **Uji validasi Model** melalui route sementara (buang selepas checkpoint). Tambah dalam `app/Config/Routes.php`:
 
    ```php
    // SEMENTARA — buang selepas Checkpoint 7.1
@@ -136,7 +136,7 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
 ### ✅ Checkpoint 7.1
 - [ ] Skrip enum mencetak `bool(true)`, `bool(false)`, `bool(true)`, `bool(true)`, `Dalam Semakan`, `NULL`.
 - [ ] `/cuba-model-pas` memulangkan `"ok": false` dengan ralat untuk **`pass_type`**, **`purpose`** dan **`valid_from`** (3 ralat).
-- [ ] Laluan sementara **dibuang** dan `writable/scratch/` tidak di-commit.
+- [ ] Route sementara **dibuang** dan `writable/scratch/` tidak di-commit.
 - [ ] Commit: `git add app/ && git commit -m "PAS: enum PassType/PassStatus, entity & model permohonan"`
 
 ### 🧯 Masalah lazim
@@ -145,7 +145,7 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
 |--------|-------|--------------|
 | `Fatal error: Constant expression contains invalid operations` | `implode()` dalam nilai lalai `$validationRules` | Isi dalam `protected function initialize(): void` |
 | `UnhandledMatchError` dalam `label()` | `case` baharu tanpa cabang `match` | Tambah cabang; ini ciri keselamatan, bukan pepijat |
-| `Class "App\Enums\PassStatus" not found` | Nama fail/namespace tidak sepadan (cth `app/enums/`) | Folder `app/Enums/` (E besar), `namespace App\Enums;`. 🪟 Windows tidak membezakan huruf besar/kecil, jadi `app/enums` berfungsi di laptop tetapi gagal di pelayan Linux dan di laptop pasangan macOS. Betulkan melalui Git: `git mv app/enums app/Enums-tmp && git mv app/Enums-tmp app/Enums` |
+| `Class "App\Enums\PassStatus" not found` | Nama fail/namespace tidak sepadan (cth `app/enums/`) | Folder `app/Enums/` (E besar), `namespace App\Enums;`. 🪟 Windows tidak membezakan huruf besar/kecil, jadi `app/enums` berfungsi di laptop tetapi gagal di server Linux dan di laptop pasangan macOS. Betulkan melalui Git: `git mv app/enums app/Enums-tmp && git mv app/Enums-tmp app/Enums` |
 | `ValueError: "Approved" is not a valid backing value` | `PassStatus::from('Approved')` — nilai DB ialah huruf kecil | Guna `->value` semasa simpan; `from()` hanya untuk data DB |
 | `/cuba-model-pas` → `"ok": 5` (berjaya!) | `$validationRules` kosong — `initialize()` tidak dipanggil / tersalah nama | Nama tepat `initialize`, keterlihatan `protected` |
 
@@ -158,14 +158,14 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
 ## Lab 7.2 — Laluan, Service & Paparan Senarai/Butiran (S2)
 
 ### 🎯 Objektif
-Membina `/pas/permohonan` (senarai skop pemilik, penapis status, pagination) dan `/pas/permohonan/{id}` yang memulangkan 404 kepada bukan pemilik (BR-PAS-04).
+Membina `/pas/permohonan` (senarai skop pemilik, filter status, pagination) dan `/pas/permohonan/{id}` yang memulangkan 404 kepada bukan pemilik (BR-PAS-04).
 
 ### Prasyarat
 - Lab 7.1 selesai. Log masuk sebagai `pemohon1@latihan.test` / `Latihan@2026` berfungsi.
 
 ### Langkah
 
-1. **Tambah laluan** dalam `app/Config/Routes.php` (selepas `service('auth')->routes($routes);`):
+1. **Tambah route** dalam `app/Config/Routes.php` (selepas `service('auth')->routes($routes);`):
 
    ```php
    $routes->group('pas/permohonan', ['namespace' => 'App\Controllers\Pas', 'filter' => 'session'], static function ($routes): void {
@@ -238,7 +238,7 @@ Membina `/pas/permohonan` (senarai skop pemilik, penapis status, pagination) dan
    }
    ```
 
-4. **Cipta `app/Controllers/Pas/ApplicationController.php`** dengan `index()`, `show()` dan pembantu `findVisibleOr404()`. Salin bahagian berkaitan dari [`ApplicationController-upload.php.txt`](../templates/kod/ApplicationController-upload.php.txt). Untuk hari ini, `show()` memulangkan **dua** pemboleh ubah sahaja:
+4. **Cipta `app/Controllers/Pas/ApplicationController.php`** dengan `index()`, `show()` dan pembantu `findVisibleOr404()`. Salin bahagian berkaitan dari [`ApplicationController-upload.php.txt`](../templates/kod/ApplicationController-upload.php.txt). Untuk hari ini, `show()` memulangkan **dua** variable sahaja:
 
    ```php
    public function show(string $id): string
@@ -439,7 +439,7 @@ Membina borang permohonan dengan 1–3 dokumen yang disimpan secara selamat (BR-
 
    Sebelum meneruskan, navigator menerangkan dengan lisan: *"Kenapa fail dipindah SEBELUM `transBegin()`, dan apa yang berlaku kepada fail jika `record()` gagal?"*
 
-2. **Tambah `new()`, `create()`, `download()`, `rules()`, `uploadedFiles()`** dalam `ApplicationController` (rujuk templat). Pastikan `protected $helpers = ['form', 'url'];`.
+2. **Tambah `new()`, `create()`, `download()`, `rules()`, `uploadedFiles()`** dalam `ApplicationController` (rujuk template). Pastikan `protected $helpers = ['form', 'url'];`.
 
 3. **Cipta `app/Views/pas/new.php`**:
 
@@ -573,11 +573,11 @@ Membina borang permohonan dengan 1–3 dokumen yang disimpan secara selamat (BR-
 | Ralat validasi `uploaded` (tiada fail diterima) walaupun fail dipilih | Borang tanpa `enctype` (guna `form_open()` bukan `form_open_multipart()`) | `form_open_multipart()` |
 | Hanya **satu** fail disimpan walaupun 2 dipilih | `name="documents"` tanpa `[]` | `name="documents[]"` + `multiple` |
 | `The action you requested is not allowed.` (SecurityException) semasa hantar fail besar | `post_max_size` dilepasi → `$_POST` kosong → token CSRF hilang | Naikkan `post_max_size` (16M) — Lab 7.0 |
-| `mime_in` gagal untuk PDF yang sah | Sambungan `fileinfo` tidak dimuatkan | `extension=fileinfo` dalam `php.ini`, mulakan semula pelayan |
+| `mime_in` gagal untuk PDF yang sah | Extension `fileinfo` tidak dimuatkan | `extension=fileinfo` dalam `php.ini`, mulakan semula server |
 | `CodeIgniter\HTTP\Exceptions\HTTPException: The file has already been moved` | `move()` dipanggil dua kali untuk fail sama | Satu `move()` sahaja dalam `storeFile()` |
-| `Cannot add or update a child row: a foreign key constraint fails` pada `pass_documents` | `application_id` salah (cth `false` dari insert yang gagal) | Semak `$id === false` → baling exception (sudah dalam templat) |
+| `Cannot add or update a child row: a foreign key constraint fails` pada `pass_documents` | `application_id` salah (cth `false` dari insert yang gagal) | Semak `$id === false` → baling exception (sudah dalam template) |
 | `ValueError: "" is not a valid backing value` | `PassType::from()` dengan input kosong sebelum validasi | Validasi `in_list` **sebelum** memanggil Service |
-| `Unable to create directory` / `Permission denied` pada `move()` | `writable/` tidak boleh ditulis oleh pelayan web | Linux/Mac: `chmod -R 775 writable`; Windows: semak folder bukan *read-only* |
+| `Unable to create directory` / `Permission denied` pada `move()` | `writable/` tidak boleh ditulis oleh web server | Linux/Mac: `chmod -R 775 writable`; Windows: semak folder bukan read-only |
 | Muat turun memaparkan PDF rosak/kosong | Ada output (spasi/`echo`) sebelum respons, cth selepas `?>` dalam fail config | Buang tag penutup `?>` dalam fail PHP tulen |
 
 ### ⭐ Cabaran tambahan
@@ -671,7 +671,7 @@ Menjalankan sekurang-kurangnya 10 (sasaran 17) kes ujian sempadan untuk muat nai
 | UT-PAS-05 (tepat 2 MB) ditolak | Fail sebenarnya > 2 097 152 bait (cth `head -c 2097152` + header) | Semak `ls -l`: mesti **2097152** |
 | UT-PAS-09 **diterima** | `mime_in` tiada atau `ext_in` guna `Rules` lama (bukan `StrictRules`) | Semak rules & `Config\Validation::$ruleSets` guna `StrictRules\FileRules` |
 | UT-PAS-04 meninggalkan fail di cakera | Semakan bilangan dibuat **selepas** `move()` | `assertFiles()` mesti dipanggil sebelum gelung `storeFile()` |
-| UT-PAS-16 memaparkan fail! | Fail disimpan di `public/` atau *document root* pelayan menunjuk akar projek, bukan `public/` | `move(WRITEPATH . …)`; Apache/Laragon: *DocumentRoot* = `…/public` |
+| UT-PAS-16 memaparkan fail! | Fail disimpan di `public/` atau document root server menunjuk akar projek, bukan `public/` | `move(WRITEPATH . …)`; Apache/Laragon: DocumentRoot = `…/public` |
 | `base64: invalid option -- d` (macOS lama) | Versi `base64` lama | Guna `base64 -D` |
 
 ### ⭐ Cabaran tambahan

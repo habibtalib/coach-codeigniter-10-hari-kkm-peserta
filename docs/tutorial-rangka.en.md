@@ -10,7 +10,7 @@ The CI4 and Shield commands were verified with CodeIgniter **4.7.5** + Shield **
 
 | Part | What | Folder | When | Minutes |
 |------|------|--------|------|---------|
-| A | CI4 basics: welcome page, `.env`, route → controller → view | `~/latihan/ci4-asas` (practice) | Day 1, after class | ±40 |
+| A | CI4 basics: welcome page, `.env`, route → controller → view | `~/latihan/ci4-asas` (practice) | Day 1 (Lab 1.5); the real project `kelas-ci-<nama>` starts on Day 2 (Labs 2.2–2.4) | ±40 |
 | B | CI4 project in the pair repo + folder structure | `~/latihan/sistem-tlk-pas` | Before Day 4 | 20 |
 | C | Database `.env` | `~/latihan/sistem-tlk-pas` | After [`persediaan.md`](./persediaan.md) §4 | 10 |
 | D | Install Shield | `~/latihan/sistem-tlk-pas` | After C | 20 |
@@ -18,7 +18,7 @@ The CI4 and Shield commands were verified with CodeIgniter **4.7.5** + Shield **
 | F | First migration + seeder (one table) | `~/latihan/sistem-tlk-pas` | After E | 20 |
 | G | `composer test` smoke test | `~/latihan/sistem-tlk-pas` | After F | 10 |
 
-> **Two folders, two purposes.** `ci4-asas` is a **practice-only** project — not a Git repo, not carried into Day 4, and safe to delete at any time. The real skeleton is built in the pair repo `sistem-tlk-pas` (Lab 1.0). Neither folder needs to be in `C:\laragon\www`: the course serves the app with `php spark serve`, not Laragon's Apache.
+> **Two folders, two purposes.** `ci4-asas` is a **practice-only** project for Day 1 — not a Git repo, and safe to delete at any time. The real project is `kelas-ci-<nama>` on GitLab, created in Day 2 Lab 2.2. The real skeleton is built in the pair repo `sistem-tlk-pas` (Lab 1.0). Neither folder needs to be in `C:\laragon\www`: the course serves the app with `php spark serve`, not Laragon's Apache.
 
 ---
 
@@ -177,7 +177,7 @@ CodeIgniter v4.7.5 Command Line Tool - Server Time: 2026-10-15 11:59:57 UTC+00:0
 
 ### Commit
 
-None — `ci4-asas` is a practice project, not a Git repo. When you're done, you can delete it:
+None — `ci4-asas` is a practice project, not a Git repo. Your repo is `kelas-ci-<nama>` ([Lab 2.2](../hari-2/lab.en.md#lab-22--your-ci-project-on-gitlab-s2)). You can delete `ci4-asas`:
 
 ```bash
 rm -rf ~/latihan/ci4-asas

@@ -156,7 +156,7 @@ Menjana **≥ 8 idea** bagi satu HMW dengan Crazy 8s, membandingkan **2 pilihan*
 3. Setiap ahli pasangan terangkan lakaran (1 minit setiap seorang). Gabung idea yang sama.
 4. Pilih 2 calon. Bandingkan dengan kriteria tetap: sepadan SPEC/BR, masa bina Hari 5–8, kesan kepada persona.
 5. **Dot voting:** setiap orang ada 3 titik; boleh letak lebih dari satu titik pada satu idea. Idea dengan titik terbanyak dipilih; seri → kriteria "sepadan SPEC" menang.
-6. Kemas kini carta to-be dengan nod ⚡ dan tulis AC laluan negatif baharu jika idea mendedahkan kes yang belum ada (Lab 2.3).
+6. Kemas kini carta to-be dengan nod ⚡ dan tulis AC negative path baharu jika idea mendedahkan kes yang belum ada (Lab 2.3).
 
 ### Templat
 ```markdown
@@ -183,7 +183,7 @@ Menjana **≥ 8 idea** bagi satu HMW dengan Crazy 8s, membandingkan **2 pilihan*
 ### Contoh — HMW-01 (ketersediaan slot)
 | Kriteria | Pilihan A: halaman `/tlk/tempahan/ketersediaan` sebelum borang | Pilihan B: hantar dahulu, tolak jika bertindih |
 |----------|-----------|-----------|
-| Sepadan SPEC / BR | ✅ Laluan tambahan SPEC §9; BR-TLK-01 masih disemak semula semasa simpan | ✅ BR-TLK-01, tetapi pemohon tahu selepas mengisi semua medan |
+| Sepadan SPEC / BR | ✅ Route tambahan SPEC §9; BR-TLK-01 masih disemak semula semasa simpan | ✅ BR-TLK-01, tetapi pemohon tahu selepas mengisi semua medan |
 | Anggaran masa bina | Sederhana (query sama dengan `hasOverlap()`, Hari 6 S1) | Rendah (sudah wajib dalam `BookingService::create`) |
 | Kesan kepada persona | Tinggi: Cik Hidayah nampak slot kosong dahulu | Sederhana: mesej "Slot tidak tersedia bagi julat tarikh ini" selepas hantar |
 | Risiko | Paparan ketersediaan boleh lapuk; semakan dalam transaksi (BR-TLK-05) tetap wajib | Pemohon cuba berulang kali |
@@ -194,7 +194,7 @@ Menjana **≥ 8 idea** bagi satu HMW dengan Crazy 8s, membandingkan **2 pilihan*
 | B — tolak selepas hantar | ● | — | 1 |
 | Kalendar slot berwarna | — | ● | 1 |
 
-Keputusan: **A + B bersama.** A memperbaiki pengalaman; B kekal sebagai pertahanan di pelayan. Nod to-be: `⚡ Papar slot kosong ikut julat tarikh (HMW-01)`.
+Keputusan: **A + B bersama.** A memperbaiki pengalaman; B kekal sebagai pertahanan di server. Nod to-be: `⚡ Papar slot kosong ikut julat tarikh (HMW-01)`.
 
 ### Semak kendiri
 - [ ] ≥ 8 idea direkod (termasuk idea "pelik"); tiada idea ditolak semasa fasa jana.
@@ -203,7 +203,7 @@ Keputusan: **A + B bersama.** A memperbaiki pengalaman; B kekal sebagai pertahan
 
 ### ⚠️ Kesilapan lazim
 - **Menilai semasa menjana.** "Tak boleh, susah" dalam minit ke-2 membunuh idea. Nilai hanya selepas 8 minit.
-- **Idea menggantikan peraturan pelayan.** Paparan ketersediaan (A) tidak menggantikan semakan pertindihan dalam transaksi (BR-TLK-05). UI membantu; pelayan menguatkuasa.
+- **Idea menggantikan peraturan server.** Paparan ketersediaan (A) tidak menggantikan semakan pertindihan dalam transaksi (BR-TLK-05). UI membantu; server menguatkuasa.
 - **Dot voting tanpa kriteria.** Undian popular boleh memilih idea di luar skop. Tapis dengan "sepadan SPEC" dahulu.
 
 ---

@@ -62,7 +62,7 @@ flowchart LR
 ### AI-01 — Terangkan ralat ini
 
 - **Bila guna:** Muncul halaman ralat, `spark` gagal, ujian merah, dan anda sudah membaca mesej ralat sendiri sekurang-kurangnya sekali.
-- **Jangan:** Tampal ralat sahaja tanpa kod — atau terima "cuba tukar ini" tanpa faham punca. Jangan tampal jejak (*stack trace*) yang mengandungi laluan/kata laluan sebenar.
+- **Jangan:** Tampal ralat sahaja tanpa kod — atau terima "cuba tukar ini" tanpa faham punca. Jangan tampal jejak (stack trace) yang mengandungi path/kata laluan sebenar.
 
 ```prompt title="AI-01"
 Saya membina aplikasi CodeIgniter 4.6 (PHP 8.2+, MySQL 8, Shield).

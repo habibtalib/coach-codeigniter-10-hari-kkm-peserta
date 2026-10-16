@@ -158,8 +158,8 @@ Melakar wireframe kesetiaan rendah bagi 6 skrin utama mengikut aliran pengguna t
    | Skrin | Wajib ada |
    |-------|-----------|
    | W1 Senarai tempahan saya | Lajur: No Rujukan, Slot, Tarikh, Status (badge BM), Tindakan (Batal hanya jika Diluluskan); pagination; butang "Mohon baharu" |
-   | W2 Borang tempahan | Zon (penapis senarai Slot sahaja — tidak disimpan; zon diterbitkan melalui `slot_id → parking_slots.zone_id`), Slot (aktif sahaja), Kenderaan, Tarikh mula, Tarikh tamat, Sebab; nota had 90 hari & 1 tempahan aktif |
-   | W3 Keputusan TLK | Senarai tempahan; penapis status (lalai Menunggu); butang Lulus/Tolak + catatan |
+   | W2 Borang tempahan | Zon (filter senarai Slot sahaja — tidak disimpan; zon diterbitkan melalui `slot_id → parking_slots.zone_id`), Slot (aktif sahaja), Kenderaan, Tarikh mula, Tarikh tamat, Sebab; nota had 90 hari & 1 tempahan aktif |
+   | W3 Keputusan TLK | Senarai tempahan; filter status (lalai Menunggu); butang Lulus/Tolak + catatan |
    | W4 Borang pas | Jenis pas, Kenderaan (muncul jika `kenderaan`), Tujuan, Sah dari/hingga, 3 slot muat naik + nota format/saiz |
    | W5 Semakan pas | Butiran, senarai dokumen (muat turun), garis masa `status_logs`, catatan, butang ikut peranan |
    | W6 Dashboard statistik | 4 kad KPI + 4 kawasan carta (SPEC §2.4) |
@@ -192,7 +192,7 @@ Melakar wireframe kesetiaan rendah bagi 6 skrin utama mengikut aliran pengguna t
 | Dashboard W6 kosong kerana "belum tahu data" | Keliru | Lakar kotak berlabel: "Carta bar: tempahan ikut bulan" — cukup |
 
 ### ⭐ Cabaran tambahan
-Lakar skrin ke-7: **W7 Laporan RPT-01** (`/laporan/tempahan`) dengan borang penapis GET (julat tarikh, zon, kategori, status), jadual berpagination, dan butang Eksport PDF / Excel (SPEC §2.3).
+Lakar skrin ke-7: **W7 Laporan RPT-01** (`/laporan/tempahan`) dengan borang filter GET (julat tarikh, zon, kategori, status), jadual berpagination, dan butang Eksport PDF / Excel (SPEC §2.3).
 
 ---
 

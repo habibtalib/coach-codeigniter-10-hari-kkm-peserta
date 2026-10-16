@@ -6,7 +6,7 @@
 
 - **Membezakan** pengesahan (*authentication*) dan kebenaran (*authorization*) dengan contoh TLK/Pas.
 - **Mengkonfigur** `Config\AuthGroups` (groups, permissions, `$matrix`) tepat seperti SPEC §4.
-- **Melindungi** laluan dengan filter Shield `session`, `group:` dan `permission:` dalam `app/Config/Routes.php`.
+- **Melindungi** route dengan filter Shield `session`, `group:` dan `permission:` dalam `app/Config/Routes.php`.
 - **Menulis** semakan pemilikan (BR-PAS-04) untuk menghalang IDOR, dan **menerangkan** kenapa menyembunyikan butang bukan kawalan keselamatan.
 
 ---
@@ -220,7 +220,7 @@ class ApplicationController extends BaseController
 }
 ```
 
-**404 atau 403?** 403 memberitahu penyerang "rekod ini wujud tetapi bukan milik anda" — maklumat itu membantu penyerang meneka ID. Untuk rekod milik orang lain, **404** lebih selamat. Untuk laluan peranan (cth `/statistik`), 403/redirect adalah wajar kerana kewujudan laluan bukan rahsia.
+**404 atau 403?** 403 memberitahu penyerang "rekod ini wujud tetapi bukan milik anda" — maklumat itu membantu penyerang meneka ID. Untuk rekod milik orang lain, **404** lebih selamat. Untuk route peranan (cth `/statistik`), 403/redirect adalah wajar kerana kewujudan route bukan rahsia.
 
 Semakan yang sama **wajib** pada muat turun dokumen `/pas/permohonan/dokumen/{id}` — lihat [nota 07](./07-muat-naik-fail-selamat.md).
 
@@ -237,7 +237,7 @@ Semakan yang sama **wajib** pada muat turun dokumen `/pas/permohonan/dokumen/{id
 <?php endif ?>
 ```
 
-Ini hanya untuk **UX** (pengguna tidak nampak butang yang tidak boleh ditekan). Penyerang boleh menghantar `POST` terus dengan `curl` atau DevTools. Kawalan sebenar ialah filter + semakan di pelayan (SPEC §4: "tidak cukup sekadar sembunyi butang").
+Ini hanya untuk **UX** (pengguna tidak nampak butang yang tidak boleh ditekan). Penyerang boleh menghantar `POST` terus dengan `curl` atau DevTools. Kawalan sebenar ialah filter + semakan di server (SPEC §4: "tidak cukup sekadar sembunyi butang").
 
 ### Helper Shield yang kerap diguna
 
@@ -254,7 +254,7 @@ Ini hanya untuk **UX** (pengguna tidak nampak butang yang tidak boleh ditekan). 
 
 ## 8. Menguji akses (ringkas)
 
-Setiap laluan dilindungi perlu **dua** ujian: positif (peranan betul → 200) dan negatif (peranan salah → bukan 200). Gunakan `actingAs()` dari `CodeIgniter\Shield\Test\AuthenticationTesting`. Contoh penuh: [nota 10](./10-ujian-phpunit-ci4.md).
+Setiap route dilindungi perlu **dua** ujian: positif (peranan betul → 200) dan negatif (peranan salah → bukan 200). Gunakan `actingAs()` dari `CodeIgniter\Shield\Test\AuthenticationTesting`. Contoh penuh: [nota 10](./10-ujian-phpunit-ci4.md).
 
 ---
 
@@ -262,7 +262,7 @@ Setiap laluan dilindungi perlu **dua** ujian: positif (peranan betul → 200) da
 
 | Kesilapan | Akibat | Betulkan |
 |-----------|--------|----------|
-| Hanya sembunyi butang dalam view | Sesiapa boleh `POST` terus ke `/approve` | Filter laluan + `can()` dalam controller/service |
+| Hanya sembunyi butang dalam view | Sesiapa boleh `POST` terus ke `/approve` | Filter route + `can()` dalam controller/service |
 | Hanya filter `session` pada `/pas/permohonan/(:num)` | IDOR — pemohon lihat permohonan orang lain | Semakan pemilikan BR-PAS-04 + skop query senarai |
 | Semak nama group dalam kod (`inGroup('approver')`) untuk tindakan | Tukar polisi = tukar kod di banyak tempat | Semak permission (`can('pas.approve')`); group untuk skop paparan |
 | Permission guna dalam `$matrix` tetapi tidak diisytihar dalam `$permissions` | Ralat atau `can()` sentiasa `false` | Isytihar semua dalam `$permissions` |
@@ -290,4 +290,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Buku terbit sebelum Shield; groups, permissions dan `auth()` hanya dalam nota ini dan dokumentasi Shield.
 
 ---
-**Digunakan pada Hari 8** — S2 (groups/permissions + filter laluan + semakan pemilikan) dan S3 (ujian akses positif & negatif). Turut Hari 4 S2 (pasang Shield & `UserSeeder`) dan Hari 10 (`permission:statistik.view`). Nota berkaitan: [01 Kitaran request](./01-mvc-dan-kitaran-request-ci4.md) · [07 Muat naik](./07-muat-naik-fail-selamat.md) · [11 Keselamatan](./11-keselamatan-aplikasi-web.md)
+**Digunakan pada Hari 8** — S2 (groups/permissions + filter route + semakan pemilikan) dan S3 (ujian akses positif & negatif). Turut Hari 4 S2 (pasang Shield & `UserSeeder`) dan Hari 10 (`permission:statistik.view`). Nota berkaitan: [01 Kitaran request](./01-mvc-dan-kitaran-request-ci4.md) · [07 Muat naik](./07-muat-naik-fail-selamat.md) · [11 Keselamatan](./11-keselamatan-aplikasi-web.md)

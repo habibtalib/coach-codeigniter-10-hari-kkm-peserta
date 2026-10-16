@@ -1,6 +1,6 @@
 # Trek Jira — Backlog & Sprint Pasangan (Pilihan)
 
-> **Trek sampingan pilihan.** Halaman ini menunjukkan cara pasangan menguruskan kerja 10 hari dalam **Jira Cloud** (pelan Free): backlog daripada keperluan Hari 1–2, sprint yang dipadankan dengan modul M1–M4, dan pautan antara kad Jira dengan cabang dan commit Git. Ia **tidak menggantikan** mana-mana deliverable kursus: `docs/keperluan-awal.md`, `docs/acceptance-criteria.md` dan `docs/pelan-kerja.md` kekal sebagai sumber kebenaran. Jira ialah paparan penjejakan di atasnya.
+> **Trek sampingan pilihan.** Halaman ini menunjukkan cara pasangan menguruskan kerja 10 hari dalam **Jira Cloud** (pelan Free): backlog daripada keperluan Hari 1–2, sprint yang dipadankan dengan modul M1–M4, dan pautan antara kad Jira dengan branch dan commit Git. Ia **tidak menggantikan** mana-mana deliverable kursus: `docs/keperluan-awal.md`, `docs/acceptance-criteria.md` dan `docs/pelan-kerja.md` kekal sebagai sumber kebenaran. Jira ialah paparan penjejakan di atasnya.
 > Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Jadual: [`JADUAL.md`](../JADUAL.md) · Kontrak kerja: [`KOLABORASI.md`](../KOLABORASI.md) · Trek berkaitan: [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
 
 > ⚠️ **Siap sebelum Hari 4.** Kod bermula Hari 4. Persediaan dan backlog dibuat Hari 1–2, story dengan acceptance criteria Hari 2, dan sprint planning Hari 4 S4 sebelum baris kod pertama modul.
@@ -76,7 +76,7 @@ Disemak pada 2026-10-15 daripada halaman rasmi Atlassian (lihat bahagian Sumber)
 1. Seorang ahli pasangan (pemilik site) membuka <https://www.atlassian.com/software/jira/free> dan mendaftar dengan e-mel sendiri. Pemilik site menjadi pentadbir Jira — perlu untuk import CSV (§6).
 2. Pilih nama site yang neutral, cth `latihan-tlkpas-pasangan3` (jadi `latihan-tlkpas-pasangan3.atlassian.net`). Jangan guna nama agensi.
 3. Dalam navigasi sisi, halakan tetikus ke **Spaces** → **Create space**.
-4. Pilih kategori **Software development** → templat **Scrum** → **Use template**.
+4. Pilih kategori **Software development** → template **Scrum** → **Use template**.
 5. Pilih **Team-managed** (konfigurasi ringkas, sesuai pelan Free).
 6. Namakan space `Sistem TLK & Pas`. Tukar kunci kepada **`TLKPAS`** (sekurang-kurangnya 2 aksara, bermula dengan huruf besar, huruf besar atau nombor sahaja).
 7. Semak work type, status dan paparan lalai yang dicadangkan → **Create**.
@@ -206,7 +206,7 @@ Contoh ini selari dengan SPEC §2 dan contoh AC Hari 2.
 | Work type · Parent | Story · M1 — TLK |
 | Priority | High (Must) |
 | Label | `tlk`, `br-tlk-03` |
-| Story point | 3 — validasi pelayan dengan jadual sempadan yang jelas |
+| Story point | 3 — validasi server dengan jadual sempadan yang jelas |
 | AC | AC-TLK-05-01..05: mula di masa lalu ditolak; satu hari diterima; tamat sebelum mula ditolak; 2026-10-01 → 2026-12-30 (90 hari) diterima; → 2026-12-31 (91 hari) ditolak |
 
 **Contoh 3 — muat naik dokumen (Sprint 2)**
@@ -270,7 +270,7 @@ Lakukan **bersama** Lab 4.4 ([`hari-4/lab.md`](../hari-4/lab.md)), selepas `docs
 1. Backlog → **Create sprint** → namakan `Sprint 1 — M1 TLK`.
 2. Seret Story Must M1 dan Task Hari 4 ke Sprint 1, ikut susunan keutamaan.
 3. Semak kapasiti: jika jumlah mata jauh melebihi apa yang pasangan yakin boleh siap dalam Hari 5–6, alih Should ke backlog.
-4. Padankan dengan `docs/pelan-kerja.md`: setiap baris dalam jadual **Cabang** mendapat kunci Story (cth `feat/TLKPAS-12-borang-tempahan`). Satu cabang = satu Story.
+4. Padankan dengan `docs/pelan-kerja.md`: setiap baris dalam jadual **Cabang** mendapat kunci Story (cth `feat/TLKPAS-12-borang-tempahan`). Satu branch = satu Story.
 5. **Start sprint** → tarikh mula Hari 4, tarikh tamat Hari 6 → tulis matlamat sprint: *"M1 TLK siap dan lulus DoD."*
 6. Sprint 2 dicipta dan dimulakan pada recap Hari 7 dengan cara yang sama.
 
@@ -298,8 +298,8 @@ Board Scrum team-managed bermula dengan To Do, In Progress dan Done. Tambah laju
 | Lajur | Masuk apabila | Kaitan DoD ([`KOLABORASI.md`](../KOLABORASI.md) §2) |
 |-------|---------------|------------------------------------------------------|
 | **To Do** | Story ada dalam sprint, AC jelas | AC wujud — syarat DoD baris 1 boleh diuji |
-| **In Progress** | Cabang `feat/TLKPAS-nn-…` dicipta, driver mula menaip | — |
-| **In Review** | Merge request / PR dibuka; navigator menyemak | Semak validasi pelayan, akses, `status_logs`, ujian PHPUnit, tiada `.env` |
+| **In Progress** | Branch `feat/TLKPAS-nn-…` dicipta, driver mula menaip | — |
+| **In Review** | Merge request / PR dibuka; navigator menyemak | Semak validasi server, akses, `status_logs`, ujian PHPUnit, tiada `.env` |
 | **Done** | Digabung ke `main` dan **semua** item DoD bertanda | Semua 7 item DoD; peserta boleh menerangkan setiap baris |
 
 Gunakan [`senarai-semak-modul.md`](./senarai-semak-modul.md) (D1–D7) semasa In Review.
@@ -309,7 +309,7 @@ Gunakan [`senarai-semak-modul.md`](./senarai-semak-modul.md) (D1–D7) semasa In
 ### 8.1 Satu peraturan: kunci + prefix
 
 > **Kunci Jira dahulu, kemudian prefix KOLABORASI, kemudian huraian.**
-> Cabang: `feat/<KUNCI>-<huraian>` · Commit: `<KUNCI> <PREFIX>: <huraian>`
+> Branch: `feat/<KUNCI>-<huraian>` · Commit: `<KUNCI> <PREFIX>: <huraian>`
 
 ```bash
 git switch main && git pull
@@ -330,10 +330,10 @@ Tulis kunci dalam **huruf besar** (`TLKPAS-12`, bukan `tlkpas-12`). Letakkan kun
 
 ### 8.2 Panel Development (GitLab for Jira Cloud)
 
-Jika repo pasangan di GitLab KKM ([`trek-gitlab.md`](./trek-gitlab.md)), aplikasi **GitLab for Jira Cloud** boleh memaparkan cabang, commit dan MR yang menyebut kunci dalam panel **Development** setiap work item. Ini **pilihan; tanya jurulatih / IT KKM** — peraturan §8.1 tetap berguna tanpa aplikasi itu kerana kunci dalam sejarah Git boleh dicari.
+Jika repo pasangan di GitLab KKM ([`trek-gitlab.md`](./trek-gitlab.md)), aplikasi **GitLab for Jira Cloud** boleh memaparkan branch, commit dan MR yang menyebut kunci dalam panel **Development** setiap work item. Ini **pilihan; tanya jurulatih / IT KKM** — peraturan §8.1 tetap berguna tanpa aplikasi itu kerana kunci dalam sejarah Git boleh dicari.
 
 - GitLab self-managed perlu boleh dicapai dari internet melalui HTTPS (GitLab 15.7+), dan **admin GitLab** KKM mesti mencipta aplikasi OAuth. Pasangan tidak boleh memasangnya sendiri.
-- Kunci perlu ada dalam nama cabang, mesej commit atau tajuk MR; sesuatu mesti di-push selepas sambungan supaya Jira menyegerak.
+- Kunci perlu ada dalam nama branch, mesej commit atau tajuk MR; sesuatu mesti di-push selepas sambungan supaya Jira menyegerak.
 - Lakukan selepas trek GitLab siap, bukan sebelum Hari 4 S4.
 
 ## 9. Pemetaan GitLab ↔ Jira
@@ -350,7 +350,7 @@ Bagi pasangan yang biasa dengan GitLab Issues/Boards ([`trek-gitlab.md`](./trek-
 | *Weight* | Story point estimate | |
 | Issue board | Board Scrum / Kanban | |
 | Assignee | Assignee | |
-| `Closes #14` dalam MR | `TLKPAS-12` dalam cabang, commit, tajuk MR | Panel Development perlu GitLab for Jira Cloud |
+| `Closes #14` dalam MR | `TLKPAS-12` dalam branch, commit, tajuk MR | Panel Development perlu GitLab for Jira Cloud |
 
 > Pilih **satu** alat sebagai sumber kebenaran backlog. Jika pasangan guna kedua-dua trek, GitLab mengurus kod dan MR; Jira mengurus backlog dan sprint.
 
@@ -391,5 +391,5 @@ Fakta Jira disemak pada **2026-10-15**:
 - Hidupkan Estimation (story points): <https://support.atlassian.com/jira-software-cloud/docs/enable-estimation/>
 - Tambah orang ke space team-managed: <https://support.atlassian.com/jira-software-cloud/docs/add-people-to-team-managed-projects/>
 - Import CSV: <https://support.atlassian.com/jira-cloud-administration/docs/import-data-from-a-csv-file/>
-- Kunci dalam cabang/commit/PR: <https://support.atlassian.com/jira-software-cloud/docs/reference-issues-in-your-development-work/>
+- Kunci dalam branch/commit/PR: <https://support.atlassian.com/jira-software-cloud/docs/reference-issues-in-your-development-work/>
 - GitLab for Jira Cloud (disemak 2026-10-15): <https://docs.gitlab.com/integration/jira/connect-app/> · self-managed: <https://docs.gitlab.com/administration/settings/jira_cloud_app/>

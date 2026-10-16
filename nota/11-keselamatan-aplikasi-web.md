@@ -5,7 +5,7 @@
 ## Objektif nota
 
 - **Memetakan** setiap kategori OWASP Top 10 (2021) kepada ciri CodeIgniter 4 / Shield yang mengurangkan risikonya.
-- **Menerangkan** kenapa kawalan akses mesti dikuatkuasa di pelayan (filter + semakan pemilikan), bukan sekadar menyembunyikan butang.
+- **Menerangkan** kenapa kawalan akses mesti dikuatkuasa di server (filter + semakan pemilikan), bukan sekadar menyembunyikan butang.
 - **Menggunakan** `esc()` mengikut konteks, CSRF, `$allowedFields` dan Query Builder binding dengan betul.
 - **Melaksanakan** senarai semak keselamatan sebelum demo capstone.
 
@@ -17,7 +17,7 @@ Sistem TLK & Pas menyimpan data kakitangan, nombor plat dan dokumen sokongan. Da
 
 Prinsip asas:
 1. **Jangan percaya input** — semua dari pelayar (borang, query string, header, nama fail) boleh dipalsukan.
-2. **Pertahanan berlapis** — filter laluan + semakan pemilikan + validasi model; jika satu terlepas, yang lain menahan.
+2. **Pertahanan berlapis** — filter route + semakan pemilikan + validasi model; jika satu terlepas, yang lain menahan.
 3. **Keistimewaan minimum** — setiap peranan hanya dapat apa yang perlu (`AuthGroups::$matrix`).
 
 ---
@@ -33,7 +33,7 @@ Prinsip asas:
 | **A05** | Security Misconfiguration | Debug Toolbar & stack trace di pengeluaran; `.env` dalam Git | `CI_ENVIRONMENT = production`; `.env` dalam `.gitignore`; hanya `public/` sebagai document root; `writable/` tidak boleh dicapai web |
 | **A06** | Vulnerable & Outdated Components | Dompdf/PhpSpreadsheet versi lama berlubang | `composer audit`, `composer outdated`; kemas kini berkala |
 | **A07** | Identification & Authentication Failures | Serangan teka kata laluan berulang | Shield: filter `auth-rates` (had cubaan), sesi dijana semula selepas login, polisi kata laluan (`Config\Auth::$passwordValidators`) |
-| **A08** | Software & Data Integrity Failures | Pakej dipasang tanpa kunci versi; fail muat naik disamar | Commit `composer.lock`; muat naik disemak `mime_in`/`ext_in`, nama rawak, luar `public/` |
+| **A08** | Software & Data Integrity Failures | Package dipasang tanpa kunci versi; fail muat naik disamar | Commit `composer.lock`; muat naik disemak `mime_in`/`ext_in`, nama rawak, luar `public/` |
 | **A09** | Security Logging & Monitoring Failures | Tiada jejak siapa meluluskan pas | `status_logs` (BR-PAS-05) + `log_message('warning', …)` untuk percubaan akses ditolak |
 | **A10** | Server-Side Request Forgery | HTML laporan memuatkan URL luar semasa jana PDF | Dompdf `isRemoteEnabled = false`; jangan `file_get_contents($urlDariPengguna)` |
 
@@ -175,9 +175,9 @@ cookie.samesite = 'Lax'
 ```
 
 - `CI_ENVIRONMENT = production` → mesej ralat generik, Debug Toolbar mati.
-- Document root pelayan web **mesti** `public/` — supaya `app/`, `.env`, `writable/` tidak boleh dicapai.
+- Document root web server **mesti** `public/` — supaya `app/`, `.env`, `writable/` tidak boleh dicapai.
 - Content Security Policy: `Config\App::$CSPEnabled = true` kemudian tetapkan sumber dalam `app/Config/ContentSecurityPolicy.php` (cth `scriptSrc = 'self'` — sebab itu Chart.js disimpan setempat).
-- Kebenaran fail: `writable/` boleh ditulis oleh pelayan web; kod lain baca-sahaja.
+- Kebenaran fail: `writable/` boleh ditulis oleh web server; kod lain baca-sahaja.
 
 ---
 
@@ -203,7 +203,7 @@ composer audit          # semak kelemahan diketahui dalam pakej terpasang
 composer outdated -D    # pakej langsung yang ada versi baharu
 ```
 
-Commit `composer.lock` supaya semua pasangan dan pelayan memasang versi **tepat** yang sama.
+Commit `composer.lock` supaya semua pasangan dan server memasang versi **tepat** yang sama.
 
 ---
 
@@ -219,12 +219,12 @@ Commit `composer.lock` supaya semua pasangan dan pelayan memasang versi **tepat*
 
 | Kesilapan | Akibat | Betulkan |
 |-----------|--------|----------|
-| Sembunyi butang sahaja, tiada filter/semakan pemilikan | Pengguna buka rekod orang lain melalui URL (A01) | Filter laluan + semakan pemilikan dalam controller/service |
+| Sembunyi butang sahaja, tiada filter/semakan pemilikan | Pengguna buka rekod orang lain melalui URL (A01) | Filter route + semakan pemilikan dalam controller/service |
 | `<?= $b->reason ?>` tanpa `esc()` | XSS disimpan (stored XSS) | `<?= esc($b->reason) ?>` |
 | SQL dicantum dengan input | SQL injection | Query Builder / binding `?` |
 | `insert($this->request->getPost())` | Mass assignment — `status`/`user_id` dipalsukan | `getPost([...medan dibenarkan])` + `user_id` dari `auth()->id()` |
 | Tindakan ubah data melalui GET | Tidak dilindungi CSRF; boleh dicetus oleh `<img src>` | Guna POST + `csrf_field()` |
-| `CI_ENVIRONMENT = development` di pelayan | Stack trace & laluan fail terdedah | `production` di pelayan |
+| `CI_ENVIRONMENT = development` di server | Stack trace & path fail terdedah | `production` di server |
 | `.env` di-commit | Kata laluan DB/kunci bocor | `.gitignore` + tukar (rotate) rahsia — lihat [nota 12](./12-git-aliran-kerja.md) |
 | Fail muat naik dalam `public/` | Skrip boleh dilaksana/dimuat turun tanpa semakan | `writable/uploads/pas/` + muat turun melalui controller |
 
@@ -232,7 +232,7 @@ Commit `composer.lock` supaya semua pasangan dan pelayan memasang versi **tepat*
 
 ## ✅ Senarai semak keselamatan sebelum demo (Hari 10)
 
-- [ ] Setiap laluan dalam `php spark routes` ada filter yang betul (bandingkan dengan SPEC §6).
+- [ ] Setiap route dalam `php spark routes` ada filter yang betul (bandingkan dengan SPEC §6).
 - [ ] Pemohon A **tidak** boleh buka `/pas/permohonan/{id}` milik pemohon B (diuji manual + PHPUnit).
 - [ ] Pemohon tidak boleh buka `/pas/semakan`, `/tlk/keputusan`, `/admin/slot`, `/laporan/*`, `/statistik`.
 - [ ] Semua output data pengguna dalam view melalui `esc()` (cari `<?= $` tanpa `esc`).

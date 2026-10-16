@@ -6,7 +6,7 @@
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
-| 8.0 | Awal S1 | 10 min | Cabang + data demo + 3 akaun peranan disahkan |
+| 8.0 | Awal S1 | 10 min | Branch + data demo + 3 akaun peranan disahkan |
 | 8.1 | S1 | 09:10–10:30 | Service peralihan + `ReviewController` + baris gilir + panel tindakan |
 | 8.2 | S2 | 10:45–12:30 | `AuthGroups`, filter `permission:`, `authorize()`, 403 |
 | 8.3 | S3 | 14:30–16:00 | Garis masa `status_logs` + `PassAccessTest` hijau |
@@ -16,7 +16,7 @@
 
 ## Lab 8.0 — Persediaan (10 minit, awal S1)
 
-1. Cabang baharu dari cabang Hari 7 yang telah di-push:
+1. Branch baharu dari branch Hari 7 yang telah di-push:
 
    ```bash
    git switch feat/pas-permohonan && git pull
@@ -37,7 +37,7 @@
 
 3. Pastikan ada **sekurang-kurangnya 3** permohonan `submitted` (hantar melalui borang Hari 7 sebagai `pemohon1`/`pemohon2` jika perlu).
 
-**✅ Checkpoint 8.0:** 5 akaun dengan group betul; ≥ 3 permohonan `submitted`; cabang `feat/pas-kelulusan` aktif.
+**✅ Checkpoint 8.0:** 5 akaun dengan group betul; ≥ 3 permohonan `submitted`; branch `feat/pas-kelulusan` aktif.
 
 ---
 
@@ -64,7 +64,7 @@ Melaksanakan `startReview()`, `approve()`, `reject()` melalui satu `transition()
 
 3. **Cipta `app/Controllers/Pas/ReviewController.php`** dari [`ReviewController.php.txt`](../templates/kod/ReviewController.php.txt): `index()`, `review()`, `approve()`, `reject()`, `act()`, `defaultQueue()`.
 
-4. **Tambah laluan** dalam `app/Config/Routes.php` — buat masa ini dengan filter **group sahaja**:
+4. **Tambah route** dalam `app/Config/Routes.php` — buat masa ini dengan filter **group sahaja**:
 
    ```php
    $routes->group('pas/semakan', ['namespace' => 'App\Controllers\Pas', 'filter' => 'group:reviewer,approver,admin'], static function ($routes): void {
@@ -129,7 +129,7 @@ Melaksanakan `startReview()`, `approve()`, `reject()` melalui satu `transition()
    <?= $this->endSection() ?>
    ```
 
-6. **Kemas kini `ApplicationController::show()`** supaya menghantar `history` dan `actions` (rujuk templat [`ApplicationController-upload.php.txt`](../templates/kod/ApplicationController-upload.php.txt)):
+6. **Kemas kini `ApplicationController::show()`** supaya menghantar `history` dan `actions` (rujuk template [`ApplicationController-upload.php.txt`](../templates/kod/ApplicationController-upload.php.txt)):
 
    ```php
    public function show(string $id): string
@@ -216,7 +216,7 @@ Melaksanakan `startReview()`, `approve()`, `reject()` melalui satu `transition()
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
 | `The action you requested is not allowed.` | Borang tanpa token CSRF (HTML `<form>` biasa) | Guna `form_open()` — ia menambah `csrf_field()` automatik |
-| `Call to a member function can() on null` | Laluan tanpa filter log masuk → `auth()->user()` null | Semak kumpulan `pas/semakan` ada filter `group:` (ia juga memaksa log masuk) |
+| `Call to a member function can() on null` | Route tanpa filter log masuk → `auth()->user()` null | Semak kumpulan `pas/semakan` ada filter `group:` (ia juga memaksa log masuk) |
 | `ValueError: "" is not a valid backing value for enum` | `PassStatus::from()` pada `$row['status']` kosong — data rosak/ujian | Semak data; `from()` sengaja gagal kuat untuk data DB yang tidak sah |
 | `Undefined variable $actions` / `$history` dalam view | `show()` belum dikemas kini (langkah 6) | Hantar kedua-duanya dari controller |
 | Status berubah tetapi **tiada** baris `status_logs` | `record()` dipanggil di luar `transition()` atau pulangan `false` diabaikan | Semua peralihan melalui `transition()`; semak `if (! ...record(...)) throw` |
@@ -251,7 +251,7 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
 
 2. **Semak `app/Config/AuthGroups.php`** terhadap SPEC §4 dan [`AuthGroups.php.txt`](../templates/kod/AuthGroups.php.txt): 4 groups, 8 permissions, `$matrix` tepat. `$defaultGroup = 'applicant'`.
 
-3. **Tambah filter `permission:` per laluan** dalam `app/Config/Routes.php` (bandingkan dengan [`Routes-pas.php.txt`](../templates/kod/Routes-pas.php.txt)):
+3. **Tambah filter `permission:` per route** dalam `app/Config/Routes.php` (bandingkan dengan [`Routes-pas.php.txt`](../templates/kod/Routes-pas.php.txt)):
 
    ```php
    // pas/permohonan
@@ -270,7 +270,7 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
    php spark routes | grep pas/      # PowerShell: php spark routes | Select-String "pas/"
    ```
 
-   Lajur *Before Filters* untuk `pas/semakan/([0-9]+)/approve` mesti mengandungi **kedua-dua** `group:reviewer,approver,admin` dan `permission:pas.approve` (CI 4.5.4+ menggabungkan filter kumpulan & laluan). `csrf` turut tersenarai kerana ia filter global.
+   Lajur *Before Filters* untuk `pas/semakan/([0-9]+)/approve` mesti mengandungi **kedua-dua** `group:reviewer,approver,admin` dan `permission:pas.approve` (CI 4.5.4+ menggabungkan filter kumpulan & route). `csrf` turut tersenarai kerana ia filter global.
 
 5. **Tambah `authorize()` dalam Service** — nyah-komen/salin baris `$this->authorize(...)` dalam `startReview()`, `approve()`, `reject()` dan kaedah peribadi `authorize()`. Tambah `use CodeIgniter\Shield\Exceptions\PermissionException;`.
 
@@ -292,7 +292,7 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
 
 7. **Ulang serangan langkah 1** pada permohonan `under_review` yang lain. Kali ini dijangka: redirect ke `/` dengan mesej ralat Shield, status **tidak** berubah. Rekodkan sebagai **UT-PAS-20 (selepas pembaikan)**.
 
-8. **Buktikan Lapisan 2 berdiri sendiri:** buang sementara `'filter' => 'permission:pas.approve'` dari laluan `/approve`, ulang serangan → dijangka **403 — Akses Ditolak** (dari `authorize()`). **Pulihkan filter** selepas itu.
+8. **Buktikan Lapisan 2 berdiri sendiri:** buang sementara `'filter' => 'permission:pas.approve'` dari route `/approve`, ulang serangan → dijangka **403 — Akses Ditolak** (dari `authorize()`). **Pulihkan filter** selepas itu.
 
 9. **Jalankan matriks akses manual** — isi dalam `docs/ujian-manual-pas.md`:
 
@@ -306,11 +306,11 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
    | UT-PAS-26 | `pemohon2` | GET `/pas/permohonan/{id pemohon1}` | 404 |
 
 ### ✅ Checkpoint 8.2
-- [ ] `php spark routes` menunjukkan filter gabungan pada ketiga-tiga laluan POST semakan.
+- [ ] `php spark routes` menunjukkan filter gabungan pada ketiga-tiga route POST semakan.
 - [ ] UT-PAS-20 (selepas) — penyemak tidak boleh meluluskan melalui DevTools/curl; status kekal.
-- [ ] Langkah 8 — tanpa filter laluan, Service memulangkan **403**; filter sudah dipulihkan.
+- [ ] Langkah 8 — tanpa filter route, Service memulangkan **403**; filter sudah dipulihkan.
 - [ ] UT-PAS-21 hingga 26 lulus.
-- [ ] Setiap ahli boleh menerangkan: *filter laluan vs `authorize()` vs `canView()` — apa yang setiap satu lindungi*.
+- [ ] Setiap ahli boleh menerangkan: *filter route vs `authorize()` vs `canView()` — apa yang setiap satu lindungi*.
 - [ ] Commit: `git add app/ docs/ && git commit -m "PAS: RBAC Shield — permission per tindakan + authorize() dalam Service"`
 
 ### 🧯 Masalah lazim
@@ -318,17 +318,17 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
 | Semua pegawai ditolak selepas menambah filter | `AuthGroups` tersalah ejaan (`pas.aprove`) atau pengguna tiada dalam group | Semak `$matrix`; `SELECT * FROM auth_groups_users;` |
-| `php spark routes` menunjukkan `permission:` tetapi **tiada** `group:` pada laluan POST | CI < 4.5.4 — filter laluan **menggantikan** filter kumpulan (bukan digabung) | Naik taraf ke CI 4.6+ (SPEC); atau nyatakan kedua-dua filter dalam tatasusunan laluan `['filter' => ['group:…', 'permission:…']]` |
+| `php spark routes` menunjukkan `permission:` tetapi **tiada** `group:` pada route POST | CI < 4.5.4 — filter route **menggantikan** filter kumpulan (bukan digabung) | Naik taraf ke CI 4.6+ (SPEC); atau nyatakan kedua-dua filter dalam route array `['filter' => ['group:…', 'permission:…']]` |
 | `Filter "permission" not found` / `"group" not found` | Shield tidak didaftarkan (Registrar Shield tidak dimuatkan) | `composer show codeigniter4/shield`; jalankan semula `php spark shield:setup` (Hari 4) |
 | Mesej penolakan dalam Bahasa Inggeris ("You do not have the necessary permission…") | Shield tiada pek bahasa `ms` | Terima buat masa ini, atau ⭐ cabaran di bawah |
 | Admin ditolak pada `/approve` | `$matrix['admin']` tiada `pas.*` | Salin baris admin tepat dari SPEC §4 |
-| Redirect gelung ke `/` | `permission_denied` menghala ke laluan yang juga memerlukan permission | Tetapkan `Config\Auth::$redirects['permission_denied']` ke laluan awam/`session` sahaja |
+| Redirect gelung ke `/` | `permission_denied` menghala ke route yang juga memerlukan permission | Tetapkan `Config\Auth::$redirects['permission_denied']` ke route awam/`session` sahaja |
 | `Class "App\Controllers\Pas\PermissionException" not found` | Lupa `use CodeIgniter\Shield\Exceptions\PermissionException;` | Tambah `use` dalam Service **dan** `ReviewController` |
 
 ### ⭐ Cabaran tambahan
 - Terjemah mesej Shield: cipta `app/Language/ms/Auth.php` dengan `'notEnoughPrivilege' => 'Anda tidak mempunyai kebenaran untuk tindakan ini.'`, tetapkan `app.defaultLocale = 'ms'` dan uji semula.
-- Tukar `Config\Auth::$redirects['permission_denied']` dan `['group_denied']` ke laluan `/akses-ditolak` yang memaparkan `errors/forbidden` dengan status **403**.
-- Log setiap penolakan `PermissionException` ke `writable/logs` dengan `log_message('warning', …)` (ID pengguna, laluan, masa) — bukti audit cubaan akses.
+- Tukar `Config\Auth::$redirects['permission_denied']` dan `['group_denied']` ke route `/akses-ditolak` yang memaparkan `errors/forbidden` dengan status **403**.
+- Log setiap penolakan `PermissionException` ke `writable/logs` dengan `log_message('warning', …)` (ID pengguna, route, masa) — bukti audit cubaan akses.
 
 ---
 
@@ -338,7 +338,7 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
 Memaparkan sejarah `status_logs` pada halaman butiran, dan menulis `PassAccessTest` yang menguji akses positif & negatif setiap peranan (≥ 13 ujian hijau).
 
 ### Prasyarat
-- Lab 8.2 selesai. Pangkalan data ujian MySQL (`kkm_latihan_test`) sudah dikonfigur sejak Hari 6 ([nota 10](../nota/10-ujian-phpunit-ci4.md) §3).
+- Lab 8.2 selesai. Database ujian MySQL (`kkm_latihan_test`) sudah dikonfigur sejak Hari 6 ([nota 10](../nota/10-ujian-phpunit-ci4.md) §3).
 
 ### Langkah
 
@@ -391,7 +391,7 @@ Memaparkan sejarah `status_logs` pada halaman butiran, dan menulis `PassAccessTe
 
    | Mutasi | Ujian yang sepatutnya gagal |
    |--------|-----------------------------|
-   | Buang `'filter' => 'permission:pas.approve'` dari laluan `/approve` **dan** komen `authorize()` dalam `approve()` | `testPenyemakTidakBolehLuluskan`, `testServiceMenyekatPenyemakWalaupunFilterTerlepas` |
+   | Buang `'filter' => 'permission:pas.approve'` dari route `/approve` **dan** komen `authorize()` dalam `approve()` | `testPenyemakTidakBolehLuluskan`, `testServiceMenyekatPenyemakWalaupunFilterTerlepas` |
    | Dalam `canView()`, pulangkan `true` | `testPemohonLainMendapat404BagiPermohonanOrangLain` |
    | Dalam `PassStatus::allowedTransitions()`, tambah `self::Approved` untuk `Submitted` | `testServiceMenolakPeralihanTidakSah` |
    | Dalam `reject()`, tukar `REMARKS_MIN` kepada `3` dan buang `min_length[10]` dari controller | `testTolakTanpaCatatanYangCukupTidakMengubahStatus` |
@@ -408,9 +408,9 @@ Memaparkan sejarah `status_logs` pada halaman butiran, dan menulis `PassAccessTe
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| `SecurityException: The action you requested is not allowed.` dalam ujian POST | CSRF aktif — `FeatureTestTrait` tidak memintasnya | Blok `setUp()` templat yang membuang `csrf` dari `$globals['before']`; pastikan `tearDown()` memulihkannya |
+| `SecurityException: The action you requested is not allowed.` dalam ujian POST | CSRF aktif — `FeatureTestTrait` tidak memintasnya | Blok `setUp()` template yang membuang `csrf` dari `$globals['before']`; pastikan `tearDown()` memulihkannya |
 | `Table 'kkm_latihan_test.users' doesn't exist` | `$namespace` lalai hanya migrasi `App` | `protected $namespace = null;` |
-| Ujian lulus apabila dijalankan seorang diri tetapi gagal (redirect/403 salah) dalam `composer test` penuh | Pengguna `actingAs()` dari kelas ujian lain "bocor" melalui service `auth` Shield yang dikongsi | `$this->resetServices();` **sebelum** `parent::setUp()` (lihat `setUp()` templat) |
+| Ujian lulus apabila dijalankan seorang diri tetapi gagal (redirect/403 salah) dalam `composer test` penuh | Pengguna `actingAs()` dari kelas ujian lain "bocor" melalui service `auth` Shield yang dikongsi | `$this->resetServices();` **sebelum** `parent::setUp()` (lihat `setUp()` template) |
 | `near "FOR": syntax error` | Masih guna SQLite `:memory:` | `.env`: `database.tests.DBDriver = MySQLi`, `database.tests.database = kkm_latihan_test`, `DBPrefix` kosong |
 | `Unknown database 'kkm_latihan_test'` | DB ujian belum dicipta | `CREATE DATABASE kkm_latihan_test CHARACTER SET utf8mb4;` |
 | `Call to a member function assertSee() on null` | Merantai `->assertOK()->assertSee()` — kaedah `assert*` memulangkan `void` | Simpan `$result = $this->…->get(...)`, kemudian `$result->assertOK(); $result->assertSee(...);` |
@@ -419,7 +419,7 @@ Memaparkan sejarah `status_logs` pada halaman butiran, dan menulis `PassAccessTe
 | `Call to undefined method Config\Services::passWorkflowService()` | Service belum didaftar (Hari 7) | Lab 7.2 langkah 3 |
 
 ### ⭐ Cabaran tambahan
-- Tukar ujian negatif kepada `@dataProvider` tunggal: `[peranan, laluan, status awal]` → sentiasa "ditolak & status kekal".
+- Tukar ujian negatif kepada `@dataProvider` tunggal: `[peranan, route, status awal]` → sentiasa "ditolak & status kekal".
 - Ujian unit `tests/unit/Enums/PassStatusTest.php` untuk semua 25 pasangan `canTransitionTo()` (jika belum dari Hari 7).
 - Jadikan partial garis masa digunakan juga untuk TLK (`BookingStatus::class`) pada halaman butiran tempahan.
 
@@ -466,7 +466,7 @@ Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahk
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| Konflik gabung dalam `app/Config/Routes.php` | TLK dan Pas menambah laluan di tempat yang sama | Kekalkan **kedua-dua** kumpulan; jalankan `php spark routes` selepas menyelesaikan |
+| Konflik gabung dalam `app/Config/Routes.php` | TLK dan Pas menambah route di tempat yang sama | Kekalkan **kedua-dua** kumpulan; jalankan `php spark routes` selepas menyelesaikan |
 | `pas:expire` tidak tersenarai | Namespace/folder salah | `app/Commands/`, `namespace App\Commands;`, kelas `extends BaseCommand` |
 | `Tiada actor sah` | Tiada pengguna dalam group `admin` | `php spark pas:expire --actor <id admin>` atau jalankan `UserSeeder` |
 | `pas:expire` tidak menjumpai pas yang tamat semalam (00:00–08:00) | `app.appTimezone` masih `UTC` | `.env`: `app.appTimezone = 'Asia/Kuala_Lumpur'` |

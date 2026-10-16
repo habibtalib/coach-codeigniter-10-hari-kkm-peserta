@@ -8,8 +8,8 @@
 | Kod | Kriteria Definition of Done |
 |-----|-----------------------------|
 | **D1** | Acceptance criteria (Given/When/Then) dari URS lulus diuji manual |
-| **D2** | Validasi di **pelayan** (Model rules / Validation) — bukan JS sahaja |
-| **D3** | Akses dikawal di pelayan (filter + semakan pemilikan) |
+| **D2** | Validasi di **server** (Model rules / Validation) — bukan JS sahaja |
+| **D3** | Akses dikawal di server (filter + semakan pemilikan) |
 | **D4** | Peralihan status direkod dalam `status_logs` |
 | **D5** | Ujian PHPUnit berkaitan lulus (`vendor/bin/phpunit`) |
 | **D6** | Tiada `.env`/rahsia dalam commit; data sintetik sahaja |
@@ -29,7 +29,7 @@
 | [ ] | `DatabaseSeeder` memanggil semua seeder; 5 pengguna sintetik | D6 | `php spark db:seed DatabaseSeeder` tanpa ralat |
 | [ ] | Layout `app/Views/layouts/main.php` (Bootstrap 5.3 + Icons) | — | Semua halaman guna `$this->extend('layouts/main')` |
 | [ ] | CSRF global dihidupkan (`Filters::$globals['before']`) | D3 | Borang tanpa `csrf_field()` ditolak |
-| [ ] | Cabang Git per ciri; commit berprefix `SETUP:` | — | `git log --oneline` |
+| [ ] | Branch Git per ciri; commit berprefix `SETUP:` | — | `git log --oneline` |
 
 ---
 
@@ -79,7 +79,7 @@
 |----|---------|-----|-----------|
 | [ ] | Enum `PassType` & `PassStatus` (dengan `canTransitionTo()`) | D7 | Nilai sepadan SPEC §2.2 tepat |
 | [ ] | `PassApplicationModel`, `PassDocumentModel`, `StatusLogModel`; Entity `PassApplication` | D2 | `$allowedFields` tidak termasuk `status`, `approved_by` |
-| [ ] | Borang permohonan dengan validasi pelayan; `valid_until >= valid_from` | D2 | Hantar borang kosong → ralat di setiap medan, input lama kekal (`old()`) |
+| [ ] | Borang permohonan dengan validasi server; `valid_until >= valid_from` | D2 | Hantar borang kosong → ralat di setiap medan, input lama kekal (`old()`) |
 | [ ] | Nombor rujukan `PAS-2026-0001` | D5 | Semak `ref_no` |
 | [ ] | Status awal `submitted` + log `status_logs` (`from_status` NULL) | D4 | Semak DB selepas hantar |
 
@@ -101,7 +101,7 @@
 | [ ] | `reviewer`: `submitted → under_review`, atau tolak | D3 D4 | Log masuk `penyemak@latihan.test` |
 | [ ] | `approver`: `under_review → approved`, atau tolak | D3 D4 | Log masuk `pelulus@latihan.test` |
 | [ ] | `reviewed_by/at`, `approved_by/at` diisi | D4 | Semak DB |
-| [ ] | Semakan kebenaran **dalam service** juga (bukan filter laluan sahaja) | D3 | Terangkan kenapa (pertahanan berlapis) |
+| [ ] | Semakan kebenaran **dalam service** juga (bukan filter route sahaja) | D3 | Terangkan kenapa (pertahanan berlapis) |
 | [ ] | Muat turun dokumen melalui controller (`response->download()`) selepas semakan pemilikan | D3 | Tiada URL terus ke fail |
 | [ ] | Ujian akses positif & negatif (3 peranan) | D5 | `vendor/bin/phpunit --filter Pas` hijau |
 | [ ] | Demo aliran penuh 3 peranan | D1 | Pemohon → penyemak → pelulus |
@@ -113,15 +113,15 @@
 
 | ✅ | Perkara | DoD | Cara semak |
 |----|---------|-----|-----------|
-| [ ] | Laluan `/laporan/{tempahan\|pas\|penggunaan}` dengan `permission:laporan.view` | D3 | `pemohon1` → ditolak; `penyemak` → dibenarkan |
-| [ ] | **RPT-01** Senarai tempahan TLK — penapis julat tarikh, zon, kategori, status | D1 | Setiap penapis mengubah hasil |
-| [ ] | **RPT-02** Senarai permohonan Pas — penapis julat tarikh, jenis pas, jabatan, status | D1 | Setiap penapis mengubah hasil |
-| [ ] | **RPT-03** Penggunaan slot ikut zon (aggregate `groupBy`) — penapis bulan/tahun | D1 | Jumlah sepadan query manual |
-| [ ] | Borang penapis **GET**; pagination membawa query string | D1 | Halaman 2 masih bertapis |
-| [ ] | Penapis disenarai putih (whitelist) & melalui Query Builder — tiada SQL bercantum input | D2 D3 | Cuba `?status=' OR 1=1 --` → tiada kesan |
-| [ ] | Nilai penapis tidak sah (cth status bukan enum) diabaikan/ditolak | D2 | `?status=xyz` |
-| [ ] | `?export=pdf` (Dompdf) guna penapis yang **sama** | D1 | Bilangan baris PDF = HTML |
-| [ ] | `?export=xlsx` (PhpSpreadsheet) guna penapis yang **sama**; lindungi *formula injection* | D1 D3 | Sebab bermula `=` dipapar sebagai teks |
+| [ ] | Route `/laporan/{tempahan\|pas\|penggunaan}` dengan `permission:laporan.view` | D3 | `pemohon1` → ditolak; `penyemak` → dibenarkan |
+| [ ] | **RPT-01** Senarai tempahan TLK — filter julat tarikh, zon, kategori, status | D1 | Setiap filter mengubah hasil |
+| [ ] | **RPT-02** Senarai permohonan Pas — filter julat tarikh, jenis pas, jabatan, status | D1 | Setiap filter mengubah hasil |
+| [ ] | **RPT-03** Penggunaan slot ikut zon (aggregate `groupBy`) — filter bulan/tahun | D1 | Jumlah sepadan query manual |
+| [ ] | Borang filter **GET**; pagination membawa query string | D1 | Halaman 2 masih bertapis |
+| [ ] | Filter disenarai putih (whitelist) & melalui Query Builder — tiada SQL bercantum input | D2 D3 | Cuba `?status=' OR 1=1 --` → tiada kesan |
+| [ ] | Nilai filter tidak sah (cth status bukan enum) diabaikan/ditolak | D2 | `?status=xyz` |
+| [ ] | `?export=pdf` (Dompdf) guna filter yang **sama** | D1 | Bilangan baris PDF = HTML |
+| [ ] | `?export=xlsx` (PhpSpreadsheet) guna filter yang **sama**; lindungi formula injection | D1 D3 | Sebab bermula `=` dipapar sebagai teks |
 | [ ] | **Jumlah laporan = jumlah DB** | D5 | Ujian atau `SELECT COUNT(*)` manual |
 | [ ] | Logik dalam `ReportService` / `ExportService` — controller nipis | D7 | Controller < ~30 baris setiap action |
 | [ ] | **M3 siap** — ditandatangani jurulatih | D7 | ✍️ ________ |

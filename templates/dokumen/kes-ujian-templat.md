@@ -60,7 +60,7 @@ ORDER BY id;
 
 ## Log pepijat
 
-| Bug-ID | TC | Keterukan | Ringkasan | Langkah reproduce | Dijangka vs sebenar | Cabang pembetulan | Status |
+| Bug-ID | TC | Keterukan | Ringkasan | Langkah reproduce | Dijangka vs sebenar | Branch pembetulan | Status |
 |--------|----|-----------|-----------|-------------------|---------------------|-------------------|--------|
 | BUG-001 | `<TC-…>` | Tinggi / Sederhana / Rendah | `<…>` | `<…>` | `<…>` | `fix/<…>` | Terbuka |
 

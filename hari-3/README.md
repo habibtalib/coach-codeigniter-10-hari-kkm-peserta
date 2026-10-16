@@ -37,7 +37,7 @@ Di akhir hari ini, peserta boleh:
 
 ## 🧭 Kenapa hari ini penting
 
-Mengubah reka bentuk pangkalan data **selepas** kod ditulis adalah mahal:
+Mengubah reka bentuk database **selepas** kod ditulis adalah mahal:
 
 | Bila kesilapan ditemui | Kos membetulkan |
 |------------------------|-----------------|
@@ -311,7 +311,7 @@ WHERE slot_id = ?
 FOR UPDATE;
 ```
 
-Index bermula dengan `slot_id` — MySQL terus melompat ke tempahan slot itu sahaja, bukan mengimbas seluruh jadual. (Nota: `?` ialah *binding* — kita tidak sekali-kali mencantum input pengguna ke dalam SQL. SPEC §9.)
+Index bermula dengan `slot_id` — MySQL terus melompat ke tempahan slot itu sahaja, bukan mengimbas seluruh jadual. (Nota: `?` ialah binding — kita tidak sekali-kali mencantum input pengguna ke dalam SQL. SPEC §9.)
 
 ### 2.3 Cadangan peraturan `ON DELETE`
 
@@ -342,10 +342,10 @@ Kerani Unit Keselamatan menyimpan hamparan Excel ini (data rekaan):
 **1NF — setiap sel satu nilai, tiada kumpulan berulang**
 `Plat 1`, `Plat 2` → pisahkan kepada jadual **`vehicles`** (satu baris setiap plat, dengan `user_id`).
 
-**2NF — tiada kebergantungan separa pada kunci komposit**
+**2NF — tiada dependency separa pada kunci komposit**
 Jika kunci hamparan dianggap `(No Staf, Slot, Mula)`, maka `Nama` bergantung hanya pada `No Staf` (sebahagian kunci) → pindah ke **`users`** (`full_name`, `staff_no`). `Kategori` bergantung hanya pada `Slot` → pindah ke **`parking_slots`**.
 
-**3NF — tiada kebergantungan transitif (medan bukan kunci bergantung pada medan bukan kunci)**
+**3NF — tiada dependency transitif (medan bukan kunci bergantung pada medan bukan kunci)**
 - `Nama Jabatan` bergantung pada `Jabatan` (kod), bukan pada pengguna → **`departments`** (`code`, `name`); `users.department_id`.
 - `Nama Zon` bergantung pada `Zon` → **`parking_zones`** (`code`, `name`, `location`); `parking_slots.zone_id`.
 - `Lulus Oleh` ialah orang → `decided_by` FK ke `users`.
@@ -410,7 +410,7 @@ Wireframe = lakaran **struktur** skrin: apa kandungan, di mana, dan apa tindakan
 | Kandungan dahulu | Setiap medan borang mesti wujud dalam kamus data. Tiada medan "rekaan" dalam UI. |
 | Satu tugas utama setiap skrin | Borang tempahan = mohon. Jangan campur senarai dan kelulusan. |
 | Label BM, nilai EN di belakang | Pengguna nampak "Menunggu"; DB menyimpan `pending` |
-| Peranan menentukan menu | `applicant` tidak nampak "Keputusan TLK" — **dan** pelayan juga menyekatnya (SPEC §4) |
+| Peranan menentukan menu | `applicant` tidak nampak "Keputusan TLK" — **dan** server juga menyekatnya (SPEC §4) |
 | Ralat dekat medan | Mesej validasi di bawah medan berkaitan, bukan hanya di atas halaman |
 | Status = badge berwarna konsisten | `pending`/`submitted` kuning · `under_review` biru · `approved` hijau · `rejected` merah · `cancelled`/`expired` kelabu |
 
@@ -465,7 +465,7 @@ flowchart LR
  Dijana sistem (tidak dalam borang): ref_no, user_id, status=pending
 ```
 
-> 💡 **Tip:** Perhatikan medan yang **tiada** dalam borang: `user_id`, `status`, `ref_no`, `decided_by`. Jika ia dihantar dari borang, pengguna boleh memalsukannya (*mass assignment*). Wireframe yang baik menandakan medan "dijana sistem" secara jelas — Hari 5 ia menjadi `$allowedFields` yang ketat.
+> 💡 **Tip:** Perhatikan medan yang **tiada** dalam borang: `user_id`, `status`, `ref_no`, `decided_by`. Jika ia dihantar dari borang, pengguna boleh memalsukannya (mass assignment). Wireframe yang baik menandakan medan "dijana sistem" secara jelas — Hari 5 ia menjadi `$allowedFields` yang ketat.
 
 ### 3.5 Contoh wireframe W5 — Semakan pas
 
@@ -556,7 +556,7 @@ Diedarkan hari ini, disemak **Hari 4 S1 (09:00)**. Butiran penuh & rubrik: [`doc
 | T3 | Perhalusi ERD pasangan anda berdasarkan semakan hari ini | 30 minit |
 | T4 | Tulis 3 acceptance criteria baharu (Given/When/Then) | 30 minit |
 
-> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Test](../docs/trek-design-thinking.md): buat *hallway test* wireframe dengan seorang rakan. [GitLab](../docs/trek-gitlab.md): log masuk, kunci SSH, projek *private* dan MR pertama. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
+> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Test](../docs/trek-design-thinking.md): buat hallway test wireframe dengan seorang rakan. [GitLab](../docs/trek-gitlab.md): log masuk, kunci SSH, projek *private* dan MR pertama. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
 
 ### 🎯 Kuiz S4
 

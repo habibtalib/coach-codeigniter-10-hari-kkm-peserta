@@ -76,8 +76,8 @@
 | `application_id` | INT UNSIGNED | Tidak | — | FK | `pass_applications.id` | maks 3 dokumen setiap permohonan (BR-PAS-02, dikuatkuasa kod) | Permohonan induk |
 | `doc_type` | VARCHAR(30) | Tidak | — | — | — | cth `geran`, `kad_kakitangan`, `surat_lantikan`, `ic` | Jenis dokumen |
 | `original_name` | VARCHAR(255) | Tidak | — | — | — | untuk paparan sahaja; **jangan** guna sebagai nama fail storan | Nama asal fail |
-| `stored_path` | VARCHAR(255) | Tidak | — | — | — | nama rawak `$file->getRandomName()`; di bawah `writable/uploads/pas/` (BR-PAS-02) | Laluan storan |
-| `mime` | VARCHAR(80) | Tidak | — | — | — | `application/pdf`, `image/jpeg`, `image/png` | Jenis MIME disahkan pelayan |
+| `stored_path` | VARCHAR(255) | Tidak | — | — | — | nama rawak `$file->getRandomName()`; di bawah `writable/uploads/pas/` (BR-PAS-02) | Path storan |
+| `mime` | VARCHAR(80) | Tidak | — | — | — | `application/pdf`, `image/jpeg`, `image/png` | Jenis MIME disahkan server |
 | `size_bytes` | INT UNSIGNED | Tidak | — | — | — | ≤ 2,097,152 (2 MB) | Saiz fail |
 | `created_at` | DATETIME | Ya | NULL | — | — | diurus Model | Masa muat naik |
 | `updated_at` | DATETIME | Ya | NULL | — | — | diurus Model | |

@@ -6,7 +6,7 @@
 
 | Fasa | Hari | Fokus | Output fasa |
 |------|------|-------|-------------|
-| **A — Fahami & Reka** | 1–3 | Keperluan, proses, acceptance criteria, ERD, wireframe | URS disahkan + ERD + wireframe |
+| **A — Fahami & Bina Asas CI** | 1–3 | Keperluan (Hari 1 + S1 Hari 2), projek `kelas-ci-<nama>` di GitLab, route/view/borang, database & migration | Projek CI4 individu di GitLab dengan borang & migration pertama |
 | **B — Sedia & Bina** | 4–8 | Persekitaran CI4, migration, **M1 TLK**, **M2 Pas** | Dua modul transaksi berfungsi & diuji |
 | **C — Lapor & Serah** | 9–10 | **M3 Laporan**, **M4 Statistik**, ujian akhir, demo | Sistem lengkap didemo kepada pemilik sistem |
 
@@ -22,15 +22,15 @@
 | 14:30–16:00 | S3 | Requirement deep-dive — **Modul Pas** | Mengumpul keperluan Pas termasuk dokumen & peringkat kelulusan |
 | 16:00–17:00 | S4 | Senarai awal keperluan fungsian & bukan fungsian; persediaan CI4 tempatan (Laragon) & gambaran ERD sistem sedia ada; wrap-up | Menulis FR/NFR berformat ID (`FR-TLK-01`) & mengelaskan MoSCoW; menjalankan CI4 di laptop (Lab 1.5) |
 
-## Hari 2 — Requirement Finalization & Process Flow · [nota](./hari-2/README.md)
+## Hari 2 — Pengesahan Keperluan & Projek CI di GitLab · [nota](./hari-2/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 1 | — |
 | 09:00–10:30 | S1 | Semakan & pengesahan keperluan bersama pemilik sistem | Mengesahkan/menolak setiap FR; merekod keputusan & soalan terbuka |
-| 10:45–12:30 | S2 | Pemetaan proses as-is vs to-be (carta alir) | Melukis carta alir as-is & to-be (Mermaid) dan menanda titik penambahbaikan |
-| 14:30–16:00 | S3 | Acceptance criteria setiap keperluan utama | Menulis AC Given/When/Then yang boleh diuji |
-| 16:00–17:00 | S4 | Muktamadkan URS & carta alir; wrap-up | Menghasilkan URS v1.0 bertandatangan (templat) |
+| 10:45–12:30 | S2 | Projek `kelas-ci-<nama>` di GitLab KKM | Mencipta projek GitLab & projek CI4; push commit pertama |
+| 14:30–16:00 | S3 | Route, controller & layout view | Membina MVC pertama, route berparameter, layout; `php spark routes` |
+| 16:00–17:00 | S4 | Borang, validation & CSRF; wrap-up | Membina borang `/daftar` dengan validation, flash & CSRF |
 
 ## Hari 3 — Database Design & UI/UX Foundation · [nota](./hari-3/README.md)
 
@@ -50,7 +50,7 @@
 | 09:00–10:30 | S1 | Semakan tugasan persediaan peserta | Mendemokan tugasan; menjelaskan aliran request MVC CI4 |
 | 10:45–12:30 | S2 | Persekitaran CI4 (struktur projek, `.env`) + Shield | Mencipta projek, konfigur `.env`, memasang Shield & layout Bootstrap |
 | 14:30–16:00 | S3 | Migration awal daripada ERD | Menukar ERD kepada migration + seeder; `php spark migrate` berjaya |
-| 16:00–17:00 | S4 | Pembahagian tugas/modul; wrap-up | Menerima tugasan modul, cabang Git & Definition of Done |
+| 16:00–17:00 | S4 | Pembahagian tugas/modul; wrap-up | Menerima tugasan modul, branch Git & Definition of Done |
 
 ## Hari 5 — Modul TLK (Bahagian 1) · [nota](./hari-5/README.md)
 
@@ -59,7 +59,7 @@
 | 08:30–09:00 | — | Recap Hari 4 | — |
 | 09:00–10:30 | S1 | Migration & Model kenderaan/slot/tempahan | Menulis Model dengan `$allowedFields`, `$validationRules`, Entity & enum |
 | 10:45–12:30 | S2 | Controller & View CRUD asas | Membina CRUD slot (admin) & senarai tempahan dengan pagination |
-| 14:30–16:00 | S3 | Borang permohonan & validasi input | Membina borang tempahan dengan validasi pelayan + nombor rujukan `TLK-` |
+| 14:30–16:00 | S3 | Borang permohonan & validasi input | Membina borang tempahan dengan validasi server + nombor rujukan `TLK-` |
 | 16:00–17:00 | S4 | Ujian manual & semakan; wrap-up | Melaksanakan senarai ujian manual & merekod pepijat |
 
 ## Hari 6 — Modul TLK (Bahagian 2) · [nota](./hari-6/README.md)
@@ -88,7 +88,7 @@
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 7 | — |
 | 09:00–10:30 | S1 | Aliran kelulusan mohon → semak → lulus/tolak | Melaksanakan `PassWorkflowService` dengan `PassStatus::canTransitionTo()` |
-| 10:45–12:30 | S2 | Kawalan akses ikut peranan | Mengkonfigur Shield groups/permissions + filter laluan + semakan pemilikan |
+| 10:45–12:30 | S2 | Kawalan akses ikut peranan | Mengkonfigur Shield groups/permissions + filter route + semakan pemilikan |
 | 14:30–16:00 | S3 | Log status/sejarah & ujian fungsian | Memaparkan garis masa `status_logs`; ujian akses positif & negatif |
 | 16:00–17:00 | S4 | Wrap-up Modul Pas | Demo aliran penuh 3 peranan; **M2 siap** |
 
@@ -97,9 +97,9 @@
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 8 | — |
-| 09:00–10:30 | S1 | Reka bentuk laporan (jenis, kriteria carian/penapis) | Menentukan spesifikasi RPT-01..03 & borang penapis GET |
-| 10:45–12:30 | S2 | Query aggregate & carian data | Menulis `ReportService` (join, `groupBy`, `selectCount`, penapis dinamik) |
-| 14:30–16:00 | S3 | Eksport PDF/Excel | Menjana PDF (Dompdf) & `.xlsx` (PhpSpreadsheet) dari penapis sama |
+| 09:00–10:30 | S1 | Reka bentuk laporan (jenis, kriteria carian/filter) | Menentukan spesifikasi RPT-01..03 & borang filter GET |
+| 10:45–12:30 | S2 | Query aggregate & carian data | Menulis `ReportService` (join, `groupBy`, `selectCount`, filter dinamik) |
+| 14:30–16:00 | S3 | Eksport PDF/Excel | Menjana PDF (Dompdf) & `.xlsx` (PhpSpreadsheet) dari filter sama |
 | 16:00–17:00 | S4 | Ujian modul laporan; wrap-up | Mengesahkan jumlah laporan = jumlah DB; **M3 siap** |
 
 ## Hari 10 — Modul Statistik & Capstone · [nota](./hari-10/README.md)

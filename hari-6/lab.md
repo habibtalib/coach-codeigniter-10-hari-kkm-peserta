@@ -1,10 +1,10 @@
 # Lab Hari 6 — Modul TLK (Bahagian 2)
 
-[⬅️ README Hari 6](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🧩 Templat kod](../templates/kod/)
+[⬅️ README Hari 6](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🧩 Template kod](../templates/kod/)
 
-> **Peraturan lab:** hari ini tentang **ketepatan di bawah tekanan**, bukan kelajuan. Tulis query pertindihan & transaksi **sendiri dahulu**; bandingkan dengan templat hanya selepas checkpoint. AI boleh membantu menerangkan `Lock wait timeout` atau `errno` — tetapi anda mesti boleh menerangkan kenapa kunci diambil mengikut tertib pengguna → slot.
+> **Peraturan lab:** hari ini tentang **ketepatan di bawah tekanan**, bukan kelajuan. Tulis query pertindihan & transaksi **sendiri dahulu**; bandingkan dengan template hanya selepas checkpoint. AI boleh membantu menerangkan `Lock wait timeout` atau `errno` — tetapi anda mesti boleh menerangkan kenapa kunci diambil mengikut tertib pengguna → slot.
 
-| Lab | Sesi | Cabang | Hasil |
+| Lab | Sesi | Branch | Hasil |
 |-----|------|--------|-------|
 | 6.1 | S1 09:00–10:30 | `feat/tlk-ketersediaan` | `SlotAvailabilityService` + paparan slot kosong |
 | 6.2 | S2 10:45–12:30 | `feat/tlk-keputusan` | `BookingService` v2 + `status_logs` + lulus/tolak/batal |
@@ -84,7 +84,7 @@ Menulis `SlotAvailabilityService` (`hasOverlap()` & `availableSlots()`) dan papa
    }
    ```
 
-4. Laluan — dalam kumpulan `tlk/tempahan`, **sebelum** `(:num)`:
+4. Route — dalam kumpulan `tlk/tempahan`, **sebelum** `(:num)`:
 
    ```php
    $routes->get('ketersediaan', 'BookingController::availability', ['as' => 'tlk.availability']);
@@ -203,8 +203,8 @@ Menulis `SlotAvailabilityService` (`hasOverlap()` & `availableSlots()`) dan papa
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| `/tlk/tempahan/ketersediaan` → 404 | Laluan belum ditambah, salah eja, atau diletak di luar kumpulan `tlk/tempahan` | `php spark routes \| grep ketersediaan` |
-| Slot yang dipadam (soft delete) muncul | Guna `$this->slots->builder()` (Query Builder mentah) | Guna kaedah Model (`withZone()->…->findAll()`) — penapis `deleted_at` automatik |
+| `/tlk/tempahan/ketersediaan` → 404 | Route belum ditambah, salah eja, atau diletak di luar kumpulan `tlk/tempahan` | `php spark routes \| grep ketersediaan` |
+| Slot yang dipadam (soft delete) muncul | Guna `$this->slots->builder()` (Query Builder mentah) | Guna kaedah Model (`withZone()->…->findAll()`) — filter `deleted_at` automatik |
 | Semua slot hilang | Subquery tanpa `whereIn('status', …)` / syarat terbalik | Semak jadual langkah 1 |
 | `Call to undefined method … whereNotIn() closure` | Versi CI lama | CI ≥ 4.6 menyokong closure subquery |
 
@@ -227,7 +227,7 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
 
 **A. Buktikan masalah dahulu (5 minit)**
 
-1. Dengan `BookingService` v1, log masuk `pemohon1` (pelayar biasa) & `pemohon2` (*incognito*). Kedua-dua mohon slot A-02, tarikh bertindih. Kedua-dua berjaya → **pepijat TM-TLK-16 dihasilkan semula**. Rekod ID tempahan.
+1. Dengan `BookingService` v1, log masuk `pemohon1` (pelayar biasa) & `pemohon2` (incognito). Kedua-dua mohon slot A-02, tarikh bertindih. Kedua-dua berjaya → **pepijat TM-TLK-16 dihasilkan semula**. Rekod ID tempahan.
 
 **B. `StatusLogModel`**
 
@@ -307,7 +307,7 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
    }
    ```
 
-4. Kemas kini `Config\Services::bookingService()` — sambungan dikongsi untuk kedua-dua service:
+4. Kemas kini `Config\Services::bookingService()` — connection dikongsi untuk kedua-dua service:
 
    ```php
    return new BookingService(
@@ -316,7 +316,7 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
    );
    ```
 
-**D. Laluan, controller & view**
+**D. Route, controller & view**
 
 5. Kumpulan `tlk/tempahan` — tambah:
 
@@ -396,7 +396,7 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
    }
    ```
 
-7. `app/Views/tlk/decision/index.php` — jadual tempahan dengan penapis status; untuk setiap baris `pending`: borang **Lulus** (POST, `data-confirm`) dan butang **Tolak** yang membuka baris `collapse` mengandungi input `remarks` (min 10 aksara) + butang *Sahkan Tolak*. Untuk admin, baris `approved` ada borang **Batal** → `tlk.cancel`. Tulis sendiri; rujuk pola dari `tlk/booking/index.php`. Petua bagi baris tolak:
+7. `app/Views/tlk/decision/index.php` — jadual tempahan dengan filter status; untuk setiap baris `pending`: borang **Lulus** (POST, `data-confirm`) dan butang **Tolak** yang membuka baris `collapse` mengandungi input `remarks` (min 10 aksara) + butang *Sahkan Tolak*. Untuk admin, baris `approved` ada borang **Batal** → `tlk.cancel`. Tulis sendiri; rujuk pola dari `tlk/booking/index.php`. Petua bagi baris tolak:
 
    ```php
    <tr class="collapse" id="tolak-<?= $b->id ?>">
@@ -490,7 +490,7 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
 
 ### ✅ Checkpoint
 - Langkah 11: permintaan **menunggu** sehingga `COMMIT` (bukti visual kunci baris).
-- `pelulus@latihan.test` → `/tlk/keputusan` → *Lulus* satu tempahan → flash hijau; *Tolak* dengan sebab 5 aksara (buang dahulu atribut `minlength`/`required` pada `<input name="remarks">` melalui DevTools — pelayar menyekatnya; kita menguji peraturan **pelayan**) → flash merah *"Sebab penolakan wajib diisi (sekurang-kurangnya 10 aksara)."*
+- `pelulus@latihan.test` → `/tlk/keputusan` → *Lulus* satu tempahan → flash hijau; *Tolak* dengan sebab 5 aksara (buang dahulu atribut `minlength`/`required` pada `<input name="remarks">` melalui DevTools — pelayar menyekatnya; kita menguji peraturan **server**) → flash merah *"Sebab penolakan wajib diisi (sekurang-kurangnya 10 aksara)."*
 - `pemohon1` → butiran tempahan yang diluluskan → *Batalkan* → status *Dibatalkan*; sejarah menunjukkan 3 baris (Menunggu → Diluluskan → Dibatalkan) dengan nama pelaku.
 - Tempahan `pending` **tiada** butang Batal; POST terus ke `/tlk/tempahan/{id}/cancel` → mesej *"Status "Menunggu" tidak boleh ditukar kepada "Dibatalkan"."*
 - `pemohon1` cuba tempahan kedua semasa satu masih `pending` → *"Anda sudah mempunyai satu tempahan aktif…"* (BR-TLK-04).
@@ -505,9 +505,9 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
 | Demo langkah 11 **tidak** menunggu | `lockRow('parking_slots', …)` dipanggil di luar transaksi, atau slot berbeza | Pastikan `transBegin()` sebelum `lockRow()`; slot ID sama |
-| `Lock wait timeout exceeded` dalam penggunaan biasa | Transaksi tidak ditutup (tiada `transCommit()`/`transRollback()` pada satu laluan) | Setiap laluan keluar dari `try` mesti commit **atau** rollback |
+| `Lock wait timeout exceeded` dalam penggunaan biasa | Transaksi tidak ditutup (tiada `transCommit()`/`transRollback()` pada satu path) | Setiap path keluar dari `try` mesti commit **atau** rollback |
 | `Deadlock found when trying to get lock` | Dua kaedah mengunci baris dalam **tertib berbeza** (slot→user vs user→slot) | Tertib kunci tetap: pengguna → slot |
-| `There is no active transaction` / nombor rujukan melompat | `ReferenceNumberService` mencipta sambungan sendiri | Kedua-dua guna `db_connect()` (dikongsi) — langkah 4 |
+| `There is no active transaction` / nombor rujukan melompat | `ReferenceNumberService` mencipta connection sendiri | Kedua-dua guna `db_connect()` (dikongsi) — langkah 4 |
 | Log `status_logs` tidak ditulis | `StatusLogModel::$updatedField` tidak dikosongkan → `Unknown column 'updated_at'` | `$updatedField = ''` |
 | `actor_name` kosong dalam sejarah | Pengguna tiada `full_name` | Semak seeder; `LEFT JOIN` memastikan baris masih dipapar |
 | Pelulus mendapat 404 bila klik no. rujukan | `show()` masih semakan pemilik sahaja | Tambah `|| can('tlk.decide')` (langkah 8) |
@@ -525,7 +525,7 @@ Menulis ujian integrasi `BookingServiceTest` (pertindihan, BR-TLK-03/04, peralih
 
 ### Prasyarat
 - Lab 6.2 di-merge; `git switch -c feat/tlk-ujian`
-- Pangkalan data `kkm_latihan_test` wujud dan `database.tests.*` dalam `.env` (README §3.2)
+- Database `kkm_latihan_test` wujud dan `database.tests.*` dalam `.env` (README §3.2)
 
 ### Langkah
 
@@ -782,7 +782,7 @@ Menulis ujian integrasi `BookingServiceTest` (pertindihan, BR-TLK-03/04, peralih
 7. Commit `TLK: ujian PHPUnit BookingService + akses keputusan`.
 
 ### ✅ Checkpoint
-- `composer test -- --no-coverage tests/tlk` → `OK` dengan **≥ 25 ujian** (BookingStatus 5 + BookingService ≥ 15 + DecisionAccess 5). Penyelesaian rujukan (tag `penyelesaian-hari-6`): **43** = BookingStatus 6 (dengan ⭐) + BookingService 28 (templat 27 + 1) + DecisionAccess 7 (dengan ⭐) + ReferenceNumberService 2.
+- `composer test -- --no-coverage tests/tlk` → `OK` dengan **≥ 25 ujian** (BookingStatus 5 + BookingService ≥ 15 + DecisionAccess 5). Penyelesaian rujukan (tag `penyelesaian-hari-6`): **43** = BookingStatus 6 (dengan ⭐) + BookingService 28 (template 27 + 1) + DecisionAccess 7 (dengan ⭐) + ReferenceNumberService 2.
 - Langkah 6: membuang `hasOverlap()` menyebabkan sekurang-kurangnya `testCreateRejectsOverlappingBooking` merah; menukar `<=` → `<` menyebabkan kes *"bertindih di hujung awal"* merah.
 - `mysql -u kkm_dev -p -e "SELECT COUNT(*) FROM slot_bookings" kkm_latihan` sebelum dan selepas `composer test` → nombor **sama** dan bukan `0` (tempahan Lab 6.1–6.2 masih ada). Ujian menulis ke `kkm_latihan_test` (kumpulan `tests`), **bukan** `kkm_latihan`.
 - Bandingkan dengan [`BookingServiceTest.php.txt`](../templates/kod/BookingServiceTest.php.txt).
@@ -870,7 +870,7 @@ Menggilap UI Modul TLK (badge, flash, pengesahan, pagination Bootstrap, menu iku
    </nav>
    ```
 
-   `app/Config/Pager.php` — tukar templat lalai supaya **semua** `$pager->links()` menggunakan Bootstrap:
+   `app/Config/Pager.php` — tukar template lalai supaya **semua** `$pager->links()` menggunakan Bootstrap:
 
    ```php
    public array $templates = [
@@ -923,7 +923,7 @@ Menggilap UI Modul TLK (badge, flash, pengesahan, pagination Bootstrap, menu iku
 |--------|-------|--------------|
 | Dialog pengesahan tidak muncul | Skrip diletak sebelum borang dimuat / dalam `<head>` | Letak skrip di hujung `<body>` selepas `bootstrap.bundle` |
 | Butang *Tolak* tidak membuka baris | `bootstrap.bundle.min.js` tidak dimuat | Pastikan skrip JS Bootstrap dalam layout |
-| `Invalid file: "App\Views\pager\bootstrap_full.php"` | Laluan/nama fail salah | Fail `app/Views/pager/bootstrap_full.php`; nilai config tanpa `.php` |
+| `Invalid file: "App\Views\pager\bootstrap_full.php"` | Path/nama fail salah | Fail `app/Views/pager/bootstrap_full.php`; nilai config tanpa `.php` |
 | Badge tiada warna | Kelas salah eja (`bg-text-warning`) atau guna sintaks Bootstrap 4 (`badge-warning`) | `badge text-bg-{warna}` (Bootstrap 5.3) |
 
 ### ⭐ Cabaran tambahan

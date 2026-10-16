@@ -2,7 +2,7 @@
 
 [📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [🧪 Lab Hari 5](./lab.md)
 
-> Semalam kita ada pangkalan data kosong yang betul. Hari ini kita beri ia **tingkah laku**: enum yang menjadi satu-satunya sumber status, Model yang menolak data buruk, CRUD slot untuk admin, dan borang tempahan yang menghasilkan nombor rujukan **`TLK-2026-0001`** yang pertama. Esok (Hari 6) kita jadikannya **selamat serentak** dan lengkap dengan kelulusan.
+> Semalam kita ada database kosong yang betul. Hari ini kita beri ia **tingkah laku**: enum yang menjadi satu-satunya sumber status, Model yang menolak data buruk, CRUD slot untuk admin, dan borang tempahan yang menghasilkan nombor rujukan **`TLK-2026-0001`** yang pertama. Esok (Hari 6) kita jadikannya **selamat serentak** dan lengkap dengan kelulusan.
 
 ---
 
@@ -15,7 +15,7 @@ Di akhir hari ini, peserta boleh:
 | O1 | **Menulis** enum `BookingStatus` & `SlotCategory` (backed enum PHP 8.2) dengan label BM, warna badge dan `canTransitionTo()` | S1 | `composer test -- tests/tlk/BookingStatusTest.php` lulus |
 | O2 | **Membina** Model (`$allowedFields`, `$validationRules`, `$returnType`, soft delete) dan Entity `SlotBooking` dengan kaedah pembantu | S1 | Ujian entity lulus; `SlotBookingModel::listing()` memulangkan objek `SlotBooking` |
 | O3 | **Membina** CRUD slot (admin) dan senarai tempahan pemohon **berpagination** yang diskop kepada pemilik | S2 | `/admin/slot` memaparkan 2 halaman; `/tlk/tempahan` hanya menunjukkan tempahan sendiri |
-| O4 | **Melaksanakan** validasi pelayan borang tempahan termasuk peraturan tersuai BR-TLK-03 dengan mesej BM | S3 | Borang dengan tarikh lalu/tempoh > 90 hari ditolak dengan mesej di bawah medan |
+| O4 | **Melaksanakan** validasi server borang tempahan termasuk peraturan tersuai BR-TLK-03 dengan mesej BM | S3 | Borang dengan tarikh lalu/tempoh > 90 hari ditolak dengan mesej di bawah medan |
 | O5 | **Menjana** nombor rujukan `TLK-YYYY-NNNN` melalui `ReferenceNumberService::next()` dengan kunci baris | S3 | Baris `slot_bookings.ref_no = 'TLK-2026-0001'` + `reference_sequences.last_number = 1` |
 | O6 | **Melaksanakan** senarai ujian manual dan **merekod** pepijat dalam format boleh diulang | S4 | `docs/ujian-manual-tlk.md` dengan ≥ 12 kes & status |
 
@@ -30,7 +30,7 @@ Di akhir hari ini, peserta boleh:
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:30 | S2 | Controller & View CRUD asas | Membina CRUD slot (admin) & senarai tempahan dengan pagination |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–16:00 | S3 | Borang permohonan & validasi input | Membina borang tempahan dengan validasi pelayan + nombor rujukan `TLK-` |
+| 14:30–16:00 | S3 | Borang permohonan & validasi input | Membina borang tempahan dengan validasi server + nombor rujukan `TLK-` |
 | 16:00–17:00 | S4 | Ujian manual & semakan; wrap-up | Melaksanakan senarai ujian manual & merekod pepijat |
 
 ---
@@ -67,7 +67,7 @@ flowchart LR
 
 ### 1.1 Enum — satu sumber kebenaran untuk status
 
-Tanpa enum, rentetan `'approved'` bertaburan di controller, view, laporan dan ujian. Satu salah eja (`'aproved'`) = pepijat senyap. Backed enum PHP 8.1+ memberi kita **jenis** yang disemak:
+Tanpa enum, string `'approved'` bertaburan di controller, view, laporan dan ujian. Satu salah eja (`'aproved'`) = pepijat senyap. Backed enum PHP 8.1+ memberi kita **jenis** yang disemak:
 
 ```php
 // app/Enums/BookingStatus.php
@@ -131,7 +131,7 @@ stateDiagram-v2
 | Kaedah | Guna | Contoh |
 |--------|------|--------|
 | `BookingStatus::from('approved')` | DB → enum (ralat jika nilai tidak sah) | Dalam Entity |
-| `BookingStatus::tryFrom($get)` | Input pengguna → enum atau `null` | Penapis `?status=` |
+| `BookingStatus::tryFrom($get)` | Input pengguna → enum atau `null` | Filter `?status=` |
 | `->value` | enum → DB | `'status' => BookingStatus::Pending->value` |
 | `->label()` / `->badge()` | enum → UI | View |
 
@@ -173,7 +173,7 @@ class SlotBooking extends Entity
 
 Dalam view: `<?= esc($booking->statusLabel()) ?>` — bukan `if ($booking->status == 'approved') echo 'Diluluskan'` bertaburan.
 
-> 💡 **Tip:** `start_date`/`end_date` **tidak** dimasukkan ke `$dates` — lajur DATE lebih mudah dibanding sebagai rentetan `'Y-m-d'` dan terus dihantar semula ke `<input type="date">`.
+> 💡 **Tip:** `start_date`/`end_date` **tidak** dimasukkan ke `$dates` — lajur DATE lebih mudah dibanding sebagai string `'Y-m-d'` dan terus dihantar semula ke `<input type="date">`.
 
 ### 1.3 Model — pintu pangkalan data yang berdisiplin
 
@@ -217,7 +217,7 @@ class SlotBookingModel extends Model
 
 | Tetapan | Kenapa |
 |---------|--------|
-| `$allowedFields` | **Perlindungan mass assignment.** `insert($this->request->getPost())` tidak boleh menyelinap `status=approved` jika… tunggu — `status` ada dalam senarai! Itulah sebabnya controller **tidak pernah** menghantar POST mentah ke Model; Service membina tatasusunan sendiri. |
+| `$allowedFields` | **Perlindungan mass assignment.** `insert($this->request->getPost())` tidak boleh menyelinap `status=approved` jika… tunggu — `status` ada dalam senarai! Itulah sebabnya controller **tidak pernah** menghantar POST mentah ke Model; Service membina array sendiri. |
 | `$validationRules` | Peraturan **format** (wajib, panjang, tarikh sah). Peraturan **perniagaan** (pertindihan, 90 hari, 1 aktif) → Service. |
 | `$returnType` | Entity dengan kaedah pembantu |
 | `listing()` pulangkan `static` | Boleh dirantai: `$model->listing()->where('slot_bookings.user_id', $id)->paginate(10)` |
@@ -266,11 +266,11 @@ $routes->group('admin/slot', ['namespace' => 'App\Controllers\Admin', 'filter' =
 
 | Keputusan | Sebab |
 |-----------|-------|
-| Filter pada **group** | Satu baris melindungi 6 laluan — tiada laluan terlupa |
-| Nama laluan (`'as'`) | View guna `url_to('admin.slot.edit', $id)` — URL boleh berubah tanpa mengubah view |
+| Filter pada **group** | Satu baris melindungi 6 route — tiada route terlupa |
+| Nama route (`'as'`) | View guna `url_to('admin.slot.edit', $id)` — URL boleh berubah tanpa mengubah view |
 | Padam = `POST …/delete` | Pautan `GET` untuk padam boleh dicetuskan oleh crawler / `<img src>`. Tindakan yang mengubah data → POST + CSRF |
 
-Fail laluan penuh untuk TLK: [`templates/kod/Routes-tlk.php.txt`](../templates/kod/Routes-tlk.php.txt).
+Fail route penuh untuk TLK: [`templates/kod/Routes-tlk.php.txt`](../templates/kod/Routes-tlk.php.txt).
 
 ### 2.2 Corak Post/Redirect/Get (PRG)
 
@@ -348,7 +348,7 @@ public function index(): string
 }
 ```
 
-Dalam view: `<?= $pager->links() ?>` menghasilkan pautan `?page=2` (gaya Bootstrap ditambah pada Hari 6 S4). Penapis `status` dikekalkan kerana pager membawa query string semasa.
+Dalam view: `<?= $pager->links() ?>` menghasilkan pautan `?page=2` (gaya Bootstrap ditambah pada Hari 6 S4). Filter `status` dikekalkan kerana pager membawa query string semasa.
 
 > ⚠️ **Kesilapan lazim:** Menapis pemilik dalam **view** (`if ($b->user_id == auth()->id())`). Rekod orang lain masih diambil dari DB, pagination salah, dan JSON/eksport kemudian akan membocorkan data. Tapis dalam **query**.
 
@@ -370,7 +370,7 @@ Dalam view: `<?= $pager->links() ?>` menghasilkan pautan `?page=2` (gaya Bootstr
    - [ ] Tiada masalah; hasilnya sama
    - [x] Rekod orang lain masih diambil dari DB dan pagination salah — skop pemilik mesti dalam query: `->where('slot_bookings.user_id', auth()->id())`
    - [ ] `paginate()` tidak boleh dirantai selepas `listing()`
-   - [ ] Masalahnya hanya `==` sepatutnya `===`; selepas itu penapisan dalam view selamat kerana rekod orang lain tidak dipaparkan
+   - [ ] Masalahnya hanya `==` sepatutnya `===`; selepas itu filtering dalam view selamat kerana rekod orang lain tidak dipaparkan
    > Menapis dalam view bermaksud halaman boleh kosong walaupun ada rekod, dan JSON/eksport kemudian akan membocorkan data. Tapis di peringkat query.
 
 ---
@@ -438,7 +438,7 @@ $rules = [
 
 Mesej BM dihantar sebagai argumen kedua `$this->validate($rules, $messages)`. Dalam view, `validation_show_error('start_date')` memaparkan ralat medan itu, dan `old('start_date')` mengisi semula nilai.
 
-> ⚠️ **Kesilapan lazim:** `<input type="date" min="…">` dianggap "sudah validasi". Atribut HTML boleh dibuang dengan DevTools dalam 5 saat. **Validasi pelayan wajib** (KOLABORASI DoD).
+> ⚠️ **Kesilapan lazim:** `<input type="date" min="…">` dianggap "sudah validasi". Atribut HTML boleh dibuang dengan DevTools dalam 5 saat. **Validasi server wajib** (KOLABORASI DoD).
 
 > ⚠️ **Kesilapan lazim:** Menerima `user_id` daripada borang (`<input type="hidden" name="user_id">`). Pemohon boleh menukarnya dan memohon bagi pihak orang lain. `user_id` **sentiasa** `auth()->id()`.
 
@@ -589,7 +589,7 @@ public function create(): RedirectResponse
 
 `$this->validator->getValidated()` memulangkan **hanya** medan yang ada peraturan — medan tambahan yang diselitkan penyerang dibuang.
 
-Service didaftar dalam `app/Config/Services.php` supaya boleh dipanggil `service('bookingService')` dan diganti dalam ujian. Perhatikan `db_connect()` — ia memulangkan sambungan **dikongsi**, jadi `BookingService` dan `ReferenceNumberService` menggunakan sambungan yang sama (penting untuk transaksi bersarang esok):
+Service didaftar dalam `app/Config/Services.php` supaya boleh dipanggil `service('bookingService')` dan diganti dalam ujian. Perhatikan `db_connect()` — ia memulangkan connection **dikongsi**, jadi `BookingService` dan `ReferenceNumberService` menggunakan connection yang sama (penting untuk transaksi bersarang esok):
 
 ```php
 public static function bookingService(bool $getShared = true): BookingService
@@ -678,7 +678,7 @@ Senarai penuh ±14 kes dalam [Lab 5.4](./lab.md#lab-54--ujian-manual--rekod-pepi
 - [ ] `app/Services/ReferenceNumberService.php` + `BookingService.php` (v1) + `app/Config/Services.php`
 - [ ] `TLK-2026-0001` wujud dalam DB
 - [ ] `docs/ujian-manual-tlk.md` — ≥ 12 kes dilaksana, pepijat direkod
-- [ ] Cabang `feat/tlk-model`, `feat/tlk-crud`, `feat/tlk-borang-tempahan` di-merge ke `main`
+- [ ] Branch `feat/tlk-model`, `feat/tlk-crud`, `feat/tlk-borang-tempahan` di-merge ke `main`
 
 ---
 
@@ -688,13 +688,13 @@ Senarai penuh ±14 kes dalam [Lab 5.4](./lab.md#lab-54--ujian-manual--rekod-pepi
    <details><summary>Jawapan</summary>DB menyimpan <b>nilai</b> stabil yang digunakan kod & query; label ialah kebimbangan UI yang mungkin berubah atau diterjemah. Penukaran berlaku dalam <code>BookingStatus::label()</code>, dipanggil melalui <code>SlotBooking::statusLabel()</code> dalam view.</details>
 
 2. `status` ada dalam `$allowedFields` `SlotBookingModel`. Bagaimana kita menghalang pemohon menghantar `status=approved` melalui borang?
-   <details><summary>Jawapan</summary>Controller tidak menghantar POST mentah ke Model. Ia mengambil <code>$this->validator->getValidated()</code> (hanya medan berperaturan — <code>status</code> tiada) dan Service membina tatasusunan insert sendiri dengan <code>'status' => BookingStatus::Pending->value</code>.</details>
+   <details><summary>Jawapan</summary>Controller tidak menghantar POST mentah ke Model. Ia mengambil <code>$this->validator->getValidated()</code> (hanya medan berperaturan — <code>status</code> tiada) dan Service membina array insert sendiri dengan <code>'status' => BookingStatus::Pending->value</code>.</details>
 
 3. Tempahan 1 Oktober hingga 30 Disember (tahun sama). Lulus atau gagal BR-TLK-03? Kira.
    <details><summary>Jawapan</summary><code>end − start</code> = 31 (1 Okt → 1 Nov) + 30 (1 Nov → 1 Dis) + 29 (1 Dis → 30 Dis) = 90 hari → <b>lulus</b> (had ialah ≤ 90). 1 Okt hingga 31 Dis = 91 → ditolak. Paparan <code>durationDays()</code> pula menunjukkan 91 hari kalendar kerana ia mengira hari pertama & terakhir.</details>
 
 4. Kenapa `ReferenceNumberService` menggunakan `SELECT … FOR UPDATE` dan bukan hanya `UPDATE last_number = last_number + 1`?
-   <details><summary>Jawapan</summary>Kita perlu <b>membaca</b> nombor untuk membina rentetan rujukan. Tanpa kunci, dua transaksi boleh membaca nilai sama sebelum salah satu mengemas kini. <code>FOR UPDATE</code> memaksa transaksi kedua menunggu sehingga yang pertama commit, jadi setiap request mendapat nombor unik berturutan. (Alternatif <code>UPDATE … SET last_number = LAST_INSERT_ID(last_number + 1)</code> juga atomik tetapi kurang jelas untuk diajar.)</details>
+   <details><summary>Jawapan</summary>Kita perlu <b>membaca</b> nombor untuk membina string rujukan. Tanpa kunci, dua transaksi boleh membaca nilai sama sebelum salah satu mengemas kini. <code>FOR UPDATE</code> memaksa transaksi kedua menunggu sehingga yang pertama commit, jadi setiap request mendapat nombor unik berturutan. (Alternatif <code>UPDATE … SET last_number = LAST_INSERT_ID(last_number + 1)</code> juga atomik tetapi kurang jelas untuk diajar.)</details>
 
 5. Pemohon membuka `/tlk/tempahan/5` (milik orang lain). Apa yang patut berlaku, dan kenapa 404 lebih baik daripada 403?
    <details><summary>Jawapan</summary>Controller menyemak <code>$booking->isOwnedBy(auth()->id())</code> dan membaling <code>PageNotFoundException</code>. 404 tidak mendedahkan bahawa rekod #5 wujud — penyerang tidak boleh "menghitung" ID yang sah.</details>
@@ -705,8 +705,8 @@ Senarai penuh ±14 kes dalam [Lab 5.4](./lab.md#lab-54--ujian-manual--rekod-pepi
 
 Esok **Hari 6 — Modul TLK (Bahagian 2)**: semakan ketersediaan, anti-pertindihan dalam transaksi, lulus/tolak dengan `status_logs`, ujian PHPUnit — **M1 siap**.
 
-- Pastikan `TLK-2026-0001` boleh dijana dan cabang hari ini di-merge ke `main`.
-- Konfigur **pangkalan data ujian** dalam `.env` (kita perlukannya pada S3 esok):
+- Pastikan `TLK-2026-0001` boleh dijana dan branch hari ini di-merge ke `main`.
+- Konfigur **database ujian** dalam `.env` (kita perlukannya pada S3 esok):
 
   ```ini
   database.tests.hostname = localhost

@@ -13,7 +13,7 @@
 
 ## 1. Seni bina dashboard — kenapa HTML dan JSON diasingkan?
 
-Dashboard `/statistik` terdiri daripada **dua laluan**:
+Dashboard `/statistik` terdiri daripada **dua route**:
 
 | URL | Pulangan | Tujuan |
 |-----|----------|--------|
@@ -25,7 +25,7 @@ Dashboard `/statistik` terdiri daripada **dua laluan**:
 2. **Satu sumber data** — kad KPI dan carta membaca dari `StatisticsService` yang sama; tiada logik kiraan dalam view atau JavaScript.
 3. **Boleh dimuat semula** — butang "Muat semula" hanya panggil `fetch()` semula, tidak perlu muat semula halaman penuh.
 
-Kedua-dua laluan dilindungi filter **`permission:statistik.view`** (peranan `approver` & `admin`):
+Kedua-dua route dilindungi filter **`permission:statistik.view`** (peranan `approver` & `admin`):
 
 ```php
 // app/Config/Routes.php
@@ -100,7 +100,7 @@ class DashboardController extends BaseController
 
 ## 3. `StatisticsService` — query aggregate
 
-Semua kiraan dibuat dalam **pangkalan data** (`COUNT`, `SUM`, `AVG`, `GROUP BY`), bukan dengan menarik semua baris ke PHP lalu `foreach`. **Kenapa?** Jadual `slot_bookings` boleh mencecah puluhan ribu baris; DB dioptimumkan untuk aggregate dan hanya menghantar beberapa baris hasil.
+Semua kiraan dibuat dalam **database** (`COUNT`, `SUM`, `AVG`, `GROUP BY`), bukan dengan menarik semua baris ke PHP lalu `foreach`. **Kenapa?** Jadual `slot_bookings` boleh mencecah puluhan ribu baris; DB dioptimumkan untuk aggregate dan hanya menghantar beberapa baris hasil.
 
 ```php
 <?php

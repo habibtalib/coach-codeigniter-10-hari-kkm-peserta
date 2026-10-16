@@ -1,15 +1,15 @@
 # Lab Hari 4 — Development Kickoff
 
-[⬅️ README Hari 4](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🤝 KOLABORASI](../KOLABORASI.md) · [🧩 Templat kod](../templates/kod/)
+[⬅️ README Hari 4](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🤝 KOLABORASI](../KOLABORASI.md) · [🧩 Template kod](../templates/kod/)
 
-> **Peraturan lab:** cuba **manual dahulu** (baca ralat, semak SPEC, tanya navigator). AI (Claude Code) hanya selepas 10 minit buntu — dan hanya untuk *menerangkan*, bukan menjana fail penuh. Templat dalam `templates/kod/` untuk **menyemak**, bukan menyalin.
+> **Peraturan lab:** cuba **manual dahulu** (baca ralat, semak SPEC, tanya navigator). AI (Claude Code) hanya selepas 10 minit buntu — dan hanya untuk *menerangkan*, bukan menjana fail penuh. Template dalam `templates/kod/` untuk **menyemak**, bukan menyalin.
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
 | 4.1 | S1 | 09:00–10:30 | Demo tugasan + jejak kitaran request |
 | 4.2 | S2 | 10:45–12:30 | Projek CI4 + `.env` + Shield + layout |
 | 4.3 | S3 | 14:30–16:00 | 10 migration + 5 seeder + log masuk |
-| 4.4 | S4 | 16:00–17:00 | Pelan kerja, cabang Git, commit `SETUP:` |
+| 4.4 | S4 | 16:00–17:00 | Pelan kerja, branch Git, commit `SETUP:` |
 
 ---
 
@@ -22,6 +22,7 @@ Mendemokan aplikasi berita tugasan persediaan dan menerangkan 7 langkah kitaran 
 - 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
 - Tugasan T1–T4 ([`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md)) siap
 - Aplikasi berita berjalan: `php spark serve` → `http://localhost:8080/news`
+- `~/latihan/kelas-ci-<nama>` dengan borang `/daftar` ([Lab 2.4](../hari-2/lab.md#lab-24--borang-validation--csrf-s4)) — demo 1 minit bersama aplikasi berita
 
 ### Langkah
 
@@ -53,16 +54,16 @@ Mendemokan aplikasi berita tugasan persediaan dan menerangkan 7 langkah kitaran 
 
 ### ✅ Checkpoint
 - `docs/kitaran-request.md` lengkap 7 baris dengan bukti.
-- Anda boleh menjawab: *"Jika saya tambah filter `session` pada laluan `/news`, langkah mana yang berubah dan apa berlaku kepada pengguna tidak log masuk?"*
+- Anda boleh menjawab: *"Jika saya tambah filter `session` pada route `/news`, langkah mana yang berubah dan apa berlaku kepada pengguna tidak log masuk?"*
 
 ### 🧯 Masalah lazim
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
 | Debug Toolbar tidak muncul | `CI_ENVIRONMENT` bukan `development` / `.env` tiada | `cp env .env`, nyahkomen `CI_ENVIRONMENT = development` |
-| `404 - Can't find a route for 'GET: news'` | Laluan belum ditambah / *auto routing* dimatikan | Tambah `$routes->get('news', [News::class, 'index']);` |
+| `404 - Can't find a route for 'GET: news'` | Route belum ditambah / auto routing dimatikan | Tambah `$routes->get('news', [News::class, 'index']);` |
 | `Unable to connect to the database` | `.env` salah | Semak `database.default.*`; cuba `hostname = 127.0.0.1` |
-| `The required PHP extension "sqlite3" is not loaded` bila `composer test` (Windows) | Kumpulan pangkalan data `tests` appstarter masih SQLite; Laragon tidak menghidupkan `sqlite3` | Kursus guna MySQL untuk ujian: salin blok `database.tests.*` dari [`nota/10`](../nota/10-ujian-phpunit-ci4.md) §3 ke `.env` (pangkalan data `kkm_latihan_test`) — Hari 6 menetapkannya juga. Disahkan pada Windows: selepas itu `composer test` → `OK` |
+| `The required PHP extension "sqlite3" is not loaded` bila `composer test` (Windows) | Kumpulan database `tests` appstarter masih SQLite; Laragon tidak menghidupkan `sqlite3` | Kursus guna MySQL untuk ujian: salin blok `database.tests.*` dari [`nota/10`](../nota/10-ujian-phpunit-ci4.md) §3 ke `.env` (database `kkm_latihan_test`) — Hari 6 menetapkannya juga. Disahkan pada Windows: selepas itu `composer test` → `OK` |
 
 ### ⭐ Cabaran tambahan
 Tambah `log_message('info', 'News::show slug={slug}', ['slug' => $slug]);` dalam controller, tetapkan `app/Config/Logger.php` `$threshold = 7`, kemudian cari baris itu dalam `writable/logs/log-YYYY-MM-DD.log`.
@@ -76,7 +77,8 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
 
 ### Prasyarat
 - Repo `~/latihan/sistem-tlk-pas` (dari Hari 1, mengandungi `docs/`)
-- Pangkalan data `kkm_latihan` & `kkm_latihan_test` + pengguna `kkm_dev` ([`docs/persediaan.md`](../docs/persediaan.md) §4)
+- Route, controller, layout view, borang, validation dan CSRF sudah dibuat dalam `kelas-ci-<nama>` (Lab 2.2–2.4). Lab ini menambah database, Shield dan Bootstrap dalam projek yang sama.
+- Database `kkm_latihan` & `kkm_latihan_test` + pengguna `kkm_dev` ([`docs/persediaan.md`](../docs/persediaan.md) §4)
 - PHP ≥ 8.2 dengan `intl`, `mbstring`, `mysqli` (`php -m`)
 - `php.ini` (untuk muat naik dokumen Pas, Hari 7): `upload_max_filesize = 8M` dan `post_max_size = 16M` atau lebih. Semak: `php -i | grep -E "upload_max_filesize|post_max_size"`. Cari fail dengan `php --ini`; mulakan semula `php spark serve` selepas menukar.
 
@@ -95,7 +97,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
 
    🪟 **Windows:** jalankan blok di atas dalam Git Bash. Jangan guna `Copy-Item` PowerShell — ia menulis ganti `README.md` anda.
 
-   **Kebersihan projek (semua OS).** Cipta dua fail di akar projek dalam VS Code (*File → New File*), supaya hujung baris LF dan inden sama di Windows, macOS dan Linux. `.gitattributes` (templat: [`gitattributes.txt`](../templates/kod/gitattributes.txt)):
+   **Kebersihan projek (semua OS).** Cipta dua fail di akar projek dalam VS Code (*File → New File*), supaya hujung baris LF dan inden sama di Windows, macOS dan Linux. `.gitattributes` (template: [`gitattributes.txt`](../templates/kod/gitattributes.txt)):
 
    ```text
    * text=auto eol=lf
@@ -113,7 +115,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
    *.ttf binary
    ```
 
-   `.editorconfig` (templat: [`editorconfig.txt`](../templates/kod/editorconfig.txt)):
+   `.editorconfig` (template: [`editorconfig.txt`](../templates/kod/editorconfig.txt)):
 
    ```ini
    root = true
@@ -156,7 +158,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
 
    > Versi 4.7.x dipasang? Tidak mengapa — kursus memerlukan **4.6+**.
 
-   Folder `docs/` (URS, carta alir, ERD, kamus data, wireframe Hari 1–3) kini berada di **akar projek CI4**. Jika anda ikut Lab 1.0 (Hari 1), `docs/` sudah berada di `~/latihan/sistem-tlk-pas/docs` — langkau langkah ini. Jika dokumen pasukan anda disimpan di repo/folder lain (contoh di bawah: `~/latihan/dokumen-pasukan`), salin **kandungannya** ke sini dan commit. Tulis laluan sebenar anda; jangan taip `<` `>` (dalam Git Bash ia bermaksud *redirect*):
+   Folder `docs/` (URS, carta alir, ERD, kamus data, wireframe Hari 1–3) kini berada di **akar projek CI4**. Jika anda ikut Lab 1.0 (Hari 1), `docs/` sudah berada di `~/latihan/sistem-tlk-pas/docs` — langkau langkah ini. Jika dokumen pasukan anda disimpan di repo/folder lain (contoh di bawah: `~/latihan/dokumen-pasukan`), salin **kandungannya** ke sini dan commit. Tulis path sebenar anda; jangan taip `<` `>` (dalam Git Bash ia bermaksud redirect):
 
    ```bash
    mkdir -p docs
@@ -167,7 +169,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
 
 **B. `.env`**
 
-3. Salin templat dan sunting:
+3. Salin template dan sunting:
 
    ```bash
    cp env .env          # Windows: dalam Git Bash, bukan Notepad
@@ -202,7 +204,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
    git check-ignore -v .env                 # mesti menunjukkan baris .gitignore
    ```
 
-5. Uji sambungan:
+5. Uji connection:
 
    ```bash
    php spark db:table --show
@@ -352,7 +354,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
     }
     ```
 
-16. `app/Config/Routes.php` — lindungi halaman utama. Tukar baris `/` sahaja; `php spark shield:setup` sudah menambah `service('auth')->routes($routes);` — jangan tambah kali kedua (laluan pendua):
+16. `app/Config/Routes.php` — lindungi halaman utama. Tukar baris `/` sahaja; `php spark shield:setup` sudah menambah `service('auth')->routes($routes);` — jangan tambah kali kedua (route pendua):
 
     ```php
     $routes->get('/', 'Home::index', ['filter' => 'session', 'as' => 'home']);
@@ -361,7 +363,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
     ```
 
 ### ✅ Checkpoint
-- `php spark routes | grep -E "login|logout"` → laluan `login` (GET & POST) dan `logout` wujud.
+- `php spark routes | grep -E "login|logout"` → route `login` (GET & POST) dan `logout` wujud.
 - `http://localhost:8080/` (belum log masuk) → **dialih** ke `http://localhost:8080/login` (tiada `index.php` dalam URL).
 - `php spark db:table --show` → jadual `users`, `auth_identities`, `auth_groups_users`, `settings`, `migrations` wujud.
 - `git status` **tidak** menyenaraikan `.env`.
@@ -371,7 +373,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| `Your requirements could not be resolved… ext-intl` | Sambungan `intl` tiada | Aktifkan `extension=intl` dalam `php.ini` (`php --ini` untuk cari fail) |
+| `Your requirements could not be resolved… ext-intl` | Extension `intl` tiada | Aktifkan `extension=intl` dalam `php.ini` (`php --ini` untuk cari fail) |
 | `shield:setup` → `TypeError … InputOutput::input(): Return value must be of type string, false returned` | Dijalankan tanpa terminal interaktif (cth dalam skrip/IDE) | Jalankan dalam terminal VS Code (tetingkap Git Bash berasingan: `winpty php spark shield:setup`); atau isi `app/Config/Email.php` `$fromEmail`/`$fromName` dahulu, kemudian ulang |
 | URL mengandungi `/index.php/login` | `app.indexPage` belum dikosongkan | `.env`: `app.indexPage = ''` |
 | `Class "App\Models\UserModel" not found` selepas ubah `Auth.php` | Langkah 7 belum dibuat / namespace salah | `php spark shield:model UserModel`; semak `namespace App\Models;` |
@@ -635,7 +637,7 @@ Menghasilkan pelan kerja pasangan dan menolak commit `SETUP:` yang bersih ke `ma
    - [ ] …
    ```
 
-5. Cuba aliran cabang sekali (latihan 5 minit):
+5. Cuba aliran branch sekali (latihan 5 minit):
 
    ```bash
    git switch -c feat/tlk-model
@@ -670,7 +672,7 @@ Menghasilkan pelan kerja pasangan dan menolak commit `SETUP:` yang bersih ke `ma
 | `composer install` gagal pada klon baharu | `composer.lock` tidak di-commit | Commit `composer.lock` |
 
 ### ⭐ Cabaran tambahan
-Lindungi `main`: tetapkan *protected branch* di GitLab/GitHub dalaman supaya perubahan hanya melalui *merge request* yang disemak rakan pasangan.
+Lindungi `main`: tetapkan protected branch di GitLab/GitHub dalaman supaya perubahan hanya melalui merge request yang disemak rakan pasangan.
 
 ---
 

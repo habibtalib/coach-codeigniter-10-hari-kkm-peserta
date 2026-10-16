@@ -1,15 +1,15 @@
-# Lab Hari 2 — Pengesahan, Carta Alir, Acceptance Criteria & URS v1.0
+# Lab Hari 2 — Pengesahan Keperluan & Projek CI Anda di GitLab
 
 [📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [📖 README Hari 2](./README.md)
 
 | Lab | Sesi | Hasil |
 |-----|------|-------|
 | [Lab 2.1](#lab-21--sesi-pengesahan--log-keputusan) | S1 | `docs/log-keputusan.md`, `docs/keperluan-awal.md` v0.9 |
-| [Lab 2.2](#lab-22--carta-alir-as-is--to-be) | S2 | `docs/carta-alir.md` |
-| [Lab 2.3](#lab-23--acceptance-criteria-givenwhenthen) | S3 | `docs/acceptance-criteria.md` |
-| [Lab 2.4](#lab-24--himpun-urs-v10) | S4 | `docs/URS-v1.md` |
+| [Lab 2.2](#lab-22--projek-ci-anda-di-gitlab-s2) | S2 | Projek private `kelas-ci-<nama>` di GitLab KKM + commit pertama |
+| [Lab 2.3](#lab-23--route-controller--layout-view-s3) | S3 | `/hello`, `/hello/<nama>`, `layout.php`; 2 commit di-push |
+| [Lab 2.4](#lab-24--borang-validation--csrf-s4) | S4 | Borang `/daftar` + validation + CSRF; commit di-push |
 
-Templat rujukan: [`urs-templat.md`](../templates/dokumen/urs-templat.md) · [`acceptance-criteria-templat.md`](../templates/dokumen/acceptance-criteria-templat.md).
+> Mulai Lab 2.2 semua kerja dalam projek **individu** `kelas-ci-<nama>`. Lab carta alir, acceptance criteria dan URS yang asal kini bacaan pilihan dalam [`docs/rujukan-keperluan.md`](../docs/rujukan-keperluan.md).
 
 ---
 
@@ -65,177 +65,338 @@ Tulis satu **CR-01** lengkap (README §1.4) untuk satu keperluan yang pemilik si
 
 ---
 
-## Lab 2.2 — Carta Alir As-Is & To-Be
+## Lab 2.2 — Projek CI anda di GitLab (S2)
 
 ### 🎯 Objektif
-Melukis 4 carta alir Mermaid (TLK/Pas × as-is/to-be) dengan lorong aktor dan menanda titik penambahbaikan yang menjejak ke pain point.
+Mencipta projek private `kelas-ci-<nama>` di GitLab KKM (GitLab KKM), mencipta projek CodeIgniter 4 baharu di laptop, dan push commit pertama — tanpa `.env` dan `vendor/`. Projek ini digunakan sepanjang kursus.
 
 ### Prasyarat
-- `docs/temubual-tlk.md` dan `docs/temubual-pas.md` (bahagian proses semasa).
-- Baca README §2.2–2.5.
+- Akaun GitLab KKM (`https://<gitlab-kkm>`) — log masuk berjaya.
+- Laragon (PHP 8.2+, Composer) dan Git Bash dalam VS Code ([Lab 1.5](../hari-1/lab.md#lab-15--ci4-asas-di-laptop-dalam-kelas-s4)). `php -v` dan `composer -V` berjalan.
+- Kerja **individu**: setiap peserta ada repo sendiri. `<nama>` = nama pendek anda, huruf kecil tanpa ruang (cth `kelas-ci-aminah`).
 
 ### Langkah
-1. Cipta `docs/carta-alir.md` dengan 4 bahagian: `## 1. TLK as-is`, `## 2. TLK to-be`, `## 3. Pas as-is`, `## 4. Pas to-be`.
-2. **TLK as-is (15 minit):** Lukis dari jawapan temu bual — bukan dari contoh README. Minimum 3 lorong (`subgraph`): Pemohon, Kerani, Ketua Unit. Mulakan dengan rangka ini:
-   ```mermaid
-   flowchart TB
-       subgraph P["Pemohon"]
-           A([Mula]) --> B["Isi borang kertas"]
-       end
-       subgraph K["Kerani"]
-           B --> C[("Buku log slot")]
-       end
+1. **Cipta projek kosong di GitLab.** Log masuk GitLab KKM → **New project** → **Create blank project**:
+   - *Project name:* `kelas-ci-<nama>`
+   - *Project URL:* namespace anda sendiri (nama pengguna anda)
+   - *Visibility Level:* **Private**
+   - **Buang tanda** *Initialize repository with a README* (projek mesti kosong)
+
+   Klik **Create project**. GitLab memaparkan halaman *"The repository for this project is empty"* dengan URL HTTPS seperti `https://<gitlab-kkm>/<pengguna>/kelas-ci-<nama>.git` — salin URL itu.
+2. **Tambah jurulatih.** *Project information → Members → Invite members* → nama pengguna jurulatih, peranan **Reporter** → *Invite*. Jurulatih boleh melihat kod anda tetapi tidak boleh push.
+3. **Identiti Git (sekali sahaja setiap laptop).** Dalam Git Bash, guna nama dan e-mel akaun GitLab KKM anda:
+   ```bash
+   git config --global user.name "Nama Penuh Anda"
+   git config --global user.email "emel-anda@moh.gov.my"
+   git config --global init.defaultBranch main
+   git config --global --list | grep -E "user|init"
    ```
-3. Di bawah carta, senaraikan **masalah yang kelihatan** — rujuk ID pain point (`PP-TLK-nn`).
-4. **TLK to-be (25 minit):** Minimum 4 lorong: Pemohon (`applicant`), Sistem, Pelulus (`approver`), dan Pentadbir (`admin`) jika ada langkah urus slot. Wajib ada nod keputusan untuk:
-   - validasi tarikh (BR-TLK-03)
-   - had tempahan aktif (BR-TLK-04)
-   - pertindihan (BR-TLK-01)
-5. Tanda nod penambahbaikan dengan `classDef`:
+4. **Cipta projek CI4 baharu:**
+   ```bash
+   mkdir -p ~/latihan && cd ~/latihan
+   composer create-project codeigniter4/appstarter kelas-ci-<nama>
+   cd kelas-ci-<nama>
+   php spark --version
+   ```
+   Tukar `<nama>` kepada nama anda (jangan taip `<` `>` — dalam Git Bash ia bermaksud redirect).
+5. **Mod pembangunan.** `cp env .env`, buka `.env` dalam VS Code (`code .`), buang `#` dan tetapkan `CI_ENVIRONMENT = development`. Jalankan `php spark serve` dan buka <http://localhost:8080> — halaman *Welcome to CodeIgniter* dengan ikon Debug Toolbar di penjuru kanan bawah. Hentikan server (`Ctrl+C`).
+6. **Hujung baris LF untuk semua.** Cipta dua fail di akar projek dalam VS Code (*File → New File*), **sebelum** commit pertama, supaya Windows tidak menukar hujung baris kepada CRLF. `.gitattributes`:
    ```text
-   classDef baik fill:#d1f2d9,stroke:#1e7b34,color:#000
-   class C,D,E baik
+   * text=auto eol=lf
+   *.bat text eol=crlf
+   *.png binary
+   *.jpg binary
+   *.jpeg binary
+   *.gif binary
+   *.ico binary
+   *.pdf binary
+   *.xlsx binary
+   *.zip binary
+   *.woff binary
+   *.woff2 binary
+   *.ttf binary
    ```
-   Kemudian tambah jadual ⚡ di bawah carta: `| ⚡ | Perubahan | Menyelesaikan (PP) | BR |`.
-6. **Pas as-is & to-be (35 minit):** Ulang langkah 2–5. To-be Pas wajib menunjukkan: semakan fail (BR-PAS-02), dua lorong penyemak & pelulus, penolakan dengan catatan (BR-PAS-03), tamat tempoh oleh Sistem.
-7. **Semak sintaks:** tampal setiap carta ke <https://mermaid.live>. Tiada ralat.
+   `.editorconfig`:
+   ```ini
+   root = true
+
+   [*]
+   charset = utf-8
+   end_of_line = lf
+   insert_final_newline = true
+   trim_trailing_whitespace = true
+   indent_style = space
+   indent_size = 4
+
+   [*.md]
+   trim_trailing_whitespace = false
+
+   [*.{yml,yaml}]
+   indent_size = 2
+   ```
+7. **Commit pertama dan push** (arahan "Push an existing folder" di halaman GitLab, dengan URL anda):
+   ```bash
+   git init --initial-branch=main
+   git remote add origin https://<gitlab-kkm>/<pengguna>/kelas-ci-<nama>.git
+   git status --short | grep -E "env|vendor"
+   git add .
+   git commit -m "SETUP: projek CI4 appstarter"
+   git push -u origin main
+   ```
+   `git status` hanya menunjukkan `?? env` — `.env` (rahsia) dan `vendor/` (pakej Composer) diabaikan oleh `.gitignore` appstarter. Pada push pertama, **Git Credential Manager** membuka tetingkap log masuk: log masuk dengan akaun GitLab KKM anda. Kata laluan ditolak? Cipta *Personal Access Token* (avatar → *Edit profile → Access Tokens*, skop `write_repository`) dan guna token sebagai kata laluan.
+8. **Semak di GitLab.** Muat semula halaman projek: fail `app/`, `public/`, `spark`, `composer.json` kelihatan; **tiada** `.env` dan **tiada** `vendor/`. Salin URL projek ke ruang yang jurulatih minta (cth senarai kelas).
+
+### ✅ Checkpoint
+- [ ] Projek `kelas-ci-<nama>` wujud di GitLab KKM, **Private**, jurulatih ditambah sebagai Reporter.
+- [ ] `php spark serve` memaparkan *Welcome to CodeIgniter* dengan Debug Toolbar (`CI_ENVIRONMENT = development`).
+- [ ] Halaman GitLab menunjukkan commit `SETUP: projek CI4 appstarter`; `.env` dan `vendor/` tiada dalam repo (Kuiz hari).
+
+### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `! [rejected] main -> main (fetch first)` | Projek GitLab dicipta **dengan** README | Padam projek dan cipta semula tanpa README, atau `git pull --rebase origin main` dahulu |
+| `remote: HTTP Basic: Access denied` | Kata laluan ditolak (SSO/2FA) atau kelayakan lama tersimpan | Guna Personal Access Token sebagai kata laluan; padam kelayakan lama: Windows → *Credential Manager → Windows Credentials* → `git:https://<gitlab-kkm>` |
+| `fatal: remote origin already exists` | `git remote add` dijalankan dua kali | `git remote set-url origin <url-betul>` |
+| `.env` kelihatan di GitLab | `.env` dicipta sebelum `.gitignore` atau dipaksa dengan `git add -f` | `git rm --cached .env`, commit, push; tukar mana-mana kata laluan di dalamnya |
+| `error: src refspec main does not match any` | Belum ada commit | Jalankan `git add .` dan `git commit` dahulu |
+| `SSL certificate problem` | Proksi/sijil rangkaian KKM | Lapor kepada jurulatih; **jangan** matikan `http.sslVerify` ([`persediaan.md`](../docs/persediaan.md)) |
+
+### ⭐ Cabaran tambahan
+Tambah `README.md` ringkas (nama anda, cara menjalankan: `composer install`, `cp env .env`, `php spark serve`), commit `DOCS: README projek` dan push. Lihat GitLab memaparkannya di halaman utama projek.
+
+---
+
+## Lab 2.3 — Route, controller & layout view (S3)
+
+### 🎯 Objektif
+Membina aliran MVC dalam `kelas-ci-<nama>`: route → controller → view, route berparameter, layout view yang dikongsi, dan membaca jadual `php spark routes`. Setiap langkah di-commit dan di-push ke GitLab.
+
+### Prasyarat
+- [Lab 2.2](#lab-22--projek-ci-anda-di-gitlab-s2) siap: commit pertama kelihatan di GitLab.
+- Dua terminal Git Bash dalam folder `~/latihan/kelas-ci-<nama>`: satu untuk `php spark serve`, satu untuk Git.
+
+> 🔍 **Bukti kerja:** platform menanda checkpoint lab ini apabila anda **lulus Kuiz hari** — soalannya hanya boleh dijawab dengan menjalankan kod. Jurulatih juga membuka repo GitLab anda secara rawak.
+
+### Langkah
+1. **Route → controller → view pertama.** Tambah dalam `app/Config/Routes.php`:
+   ```php
+   $routes->get('hello', 'Hello::index');
+   ```
+   Cipta `app/Controllers/Hello.php`:
+   ```php
+   <?php
+
+   namespace App\Controllers;
+
+   class Hello extends BaseController
+   {
+       public function index(): string
+       {
+           return view('hello', ['nama' => 'Peserta KKM']);
+       }
+   }
+   ```
+   Cipta `app/Views/hello.php`:
+   ```php
+   <h1>Hello, <?= esc($nama) ?>!</h1>
+   ```
+   Jalankan `php spark serve` dan buka <http://localhost:8080/hello>. Buka tab *Routes* dan *Views* dalam Debug Toolbar: request melalui `Routes.php` → `Hello::index` → `hello.php`.
+2. Commit dan push:
+   ```bash
+   git add . && git commit -m "CI-ASAS: route /hello" && git push
+   ```
+3. **Route berparameter.** Tambah di bawah route `hello`:
+   ```php
+   $routes->get('hello/(:segment)', 'Hello::sapa/$1');
+   ```
+   Tambah method kedua dalam `Hello`:
+   ```php
+   public function sapa(string $nama): string
+   {
+       return view('hello', ['nama' => $nama]);
+   }
+   ```
+   Buka <http://localhost:8080/hello/Ali>, <http://localhost:8080/hello/Ali%20Bakar> dan <http://localhost:8080/hello/Ali/Bakar>. Catat apa yang berlaku pada setiap satu.
+4. **Cuba input berbahaya.** Taip `http://localhost:8080/hello/<b>Ali</b>` dalam bar alamat. Catat **kod status dan mesej** — soalan Kuiz hari.
+5. **Baca jadual route:**
+   ```bash
+   php spark routes
+   ```
+   Cari baris `Hello::sapa/$1`. Catat lajur **Route** — CI menukar `(:segment)` kepada regex sebenar.
+6. **Layout view.** Cipta `app/Views/layout.php`:
+   ```php
+   <!doctype html>
+   <html lang="ms">
+   <head>
+       <meta charset="utf-8">
+       <title><?= esc($tajuk ?? 'CI4 Asas') ?></title>
+   </head>
+   <body>
+       <nav><a href="<?= site_url('hello') ?>">Hello</a></nav>
+       <main>
+           <?= $this->renderSection('content') ?>
+       </main>
+   </body>
+   </html>
+   ```
+   Tukar `app/Views/hello.php` supaya guna layout:
+   ```php
+   <?= $this->extend('layout') ?>
+
+   <?= $this->section('content') ?>
+   <h1>Hello, <?= esc($nama) ?>!</h1>
+   <?= $this->endSection() ?>
+   ```
+   Muat semula `/hello` dan `/hello/Ali`: kedua-dua halaman kini ada pautan **Hello** di atas. Satu layout, banyak view.
+7. Commit dan push:
+   ```bash
+   git add . && git commit -m "CI-ASAS: route berparameter + layout" && git push
+   git log --oneline
+   ```
+
+### ✅ Checkpoint
+- [ ] `/hello/Ali` memaparkan "Hello, Ali!" melalui `Hello::sapa` dan `layout.php` (Kuiz hari).
+- [ ] `php spark routes` dijalankan dan lajur Route bagi `Hello::sapa/$1` dicatat (Kuiz hari).
+- [ ] GitLab menunjukkan 3 commit (`SETUP:` + 2 `CI-ASAS:`) (Kuiz hari).
+
+### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `/hello` → *404 Can't find a route* | Route belum disimpan atau salah eja kelas | Simpan `Routes.php`; nama fail `Hello.php` sama dengan nama kelas; semak `php spark routes` |
+| *Too few arguments to function Hello::sapa()* | Route tanpa `/$1` | Tulis `'Hello::sapa/$1'` |
+| Halaman kosong selepas tukar ke layout | `section('content')` tidak sama dengan `renderSection('content')` | Guna nama yang sama dalam kedua-dua fail |
+| `git push` → *no upstream branch* | Push pertama tanpa `-u` | `git push -u origin main` sekali |
+
+### ⭐ Cabaran tambahan
+Hantar `'tajuk' => 'Sapa ' . $nama` dari `sapa()` dan lihat tajuk tab berubah. Kenapa layout boleh membaca `$tajuk` walaupun ia hanya dihantar kepada `hello`?
+
+---
+
+## Lab 2.4 — Borang, validation & CSRF (S4)
+
+### 🎯 Objektif
+Membina borang `/daftar` dalam `kelas-ci-<nama>` dengan validation server, flash message (PRG) dan CSRF — corak yang sama digunakan dalam borang tempahan TLK Hari 5.
+
+### Prasyarat
+- [Lab 2.3](#lab-23--route-controller--layout-view-s3) siap: `layout.php` wujud dan GitLab menunjukkan 3 commit.
+- ±45 minit. Platform menanda checkpoint lab ini apabila anda **lulus Kuiz hari**.
+
+### Langkah
+1. **Route GET dan POST** dalam `app/Config/Routes.php`:
+   ```php
+   $routes->get('daftar', 'Daftar::index');
+   $routes->post('daftar', 'Daftar::simpan');
+   ```
+2. **Controller** `app/Controllers/Daftar.php`:
+   ```php
+   <?php
+
+   namespace App\Controllers;
+
+   use CodeIgniter\HTTP\RedirectResponse;
+
+   class Daftar extends BaseController
+   {
+       protected $helpers = ['form'];
+
+       public function index(): string
+       {
+           return view('daftar');
+       }
+
+       public function simpan(): RedirectResponse
+       {
+           $rules = [
+               'nama' => ['label' => 'Nama', 'rules' => 'required|min_length[3]|max_length[100]'],
+               'emel' => ['label' => 'E-mel', 'rules' => 'required|valid_email'],
+               'nokp' => ['label' => 'No. KP', 'rules' => 'required|exact_length[12]|numeric'],
+           ];
+
+           if (! $this->validate($rules)) {
+               return redirect()->to('daftar')->withInput();
+           }
+
+           $data = $this->validator->getValidated();
+
+           return redirect()->to('daftar')->with('berjaya', 'Pendaftaran ' . $data['nama'] . ' diterima.');
+       }
+   }
+   ```
+   `$helpers = ['form']` wajib: tanpanya `validation_show_error()` dalam view memberi *Call to undefined function*.
+3. **View** `app/Views/daftar.php`:
+   ```php
+   <?= $this->extend('layout') ?>
+
+   <?= $this->section('content') ?>
+   <h1>Daftar peserta</h1>
+
+   <?php if (session()->getFlashdata('berjaya')): ?>
+       <p class="berjaya"><?= esc(session()->getFlashdata('berjaya')) ?></p>
+   <?php endif ?>
+
+   <form method="post" action="<?= site_url('daftar') ?>">
+       <?= csrf_field() ?>
+
+       <label for="nama">Nama</label>
+       <input id="nama" name="nama" value="<?= esc(old('nama')) ?>">
+       <?= validation_show_error('nama') ?>
+
+       <label for="emel">E-mel</label>
+       <input id="emel" name="emel" type="email" value="<?= esc(old('emel')) ?>">
+       <?= validation_show_error('emel') ?>
+
+       <label for="nokp">No. KP</label>
+       <input id="nokp" name="nokp" inputmode="numeric" value="<?= esc(old('nokp')) ?>">
+       <?= validation_show_error('nokp') ?>
+
+       <button type="submit">Hantar</button>
+   </form>
+   <?= $this->endSection() ?>
+   ```
+4. **Uji validation.** Buka <http://localhost:8080/daftar>. Hantar dengan Nama **kosong**, E-mel `x` dan No. KP `123`. Catat mesej ralat **tepat** di bawah Nama — ini soalan Kuiz hari. Perhatikan E-mel dan No. KP yang anda taip kekal dalam borang (`old()`).
+5. **Uji kejayaan.** Isi data sintetik (Nama `Aminah`, E-mel `aminah@latihan.test`, No. KP `900101010001`) dan hantar. Mesej "Pendaftaran Aminah diterima." muncul sekali; muat semula (F5) — mesej hilang dan pelayar **tidak** bertanya "hantar semula borang?". Itulah PRG (Post/Redirect/Get) + flash.
+6. **Hidupkan CSRF secara global.** Dalam `app/Config/Filters.php`, `$globals['before']`, buang `//` di depan `'csrf'`:
+   ```php
+   public array $globals = [
+       'before' => [
+           // 'honeypot',
+           'csrf',
+           // 'invalidchars',
+       ],
+   ```
+   Jalankan `php spark routes` — lajur **Before Filters** bagi `daftar` kini menunjukkan `csrf`.
+7. **Buktikan CSRF berfungsi.** Dalam `daftar.php`, jadikan `<?= csrf_field() ?>` komen sementara (`<?php // csrf_field() ?>`), muat semula `/daftar` dan hantar borang yang sah. Catat **kod status dan mesej** — soalan Kuiz hari. Pulihkan `<?= csrf_field() ?>` dan hantar semula: berjaya.
 8. Commit:
    ```bash
-   git add docs/ && git commit -m "SETUP: carta alir as-is & to-be TLK/Pas"
+   git add . && git commit -m "CI-ASAS: borang daftar + validation + CSRF" && git push
+   git log --oneline
    ```
 
 ### ✅ Checkpoint
-- [ ] 4 carta dipaparkan tanpa ralat dalam pratonton VS Code / mermaid.live.
-- [ ] Setiap carta to-be ada lorong **Sistem**.
-- [ ] Setiap carta to-be ada ≥ 3 titik ⚡, setiap satu dengan ID pain point.
-- [ ] Nama status dalam carta to-be sepadan dengan enum SPEC (`pending`, `approved`, `under_review`, …).
-- [ ] Carta to-be Pas **tidak** mempunyai laluan `submitted → approved` terus.
+- [ ] Borang kosong memaparkan mesej ralat Nama, E-mel dan No. KP, dan nilai yang ditaip kekal (Kuiz hari).
+- [ ] Hantar yang sah memaparkan flash "Pendaftaran … diterima." sekali sahaja; F5 tidak menghantar semula (Kuiz hari).
+- [ ] CSRF global hidup: tanpa `csrf_field()` borang ditolak dengan 403; GitLab menunjukkan 4 commit (Kuiz hari).
+
+> ⏱️ Tidak sempat? Siapkan sebelum 08:30 Hari 3 — Hari 3 bermula dengan database untuk borang ini.
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| `Parse error … got 'end'` | Nod bernama `end` | Tukar ID kepada `tamat` atau `Z` |
-| Anak panah merentas lorong berselirat | Terlalu banyak nod dalam satu lorong | Guna `flowchart TB`; pindah nod keputusan ke lorong Sistem |
-| Label terpotong/ralat dengan `(` atau `:` | Tiada tanda petik | `B["Semak (manual): buku log"]` |
-| Aksara `<` `>` dalam label rosak | HTML ditafsir | Tulis "kurang daripada" atau guna `≤`/`≥` |
+| *Call to undefined function validation_show_error()* | Form helper belum dimuatkan | `protected $helpers = ['form'];` dalam `Daftar` |
+| Ralat validation tidak muncul selepas hantar | `withInput()` tertinggal pada redirect | `return redirect()->to('daftar')->withInput();` |
+| Borang sah masih *The action you requested is not allowed.* | `csrf_field()` masih dikomen dari langkah 7 | Pulihkan `<?= csrf_field() ?>`, muat semula `/daftar`, hantar semula |
+| Redirect ke `localhost:8080/index.php/...` sedangkan server di port lain | `app.baseURL` dalam `.env` tidak sama dengan port | Guna port 8080, atau tetapkan `app.baseURL = 'http://localhost:8081/'` |
 
 ### ⭐ Cabaran tambahan
-Lukis carta alir to-be untuk **pembatalan** tempahan TLK (`approved → cancelled`) dan **tamat tempoh** automatik (`approved → expired`) — siapa/apa mencetuskannya, dan apa yang direkod dalam `status_logs`.
-
----
-
-## Lab 2.3 — Acceptance Criteria Given/When/Then
-
-### 🎯 Objektif
-Menulis AC yang boleh diuji untuk sekurang-kurangnya 8 FR utama, termasuk senario negatif dan sempadan, menggunakan data sintetik konkrit.
-
-### Prasyarat
-- `docs/keperluan-awal.md` v0.9.
-- Baca README §3.1–3.5 dan [`acceptance-criteria-templat.md`](../templates/dokumen/acceptance-criteria-templat.md).
-
-### Langkah
-1. Cipta `docs/acceptance-criteria.md` berdasarkan templat.
-2. Sediakan bahagian **Data ujian asas** di atas fail — semua senario merujuknya:
-   ```markdown
-   ## Data ujian asas
-   - Pengguna: pemohon1@latihan.test, pemohon2@latihan.test, penyemak@latihan.test,
-     pelulus@latihan.test, admin@latihan.test (kata laluan Latihan@2026)
-   - Zon A "Blok Utama": slot A-01 (oku), A-02 (mengandung), A-03 (pegawai_kanan)
-   - Kenderaan pemohon1: WXX 1234 · pemohon2: VXX 2468 (rekaan)
-   - Tempahan sedia ada: TLK-2026-0007, slot A-01, 2026-10-01 → 2026-10-10, approved
-   - "Hari ini" = 2026-10-01
-   ```
-3. Tulis AC untuk **8 FR wajib** berikut (minimum). ID FR ikut contoh README (atau ID setara dalam senarai anda):
-
-   | FR | BR | Senario minimum |
-   |----|----|-----------------|
-   | FR-TLK-01 (mohon) | — | gembira |
-   | FR-TLK-03 (pertindihan) | BR-TLK-01 | gembira, negatif, sempadan hari sama, status tidak aktif |
-   | FR-TLK-04 (1 aktif) | BR-TLK-04 | negatif (ada `pending`), gembira (ada `rejected` sahaja) |
-   | FR-TLK-05 (tarikh) | BR-TLK-03 | jadual 5 kes sempadan |
-   | FR-TLK-07 (lulus/tolak) | — | lulus → `decided_by`/`decided_at` diisi + baris `status_logs` |
-   | FR-PAS-02 (muat naik) | BR-PAS-02 | jenis salah, saiz sempadan, 4 fail |
-   | FR-PAS-04 (pemilikan) | BR-PAS-04 | pemohon2 buka permohonan pemohon1 |
-   | FR-PAS-06 (tolak) | BR-PAS-01, BR-PAS-03 | catatan < 10 aksara, catatan sah, tolak dari `submitted`? |
-
-4. Beri setiap senario ID `AC-{MODUL}-{nn}-{nn}` (cth `AC-TLK-03-02`).
-5. **Uji AC anda sendiri:** untuk setiap senario, tanya — *"Bolehkah seorang penguji yang tidak pernah hadir kursus ini melaksanakan senario ini dan memutuskan LULUS/GAGAL tanpa bertanya saya?"* Jika tidak, betulkan.
-6. **Tukar dengan pasangan lain (10 minit):** mereka cuba "memecahkan" AC anda — cari senario yang tertinggal.
-7. Commit:
-   ```bash
-   git add docs/ && git commit -m "SETUP: acceptance criteria TLK & Pas"
-   ```
-
-### ✅ Checkpoint
-- [ ] Akhir S3: AC untuk ≥ 6 daripada 8 FR wajib (baki disiapkan dalam S4 sebelum menghimpun URS). Akhir hari: 8 FR, jumlah senario ≥ 20.
-- [ ] Setiap `When` mengandungi **satu** tindakan.
-- [ ] Setiap `Then` boleh diperhatikan (mesej, status, baris DB, kod HTTP).
-- [ ] Senario sempadan wujud untuk: 90 hari, 2 MB, 10 aksara, tarikh hari sama (bagi FR yang sudah ada AC).
-- [ ] Hanya data sintetik (`@latihan.test`, plat rekaan).
-
-### 🧯 Masalah lazim
-| Gejala | Punca | Penyelesaian |
-|--------|-------|--------------|
-| `Then` = "berjaya" | Tidak spesifik | Nyatakan **apa** yang dilihat: status, mesej, rekod |
-| Senario bergantung pada senario lain | Keadaan dikongsi tanpa Given | Setiap senario mesti ada `Given` sendiri yang lengkap |
-| Tidak pasti jawapan betul untuk kes pelik | Keperluan belum jelas | Itu penemuan! Tambah ke `soalan-terbuka.md` dan tanya pemilik sistem |
-| AC menyebut nama method PHP | Menguji pelaksanaan | Uji tingkah laku yang pengguna nampak |
-
-### ⭐ Cabaran tambahan
-1. Tulis AC untuk **dua kelulusan serentak** (BR-TLK-05): dua pelulus meluluskan dua tempahan `pending` bertindih bagi slot yang sama pada saat yang sama. Apa hasil yang dijangka?
-2. Tulis AC untuk `FR-TLK-04` di mana pemohon ada tempahan `approved` yang **sudah tamat** `end_date` tetapi status masih `approved` (belum ditukar ke `expired`). Adakah ia masih "aktif"? Rekod sebagai soalan terbuka jika tidak pasti.
-
----
-
-## Lab 2.4 — Himpun URS v1.0
-
-### 🎯 Objektif
-Menghimpun semua dokumen Hari 1–2 menjadi URS v1.0 lengkap dengan matriks jejak dan ditandatangani pemilik sistem.
-
-### Prasyarat
-- Lab 2.1–2.3 siap.
-- [`templates/dokumen/urs-templat.md`](../templates/dokumen/urs-templat.md).
-
-### Langkah
-1. Cipta fail `docs/URS-v1.md` dan salin kandungan templat `templates/dokumen/urs-templat.md` (jurulatih akan kongsi).
-2. Isi bahagian 1–4 (maklumat dokumen, pengenalan/skop, pihak berkepentingan, glosari) dari `docs/carta-skop.md`. Glosari mesti ada label BM bagi **semua** nilai `BookingStatus` dan `PassStatus`.
-3. Bahagian 5: **pautkan** ke `docs/carta-alir.md` (jangan salin semula) atau tampal hanya dua carta to-be.
-4. Bahagian 6: senaraikan BR-TLK-01..06 dan BR-PAS-01..06 dalam bahasa pengguna.
-5. Bahagian 7–8: salin FR/NFR yang **Disahkan/Diubah** sahaja. "Ditolak" ke bahagian Luar skop / Won't.
-6. Bahagian 9: pautkan ke `docs/acceptance-criteria.md`.
-7. Bahagian 10: bina matriks jejak — satu baris setiap BR, lajur FR dan AC. Semak dua arah (README §4.3).
-8. Bahagian 11: soalan terbuka yang masih tinggal + **andaian** (cth "Tempoh simpanan dokumen diandaikan tidak terhad sehingga Q-04 dijawab").
-9. Bahagian 12: kemukakan kepada pemilik sistem. Isi nama, tarikh, dan "Disahkan" selepas beliau bersetuju.
-10. Tag versi dalam Git:
-    ```bash
-    git add docs/ && git commit -m "SETUP: URS v1.0 disahkan"
-    git tag urs-v1.0
-    ```
-
-### ✅ Checkpoint
-- [ ] `docs/URS-v1.md` mengandungi 12 bahagian bertajuk. Bahagian 6, 7, 9, 10, 11 dan 12 lengkap; bahagian 1–5 dan 8 boleh bertanda **"Draf"** dan disiapkan sebelum 08:30 esok.
-- [ ] Matriks jejak: 12 baris BR; **tiada** lajur AC kosong.
-- [ ] Setiap FR "Must" ada ≥ 1 AC.
-- [ ] Sejarah versi menunjukkan v0.1 → v0.9 → v1.0.
-- [ ] Jadual tandatangan diisi; `git tag` menunjukkan `urs-v1.0`.
-
-### 🧯 Masalah lazim
-| Gejala | Punca | Penyelesaian |
-|--------|-------|--------------|
-| URS sangat panjang, menyalin semua | Salin kandungan, bukan pautan | Pautkan ke fail sokongan; URS ialah dokumen induk |
-| BR tanpa AC dalam matriks | AC tertinggal | Tulis AC minimum (satu senario negatif) sebelum tandatangan |
-| Pemilik sistem enggan tandatangan | Masih ada soalan kritikal | Betul! Selesaikan atau rekod sebagai andaian yang dipersetujui |
-
-### ⭐ Cabaran tambahan
-Tambah bahagian **"Keperluan laporan"** ringkas dalam URS yang memetakan RPT-01..03 (SPEC §2.3) kepada penapis dan pengguna, supaya Hari 9 bermula dengan keperluan yang sudah disahkan.
+Tambah medan **Telefon** yang tidak wajib: rule `permit_empty|numeric|max_length[11]`, label `Telefon`, `old('telefon')` dan `validation_show_error('telefon')` dalam view. Hantar dengan Telefon kosong (lulus) dan dengan `01-234` (gagal). Apa yang berlaku jika `permit_empty` dibuang daripada rule?
 
 ---
 
 ## Semakan kendiri — akhir hari
 
 ```bash
-ls docs/
-# URS-v1.md  acceptance-criteria.md  carta-alir.md  carta-skop.md  keperluan-awal.md
-# log-keputusan.md  soalan-terbuka.md  temubual-pas.md  temubual-tlk.md
-git tag   # urs-v1.0
+cd ~/latihan/kelas-ci-<nama>
+git status          # nothing to commit, working tree clean
+git log --oneline   # 4 commit: SETUP + 3 CI-ASAS
+php spark routes    # hello, hello/([^/]+), daftar (GET & POST)
 ```

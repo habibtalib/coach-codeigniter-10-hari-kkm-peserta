@@ -7,18 +7,18 @@
 - **Menyenaraikan** risiko utama muat naik fail menurut OWASP dan kawalan yang menanganinya.
 - **Menulis** rules validasi CI4 untuk BR-PAS-02 (`pdf`/`jpg`/`png`, ≤ 2 MB, ≤ 3 fail).
 - **Menggunakan** API `UploadedFile` untuk menyimpan fail dengan nama rawak di `writable/uploads/pas/` dan merekod metadata dalam `pass_documents`.
-- **Membina** laluan muat turun yang menyemak pemilikan sebelum menghantar fail.
+- **Membina** route muat turun yang menyemak pemilikan sebelum menghantar fail.
 
 ---
 
 ## 1. Kenapa muat naik fail berbahaya?
 
-Borang muat naik membenarkan pengguna **meletakkan fail pada pelayan kita**. Itu satu keistimewaan besar. Risiko utama (OWASP File Upload Cheat Sheet):
+Borang muat naik membenarkan pengguna **meletakkan fail pada server kita**. Itu satu keistimewaan besar. Risiko utama (OWASP File Upload Cheat Sheet):
 
 | Risiko | Contoh serangan | Kawalan dalam kursus |
 |--------|-----------------|----------------------|
 | Pelaksanaan kod jauh (RCE) | Muat naik `shell.php` ke `public/` lalu buka `https://…/uploads/shell.php` | Simpan di **`writable/`** (di luar web root) |
-| Penyamaran jenis | `shell.php` dinamakan semula `surat.pdf` | Semak **kandungan** (`mime_in` guna finfo) + sambungan |
+| Penyamaran jenis | `shell.php` dinamakan semula `surat.pdf` | Semak **kandungan** (`mime_in` guna finfo) + extension |
 | Path traversal / tulis ganti | Nama fail `../../app/Config/App.php` | **Jangan** guna nama asal; `getRandomName()` |
 | Denial of service | Fail 2 GB atau 500 fail | `max_size`, bilangan maksimum 3, had `php.ini` |
 | XSS melalui fail | SVG/HTML berisi `<script>` dibuka dalam pelayar | Senarai putih `pdf`,`jpg`,`png` sahaja; `Content-Disposition: attachment` |
@@ -52,7 +52,7 @@ Borang muat naik membenarkan pengguna **meletakkan fail pada pelayan kita**. Itu
 <?= form_close() ?>
 ```
 
-`accept=` hanya **memudahkan pengguna** memilih fail; ia tidak menghalang penyerang. Semua semakan sebenar di pelayan.
+`accept=` hanya **memudahkan pengguna** memilih fail; ia tidak menghalang penyerang. Semua semakan sebenar di server.
 
 ---
 
@@ -77,10 +77,10 @@ if (! $this->validate($rules)) {
 Rules fail CI4 memeriksa **setiap** fail dalam `documents[]`. Tiga perkara yang **rules tidak buat**, jadi kita semak sendiri dalam Service:
 
 1. **Bilangan fail** (maks 3) — tiada rule terbina.
-2. **Konsistensi sambungan ↔ kandungan** — `guessExtension()` (dari MIME sebenar) mesti dalam senarai putih.
+2. **Konsistensi extension ↔ kandungan** — `guessExtension()` (dari MIME sebenar) mesti dalam senarai putih.
 3. **Fail yang gagal dimuat naik** oleh PHP (cth melebihi `upload_max_filesize`) — `isValid()`.
 
-> `ext_in` membaca sambungan dari nama klien; `mime_in` menggunakan `getMimeType()` yang **mengesan jenis dari kandungan** melalui sambungan PHP `fileinfo`. Kedua-duanya diperlukan. Pastikan `fileinfo` dihidupkan (lihat [`docs/persediaan.md`](../docs/persediaan.md)).
+> `ext_in` membaca extension dari nama klien; `mime_in` menggunakan `getMimeType()` yang **mengesan jenis dari kandungan** melalui PHP extension `fileinfo`. Kedua-duanya diperlukan. Pastikan `fileinfo` dihidupkan (lihat [`docs/persediaan.md`](../docs/persediaan.md)).
 
 ---
 
@@ -91,11 +91,11 @@ Rules fail CI4 memeriksa **setiap** fail dalam `documents[]`. Tiga perkara yang 
 | `getClientName()` | Pelayar pengguna | ❌ | Paparan sahaja (`original_name`, sentiasa `esc()`) |
 | `getClientMimeType()` | Header dari pelayar | ❌ | Jangan guna untuk keputusan keselamatan |
 | `getMimeType()` | `finfo` pada kandungan | ✅ (munasabah) | Semakan jenis, simpan `mime` |
-| `guessExtension()` | Dari MIME sebenar | ✅ | Sambungan fail simpanan |
+| `guessExtension()` | Dari MIME sebenar | ✅ | Extension fail simpanan |
 | `getSize()` / `getSizeByUnit('kb')` | Saiz fail sementara | ✅ | `size_bytes`, semakan saiz |
 | `isValid()` | Status muat naik PHP | ✅ | Tolak fail rosak/terpotong |
 | `getErrorString()` | Mesej ralat PHP | — | Log / mesej ralat |
-| `getRandomName()` | Dijana CI4 (masa + rawak + sambungan) | ✅ | Nama fail di cakera |
+| `getRandomName()` | Dijana CI4 (masa + rawak + extension) | ✅ | Nama fail di cakera |
 | `hasMoved()` | Status dalaman | — | Elak `move()` dua kali |
 | `move($dir, $name)` | — | — | Pindah dari folder sementara |
 
@@ -176,7 +176,7 @@ class PassWorkflowService
 }
 ```
 
-Kenapa `stored_path` **relatif**? Jika aplikasi dipindah ke pelayan lain (`/var/www/…` → `D:\apps\…`), path mutlak dalam DB akan rosak. Gabungkan dengan `WRITEPATH` semasa baca.
+Kenapa `stored_path` **relatif**? Jika aplikasi dipindah ke server lain (`/var/www/…` → `D:\apps\…`), path mutlak dalam DB akan rosak. Gabungkan dengan `WRITEPATH` semasa baca.
 
 > **Konsistensi dengan transaksi:** fail dipindah ke cakera **bukan** sebahagian transaksi DB. Jika insert `pass_applications` gagal selepas fail dipindah, fail menjadi yatim. Corak mudah: simpan rekod permohonan dahulu dalam transaksi, kemudian fail; jika fail gagal, `unlink()` fail yang sudah dipindah dan rollback.
 
@@ -191,7 +191,7 @@ service('passWorkflowService')->submit(auth()->id(), $this->validator->getValida
 
 ## 7. Muat turun melalui controller — dengan semakan pemilikan
 
-Kerana fail di `writable/`, pelayar **tidak boleh** mencapainya melalui URL. Satu-satunya jalan ialah laluan `/pas/permohonan/dokumen/{id}` yang menyemak kebenaran dahulu.
+Kerana fail di `writable/`, pelayar **tidak boleh** mencapainya melalui URL. Satu-satunya jalan ialah route `/pas/permohonan/dokumen/{id}` yang menyemak kebenaran dahulu.
 
 ```php
 public function document(int $id)

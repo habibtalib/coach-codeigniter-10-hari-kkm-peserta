@@ -6,7 +6,7 @@
 
 | Phase | Day | Focus | Phase output |
 |------|------|-------|-------------|
-| **A — Understand & Design** | 1–3 | Requirements, processes, acceptance criteria, ERD, wireframes | Approved URS + ERD + wireframes |
+| **A — Understand & Build CI Basics** | 1–3 | Requirements (Day 1 + Day 2 S1), project `kelas-ci-<nama>` on GitLab, routes/views/forms, database & migrations | An individual CI4 project on GitLab with a form & the first migrations |
 | **B — Set Up & Build** | 4–8 | CI4 environment, migrations, **M1 TLK**, **M2 Pass** | Two working, tested transaction modules |
 | **C — Report & Hand Over** | 9–10 | **M3 Report**, **M4 Statistics**, final testing, demo | Complete system demonstrated to the system owner |
 
@@ -22,15 +22,15 @@
 | 14:30–16:00 | S3 | Requirement deep-dive — **Pass module** | Gather Pass requirements, including documents & approval stages |
 | 16:00–17:00 | S4 | Initial list of functional & non-functional requirements; local CI4 setup (Laragon) & an overview of the existing system's ERD; wrap-up | Write FR/NFR with ID format (`FR-TLK-01`) & classify them with MoSCoW; run CI4 on your laptop (Lab 1.5) |
 
-## Day 2 — Requirement Finalization & Process Flow · [notes](./hari-2/README.md)
+## Day 2 — Requirement Sign-off & Your CI Project on GitLab · [notes](./hari-2/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 1 recap | — |
 | 09:00–10:30 | S1 | Review & confirm the requirements with the system owner | Confirm/reject each FR; record decisions & open questions |
-| 10:45–12:30 | S2 | As-is vs to-be process mapping (flowcharts) | Draw as-is & to-be flowcharts (Mermaid) and mark points for improvement |
-| 14:30–16:00 | S3 | Acceptance criteria for each key requirement | Write testable Given/When/Then AC |
-| 16:00–17:00 | S4 | Finalise the URS & flowcharts; wrap-up | Produce a signed URS v1.0 (template) |
+| 10:45–12:30 | S2 | Project `kelas-ci-<nama>` on KKM GitLab | Create the GitLab project & CI4 project; push the first commit |
+| 14:30–16:00 | S3 | Route, controller & layout view | Build the first MVC flow, a route parameter, a layout; `php spark routes` |
+| 16:00–17:00 | S4 | Form, validation & CSRF; wrap-up | Build a `/daftar` form with validation, flash & CSRF |
 
 ## Day 3 — Database Design & UI/UX Foundation · [notes](./hari-3/README.md)
 

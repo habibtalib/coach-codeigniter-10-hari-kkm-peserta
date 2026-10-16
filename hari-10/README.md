@@ -14,9 +14,9 @@ Di akhir hari ini, peserta boleh:
 |---|-------------------------|------|
 | O1 | **Menulis** `StatisticsService` yang mengira 4 KPI dan 4 dataset carta (SPEC §2.4) menggunakan aggregate Query Builder, termasuk mengisi bulan kosong dengan sifar. | S1 |
 | O2 | **Membina** dashboard `/statistik` dengan kad KPI dan 4 carta Chart.js 4 (bar, doughnut, bar mendatar, line) yang mengambil data daripada endpoint JSON `/statistik/data`. | S1 |
-| O3 | **Menggunakan** `cache()->remember('stat_dashboard', 600, …)` dan **menambah** `cache()->delete('stat_dashboard')` selepas setiap perubahan status dalam `BookingService` & `PassWorkflowService`, serta **menerangkan** tukar-ganti (*tradeoff*) invalidasi cache. | S2 |
+| O3 | **Menggunakan** `cache()->remember('stat_dashboard', 600, …)` dan **menambah** `cache()->delete('stat_dashboard')` selepas setiap perubahan status dalam `BookingService` & `PassWorkflowService`, serta **menerangkan** tukar-ganti (tradeoff) invalidasi cache. | S2 |
 | O4 | **Melaksanakan** skrip UAT merentas 4 modul mengikut peranan dan merekod keputusan dalam templat UAT. | S3 |
-| O5 | **Membaiki** pepijat menggunakan kitaran *reproduce → ujian gagal → baiki → ujian lulus*, dan **mengesahkan** senarai semak keselamatan akhir (CSRF, `esc()`, `.env`, muat naik luar `public/`, filter laluan). | S3 |
+| O5 | **Membaiki** pepijat menggunakan kitaran *reproduce → ujian gagal → baiki → ujian lulus*, dan **mengesahkan** senarai semak keselamatan akhir (CSRF, `esc()`, `.env`, muat naik luar `public/`, filter route). | S3 |
 | O6 | **Mendemokan** sistem hujung-ke-hujung dalam 15 minit, **menerangkan** baris kod yang dipilih panel, dan **menyumbang** kepada retrospektif Start/Stop/Continue. | S4 |
 
 ---
@@ -105,9 +105,9 @@ sequenceDiagram
     B->>B: Chart.js lukis 4 carta
 ```
 
-Kenapa **dua** laluan?
+Kenapa **dua** route?
 
-- **Kad KPI** dirender di pelayan → muncul serta-merta, berfungsi walaupun JavaScript gagal, mudah diuji dengan `FeatureTestTrait`.
+- **Kad KPI** dirender di server → muncul serta-merta, berfungsi walaupun JavaScript gagal, mudah diuji dengan `FeatureTestTrait`.
 - **Carta** memerlukan JavaScript. Endpoint JSON (`setJSON()`) memisahkan *data* daripada *persembahan* — endpoint sama boleh digunakan semula (cth untuk skrin TV di bilik gerakan).
 - Kedua-dua memanggil `StatisticsService::dashboard()` → **cache yang sama**, nombor yang sama.
 
@@ -257,14 +257,14 @@ Jika cache dikosongkan sebelum `COMMIT`, permintaan lain boleh membina semula ca
 | **Tiada cache** | Sentiasa tepat; tiada kod tambahan | Beban DB tinggi; perlahan apabila data besar | Data kecil, pengguna sedikit |
 | **TTL sahaja** (remember 600) | Paling mudah; satu baris | Basi sehingga 10 minit | Dashboard pengurusan yang tidak kritikal masa |
 | **TTL + delete semasa tulis** ✅ (pilihan kita) | Segar selepas perubahan; TTL sebagai jaring keselamatan | Mesti ingat setiap tempat yang menulis; terlepas satu = basi | Tulisan jarang, bacaan kerap (kes kita) |
-| **Kemas kini cache semasa tulis** (*write-through*) | Tiada MISS selepas tulis | Kompleks; risiko kiraan salah; ulang logik | Jarang perlu untuk aplikasi jabatan |
+| **Kemas kini cache semasa tulis** (write-through) | Tiada MISS selepas tulis | Kompleks; risiko kiraan salah; ulang logik | Jarang perlu untuk aplikasi jabatan |
 
 > 💡 **Tip — "Ada dua perkara sukar dalam sains komputer: invalidasi cache dan menamakan sesuatu."** Kita ringankan kedua-duanya: **satu** kunci (`StatisticsService::CACHE_KEY`), dan invalidasi di **satu** tempat per service (kaedah peribadi `transition()` + kaedah cipta).
 
 > ⚠️ **Kesilapan lazim:**
 > - Menaip `'stat_dashboard'` di 5 tempat → satu tersalah eja (`'stats_dashboard'`) → tiada ralat, cuma basi. Guna **pemalar**.
 > - Cache data **per pengguna** di bawah kunci global. Dashboard kita sama untuk semua `approver`/`admin`, jadi satu kunci selamat. Jika kelak ada data ikut jabatan pengguna, kunci mesti mengandungi id jabatan (`stat_dashboard_dept_3`) — jika tidak, data jabatan A bocor kepada jabatan B.
-> - Lupa laluan tulis lain: `pas:expire` (Spark) juga mengubah status — tetapi kerana ia melalui `PassWorkflowService::transition()`, ia diliputi secara automatik. Inilah ganjaran "satu pintu untuk perubahan status" dari Hari 6 & 8.
+> - Lupa path tulis lain: `pas:expire` (Spark) juga mengubah status — tetapi kerana ia melalui `PassWorkflowService::transition()`, ia diliputi secara automatik. Inilah ganjaran "satu pintu untuk perubahan status" dari Hari 6 & 8.
 
 ### 2.6 Bagaimana kita tahu cache berfungsi?
 
@@ -289,7 +289,7 @@ Jika cache dikosongkan sebelum `COMMIT`, permintaan lain boleh membina semula ca
    - [ ] `CacheException` dilontar serta-merta kerana `delete()` menyemak dahulu bahawa kunci `stats_dashboard` wujud
    - [ ] Dashboard memaparkan halaman kosong kerana `remember()` memulangkan `null` selepas `delete()` yang gagal
    - [ ] Semua cache aplikasi dikosongkan kerana handler `file` memadam seluruh `writable/cache/` jika kunci tiada
-   > `delete()` pada kunci yang tiada tidak menghasilkan ralat. Sebab itu kunci ditulis sebagai pemalar `StatisticsService::CACHE_KEY`, bukan rentetan yang ditaip di banyak tempat.
+   > `delete()` pada kunci yang tiada tidak menghasilkan ralat. Sebab itu kunci ditulis sebagai pemalar `StatisticsService::CACHE_KEY`, bukan string yang ditaip di banyak tempat.
 
 ---
 
@@ -297,7 +297,7 @@ Jika cache dikosongkan sebelum `COMMIT`, permintaan lain boleh membina semula ca
 
 ### 3.1 UAT — menguji sebagai pengguna, bukan sebagai pembangun
 
-UAT (*User Acceptance Testing*) menjawab soalan pemilik sistem: "*Adakah sistem ini melakukan apa yang kita setuju dalam URS?*" Ia **bukan** ujian unit. Ia dijalankan melalui pelayar, mengikut peranan, dengan data sintetik.
+UAT (User Acceptance Testing) menjawab soalan pemilik sistem: "*Adakah sistem ini melakukan apa yang kita setuju dalam URS?*" Ia **bukan** ujian unit. Ia dijalankan melalui pelayar, mengikut peranan, dengan data sintetik.
 
 Dua templat (ditulis Hari 2, digunakan hari ini):
 
@@ -306,7 +306,7 @@ Dua templat (ditulis Hari 2, digunakan hari ini):
 
 ### 3.2 Skrip UAT merentas 4 modul ikut peranan
 
-Jalankan **mengikut tertib** — setiap langkah menyediakan data untuk langkah seterusnya. Guna tetingkap *incognito* berasingan untuk setiap peranan.
+Jalankan **mengikut tertib** — setiap langkah menyediakan data untuk langkah seterusnya. Guna tetingkap incognito berasingan untuk setiap peranan.
 
 | # | Peranan (log masuk) | Tindakan | Hasil dijangka | UAT |
 |---|---------------------|----------|----------------|-----|
@@ -372,10 +372,10 @@ Rujukan mendalam: [`nota/11-keselamatan-aplikasi-web.md`](../nota/11-keselamatan
 | K2 | **Output dilepaskan** dengan `esc()` | `grep -rnF '<?= $' app/Views \| grep -vF 'esc(' \| grep -vF '$this->'` — setiap baris baki mesti dijustifikasi (cth integer `$n`, `$pager->makeLinks()`); abaikan `app/Views/errors/` (fail rangka kerja) |
 | K3 | **`.env` tidak dalam Git** | `git ls-files \| grep -E "(^\|/)\.env$"` → tiada output; `git log --all --oneline -- .env` → tiada |
 | K4 | **Muat naik di luar `public/`** | Fail berada di `writable/uploads/pas/` dengan nama rawak; `ls public/` tiada folder uploads; muat turun hanya melalui controller dengan semakan pemilikan |
-| K5 | **Filter laluan** pada setiap kumpulan | `php spark routes` — lajur *Filters* untuk `/tlk/keputusan`, `/admin/slot`, `/pas/semakan`, `/laporan/*`, `/statistik*`; `MSYS_NO_PATHCONV=1 php spark filter:check GET /statistik` (Git Bash) |
+| K5 | **Filter route** pada setiap kumpulan | `php spark routes` — lajur *Filters* untuk `/tlk/keputusan`, `/admin/slot`, `/pas/semakan`, `/laporan/*`, `/statistik*`; `MSYS_NO_PATHCONV=1 php spark filter:check GET /statistik` (Git Bash) |
 | K6 | **Semakan pemilikan** dalam service | UAT langkah 9 (pemohon2 → permohonan pemohon1) = disekat |
 | K7 | **Tiada SQL mentah bercantum input** | `grep -rn -e '->query(' app/` — setiap hit mesti guna binding `?` (pengecualian sah: `EXPLAIN` dalam `ReportExplain` — SQL dikompil Query Builder, CLI sahaja) |
-| K8 | **Whitelist susunan/penapis** laporan | `/laporan/tempahan?sort=(SELECT 1)` → jatuh ke susunan lalai |
+| K8 | **Whitelist susunan/filter** laporan | `/laporan/tempahan?sort=(SELECT 1)` → jatuh ke susunan lalai |
 | K9 | **Data sintetik sahaja** | Tiada nama/IC/plat sebenar dalam seeder, fixture, tangkapan skrin demo |
 | K10 | **Mod pengeluaran** untuk staging | `CI_ENVIRONMENT = production` → tiada Debug Toolbar, tiada jejak ralat dipapar |
 
@@ -390,9 +390,9 @@ Rujukan mendalam: [`nota/11-keselamatan-aplikasi-web.md`](../nota/11-keselamatan
 
 2. Dalam skrip UAT, `penyemak@latihan.test` membuka `/statistik` terus. Apakah hasil dijangka, dan kenapa?
    - [ ] Dashboard dipapar kerana `laporan.view` milik penyemak meliputi `/statistik` — kedua-duanya modul bacaan yang membaca data M1 dan M2
-   - [x] Disekat — group `reviewer` tiada `statistik.view`; laluan dilindungi `permission:statistik.view`
+   - [x] Disekat — group `reviewer` tiada `statistik.view`; route dilindungi `permission:statistik.view`
    - [ ] Dashboard dipapar tanpa carta
-   - [ ] 404 kerana laluan tidak wujud untuk penyemak
+   - [ ] 404 kerana route tidak wujud untuk penyemak
    > Mengikut SPEC §4, `statistik.view` hanya untuk `approver` dan `admin` (melalui `statistik.*`). `laporan.view` tidak memberi akses kepada dashboard.
 
 ---
@@ -403,10 +403,10 @@ Rujukan mendalam: [`nota/11-keselamatan-aplikasi-web.md`](../nota/11-keselamatan
 
 | Minit | Segmen | Apa yang panel mahu lihat |
 |-------|--------|---------------------------|
-| 0–1 | **Pengenalan** | Nama pasangan, cabang/tag Git (`v1.0-capstone`), satu ayat "apa yang kami bina" |
+| 0–1 | **Pengenalan** | Nama pasangan, branch/tag Git (`v1.0-capstone`), satu ayat "apa yang kami bina" |
 | 1–4 | **M1 TLK** | Pemohon mohon → pertindihan ditolak → pelulus lulus → `TLK-2026-####` |
 | 4–7 | **M2 Pas** | Mohon + dokumen → penyemak → pelulus → garis masa `status_logs` |
-| 7–9 | **M3 Laporan** | Tapis RPT-01/02 → halaman 2 kekal penapis → PDF & Excel dengan jumlah sama |
+| 7–9 | **M3 Laporan** | Tapis RPT-01/02 → halaman 2 kekal filter → PDF & Excel dengan jumlah sama |
 | 9–11 | **M4 Statistik** | 4 KPI + 4 carta; lulus satu permohonan pas → KPI "Pas menunggu" berubah serta-merta (invalidasi) |
 | 11–13 | **Terangkan kod** | Panel pilih **satu fail + satu baris**; mana-mana ahli pasangan menerangkan |
 | 13–15 | **Soal jawab & markah** | Panel isi rubrik; pasangan seterusnya bersedia |
@@ -443,7 +443,7 @@ Sijil **tamat kursus** dikeluarkan kepada peserta yang memenuhi **semua** kriter
 |---|----------|-------|
 | 1 | Kehadiran **≥ 80 %** sesi (≥ 32 daripada 40 sesi S1–S4) | Senarai kehadiran harian |
 | 2 | Modul **M1–M4** didemo dalam capstone oleh pasangan peserta | Helaian markah rubrik |
-| 3 | Markah capstone pasangan **≥ 60 / 100** dan **tiada** kegagalan *gate* kritikal yang tidak dibaiki | [`rubrik-capstone.md`](../docs/rubrik-capstone.md) |
+| 3 | Markah capstone pasangan **≥ 60 / 100** dan **tiada** kegagalan gate kritikal yang tidak dibaiki | [`rubrik-capstone.md`](../docs/rubrik-capstone.md) |
 | 4 | Peserta **sendiri** menerangkan sekurang-kurangnya satu baris kod dengan betul semasa demo (segmen 11–13) | Catatan panel |
 | 5 | Repo diserahkan: tag `v1.0-capstone`, `composer test` hijau, tiada `.env`/data sebenar | Pautan repo / arkib zip |
 
@@ -453,7 +453,7 @@ Peserta yang tidak memenuhi kriteria 2–5 tetapi hadir ≥ 80 % menerima **siji
 
 1. Sebuah pasangan mendapat 78/100 dalam rubrik capstone, tetapi semasa demo panel mendapati `pemohon2` boleh membuka permohonan `pemohon1`. Apakah kesannya?
    - [ ] Tiada — markah melebihi 60, jadi lulus penuh
-   - [x] Ia kegagalan *gate* kritikal — keputusan dihadkan kepada *Lulus bersyarat* sehingga dibaiki
+   - [x] Ia kegagalan gate kritikal — keputusan dihadkan kepada *Lulus bersyarat* sehingga dibaiki
    - [ ] Hanya markah kriteria B (Keselamatan & kawalan akses) dikurangkan; keputusan kekal lulus penuh kerana jumlah masih ≥ 60
    - [ ] Pasangan terus gagal kursus tanpa peluang membaiki
    > Terdapat 5 gate kritikal (cth pemohon tidak boleh melihat rekod orang lain, `.env` tidak dalam Git). Sijil tamat kursus memerlukan tiada kegagalan gate kritikal yang tidak dibaiki. Pilihan "hanya markah kriteria B dikurangkan" salah kerana gate kritikal menghadkan keputusan tanpa mengira jumlah markah.
@@ -483,7 +483,7 @@ Peserta yang tidak memenuhi kriteria 2–5 tetapi hadir ≥ 80 % menerima **siji
 
 ## 🧠 Semakan Kendiri
 
-**1. Kenapa dashboard memisahkan kad KPI (render pelayan) dan carta (endpoint JSON)?**
+**1. Kenapa dashboard memisahkan kad KPI (render di server) dan carta (endpoint JSON)?**
 <details><summary>Jawapan</summary>
 
 Kad KPI muncul serta-merta dan berfungsi tanpa JavaScript, serta mudah diuji dengan `FeatureTestTrait`. Carta memerlukan JavaScript; endpoint JSON memisahkan data daripada persembahan dan boleh digunakan semula. Kedua-duanya memanggil `StatisticsService::dashboard()` jadi nombor datang dari cache yang sama.
@@ -504,7 +504,7 @@ Jika dikosongkan sebelum commit, permintaan lain boleh membina semula cache dala
 **4. Berikan satu kelebihan dan satu kelemahan strategi "TTL + delete semasa tulis" berbanding "TTL sahaja".**
 <details><summary>Jawapan</summary>
 
-Kelebihan: dashboard segar serta-merta selepas perubahan status (tiada kekeliruan "saya dah lulus tapi tak berubah"). Kelemahan: pembangun mesti ingat setiap laluan tulis — terlepas satu (cth kaedah cipta) menyebabkan data basi senyap sehingga TTL tamat. Mitigasi: satu pintu perubahan status (`transition()`), pemalar `CACHE_KEY`, dan ujian automatik.
+Kelebihan: dashboard segar serta-merta selepas perubahan status (tiada kekeliruan "saya dah lulus tapi tak berubah"). Kelemahan: pembangun mesti ingat setiap path tulis — terlepas satu (cth kaedah cipta) menyebabkan data basi senyap sehingga TTL tamat. Mitigasi: satu pintu perubahan status (`transition()`), pemalar `CACHE_KEY`, dan ujian automatik.
 </details>
 
 **5. Semasa UAT, anda jumpa pepijat. Senaraikan 5 langkah kitaran pembetulan dan terangkan kenapa langkah 2 tidak boleh dilangkau.**
@@ -523,17 +523,17 @@ Tahniah — anda telah membina sistem 4 modul dari keperluan hingga demo. Sistem
 
 | # | Langkah | Arahan / nota |
 |---|---------|---------------|
-| 1 | Pelayan PHP 8.2+ dengan `intl`, `mbstring`, `mysqlnd`, `gd`, `zip`, `xml`, `curl` | `php -m` |
-| 2 | *Document root* menghala ke **`public/`** sahaja | Bukan akar projek — jika tidak, `.env` & `writable/` boleh dicapai dari web |
-| 3 | Pasang kebergantungan tanpa pakej dev | `composer install --no-dev --optimize-autoloader` |
+| 1 | Server PHP 8.2+ dengan `intl`, `mbstring`, `mysqlnd`, `gd`, `zip`, `xml`, `curl` | `php -m` |
+| 2 | Document root menghala ke **`public/`** sahaja | Bukan akar projek — jika tidak, `.env` & `writable/` boleh dicapai dari web |
+| 3 | Pasang dependency tanpa package dev | `composer install --no-dev --optimize-autoloader` |
 | 4 | `.env` staging (tidak dalam Git) | `CI_ENVIRONMENT = production` · `app.baseURL` · `database.default.*` · `php spark key:generate` |
 | 5 | Migration | `php spark migrate --all` |
 | 6 | Data rujukan sahaja | Seed jabatan/zon/slot; **jangan** jalankan `UserSeeder` sintetik (`Latihan@2026`) di staging — cipta akaun sebenar melalui proses rasmi |
-| 7 | Kebenaran folder | `writable/` boleh ditulis oleh pengguna pelayan web; `public/` baca sahaja |
+| 7 | Kebenaran folder | `writable/` boleh ditulis oleh pengguna web server; `public/` baca sahaja |
 | 8 | Optimumkan | `php spark optimize` (CI 4.5+: cache konfigurasi & lokasi fail) |
 | 9 | HTTPS | `app.forceGlobalSecureRequests = true`; sijil TLS daripada pasukan infrastruktur |
-| 10 | Tugasan berjadual | cron harian: `php spark pas:expire` (pelayan Windows: Task Scheduler / `schtasks /sc daily`) |
-| 11 | Cache | Pelayan tunggal: `file` memadai. Berbilang pelayan: tukar ke Redis/Memcached supaya `cache()->delete()` berkuat kuasa di semua pelayan |
+| 10 | Tugasan berjadual | cron harian: `php spark pas:expire` (server Windows: Task Scheduler / `schtasks /sc daily`) |
+| 11 | Cache | Server tunggal: `file` memadai. Berbilang server: tukar ke Redis/Memcached supaya `cache()->delete()` berkuat kuasa di semua server |
 | 12 | Log & sandaran | Putaran `writable/logs/`; sandaran DB harian + ujian pemulihan |
 | 13 | Semakan keselamatan | Jalankan semula K1–K10; `composer audit`; ikut prosedur penilaian keselamatan ICT jabatan sebelum pengeluaran |
 
@@ -549,6 +549,6 @@ Tahniah — anda telah membina sistem 4 modul dari keperluan hingga demo. Sistem
 
 1. **Keperluan → AC → ujian** sebelum kod.
 2. **Satu pintu** untuk perubahan status (service + enum + `status_logs`).
-3. **Pelayan** yang menguatkuasa akses — bukan butang yang disembunyikan.
+3. **Server** yang menguatkuasa akses — bukan butang yang disembunyikan.
 4. **Ujian gagal dahulu** untuk setiap pepijat.
 5. **Faham dahulu, terima kemudian** — termasuk cadangan AI.

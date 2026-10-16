@@ -37,7 +37,7 @@ Di akhir hari ini, peserta boleh:
 
 ## 🧭 Kenapa hari ini penting
 
-Pepijat serentak (*race condition*) ialah jenis pepijat yang **paling mahal**: ia tidak muncul semasa ujian seorang diri, hanya muncul semasa kemuncak penggunaan (hari pertama pendaftaran slot, jam 8 pagi), dan hasilnya data rosak yang sukar dikesan — dua pegawai OKU diberi slot sama, kedua-duanya ada surat kelulusan.
+Pepijat serentak (race condition) ialah jenis pepijat yang **paling mahal**: ia tidak muncul semasa ujian seorang diri, hanya muncul semasa kemuncak penggunaan (hari pertama pendaftaran slot, jam 8 pagi), dan hasilnya data rosak yang sukar dikesan — dua pegawai OKU diberi slot sama, kedua-duanya ada surat kelulusan.
 
 | Tanpa hari ini | Dengan hari ini |
 |----------------|-----------------|
@@ -99,7 +99,7 @@ public function hasOverlap(int $slotId, string $start, string $end, ?int $exclud
 | Soalan reka bentuk | Jawapan |
 |--------------------|---------|
 | Kenapa `whereIn('status', active())`? | Tempahan `rejected`/`cancelled`/`expired` tidak lagi menduduki slot |
-| Kenapa Query Builder, bukan `query("… '$start' …")`? | Nilai diikat (*escaped*) automatik — tiada SQL injection (SPEC §9) |
+| Kenapa Query Builder, bukan `query("… '$start' …")`? | Nilai diikat (escaped) automatik — tiada SQL injection (SPEC §9) |
 | Index mana digunakan? | `INDEX(slot_id, start_date, end_date)` dari migration Hari 4 — `slot_id` sama, julat pada `start_date` |
 
 **Slot kosong** = slot aktif yang **tiada** dalam senarai slot sibuk. Subquery dalam `whereNotIn`:
@@ -141,7 +141,7 @@ WHERE parking_slots.is_active = 1
 ORDER BY parking_zones.code, parking_slots.slot_no
 ```
 
-Paparan `/tlk/tempahan/ketersediaan` ialah borang **GET** (penapis dalam URL → boleh ditanda buku & dikongsi). Controller mengesahkan tarikh dengan validator biasa sebelum memanggil service. Fail penuh: [`templates/kod/SlotAvailabilityService.php.txt`](../templates/kod/SlotAvailabilityService.php.txt).
+Paparan `/tlk/tempahan/ketersediaan` ialah borang **GET** (filter dalam URL → boleh ditanda buku & dikongsi). Controller mengesahkan tarikh dengan validator biasa sebelum memanggil service. Fail penuh: [`templates/kod/SlotAvailabilityService.php.txt`](../templates/kod/SlotAvailabilityService.php.txt).
 
 > 💡 **Tip:** Paparan slot kosong ialah **maklumat**, bukan jaminan. Antara pemohon melihat "A-02 kosong" dan menekan "Hantar", orang lain mungkin menempahnya. Itulah sebabnya S2 menyemak semula **dalam transaksi**.
 
@@ -286,11 +286,11 @@ private function lockRow(string $table, int $id, string $columns = 'id'): ?objec
 | `parking_slots` (slot) | BR-TLK-01 — dua pemohon, slot **sama** | Dua tempahan bertindih |
 | `reference_sequences` | Nombor rujukan unik (Hari 5) | `Duplicate entry` |
 
-**Transaksi bersarang CI4.** `ReferenceNumberService::next()` memanggil `transBegin()` sendiri. Kerana sambungan sama sudah dalam transaksi, CI4 hanya menambah kedalaman (*depth*) — `transCommit()` dalaman tidak commit sebenar; hanya transaksi luar yang commit/rollback. Hasilnya: jika tempahan gagal, nombor rujukan **tidak hilang** (tiada jurang `0005 → 0007`). Syarat: kedua-dua service guna sambungan **sama** — `db_connect()` (dikongsi) dalam `Config\Services`. **Deadlock (1213) dalam transaksi luar:** `next()` **tidak** cuba semula — InnoDB telah me-rollback semua kerja `BookingService`; ralat dilontar kepada pemanggil. `next()` hanya cuba semula apabila ia memiliki transaksi sendiri (`transDepth === 0`).
+**Transaksi bersarang CI4.** `ReferenceNumberService::next()` memanggil `transBegin()` sendiri. Kerana connection sama sudah dalam transaksi, CI4 hanya menambah kedalaman (depth) — `transCommit()` dalaman tidak commit sebenar; hanya transaksi luar yang commit/rollback. Hasilnya: jika tempahan gagal, nombor rujukan **tidak hilang** (tiada jurang `0005 → 0007`). Syarat: kedua-dua service guna connection **sama** — `db_connect()` (dikongsi) dalam `Config\Services`. **Deadlock (1213) dalam transaksi luar:** `next()` **tidak** cuba semula — InnoDB telah me-rollback semua kerja `BookingService`; ralat dilontar kepada pemanggil. `next()` hanya cuba semula apabila ia memiliki transaksi sendiri (`transDepth === 0`).
 
-> ⚠️ **Kesilapan lazim:** `SELECT … FOR UPDATE` **di luar** transaksi. Dalam mod *autocommit*, kunci dilepaskan serta-merta selepas SELECT — tiada perlindungan langsung. Kunci hanya bermakna antara `transBegin()` dan `transCommit()`.
+> ⚠️ **Kesilapan lazim:** `SELECT … FOR UPDATE` **di luar** transaksi. Dalam mod autocommit, kunci dilepaskan serta-merta selepas SELECT — tiada perlindungan langsung. Kunci hanya bermakna antara `transBegin()` dan `transCommit()`.
 
-> ⚠️ **Kesilapan lazim:** Menangkap `DomainException` di dalam `try` Service dan meneruskan. Setiap `throw` mesti sampai ke `catch (Throwable)` yang memanggil `transRollback()` — jika tidak, transaksi terbiar terbuka dan kunci dipegang sehingga sambungan tamat.
+> ⚠️ **Kesilapan lazim:** Menangkap `DomainException` di dalam `try` Service dan meneruskan. Setiap `throw` mesti sampai ke `catch (Throwable)` yang memanggil `transRollback()` — jika tidak, transaksi terbiar terbuka dan kunci dipegang sehingga connection tamat.
 
 ### 2.3 Peralihan status melalui satu pintu
 
@@ -388,11 +388,11 @@ public function approve(int $id): RedirectResponse
 }
 ```
 
-Laluan `tlk/keputusan` dilindungi `permission:tlk.decide` (pelulus & admin). Tiada `if ($user->inGroup('approver'))` dalam controller — filter sudah memastikannya.
+Route `tlk/keputusan` dilindungi `permission:tlk.decide` (pelulus & admin). Tiada `if ($user->inGroup('approver'))` dalam controller — filter sudah memastikannya.
 
 ### 🎯 Kuiz S2
 
-1. Apakah kesan kod berikut dalam mod *autocommit* (tiada `transBegin()`)?
+1. Apakah kesan kod berikut dalam mod autocommit (tiada `transBegin()`)?
    ```php
    $slot = $this->db->query(
        'SELECT id FROM parking_slots WHERE id = ? FOR UPDATE',
@@ -402,7 +402,7 @@ Laluan `tlk/keputusan` dilindungi `permission:tlk.decide` (pelulus & admin). Tia
        $this->bookings->insert($data);
    }
    ```
-   - [ ] Baris slot kekal dikunci sehingga `insert()` selesai kerana MySQL memegang kunci `FOR UPDATE` sehingga query seterusnya dalam sambungan yang sama, jadi ia selamat
+   - [ ] Baris slot kekal dikunci sehingga `insert()` selesai kerana MySQL memegang kunci `FOR UPDATE` sehingga query seterusnya dalam connection yang sama, jadi ia selamat
    - [ ] Query gagal kerana `FOR UPDATE` memerlukan Query Builder
    - [ ] Seluruh jadual `slot_bookings` dikunci
    - [x] Kunci dilepaskan serta-merta selepas SELECT — tiada perlindungan; dua request serentak masih boleh menghasilkan tempahan bertindih
@@ -425,7 +425,7 @@ Laluan `tlk/keputusan` dilindungi `permission:tlk.decide` (pelulus & admin). Tia
 |-------|-------|-----|---------|
 | Unit | `BookingStatusTest` (Hari 5) | ❌ | Enum & Entity |
 | Integrasi service | `BookingServiceTest` | ✅ MySQL ujian | BR-TLK-01/03/04, peralihan, log |
-| Fungsian HTTP | `DecisionAccessTest` | ✅ | Laluan + filter + controller + service hujung-ke-hujung |
+| Fungsian HTTP | `DecisionAccessTest` | ✅ | Route + filter + controller + service hujung-ke-hujung |
 
 ### 3.2 Pangkalan data ujian
 
@@ -556,8 +556,8 @@ CSRF dihidupkan secara global — dalam `setUp()` ujian fungsian kita **menyahak
    - [ ] Butang Lulus disembunyikan daripada `applicant` dalam view `tlk/booking/show.php`, jadi pemohon tidak dapat meluluskan tempahan dari UI
    - [ ] `applicant` boleh meluluskan tempahan sendiri
    - [ ] CSRF menyekat semua POST dalam ujian
-   - [x] Pelayan menolak POST terus daripada `applicant` (filter/Service); status kekal `pending`
-   > Ujian fungsian HTTP melalui router dan filter sebenar. Menyemak kesan dalam DB membuktikan kawalan akses di pelayan, bukan sekadar UI (lebih kukuh dengan `assertRedirect()` juga).
+   - [x] Server menolak POST terus daripada `applicant` (filter/Service); status kekal `pending`
+   > Ujian fungsian HTTP melalui router dan filter sebenar. Menyemak kesan dalam DB membuktikan kawalan akses di server, bukan sekadar UI (lebih kukuh dengan `assertRedirect()` juga).
 
 ---
 
@@ -597,7 +597,7 @@ Badge:
 <span class="badge text-bg-<?= esc($b->statusBadge(), 'attr') ?>"><?= esc($b->statusLabel()) ?></span>
 ```
 
-> ⚠️ **Kesilapan lazim:** Dialog pengesahan dianggap kawalan keselamatan. Ia hanya **UX**. Penyerang menghantar POST terus tanpa JavaScript — pelayan (filter + `canTransitionTo()`) yang menjaga.
+> ⚠️ **Kesilapan lazim:** Dialog pengesahan dianggap kawalan keselamatan. Ia hanya **UX**. Penyerang menghantar POST terus tanpa JavaScript — server (filter + `canTransitionTo()`) yang menjaga.
 
 Layout akhir: [`templates/kod/layout-main.php.txt`](../templates/kod/layout-main.php.txt).
 
@@ -606,8 +606,8 @@ Layout akhir: [`templates/kod/layout-main.php.txt`](../templates/kod/layout-main
 | DoD (KOLABORASI §2) | Bukti M1 |
 |---------------------|----------|
 | AC URS lulus diuji manual | `docs/ujian-manual-tlk.md` — 16/16 ✅ (termasuk TM-TLK-16) |
-| Validasi di pelayan | `BookingRules` + `BookingService::assertValidPeriod()` |
-| Akses dikawal di pelayan | `session`, `permission:tlk.apply`, `permission:tlk.decide`, `group:admin` + `isOwnedBy()` |
+| Validasi di server | `BookingRules` + `BookingService::assertValidPeriod()` |
+| Akses dikawal di server | `session`, `permission:tlk.apply`, `permission:tlk.decide`, `group:admin` + `isOwnedBy()` |
 | Peralihan status dilog | `status_logs` — sejarah dipapar |
 | Ujian PHPUnit lulus | `composer test -- tests/tlk` hijau |
 | Tiada rahsia dalam commit | `git ls-files | grep .env` kosong |
@@ -627,24 +627,24 @@ Layout akhir: [`templates/kod/layout-main.php.txt`](../templates/kod/layout-main
 
 2. Dialog `data-confirm` ditambah pada borang Lulus/Tolak/Batal. Apakah peranannya dari segi keselamatan?
    - [ ] Ia menghalang penyerang menghantar POST tanpa pengesahan
-   - [ ] Ia menggantikan keperluan CSRF kerana pengguna mesti mengesahkan tindakan secara manual sebelum borang dihantar ke pelayan
-   - [x] Tiada — ia hanya UX untuk elak klik tidak sengaja; pelayan (filter + `canTransitionTo()`) yang menjaga
+   - [ ] Ia menggantikan keperluan CSRF kerana pengguna mesti mengesahkan tindakan secara manual sebelum borang dihantar ke server
+   - [x] Tiada — ia hanya UX untuk elak klik tidak sengaja; server (filter + `canTransitionTo()`) yang menjaga
    - [ ] Ia menggantikan semakan `permission:tlk.decide`
-   > Penyerang boleh menghantar POST terus tanpa JavaScript. Kawalan sebenar ialah filter laluan, semakan pemilikan dan enum di Service.
+   > Penyerang boleh menghantar POST terus tanpa JavaScript. Kawalan sebenar ialah filter route, semakan pemilikan dan enum di Service.
 
 ---
 
 ## 📦 Hasil Hari Ini
 
-- [ ] `app/Services/SlotAvailabilityService.php` + laluan & view `tlk/tempahan/ketersediaan`
+- [ ] `app/Services/SlotAvailabilityService.php` + route & view `tlk/tempahan/ketersediaan`
 - [ ] `app/Services/BookingService.php` versi 2 — transaksi, `FOR UPDATE`, BR-TLK-01/03/04/05, `approve`/`reject`/`cancel`
 - [ ] `app/Models/StatusLogModel.php` — `record()` & `history()`
-- [ ] `Tlk/DecisionController` + view `tlk/decision/index.php`; laluan `tlk/keputusan` (`permission:tlk.decide`)
+- [ ] `Tlk/DecisionController` + view `tlk/decision/index.php`; route `tlk/keputusan` (`permission:tlk.decide`)
 - [ ] Butiran tempahan dengan sejarah status + butang Batal (tempahan `approved`)
 - [ ] `tests/tlk/BookingServiceTest.php` + `DecisionAccessTest.php` — hijau
 - [ ] UI: badge, flash, `data-confirm`, pagination Bootstrap
 - [ ] `docs/ujian-manual-tlk.md` dikemas kini — TM-TLK-16 ✅
-- [ ] Cabang `feat/tlk-ketersediaan`, `feat/tlk-keputusan`, `feat/tlk-ujian` di-merge; tag `m1-siap`
+- [ ] Branch `feat/tlk-ketersediaan`, `feat/tlk-keputusan`, `feat/tlk-ujian` di-merge; tag `m1-siap`
 
 ---
 
@@ -657,13 +657,13 @@ Layout akhir: [`templates/kod/layout-main.php.txt`](../templates/kod/layout-main
    <details><summary>Jawapan</summary>Slot ialah sumber yang direbut. Mengunci satu baris slot hanya menyerialkan permintaan untuk slot yang <b>sama</b>; tempahan slot lain berjalan selari. Mengunci seluruh jadual (<code>LOCK TABLES</code>) menyerialkan semua orang, dan dalam MySQL ia melakukan <i>commit</i> tersirat — tidak serasi dengan corak transaksi kita. Kita juga tidak boleh mengunci baris tempahan "yang belum wujud".</details>
 
 3. `ReferenceNumberService::next()` berjaya (nombor 0007), kemudian `insert` tempahan gagal. Adakah `TLK-2026-0007` hilang? Kenapa?
-   <details><summary>Jawapan</summary>Tidak. <code>next()</code> berjalan dalam transaksi <b>bersarang</b> pada sambungan sama; commit dalamannya tidak muktamad. Apabila <code>create()</code> memanggil <code>transRollback()</code>, kemas kini <code>last_number</code> turut dibatalkan — tempahan seterusnya mendapat 0007.</details>
+   <details><summary>Jawapan</summary>Tidak. <code>next()</code> berjalan dalam transaksi <b>bersarang</b> pada connection sama; commit dalamannya tidak muktamad. Apabila <code>create()</code> memanggil <code>transRollback()</code>, kemas kini <code>last_number</code> turut dibatalkan — tempahan seterusnya mendapat 0007.</details>
 
 4. Pemohon cuba membatalkan tempahan yang masih `pending`. Apa berlaku dan di baris mana ia dihalang?
    <details><summary>Jawapan</summary><code>DomainException</code> "Status "Menunggu" tidak boleh ditukar kepada "Dibatalkan"." — dihalang dalam <code>transition()</code> oleh <code>BookingStatus::Pending->canTransitionTo(Cancelled) === false</code>. Tiada kemas kini status dan tiada baris <code>status_logs</code> ditulis (ujian <code>testFailedTransitionDoesNotWriteLog</code>).</details>
 
 5. Kenapa ujian menggunakan MySQL `kkm_latihan_test` dan bukan SQLite `:memory:` yang lebih pantas?
-   <details><summary>Jawapan</summary>SQLite tidak menyokong <code>SELECT … FOR UPDATE</code>, jadi kod transaksi sebenar tidak boleh diuji. Ujian mesti menggunakan enjin sama dengan produksi untuk membuktikan BR-TLK-05. Pangkalan data berasingan kerana <code>DatabaseTestTrait</code> memadam semua jadual.</details>
+   <details><summary>Jawapan</summary>SQLite tidak menyokong <code>SELECT … FOR UPDATE</code>, jadi kod transaksi sebenar tidak boleh diuji. Ujian mesti menggunakan enjin sama dengan produksi untuk membuktikan BR-TLK-05. Database berasingan kerana <code>DatabaseTestTrait</code> memadam semua jadual.</details>
 
 ---
 

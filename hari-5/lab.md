@@ -1,10 +1,10 @@
 # Lab Hari 5 — Modul TLK (Bahagian 1)
 
-[⬅️ README Hari 5](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🧩 Templat kod](../templates/kod/)
+[⬅️ README Hari 5](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🧩 Template kod](../templates/kod/)
 
-> **Peraturan lab:** navigator membaca langkah & SPEC, driver menaip. **Cuba manual dahulu** — baca mesej ralat penuh (Whoops page menunjukkan fail & baris). Selepas 10 minit buntu: tanya jurulatih atau guna AI untuk *menerangkan* ralat. Templat `templates/kod/*.php.txt` untuk **menyemak** selepas anda cuba.
+> **Peraturan lab:** navigator membaca langkah & SPEC, driver menaip. **Cuba manual dahulu** — baca mesej ralat penuh (Whoops page menunjukkan fail & baris). Selepas 10 minit buntu: tanya jurulatih atau guna AI untuk *menerangkan* ralat. Template `templates/kod/*.php.txt` untuk **menyemak** selepas anda cuba.
 
-| Lab | Sesi | Cabang | Hasil |
+| Lab | Sesi | Branch | Hasil |
 |-----|------|--------|-------|
 | 5.1 | S1 09:00–10:30 | `feat/tlk-model` | Enum, Entity, 5 Model, ujian unit |
 | 5.2 | S2 10:45–12:30 | `feat/tlk-crud` | CRUD slot admin + senarai tempahan berpagination |
@@ -536,7 +536,7 @@ Membina `Admin/SlotController` (senarai, tambah, ubah, padam lembut) dan `Tlk/Bo
    <?= $this->endSection() ?>
    ```
 
-   > `url_to('tlk.show', …)` akan ralat sehingga laluan `tlk.show` ditambah dalam Lab 5.3. Sementara itu, gantikan dengan `#` **atau** teruskan ke Lab 5.3 langkah 1 dahulu.
+   > `url_to('tlk.show', …)` akan ralat sehingga route `tlk.show` ditambah dalam Lab 5.3. Sementara itu, gantikan dengan `#` **atau** teruskan ke Lab 5.3 langkah 1 dahulu.
 
 7. Uji:
 
@@ -561,27 +561,27 @@ Membina `Admin/SlotController` (senarai, tambah, ubah, padam lembut) dan `Tlk/Bo
 | `404 Controller or its method is not found: \App\Controllers\Admin\SlotController::index` | Namespace/folder salah | Fail `app/Controllers/Admin/SlotController.php`, `namespace App\Controllers\Admin;` |
 | `Call to undefined function form_dropdown()` | Helper `form` tidak dimuat | `BaseController::initController()` → `$this->helpers = ['form', 'url'];` |
 | `The action you requested is not allowed.` | `csrf_field()` tertinggal dalam borang | Tambah dalam setiap `<form method="post">` |
-| `Too few arguments to function … edit(), 0 passed` | Laluan tanpa `/$1` | `'SlotController::edit/$1'` |
+| `Too few arguments to function … edit(), 0 passed` | Route tanpa `/$1` | `'SlotController::edit/$1'` |
 | Kotak "Slot aktif" tidak boleh dinyahtanda | Checkbox tidak dihantar bila tidak ditanda | `is_active = getPost('is_active') === '1' ? 1 : 0` |
 | `Unknown column 'deleted_at'` pada model lain | `$useSoftDeletes = true` disalin ke Model yang jadualnya tiada `deleted_at` | Hanya `ParkingSlotModel` |
 
 ### ⭐ Cabaran tambahan
 - CRUD zon (`Admin/ZoneController`) — halang padam zon yang masih ada slot (FK `RESTRICT` akan membaling ralat DB; tangkap dan papar mesej BM).
-- Penapis kategori pada `/admin/slot?category=oku`.
+- Filter kategori pada `/admin/slot?category=oku`.
 
 ---
 
 ## Lab 5.3 — Borang Tempahan, Validasi & `TLK-2026-0001` (S3)
 
 ### 🎯 Objektif
-Membina borang tempahan dengan validasi pelayan (termasuk BR-TLK-03), `ReferenceNumberService`, `BookingService` v1, dan menjana `TLK-2026-0001`.
+Membina borang tempahan dengan validasi server (termasuk BR-TLK-03), `ReferenceNumberService`, `BookingService` v1, dan menjana `TLK-2026-0001`.
 
 ### Prasyarat
 - Lab 5.2 di-merge; `git switch -c feat/tlk-borang-tempahan`
 
 ### Langkah
 
-1. Tambah laluan dalam kumpulan `tlk/tempahan`:
+1. Tambah route dalam kumpulan `tlk/tempahan`:
 
    ```php
    $routes->get('new', 'BookingController::new', ['as' => 'tlk.new', 'filter' => 'permission:tlk.apply']);
@@ -589,7 +589,7 @@ Membina borang tempahan dengan validasi pelayan (termasuk BR-TLK-03), `Reference
    $routes->get('(:num)', 'BookingController::show/$1', ['as' => 'tlk.show']);
    ```
 
-   > Filter `permission:tlk.apply` pada laluan **ditambah** kepada filter `session` kumpulan. Pelulus (tiada `tlk.apply`) tidak boleh memohon.
+   > Filter `permission:tlk.apply` pada route **ditambah** kepada filter `session` kumpulan. Pelulus (tiada `tlk.apply`) tidak boleh memohon.
 
 2. `app/Validation/BookingRules.php` — README §3.2. Kaedah `parse()`:
 
@@ -715,7 +715,7 @@ Membina borang tempahan dengan validasi pelayan (termasuk BR-TLK-03), `Reference
    }
    ```
 
-6. `BookingController` — tambah `new()`, `create()` (README §3.2 + §3.4, termasuk tatasusunan `$messages` BM untuk setiap peraturan) dan `show()`:
+6. `BookingController` — tambah `new()`, `create()` (README §3.2 + §3.4, termasuk array `$messages` BM untuk setiap peraturan) dan `show()`:
 
    ```php
    public function new(): string
@@ -882,7 +882,7 @@ Melaksanakan senarai ujian manual TLK secara sistematik dan merekod pepijat deng
 
 ### Prasyarat
 - Lab 5.1–5.3 di-merge ke `main`; `php spark db:seed DatabaseSeeder` (data asas lengkap)
-- Dua pelayar (atau satu biasa + satu *incognito*)
+- Dua pelayar (atau satu biasa + satu incognito)
 
 ### Langkah
 
@@ -904,12 +904,12 @@ Melaksanakan senarai ujian manual TLK secara sistematik dan merekod pepijat deng
    | TM-TLK-12 | pemohon1 | DevTools: tukar `value` pilihan kenderaan kepada ID kenderaan pemohon2 (`3`), hantar | "Kenderaan … bukan milik anda." | | |
    | TM-TLK-13 | pemohon2 | Buka `/tlk/tempahan/1` (milik pemohon1) | 404 | | |
    | TM-TLK-14 | pemohon1 | DevTools: padam input `csrf_test_name`, hantar | "The action you requested is not allowed." | | |
-   | TM-TLK-15 | pemohon1 | `/tlk/tempahan?status=xyz` | Penapis diabaikan; semua tempahan sendiri dipapar | | |
+   | TM-TLK-15 | pemohon1 | `/tlk/tempahan?status=xyz` | Filter diabaikan; semua tempahan sendiri dipapar | | |
    | TM-TLK-16 | pemohon1 & 2 | Dua tempahan slot A-01, tarikh bertindih | **Dijangka gagal hari ini** (BR-TLK-01 esok) | | |
 
 2. Untuk setiap ❌, tulis laporan pepijat (format README §4.3) di bahagian bawah fail yang sama.
 
-3. Baiki pepijat **Tinggi/Sederhana** yang sempat (satu cabang `fix/…` setiap pepijat; commit `FIX: …`). Pepijat TM-TLK-16 **jangan** dibaiki hari ini.
+3. Baiki pepijat **Tinggi/Sederhana** yang sempat (satu branch `fix/…` setiap pepijat; commit `FIX: …`). Pepijat TM-TLK-16 **jangan** dibaiki hari ini.
 
 4. Wrap-up: commit `docs/ujian-manual-tlk.md` dengan `TLK: rekod ujian manual Hari 5`.
 
@@ -922,7 +922,7 @@ Melaksanakan senarai ujian manual TLK secara sistematik dan merekod pepijat deng
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| Tidak dapat log masuk dua pengguna serentak | Sesi dikongsi dalam satu pelayar | Guna tetingkap *incognito* atau pelayar kedua |
+| Tidak dapat log masuk dua pengguna serentak | Sesi dikongsi dalam satu pelayar | Guna tetingkap incognito atau pelayar kedua |
 | TM-TLK-12 berjaya (tidak sepatutnya) | `BookingService` tidak menyemak pemilikan kenderaan | Semak langkah 4 Lab 5.3 |
 | TM-TLK-13 memaparkan tempahan | `show()` tiada semakan `isOwnedBy()` | Tambah semakan → `PageNotFoundException` |
 

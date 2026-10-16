@@ -4,7 +4,7 @@
 
 > **Trek pilihan.** Lab teras kekal dengan merge setempat (`git merge --no-ff`) dan lulus tanpa GitLab. Trek ini meletakkan repo pasangan di **GitLab KKM** (self-managed) dan menggantikan merge setempat dengan **merge request (MR)** yang disemak rakan pasangan.
 
-Aliran Git setempat (cabang, commit, merge, konflik) diterangkan dalam [Nota 12](../nota/12-git-aliran-kerja.md). Halaman ini hanya menambah lapisan GitLab di atasnya.
+Aliran Git setempat (branch, commit, merge, konflik) diterangkan dalam [Nota 12](../nota/12-git-aliran-kerja.md). Halaman ini hanya menambah lapisan GitLab di atasnya.
 
 ---
 
@@ -83,13 +83,13 @@ Berikan URL projek kepada **jurulatih**. Jurulatih merekodnya sebagai butiran la
 
 ## 6. Lindungi `main` & merge request pertama
 
-Projek GitLab baharu melindungi cabang lalai secara automatik: tiada force push, dan hanya Maintainer boleh push dan merge. Semak di *Settings* → *Repository* → *Protected branches* (versi baharu: *Branch rules*): `main` → *Allowed to merge* = Maintainers, *Allowed to push and merge* = Maintainers, *Allowed to force push* = mati.
+Projek GitLab baharu melindungi branch lalai secara automatik: tiada force push, dan hanya Maintainer boleh push dan merge. Semak di *Settings* → *Repository* → *Protected branches* (versi baharu: *Branch rules*): `main` → *Allowed to merge* = Maintainers, *Allowed to push and merge* = Maintainers, *Allowed to force push* = mati.
 
 Peraturan pasangan: tiada push terus ke `main` selepas §5. Semua perubahan melalui MR.
 
-1. **Cabang & push:** `git switch -c setup/ahli-pasangan`, tambah nama kedua-dua ahli dalam `README.md`, commit `SETUP: ahli pasangan`, kemudian `git push -u origin setup/ahli-pasangan`. Pilihan: `git push -o merge_request.create -u origin setup/ahli-pasangan` terus membuka MR.
+1. **Branch & push:** `git switch -c setup/ahli-pasangan`, tambah nama kedua-dua ahli dalam `README.md`, commit `SETUP: ahli pasangan`, kemudian `git push -u origin setup/ahli-pasangan`. Pilihan: `git push -o merge_request.create -u origin setup/ahli-pasangan` terus membuka MR.
 2. **Buka MR:** GitLab memaparkan *Create merge request* → *Target branch*: `main` → *Reviewer*: rakan → *Create merge request*.
-3. **Rakan menyemak** tab *Changes* ikut Definition of Done ([KOLABORASI §2](../KOLABORASI.md)): AC lulus, ujian hijau, tiada `.env`/rahsia, kod boleh diterangkan. Pembetulan = commit baharu pada cabang yang sama + `git push`.
+3. **Rakan menyemak** tab *Changes* ikut Definition of Done ([KOLABORASI §2](../KOLABORASI.md)): AC lulus, ujian hijau, tiada `.env`/rahsia, kod boleh diterangkan. Pembetulan = commit baharu pada branch yang sama + `git push`.
 4. **Rakan klik** *Approve*, kemudian *Merge*. Pengarang **tidak** merge MR sendiri. Di GitLab Free, *Approve* adalah pilihan dan tidak menyekat merge; peraturan kelulusan wajib ialah ciri Premium.
 5. **Kedua-dua ahli:** `git switch main && git pull && git branch -d setup/ahli-pasangan`.
 
@@ -97,7 +97,7 @@ Pemetaan ke lab teras:
 
 | Langkah lab teras | Dengan trek GitLab |
 |-------------------|--------------------|
-| Hari 4, Lab 4.4 langkah 3: `git push -u origin main` | Cabang `setup/projek-ci4` → push → MR → rakan merge |
+| Hari 4, Lab 4.4 langkah 3: `git push -u origin main` | Branch `setup/projek-ci4` → push → MR → rakan merge |
 | `git switch main && git merge --no-ff feat/…` (Hari 4–10) | Push `feat/…` → MR → rakan merge. Kaedah merge lalai GitLab (*Merge commit*) sama dengan `--no-ff` |
 | Hari 4, Lab 4.4 ⭐: *protected branch* | Sudah dipenuhi oleh §6 |
 

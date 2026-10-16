@@ -4,7 +4,7 @@
 
 ## Objektif nota
 
-- **Menerangkan** kenapa validasi mesti berlaku di pelayan walaupun borang sudah ada semakan JavaScript/HTML5.
+- **Menerangkan** kenapa validasi mesti berlaku di server walaupun borang sudah ada semakan JavaScript/HTML5.
 - **Menulis** peraturan validasi terbina CI4 dan **membina** peraturan tersuai untuk BR-TLK-03 (tempoh ≤ 90 hari, tarikh tidak di masa lalu).
 - **Membina** borang Bootstrap yang memaparkan semula input lama (`old()`) dan mesej ralat setiap medan.
 - **Menerangkan** cara CSRF melindungi borang dan cara menghantar token melalui `fetch()`.
@@ -19,7 +19,7 @@ Semakan di pelayar (`required`, `type="date"`, JavaScript) hanya **kemudahan pen
 - menghantar request terus dengan `curl` atau Postman;
 - mengubah nilai `<select>` kepada `slot_id=9999`.
 
-Pelayan ialah **satu-satunya tempat yang anda kawal**. DoD (KOLABORASI §2) menyatakan: *"Validasi di pelayan (Model rules / Validation) — bukan JavaScript sahaja."*
+Server ialah **satu-satunya tempat yang anda kawal**. DoD (KOLABORASI §2) menyatakan: *"Validasi di server (Model rules / Validation) — bukan JavaScript sahaja."*
 
 ### Dua tempat validasi — bila guna yang mana?
 
@@ -254,9 +254,9 @@ public array $ruleSets = [
 ```
 
 - **`old('field')`** — nilai yang pengguna taip sebelum redirect. Pengguna tidak perlu menaip semula semuanya kerana satu medan salah. Sentiasa bungkus dengan `esc()`.
-- **`validation_show_error('field')`** — mesej ralat satu medan (sudah dilepaskan dalam templat lalai). Pulang string kosong jika tiada ralat, jadi sesuai untuk menambah kelas `is-invalid`.
+- **`validation_show_error('field')`** — mesej ralat satu medan (sudah dilepaskan dalam template lalai). Pulang string kosong jika tiada ralat, jadi sesuai untuk menambah kelas `is-invalid`.
 - **`validation_list_errors()`** — senarai semua ralat di atas borang (berguna untuk borang panjang).
-- `novalidate` mematikan pop-up HTML5 supaya jurulatih boleh menunjukkan validasi **pelayan** berfungsi.
+- `novalidate` mematikan pop-up HTML5 supaya jurulatih boleh menunjukkan validasi **server** berfungsi.
 - Untuk `<select>`: `<option value="<?= $v->id ?>" <?= set_select('vehicle_id', (string) $v->id) ?>>`.
 
 ---
@@ -303,7 +303,7 @@ Jika token tidak sepadan, CI4 melontar `SecurityException` — "The action you r
 
 | Kesilapan | Akibat | Betulkan |
 |-----------|--------|----------|
-| Hanya validasi JavaScript/HTML5 | Dipintas dengan DevTools/curl | `validateData()` / Model rules di pelayan |
+| Hanya validasi JavaScript/HTML5 | Dipintas dengan DevTools/curl | `validateData()` / Model rules di server |
 | `return view(...)` selepas gagal validasi (bukan redirect) | Refresh = hantar semula; URL salah | `redirect()->back()->withInput()` |
 | Lupa `withInput()` | `old()` dan ralat medan kosong | Tambah `->withInput()` |
 | Lupa `helper('form')` | `Call to undefined function old()` / `form_open()` | `helper('form')` dalam controller atau `$helpers` di `BaseController` |
@@ -332,4 +332,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Buku guna `validate()`; kursus ini guna `validateData()` (CI 4.2+) supaya data yang disemak jelas.
 
 ---
-**Digunakan pada Hari 5** — S3 (borang tempahan TLK + validasi pelayan + peraturan tersuai BR-TLK-03); **Hari 7** — S3 (borang permohonan Pas + validasi fail). Nota berkaitan: [03 · Model](./03-model-entity-dan-enum.md) · [07 · Muat naik fail](./07-muat-naik-fail-selamat.md) · [11 · Keselamatan](./11-keselamatan-aplikasi-web.md)
+**Digunakan pada Hari 5** — S3 (borang tempahan TLK + validasi server + peraturan tersuai BR-TLK-03); **Hari 7** — S3 (borang permohonan Pas + validasi fail). Nota berkaitan: [03 · Model](./03-model-entity-dan-enum.md) · [07 · Muat naik fail](./07-muat-naik-fail-selamat.md) · [11 · Keselamatan](./11-keselamatan-aplikasi-web.md)

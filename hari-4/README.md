@@ -15,9 +15,9 @@ Di akhir hari ini, peserta boleh:
 | O1 | **Menerangkan** 7 langkah kitaran request CI4 (`public/index.php` → Routing → Filter → Controller → Model → View → Response) menggunakan aplikasi berita tugasan persediaan | S1 | Penerangan lisan 3 minit + tab *Timeline* Debug Toolbar |
 | O2 | **Mencipta** projek CI4 dengan `composer create-project`, **mengkonfigur** `.env` (`CI_ENVIRONMENT`, `app.baseURL`, `database.default.*`) dan **memasang** Shield dengan `shield:setup` | S2 | `http://localhost:8080/login` memaparkan borang log masuk Shield |
 | O3 | **Membina** layout Bootstrap 5.3 `app/Views/layouts/main.php` dengan `extend()`/`section()` dan output dilepaskan `esc()` | S2 | Halaman utama selepas log masuk memaparkan nama pengguna dalam navbar |
-| O4 | **Menukar** ERD kepada 10 migration (FK, UNIQUE, INDEX) mengikut tertib kebergantungan dan **menjalankan** `php spark migrate` tanpa ralat | S3 | `php spark migrate:status` — 10 migration `App` berstatus *Migrated* |
+| O4 | **Menukar** ERD kepada 10 migration (FK, UNIQUE, INDEX) mengikut tertib dependency dan **menjalankan** `php spark migrate` tanpa ralat | S3 | `php spark migrate:status` — 10 migration `App` berstatus *Migrated* |
 | O5 | **Menulis** 5 seeder idempoten termasuk `UserSeeder` yang menetapkan Shield group dan kata laluan `Latihan@2026` | S3 | Log masuk sebagai `pelulus@latihan.test` berjaya; `auth_groups_users` ada 5 baris |
-| O6 | **Merancang** pembahagian tugas pasangan, cabang Git per ciri dan **menyatakan** Definition of Done | S4 | `docs/pelan-kerja.md` + cabang `main` ditolak dengan commit `SETUP:` |
+| O6 | **Merancang** pembahagian tugas pasangan, branch Git per ciri dan **menyatakan** Definition of Done | S4 | `docs/pelan-kerja.md` + branch `main` ditolak dengan commit `SETUP:` |
 
 ---
 
@@ -31,7 +31,7 @@ Di akhir hari ini, peserta boleh:
 | 10:45–12:30 | S2 | Persekitaran CI4 (struktur projek, `.env`) + Shield | Mencipta projek, konfigur `.env`, memasang Shield & layout Bootstrap |
 | 12:30–14:30 | — | Makan tengah hari | — |
 | 14:30–16:00 | S3 | Migration awal daripada ERD | Menukar ERD kepada migration + seeder; `php spark migrate` berjaya |
-| 16:00–17:00 | S4 | Pembahagian tugas/modul; wrap-up | Menerima tugasan modul, cabang Git & Definition of Done |
+| 16:00–17:00 | S4 | Pembahagian tugas/modul; wrap-up | Menerima tugasan modul, branch Git & Definition of Done |
 
 ---
 
@@ -42,12 +42,12 @@ Hari 4 ialah **asas konkrit** untuk enam hari seterusnya. Setiap kesilapan hari 
 | Jika hari ini… | …maka kemudian |
 |----------------|----------------|
 | `.env` di-commit ke Git | Kata laluan DB bocor ke semua orang yang boleh baca repo |
-| Nama jadual/medan tidak tepat seperti SPEC | Templat rujukan, ujian dan laporan Hari 9 tidak sepadan — anda perlu betulkan di 5 tempat |
+| Nama jadual/medan tidak tepat seperti SPEC | Template rujukan, ujian dan laporan Hari 9 tidak sepadan — anda perlu betulkan di 5 tempat |
 | FK/INDEX tertinggal dalam migration | Data yatim (tempahan tanpa slot) dan query pertindihan perlahan |
 | Seeder tidak idempoten | `db:seed` kali kedua gagal dengan `Duplicate entry` — pasangan buang masa |
 | Shield group tidak dikonfigur | Hari 5–8 tiada cara untuk menguji "pemohon tidak boleh lulus" |
 
-Selepas hari ini, **skema pangkalan data dibekukan**. Perubahan skema selepas Hari 4 = migration **baharu** (bukan mengubah migration lama).
+Selepas hari ini, **skema database dibekukan**. Perubahan skema selepas Hari 4 = migration **baharu** (bukan mengubah migration lama).
 
 ---
 
@@ -94,13 +94,13 @@ sequenceDiagram
 
 | # | Langkah | Fail dalam projek | Soalan untuk diri sendiri |
 |---|---------|-------------------|---------------------------|
-| 1 | Front controller | `public/index.php` | Kenapa *document root* mesti `public/`, bukan akar projek? |
+| 1 | Front controller | `public/index.php` | Kenapa document root mesti `public/`, bukan akar projek? |
 | 2 | Routing | `app/Config/Routes.php` | URL ini dipadan dengan method mana? (`php spark routes`) |
-| 3 | Filter *before* | `app/Config/Filters.php` | Siapa yang boleh sampai ke controller? |
+| 3 | Filter before | `app/Config/Filters.php` | Siapa yang boleh sampai ke controller? |
 | 4 | Controller | `app/Controllers/News.php` | Adakah controller ini **nipis** (terima → panggil → pulang)? |
 | 5 | Model | `app/Models/NewsModel.php` | Query ditulis dengan Query Builder (selamat dari SQL injection)? |
 | 6 | View | `app/Views/news/*.php` | Setiap `<?= … ?>` dibalut `esc()`? |
-| 7 | Response + filter *after* | — | Header apa yang ditambah? (Debug Toolbar hanya dalam `development`) |
+| 7 | Response + filter after | — | Header apa yang ditambah? (Debug Toolbar hanya dalam `development`) |
 
 **Pemetaan ke projek kita:** mulai esok, langkah 5 dipecah dua — **Service** (logik perniagaan: pertindihan, had 90 hari, transaksi) dan **Model** (akses data + validasi format). Controller tidak pernah mengandungi `if` peraturan perniagaan.
 
@@ -109,11 +109,11 @@ sequenceDiagram
 ### 🎯 Kuiz S1
 
 1. Dalam kitaran request CI4, apakah komponen yang berjalan **sebelum** controller dan menentukan sama ada pengguna boleh sampai ke controller?
-   - [x] Filters (*before*) seperti `csrf`, `session`, `permission:…`
+   - [x] Filters (before) seperti `csrf`, `session`, `permission:…`
    - [ ] View
    - [ ] Model, melalui `$validationRules` yang dijalankan sebelum controller dipanggil
    - [ ] Debug Toolbar
-   > Aliran: `public/index.php` → Router → Filters *before* → Controller → Model/Service → View → Response (filter *after*). Filters ialah pintu kawalan sebelum controller dipanggil.
+   > Aliran: `public/index.php` → Router → Filters before → Controller → Model/Service → View → Response (filter after). Filters ialah pintu kawalan sebelum controller dipanggil.
 
 2. Seorang peserta menulis semakan pertindihan slot terus dalam controller menggunakan `$db->query()`. Apakah maklum balas yang paling tepat mengikut SPEC §5?
    - [x] Pindahkan logik ke Service; controller hanya terima request → panggil service → pulang view/redirect
@@ -170,24 +170,24 @@ database.default.DBCollat = utf8mb4_unicode_ci
 
 | Kunci | Kenapa penting |
 |-------|----------------|
-| `CI_ENVIRONMENT` | `development` memaparkan ralat terperinci. **Jangan** sekali-kali di pelayan produksi — ia mendedahkan laluan fail & query |
+| `CI_ENVIRONMENT` | `development` memaparkan ralat terperinci. **Jangan** sekali-kali di server produksi — ia mendedahkan path fail & query |
 | `app.baseURL` | Digunakan oleh `site_url()`, `url_to()`, `redirect()`. Salah nilai → pautan CSS pecah / redirect ke hos lain |
 | `app.indexPage` | Kosong = tiada `index.php` dalam URL (`php spark serve` menyokong ini terus) |
 | `app.appTimezone` | CI4 menetapkan zon waktu PHP daripada nilai ini. Lalai `UTC` → antara 00:00–08:00 waktu Malaysia, "hari ini" masih semalam dan peraturan *tarikh mula bukan masa lalu* (BR-TLK-03) tersilap |
-| `database.default.*` | Sambungan kumpulan `default`. Kumpulan `tests` (Hari 6) ditetapkan berasingan |
+| `database.default.*` | Connection kumpulan `default`. Kumpulan `tests` (Hari 6) ditetapkan berasingan |
 
 > ⚠️ **Kesilapan lazim:** Menyunting `app/Config/Database.php` dengan kata laluan sebenar. Fail itu **di-commit**. Kata laluan hanya dalam `.env`.
 
 ### 2.3 CodeIgniter Shield — apa yang kita dapat
 
-Shield ialah pakej rasmi pengesahan & kebenaran CI4. Kita **tidak** menulis log masuk sendiri.
+Shield ialah package rasmi pengesahan & kebenaran CI4. Kita **tidak** menulis log masuk sendiri.
 
 | Keperluan | Disediakan Shield | Kita tambah |
 |-----------|-------------------|-------------|
 | Log masuk / keluar, hash kata laluan | ✅ `auth()->attempt()`, `password_hash` | — |
 | Jadual pengguna | ✅ `users`, `auth_identities` (e-mel + hash), `auth_logins`… | Medan profil: `full_name`, `staff_no`, `department_id`, `phone` |
 | Peranan & kebenaran | ✅ `Config/AuthGroups.php` + `auth_groups_users` | 4 group + 8 permission SPEC §4 |
-| Filter laluan | ✅ `session`, `group:…`, `permission:…` | Dipasang pada `Routes.php` |
+| Filter route | ✅ `session`, `group:…`, `permission:…` | Dipasang pada `Routes.php` |
 
 **Apa yang `php spark shield:setup` ubah** (baca output — jangan klik "y" membuta tuli):
 
@@ -198,7 +198,7 @@ Shield ialah pakej rasmi pengesahan & kebenaran CI4. Kita **tidak** menulis log 
 | `app/Config/Routes.php` | `service('auth')->routes($routes);` → `/login`, `/logout`, `/register` (kita tutup `/register` dengan `Auth::$allowRegistration = false` — akaun dicipta oleh admin: `php spark shield:user create … -g applicant`) |
 | `app/Config/Security.php` | `$csrfProtection = 'session'` |
 | `app/Config/Email.php` | Menanya `fromEmail`/`fromName` (isi `noreply@latihan.test`, `Sistem TLK`) |
-| Pangkalan data | Menawarkan `spark migrate --all` → cipta jadual Shield |
+| Database | Menawarkan `spark migrate --all` → cipta jadual Shield |
 
 **Medan tambahan pada `users`** — tiga langkah (jangan ubah migration Shield dalam `vendor/`!):
 
@@ -280,7 +280,7 @@ flowchart LR
 
 Layout memasukkan partial `partials/flash.php` yang memaparkan mesej `session('success')` / `session('message')` (hijau) dan `session('error')` (merah) sekali selepas redirect. Modul TLK guna `success`; modul Pas (Hari 7–8) guna `message`. **Ralat validasi per medan tidak** diletak di sini — view borang memaparkannya dengan `validation_show_error('medan')` (atau `validation_list_errors()` untuk ringkasan), yang dibawa secara automatik oleh `redirect()->back()->withInput()`.
 
-Dalam layout, navbar memaparkan menu **ikut kebenaran** (`$user->can('tlk.decide')`, `$user->inGroup('admin')`). Ingat: menyembunyikan menu hanya **kemudahan UI**. Kawalan sebenar ialah filter laluan di pelayan.
+Dalam layout, navbar memaparkan menu **ikut kebenaran** (`$user->can('tlk.decide')`, `$user->inGroup('admin')`). Ingat: menyembunyikan menu hanya **kemudahan UI**. Kawalan sebenar ialah filter route di server.
 
 > ⚠️ **Kesilapan lazim:** `<?= $user->full_name ?>` tanpa `esc()`. Jika seseorang mendaftar dengan nama `<script>…</script>`, skrip itu berjalan dalam pelayar pelulus (XSS tersimpan). **Setiap** output data → `esc()`; dalam atribut HTML → `esc($x, 'attr')`.
 
@@ -505,7 +505,7 @@ Kata laluan semua: **`Latihan@2026`**. Fail penuh: [`templates/kod/UserSeeder.ph
 
 ### 4.1 Cara pasangan bekerja
 
-Setiap pasangan membina **keempat-empat** modul dalam repo sendiri (KOLABORASI §4). "Pembahagian tugas" bermakna **siapa driver bagi setiap sesi** dan **cabang mana untuk setiap ciri**.
+Setiap pasangan membina **keempat-empat** modul dalam repo sendiri (KOLABORASI §4). "Pembahagian tugas" bermakna **siapa driver bagi setiap sesi** dan **branch mana untuk setiap ciri**.
 
 | Peranan | Tugas | Tukar |
 |---------|-------|-------|
@@ -514,7 +514,7 @@ Setiap pasangan membina **keempat-empat** modul dalam repo sendiri (KOLABORASI �
 
 ### 4.2 Pelan cabang (satu ciri = satu cabang)
 
-| Hari | Cabang | Prefix commit | Siap apabila |
+| Hari | Branch | Prefix commit | Siap apabila |
 |------|--------|---------------|--------------|
 | 4 | `main` (setup terus) | `SETUP:` | Migration + seeder + log masuk OK |
 | 5 | `feat/tlk-model`, `feat/tlk-crud`, `feat/tlk-borang-tempahan` | `TLK:` | `TLK-2026-0001` dijana |
@@ -541,20 +541,20 @@ gitGraph
 
 ### 4.3 Definition of Done (KOLABORASI §2)
 
-Satu ciri "siap" hanya apabila **ketujuh-tujuh** kotak ditanda: AC lulus diuji manual · validasi di pelayan · akses dikawal di pelayan · peralihan status dilog · ujian PHPUnit lulus · tiada `.env`/rahsia dalam commit · **setiap ahli pasangan boleh menerangkan setiap baris**.
+Satu ciri "siap" hanya apabila **ketujuh-tujuh** kotak ditanda: AC lulus diuji manual · validasi di server · akses dikawal di server · peralihan status dilog · ujian PHPUnit lulus · tiada `.env`/rahsia dalam commit · **setiap ahli pasangan boleh menerangkan setiap baris**.
 
 > 💡 **Tip — disiplin AI:** Claude Code boleh menerangkan ralat `errno: 150` atau mencadang nama index. Ia **tidak** menjana modul penuh untuk anda salin. Ujian cepat: bolehkah navigator menerangkan baris itu tanpa melihat skrin AI?
 
-> ⭐ **Trek sampingan (pilihan):** [Jira](../docs/trek-jira.md): rancang *sprint* pertama sebelum mula menulis kod. [GitLab](../docs/trek-gitlab.md): projek CI4 melalui *merge request* pertama. Tidak dikira dalam kemajuan; ini langkah akhir trek.
+> ⭐ **Trek sampingan (pilihan):** [Jira](../docs/trek-jira.md): rancang sprint pertama sebelum mula menulis kod. [GitLab](../docs/trek-gitlab.md): projek CI4 melalui merge request pertama. Tidak dikira dalam kemajuan; ini langkah akhir trek.
 
 ### 🎯 Kuiz S4
 
-1. Mengikut pelan cabang, di manakah kerja enum + entity + model tempahan TLK pada Hari 5 dibuat?
+1. Mengikut pelan branch, di manakah kerja enum + entity + model tempahan TLK pada Hari 5 dibuat?
    - [ ] Terus pada `main` dengan prefix `SETUP:`
-   - [x] Cabang `feat/tlk-model` dengan prefix commit `TLK:`, kemudian di-merge ke `main`
-   - [ ] Cabang `feat/laporan` dengan prefix `RPT:`
-   - [ ] Satu cabang `feat/kursus` untuk keseluruhan 10 hari supaya semua modul di-merge sekali sahaja pada Hari 10
-   > Satu ciri = satu cabang. Hari 4 sahaja dibuat terus pada `main` (`SETUP:`); ciri TLK menggunakan cabang `feat/tlk-*` dan prefix `TLK:`.
+   - [x] Branch `feat/tlk-model` dengan prefix commit `TLK:`, kemudian di-merge ke `main`
+   - [ ] Branch `feat/laporan` dengan prefix `RPT:`
+   - [ ] Satu branch `feat/kursus` untuk keseluruhan 10 hari supaya semua modul di-merge sekali sahaja pada Hari 10
+   > Satu ciri = satu branch. Hari 4 sahaja dibuat terus pada `main` (`SETUP:`); ciri TLK menggunakan branch `feat/tlk-*` dan prefix `TLK:`.
 
 2. Satu ciri TLK lulus ujian PHPUnit dan AC diuji manual, tetapi navigator tidak dapat menerangkan beberapa baris yang dicadangkan AI. Adakah ciri ini memenuhi Definition of Done?
    - [ ] Ya, kerana ujian PHPUnit sudah lulus
@@ -574,7 +574,7 @@ Satu ciri "siap" hanya apabila **ketujuh-tujuh** kotak ditanda: AC lulus diuji m
 - [ ] 10 migration dalam `app/Database/Migrations/` — `migrate:status` semua *Migrated*
 - [ ] 5 seeder; `php spark db:seed DatabaseSeeder` boleh dijalankan **dua kali** tanpa ralat
 - [ ] Log masuk sebagai kelima-lima pengguna sintetik berjaya
-- [ ] `docs/pelan-kerja.md` — driver/navigator, pelan cabang, DoD
+- [ ] `docs/pelan-kerja.md` — driver/navigator, pelan branch, DoD
 - [ ] Commit `SETUP:` ditolak ke `main`
 
 ---
@@ -582,7 +582,7 @@ Satu ciri "siap" hanya apabila **ketujuh-tujuh** kotak ditanda: AC lulus diuji m
 ## 🧠 Semakan Kendiri
 
 1. Kenapa `.env` tidak di-commit tetapi fail `env` di-commit?
-   <details><summary>Jawapan</summary><code>env</code> ialah templat tanpa nilai sulit — ia memberitahu rakan pasangan kunci apa yang perlu diisi. <code>.env</code> mengandungi kata laluan DB sebenar mesin anda dan disenaraikan dalam <code>.gitignore</code>. Setiap pembangun menyalin <code>env</code> → <code>.env</code> dan mengisi sendiri.</details>
+   <details><summary>Jawapan</summary><code>env</code> ialah template tanpa nilai sulit — ia memberitahu rakan pasangan kunci apa yang perlu diisi. <code>.env</code> mengandungi kata laluan DB sebenar mesin anda dan disenaraikan dalam <code>.gitignore</code>. Setiap pembangun menyalin <code>env</code> → <code>.env</code> dan mengisi sendiri.</details>
 
 2. Anda menambah `full_name` pada migration `users`, seeder memanggil `save()` dengan `full_name`, tetapi lajur itu kosong dalam DB. Apa puncanya?
    <details><summary>Jawapan</summary>Model Shield asal tidak menyenaraikan <code>full_name</code> dalam <code>$allowedFields</code>, jadi medan itu dibuang secara senyap. Perlu <code>php spark shield:model UserModel</code>, tambah medan ke <code>$allowedFields</code>, dan tetapkan <code>Auth::$userProvider = \App\Models\UserModel::class</code>.</details>
@@ -594,7 +594,7 @@ Satu ciri "siap" hanya apabila **ketujuh-tujuh** kotak ditanda: AC lulus diuji m
    <details><summary>Jawapan</summary>Jadual <code>users</code> Shield tiada lajur e-mel atau kata laluan — kedua-duanya disimpan dalam <code>auth_identities</code> dan kata laluan mesti di-hash. <code>UserModel::save()</code> dengan entiti <code>User</code> melakukan kedua-duanya secara automatik; kemudian <code>addGroup()</code> mengisi <code>auth_groups_users</code>.</details>
 
 5. Navbar menyembunyikan menu "Keputusan TLK" daripada pemohon. Adakah itu cukup untuk BR akses? Kenapa?
-   <details><summary>Jawapan</summary>Tidak. Pemohon masih boleh menaip URL atau menghantar POST terus. Kawalan sebenar ialah filter <code>permission:tlk.decide</code> pada laluan dalam <code>Routes.php</code> (dan semakan pemilikan dalam controller/service). Menyembunyikan menu hanya kemudahan UI (SPEC §4).</details>
+   <details><summary>Jawapan</summary>Tidak. Pemohon masih boleh menaip URL atau menghantar POST terus. Kawalan sebenar ialah filter <code>permission:tlk.decide</code> pada route dalam <code>Routes.php</code> (dan semakan pemilikan dalam controller/service). Menyembunyikan menu hanya kemudahan UI (SPEC §4).</details>
 
 ---
 
@@ -605,4 +605,4 @@ Esok **Hari 5 — Modul TLK (Bahagian 1)**: Enum, Entity, Model, CRUD slot admin
 - Pastikan `php spark migrate:status` bersih dan `db:seed` berjaya — esok bermula terus dengan Model, **tiada masa** untuk membaiki migration.
 - Baca semula SPEC §2.1 (enum `SlotCategory`, `BookingStatus`, BR-TLK-01..06).
 - Baca [`../nota/03-model-entity-dan-enum.md`](../nota/03-model-entity-dan-enum.md) dan [`../nota/04-validasi-dan-borang.md`](../nota/04-validasi-dan-borang.md) (±20 minit).
-- Semak kendiri: bolehkah anda log masuk sebagai `admin@latihan.test` dan `pemohon1@latihan.test` dalam dua pelayar berbeza (atau tetingkap *incognito*)?
+- Semak kendiri: bolehkah anda log masuk sebagai `admin@latihan.test` dan `pemohon1@latihan.test` dalam dua pelayar berbeza (atau tetingkap incognito)?
