@@ -1,6 +1,6 @@
 # Lab Day 6 — TLK Module (Part 2)
 
-[⬅️ README Day 6](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🧩 Code templates](../templates/kod/)
+[⬅️ README Day 6](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module)
 
 > **Lab rules:** today is about **accuracy under pressure**, not speed. Write the overlap query and the transaction **yourself first**; compare with the template only after the checkpoint. AI can help explain `Lock wait timeout` or `errno` — but you must be able to explain why the locks are taken in the order user → slot.
 
@@ -334,7 +334,7 @@ Upgrade `BookingService` to version 2 (transaction + `FOR UPDATE` + BR-TLK-01/04
    });
    ```
 
-   Check against [`Routes-tlk.php.txt`](../templates/kod/Routes-tlk.php.txt).
+   Check against `Routes-tlk.php.txt` (**Templat & Rujukan** module).
 
 6. `app/Controllers/Tlk/DecisionController.php`:
 
@@ -785,7 +785,7 @@ Write the integration test `BookingServiceTest` (overlap, BR-TLK-03/04, transiti
 - `composer test -- --no-coverage tests/tlk` → `OK` with **≥ 25 tests** (BookingStatus 5 + BookingService ≥ 15 + DecisionAccess 5). Reference solution (tag `penyelesaian-hari-6`): **43** = BookingStatus 6 (with ⭐) + BookingService 28 (template 27 + 1) + DecisionAccess 7 (with ⭐) + ReferenceNumberService 2.
 - Step 6: removing `hasOverlap()` turns at least `testCreateRejectsOverlappingBooking` red; changing `<=` → `<` turns the *"overlap at the start edge"* case red.
 - `mysql -u kkm_dev -p -e "SELECT COUNT(*) FROM slot_bookings" kkm_latihan` before and after `composer test` → the **same** number, not `0` (your Lab 6.1–6.2 bookings are still there). The tests write to `kkm_latihan_test` (the `tests` group), **not** `kkm_latihan`.
-- Compare with [`BookingServiceTest.php.txt`](../templates/kod/BookingServiceTest.php.txt).
+- Compare with `BookingServiceTest.php.txt` (**Templat & Rujukan** module).
 
 ### 🧯 Troubleshooting
 
@@ -840,7 +840,7 @@ Polish the TLK module UI (badges, flash messages, confirmation, Bootstrap pagina
    <?php endif ?>
    ```
 
-3. **Layout** — update `app/Views/layouts/main.php` following [`layout-main.php.txt`](../templates/kod/layout-main.php.txt): menu items *Tempahan Saya* (My Bookings), *Mohon Slot* (Apply for a Slot) (`can('tlk.apply')`), *Slot Kosong* (Free Slots), *Keputusan TLK* (TLK Decisions) (`can('tlk.decide')`), *Urus Slot* (Manage Slots) (`inGroup('admin')`), and the `data-confirm` script before `</body>` (README §4.1).
+3. **Layout** — update `app/Views/layouts/main.php` following `layout-main.php.txt` (**Templat & Rujukan** module): menu items *Tempahan Saya* (My Bookings), *Mohon Slot* (Apply for a Slot) (`can('tlk.apply')`), *Slot Kosong* (Free Slots), *Keputusan TLK* (TLK Decisions) (`can('tlk.decide')`), *Urus Slot* (Manage Slots) (`inGroup('admin')`), and the `data-confirm` script before `</body>` (README §4.1).
 
 4. **Bootstrap pagination** — create `app/Views/pager/bootstrap_full.php`:
 

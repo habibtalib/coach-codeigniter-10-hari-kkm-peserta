@@ -1,6 +1,6 @@
 # Day 2 — Your CI Project on GitLab: Routes, Views & Forms
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../SPEC-KURSUS.md) · [🧪 Day 2 Lab](./lab.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 2 Lab](./lab.md)
 
 > From today this course is **hands-on**. After this morning's requirement sign-off (S1), every participant creates their own project `kelas-ci-<nama>` on KKM GitLab and builds CodeIgniter 4 step by step: route → controller → view → layout → a form with validation and CSRF. Every step is committed and pushed. The remaining requirements & design theory is now in [`docs/rujukan-keperluan.md`](../docs/rujukan-keperluan.md) (optional reading).
 
@@ -175,7 +175,7 @@ flowchart LR
 | View | `app/Views/*.php` | HTML only; every value is printed with `esc()` |
 | Layout | `app/Views/layout.php` | The shared page frame; views fill `section('content')` |
 
-Full notes: [`nota/01-mvc-dan-kitaran-request-ci4.md`](../nota/01-mvc-dan-kitaran-request-ci4.md).
+Full notes: [`docs/nota-01-mvc-dan-kitaran-request-ci4.md`](../docs/nota-01-mvc-dan-kitaran-request-ci4.md).
 
 ### 3.2 Route placeholders
 

@@ -1,6 +1,6 @@
 # Day 3 Lab — ERD, Data Dictionary, Wireframes & Design Review
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../SPEC-KURSUS.md) · [📖 Day 3 README](./README.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 3 README](./README.md)
 
 | Lab | Session | Output |
 |-----|---------|--------|
@@ -93,10 +93,10 @@ Write a complete data dictionary for 5 core tables in the session (the other 5 t
 
 ### Prerequisites
 - Lab 3.1 is done.
-- [`templates/dokumen/kamus-data-templat.md`](../templates/dokumen/kamus-data-templat.md), README §2.
+- `templates/dokumen/kamus-data-templat.md` (**Templat & Rujukan** module), README §2.
 
 ### Steps
-1. Create the file `docs/kamus-data.md` and copy the contents of the template [`templates/dokumen/kamus-data-templat.md`](../templates/dokumen/kamus-data-templat.md) into it (the `## Jadual: <nama_jadual>` section is repeated for each table).
+1. Create the file `docs/kamus-data.md` and copy the contents of the template `templates/dokumen/kamus-data-templat.md` (**Templat & Rujukan** module) into it (the `## Jadual: <nama_jadual>` section is repeated for each table).
 2. **In the session — 5 core tables, split the work in your pair:** the driver writes `parking_slots` and `slot_bookings`; the navigator checks against the SPEC. Swap for `pass_applications`, `pass_documents`, `status_logs`.
    **The other 5 tables** (`departments`, `users`, `parking_zones`, `vehicles`, `reference_sequences`) — finish them before **Day 4, 08:30** together with preparation task T3 ([`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md)). These tables are small; README §2.5 gives their unique keys and special notes.
 3. For every table fill in **all** the columns: Field, Type, NULL, Default, Key/Index, FK →, Rule/enum, Description. Use `slot_bookings` in README §2.2 as the example.

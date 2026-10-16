@@ -1,7 +1,7 @@
 # Glossary Malay ↔ English
 
 > Terms used throughout the CI-KKM-10 course. Convention: prose in **Malay**, code and technical terms in **English**. In prose, technical terms are written in plain English (see the table below); names from code are written as `code`.
-> Domain names (tables, enums, statuses) follow [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) and are **not translated in code**.
+> Domain names (tables, enums, statuses) follow [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) and are **not translated in code**.
 
 ## Technical terms in prose
 
@@ -79,14 +79,14 @@ Stay in Malay: ralat (error), sesi (class session), pengesahan (owner sign-off),
 | Indeks unik | Unique index | `UNIQUE` | |
 | Rangka skrin | Wireframe / mockup | | |
 | Ujian penerimaan pengguna | User acceptance testing | UAT | |
-| Definisi Siap | Definition of Done | DoD | [`KOLABORASI.md`](../KOLABORASI.md) §2 |
+| Definisi Siap | Definition of Done | DoD | [`docs/kolaborasi.md`](kolaborasi.md) §2 |
 
 ## C. CodeIgniter 4 & PHP
 
 | Malay | English | In CI4 | Notes |
 |---------------|---------|-----------|------|
 | Rangka kerja | Framework | CodeIgniter 4.6 | |
-| Model–Paparan–Pengawal | Model–View–Controller | MVC | [01](../nota/01-mvc-dan-kitaran-request-ci4.md) |
+| Model–Paparan–Pengawal | Model–View–Controller | MVC | [01](nota-01-mvc-dan-kitaran-request-ci4.md) |
 | Pengawal | Controller | `app/Controllers/` | |
 | Paparan | View | `app/Views/`, `view()` | |
 | Susun atur | Layout | `$this->extend()`, `$this->section()` | |
@@ -94,31 +94,31 @@ Stay in Malay: ralat (error), sesi (class session), pengesahan (owner sign-off),
 | Penapis | Filter (middleware) | `app/Config/Filters.php` | |
 | Permintaan / respons | Request / response | `$this->request`, `$this->response` | |
 | Kitaran hayat permintaan | Request lifecycle | | |
-| Pemindahan skema | Migration | `php spark migrate` | [02](../nota/02-migration-seeder-dan-query-builder.md) |
+| Pemindahan skema | Migration | `php spark migrate` | [02](nota-02-migration-seeder-dan-query-builder.md) |
 | Penyemai data | Seeder | `php spark db:seed` | |
 | Pembina query | Query Builder | `$db->table()` | |
 | Pengikatan parameter | Parameter binding | `?` placeholder | Prevents SQL injection |
-| Entiti | Entity | `CodeIgniter\Entity\Entity` | [03](../nota/03-model-entity-dan-enum.md) |
+| Entiti | Entity | `CodeIgniter\Entity\Entity` | [03](nota-03-model-entity-dan-enum.md) |
 | Enum bersandar | Backed enum | `enum BookingStatus: string` | PHP 8.1+ |
 | Medan dibenarkan | Allowed fields | `$allowedFields` | Blocks *mass assignment* |
 | Padam lembut | Soft delete | `$useSoftDeletes`, `deleted_at` | |
 | Panggil balik model | Model callback | `$beforeInsert`, `$afterUpdate` | |
-| Pengesahan input | Validation | `$validationRules`, `validateData()` | [04](../nota/04-validasi-dan-borang.md) |
+| Pengesahan input | Validation | `$validationRules`, `validateData()` | [04](nota-04-validasi-dan-borang.md) |
 | Peraturan tersuai | Custom rule | `Config\Validation::$ruleSets` | |
 | Input lama | Old input | `old()`, `withInput()` | |
 | Mesej kilat | Flash message | `session()->setFlashdata()`, `->with()` | |
 | Penomboran halaman | Pagination | `paginate()`, `$pager->links()` | |
-| Lapisan servis | Service layer | `app/Services/`, `service()` | [05](../nota/05-service-layer-dan-transaksi.md) |
+| Lapisan servis | Service layer | `app/Services/`, `service()` | [05](nota-05-service-layer-dan-transaksi.md) |
 | Pengawal nipis | Thin controller | | Logic lives in the Service |
 | Transaksi | Transaction | `transStart()`, `transComplete()` | |
 | Kunci baris | Row lock | `SELECT … FOR UPDATE` | |
 | Keadaan perlumbaan | Race condition | | Two requests at the same time |
 | Pengecualian | Exception | `throw`, `try/catch` | |
-| Fail dimuat naik | Uploaded file | `UploadedFile`, `getFile()` | [07](../nota/07-muat-naik-fail-selamat.md) |
+| Fail dimuat naik | Uploaded file | `UploadedFile`, `getFile()` | [07](nota-07-muat-naik-fail-selamat.md) |
 | Nama rawak | Random name | `getRandomName()` | |
-| Cache / cache kosongkan | Cache / cache invalidation | `cache()->remember()`, `cache()->delete()` | [09](../nota/09-statistik-chartjs-dan-cache.md) |
+| Cache / cache kosongkan | Cache / cache invalidation | `cache()->remember()`, `cache()->delete()` | [09](nota-09-statistik-chartjs-dan-cache.md) |
 | Titik akhir JSON | JSON endpoint | `$this->response->setJSON()` | |
-| Eksport | Export | Dompdf, PhpSpreadsheet | [08](../nota/08-laporan-eksport-pdf-excel.md) |
+| Eksport | Export | Dompdf, PhpSpreadsheet | [08](nota-08-laporan-eksport-pdf-excel.md) |
 | Pembolehubah persekitaran | Environment variable | `.env` | Never commit it |
 | Antara muka baris arahan | Command-line interface | Spark (`php spark`) | |
 | Pengurus pakej | Package manager | Composer | |
@@ -129,7 +129,7 @@ Stay in Malay: ralat (error), sesi (class session), pengesahan (owner sign-off),
 |---------------|---------|---------------------|------|
 | Pengesahan identiti | Authentication (authn) | Shield `session`, `auth()->loggedIn()` | "Who are you?" |
 | Kebenaran | Authorization (authz) | `can()`, `inGroup()`, filter `permission:` | "What are you allowed to do?" |
-| Kawalan akses berasaskan peranan | Role-based access control | RBAC, `AuthGroups` | [06](../nota/06-shield-auth-dan-rbac.md) |
+| Kawalan akses berasaskan peranan | Role-based access control | RBAC, `AuthGroups` | [06](nota-06-shield-auth-dan-rbac.md) |
 | Kumpulan / kebenaran | Group / permission | `$groups`, `$permissions`, `$matrix` | |
 | Semakan pemilikan | Ownership check | `user_id === auth()->id()` | BR-PAS-04 |
 | Rujukan objek terus tidak selamat | Insecure direct object reference | IDOR | |
@@ -141,14 +141,14 @@ Stay in Malay: ralat (error), sesi (class session), pengesahan (owner sign-off),
 | Pertahanan berlapis | Defence in depth | Filter + service + DB | |
 | Kata laluan dicincang | Hashed password | Shield (`password_hash`) | |
 | Pendikit log masuk | Login throttling | Filter `auth-rates` | |
-| Pengepala keselamatan | Security headers | Filter `secureheaders`, CSP | [11](../nota/11-keselamatan-aplikasi-web.md) |
+| Pengepala keselamatan | Security headers | Filter `secureheaders`, CSP | [11](nota-11-keselamatan-aplikasi-web.md) |
 | Data sintetik | Synthetic data | `@latihan.test` | Mandatory |
 
 ## E. Testing & quality
 
 | Malay | English | In code | Notes |
 |---------------|---------|-----------|------|
-| Ujian unit | Unit test | `CIUnitTestCase` | [10](../nota/10-ujian-phpunit-ci4.md) |
+| Ujian unit | Unit test | `CIUnitTestCase` | [10](nota-10-ujian-phpunit-ci4.md) |
 | Ujian ciri / fungsian | Feature / functional test | `FeatureTestTrait` | |
 | Ujian pangkalan data | Database test | `DatabaseTestTrait` | |
 | Bertindak sebagai | Acting as (a user) | `actingAs($user)` | Shield `AuthenticationTesting` |
@@ -164,7 +164,7 @@ Stay in Malay: ralat (error), sesi (class session), pengesahan (owner sign-off),
 
 | Malay | English | Command | Notes |
 |---------------|---------|--------|------|
-| Kawalan versi | Version control | Git | [12](../nota/12-git-aliran-kerja.md) |
+| Kawalan versi | Version control | Git | [12](nota-12-git-aliran-kerja.md) |
 | Repositori | Repository | `git init`, `git clone` | |
 | Cabang | Branch | `git switch -c feat/…` | One feature = one branch |
 | Serah / komit | Commit | `git commit -m "TLK: …"` | |

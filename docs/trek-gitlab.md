@@ -1,17 +1,17 @@
 # Trek Pilihan — GitLab KKM: Repo Pasangan & Merge Request
 
-[📅 Jadual](../JADUAL.md) · [🤝 KOLABORASI](../KOLABORASI.md) · [🌿 Nota 12 · Git](../nota/12-git-aliran-kerja.md) · [🛠️ Persediaan](./persediaan.md) · [📋 Trek Jira](./trek-jira.md) · [💡 Trek Design Thinking](./trek-design-thinking.md)
+[📅 Jadual](../JADUAL.md) · [🤝 KOLABORASI](kolaborasi.md) · [🌿 Nota 12 · Git](nota-12-git-aliran-kerja.md) · [🛠️ Persediaan](./persediaan.md) · [📋 Trek Jira](./trek-jira.md) · [💡 Trek Design Thinking](./trek-design-thinking.md)
 
 > **Trek pilihan.** Lab teras kekal dengan merge setempat (`git merge --no-ff`) dan lulus tanpa GitLab. Trek ini meletakkan repo pasangan di **GitLab KKM** (self-managed) dan menggantikan merge setempat dengan **merge request (MR)** yang disemak rakan pasangan.
 
-Aliran Git setempat (branch, commit, merge, konflik) diterangkan dalam [Nota 12](../nota/12-git-aliran-kerja.md). Halaman ini hanya menambah lapisan GitLab di atasnya.
+Aliran Git setempat (branch, commit, merge, konflik) diterangkan dalam [Nota 12](nota-12-git-aliran-kerja.md). Halaman ini hanya menambah lapisan GitLab di atasnya.
 
 ---
 
 ## 1. Tujuan & bila
 
 - **Menyambung** repo `~/latihan/sistem-tlk-pas` (Lab 1.0) kepada satu projek *private* di GitLab KKM.
-- **Melindungi** `main` dan **menggabung** perubahan melalui MR yang disemak rakan ([KOLABORASI §2](../KOLABORASI.md)).
+- **Melindungi** `main` dan **menggabung** perubahan melalui MR yang disemak rakan ([KOLABORASI §2](kolaborasi.md)).
 
 | Bila | Apa | Minit |
 |------|-----|-------|
@@ -89,7 +89,7 @@ Peraturan pasangan: tiada push terus ke `main` selepas §5. Semua perubahan mela
 
 1. **Branch & push:** `git switch -c setup/ahli-pasangan`, tambah nama kedua-dua ahli dalam `README.md`, commit `SETUP: ahli pasangan`, kemudian `git push -u origin setup/ahli-pasangan`. Pilihan: `git push -o merge_request.create -u origin setup/ahli-pasangan` terus membuka MR.
 2. **Buka MR:** GitLab memaparkan *Create merge request* → *Target branch*: `main` → *Reviewer*: rakan → *Create merge request*.
-3. **Rakan menyemak** tab *Changes* ikut Definition of Done ([KOLABORASI §2](../KOLABORASI.md)): AC lulus, ujian hijau, tiada `.env`/rahsia, kod boleh diterangkan. Pembetulan = commit baharu pada branch yang sama + `git push`.
+3. **Rakan menyemak** tab *Changes* ikut Definition of Done ([KOLABORASI §2](kolaborasi.md)): AC lulus, ujian hijau, tiada `.env`/rahsia, kod boleh diterangkan. Pembetulan = commit baharu pada branch yang sama + `git push`.
 4. **Rakan klik** *Approve*, kemudian *Merge*. Pengarang **tidak** merge MR sendiri. Di GitLab Free, *Approve* adalah pilihan dan tidak menyekat merge; peraturan kelulusan wajib ialah ciri Premium.
 5. **Kedua-dua ahli:** `git switch main && git pull && git branch -d setup/ahli-pasangan`.
 
@@ -117,7 +117,7 @@ Pemetaan ke lab teras:
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| `.env` atau `vendor/` kelihatan dalam tab *Changes* | `git add .` tanpa semak | Jangan merge; ikut [Nota 12 §9](../nota/12-git-aliran-kerja.md) dan **tukar (rotate)** rahsia |
+| `.env` atau `vendor/` kelihatan dalam tab *Changes* | `git add .` tanpa semak | Jangan merge; ikut [Nota 12 §9](nota-12-git-aliran-kerja.md) dan **tukar (rotate)** rahsia |
 | Projek boleh dilihat oleh pengguna lain | *Visibility Level* bukan Private | *Settings* → *General* → *Visibility* → **Private** |
 | Pengarang merge MR sendiri | GitLab Free tidak menyekatnya | Rakan yang klik *Merge*; jurulatih menyemak `git log --merges` |
 

@@ -36,7 +36,7 @@ Days 1–3: requirements, process flows, acceptance criteria, ERD, wireframes. D
 |-------|------------------------------------------------|------------------------|
 | Duration & scope | 15 days, Parking + Work Permit | **10 compact days** following the tentative schedule, 4 modules (TLK, Pass, Report, Statistics) |
 | Objectives | General focus per day | **Measurable objectives per session** + self-check + lab ✅ checkpoints |
-| Notes | Short README; labs "to be expanded later" | Full concept notes, step-by-step labs, trainer notes, topical notes in `nota/` |
+| Notes | Short README; labs "to be expanded later" | Full concept notes, step-by-step labs, trainer notes, topical notes in `docs/nota-*` |
 | Stack | CI4 + home-made auth | **CI 4.6+ · PHP 8.2 enum · Shield (groups/permissions) · Service layer · Entities** |
 | Data integrity | Overlap check in the controller | **Transactions + `SELECT … FOR UPDATE`**, a `reference_sequences` table, a single `status_logs` audit table |
 | Report/Statistics | Part of the module dashboards | **Dedicated modules**: 3 reports + PDF/Excel export; Chart.js dashboard + cache + invalidation |
@@ -46,9 +46,9 @@ Days 1–3: requirements, process flows, acceptance criteria, ERD, wireframes. D
 ## Structure
 
 ```text
-SPEC-KURSUS.md  JADUAL.md  KOLABORASI.md  CLAUDE.md
+JADUAL.md  CLAUDE.md
 hari-1/ … hari-10/     README.md · lab.md · nota-penceramah.md
-nota/                  topical notes (MVC, migration, model/enum, validation, transactions, Shield, upload, reports, cache, testing, security, Git)
+docs/nota-NN-*.md      topical notes (MVC, migration, model/enum, validation, transactions, Shield, upload, reports, cache, testing, security, Git)
 templates/dokumen/     URS, acceptance criteria, data dictionary, test cases, UAT sign-off
 templates/kod/         trainer reference code (*.php.txt) — answer key
 docs/                  setup, pre-course assignment, prompt library, capstone rubric, glossary
@@ -59,7 +59,7 @@ slides/                ci-kkm-10.html (open directly in the browser)
 
 - Prose in **Malay**; code & technical terms in **English**.
 - **Synthetic data only** — no real KKM data. No secrets in the repo.
-- AI discipline: **understand first, accept later** — see [`KOLABORASI.md`](./KOLABORASI.md).
+- AI discipline: **understand first, accept later** — see [`docs/kolaborasi.md`](./docs/kolaborasi.md).
 
 ---
 

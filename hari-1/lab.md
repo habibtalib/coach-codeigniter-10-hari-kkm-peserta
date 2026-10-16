@@ -1,6 +1,6 @@
 # Lab Hari 1 — Carta Skop, Temu Bual & Senarai Keperluan
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [📖 README Hari 1](./README.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 README Hari 1](./README.md)
 
 > Semua lab hari ini menghasilkan **dokumen Markdown**, bukan kod (kecuali Lab 1.5 dalam S4: CI4 asas di Laragon). Kerja berpasangan (driver menaip, navigator menyemak terhadap SPEC) — tukar peranan setiap lab.
 
@@ -45,7 +45,7 @@ Menghasilkan carta skop yang menyatakan matlamat, 4 modul, dalam/luar skop, had 
 ### Prasyarat
 - 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
 - Telah mendengar taklimat projek S1.
-- Baca [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) §1, §2 dan §4.
+- Baca [`docs/spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §1, §2 dan §4.
 
 ### Langkah
 1. Cipta `docs/carta-skop.md` dengan rangka berikut:

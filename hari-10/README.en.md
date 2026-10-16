@@ -1,6 +1,6 @@
 # Day 10 — Statistics Module (M4) & Capstone
 
-[← Schedule](../JADUAL.md) · [SPEC Canon](../SPEC-KURSUS.md) · [🧪 Day 10 Lab](./lab.md) · [📋 Capstone Rubric](../docs/rubrik-capstone.md) · [← Day 9](../hari-9/README.md)
+[← Schedule](../JADUAL.md) · [SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 10 Lab](./lab.md) · [📋 Capstone Rubric](../docs/rubrik-capstone.md) · [← Day 9](../hari-9/README.md)
 
 > **The last day.** Morning: we build a dashboard that summarises M1 & M2 and learn one performance concept that is often misused — **cache**. Afternoon: we stop building and start **proving** — UAT, disciplined bug fixing, a security review, and a demo to the system owner.
 
@@ -301,8 +301,8 @@ UAT (*User Acceptance Testing*) answers the system owner's question: "*Does this
 
 Two templates (written on Day 2, used today):
 
-- [`templates/dokumen/kes-ujian-templat.md`](../templates/dokumen/kes-ujian-templat.md) — detailed test cases (TC-…) + a **bug log**.
-- [`templates/dokumen/uat-signoff-templat.md`](../templates/dokumen/uat-signoff-templat.md) — scenarios UAT-01..10 + the acceptance decision + signatures.
+- `templates/dokumen/kes-ujian-templat.md` (**Templat & Rujukan** module) — detailed test cases (TC-…) + a **bug log**.
+- `templates/dokumen/uat-signoff-templat.md` (**Templat & Rujukan** module) — scenarios UAT-01..10 + the acceptance decision + signatures.
 
 ### 3.2 UAT script across the 4 modules by role
 
@@ -364,7 +364,7 @@ flowchart LR
 
 ### 3.4 Final security checklist
 
-In-depth reference: [`nota/11-keselamatan-aplikasi-web.md`](../nota/11-keselamatan-aplikasi-web.md).
+In-depth reference: [`docs/nota-11-keselamatan-aplikasi-web.md`](../docs/nota-11-keselamatan-aplikasi-web.md).
 
 | # | Item | How to check (evidence) |
 |---|---------|--------------------|

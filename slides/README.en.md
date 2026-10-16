@@ -6,7 +6,7 @@ Slide deck for the course **Application Development Coaching with CodeIgniter** 
 |------|------------|
 | `ci-kkm-10.html` | Full deck (117 slides), **one self-contained file**: inline CSS + JavaScript, system fonts, no CDN. Works **without internet**. |
 
-The content follows [`../SPEC-KURSUS.md`](../SPEC-KURSUS.md) and [`../JADUAL.md`](../JADUAL.md). If the SPEC changes (table names, enums, classes, routes), update the related slides.
+The content follows [`../docs/spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) and [`../JADUAL.md`](../JADUAL.md). If the SPEC changes (table names, enums, classes, routes), update the related slides.
 
 ## Deck order
 

@@ -3,7 +3,7 @@
 > **Two deadlines:**
 > - **Before Day 1:** Git, VS Code (+ the **Markdown Preview Mermaid Support** extension), a modern browser; Windows: Git Bash as the VS Code default terminal (§5). The Day 1 labs use Git and the Mermaid preview.
 > - **Before Day 4** (Development Kickoff): the PHP stack — PHP 8.2+, PHP extensions, Composer, MySQL/MariaDB, Laragon/Herd and the CI4 smoke test (§6). Days 1–3 involve no coding, so use that time to fix your environment — don't wait until the morning of Day 4.
-> Stack canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) §1.
+> Stack canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §1.
 
 ## Why set it up early?
 
@@ -255,7 +255,7 @@ mysql -u kkm_dev -p -e "SHOW DATABASES LIKE 'kkm_latihan%';"
 
 > 🪟 **Windows:** in the VS Code terminal (Git Bash), `mysql -p` asks for the password as usual. In a separate Git Bash window (mintty), `mysql` can hang with no prompt — put `winpty` in front: `winpty mysql -u kkm_dev -p`.
 
-> **Why MySQL for tests, not SQLite?** BR-TLK-05 needs `SELECT … FOR UPDATE`, which SQLite does not support. See [`../nota/10-ujian-phpunit-ci4.md`](../nota/10-ujian-phpunit-ci4.md).
+> **Why MySQL for tests, not SQLite?** BR-TLK-05 needs `SELECT … FOR UPDATE`, which SQLite does not support. See [`nota-10-ujian-phpunit-ci4.md`](nota-10-ujian-phpunit-ci4.md).
 
 GUI tool (choose one): HeidiSQL (Laragon: **Database** button), phpMyAdmin (needs Laragon's Apache), TablePlus, DBeaver, or MySQL Workbench.
 

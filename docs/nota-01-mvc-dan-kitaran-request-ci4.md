@@ -1,6 +1,6 @@
 # 01 · MVC dan Kitaran Request CodeIgniter 4
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -21,7 +21,7 @@ MVC memisahkan tiga tanggungjawab supaya perubahan di satu tempat tidak memecahk
 | **View** | Paparan HTML sahaja — tiada query, tiada logik perniagaan | `app/Views/tlk/index.php` |
 | **Controller** | Terima request → panggil service → pulang view/redirect | `Tlk\BookingController` |
 
-Projek kita menambah satu lapisan lagi: **Service** (`BookingService`, `PassWorkflowService`, …) untuk logik perniagaan. Sebabnya: peraturan seperti BR-TLK-01 (tiada pertindihan) perlu digunakan dari controller, Spark command **dan** ujian PHPUnit. Jika logik itu terperangkap dalam controller, ia tidak boleh diguna semula dan sukar diuji. Lihat [`05-service-layer-dan-transaksi.md`](./05-service-layer-dan-transaksi.md).
+Projek kita menambah satu lapisan lagi: **Service** (`BookingService`, `PassWorkflowService`, …) untuk logik perniagaan. Sebabnya: peraturan seperti BR-TLK-01 (tiada pertindihan) perlu digunakan dari controller, Spark command **dan** ujian PHPUnit. Jika logik itu terperangkap dalam controller, ia tidak boleh diguna semula dan sukar diuji. Lihat [`05-service-layer-dan-transaksi.md`](./nota-05-service-layer-dan-transaksi.md).
 
 > **Prinsip SPEC §5:** *Controller nipis. Logik perniagaan dalam Service. Model = akses data + `$validationRules`. Enum = satu-satunya sumber status.*
 
@@ -231,7 +231,7 @@ CI4 menyediakan **View Layouts** — satu fail kerangka (navbar, CSS Bootstrap) 
 <?= $this->endSection() ?>
 ```
 
-**Kenapa `esc()` setiap kali?** Semua data yang berasal daripada pengguna (sebab tempahan, nama, nombor plat) mesti dilepaskan sebelum dipapar untuk menghalang XSS. `esc()` menukar `<script>` kepada `&lt;script&gt;`. Lihat [`11-keselamatan-aplikasi-web.md`](./11-keselamatan-aplikasi-web.md).
+**Kenapa `esc()` setiap kali?** Semua data yang berasal daripada pengguna (sebab tempahan, nama, nombor plat) mesti dilepaskan sebelum dipapar untuk menghalang XSS. `esc()` menukar `<script>` kepada `&lt;script&gt;`. Lihat [`11-keselamatan-aplikasi-web.md`](./nota-11-keselamatan-aplikasi-web.md).
 
 ---
 
@@ -259,7 +259,7 @@ public array $globals = [
 
 Filter Shield (`session`, `group`, `permission`) didaftarkan secara automatik oleh package Shield. Argumen selepas titik bertindih dihantar kepada filter: `group:reviewer,approver,admin` bermaksud "mana-mana satu daripada group ini".
 
-**Kenapa filter tidak mencukupi seorang diri?** Filter menjawab soalan *"boleh akses URL ini?"*. Ia **tidak** menjawab *"boleh akses rekod #42 ini?"*. Pemohon A dan B sama-sama lulus filter `session` pada `/pas/permohonan/42` — semakan pemilikan dalam controller/service (BR-PAS-04) yang menghalang A melihat permohonan B. Lihat [`06-shield-auth-dan-rbac.md`](./06-shield-auth-dan-rbac.md).
+**Kenapa filter tidak mencukupi seorang diri?** Filter menjawab soalan *"boleh akses URL ini?"*. Ia **tidak** menjawab *"boleh akses rekod #42 ini?"*. Pemohon A dan B sama-sama lulus filter `session` pada `/pas/permohonan/42` — semakan pemilikan dalam controller/service (BR-PAS-04) yang menghalang A melihat permohonan B. Lihat [`06-shield-auth-dan-rbac.md`](./nota-06-shield-auth-dan-rbac.md).
 
 ---
 
@@ -315,4 +315,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Buku menutup auto-routing secara manual (`setAutoRoute(false)`, hlm. 19); sejak CI 4.2 ia sudah tertutup secara lalai.
 
 ---
-**Digunakan pada Hari 4** — S1 (menjelaskan aliran request MVC semasa semakan tugasan) & S2 (struktur projek, `.env`, layout Bootstrap); **Hari 5** — S2 (controller & view CRUD asas). Nota berkaitan: [02 · Migration](./02-migration-seeder-dan-query-builder.md) · [05 · Service](./05-service-layer-dan-transaksi.md) · [06 · Shield](./06-shield-auth-dan-rbac.md)
+**Digunakan pada Hari 4** — S1 (menjelaskan aliran request MVC semasa semakan tugasan) & S2 (struktur projek, `.env`, layout Bootstrap); **Hari 5** — S2 (controller & view CRUD asas). Nota berkaitan: [02 · Migration](./nota-02-migration-seeder-dan-query-builder.md) · [05 · Service](./nota-05-service-layer-dan-transaksi.md) · [06 · Shield](./nota-06-shield-auth-dan-rbac.md)

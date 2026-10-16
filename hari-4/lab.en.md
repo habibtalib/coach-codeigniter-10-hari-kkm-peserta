@@ -1,6 +1,6 @@
 # Day 4 Lab — Development Kickoff
 
-[⬅️ Day 4 README](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🤝 COLLABORATION](../KOLABORASI.md) · [🧩 Code templates](../templates/kod/)
+[⬅️ Day 4 README](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · [🤝 COLLABORATION](../docs/kolaborasi.md) · 🧩 Code templates (**Templat & Rujukan** module)
 
 > **Lab rule:** try **manually first** (read the error, check the SPEC, ask the navigator). Use AI (Claude Code) only after 10 minutes stuck — and only to *explain*, not to generate whole files. The templates in `templates/kod/` are for **checking**, not copying.
 
@@ -63,7 +63,7 @@ Demo the news application from the pre-course assignment and explain the 7 steps
 | Debug Toolbar does not appear | `CI_ENVIRONMENT` is not `development` / no `.env` | `cp env .env`, uncomment `CI_ENVIRONMENT = development` |
 | `404 - Can't find a route for 'GET: news'` | Route not added yet / *auto routing* is off | Add `$routes->get('news', [News::class, 'index']);` |
 | `Unable to connect to the database` | Wrong `.env` | Check `database.default.*`; try `hostname = 127.0.0.1` |
-| `The required PHP extension "sqlite3" is not loaded` on `composer test` (Windows) | The appstarter's `tests` database group is still SQLite; Laragon does not enable `sqlite3` | The course tests on MySQL: copy the `database.tests.*` block from [`nota/10`](../nota/10-ujian-phpunit-ci4.md) §3 into `.env` (database `kkm_latihan_test`) — Day 6 sets it too. Verified on Windows: afterwards `composer test` → `OK` |
+| `The required PHP extension "sqlite3" is not loaded` on `composer test` (Windows) | The appstarter's `tests` database group is still SQLite; Laragon does not enable `sqlite3` | The course tests on MySQL: copy the `database.tests.*` block from [`nota/10`](../docs/nota-10-ujian-phpunit-ci4.md) §3 into `.env` (database `kkm_latihan_test`) — Day 6 sets it too. Verified on Windows: afterwards `composer test` → `OK` |
 
 ### ⭐ Bonus challenge
 Add `log_message('info', 'News::show slug={slug}', ['slug' => $slug]);` in the controller, set `app/Config/Logger.php` `$threshold = 7`, then find that line in `writable/logs/log-YYYY-MM-DD.log`.
@@ -97,7 +97,7 @@ Create a CI4 project in the pair's repo, configure `.env`, install Shield with t
 
    🪟 **Windows:** run the block above in Git Bash. Don't use PowerShell `Copy-Item` — it overwrites your `README.md`.
 
-   **Project hygiene (every OS).** Create two files in the project root in VS Code (*File → New File*), so line endings are LF and indentation is the same on Windows, macOS and Linux. `.gitattributes` (template: [`gitattributes.txt`](../templates/kod/gitattributes.txt)):
+   **Project hygiene (every OS).** Create two files in the project root in VS Code (*File → New File*), so line endings are LF and indentation is the same on Windows, macOS and Linux. `.gitattributes` (template: `gitattributes.txt` (**Templat & Rujukan** module)):
 
    ```text
    * text=auto eol=lf
@@ -115,7 +115,7 @@ Create a CI4 project in the pair's repo, configure `.env`, install Shield with t
    *.ttf binary
    ```
 
-   `.editorconfig` (template: [`editorconfig.txt`](../templates/kod/editorconfig.txt)):
+   `.editorconfig` (template: `editorconfig.txt` (**Templat & Rujukan** module)):
 
    ```ini
    root = true
@@ -263,7 +263,7 @@ Create a CI4 project in the pair's repo, configure `.env`, install Shield with t
 
    🪟 The password is asked interactively. In a separate Git Bash window (not the VS Code terminal), if the prompt does not appear: `winpty php spark shield:user create …`.
 
-9. `app/Config/AuthGroups.php` — replace `$defaultGroup`, `$groups`, `$permissions`, `$matrix` with the values from SPEC §4 (4 groups: `applicant`, `reviewer`, `approver`, `admin`; 8 permissions: `admin.access`, `tlk.apply`, `tlk.decide`, `pas.apply`, `pas.review`, `pas.approve`, `laporan.view`, `statistik.view`). Write it yourself first based on README §2.3, then check it against [`templates/kod/AuthGroups.php.txt`](../templates/kod/AuthGroups.php.txt).
+9. `app/Config/AuthGroups.php` — replace `$defaultGroup`, `$groups`, `$permissions`, `$matrix` with the values from SPEC §4 (4 groups: `applicant`, `reviewer`, `approver`, `admin`; 8 permissions: `admin.access`, `tlk.apply`, `tlk.decide`, `pas.apply`, `pas.review`, `pas.approve`, `laporan.view`, `statistik.view`). Write it yourself first based on README §2.3, then check it against `templates/kod/AuthGroups.php.txt` (**Templat & Rujukan** module).
 
 10. `app/Config/Filters.php` — in `$globals['before']`, uncomment `'csrf'`. (`shield:setup` only changes `Security::$csrfProtection = 'session'`; it does **not** turn on the CSRF filter.)
 
@@ -466,7 +466,7 @@ Turn the Day 3 ERD into 10 migrations (FK, UNIQUE, INDEX), write 5 idempotent se
    - [ ] Every FK: the same INT UNSIGNED type as the parent; `ON DELETE` chosen for a reason
    - [ ] `down()` removes what `up()` creates
 
-   > ⏱️ **Falling behind?** If you are not done by minute 60 of the session, follow the trainer's catch-up plan: copy the `up()`/`down()` blocks from [`templates/kod/migration-core-tables.php.txt`](../templates/kod/migration-core-tables.php.txt) into the files generated by `make:migration` (keep the class names), then the navigator explains one FK and one `ON DELETE` to the trainer.
+   > ⏱️ **Falling behind?** If you are not done by minute 60 of the session, follow the trainer's catch-up plan: copy the `up()`/`down()` blocks from `templates/kod/migration-core-tables.php.txt` (**Templat & Rujukan** module) into the files generated by `make:migration` (keep the class names), then the navigator explains one FK and one `ON DELETE` to the trainer.
 
 6. Run them all:
 
@@ -509,7 +509,7 @@ Turn the Day 3 ERD into 10 migrations (FK, UNIQUE, INDEX), write 5 idempotent se
    }
    ```
 
-9. `UserSeeder` — write it based on README §3.4 (5 users, groups, `Latihan@2026`, `department_id` looked up by `code`, skip if the e-mail exists). Check it against [`templates/kod/UserSeeder.php.txt`](../templates/kod/UserSeeder.php.txt).
+9. `UserSeeder` — write it based on README §3.4 (5 users, groups, `Latihan@2026`, `department_id` looked up by `code`, skip if the e-mail exists). Check it against `templates/kod/UserSeeder.php.txt` (**Templat & Rujukan** module).
 
 10. `ParkingSeeder` — zones `A` *Blok Utama* (Main Block), `B` *Blok Klinik* (Clinic Block), `C` *Parkir Bertingkat* (Multi-storey Car Park); 4 slots per zone (`A-01`…`C-04`) covering all five categories `oku`, `mengandung`, `pegawai_kanan`, `kenderaan_rasmi`, `pelawat_vip`. Get `zone_id` with:
 

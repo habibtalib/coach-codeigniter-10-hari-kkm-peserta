@@ -1,6 +1,6 @@
 # Supporting Documents — CI-KKM-10
 
-> Index of all supporting material outside the `hari-N/` folders. Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Schedule: [`JADUAL.md`](../JADUAL.md) · Working agreement: [`KOLABORASI.md`](../KOLABORASI.md) · Topic notes: [`../nota/README.md`](../nota/README.md)
+> Index of all supporting material outside the `hari-N/` folders. Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Schedule: [`JADUAL.md`](../JADUAL.md) · Working agreement: [`docs/kolaborasi.md`](kolaborasi.md) · Topic notes: [`nota.md`](nota.md)
 
 ## `docs/` — participant & trainer reference
 
@@ -14,6 +14,10 @@
 | [`senarai-semak-modul.md`](./senarai-semak-modul.md) | M1–M4 progress checklist mapped to the Definition of Done & `BR-*` rules | End of every build session; before the demo |
 | [`rubrik-capstone.md`](./rubrik-capstone.md) | Assessment rubric for the Day 10 capstone demo | Day 9 (read), Day 10 S4 (assessed) |
 | [`glosari.md`](./glosari.md) | Malay ↔ English glossary of terms | When you meet a new term |
+| [`spesifikasi-sistem.md`](./spesifikasi-sistem.md) | System specification: stack, `BR-*` rules, status enums, table & field schema, Shield roles, routes | Every time you write a migration, model, enum or route |
+| [`kolaborasi.md`](./kolaborasi.md) | Git workflow, Definition of Done, AI discipline | Every commit & merge request |
+| [`nota.md`](./nota.md) | Index of the topical notes `nota-01` … `nota-12` (MVC, migrations, model/enum, validation, transactions, Shield, uploads, reports, cache, testing, security, Git) | Follow the links in the labs |
+| [`rujukan-keperluan.md`](./rujukan-keperluan.md) | The original requirements & design material (flowcharts, AC, URS) — optional reading | When you want the requirements theory |
 
 ## Side tracks (optional)
 
@@ -29,8 +33,8 @@ Not counted in progress or assessment. Finish before Day 4; the last Jira & GitL
 
 | Folder | Contents | Who uses it |
 |--------|-----------|-----------|
-| [`../templates/dokumen/`](../templates/dokumen/) | Templates for URS, acceptance criteria (Given/When/Then), data dictionary, manual test cases, UAT script | Participants — Day 1–3, 5, 7, 10 |
-| [`../templates/kod/`](../templates/kod/) | CI4 reference code (`*.php.txt`) — migration, model, enum, service, controller | **Trainer** — to check participants' work. Participants type their own code. |
+| `../templates/dokumen/` (**Templat & Rujukan** module) | Templates for URS, acceptance criteria (Given/When/Then), data dictionary, manual test cases, UAT script | Participants — Day 1–3, 5, 7, 10 |
+| `../templates/kod/` (**Templat & Rujukan** module) | CI4 reference code (`*.php.txt`) — migration, model, enum, service, controller | **Trainer** — to check participants' work. Participants type their own code. |
 
 > The `*.php.txt` files are deliberately not `.php` so they are not copied straight into `app/`. KOLABORASI §3 applies: participants must be able to explain every line.
 
@@ -38,7 +42,7 @@ Not counted in progress or assessment. Finish before Day 4; the last Jira & GitL
 
 | Location | Contents |
 |--------|-----------|
-| [`../slides/`](../slides/) | *Self-contained* HTML slide deck (no internet needed) — open it directly in the browser. One deck covers all 10 days; navigate with the arrow keys. |
+| Slides (pelatih.my → Day page) | *Self-contained* HTML slide deck (no internet needed) — open it directly in the browser. One deck covers all 10 days; navigate with the arrow keys. |
 
 ## Recommended reading flow
 

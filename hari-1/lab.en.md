@@ -1,6 +1,6 @@
 # Day 1 Lab — Scope Chart, Interviews & Requirements List
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../SPEC-KURSUS.md) · [📖 Day 1 README](./README.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 1 README](./README.md)
 
 > Every lab today produces **Markdown documents**, not code (except Lab 1.5 in S4: CI4 basics on Laragon). Work in pairs (the driver types, the navigator checks against the SPEC) — swap roles every lab.
 
@@ -45,7 +45,7 @@ Produce a scope chart that states the goal, the 4 modules, what is in and out of
 ### Prerequisites
 - 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
 - You have attended the S1 project briefing.
-- Read [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) §1, §2 and §4.
+- Read [`docs/spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §1, §2 and §4.
 
 ### Steps
 1. Create `docs/carta-skop.md` with this outline:

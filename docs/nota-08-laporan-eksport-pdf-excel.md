@@ -1,6 +1,6 @@
 # 08 · Laporan Bertapis & Eksport PDF/Excel
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -250,7 +250,7 @@ private function pdf(string $code, string $view, array $rows, array $filters)
 </table>
 ```
 
-> Jika `SlotBookingModel::$returnType` ialah Entity `SlotBooking`, `$r->status` mungkin sudah enum mengikut cara anda menulis Entity (lihat [nota 03](./03-model-entity-dan-enum.md)). Sesuaikan.
+> Jika `SlotBookingModel::$returnType` ialah Entity `SlotBooking`, `$r->status` mungkin sudah enum mengikut cara anda menulis Entity (lihat [nota 03](./nota-03-model-entity-dan-enum.md)). Sesuaikan.
 
 ---
 
@@ -365,4 +365,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Dompdf dan PhpSpreadsheet tiada dalam buku; ikut nota ini.
 
 ---
-**Digunakan pada Hari 9** — S1 (spesifikasi RPT-01..03 & borang filter GET), S2 (`ReportService`: join, `groupBy`, filter dinamik), S3 (eksport Dompdf & PhpSpreadsheet), S4 (jumlah laporan = jumlah DB). Nota berkaitan: [02 Query Builder](./02-migration-seeder-dan-query-builder.md) · [09 Statistik & cache](./09-statistik-chartjs-dan-cache.md) · [10 Ujian](./10-ujian-phpunit-ci4.md)
+**Digunakan pada Hari 9** — S1 (spesifikasi RPT-01..03 & borang filter GET), S2 (`ReportService`: join, `groupBy`, filter dinamik), S3 (eksport Dompdf & PhpSpreadsheet), S4 (jumlah laporan = jumlah DB). Nota berkaitan: [02 Query Builder](./nota-02-migration-seeder-dan-query-builder.md) · [09 Statistik & cache](./nota-09-statistik-chartjs-dan-cache.md) · [10 Ujian](./nota-10-ujian-phpunit-ci4.md)

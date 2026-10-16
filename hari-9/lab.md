@@ -1,9 +1,9 @@
 # Lab Hari 9 — Modul Laporan (M3)
 
-[← README Hari 9](./README.md) · [Kanun SPEC](../SPEC-KURSUS.md) · [Jadual](../JADUAL.md)
+[← README Hari 9](./README.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [Jadual](../JADUAL.md)
 
 > **Branch kerja:** `git switch main && git pull && git switch -c feat/laporan`
-> **Prefix commit:** `RPT:` · **Kod rujukan jurulatih:** [`templates/kod/`](../templates/kod/) (guna untuk **semak**, bukan salin bulat-bulat — anda mesti boleh menerangkan setiap baris).
+> **Prefix commit:** `RPT:` · **Kod rujukan jurulatih:** `templates/kod/` (modul **Templat & Rujukan**) (guna untuk **semak**, bukan salin bulat-bulat — anda mesti boleh menerangkan setiap baris).
 
 | Lab | Sesi | Tempoh | Hasil |
 |-----|------|--------|-------|
@@ -29,7 +29,7 @@
 
 ### Langkah
 
-**0. Sediakan data demo (10 min).** Laporan dan carta (Hari 10) perlukan data merentas bulan dan status. Salin [`DemoDataSeeder.php.txt`](../templates/kod/DemoDataSeeder.php.txt) ke `app/Database/Seeds/DemoDataSeeder.php` (salin terus — ini data, bukan latihan menulis), kemudian tambah panggilannya di hujung `DatabaseSeeder::run()`:
+**0. Sediakan data demo (10 min).** Laporan dan carta (Hari 10) perlukan data merentas bulan dan status. Salin `DemoDataSeeder.php.txt` (modul **Templat & Rujukan**) ke `app/Database/Seeds/DemoDataSeeder.php` (salin terus — ini data, bukan latihan menulis), kemudian tambah panggilannya di hujung `DatabaseSeeder::run()`:
 
 ```php
 $this->call(DemoDataSeeder::class);     // Hari 9–10: data demo Laporan/Statistik (≥ 20 tempahan, ≥ 15 pas)
@@ -60,7 +60,7 @@ php spark db:seed DatabaseSeeder
 | Siapa boleh lihat (permission) | | | |
 ```
 
-**2. Tambah route.** Buka `app/Config/Routes.php` dan tambah kumpulan laporan (rujuk [`Routes-laporan-statistik.php.txt`](../templates/kod/Routes-laporan-statistik.php.txt)):
+**2. Tambah route.** Buka `app/Config/Routes.php` dan tambah kumpulan laporan (rujuk `Routes-laporan-statistik.php.txt` (modul **Templat & Rujukan**)):
 
 ```php
 $routes->group('laporan', [
@@ -98,7 +98,7 @@ Buat sementara `bookings()`, `passes()`, `usage()` yang memulangkan `view('lapor
 - Dropdown status/kategori/jenis pas dibina dari enum `::cases()` dan `->label()` — **bukan** senarai ditaip tangan.
 - Butang **Set semula** = pautan ke `current_url()` tanpa query string.
 
-Rujukan penuh: [`report-filter-view.php.txt`](../templates/kod/report-filter-view.php.txt).
+Rujukan penuh: `report-filter-view.php.txt` (modul **Templat & Rujukan**).
 
 **5. Tambah pautan menu** dalam `layouts/main.php` hanya jika pengguna ada kebenaran:
 
@@ -187,7 +187,7 @@ class ReportService
 | `sort=b.id; DROP TABLE users` | `'sort' => 'start_date'` (lalai) |
 | `dir=sideways` | `'dir' => 'desc'` (lalai) |
 
-Pembantu teras (rujuk [`ReportService.php.txt`](../templates/kod/ReportService.php.txt) §1 dan §Pembantu):
+Pembantu teras (rujuk `ReportService.php.txt` (modul **Templat & Rujukan**) §1 dan §Pembantu):
 
 ```php
 private function validDate(?string $value): ?string
@@ -356,7 +356,7 @@ public function pdf(string $title, array $columns, iterable $rows, array $meta):
 public function xlsx(string $title, array $columns, iterable $rows, array $meta): string
 ```
 
-`$meta = ['filters' => 'ringkasan penapis', 'user' => 'nama pengguna', 'generated_at' => 'd/m/Y H:i']`. Kedua-dua memulangkan **string binari**; controller yang menghantar respons. Rujukan: [`ExportService.php.txt`](../templates/kod/ExportService.php.txt).
+`$meta = ['filters' => 'ringkasan penapis', 'user' => 'nama pengguna', 'generated_at' => 'd/m/Y H:i']`. Kedua-dua memulangkan **string binari**; controller yang menghantar respons. Rujukan: `ExportService.php.txt` (modul **Templat & Rujukan**).
 
 **3. Cipta view PDF** `app/Views/laporan/pdf.php` — HTML ringkas, **tanpa** layout Bootstrap:
 
@@ -372,7 +372,7 @@ public function xlsx(string $title, array $columns, iterable $rows, array $meta)
 <footer>Dijana pada <?= esc($meta['generated_at']) ?> oleh <?= esc($meta['user']) ?></footer>
 ```
 
-Rujukan penuh: [`report-pdf-view.php.txt`](../templates/kod/report-pdf-view.php.txt).
+Rujukan penuh: `report-pdf-view.php.txt` (modul **Templat & Rujukan**).
 
 **4. Tambah `exportRows()` dalam `ReportService`** — kira dahulu, tolak jika melebihi had, kemudian pulang Generator:
 
@@ -527,7 +527,7 @@ final class ReportServiceTest extends CIUnitTestCase
 | `testEksportSamaJumlahDenganPaparanHtml` | `count(iterator_to_array(exportRows)) === paginate total` |
 | `testRpt03KadarPenggunaanJun2026` | Zon A = `25.0` |
 
-Rujukan penuh: [`ReportServiceTest.php.txt`](../templates/kod/ReportServiceTest.php.txt).
+Rujukan penuh: `ReportServiceTest.php.txt` (modul **Templat & Rujukan**).
 
 **4. Jalankan.**
 

@@ -1,6 +1,6 @@
 # Optional Track — Design Thinking for the TLK & Pass System
 
-[← Docs index](./README.md) · [📘 SPEC canon](../SPEC-KURSUS.md) · [📅 Schedule](../JADUAL.md) · [🧪 Day 1 Lab](../hari-1/lab.md)
+[← Docs index](./README.md) · [📘 SPEC canon](spesifikasi-sistem.md) · [📅 Schedule](../JADUAL.md) · [🧪 Day 1 Lab](../hari-1/lab.md)
 
 > **Optional side track — finish it before Day 4.** This page **does not replace** the core labs of Days 1–3. It takes the lab outputs you already have (interviews, pain points, FRs, ACs, wireframes) and adds five Design Thinking steps, so that every requirement can be traced back to **the real problem of one user**. The course scope is fixed (4 modules, SPEC), so we do **not** use Design Thinking to invent new features. We use it to sharpen the requirements and the screen design.
 
@@ -367,8 +367,8 @@ Each row below traces one real problem all the way to a test that can pass or fa
 - [Day 2 README](../hari-2/README.md) §1 (validation), §2 (as-is/to-be), §3 (Given/When/Then ACs), §4.3 (traceability matrix) · [Day 2 Lab](../hari-2/lab.md)
 - [Day 3 README](../hari-3/README.md) §3 (wireframes) · [Day 3 Lab](../hari-3/lab.md) Labs 3.3–3.4
 - [Day 10 Lab](../hari-10/lab.md) Lab 10.3 (UAT)
-- [Acceptance criteria template](../templates/dokumen/acceptance-criteria-templat.md) · [URS template](../templates/dokumen/urs-templat.md)
-- [SPEC-KURSUS](../SPEC-KURSUS.md) §2 (BR-TLK-01..06, BR-PAS-01..06) · [Glossary](./glosari.md)
+- Acceptance criteria template (**Templat & Rujukan** module) · URS template (**Templat & Rujukan** module)
+- [Spesifikasi sistem](spesifikasi-sistem.md) §2 (BR-TLK-01..06, BR-PAS-01..06) · [Glossary](./glosari.md)
 
 **External references** (checked 2026-10-15)
 - Nielsen Norman Group — [Design Thinking 101](https://www.nngroup.com/articles/design-thinking/)

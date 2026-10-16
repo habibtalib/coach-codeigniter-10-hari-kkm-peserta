@@ -1,7 +1,7 @@
 # AI Prompt Library — for LEARNING, not copying
 
 > A collection of Claude Code (or any AI assistant) prompts for the **CI-KKM-10** course. Every prompt has an **ID**, **when to use**, **don't**, and **after** — so it can be referred to in labs and during trainer reviews.
-> Basis: [`KOLABORASI.md`](../KOLABORASI.md) §3 · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md)
+> Basis: [`docs/kolaborasi.md`](kolaborasi.md) §3 · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md)
 
 ## Principle: **understand first, accept later**
 
@@ -27,7 +27,7 @@ flowchart LR
 | 1 | **Synthetic data only** — don't paste real KKM data, real names/IC numbers/plates | Government data must not go out to external services |
 | 2 | **Don't paste `.env`**, passwords, tokens, `encryption.key` | A pasted secret = a leaked secret |
 | 3 | **Include context**: versions (CI 4.6, PHP 8.2+, Shield), related files, the full error message | AI answers are only as good as their context |
-| 4 | **Refer to the SPEC**: "Use table/field/enum names as in SPEC-KURSUS.md" | Stops the AI inventing field names (`booking_status` vs `status`) |
+| 4 | **Refer to the SPEC**: "Use table/field/enum names as in docs/spesifikasi-sistem.md" | Stops the AI inventing field names (`booking_status` vs `status`) |
 | 5 | **Ask for an explanation, not just code** — add "explain why" | You learn from the *why*, not from the *what* |
 | 6 | **Verify** with tests, `php spark routes`, `getLastQuery()`, or the official documentation | AI can be confident but wrong — especially with old-version APIs (CI3!) |
 | 7 | **Type it yourself** — don't copy-paste large blocks | Typing forces you to read every line |
@@ -116,10 +116,10 @@ parking_slots — see the schema below).
 - Finally, a SHORT (≤ 15 lines) CI 4.6 code example.
 Plain English; keep technical terms as they are.
 
-[paste the related part of the schema from SPEC-KURSUS.md §3]
+[paste the related part of the schema from docs/spesifikasi-sistem.md §3]
 ```
 
-- **After:** Compare with the topic notes ([`../nota/`](../nota/README.md)). If they conflict, **the notes & official documentation win** — ask the trainer.
+- **After:** Compare with the topic notes ([`nota.md`](nota.md)). If they conflict, **the notes & official documentation win** — ask the trainer.
 
 ### AI-14 — Quiz me
 
@@ -163,7 +163,7 @@ Format: table | Issue | Example input | Effect |. DO NOT rewrite the code.
 - **Don't:** Paste the whole `app/` folder. Choose the related service + controller.
 
 ```prompt title="AI-05"
-Here are the business rules of the <TLK> module (from SPEC-KURSUS.md):
+Here are the business rules of the <TLK> module (from docs/spesifikasi-sistem.md):
 [paste the list BR-TLK-01..06]
 
 Here is my code:
@@ -197,7 +197,7 @@ storage location (not public/), IDOR on download, Content-Disposition, empty fil
 hasMoved()/isValid(). DO NOT rewrite the code — explain only.
 ```
 
-- **After:** Test every "No" yourself: a `.php` file renamed to `.pdf`, a 2.1 MB file, 4 files, accessing `/pas/permohonan/dokumen/{id}` that belongs to another applicant. See [`../nota/07-muat-naik-fail-selamat.md`](../nota/07-muat-naik-fail-selamat.md).
+- **After:** Test every "No" yourself: a `.php` file renamed to `.pdf`, a 2.1 MB file, 4 files, accessing `/pas/permohonan/dokumen/{id}` that belongs to another applicant. See [`nota-07-muat-naik-fail-selamat.md`](nota-07-muat-naik-fail-selamat.md).
 
 ### AI-07 — Access control review (RBAC + ownership)
 
@@ -206,7 +206,7 @@ hasMoved()/isValid(). DO NOT rewrite the code — explain only.
 
 ```prompt title="AI-07"
 CodeIgniter 4.6 + Shield application. Role matrix (AuthGroups::$matrix):
-[paste SPEC-KURSUS.md §4]
+[paste docs/spesifikasi-sistem.md §4]
 
 My routes (app/Config/Routes.php):
 [paste the pas/ and tlk/ route groups]
@@ -220,7 +220,7 @@ SERVER (filter + ownership check) or only in the view? Identify any IDOR
 List the positive & negative access tests I need to write.
 ```
 
-- **After:** Write the negative tests first (applicant → `/pas/semakan` must be denied). See [`../nota/06-shield-auth-dan-rbac.md`](../nota/06-shield-auth-dan-rbac.md).
+- **After:** Write the negative tests first (applicant → `/pas/semakan` must be denied). See [`nota-06-shield-auth-dan-rbac.md`](nota-06-shield-auth-dan-rbac.md).
 
 ### AI-08 — Pre-commit review (DoD)
 
@@ -268,7 +268,7 @@ Include: the happy path, date edge cases (same day, overlapping by 1 day, adjace
 access cases (wrong role), invalid status cases. DO NOT write test code yet.
 ```
 
-- **After:** Choose the 3–5 most important cases; write them yourself following [`../nota/10-ujian-phpunit-ci4.md`](../nota/10-ujian-phpunit-ci4.md).
+- **After:** Choose the 3–5 most important cases; write them yourself following [`nota-10-ujian-phpunit-ci4.md`](nota-10-ujian-phpunit-ci4.md).
 
 ### AI-10 — Help write a failing test first (reproduce a bug)
 
@@ -297,7 +297,7 @@ DO NOT fix the application code — I will fix it myself after the test is red.
 - **Don't:** Ask the AI to generate all the migrations — you need to understand the FK order.
 
 ```prompt title="AI-11"
-Compare my CodeIgniter 4.6 migrations with the canonical schema (SPEC-KURSUS.md §3, attached).
+Compare my CodeIgniter 4.6 migrations with the canonical schema (docs/spesifikasi-sistem.md §3, attached).
 Report in a table: | Table | Field | In SPEC | In migration | Issue |
 Check: type & length, NULL, UNIQUE, INDEX, FK (onDelete), deleted_at only where
 specified, utf8mb4. Also check the migration ORDER (parent tables before child tables).

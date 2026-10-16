@@ -1,6 +1,6 @@
 # Day 1 — Project Kickoff & Requirement Deep Dive
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../SPEC-KURSUS.md) · [🧪 Day 1 Lab](./lab.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 1 Lab](./lab.md)
 
 > **No PHP code today.** This is on purpose. We will build the TLK (Special Vehicle Parking) and Pass system over 10 days — and every line of code written on Days 5–10 is only correct if **its requirement is correct**. Today we learn to *ask*, to *listen* and to *write requirements* that can be tested.
 
@@ -148,7 +148,7 @@ quadrantChart
 | Role | Who |
 |---------|-------|
 | **System owner** (*system owner*) | The trainer or a department representative — answers domain questions, signs off the URS (Day 2), accepts the demo (Day 10) |
-| **Developer pair** | You — driver/navigator, swap every session ([`KOLABORASI.md`](../KOLABORASI.md) §4) |
+| **Developer pair** | You — driver/navigator, swap every session ([`docs/kolaborasi.md`](../docs/kolaborasi.md) §4) |
 | **Trainer** | Checks at every ✅ checkpoint |
 
 ⚠️ **Common mistake:** Assuming the trainer "knows the answer" and so not asking. When the trainer wears the "system owner hat", they only answer **what is asked**. Hidden requirements only come out if you ask the right questions — just like a real project.

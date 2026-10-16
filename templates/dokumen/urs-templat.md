@@ -1,6 +1,6 @@
 # URS — Spesifikasi Keperluan Pengguna: Sistem TLK & Pas
 
-> **Templat.** Salin ke `docs/URS-v1.md` (Hari 2 Lab 2.4). Ganti semua `<…>`. Padam blok "Panduan" selepas diisi. Rujuk [`SPEC-KURSUS.md`](../../SPEC-KURSUS.md) untuk nama status, peranan dan BR — **jangan** mencipta nilai baharu.
+> **Templat.** Salin ke `docs/URS-v1.md` (Hari 2 Lab 2.4). Ganti semua `<…>`. Padam blok "Panduan" selepas diisi. Rujuk [`docs/spesifikasi-sistem.md`](../../docs/spesifikasi-sistem.md) untuk nama status, peranan dan BR — **jangan** mencipta nilai baharu.
 
 ---
 

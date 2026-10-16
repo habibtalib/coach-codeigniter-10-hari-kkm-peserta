@@ -1,6 +1,6 @@
 # 12 · Git — Aliran Kerja Satu Cabang Satu Ciri
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Kontrak kerja: [`KOLABORASI.md`](../KOLABORASI.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Kontrak kerja: [`docs/kolaborasi.md`](kolaborasi.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -82,7 +82,7 @@ build/
 
 ---
 
-## 3. Kitaran harian (KOLABORASI.md §1)
+## 3. Kitaran harian (docs/kolaborasi.md §1)
 
 ```bash
 # 1. Mula dari main yang terkini
@@ -273,7 +273,7 @@ Semak: `git log --all --oneline -- .env` sepatutnya kosong untuk repo yang bersi
 ## 10. Kerja berpasangan (driver/navigator)
 
 - **Driver** menaip; **navigator** membaca, menyemak SPEC, menangkap kesilapan.
-- Tukar peranan setiap sesi (KOLABORASI.md §4). Sebelum tukar: commit & push, pasangan `git pull`.
+- Tukar peranan setiap sesi (docs/kolaborasi.md §4). Sebelum tukar: commit & push, pasangan `git pull`.
 - Kredit kedua-dua dalam commit (pilihan):
   ```text
   TLK: senarai tempahan dengan pagination
@@ -308,4 +308,4 @@ Semak: `git log --all --oneline -- .env` sepatutnya kosong untuk repo yang bersi
 - Mermaid — gitGraph: <https://mermaid.js.org/syntax/gitgraph.html>
 
 ---
-**Digunakan pada Hari 4** (S4 — pembahagian tugas, branch Git & Definition of Done) **dan sepanjang Hari 5–10** (setiap ciri modul TLK, Pas, Laporan, Statistik). Nota berkaitan: [11 · Keselamatan Aplikasi Web](./11-keselamatan-aplikasi-web.md) · [10 · Ujian PHPUnit](./10-ujian-phpunit-ci4.md) · [02 · Migration, Seeder & Query Builder](./02-migration-seeder-dan-query-builder.md)
+**Digunakan pada Hari 4** (S4 — pembahagian tugas, branch Git & Definition of Done) **dan sepanjang Hari 5–10** (setiap ciri modul TLK, Pas, Laporan, Statistik). Nota berkaitan: [11 · Keselamatan Aplikasi Web](./nota-11-keselamatan-aplikasi-web.md) · [10 · Ujian PHPUnit](./nota-10-ujian-phpunit-ci4.md) · [02 · Migration, Seeder & Query Builder](./nota-02-migration-seeder-dan-query-builder.md)

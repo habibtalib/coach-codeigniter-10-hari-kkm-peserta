@@ -1,8 +1,8 @@
 # Lab Hari 8 — Modul Pas (2): Aliran Kelulusan, RBAC & Ujian Akses
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [📖 Nota Hari 8](./README.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 Nota Hari 8](./README.md)
 
-> Bekerja **berpasangan** (tukar driver/navigator setiap sesi). Semua arahan dari **akar projek CI4**. Rujukan jurulatih: [`templates/kod/`](../templates/kod/) — salin **hanya** selepas anda boleh menerangkan setiap baris (KOLABORASI §3).
+> Bekerja **berpasangan** (tukar driver/navigator setiap sesi). Semua arahan dari **akar projek CI4**. Rujukan jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — salin **hanya** selepas anda boleh menerangkan setiap baris (KOLABORASI §3).
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
@@ -52,7 +52,7 @@ Melaksanakan `startReview()`, `approve()`, `reject()` melalui satu `transition()
 
 ### Langkah
 
-1. **Tambah kaedah Hari 8 dalam `app/Services/PassWorkflowService.php`** dari [`PassWorkflowService.php.txt`](../templates/kod/PassWorkflowService.php.txt):
+1. **Tambah kaedah Hari 8 dalam `app/Services/PassWorkflowService.php`** dari `PassWorkflowService.php.txt` (modul **Templat & Rujukan**):
    - pemalar `REMARKS_MIN = 10`
    - `startReview()`, `approve()`, `reject()`, `history()`
    - `transition()` (peribadi)
@@ -62,7 +62,7 @@ Melaksanakan `startReview()`, `approve()`, `reject()` melalui satu `transition()
 
 2. Sebelum meneruskan, navigator menerangkan kepada driver (lisan, 2 minit): *"Kenapa status dibaca SELEPAS `FOR UPDATE`, dan apa berlaku jika `record()` memulangkan `false`?"*
 
-3. **Cipta `app/Controllers/Pas/ReviewController.php`** dari [`ReviewController.php.txt`](../templates/kod/ReviewController.php.txt): `index()`, `review()`, `approve()`, `reject()`, `act()`, `defaultQueue()`.
+3. **Cipta `app/Controllers/Pas/ReviewController.php`** dari `ReviewController.php.txt` (modul **Templat & Rujukan**): `index()`, `review()`, `approve()`, `reject()`, `act()`, `defaultQueue()`.
 
 4. **Tambah route** dalam `app/Config/Routes.php` — buat masa ini dengan filter **group sahaja**:
 
@@ -129,7 +129,7 @@ Melaksanakan `startReview()`, `approve()`, `reject()` melalui satu `transition()
    <?= $this->endSection() ?>
    ```
 
-6. **Kemas kini `ApplicationController::show()`** supaya menghantar `history` dan `actions` (rujuk template [`ApplicationController-upload.php.txt`](../templates/kod/ApplicationController-upload.php.txt)):
+6. **Kemas kini `ApplicationController::show()`** supaya menghantar `history` dan `actions` (rujuk template `ApplicationController-upload.php.txt` (modul **Templat & Rujukan**)):
 
    ```php
    public function show(string $id): string
@@ -249,9 +249,9 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
    curl -i -X POST http://localhost:8080/pas/semakan/5/approve -b "ci_session=<nilai>" -d "csrf_test_name=<token>&remarks=serangan"
    ```
 
-2. **Semak `app/Config/AuthGroups.php`** terhadap SPEC §4 dan [`AuthGroups.php.txt`](../templates/kod/AuthGroups.php.txt): 4 groups, 8 permissions, `$matrix` tepat. `$defaultGroup = 'applicant'`.
+2. **Semak `app/Config/AuthGroups.php`** terhadap SPEC §4 dan `AuthGroups.php.txt` (modul **Templat & Rujukan**): 4 groups, 8 permissions, `$matrix` tepat. `$defaultGroup = 'applicant'`.
 
-3. **Tambah filter `permission:` per route** dalam `app/Config/Routes.php` (bandingkan dengan [`Routes-pas.php.txt`](../templates/kod/Routes-pas.php.txt)):
+3. **Tambah filter `permission:` per route** dalam `app/Config/Routes.php` (bandingkan dengan `Routes-pas.php.txt` (modul **Templat & Rujukan**)):
 
    ```php
    // pas/permohonan
@@ -338,11 +338,11 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
 Memaparkan sejarah `status_logs` pada halaman butiran, dan menulis `PassAccessTest` yang menguji akses positif & negatif setiap peranan (≥ 13 ujian hijau).
 
 ### Prasyarat
-- Lab 8.2 selesai. Database ujian MySQL (`kkm_latihan_test`) sudah dikonfigur sejak Hari 6 ([nota 10](../nota/10-ujian-phpunit-ci4.md) §3).
+- Lab 8.2 selesai. Database ujian MySQL (`kkm_latihan_test`) sudah dikonfigur sejak Hari 6 ([nota 10](../docs/nota-10-ujian-phpunit-ci4.md) §3).
 
 ### Langkah
 
-1. **Cipta `app/Views/partials/status_timeline.php`** dari [`status-timeline-view.php.txt`](../templates/kod/status-timeline-view.php.txt).
+1. **Cipta `app/Views/partials/status_timeline.php`** dari `status-timeline-view.php.txt` (modul **Templat & Rujukan**).
 
 2. **Paparkan dalam `app/Views/pas/show.php`** — selepas panel tindakan, sebelum pautan "Kembali":
 
@@ -358,7 +358,7 @@ Memaparkan sejarah `status_logs` pada halaman butiran, dan menulis `PassAccessTe
    mkdir -p tests/feature/Pas
    ```
 
-   Salin [`PassAccessTest.php.txt`](../templates/kod/PassAccessTest.php.txt) ke `tests/feature/Pas/PassAccessTest.php`. **Baca setiap ujian** bersama pasangan dan tanda dalam jadual README §3.2 sel matriks mana yang diliputi.
+   Salin `PassAccessTest.php.txt` (modul **Templat & Rujukan**) ke `tests/feature/Pas/PassAccessTest.php`. **Baca setiap ujian** bersama pasangan dan tanda dalam jadual README §3.2 sel matriks mana yang diliputi.
 
 5. **Jalankan:**
 
@@ -449,7 +449,7 @@ Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahk
    ```
 
 4. **⭐ Pilihan — `php spark pas:expire`:**
-   1. Salin [`ExpirePassesCommand.php.txt`](../templates/kod/ExpirePassesCommand.php.txt) ke `app/Commands/ExpirePassesCommand.php`.
+   1. Salin `ExpirePassesCommand.php.txt` (modul **Templat & Rujukan**) ke `app/Commands/ExpirePassesCommand.php`.
    2. `php spark list | grep pas` → `pas:expire` tersenarai di bawah kumpulan **Pas**.
    3. Sediakan data: `UPDATE pass_applications SET valid_until = CURDATE() - INTERVAL 1 DAY WHERE id = <id A>;`
    4. Buka senarai `pemohon1` — badge sudah **Tamat Tempoh** (dari `displayStatus()`), walaupun DB masih `approved`.
@@ -485,4 +485,4 @@ php spark routes | grep pas/              # 9 laluan Pas; semakan dengan permiss
 composer test -- --testdox | tail -20   # semua hijau
 ```
 
-Pasangan yang ketinggalan: gunakan [`templates/kod/`](../templates/kod/) mengikut pelan kejar dalam nota penceramah — tetapi **Lab 8.2 langkah 1 (serangan DevTools)** wajib dibuat sendiri: itu pelajaran utama hari ini.
+Pasangan yang ketinggalan: gunakan `templates/kod/` (modul **Templat & Rujukan**) mengikut pelan kejar dalam nota penceramah — tetapi **Lab 8.2 langkah 1 (serangan DevTools)** wajib dibuat sendiri: itu pelajaran utama hari ini.

@@ -1,7 +1,7 @@
 # Trek Jira — Backlog & Sprint Pasangan (Pilihan)
 
 > **Trek sampingan pilihan.** Halaman ini menunjukkan cara pasangan menguruskan kerja 10 hari dalam **Jira Cloud** (pelan Free): backlog daripada keperluan Hari 1–2, sprint yang dipadankan dengan modul M1–M4, dan pautan antara kad Jira dengan branch dan commit Git. Ia **tidak menggantikan** mana-mana deliverable kursus: `docs/keperluan-awal.md`, `docs/acceptance-criteria.md` dan `docs/pelan-kerja.md` kekal sebagai sumber kebenaran. Jira ialah paparan penjejakan di atasnya.
-> Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Jadual: [`JADUAL.md`](../JADUAL.md) · Kontrak kerja: [`KOLABORASI.md`](../KOLABORASI.md) · Trek berkaitan: [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
+> Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Jadual: [`JADUAL.md`](../JADUAL.md) · Kontrak kerja: [`docs/kolaborasi.md`](kolaborasi.md) · Trek berkaitan: [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
 
 > ⚠️ **Siap sebelum Hari 4.** Kod bermula Hari 4. Persediaan dan backlog dibuat Hari 1–2, story dengan acceptance criteria Hari 2, dan sprint planning Hari 4 S4 sebelum baris kod pertama modul.
 
@@ -18,7 +18,7 @@ Di pejabat, kebanyakan pasukan IT menjejak kerja dalam alat seperti Jira. Trek i
 | **Story** | Satu FR yang disahkan, ditulis dari sudut pengguna, dengan acceptance criteria Hari 2 |
 | **Sprint** | Satu blok kerja bermatlamat: Sprint 1 = M1, Sprint 2 = M2–M4 |
 | **Stand-up** | Recap 08:30 setiap pagi — tiga soalan |
-| **Board** | To Do → In Progress → In Review → Done; "Done" bermaksud lulus DoD ([`KOLABORASI.md`](../KOLABORASI.md) §2) |
+| **Board** | To Do → In Progress → In Review → Done; "Done" bermaksud lulus DoD ([`docs/kolaborasi.md`](kolaborasi.md) §2) |
 
 **Peraturan teras:** setiap kerja ada kad. Jika anda sedang mengerjakan sesuatu yang tiada pada board, berhenti dan cipta kadnya dahulu.
 
@@ -295,7 +295,7 @@ Halangan direkod sebagai komen pada kad atau sebagai Bug baharu. Giliran driver 
 
 Board Scrum team-managed bermula dengan To Do, In Progress dan Done. Tambah lajur **In Review** dalam tetapan board (menu ••• board → konfigurasi lajur; label menu mungkin berbeza).
 
-| Lajur | Masuk apabila | Kaitan DoD ([`KOLABORASI.md`](../KOLABORASI.md) §2) |
+| Lajur | Masuk apabila | Kaitan DoD ([`docs/kolaborasi.md`](kolaborasi.md) §2) |
 |-------|---------------|------------------------------------------------------|
 | **To Do** | Story ada dalam sprint, AC jelas | AC wujud — syarat DoD baris 1 boleh diuji |
 | **In Progress** | Branch `feat/TLKPAS-nn-…` dicipta, driver mula menaip | — |
@@ -378,7 +378,7 @@ Bagi pasangan yang biasa dengan GitLab Issues/Boards ([`trek-gitlab.md`](./trek-
 
 ## Pautan
 
-- Kursus: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · [`JADUAL.md`](../JADUAL.md) · [`KOLABORASI.md`](../KOLABORASI.md)
+- Kursus: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · [`JADUAL.md`](../JADUAL.md) · [`docs/kolaborasi.md`](kolaborasi.md)
 - Hari: [`hari-1/lab.md`](../hari-1/lab.md) (Lab 1.4 FR/NFR + MoSCoW) · [`hari-2/README.md`](../hari-2/README.md) (S3 acceptance criteria) · [`hari-2/lab.md`](../hari-2/lab.md) · [`hari-4/lab.md`](../hari-4/lab.md) (Lab 4.4 pelan kerja) · [`hari-10/lab.md`](../hari-10/lab.md) (Lab 10.4 retrospektif)
 - Docs: [`README.md`](./README.md) · [`senarai-semak-modul.md`](./senarai-semak-modul.md) · [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md) · [`glosari.md`](./glosari.md)
 

@@ -6,7 +6,7 @@ Dek slaid kursus **Coaching Pembangunan Aplikasi Menggunakan CodeIgniter** (10 h
 |------|------------|
 | `ci-kkm-10.html` | Dek penuh (117 slaid), **satu fail self-contained**: CSS + JavaScript inline, fon sistem, tiada CDN. Berfungsi **tanpa internet**. |
 
-Kandungan patuh [`../SPEC-KURSUS.md`](../SPEC-KURSUS.md) dan [`../JADUAL.md`](../JADUAL.md). Jika SPEC berubah (nama jadual, enum, kelas, route), kemas kini slaid yang berkaitan.
+Kandungan patuh [`../docs/spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) dan [`../JADUAL.md`](../JADUAL.md). Jika SPEC berubah (nama jadual, enum, kelas, route), kemas kini slaid yang berkaitan.
 
 ## Susunan dek
 

@@ -1,6 +1,6 @@
 # Lab Hari 5 — Modul TLK (Bahagian 1)
 
-[⬅️ README Hari 5](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🧩 Template kod](../templates/kod/)
+[⬅️ README Hari 5](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**)
 
 > **Peraturan lab:** navigator membaca langkah & SPEC, driver menaip. **Cuba manual dahulu** — baca mesej ralat penuh (Whoops page menunjukkan fail & baris). Selepas 10 minit buntu: tanya jurulatih atau guna AI untuk *menerangkan* ralat. Template `templates/kod/*.php.txt` untuk **menyemak** selepas anda cuba.
 
@@ -255,7 +255,7 @@ Menulis enum `BookingStatus` & `SlotCategory`, Entity `SlotBooking` dan Model TL
 ### ✅ Checkpoint
 - `composer test -- --no-coverage tests/tlk/BookingStatusTest.php` → `OK (5 tests, …)` (`OK (6 tests, …)` jika ujian cabaran ⭐ ditambah).
 - Navigator boleh menjawab: *"Kenapa `status` ada dalam `$allowedFields` tetapi pemohon tidak boleh menetapkannya?"* (README §1.3).
-- Bandingkan dengan [`BookingStatus.php.txt`](../templates/kod/BookingStatus.php.txt), [`SlotCategory.php.txt`](../templates/kod/SlotCategory.php.txt), [`SlotBooking-Entity.php.txt`](../templates/kod/SlotBooking-Entity.php.txt), [`SlotBookingModel.php.txt`](../templates/kod/SlotBookingModel.php.txt).
+- Bandingkan dengan `BookingStatus.php.txt` (modul **Templat & Rujukan**), `SlotCategory.php.txt` (modul **Templat & Rujukan**), `SlotBooking-Entity.php.txt` (modul **Templat & Rujukan**), `SlotBookingModel.php.txt` (modul **Templat & Rujukan**).
 
 ### 🧯 Masalah lazim
 
@@ -618,7 +618,7 @@ Membina borang tempahan dengan validasi server (termasuk BR-TLK-03), `ReferenceN
    ];
    ```
 
-3. `app/Services/ReferenceNumberService.php` — tulis dari README §3.3 (konstruktor menerima `?BaseConnection $db = null` dan guna `db_connect()` jika null). Semak dengan [`ReferenceNumberService.php.txt`](../templates/kod/ReferenceNumberService.php.txt).
+3. `app/Services/ReferenceNumberService.php` — tulis dari README §3.3 (konstruktor menerima `?BaseConnection $db = null` dan guna `db_connect()` jika null). Semak dengan `ReferenceNumberService.php.txt` (modul **Templat & Rujukan**).
 
 4. `app/Services/BookingService.php` — **versi 1** (esok dinaik taraf):
 

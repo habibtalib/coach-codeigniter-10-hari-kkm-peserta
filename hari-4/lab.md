@@ -1,6 +1,6 @@
 # Lab Hari 4 — Development Kickoff
 
-[⬅️ README Hari 4](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🤝 KOLABORASI](../KOLABORASI.md) · [🧩 Template kod](../templates/kod/)
+[⬅️ README Hari 4](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · [🤝 KOLABORASI](../docs/kolaborasi.md) · 🧩 Template kod (modul **Templat & Rujukan**)
 
 > **Peraturan lab:** cuba **manual dahulu** (baca ralat, semak SPEC, tanya navigator). AI (Claude Code) hanya selepas 10 minit buntu — dan hanya untuk *menerangkan*, bukan menjana fail penuh. Template dalam `templates/kod/` untuk **menyemak**, bukan menyalin.
 
@@ -63,7 +63,7 @@ Mendemokan aplikasi berita tugasan persediaan dan menerangkan 7 langkah kitaran 
 | Debug Toolbar tidak muncul | `CI_ENVIRONMENT` bukan `development` / `.env` tiada | `cp env .env`, nyahkomen `CI_ENVIRONMENT = development` |
 | `404 - Can't find a route for 'GET: news'` | Route belum ditambah / auto routing dimatikan | Tambah `$routes->get('news', [News::class, 'index']);` |
 | `Unable to connect to the database` | `.env` salah | Semak `database.default.*`; cuba `hostname = 127.0.0.1` |
-| `The required PHP extension "sqlite3" is not loaded` bila `composer test` (Windows) | Kumpulan database `tests` appstarter masih SQLite; Laragon tidak menghidupkan `sqlite3` | Kursus guna MySQL untuk ujian: salin blok `database.tests.*` dari [`nota/10`](../nota/10-ujian-phpunit-ci4.md) §3 ke `.env` (database `kkm_latihan_test`) — Hari 6 menetapkannya juga. Disahkan pada Windows: selepas itu `composer test` → `OK` |
+| `The required PHP extension "sqlite3" is not loaded` bila `composer test` (Windows) | Kumpulan database `tests` appstarter masih SQLite; Laragon tidak menghidupkan `sqlite3` | Kursus guna MySQL untuk ujian: salin blok `database.tests.*` dari [`nota/10`](../docs/nota-10-ujian-phpunit-ci4.md) §3 ke `.env` (database `kkm_latihan_test`) — Hari 6 menetapkannya juga. Disahkan pada Windows: selepas itu `composer test` → `OK` |
 
 ### ⭐ Cabaran tambahan
 Tambah `log_message('info', 'News::show slug={slug}', ['slug' => $slug]);` dalam controller, tetapkan `app/Config/Logger.php` `$threshold = 7`, kemudian cari baris itu dalam `writable/logs/log-YYYY-MM-DD.log`.
@@ -97,7 +97,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
 
    🪟 **Windows:** jalankan blok di atas dalam Git Bash. Jangan guna `Copy-Item` PowerShell — ia menulis ganti `README.md` anda.
 
-   **Kebersihan projek (semua OS).** Cipta dua fail di akar projek dalam VS Code (*File → New File*), supaya hujung baris LF dan inden sama di Windows, macOS dan Linux. `.gitattributes` (template: [`gitattributes.txt`](../templates/kod/gitattributes.txt)):
+   **Kebersihan projek (semua OS).** Cipta dua fail di akar projek dalam VS Code (*File → New File*), supaya hujung baris LF dan inden sama di Windows, macOS dan Linux. `.gitattributes` (template: `gitattributes.txt` (modul **Templat & Rujukan**)):
 
    ```text
    * text=auto eol=lf
@@ -115,7 +115,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
    *.ttf binary
    ```
 
-   `.editorconfig` (template: [`editorconfig.txt`](../templates/kod/editorconfig.txt)):
+   `.editorconfig` (template: `editorconfig.txt` (modul **Templat & Rujukan**)):
 
    ```ini
    root = true
@@ -263,7 +263,7 @@ Mencipta projek CI4 dalam repo pasangan, mengkonfigur `.env`, memasang Shield de
 
    🪟 Kata laluan ditanya secara interaktif. Dalam tetingkap Git Bash berasingan (bukan terminal VS Code), jika prompt tidak muncul: `winpty php spark shield:user create …`.
 
-9. `app/Config/AuthGroups.php` — gantikan `$defaultGroup`, `$groups`, `$permissions`, `$matrix` dengan nilai SPEC §4 (4 group: `applicant`, `reviewer`, `approver`, `admin`; 8 permission: `admin.access`, `tlk.apply`, `tlk.decide`, `pas.apply`, `pas.review`, `pas.approve`, `laporan.view`, `statistik.view`). Tulis sendiri dahulu berdasarkan README §2.3, kemudian semak dengan [`templates/kod/AuthGroups.php.txt`](../templates/kod/AuthGroups.php.txt).
+9. `app/Config/AuthGroups.php` — gantikan `$defaultGroup`, `$groups`, `$permissions`, `$matrix` dengan nilai SPEC §4 (4 group: `applicant`, `reviewer`, `approver`, `admin`; 8 permission: `admin.access`, `tlk.apply`, `tlk.decide`, `pas.apply`, `pas.review`, `pas.approve`, `laporan.view`, `statistik.view`). Tulis sendiri dahulu berdasarkan README §2.3, kemudian semak dengan `templates/kod/AuthGroups.php.txt` (modul **Templat & Rujukan**).
 
 10. `app/Config/Filters.php` — dalam `$globals['before']`, nyahkomen `'csrf'`. (`shield:setup` hanya menukar `Security::$csrfProtection = 'session'`; ia **tidak** menghidupkan filter CSRF.)
 
@@ -466,7 +466,7 @@ Menukar ERD Hari 3 kepada 10 migration (FK, UNIQUE, INDEX), menulis 5 seeder ide
    - [ ] Setiap FK: jenis INT UNSIGNED sama dengan induk; `ON DELETE` dipilih dengan sebab
    - [ ] `down()` memadam apa yang `up()` cipta
 
-   > ⏱️ **Ketinggalan?** Jika belum selesai pada minit ke-60 sesi, ikut pelan kejar jurulatih: salin blok `up()`/`down()` dari [`templates/kod/migration-core-tables.php.txt`](../templates/kod/migration-core-tables.php.txt) ke fail yang dijana `make:migration` (kekalkan nama kelas), kemudian navigator menerangkan satu FK dan satu `ON DELETE` kepada jurulatih.
+   > ⏱️ **Ketinggalan?** Jika belum selesai pada minit ke-60 sesi, ikut pelan kejar jurulatih: salin blok `up()`/`down()` dari `templates/kod/migration-core-tables.php.txt` (modul **Templat & Rujukan**) ke fail yang dijana `make:migration` (kekalkan nama kelas), kemudian navigator menerangkan satu FK dan satu `ON DELETE` kepada jurulatih.
 
 6. Jalankan semua:
 
@@ -509,7 +509,7 @@ Menukar ERD Hari 3 kepada 10 migration (FK, UNIQUE, INDEX), menulis 5 seeder ide
    }
    ```
 
-9. `UserSeeder` — tulis berdasarkan README §3.4 (5 pengguna, group, `Latihan@2026`, `department_id` dicari ikut `code`, langkau jika e-mel wujud). Semak dengan [`templates/kod/UserSeeder.php.txt`](../templates/kod/UserSeeder.php.txt).
+9. `UserSeeder` — tulis berdasarkan README §3.4 (5 pengguna, group, `Latihan@2026`, `department_id` dicari ikut `code`, langkau jika e-mel wujud). Semak dengan `templates/kod/UserSeeder.php.txt` (modul **Templat & Rujukan**).
 
 10. `ParkingSeeder` — zon `A` *Blok Utama*, `B` *Blok Klinik*, `C` *Parkir Bertingkat*; 4 slot setiap zon (`A-01`…`C-04`) meliputi kelima-lima kategori `oku`, `mengandung`, `pegawai_kanan`, `kenderaan_rasmi`, `pelawat_vip`. Dapatkan `zone_id` dengan:
 

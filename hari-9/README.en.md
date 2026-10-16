@@ -1,6 +1,6 @@
 # Day 9 — Reports Module (M3)
 
-[← Schedule](../JADUAL.md) · [SPEC Canon](../SPEC-KURSUS.md) · [🧪 Day 9 Lab](./lab.md) · [Day 10 →](../hari-10/README.md)
+[← Schedule](../JADUAL.md) · [SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 9 Lab](./lab.md) · [Day 10 →](../hari-10/README.md)
 
 > **Phase C — Report & Hand Over.** M1 (TLK, Special Vehicle Parking) and M2 (Pass) already generate data. Today we turn that data into **information people can trust**: filtered lists, aggregate summaries, and PDF/Excel files that can be sent to management.
 
@@ -415,7 +415,7 @@ public function testRpt01PenapisStatusSamaDenganKiraanSql(): void
 
 Why **two** assertions? If both queries share the same bug (e.g. a wrong INNER JOIN), the first assertion can pass falsely. The number worked out by hand is the anchor of truth.
 
-Minimum cases for M3 done (all in [`templates/kod/ReportServiceTest.php.txt`](../templates/kod/ReportServiceTest.php.txt)):
+Minimum cases for M3 done (all in `templates/kod/ReportServiceTest.php.txt` (**Templat & Rujukan** module)):
 
 | Case | Proves |
 |-----|-------------|
@@ -523,4 +523,4 @@ Day 10 is the last day: **Statistics + Capstone**.
 2. Run `php spark db:seed DatabaseSeeder` again so there is enough synthetic data (at least 2 zones, 20 bookings, 15 pass applications with various statuses) — empty charts are not convincing during the demo.
 3. Skim the Chart.js 4 *Getting Started* documentation: <https://www.chartjs.org/docs/latest/getting-started/>.
 4. Each pair: list the **3 things** you are proudest of and **1 bug** that is still known — material for tomorrow's demo & retrospective.
-5. Review the UAT templates: [`templates/dokumen/uat-signoff-templat.md`](../templates/dokumen/uat-signoff-templat.md) and [`templates/dokumen/kes-ujian-templat.md`](../templates/dokumen/kes-ujian-templat.md).
+5. Review the UAT templates: `templates/dokumen/uat-signoff-templat.md` (**Templat & Rujukan** module) and `templates/dokumen/kes-ujian-templat.md` (**Templat & Rujukan** module).

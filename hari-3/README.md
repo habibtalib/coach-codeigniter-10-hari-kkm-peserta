@@ -1,6 +1,6 @@
 # Hari 3 — Database Design & UI/UX Foundation
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [🧪 Lab Hari 3](./lab.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 3](./lab.md)
 
 > URS memberitahu **apa** yang sistem perlu buat. Hari ini kita reka **di mana data tinggal** (ERD + kamus data) dan **apa yang pengguna nampak** (wireframe). Esok (Hari 4) ERD hari ini ditukar terus kepada migration CodeIgniter — jadi setiap medan yang anda lukis hari ini akan menjadi satu baris `$this->forge->addField()`.
 
@@ -280,7 +280,7 @@ ERD menunjukkan **bentuk**; kamus data menunjukkan **butiran** yang diperlukan u
 | Peraturan / enum | ≥ hari ini (BR-TLK-03) | `$validationRules` Model |
 | Keterangan | Tarikh mula tempahan | Komen / dokumentasi |
 
-Templat penuh: [`templates/dokumen/kamus-data-templat.md`](../templates/dokumen/kamus-data-templat.md).
+Templat penuh: `templates/dokumen/kamus-data-templat.md` (modul **Templat & Rujukan**).
 
 ### 2.2 Worked example — `slot_bookings`
 

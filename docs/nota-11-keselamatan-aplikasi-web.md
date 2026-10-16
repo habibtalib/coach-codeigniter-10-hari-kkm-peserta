@@ -1,6 +1,6 @@
 # 11 · Keselamatan Aplikasi Web (OWASP × CodeIgniter 4)
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -113,7 +113,7 @@ $sort = in_array($this->request->getGet('sort'), $allowedSort, true) ? $this->re
 Tanpa CSRF, laman jahat boleh membuat pelayar pelulus (yang sedang log masuk) menghantar POST `/tlk/keputusan/…/approve` tanpa disedari.
 
 ```php
-// app/Config/Filters.php — dihidupkan secara global (KOLABORASI.md §5)
+// app/Config/Filters.php — dihidupkan secara global (docs/kolaborasi.md §5)
 public array $globals = [
     'before' => [
         'csrf',
@@ -225,7 +225,7 @@ Commit `composer.lock` supaya semua pasangan dan server memasang versi **tepat**
 | `insert($this->request->getPost())` | Mass assignment — `status`/`user_id` dipalsukan | `getPost([...medan dibenarkan])` + `user_id` dari `auth()->id()` |
 | Tindakan ubah data melalui GET | Tidak dilindungi CSRF; boleh dicetus oleh `<img src>` | Guna POST + `csrf_field()` |
 | `CI_ENVIRONMENT = development` di server | Stack trace & path fail terdedah | `production` di server |
-| `.env` di-commit | Kata laluan DB/kunci bocor | `.gitignore` + tukar (rotate) rahsia — lihat [nota 12](./12-git-aliran-kerja.md) |
+| `.env` di-commit | Kata laluan DB/kunci bocor | `.gitignore` + tukar (rotate) rahsia — lihat [nota 12](./nota-12-git-aliran-kerja.md) |
 | Fail muat naik dalam `public/` | Skrip boleh dilaksana/dimuat turun tanpa semakan | `writable/uploads/pas/` + muat turun melalui controller |
 
 ---
@@ -271,4 +271,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Buku tidak membincangkan OWASP Top 10; senarai semak pra-demo ikut nota ini.
 
 ---
-**Digunakan pada Hari 4, 7, 8 dan 10** — merentas kursus: Hari 4 S2 (`.env`, CSRF, Shield), Hari 7 S3 (muat naik selamat), Hari 8 S2 (RBAC & pemilikan), Hari 10 S3 (senarai semak sebelum demo). Nota berkaitan: [04 · Validasi & Borang](./04-validasi-dan-borang.md) · [06 · Shield Auth & RBAC](./06-shield-auth-dan-rbac.md) · [07 · Muat Naik Fail Selamat](./07-muat-naik-fail-selamat.md)
+**Digunakan pada Hari 4, 7, 8 dan 10** — merentas kursus: Hari 4 S2 (`.env`, CSRF, Shield), Hari 7 S3 (muat naik selamat), Hari 8 S2 (RBAC & pemilikan), Hari 10 S3 (senarai semak sebelum demo). Nota berkaitan: [04 · Validasi & Borang](./nota-04-validasi-dan-borang.md) · [06 · Shield Auth & RBAC](./nota-06-shield-auth-dan-rbac.md) · [07 · Muat Naik Fail Selamat](./nota-07-muat-naik-fail-selamat.md)

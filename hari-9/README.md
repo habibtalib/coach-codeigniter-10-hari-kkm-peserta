@@ -1,6 +1,6 @@
 # Hari 9 — Modul Laporan (M3)
 
-[← Jadual](../JADUAL.md) · [Kanun SPEC](../SPEC-KURSUS.md) · [🧪 Lab Hari 9](./lab.md) · [Hari 10 →](../hari-10/README.md)
+[← Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 9](./lab.md) · [Hari 10 →](../hari-10/README.md)
 
 > **Fasa C — Lapor & Serah.** M1 (TLK) dan M2 (Pas) sudah menjana data. Hari ini kita mengubah data itu menjadi **maklumat yang boleh dipercayai**: senarai bertapis, ringkasan aggregate, dan fail PDF/Excel yang boleh dihantar kepada pengurusan.
 
@@ -415,7 +415,7 @@ public function testRpt01PenapisStatusSamaDenganKiraanSql(): void
 
 Kenapa **dua** assertion? Jika kedua-dua query berkongsi pepijat sama (cth INNER JOIN yang salah), assertion pertama boleh lulus secara palsu. Nombor yang dikira dengan tangan ialah jangkar kebenaran.
 
-Kes minimum untuk M3 siap (semua ada dalam [`templates/kod/ReportServiceTest.php.txt`](../templates/kod/ReportServiceTest.php.txt)):
+Kes minimum untuk M3 siap (semua ada dalam `templates/kod/ReportServiceTest.php.txt` (modul **Templat & Rujukan**)):
 
 | Kes | Membuktikan |
 |-----|-------------|
@@ -523,4 +523,4 @@ Hari 10 ialah hari terakhir: **Statistik + Capstone**.
 2. Jalankan `php spark db:seed DatabaseSeeder` semula supaya ada data sintetik yang cukup (sekurang-kurangnya 2 zon, 20 tempahan, 15 permohonan pas pelbagai status) — carta kosong tidak meyakinkan semasa demo.
 3. Baca sekali imbas dokumentasi Chart.js 4 *Getting Started*: <https://www.chartjs.org/docs/latest/getting-started/>.
 4. Setiap pasangan: senaraikan **3 perkara** yang paling anda banggakan dan **1 pepijat** yang masih diketahui — ia bahan untuk demo & retrospektif esok.
-5. Semak templat UAT: [`templates/dokumen/uat-signoff-templat.md`](../templates/dokumen/uat-signoff-templat.md) dan [`templates/dokumen/kes-ujian-templat.md`](../templates/dokumen/kes-ujian-templat.md).
+5. Semak templat UAT: `templates/dokumen/uat-signoff-templat.md` (modul **Templat & Rujukan**) dan `templates/dokumen/kes-ujian-templat.md` (modul **Templat & Rujukan**).

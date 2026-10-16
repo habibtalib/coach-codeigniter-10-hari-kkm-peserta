@@ -1,6 +1,6 @@
 # Lab Hari 3 — ERD, Kamus Data, Wireframe & Semakan Reka Bentuk
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [📖 README Hari 3](./README.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 README Hari 3](./README.md)
 
 | Lab | Sesi | Hasil |
 |-----|------|-------|
@@ -93,10 +93,10 @@ Menulis kamus data lengkap untuk 5 jadual teras dalam sesi (baki 5 jadual disiap
 
 ### Prasyarat
 - Lab 3.1 siap.
-- [`templates/dokumen/kamus-data-templat.md`](../templates/dokumen/kamus-data-templat.md), README §2.
+- `templates/dokumen/kamus-data-templat.md` (modul **Templat & Rujukan**), README §2.
 
 ### Langkah
-1. Cipta fail `docs/kamus-data.md` dan salin kandungan templat [`templates/dokumen/kamus-data-templat.md`](../templates/dokumen/kamus-data-templat.md) ke dalamnya (bahagian `## Jadual: <nama_jadual>` diulang untuk setiap jadual).
+1. Cipta fail `docs/kamus-data.md` dan salin kandungan templat `templates/dokumen/kamus-data-templat.md` (modul **Templat & Rujukan**) ke dalamnya (bahagian `## Jadual: <nama_jadual>` diulang untuk setiap jadual).
 2. **Dalam sesi — 5 jadual teras, bahagi kerja dalam pasangan:** driver menulis `parking_slots` dan `slot_bookings`; navigator menyemak terhadap SPEC. Tukar untuk `pass_applications`, `pass_documents`, `status_logs`.
    **Baki 5 jadual** (`departments`, `users`, `parking_zones`, `vehicles`, `reference_sequences`) — siapkan sebelum **Hari 4, 08:30** bersama tugasan persediaan T3 ([`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md)). Jadual ini kecil; README §2.5 memberi kunci unik dan nota khasnya.
 3. Untuk setiap jadual isi **semua** lajur: Medan, Jenis, NULL, Lalai, Kunci/Index, FK →, Peraturan/enum, Keterangan. Gunakan `slot_bookings` dalam README §2.2 sebagai contoh.

@@ -1,7 +1,7 @@
 # Pustaka Prompt AI — untuk BELAJAR, bukan menyalin
 
 > Koleksi prompt Claude Code (atau mana-mana pembantu AI) untuk kursus **CI-KKM-10**. Setiap prompt ada **ID**, **bila guna**, **jangan**, dan **selepas** — supaya boleh dirujuk dalam lab dan semasa semakan jurulatih.
-> Asas: [`KOLABORASI.md`](../KOLABORASI.md) §3 · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md)
+> Asas: [`docs/kolaborasi.md`](kolaborasi.md) §3 · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md)
 
 ## Prinsip: **faham dahulu, terima kemudian**
 
@@ -27,7 +27,7 @@ flowchart LR
 | 1 | **Data sintetik sahaja** — jangan tampal data KKM sebenar, nama/IC/plat sebenar | Data kerajaan tidak boleh keluar ke perkhidmatan luar |
 | 2 | **Jangan tampal `.env`**, kata laluan, token, `encryption.key` | Rahsia yang ditampal = rahsia yang bocor |
 | 3 | **Sertakan konteks**: versi (CI 4.6, PHP 8.2+, Shield), fail berkaitan, mesej ralat penuh | Jawapan AI hanya sebaik konteksnya |
-| 4 | **Rujuk SPEC**: "Guna nama jadual/medan/enum seperti SPEC-KURSUS.md" | Elak AI mereka nama medan (`booking_status` vs `status`) |
+| 4 | **Rujuk SPEC**: "Guna nama jadual/medan/enum seperti docs/spesifikasi-sistem.md" | Elak AI mereka nama medan (`booking_status` vs `status`) |
 | 5 | **Minta penerangan, bukan hanya kod** — tambah "terangkan kenapa" | Anda belajar dari *kenapa*, bukan dari *apa* |
 | 6 | **Sahkan** dengan ujian, `php spark routes`, `getLastQuery()`, atau dokumentasi rasmi | AI boleh yakin tetapi salah — terutama API versi lama (CI3!) |
 | 7 | **Taip sendiri** — jangan salin-tampal blok besar | Menaip memaksa anda membaca setiap baris |
@@ -116,10 +116,10 @@ parking_slots — lihat skema di bawah).
 - Akhir sekali, contoh kod PENDEK (≤ 15 baris) CI 4.6.
 Bahasa Melayu; istilah teknikal kekal English.
 
-[tampal bahagian skema berkaitan dari SPEC-KURSUS.md §3]
+[tampal bahagian skema berkaitan dari docs/spesifikasi-sistem.md §3]
 ```
 
-- **Selepas:** Bandingkan dengan nota topikal ([`../nota/`](../nota/README.md)). Jika bercanggah, **nota & dokumentasi rasmi menang** — tanya jurulatih.
+- **Selepas:** Bandingkan dengan nota topikal ([`nota.md`](nota.md)). Jika bercanggah, **nota & dokumentasi rasmi menang** — tanya jurulatih.
 
 ### AI-14 — Kuiz saya
 
@@ -163,7 +163,7 @@ Format: jadual | Isu | Input contoh | Kesan |. JANGAN tulis semula kod.
 - **Jangan:** Tampal seluruh folder `app/`. Pilih service + controller berkaitan.
 
 ```prompt title="AI-05"
-Berikut peraturan perniagaan modul <TLK> (dari SPEC-KURSUS.md):
+Berikut peraturan perniagaan modul <TLK> (dari docs/spesifikasi-sistem.md):
 [tampal senarai BR-TLK-01..06]
 
 Berikut kod saya:
@@ -197,7 +197,7 @@ lokasi simpanan (bukan public/), IDOR pada muat turun, Content-Disposition, fail
 hasMoved()/isValid(). JANGAN tulis semula kod — terangkan sahaja.
 ```
 
-- **Selepas:** Uji sendiri setiap "Tidak": fail `.php` dinamakan semula `.pdf`, fail 2.1 MB, 4 fail, akses `/pas/permohonan/dokumen/{id}` milik pemohon lain. Rujuk [`../nota/07-muat-naik-fail-selamat.md`](../nota/07-muat-naik-fail-selamat.md).
+- **Selepas:** Uji sendiri setiap "Tidak": fail `.php` dinamakan semula `.pdf`, fail 2.1 MB, 4 fail, akses `/pas/permohonan/dokumen/{id}` milik pemohon lain. Rujuk [`nota-07-muat-naik-fail-selamat.md`](nota-07-muat-naik-fail-selamat.md).
 
 ### AI-07 — Semakan kawalan akses (RBAC + pemilikan)
 
@@ -206,7 +206,7 @@ hasMoved()/isValid(). JANGAN tulis semula kod — terangkan sahaja.
 
 ```prompt title="AI-07"
 Aplikasi CodeIgniter 4.6 + Shield. Matriks peranan (AuthGroups::$matrix):
-[tampal SPEC-KURSUS.md §4]
+[tampal docs/spesifikasi-sistem.md §4]
 
 Laluan saya (app/Config/Routes.php):
 [tampal kumpulan laluan pas/ dan tlk/]
@@ -220,7 +220,7 @@ PELAYAN (filter + semakan pemilikan) atau hanya di view? Kenal pasti sebarang ID
 Senaraikan ujian akses positif & negatif yang perlu saya tulis.
 ```
 
-- **Selepas:** Tulis ujian negatif dahulu (applicant → `/pas/semakan` mesti ditolak). Lihat [`../nota/06-shield-auth-dan-rbac.md`](../nota/06-shield-auth-dan-rbac.md).
+- **Selepas:** Tulis ujian negatif dahulu (applicant → `/pas/semakan` mesti ditolak). Lihat [`nota-06-shield-auth-dan-rbac.md`](nota-06-shield-auth-dan-rbac.md).
 
 ### AI-08 — Semakan pra-commit (DoD)
 
@@ -268,7 +268,7 @@ Sertakan: laluan gembira, kes sempadan tarikh (hari sama, bertindih 1 hari, bers
 kes akses (peranan salah), kes status tidak sah. JANGAN tulis kod ujian lagi.
 ```
 
-- **Selepas:** Pilih 3–5 kes paling penting; tulis sendiri dengan panduan [`../nota/10-ujian-phpunit-ci4.md`](../nota/10-ujian-phpunit-ci4.md).
+- **Selepas:** Pilih 3–5 kes paling penting; tulis sendiri dengan panduan [`nota-10-ujian-phpunit-ci4.md`](nota-10-ujian-phpunit-ci4.md).
 
 ### AI-10 — Bantu tulis ujian gagal dahulu (reproduce pepijat)
 
@@ -297,7 +297,7 @@ JANGAN betulkan kod aplikasi — saya akan baiki sendiri selepas ujian merah.
 - **Jangan:** Minta AI menjana semua migration — anda perlu faham susunan FK.
 
 ```prompt title="AI-11"
-Bandingkan migration CodeIgniter 4.6 saya dengan skema kanun (SPEC-KURSUS.md §3, dilampirkan).
+Bandingkan migration CodeIgniter 4.6 saya dengan skema kanun (docs/spesifikasi-sistem.md §3, dilampirkan).
 Laporkan dalam jadual: | Jadual | Medan | Dalam SPEC | Dalam migration | Isu |
 Semak: jenis & panjang, NULL, UNIQUE, INDEX, FK (onDelete), deleted_at hanya di mana
 dinyatakan, utf8mb4. Semak juga SUSUNAN migration (jadual induk sebelum jadual anak).

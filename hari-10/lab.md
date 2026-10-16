@@ -1,10 +1,10 @@
 # Lab Hari 10 — Statistik (M4) & Capstone
 
-[← README Hari 10](./README.md) · [Kanun SPEC](../SPEC-KURSUS.md) · [Jadual](../JADUAL.md) · [Rubrik Capstone](../docs/rubrik-capstone.md)
+[← README Hari 10](./README.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [Jadual](../JADUAL.md) · [Rubrik Capstone](../docs/rubrik-capstone.md)
 
 > **Branch kerja:** `git switch main && git pull && git switch -c feat/statistik`
 > **Prefix commit:** `STAT:` (dashboard/cache) · `FIX:` (pembetulan pepijat UAT)
-> **Kod rujukan jurulatih:** [`templates/kod/`](../templates/kod/) — `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt`.
+> **Kod rujukan jurulatih:** `templates/kod/` (modul **Templat & Rujukan**) — `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt`.
 
 | Lab | Sesi | Tempoh | Hasil |
 |-----|------|--------|-------|
@@ -127,7 +127,7 @@ Tulis sendiri `slotUtilisationToday()` (petunjuk: `->select('slot_id')->distinct
 | `usageByZone()` | **Guna semula** `$this->reports->usageByZone(['year'=>..., 'month'=>..., 'sort'=>'utilisation', 'dir'=>'desc'])` | Tiada query baharu |
 | `passTrend12Months()` | `select("DATE_FORMAT(created_at, '%Y-%m') AS ym", false)` 12 bulan terakhir | Isi sifar; label `Okt 25` |
 
-Rujukan penuh: [`StatisticsService.php.txt`](../templates/kod/StatisticsService.php.txt).
+Rujukan penuh: `StatisticsService.php.txt` (modul **Templat & Rujukan**).
 
 **5. Daftar service & controller nipis.** Dalam `app/Config/Services.php`:
 
@@ -168,14 +168,14 @@ public function data(): ResponseInterface
 
 **6. Semak JSON dahulu, carta kemudian.** Log masuk sebagai `pelulus@latihan.test` dan buka `http://localhost:8080/statistik/data`. Semak: 12 nilai dalam `charts.bookings_by_month.data`, 5 dalam `charts.pass_status.data`, 12 dalam `charts.pass_trend.data`.
 
-**7. View** `app/Views/statistik/dashboard.php`. **Jimat masa (disyorkan):** amali S1 hanya ~30 minit — cipta fail ini dan salin kandungan template `templates/kod/dashboard-view.php.txt` (jurulatih akan kongsi) sebagai titik mula, kemudian baca dan sesuaikan; tumpukan masa menulis `StatisticsService`. Pastikan view anda memenuhi senarai ini:
+**7. View** `app/Views/statistik/dashboard.php`. **Jimat masa (disyorkan):** amali S1 hanya ~30 minit — cipta fail ini dan salin kandungan template `templates/kod/dashboard-view.php.txt` (modul **Templat & Rujukan**) sebagai titik mula, kemudian baca dan sesuaikan; tumpukan masa menulis `StatisticsService`. Pastikan view anda memenuhi senarai ini:
 - 4 kad KPI (Bootstrap `card`, `col-sm-6 col-xl-3`) dirender dari `$kpi` dengan `esc()`.
 - 4 `<canvas>` masing-masing dalam `<div style="position: relative; height: 280px">`.
 - Dalam `<?= $this->section('scripts') ?>`: `<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>` (versi **dipin** — jangan `@4` terbuka; atau salinan tempatan `base_url('assets/vendor/chartjs/chart.umd.min.js')`, lihat 🧯) dan skrip `fetch('<?= site_url('statistik/data') ?>')`.
 - Fungsi `draw()` yang memanggil `Chart.getChart(canvas)?.destroy()` sebelum `new Chart(...)`.
 - Carta ketiga: `type: 'bar'` + `options.indexAxis: 'y'`.
 
-Rujukan penuh: [`dashboard-view.php.txt`](../templates/kod/dashboard-view.php.txt).
+Rujukan penuh: `dashboard-view.php.txt` (modul **Templat & Rujukan**).
 
 **8. Menu.** Dalam `layouts/main.php`, tambah pautan hanya jika `auth()->user()->can('statistik.view')`.
 
@@ -381,8 +381,8 @@ composer test                                                # SEMUA hijau — t
 
 ### Prasyarat
 - Lab 10.1 & 10.2 siap dan di-merge ke `main`.
-- Cipta fail `docs/UAT-signoff.md` dan salin kandungan templat `templates/dokumen/uat-signoff-templat.md` (jurulatih akan kongsi).
-- Cipta fail `docs/kes-ujian-akhir.md` dan salin kandungan templat `templates/dokumen/kes-ujian-templat.md` (jurulatih akan kongsi).
+- Cipta fail `docs/UAT-signoff.md` dan salin kandungan templat `templates/dokumen/uat-signoff-templat.md` (modul **Templat & Rujukan**).
+- Cipta fail `docs/kes-ujian-akhir.md` dan salin kandungan templat `templates/dokumen/kes-ujian-templat.md` (modul **Templat & Rujukan**).
 - Database bersih: `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder`.
 
 ### Langkah

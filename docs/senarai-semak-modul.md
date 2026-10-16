@@ -1,6 +1,6 @@
 # Senarai Semak Modul M1–M4
 
-> Guna di **hujung setiap sesi pembinaan** (S4 Hari 5–10) dan sebelum ✅ checkpoint jurulatih. Setiap baris dipetakan kepada **Definition of Done** ([`KOLABORASI.md`](../KOLABORASI.md) §2) dan peraturan perniagaan **`BR-*`** ([`SPEC-KURSUS.md`](../SPEC-KURSUS.md) §2).
+> Guna di **hujung setiap sesi pembinaan** (S4 Hari 5–10) dan sebelum ✅ checkpoint jurulatih. Setiap baris dipetakan kepada **Definition of Done** ([`docs/kolaborasi.md`](kolaborasi.md) §2) dan peraturan perniagaan **`BR-*`** ([`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §2).
 > Salin fail ini ke repo projek anda (`docs/semakan-modul.md`) dan tandakan `[x]` bersama pasangan. Satu baris hanya ditanda jika **kedua-dua** driver dan navigator boleh menerangkannya.
 
 ## Legenda DoD
@@ -151,6 +151,6 @@
 | [ ] | `vendor/bin/phpunit` — semua hijau | D5 |
 | [ ] | Skrip UAT (templat `templates/dokumen/`) dijalankan; pepijat dicatat & dibaiki | D1 |
 | [ ] | `git log` — tiada `.env`, tiada data sebenar, commit berprefix | D6 |
-| [ ] | Senarai semak keselamatan [`../nota/11-keselamatan-aplikasi-web.md`](../nota/11-keselamatan-aplikasi-web.md) dilalui | D3 |
+| [ ] | Senarai semak keselamatan [`nota-11-keselamatan-aplikasi-web.md`](nota-11-keselamatan-aplikasi-web.md) dilalui | D3 |
 | [ ] | Setiap ahli pasangan boleh menerangkan satu aliran hujung-ke-hujung (mohon → lulus → laporan → statistik) | D7 |
 | [ ] | Rubrik: [`rubrik-capstone.md`](./rubrik-capstone.md) dibaca | — |

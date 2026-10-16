@@ -1,6 +1,6 @@
 # 07 · Secure File Upload
 
-> Topic notes (cross-day reference) · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Index: [`README.md`](./README.md)
+> Topic notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Notes objectives
 
@@ -80,7 +80,7 @@ CI4 file rules check **every** file in `documents[]`. There are three things tha
 2. **Extension ↔ content consistency** — `guessExtension()` (from the real MIME type) must be on the allowlist.
 3. **Files that PHP failed to upload** (e.g. larger than `upload_max_filesize`) — `isValid()`.
 
-> `ext_in` reads the extension from the client's file name; `mime_in` uses `getMimeType()`, which **detects the type from the content** through the PHP `fileinfo` extension. Both are needed. Make sure `fileinfo` is enabled (see [`docs/persediaan.md`](../docs/persediaan.md)).
+> `ext_in` reads the extension from the client's file name; `mime_in` uses `getMimeType()`, which **detects the type from the content** through the PHP `fileinfo` extension. Both are needed. Make sure `fileinfo` is enabled (see [`docs/persediaan.md`](persediaan.md)).
 
 ---
 
@@ -279,4 +279,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), 2021 editi
 The book takes the image through an API; storage under `writable/` and checked downloads follow this note.
 
 ---
-**Used on Day 7** — S3 (form, validation & secure document upload) and S4 (upload boundary case tests). Also Day 8 (document download by the reviewer/approver). Related notes: [04 Validation](./04-validasi-dan-borang.md) · [06 Shield & RBAC](./06-shield-auth-dan-rbac.md) · [11 Security](./11-keselamatan-aplikasi-web.md)
+**Used on Day 7** — S3 (form, validation & secure document upload) and S4 (upload boundary case tests). Also Day 8 (document download by the reviewer/approver). Related notes: [04 Validation](./nota-04-validasi-dan-borang.md) · [06 Shield & RBAC](./nota-06-shield-auth-dan-rbac.md) · [11 Security](./nota-11-keselamatan-aplikasi-web.md)

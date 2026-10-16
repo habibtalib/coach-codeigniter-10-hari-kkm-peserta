@@ -1,6 +1,6 @@
 # Day 6 — TLK (Special Vehicle Parking) Module (Part 2): Availability, Transactions, Approval & Testing
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../SPEC-KURSUS.md) · [🧪 Day 6 Lab](./lab.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 6 Lab](./lab.md)
 
 > Yesterday manual test TM-TLK-16 failed: two applicants could book the same slot for overlapping dates. Today we close that hole **properly** — not with a plain `if`, but with an exact overlap query, a **transaction** and a **row lock**, so it stays correct even when 50 people press "Hantar" (Submit) at the same time. Then approvers can approve/reject, every change is logged, and PHPUnit tests prove it. End of the day: **M1 complete**.
 
@@ -141,7 +141,7 @@ WHERE parking_slots.is_active = 1
 ORDER BY parking_zones.code, parking_slots.slot_no
 ```
 
-The `/tlk/tempahan/ketersediaan` view is a **GET** form (filters in the URL → can be bookmarked & shared). The controller validates the dates with the normal validator before calling the service. Full file: [`templates/kod/SlotAvailabilityService.php.txt`](../templates/kod/SlotAvailabilityService.php.txt).
+The `/tlk/tempahan/ketersediaan` view is a **GET** form (filters in the URL → can be bookmarked & shared). The controller validates the dates with the normal validator before calling the service. Full file: `templates/kod/SlotAvailabilityService.php.txt` (**Templat & Rujukan** module).
 
 > 💡 **Tip:** The free-slot view is **information**, not a guarantee. Between the applicant seeing "A-02 free" and pressing "Hantar" (Submit), someone else may book it. That is why S2 checks again **inside a transaction**.
 
@@ -354,7 +354,7 @@ private function transition(int $bookingId, BookingStatus $to, int $actorId, ?st
 }
 ```
 
-The public methods are only thin wrappers: `approve($id, $actorId, ?$remarks)`, `reject($id, $actorId, $remarks)` (rejects if `remarks` < 10 characters), `cancel($id, $actorId, ?$remarks)` (**BR-TLK-06**: the owner **or** an admin; a `pending` status **cannot** be cancelled — `canTransitionTo` rejects it). Full file: [`templates/kod/BookingService.php.txt`](../templates/kod/BookingService.php.txt).
+The public methods are only thin wrappers: `approve($id, $actorId, ?$remarks)`, `reject($id, $actorId, $remarks)` (rejects if `remarks` < 10 characters), `cancel($id, $actorId, ?$remarks)` (**BR-TLK-06**: the owner **or** an admin; a `pending` status **cannot** be cancelled — `canTransitionTo` rejects it). Full file: `templates/kod/BookingService.php.txt` (**Templat & Rujukan** module).
 
 ### 2.4 `status_logs` — a single-table audit trail
 
@@ -370,7 +370,7 @@ public function history(string $module, int $recordId): array   // old → new, 
 | `TLK` | 1 | `pending` | `approved` | 4 (Dr. Devi) | — |
 | `TLK` | 1 | `approved` | `cancelled` | 1 (Aminah) | Tidak lagi diperlukan (No longer needed) |
 
-`$updatedField = ''` in the Model because this table is **append-only** — no `updated_at`, no update/delete methods. Full file: [`templates/kod/StatusLogModel.php.txt`](../templates/kod/StatusLogModel.php.txt).
+`$updatedField = ''` in the Model because this table is **append-only** — no `updated_at`, no update/delete methods. Full file: `templates/kod/StatusLogModel.php.txt` (**Templat & Rujukan** module).
 
 ### 2.5 The decision controller — still thin
 
@@ -441,7 +441,7 @@ database.tests.DBPrefix =
 database.tests.port = 3306
 ```
 
-Why MySQL, not the appstarter's default SQLite `:memory:`? **SQLite does not support `SELECT … FOR UPDATE`** — the BR-TLK-05 tests would fail with a syntax error. Why an empty `DBPrefix`? The `tests` group default is `db_`; our code calls `prefixTable()` so it would still work, but an empty prefix gives the test tables the same names as in development (easier to investigate). Details: [`../nota/10-ujian-phpunit-ci4.md`](../nota/10-ujian-phpunit-ci4.md).
+Why MySQL, not the appstarter's default SQLite `:memory:`? **SQLite does not support `SELECT … FOR UPDATE`** — the BR-TLK-05 tests would fail with a syntax error. Why an empty `DBPrefix`? The `tests` group default is `db_`; our code calls `prefixTable()` so it would still work, but an empty prefix gives the test tables the same names as in development (easier to investigate). Details: [`../docs/nota-10-ujian-phpunit-ci4.md`](../docs/nota-10-ujian-phpunit-ci4.md).
 
 ### 3.3 Anatomy of `BookingServiceTest`
 
@@ -510,7 +510,7 @@ final class BookingServiceTest extends CIUnitTestCase
 | `seeInDatabase()` / `seeNumRecords()` / `dontSeeInDatabase()` | Checks the **effect** in the DB, not only the return value |
 | Relative dates `date('Y-m-d', strtotime('+10 days'))` | Tests do not "expire" as the calendar moves on |
 
-Full file (20+ tests): [`templates/kod/BookingServiceTest.php.txt`](../templates/kod/BookingServiceTest.php.txt).
+Full file (20+ tests): `templates/kod/BookingServiceTest.php.txt` (**Templat & Rujukan** module).
 
 ### 3.4 HTTP functional tests with Shield
 
@@ -599,7 +599,7 @@ Badge:
 
 > ⚠️ **Common mistake:** Treating the confirmation dialog as a security control. It is only **UX**. An attacker sends a POST directly without JavaScript — the server (filter + `canTransitionTo()`) is what guards it.
 
-Final layout: [`templates/kod/layout-main.php.txt`](../templates/kod/layout-main.php.txt).
+Final layout: `templates/kod/layout-main.php.txt` (**Templat & Rujukan** module).
 
 ### 4.2 Definition of Done — M1
 
@@ -674,5 +674,5 @@ Tomorrow is **Day 7 — Pass Module (Part 1)**: the `PassApplication` & `PassDoc
 - Make sure the `m1-siap` tag exists and `composer test -- tests/tlk` is green — tomorrow we do not go back to TLK.
 - Check `php.ini`: `upload_max_filesize ≥ 8M`, `post_max_size ≥ 16M` (`php -i | grep -E "upload_max|post_max"`).
 - Prepare 3 synthetic files for upload testing: one small PDF (< 2 MB), one JPG, and one file > 2 MB (e.g. a large PDF). **Do not** use real personal documents.
-- Read SPEC §2.2 (BR-PAS-01..06) and [`../nota/07-muat-naik-fail-selamat.md`](../nota/07-muat-naik-fail-selamat.md).
+- Read SPEC §2.2 (BR-PAS-01..06) and [`../docs/nota-07-muat-naik-fail-selamat.md`](../docs/nota-07-muat-naik-fail-selamat.md).
 - Note: `ReferenceNumberService::next('PAS')` and `StatusLogModel::record('PAS', …)` will be reused **without changes**.

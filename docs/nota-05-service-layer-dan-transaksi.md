@@ -1,6 +1,6 @@
 # 05 · Service Layer, Transaksi & Keadaan Perlumbaan
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -317,7 +317,7 @@ class BookingService
 }
 ```
 
-`SlotAvailabilityService` (konstruktor menerima `BaseConnection $db` — lihat [nota 02](./02-migration-seeder-dan-query-builder.md)) dengan kaedah `hasOverlap()` menggunakan syarat SPEC `start_date <= :end AND end_date >= :start`:
+`SlotAvailabilityService` (konstruktor menerima `BaseConnection $db` — lihat [nota 02](./nota-02-migration-seeder-dan-query-builder.md)) dengan kaedah `hasOverlap()` menggunakan syarat SPEC `start_date <= :end AND end_date >= :start`:
 
 ```php
 public function hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool
@@ -449,7 +449,7 @@ Kenapa `year` dalam kunci? Supaya nombor bermula semula dari `0001` setiap tahun
 
 ## 5. Menguji kod bertransaksi
 
-- Database ujian lalai `codeigniter4/appstarter` ialah **SQLite3 `:memory:`**. SQLite **tidak menyokong** `SELECT … FOR UPDATE` dan `INSERT IGNORE` — query akan gagal. Guna **database ujian MySQL berasingan** (cth `kkm_latihan_test`) dalam `.env` (`database.tests.*`). Butiran: [nota 10](./10-ujian-phpunit-ci4.md).
+- Database ujian lalai `codeigniter4/appstarter` ialah **SQLite3 `:memory:`**. SQLite **tidak menyokong** `SELECT … FOR UPDATE` dan `INSERT IGNORE` — query akan gagal. Guna **database ujian MySQL berasingan** (cth `kkm_latihan_test`) dalam `.env` (`database.tests.*`). Butiran: [nota 10](./nota-10-ujian-phpunit-ci4.md).
 - Ujian unit Service boleh terus memanggil `service('bookingService', false)->create(...)` tanpa HTTP.
 - Kes minimum: (a) tempahan tidak bertindih → berjaya; (b) julat bertindih dengan `pending` → `BookingConflictException`; (c) bertindih dengan `rejected` → berjaya; (d) pemohon ada tempahan aktif → ditolak; (e) `status_logs` bertambah 1 baris.
 - Perlumbaan sebenar sukar diuji dalam PHPUnit (satu proses). Demonstrasikan secara manual dengan **dua tetingkap `mysql`**: `BEGIN; SELECT … FOR UPDATE;` di tetingkap 1, kemudian cuba perkara sama di tetingkap 2 dan perhatikan ia menunggu.
@@ -490,4 +490,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Transaksi DB dan `FOR UPDATE` tiada dalam buku; ikut nota ini dan rujukan rasmi.
 
 ---
-**Digunakan pada Hari 6** — S1 (semakan ketersediaan), S2 (BR-TLK-01/04/05 dalam transaksi + `status_logs`), S3 (ujian pertindihan). Turut Hari 5 S3 (`TLK-2026-0001`) dan Hari 8 S1 (`PassWorkflowService`). Nota berkaitan: [02 Query Builder](./02-migration-seeder-dan-query-builder.md) · [03 Model & Enum](./03-model-entity-dan-enum.md) · [10 Ujian](./10-ujian-phpunit-ci4.md)
+**Digunakan pada Hari 6** — S1 (semakan ketersediaan), S2 (BR-TLK-01/04/05 dalam transaksi + `status_logs`), S3 (ujian pertindihan). Turut Hari 5 S3 (`TLK-2026-0001`) dan Hari 8 S1 (`PassWorkflowService`). Nota berkaitan: [02 Query Builder](./nota-02-migration-seeder-dan-query-builder.md) · [03 Model & Enum](./nota-03-model-entity-dan-enum.md) · [10 Ujian](./nota-10-ujian-phpunit-ci4.md)

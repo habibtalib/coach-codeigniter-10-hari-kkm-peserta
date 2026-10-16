@@ -1,6 +1,6 @@
 # Kamus Data — Sistem TLK & Pas
 
-> **Templat.** Salin ke `docs/kamus-data.md` (Hari 3 Lab 3.2). Nama jadual & medan **mesti** tepat seperti [`SPEC-KURSUS.md`](../../SPEC-KURSUS.md) §3. Kamus ini menjadi sumber migration pada Hari 4.
+> **Templat.** Salin ke `docs/kamus-data.md` (Hari 3 Lab 3.2). Nama jadual & medan **mesti** tepat seperti [`docs/spesifikasi-sistem.md`](../../docs/spesifikasi-sistem.md) §3. Kamus ini menjadi sumber migration pada Hari 4.
 
 ## Konvensyen
 

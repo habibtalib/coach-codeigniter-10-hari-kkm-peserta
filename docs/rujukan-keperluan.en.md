@@ -1,8 +1,8 @@
 # Reference — Requirements & Design (optional reading)
 
-[← Docs index](./README.md) · [📘 SPEC canon](../SPEC-KURSUS.md)
+[← Docs index](./README.md) · [📘 SPEC canon](spesifikasi-sistem.md)
 
-> From Day 2 S2 this course is hands-on in the project `kelas-ci-<nama>`. The original requirements & design material (as-is/to-be flowcharts, acceptance criteria, URS v1.0, ERD, data dictionary, wireframes) is kept here as **optional reading**. It does not count towards progress. To build the modules, use [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) (BRs, enums, schema) as the source of truth.
+> From Day 2 S2 this course is hands-on in the project `kelas-ci-<nama>`. The original requirements & design material (as-is/to-be flowcharts, acceptance criteria, URS v1.0, ERD, data dictionary, wireframes) is kept here as **optional reading**. It does not count towards progress. To build the modules, use [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) (BRs, enums, schema) as the source of truth.
 
 ## Part 1 — Processes, acceptance criteria & URS (originally Day 2 S2–S4)
 
@@ -279,7 +279,7 @@ Scenario: An applicant cannot view someone else's application
 
 **User Requirements Specification** — a document that states **what** users need, agreed and signed by the system owner. It is **not** technical design (that is the Day 3 ERD and the Day 4+ code).
 
-Full template: [`templates/dokumen/urs-templat.md`](../templates/dokumen/urs-templat.md).
+Full template: `templates/dokumen/urs-templat.md` (**Templat & Rujukan** module).
 
 #### 4.2 URS v1.0 structure
 
@@ -389,7 +389,7 @@ Write testable ACs for at least 8 key FRs, including negative and boundary scena
 
 #### Prerequisites
 - `docs/keperluan-awal.md` v0.9.
-- Read README §3.1–3.5 and [`acceptance-criteria-templat.md`](../templates/dokumen/acceptance-criteria-templat.md).
+- Read README §3.1–3.5 and `acceptance-criteria-templat.md` (**Templat & Rujukan** module).
 
 #### Steps
 1. Create `docs/acceptance-criteria.md` based on the template.
@@ -452,10 +452,10 @@ Assemble all the Day 1–2 documents into a complete URS v1.0, with a traceabili
 
 #### Prerequisites
 - Labs 2.1–2.3 are done.
-- [`templates/dokumen/urs-templat.md`](../templates/dokumen/urs-templat.md).
+- `templates/dokumen/urs-templat.md` (**Templat & Rujukan** module).
 
 #### Steps
-1. Create the file `docs/URS-v1.md` and copy in the content of the template `templates/dokumen/urs-templat.md` (the trainer will share it).
+1. Create the file `docs/URS-v1.md` and copy in the content of the template `templates/dokumen/urs-templat.md` (**Templat & Rujukan** module).
 2. Fill in sections 1–4 (document information, introduction/scope, stakeholders, glossary) from `docs/carta-skop.md`. The glossary must have a Malay label for **every** `BookingStatus` and `PassStatus` value.
 3. Section 5: **link** to `docs/carta-alir.md` (do not copy it again), or paste only the two to-be charts.
 4. Section 6: list BR-TLK-01..06 and BR-PAS-01..06 in user language.

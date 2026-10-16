@@ -1,6 +1,6 @@
 # Tugasan Persediaan — Sebelum Hari 4
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [📖 Hari 3](../hari-3/README.md) · [🤝 KOLABORASI](../KOLABORASI.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](spesifikasi-sistem.md) · [📖 Hari 3](../hari-3/README.md) · [🤝 KOLABORASI](kolaborasi.md)
 
 | Perkara | Nilai |
 |---------|-------|

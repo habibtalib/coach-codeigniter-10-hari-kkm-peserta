@@ -1,6 +1,6 @@
 # Hari 4 — Assignment Review & Development Kickoff
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [🧪 Lab Hari 4](./lab.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 4](./lab.md)
 
 > Hari 1–3 kita menjawab **apa** yang perlu dibina (URS, carta alir, ERD, wireframe). Hari ini kita mula **membina**: projek CodeIgniter 4 yang berjalan, log masuk dengan Shield, dan **semua 10 jadual** SPEC §3 dicipta daripada ERD melalui migration. Menjelang 17:00, setiap pasangan ada repo yang boleh log masuk sebagai 5 pengguna sintetik — asas untuk Modul TLK esok.
 
@@ -243,7 +243,7 @@ public array $matrix = [
 ];
 ```
 
-Setiap permission mesti juga diisytihar dalam `$permissions` (kunci + keterangan BM). Fail penuh: [`templates/kod/AuthGroups.php.txt`](../templates/kod/AuthGroups.php.txt).
+Setiap permission mesti juga diisytihar dalam `$permissions` (kunci + keterangan BM). Fail penuh: `templates/kod/AuthGroups.php.txt` (modul **Templat & Rujukan**).
 
 > 💡 **Tip:** `group:admin` bertanya "*siapa* anda?"; `permission:tlk.decide` bertanya "*apa* yang anda boleh buat?". Utamakan **permission** — jika esok admin juga perlu melulus, hanya matrix berubah, bukan Routes.
 
@@ -284,7 +284,7 @@ Dalam layout, navbar memaparkan menu **ikut kebenaran** (`$user->can('tlk.decide
 
 > ⚠️ **Kesilapan lazim:** `<?= $user->full_name ?>` tanpa `esc()`. Jika seseorang mendaftar dengan nama `<script>…</script>`, skrip itu berjalan dalam pelayar pelulus (XSS tersimpan). **Setiap** output data → `esc()`; dalam atribut HTML → `esc($x, 'attr')`.
 
-Layout rujukan lengkap: [`templates/kod/layout-main.php.txt`](../templates/kod/layout-main.php.txt).
+Layout rujukan lengkap: `templates/kod/layout-main.php.txt` (modul **Templat & Rujukan**).
 
 ### 🎯 Kuiz S2
 
@@ -422,7 +422,7 @@ $this->forge->processIndexes('users');   // guna key/FK yang ditambah di atas pa
 
 `full_name` dibenarkan NULL di peringkat DB kerana akaun yang dicipta oleh admin dengan `php spark shield:user create` belum ada nama penuh (daftar sendiri `/register` ditutup — `$allowRegistration = false`); `UserSeeder` mengisinya untuk pengguna sintetik.
 
-Semua 10 migration (diuji `migrate` + `migrate:rollback`): [`templates/kod/migration-core-tables.php.txt`](../templates/kod/migration-core-tables.php.txt).
+Semua 10 migration (diuji `migrate` + `migrate:rollback`): `templates/kod/migration-core-tables.php.txt` (modul **Templat & Rujukan**).
 
 > ⚠️ **Kesilapan lazim:** Jenis FK tidak sepadan — `user_id` INT (signed) merujuk `users.id` INT **UNSIGNED** → MySQL `errno: 150 "Foreign key constraint is incorrectly formed"`. Kedua-dua lajur mesti jenis & `unsigned` sama.
 
@@ -465,7 +465,7 @@ $user->addGroup('approver');                     // → auth_groups_users
 | `pelulus@latihan.test` | `approver` | Dr. Devi a/p Sampel |
 | `admin@latihan.test` | `admin` | Encik Admin Sistem |
 
-Kata laluan semua: **`Latihan@2026`**. Fail penuh: [`templates/kod/UserSeeder.php.txt`](../templates/kod/UserSeeder.php.txt).
+Kata laluan semua: **`Latihan@2026`**. Fail penuh: `templates/kod/UserSeeder.php.txt` (modul **Templat & Rujukan**).
 
 ### 3.5 Arahan Spark yang anda akan guna setiap hari
 
@@ -604,5 +604,5 @@ Esok **Hari 5 — Modul TLK (Bahagian 1)**: Enum, Entity, Model, CRUD slot admin
 
 - Pastikan `php spark migrate:status` bersih dan `db:seed` berjaya — esok bermula terus dengan Model, **tiada masa** untuk membaiki migration.
 - Baca semula SPEC §2.1 (enum `SlotCategory`, `BookingStatus`, BR-TLK-01..06).
-- Baca [`../nota/03-model-entity-dan-enum.md`](../nota/03-model-entity-dan-enum.md) dan [`../nota/04-validasi-dan-borang.md`](../nota/04-validasi-dan-borang.md) (±20 minit).
+- Baca [`../docs/nota-03-model-entity-dan-enum.md`](../docs/nota-03-model-entity-dan-enum.md) dan [`../docs/nota-04-validasi-dan-borang.md`](../docs/nota-04-validasi-dan-borang.md) (±20 minit).
 - Semak kendiri: bolehkah anda log masuk sebagai `admin@latihan.test` dan `pemohon1@latihan.test` dalam dua pelayar berbeza (atau tetingkap incognito)?

@@ -1,6 +1,6 @@
 # 05 · Service Layer, Transactions & Race Conditions
 
-> Topical notes (reference across days) · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Index: [`README.md`](./README.md)
+> Topical notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Notes objectives
 
@@ -317,7 +317,7 @@ class BookingService
 }
 ```
 
-`SlotAvailabilityService` (its constructor takes `BaseConnection $db` — see [notes 02](./02-migration-seeder-dan-query-builder.md)) with a `hasOverlap()` method that uses the SPEC condition `start_date <= :end AND end_date >= :start`:
+`SlotAvailabilityService` (its constructor takes `BaseConnection $db` — see [notes 02](./nota-02-migration-seeder-dan-query-builder.md)) with a `hasOverlap()` method that uses the SPEC condition `start_date <= :end AND end_date >= :start`:
 
 ```php
 public function hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool
@@ -449,7 +449,7 @@ Why is `year` part of the key? So that numbering restarts from `0001` every year
 
 ## 5. Testing transactional code
 
-- The default test database of `codeigniter4/appstarter` is **SQLite3 `:memory:`**. SQLite **does not support** `SELECT … FOR UPDATE` or `INSERT IGNORE` — the queries will fail. Use a **separate MySQL test database** (e.g. `kkm_latihan_test`) in `.env` (`database.tests.*`). Details: [notes 10](./10-ujian-phpunit-ci4.md).
+- The default test database of `codeigniter4/appstarter` is **SQLite3 `:memory:`**. SQLite **does not support** `SELECT … FOR UPDATE` or `INSERT IGNORE` — the queries will fail. Use a **separate MySQL test database** (e.g. `kkm_latihan_test`) in `.env` (`database.tests.*`). Details: [notes 10](./nota-10-ujian-phpunit-ci4.md).
 - A Service unit test can call `service('bookingService', false)->create(...)` directly without HTTP.
 - Minimum cases: (a) non-overlapping booking → succeeds; (b) range overlapping a `pending` one → `BookingConflictException`; (c) overlapping a `rejected` one → succeeds; (d) applicant already has an active booking → rejected; (e) `status_logs` grows by 1 row.
 - A real race is hard to test in PHPUnit (a single process). Demonstrate it manually with **two `mysql` windows**: `BEGIN; SELECT … FOR UPDATE;` in window 1, then try the same thing in window 2 and watch it wait.
@@ -490,4 +490,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), 2021 editi
 DB transactions and `FOR UPDATE` are not in the book; follow this note and the official references.
 
 ---
-**Used on Day 6** — S1 (availability check), S2 (BR-TLK-01/04/05 in a transaction + `status_logs`), S3 (overlap tests). Also Day 5 S3 (`TLK-2026-0001`) and Day 8 S1 (`PassWorkflowService`). Related notes: [02 Query Builder](./02-migration-seeder-dan-query-builder.md) · [03 Model & Enum](./03-model-entity-dan-enum.md) · [10 Testing](./10-ujian-phpunit-ci4.md)
+**Used on Day 6** — S1 (availability check), S2 (BR-TLK-01/04/05 in a transaction + `status_logs`), S3 (overlap tests). Also Day 5 S3 (`TLK-2026-0001`) and Day 8 S1 (`PassWorkflowService`). Related notes: [02 Query Builder](./nota-02-migration-seeder-dan-query-builder.md) · [03 Model & Enum](./nota-03-model-entity-dan-enum.md) · [10 Testing](./nota-10-ujian-phpunit-ci4.md)

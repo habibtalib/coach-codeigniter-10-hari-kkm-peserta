@@ -1,6 +1,6 @@
 # Day 5 — TLK (Special Vehicle Parking) Module (Part 1): Models, CRUD & Booking Form
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../SPEC-KURSUS.md) · [🧪 Day 5 Lab](./lab.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 5 Lab](./lab.md)
 
 > Yesterday we got a correct, empty database. Today we give it **behaviour**: an enum that is the single source of status, Models that reject bad data, slot CRUD for the admin, and a booking form that produces the first reference number **`TLK-2026-0001`**. Tomorrow (Day 6) we make it **safe under concurrency** and complete it with approval.
 
@@ -270,7 +270,7 @@ $routes->group('admin/slot', ['namespace' => 'App\Controllers\Admin', 'filter' =
 | Route names (`'as'`) | Views use `url_to('admin.slot.edit', $id)` — URLs can change without changing views |
 | Delete = `POST …/delete` | A `GET` delete link can be triggered by a crawler / `<img src>`. Actions that change data → POST + CSRF |
 
-Full TLK routes file: [`templates/kod/Routes-tlk.php.txt`](../templates/kod/Routes-tlk.php.txt).
+Full TLK routes file: `templates/kod/Routes-tlk.php.txt` (**Templat & Rujukan** module).
 
 ### 2.2 The Post/Redirect/Get (PRG) pattern
 
@@ -562,7 +562,7 @@ Key points:
 - **Retry** (max 3 times) on errors 1213/1205 **only** when `next()` owns the transaction. When it is called inside the `BookingService` transaction (tomorrow), the deadlock has already rolled back all of the caller's work — the caller handles it.
 - No user input in raw SQL — `$prefix`/`$year` are bound through `?`. The table name comes from our own code.
 
-Full file: [`templates/kod/ReferenceNumberService.php.txt`](../templates/kod/ReferenceNumberService.php.txt).
+Full file: `templates/kod/ReferenceNumberService.php.txt` (**Templat & Rujukan** module).
 
 ### 3.4 `BookingService` version 1 — the controller stays thin
 
@@ -718,5 +718,5 @@ Tomorrow is **Day 6 — TLK Module (Part 2)**: availability checks, overlap prev
   database.tests.port = 3306
   ```
 
-- Read [`../nota/05-service-layer-dan-transaksi.md`](../nota/05-service-layer-dan-transaksi.md) and [`../nota/10-ujian-phpunit-ci4.md`](../nota/10-ujian-phpunit-ci4.md).
+- Read [`../docs/nota-05-service-layer-dan-transaksi.md`](../docs/nota-05-service-layer-dan-transaksi.md) and [`../docs/nota-10-ujian-phpunit-ci4.md`](../docs/nota-10-ujian-phpunit-ci4.md).
 - Think about it: *"Two applicants press Hantar (Submit) for slot A-01, 1–10 Oct, at exactly the same moment. With today's code — what happens?"*

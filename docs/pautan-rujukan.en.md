@@ -1,7 +1,7 @@
 # Official Reference Links — by day
 
-> All links checked in September 2026. CodeIgniter documentation refers to the **latest 4.x version** (compatible with 4.6+). If an example in the documentation differs from the course notes, **SPEC-KURSUS.md decides the names**, and the official documentation decides the **API**.
-> Topic notes: [`../nota/README.md`](../nota/README.md)
+> All links checked in September 2026. CodeIgniter documentation refers to the **latest 4.x version** (compatible with 4.6+). If an example in the documentation differs from the course notes, **docs/spesifikasi-sistem.md decides the names**, and the official documentation decides the **API**.
+> Topic notes: [`nota.md`](nota.md)
 
 ## Core references (keep open throughout the course)
 

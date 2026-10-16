@@ -1,6 +1,6 @@
 # 02 · Migration, Seeder dan Query Builder
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -286,7 +286,7 @@ class SlotAvailabilityService
 }
 ```
 
-(Cara menyuntik `$db` — `db_connect()` atau melalui `Config\Services` — diterangkan dalam [nota 05](./05-service-layer-dan-transaksi.md).)
+(Cara menyuntik `$db` — `db_connect()` atau melalui `Config\Services` — diterangkan dalam [nota 05](./nota-05-service-layer-dan-transaksi.md).)
 
 ### `groupStart()` — kurungan untuk syarat OR
 
@@ -364,4 +364,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Query pertindihan tarikh dan `SELECT … FOR UPDATE` tiada dalam buku; ikut nota ini.
 
 ---
-**Digunakan pada Hari 4** — S3 (migration + seeder daripada ERD); **Hari 6** — S1 (query pertindihan & slot kosong); **Hari 9** — S2 (query aggregate `ReportService`). Nota berkaitan: [03 · Model & Entity](./03-model-entity-dan-enum.md) · [05 · Transaksi](./05-service-layer-dan-transaksi.md) · [08 · Laporan](./08-laporan-eksport-pdf-excel.md)
+**Digunakan pada Hari 4** — S3 (migration + seeder daripada ERD); **Hari 6** — S1 (query pertindihan & slot kosong); **Hari 9** — S2 (query aggregate `ReportService`). Nota berkaitan: [03 · Model & Entity](./nota-03-model-entity-dan-enum.md) · [05 · Transaksi](./nota-05-service-layer-dan-transaksi.md) · [08 · Laporan](./nota-08-laporan-eksport-pdf-excel.md)

@@ -1,6 +1,6 @@
 # JADUAL — Aturcara Rasmi 10 Hari (CI-KKM-10)
 
-> Ikut **Tentatif Kursus CodeIgniter KKM** (RH Dynamic Resources). Masa rehat tetap setiap hari: **10:30–10:45** (pagi) · **12:30–14:30** (makan tengah hari). Tiada rehat petang. Kanun: [`SPEC-KURSUS.md`](./SPEC-KURSUS.md).
+> Ikut **Tentatif Kursus CodeIgniter KKM** (RH Dynamic Resources). Masa rehat tetap setiap hari: **10:30–10:45** (pagi) · **12:30–14:30** (makan tengah hari). Tiada rehat petang. Kanun: [`docs/spesifikasi-sistem.md`](./docs/spesifikasi-sistem.md).
 
 ## Ringkasan fasa
 

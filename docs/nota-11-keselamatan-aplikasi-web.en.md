@@ -1,6 +1,6 @@
 # 11 · Web Application Security (OWASP × CodeIgniter 4)
 
-> Topical notes (cross-day reference) · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Index: [`README.md`](./README.md)
+> Topical notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Note objectives
 
@@ -113,7 +113,7 @@ $sort = in_array($this->request->getGet('sort'), $allowedSort, true) ? $this->re
 Without CSRF, a malicious site can make the browser of an approver (who is logged in) send a POST to `/tlk/keputusan/…/approve` without them noticing.
 
 ```php
-// app/Config/Filters.php — enabled globally (KOLABORASI.md §5)
+// app/Config/Filters.php — enabled globally (docs/kolaborasi.md §5)
 public array $globals = [
     'before' => [
         'csrf',
@@ -225,7 +225,7 @@ Commit `composer.lock` so that every pair and every server installs **exactly** 
 | `insert($this->request->getPost())` | Mass assignment — `status`/`user_id` forged | `getPost([...medan dibenarkan])` + `user_id` from `auth()->id()` |
 | Data-changing actions through GET | Not protected by CSRF; can be triggered by `<img src>` | Use POST + `csrf_field()` |
 | `CI_ENVIRONMENT = development` on the server | Stack traces & file paths exposed | `production` on the server |
-| `.env` committed | DB password/keys leaked | `.gitignore` + rotate the secrets — see [note 12](./12-git-aliran-kerja.md) |
+| `.env` committed | DB password/keys leaked | `.gitignore` + rotate the secrets — see [note 12](./nota-12-git-aliran-kerja.md) |
 | Upload files in `public/` | Scripts can be executed/downloaded without checks | `writable/uploads/pas/` + download through a controller |
 
 ---
@@ -271,4 +271,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), 2021 editi
 The book does not cover the OWASP Top 10; the pre-demo checklist follows this note.
 
 ---
-**Used on Days 4, 7, 8 and 10** — across the course: Day 4 S2 (`.env`, CSRF, Shield), Day 7 S3 (secure uploads), Day 8 S2 (RBAC & ownership), Day 10 S3 (checklist before the demo). Related notes: [04 · Validation & Forms](./04-validasi-dan-borang.md) · [06 · Shield Auth & RBAC](./06-shield-auth-dan-rbac.md) · [07 · Secure File Uploads](./07-muat-naik-fail-selamat.md)
+**Used on Days 4, 7, 8 and 10** — across the course: Day 4 S2 (`.env`, CSRF, Shield), Day 7 S3 (secure uploads), Day 8 S2 (RBAC & ownership), Day 10 S3 (checklist before the demo). Related notes: [04 · Validation & Forms](./nota-04-validasi-dan-borang.md) · [06 · Shield Auth & RBAC](./nota-06-shield-auth-dan-rbac.md) · [07 · Secure File Uploads](./nota-07-muat-naik-fail-selamat.md)

@@ -1,6 +1,6 @@
 # 07 · Muat Naik Fail Selamat
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -80,7 +80,7 @@ Rules fail CI4 memeriksa **setiap** fail dalam `documents[]`. Tiga perkara yang 
 2. **Konsistensi extension ↔ kandungan** — `guessExtension()` (dari MIME sebenar) mesti dalam senarai putih.
 3. **Fail yang gagal dimuat naik** oleh PHP (cth melebihi `upload_max_filesize`) — `isValid()`.
 
-> `ext_in` membaca extension dari nama klien; `mime_in` menggunakan `getMimeType()` yang **mengesan jenis dari kandungan** melalui PHP extension `fileinfo`. Kedua-duanya diperlukan. Pastikan `fileinfo` dihidupkan (lihat [`docs/persediaan.md`](../docs/persediaan.md)).
+> `ext_in` membaca extension dari nama klien; `mime_in` menggunakan `getMimeType()` yang **mengesan jenis dari kandungan** melalui PHP extension `fileinfo`. Kedua-duanya diperlukan. Pastikan `fileinfo` dihidupkan (lihat [`docs/persediaan.md`](persediaan.md)).
 
 ---
 
@@ -279,4 +279,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Buku menerima imej melalui API; simpanan di `writable/` dan muat turun bersemak ikut nota ini.
 
 ---
-**Digunakan pada Hari 7** — S3 (borang, validasi & muat naik dokumen selamat) dan S4 (ujian kes sempadan muat naik). Turut Hari 8 (muat turun dokumen oleh penyemak/pelulus). Nota berkaitan: [04 Validasi](./04-validasi-dan-borang.md) · [06 Shield & RBAC](./06-shield-auth-dan-rbac.md) · [11 Keselamatan](./11-keselamatan-aplikasi-web.md)
+**Digunakan pada Hari 7** — S3 (borang, validasi & muat naik dokumen selamat) dan S4 (ujian kes sempadan muat naik). Turut Hari 8 (muat turun dokumen oleh penyemak/pelulus). Nota berkaitan: [04 Validasi](./nota-04-validasi-dan-borang.md) · [06 Shield & RBAC](./nota-06-shield-auth-dan-rbac.md) · [11 Keselamatan](./nota-11-keselamatan-aplikasi-web.md)

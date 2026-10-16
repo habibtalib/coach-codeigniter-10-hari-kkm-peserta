@@ -1,6 +1,6 @@
 # Day 3 — Database Design & UI/UX Foundation
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../SPEC-KURSUS.md) · [🧪 Day 3 Lab](./lab.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 3 Lab](./lab.md)
 
 > The URS tells us **what** the system must do. Today we design **where the data lives** (ERD + data dictionary) and **what the user sees** (wireframes). Tomorrow (Day 4) today's ERD is turned straight into CodeIgniter migrations — so every field you draw today becomes one `$this->forge->addField()` line.
 
@@ -280,7 +280,7 @@ The ERD shows the **shape**; the data dictionary shows the **details** needed to
 | Rule / enum | ≥ today (BR-TLK-03) | Model `$validationRules` |
 | Description | Booking start date | Comment / documentation |
 
-Full template: [`templates/dokumen/kamus-data-templat.md`](../templates/dokumen/kamus-data-templat.md).
+Full template: `templates/dokumen/kamus-data-templat.md` (**Templat & Rujukan** module).
 
 ### 2.2 Worked example — `slot_bookings`
 

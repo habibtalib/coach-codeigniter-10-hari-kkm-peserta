@@ -1,6 +1,6 @@
 # Rubric for the Capstone Demo — CI-KKM-10
 
-[← docs](./README.md) · [Day 10 README](../hari-10/README.md) · [SPEC](../SPEC-KURSUS.md) · [COLLABORATION (DoD)](../KOLABORASI.md)
+[← docs](./README.md) · [Day 10 README](../hari-10/README.md) · [SPEC](spesifikasi-sistem.md) · [COLLABORATION (DoD)](kolaborasi.md)
 
 > **When:** Day 10 S4 (16:00–17:00). **Who is assessed:** each **pair** (pair score) + one **individual** note (the "explain the code" segment). **Who assesses:** panel = trainer (chair) + system owner/representative.
 > **Read early:** participants read this rubric at the end of Day 9 so there are no surprises.

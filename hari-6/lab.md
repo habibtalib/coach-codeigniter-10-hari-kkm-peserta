@@ -1,6 +1,6 @@
 # Lab Hari 6 — Modul TLK (Bahagian 2)
 
-[⬅️ README Hari 6](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🧩 Template kod](../templates/kod/)
+[⬅️ README Hari 6](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**)
 
 > **Peraturan lab:** hari ini tentang **ketepatan di bawah tekanan**, bukan kelajuan. Tulis query pertindihan & transaksi **sendiri dahulu**; bandingkan dengan template hanya selepas checkpoint. AI boleh membantu menerangkan `Lock wait timeout` atau `errno` — tetapi anda mesti boleh menerangkan kenapa kunci diambil mengikut tertib pengguna → slot.
 
@@ -334,7 +334,7 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
    });
    ```
 
-   Semak dengan [`Routes-tlk.php.txt`](../templates/kod/Routes-tlk.php.txt).
+   Semak dengan `Routes-tlk.php.txt` (modul **Templat & Rujukan**).
 
 6. `app/Controllers/Tlk/DecisionController.php`:
 
@@ -785,7 +785,7 @@ Menulis ujian integrasi `BookingServiceTest` (pertindihan, BR-TLK-03/04, peralih
 - `composer test -- --no-coverage tests/tlk` → `OK` dengan **≥ 25 ujian** (BookingStatus 5 + BookingService ≥ 15 + DecisionAccess 5). Penyelesaian rujukan (tag `penyelesaian-hari-6`): **43** = BookingStatus 6 (dengan ⭐) + BookingService 28 (template 27 + 1) + DecisionAccess 7 (dengan ⭐) + ReferenceNumberService 2.
 - Langkah 6: membuang `hasOverlap()` menyebabkan sekurang-kurangnya `testCreateRejectsOverlappingBooking` merah; menukar `<=` → `<` menyebabkan kes *"bertindih di hujung awal"* merah.
 - `mysql -u kkm_dev -p -e "SELECT COUNT(*) FROM slot_bookings" kkm_latihan` sebelum dan selepas `composer test` → nombor **sama** dan bukan `0` (tempahan Lab 6.1–6.2 masih ada). Ujian menulis ke `kkm_latihan_test` (kumpulan `tests`), **bukan** `kkm_latihan`.
-- Bandingkan dengan [`BookingServiceTest.php.txt`](../templates/kod/BookingServiceTest.php.txt).
+- Bandingkan dengan `BookingServiceTest.php.txt` (modul **Templat & Rujukan**).
 
 ### 🧯 Masalah lazim
 
@@ -840,7 +840,7 @@ Menggilap UI Modul TLK (badge, flash, pengesahan, pagination Bootstrap, menu iku
    <?php endif ?>
    ```
 
-3. **Layout** — kemas kini `app/Views/layouts/main.php` mengikut [`layout-main.php.txt`](../templates/kod/layout-main.php.txt): menu *Tempahan Saya*, *Mohon Slot* (`can('tlk.apply')`), *Slot Kosong*, *Keputusan TLK* (`can('tlk.decide')`), *Urus Slot* (`inGroup('admin')`), dan skrip `data-confirm` sebelum `</body>` (README §4.1).
+3. **Layout** — kemas kini `app/Views/layouts/main.php` mengikut `layout-main.php.txt` (modul **Templat & Rujukan**): menu *Tempahan Saya*, *Mohon Slot* (`can('tlk.apply')`), *Slot Kosong*, *Keputusan TLK* (`can('tlk.decide')`), *Urus Slot* (`inGroup('admin')`), dan skrip `data-confirm` sebelum `</body>` (README §4.1).
 
 4. **Pagination Bootstrap** — cipta `app/Views/pager/bootstrap_full.php`:
 

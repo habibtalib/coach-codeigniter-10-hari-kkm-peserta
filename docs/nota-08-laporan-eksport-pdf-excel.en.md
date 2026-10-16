@@ -1,6 +1,6 @@
 # 08 · Filtered Reports & PDF/Excel Export
 
-> Topic notes (cross-day reference) · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Index: [`README.md`](./README.md)
+> Topic notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Notes objectives
 
@@ -250,7 +250,7 @@ private function pdf(string $code, string $view, array $rows, array $filters)
 </table>
 ```
 
-> If `SlotBookingModel::$returnType` is the `SlotBooking` Entity, `$r->status` may already be an enum, depending on how you wrote the Entity (see [notes 03](./03-model-entity-dan-enum.md)). Adjust accordingly.
+> If `SlotBookingModel::$returnType` is the `SlotBooking` Entity, `$r->status` may already be an enum, depending on how you wrote the Entity (see [notes 03](./nota-03-model-entity-dan-enum.md)). Adjust accordingly.
 
 ---
 
@@ -365,4 +365,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), 2021 editi
 Dompdf and PhpSpreadsheet are not in the book; follow this note.
 
 ---
-**Used on Day 9** — S1 (RPT-01..03 specification & GET filter form), S2 (`ReportService`: join, `groupBy`, dynamic filters), S3 (Dompdf & PhpSpreadsheet export), S4 (report total = DB total). Related notes: [02 Query Builder](./02-migration-seeder-dan-query-builder.md) · [09 Statistics & cache](./09-statistik-chartjs-dan-cache.md) · [10 Testing](./10-ujian-phpunit-ci4.md)
+**Used on Day 9** — S1 (RPT-01..03 specification & GET filter form), S2 (`ReportService`: join, `groupBy`, dynamic filters), S3 (Dompdf & PhpSpreadsheet export), S4 (report total = DB total). Related notes: [02 Query Builder](./nota-02-migration-seeder-dan-query-builder.md) · [09 Statistics & cache](./nota-09-statistik-chartjs-dan-cache.md) · [10 Testing](./nota-10-ujian-phpunit-ci4.md)

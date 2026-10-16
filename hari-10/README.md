@@ -1,6 +1,6 @@
 # Hari 10 — Modul Statistik (M4) & Capstone
 
-[← Jadual](../JADUAL.md) · [Kanun SPEC](../SPEC-KURSUS.md) · [🧪 Lab Hari 10](./lab.md) · [📋 Rubrik Capstone](../docs/rubrik-capstone.md) · [← Hari 9](../hari-9/README.md)
+[← Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 10](./lab.md) · [📋 Rubrik Capstone](../docs/rubrik-capstone.md) · [← Hari 9](../hari-9/README.md)
 
 > **Hari terakhir.** Pagi: kita membina dashboard yang merangkum M1 & M2 dan belajar satu konsep prestasi yang sering disalah guna — **cache**. Petang: kita berhenti membina dan mula **membuktikan** — UAT, pembetulan pepijat berdisiplin, semakan keselamatan, dan demo kepada pemilik sistem.
 
@@ -301,8 +301,8 @@ UAT (User Acceptance Testing) menjawab soalan pemilik sistem: "*Adakah sistem in
 
 Dua templat (ditulis Hari 2, digunakan hari ini):
 
-- [`templates/dokumen/kes-ujian-templat.md`](../templates/dokumen/kes-ujian-templat.md) — kes ujian terperinci (TC-…) + **log pepijat**.
-- [`templates/dokumen/uat-signoff-templat.md`](../templates/dokumen/uat-signoff-templat.md) — senario UAT-01..10 + keputusan penerimaan + tandatangan.
+- `templates/dokumen/kes-ujian-templat.md` (modul **Templat & Rujukan**) — kes ujian terperinci (TC-…) + **log pepijat**.
+- `templates/dokumen/uat-signoff-templat.md` (modul **Templat & Rujukan**) — senario UAT-01..10 + keputusan penerimaan + tandatangan.
 
 ### 3.2 Skrip UAT merentas 4 modul ikut peranan
 
@@ -364,7 +364,7 @@ flowchart LR
 
 ### 3.4 Senarai semak keselamatan akhir
 
-Rujukan mendalam: [`nota/11-keselamatan-aplikasi-web.md`](../nota/11-keselamatan-aplikasi-web.md).
+Rujukan mendalam: [`docs/nota-11-keselamatan-aplikasi-web.md`](../docs/nota-11-keselamatan-aplikasi-web.md).
 
 | # | Perkara | Cara semak (bukti) |
 |---|---------|--------------------|

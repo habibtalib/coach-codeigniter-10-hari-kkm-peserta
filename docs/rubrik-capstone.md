@@ -1,6 +1,6 @@
 # Rubrik Demo Capstone — CI-KKM-10
 
-[← docs](./README.md) · [Hari 10 README](../hari-10/README.md) · [SPEC](../SPEC-KURSUS.md) · [KOLABORASI (DoD)](../KOLABORASI.md)
+[← docs](./README.md) · [Hari 10 README](../hari-10/README.md) · [SPEC](spesifikasi-sistem.md) · [KOLABORASI (DoD)](kolaborasi.md)
 
 > **Bila:** Hari 10 S4 (16:00–17:00). **Siapa dinilai:** setiap **pasangan** (markah pasangan) + satu catatan **individu** (segmen "terangkan kod"). **Siapa menilai:** panel = jurulatih (pengerusi) + pemilik sistem/wakil.
 > **Baca awal:** peserta membaca rubrik ini pada akhir Hari 9 supaya tiada kejutan.

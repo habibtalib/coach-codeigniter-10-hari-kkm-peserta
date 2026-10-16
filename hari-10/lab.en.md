@@ -1,10 +1,10 @@
 # Day 10 Lab — Statistics (M4) & Capstone
 
-[← Day 10 README](./README.md) · [SPEC canon](../SPEC-KURSUS.md) · [Schedule](../JADUAL.md) · [Capstone Rubric](../docs/rubrik-capstone.md)
+[← Day 10 README](./README.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [Schedule](../JADUAL.md) · [Capstone Rubric](../docs/rubrik-capstone.md)
 
 > **Working branch:** `git switch main && git pull && git switch -c feat/statistik`
 > **Commit prefix:** `STAT:` (dashboard/cache) · `FIX:` (UAT bug fixes)
-> **Trainer reference code:** [`templates/kod/`](../templates/kod/) — `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt`.
+> **Trainer reference code:** `templates/kod/` (**Templat & Rujukan** module) — `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt`.
 
 | Lab | Session | Duration | Outcome |
 |-----|------|--------|-------|
@@ -127,7 +127,7 @@ Write `slotUtilisationToday()` (hint: `->select('slot_id')->distinct()->...->cou
 | `usageByZone()` | **Reuse** `$this->reports->usageByZone(['year'=>..., 'month'=>..., 'sort'=>'utilisation', 'dir'=>'desc'])` | No new query |
 | `passTrend12Months()` | `select("DATE_FORMAT(created_at, '%Y-%m') AS ym", false)` for the last 12 months | Zero-fill; label `Okt 25` |
 
-Full reference: [`StatisticsService.php.txt`](../templates/kod/StatisticsService.php.txt).
+Full reference: `StatisticsService.php.txt` (**Templat & Rujukan** module).
 
 **5. Register the service & a thin controller.** In `app/Config/Services.php`:
 
@@ -168,14 +168,14 @@ public function data(): ResponseInterface
 
 **6. Check the JSON first, the charts later.** Log in as `pelulus@latihan.test` and open `http://localhost:8080/statistik/data`. Check: 12 values in `charts.bookings_by_month.data`, 5 in `charts.pass_status.data`, 12 in `charts.pass_trend.data`.
 
-**7. View** `app/Views/statistik/dashboard.php`. **Save time (recommended):** S1 has only ~30 minutes of hands-on time — create this file and copy in the content of the template `templates/kod/dashboard-view.php.txt` (the trainer will share it) as your starting point, then read and adapt it; spend your time on writing `StatisticsService`. Make sure your view meets this list:
+**7. View** `app/Views/statistik/dashboard.php`. **Save time (recommended):** S1 has only ~30 minutes of hands-on time — create this file and copy in the content of the template `templates/kod/dashboard-view.php.txt` (**Templat & Rujukan** module) as your starting point, then read and adapt it; spend your time on writing `StatisticsService`. Make sure your view meets this list:
 - 4 KPI cards (Bootstrap `card`, `col-sm-6 col-xl-3`) rendered from `$kpi` with `esc()`.
 - 4 `<canvas>` elements, each inside `<div style="position: relative; height: 280px">`.
 - In `<?= $this->section('scripts') ?>`: `<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>` (a **pinned** version — not an open `@4`; or the local copy `base_url('assets/vendor/chartjs/chart.umd.min.js')`, see 🧯) and a `fetch('<?= site_url('statistik/data') ?>')` script.
 - A `draw()` function that calls `Chart.getChart(canvas)?.destroy()` before `new Chart(...)`.
 - Third chart: `type: 'bar'` + `options.indexAxis: 'y'`.
 
-Full reference: [`dashboard-view.php.txt`](../templates/kod/dashboard-view.php.txt).
+Full reference: `dashboard-view.php.txt` (**Templat & Rujukan** module).
 
 **8. Menu.** In `layouts/main.php`, add the link only if `auth()->user()->can('statistik.view')`.
 
@@ -381,8 +381,8 @@ composer test                                                # ALL green — no 
 
 ### Prerequisites
 - Labs 10.1 & 10.2 complete and merged into `main`.
-- Create the file `docs/UAT-signoff.md` and copy in the content of the template `templates/dokumen/uat-signoff-templat.md` (the trainer will share it).
-- Create the file `docs/kes-ujian-akhir.md` and copy in the content of the template `templates/dokumen/kes-ujian-templat.md` (the trainer will share it).
+- Create the file `docs/UAT-signoff.md` and copy in the content of the template `templates/dokumen/uat-signoff-templat.md` (**Templat & Rujukan** module).
+- Create the file `docs/kes-ujian-akhir.md` and copy in the content of the template `templates/dokumen/kes-ujian-templat.md` (**Templat & Rujukan** module).
 - Clean database: `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder`.
 
 ### Steps

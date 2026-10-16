@@ -1,6 +1,6 @@
 # Hari 2 — Projek CI Anda di GitLab: Route, View & Borang
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [🧪 Lab Hari 2](./lab.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 2](./lab.md)
 
 > Mulai hari ini kursus ini **hands-on**. Selepas pengesahan keperluan pagi tadi (S1), setiap peserta mencipta projek sendiri `kelas-ci-<nama>` di GitLab KKM dan membina CodeIgniter 4 langkah demi langkah: route → controller → view → layout → borang dengan validation dan CSRF. Setiap langkah di-commit dan di-push. Teori keperluan & reka bentuk yang lain kini dalam [`docs/rujukan-keperluan.md`](../docs/rujukan-keperluan.md) (bacaan pilihan).
 
@@ -175,7 +175,7 @@ flowchart LR
 | View | `app/Views/*.php` | HTML sahaja; setiap data dicetak dengan `esc()` |
 | Layout | `app/Views/layout.php` | Rangka halaman yang dikongsi; view mengisi `section('content')` |
 
-Nota penuh: [`nota/01-mvc-dan-kitaran-request-ci4.md`](../nota/01-mvc-dan-kitaran-request-ci4.md).
+Nota penuh: [`docs/nota-01-mvc-dan-kitaran-request-ci4.md`](../docs/nota-01-mvc-dan-kitaran-request-ci4.md).
 
 ### 3.2 Placeholder route
 

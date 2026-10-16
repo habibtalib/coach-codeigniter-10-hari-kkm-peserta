@@ -1,6 +1,6 @@
 # 10 · Ujian PHPUnit dalam CodeIgniter 4
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -17,7 +17,7 @@ Ujian manual (klik-klik dalam pelayar) mudah terlepas kes sempadan dan perlu diu
 
 - **Membuktikan** peraturan perniagaan (BR-TLK-01 tiada pertindihan, BR-PAS-04 pemilikan) masih betul selepas refactor.
 - **Menjadi dokumentasi hidup** — nama ujian menerangkan kelakuan yang dijangka.
-- Menjadi syarat **Definition of Done**: "Ujian PHPUnit berkaitan lulus (`vendor/bin/phpunit`)" ([`KOLABORASI.md`](../KOLABORASI.md) §2).
+- Menjadi syarat **Definition of Done**: "Ujian PHPUnit berkaitan lulus (`vendor/bin/phpunit`)" ([`docs/kolaborasi.md`](kolaborasi.md) §2).
 
 ---
 
@@ -226,7 +226,7 @@ final class SlotAvailabilityServiceTest extends CIUnitTestCase
 }
 ```
 
-> `hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool` ialah method yang sama seperti dalam [nota 02](./02-migration-seeder-dan-query-builder.md) dan [nota 05](./05-service-layer-dan-transaksi.md) — `true` bermaksud **bertindih** (slot tidak tersedia).
+> `hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool` ialah method yang sama seperti dalam [nota 02](./nota-02-migration-seeder-dan-query-builder.md) dan [nota 05](./nota-05-service-layer-dan-transaksi.md) — `true` bermaksud **bertindih** (slot tidak tersedia).
 
 ---
 
@@ -434,4 +434,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Buku guna `CIDatabaseTestCase` (hlm. 53), yang kini *deprecated*; guna `CIUnitTestCase` + `DatabaseTestTrait` seperti nota ini.
 
 ---
-**Digunakan pada Hari 6** (S3 — ujian pertindihan & peralihan status TLK), **Hari 8** (S3 — ujian akses positif/negatif & pemilikan Pas) dan **Hari 10** (S3 — ujian akhir sistem & kitaran pembetulan pepijat). Nota berkaitan: [05 · Service Layer & Transaksi](./05-service-layer-dan-transaksi.md) · [06 · Shield Auth & RBAC](./06-shield-auth-dan-rbac.md) · [03 · Model, Entity & Enum](./03-model-entity-dan-enum.md)
+**Digunakan pada Hari 6** (S3 — ujian pertindihan & peralihan status TLK), **Hari 8** (S3 — ujian akses positif/negatif & pemilikan Pas) dan **Hari 10** (S3 — ujian akhir sistem & kitaran pembetulan pepijat). Nota berkaitan: [05 · Service Layer & Transaksi](./nota-05-service-layer-dan-transaksi.md) · [06 · Shield Auth & RBAC](./nota-06-shield-auth-dan-rbac.md) · [03 · Model, Entity & Enum](./nota-03-model-entity-dan-enum.md)

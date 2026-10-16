@@ -1,6 +1,6 @@
 # Lab Day 5 — TLK Module (Part 1)
 
-[⬅️ README Day 5](./README.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🧩 Code templates](../templates/kod/)
+[⬅️ README Day 5](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module)
 
 > **Lab rules:** the navigator reads the steps & SPEC, the driver types. **Try it by hand first** — read the full error message (the Whoops page shows the file & line). After 10 minutes stuck: ask the trainer or use AI to *explain* the error. The `templates/kod/*.php.txt` templates are for **checking** after you have tried.
 
@@ -255,7 +255,7 @@ Write the `BookingStatus` & `SlotCategory` enums, the `SlotBooking` Entity and t
 ### ✅ Checkpoint
 - `composer test -- --no-coverage tests/tlk/BookingStatusTest.php` → `OK (5 tests, …)` (`OK (6 tests, …)` if the ⭐ challenge test is added).
 - The navigator can answer: *"Why is `status` in `$allowedFields` even though the applicant cannot set it?"* (README §1.3).
-- Compare with [`BookingStatus.php.txt`](../templates/kod/BookingStatus.php.txt), [`SlotCategory.php.txt`](../templates/kod/SlotCategory.php.txt), [`SlotBooking-Entity.php.txt`](../templates/kod/SlotBooking-Entity.php.txt), [`SlotBookingModel.php.txt`](../templates/kod/SlotBookingModel.php.txt).
+- Compare with `BookingStatus.php.txt` (**Templat & Rujukan** module), `SlotCategory.php.txt` (**Templat & Rujukan** module), `SlotBooking-Entity.php.txt` (**Templat & Rujukan** module), `SlotBookingModel.php.txt` (**Templat & Rujukan** module).
 
 ### 🧯 Troubleshooting
 
@@ -618,7 +618,7 @@ Build the booking form with server-side validation (including BR-TLK-03), `Refer
    ];
    ```
 
-3. `app/Services/ReferenceNumberService.php` — write it from README §3.3 (the constructor takes `?BaseConnection $db = null` and uses `db_connect()` if null). Check it against [`ReferenceNumberService.php.txt`](../templates/kod/ReferenceNumberService.php.txt).
+3. `app/Services/ReferenceNumberService.php` — write it from README §3.3 (the constructor takes `?BaseConnection $db = null` and uses `db_connect()` if null). Check it against `ReferenceNumberService.php.txt` (**Templat & Rujukan** module).
 
 4. `app/Services/BookingService.php` — **version 1** (upgraded tomorrow):
 

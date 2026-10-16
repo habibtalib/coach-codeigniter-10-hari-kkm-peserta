@@ -1,6 +1,6 @@
 # Preparation Assignment — Before Day 4
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../SPEC-KURSUS.md) · [📖 Day 3](../hari-3/README.md) · [🤝 COLLABORATION](../KOLABORASI.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](spesifikasi-sistem.md) · [📖 Day 3](../hari-3/README.md) · [🤝 COLLABORATION](kolaborasi.md)
 
 | Item | Value |
 |---------|-------|

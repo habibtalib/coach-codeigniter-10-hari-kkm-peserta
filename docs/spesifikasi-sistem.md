@@ -219,7 +219,7 @@ Rentak harian tetap (dari tentatif): 08:30–09:00 recap · S1 09:00–10:30 · 
 | Dokumen Pas | `doc_type = 'sokongan'`; medan borang `documents[]` |
 | Cache | `StatisticsService::CACHE_KEY = 'stat_dashboard'`, TTL 600 s; service memanggil `cache()->delete(StatisticsService::CACHE_KEY)` selepas `transCommit()` (`StatisticsService::forget()` ialah pembalut setara) |
 | Persekitaran | `app.appTimezone = 'Asia/Kuala_Lumpur'`; CSRF dihidupkan manual di `Filters::$globals`; DB ujian MySQL `kkm_latihan_test` (bukan SQLite — tiada `FOR UPDATE`), `DBPrefix` kosong |
-| Rubrik capstone | Kefungsian 30 · Keselamatan 20 · Kualiti kod 20 · Ujian 15 · Demo 15 ([`docs/rubrik-capstone.md`](./docs/rubrik-capstone.md)) |
+| Rubrik capstone | Kefungsian 30 · Keselamatan 20 · Kualiti kod 20 · Ujian 15 · Demo 15 ([`docs/rubrik-capstone.md`](./rubrik-capstone.md)) |
 
 Kod rujukan telah dijalankan pada CodeIgniter 4.7.4 + Shield 1.4.1 + PHP 8.4 + MySQL (ujian PHPUnit lulus); "4.6+" kekal sah.
 

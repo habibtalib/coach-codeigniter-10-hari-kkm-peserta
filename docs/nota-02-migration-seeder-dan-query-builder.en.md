@@ -1,6 +1,6 @@
 # 02 · Migrations, Seeders and the Query Builder
 
-> Topic notes (reference across days) · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Index: [`README.md`](./README.md)
+> Topic notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Objectives of these notes
 
@@ -286,7 +286,7 @@ class SlotAvailabilityService
 }
 ```
 
-(How to inject `$db` — `db_connect()` or through `Config\Services` — is explained in [notes 05](./05-service-layer-dan-transaksi.md).)
+(How to inject `$db` — `db_connect()` or through `Config\Services` — is explained in [notes 05](./nota-05-service-layer-dan-transaksi.md).)
 
 ### `groupStart()` — brackets for OR conditions
 
@@ -364,4 +364,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), 2021 editi
 The date-overlap query and `SELECT … FOR UPDATE` are not in the book; follow this note.
 
 ---
-**Used on Day 4** — S3 (migrations + seeders from the ERD); **Day 6** — S1 (overlap & free-slot queries); **Day 9** — S2 (`ReportService` aggregate queries). Related notes: [03 · Model & Entity](./03-model-entity-dan-enum.md) · [05 · Transactions](./05-service-layer-dan-transaksi.md) · [08 · Report](./08-laporan-eksport-pdf-excel.md)
+**Used on Day 4** — S3 (migrations + seeders from the ERD); **Day 6** — S1 (overlap & free-slot queries); **Day 9** — S2 (`ReportService` aggregate queries). Related notes: [03 · Model & Entity](./nota-03-model-entity-dan-enum.md) · [05 · Transactions](./nota-05-service-layer-dan-transaksi.md) · [08 · Report](./nota-08-laporan-eksport-pdf-excel.md)

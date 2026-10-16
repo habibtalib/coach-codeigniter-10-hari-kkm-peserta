@@ -1,6 +1,6 @@
 # Trek Opsyenal — Design Thinking untuk Sistem TLK & Pas
 
-[← Indeks docs](./README.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [📅 Jadual](../JADUAL.md) · [🧪 Lab Hari 1](../hari-1/lab.md)
+[← Indeks docs](./README.md) · [📘 Kanun SPEC](spesifikasi-sistem.md) · [📅 Jadual](../JADUAL.md) · [🧪 Lab Hari 1](../hari-1/lab.md)
 
 > **Trek sampingan opsyenal — siapkan sebelum Hari 4.** Halaman ini **tidak menggantikan** lab teras Hari 1–3. Ia mengambil hasil lab yang anda sudah ada (temu bual, pain point, FR, AC, wireframe) dan menambah lima langkah Design Thinking supaya setiap keperluan boleh dijejak kembali kepada **masalah sebenar seorang pengguna**. Skop kursus tetap (4 modul, SPEC), jadi kita **tidak** guna Design Thinking untuk mencipta ciri baharu, tetapi untuk menajamkan keperluan dan reka bentuk skrin.
 
@@ -367,8 +367,8 @@ Setiap baris di bawah menjejak satu masalah sebenar sehingga ke ujian yang boleh
 - [Hari 2 README](../hari-2/README.md) §1 (pengesahan), §2 (as-is/to-be), §3 (AC Given/When/Then), §4.3 (matriks jejak) · [Lab Hari 2](../hari-2/lab.md)
 - [Hari 3 README](../hari-3/README.md) §3 (wireframe) · [Lab Hari 3](../hari-3/lab.md) Lab 3.3–3.4
 - [Lab Hari 10](../hari-10/lab.md) Lab 10.3 (UAT)
-- [Templat acceptance criteria](../templates/dokumen/acceptance-criteria-templat.md) · [Templat URS](../templates/dokumen/urs-templat.md)
-- [SPEC-KURSUS](../SPEC-KURSUS.md) §2 (BR-TLK-01..06, BR-PAS-01..06) · [Glosari](./glosari.md)
+- Templat acceptance criteria (modul **Templat & Rujukan**) · Templat URS (modul **Templat & Rujukan**)
+- [Spesifikasi sistem](spesifikasi-sistem.md) §2 (BR-TLK-01..06, BR-PAS-01..06) · [Glosari](./glosari.md)
 
 **Rujukan luar** (disemak 2026-10-15)
 - Nielsen Norman Group — [Design Thinking 101](https://www.nngroup.com/articles/design-thinking/)

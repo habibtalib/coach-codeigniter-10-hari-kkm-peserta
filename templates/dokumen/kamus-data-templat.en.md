@@ -1,6 +1,6 @@
 # Data Dictionary — TLK (Special Vehicle Parking) & Pass System
 
-> **Template.** Copy to `docs/kamus-data.md` (Day 3 Lab 3.2). Table & field names **must** be exactly as in [`SPEC-KURSUS.md`](../../SPEC-KURSUS.md) §3. This dictionary becomes the source for the migrations on Day 4.
+> **Template.** Copy to `docs/kamus-data.md` (Day 3 Lab 3.2). Table & field names **must** be exactly as in [`docs/spesifikasi-sistem.md`](../../docs/spesifikasi-sistem.md) §3. This dictionary becomes the source for the migrations on Day 4.
 
 ## Conventions
 

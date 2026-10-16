@@ -1,6 +1,6 @@
 # Day 2 Lab — Requirement Sign-off & Your CI Project on GitLab
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../SPEC-KURSUS.md) · [📖 Day 2 README](./README.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 2 README](./README.md)
 
 | Lab | Session | Output |
 |-----|---------|--------|

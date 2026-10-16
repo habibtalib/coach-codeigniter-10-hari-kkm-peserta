@@ -1,6 +1,6 @@
 # Day 7 — Pass Module (Part 1): Model, CRUD & Secure Document Upload
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../SPEC-KURSUS.md) · [🧪 Day 7 Lab](./lab.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 7 Lab](./lab.md)
 
 > **Today we start building the Pass Module (M2).** The basic pattern is the same as TLK (Special Vehicle Parking, Days 5–6): enum → entity → model → thin controller → service. What is **new**, and the riskiest part, is **file upload**. A file from a user is the most dangerous input in a web application: it can be a script, it can be too large, it can overwrite another file. Today we build an upload that is **secure by default** and prove it with boundary tests.
 
@@ -579,7 +579,7 @@ Each failed case → one row in the format *Steps to reproduce · Expected · Ac
 - [ ] `docs/ujian-manual-pas.md` — ≥ 10 cases, all Pass (or bugs recorded)
 - [ ] Commit on the `feat/pas-permohonan` branch with the `PAS:` prefix
 
-Full trainer reference: [`templates/kod/`](../templates/kod/) — `PassStatus`, `PassType`, `PassApplication-Entity`, `PassApplicationModel`, `PassWorkflowService`, `ApplicationController-upload`, `Routes-pas`. Topic notes: [07 Secure file upload](../nota/07-muat-naik-fail-selamat.md) · [03 Model, Entity & Enum](../nota/03-model-entity-dan-enum.md) · [11 Security](../nota/11-keselamatan-aplikasi-web.md).
+Full trainer reference: `templates/kod/` (**Templat & Rujukan** module) — `PassStatus`, `PassType`, `PassApplication-Entity`, `PassApplicationModel`, `PassWorkflowService`, `ApplicationController-upload`, `Routes-pas`. Topic notes: [07 Secure file upload](../docs/nota-07-muat-naik-fail-selamat.md) · [03 Model, Entity & Enum](../docs/nota-03-model-entity-dan-enum.md) · [11 Security](../docs/nota-11-keselamatan-aplikasi-web.md).
 
 ---
 
@@ -628,5 +628,5 @@ Day 8 completes the Pass Module: the **review → approve/reject** flow, **Shiel
 
 - Make sure at least **3 applications** with status `submitted` exist (use `pemohon1` and `pemohon2`) — they will be tomorrow's demo data.
 - Log in once as `penyemak@latihan.test` and `pelulus@latihan.test` (password `Latihan@2026`) to make sure the seeder accounts work.
-- Re-read [note 06 — Shield auth & RBAC](../nota/06-shield-auth-dan-rbac.md) §2–§4 (groups, permissions, `$matrix`).
+- Re-read [note 06 — Shield auth & RBAC](../docs/nota-06-shield-auth-dan-rbac.md) §2–§4 (groups, permissions, `$matrix`).
 - A question to think about: *If `reviewer` can open `/pas/semakan`, what stops them from POSTing to `/pas/semakan/5/approve`?*

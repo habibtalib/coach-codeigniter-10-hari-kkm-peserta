@@ -1,6 +1,6 @@
 # Hari 6 — Modul TLK (Bahagian 2): Ketersediaan, Transaksi, Kelulusan & Ujian
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [🧪 Lab Hari 6](./lab.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 6](./lab.md)
 
 > Semalam ujian manual TM-TLK-16 gagal: dua pemohon boleh menempah slot yang sama pada tarikh bertindih. Hari ini kita menutup lubang itu **dengan betul** — bukan dengan `if` biasa, tetapi dengan query pertindihan yang tepat, **transaksi** dan **kunci baris** supaya ia kekal betul walaupun 50 orang menekan "Hantar" serentak. Kemudian pelulus boleh lulus/tolak, setiap perubahan dilog, dan ujian PHPUnit membuktikannya. Hujung hari: **M1 siap**.
 
@@ -141,7 +141,7 @@ WHERE parking_slots.is_active = 1
 ORDER BY parking_zones.code, parking_slots.slot_no
 ```
 
-Paparan `/tlk/tempahan/ketersediaan` ialah borang **GET** (filter dalam URL → boleh ditanda buku & dikongsi). Controller mengesahkan tarikh dengan validator biasa sebelum memanggil service. Fail penuh: [`templates/kod/SlotAvailabilityService.php.txt`](../templates/kod/SlotAvailabilityService.php.txt).
+Paparan `/tlk/tempahan/ketersediaan` ialah borang **GET** (filter dalam URL → boleh ditanda buku & dikongsi). Controller mengesahkan tarikh dengan validator biasa sebelum memanggil service. Fail penuh: `templates/kod/SlotAvailabilityService.php.txt` (modul **Templat & Rujukan**).
 
 > 💡 **Tip:** Paparan slot kosong ialah **maklumat**, bukan jaminan. Antara pemohon melihat "A-02 kosong" dan menekan "Hantar", orang lain mungkin menempahnya. Itulah sebabnya S2 menyemak semula **dalam transaksi**.
 
@@ -354,7 +354,7 @@ private function transition(int $bookingId, BookingStatus $to, int $actorId, ?st
 }
 ```
 
-Kaedah awam hanya pembalut nipis: `approve($id, $actorId, ?$remarks)`, `reject($id, $actorId, $remarks)` (menolak jika `remarks` < 10 aksara), `cancel($id, $actorId, ?$remarks)` (**BR-TLK-06**: pemilik **atau** admin; status `pending` **tidak** boleh dibatalkan — `canTransitionTo` menolaknya). Fail penuh: [`templates/kod/BookingService.php.txt`](../templates/kod/BookingService.php.txt).
+Kaedah awam hanya pembalut nipis: `approve($id, $actorId, ?$remarks)`, `reject($id, $actorId, $remarks)` (menolak jika `remarks` < 10 aksara), `cancel($id, $actorId, ?$remarks)` (**BR-TLK-06**: pemilik **atau** admin; status `pending` **tidak** boleh dibatalkan — `canTransitionTo` menolaknya). Fail penuh: `templates/kod/BookingService.php.txt` (modul **Templat & Rujukan**).
 
 ### 2.4 `status_logs` — jejak audit satu jadual
 
@@ -370,7 +370,7 @@ public function history(string $module, int $recordId): array   // lama → baha
 | `TLK` | 1 | `pending` | `approved` | 4 (Dr. Devi) | — |
 | `TLK` | 1 | `approved` | `cancelled` | 1 (Aminah) | Tidak lagi diperlukan |
 
-`$updatedField = ''` dalam Model kerana jadual ini **tambah-sahaja** (append-only) — tiada `updated_at`, tiada kaedah ubah/padam. Fail penuh: [`templates/kod/StatusLogModel.php.txt`](../templates/kod/StatusLogModel.php.txt).
+`$updatedField = ''` dalam Model kerana jadual ini **tambah-sahaja** (append-only) — tiada `updated_at`, tiada kaedah ubah/padam. Fail penuh: `templates/kod/StatusLogModel.php.txt` (modul **Templat & Rujukan**).
 
 ### 2.5 Controller keputusan — masih nipis
 
@@ -441,7 +441,7 @@ database.tests.DBPrefix =
 database.tests.port = 3306
 ```
 
-Kenapa MySQL, bukan SQLite `:memory:` lalai appstarter? **SQLite tidak menyokong `SELECT … FOR UPDATE`** — ujian BR-TLK-05 akan gagal dengan ralat sintaks. Kenapa `DBPrefix` kosong? Lalai kumpulan `tests` ialah `db_`; kod kita memanggil `prefixTable()` jadi ia tetap berfungsi, tetapi prefix kosong menjadikan jadual ujian sama nama dengan pembangunan (lebih mudah disiasat). Butiran: [`../nota/10-ujian-phpunit-ci4.md`](../nota/10-ujian-phpunit-ci4.md).
+Kenapa MySQL, bukan SQLite `:memory:` lalai appstarter? **SQLite tidak menyokong `SELECT … FOR UPDATE`** — ujian BR-TLK-05 akan gagal dengan ralat sintaks. Kenapa `DBPrefix` kosong? Lalai kumpulan `tests` ialah `db_`; kod kita memanggil `prefixTable()` jadi ia tetap berfungsi, tetapi prefix kosong menjadikan jadual ujian sama nama dengan pembangunan (lebih mudah disiasat). Butiran: [`../docs/nota-10-ujian-phpunit-ci4.md`](../docs/nota-10-ujian-phpunit-ci4.md).
 
 ### 3.3 Anatomi `BookingServiceTest`
 
@@ -510,7 +510,7 @@ final class BookingServiceTest extends CIUnitTestCase
 | `seeInDatabase()` / `seeNumRecords()` / `dontSeeInDatabase()` | Menyemak **kesan** dalam DB, bukan hanya nilai pulangan |
 | Tarikh relatif `date('Y-m-d', strtotime('+10 days'))` | Ujian tidak "tamat tempoh" apabila kalendar bergerak |
 
-Fail penuh (20+ ujian): [`templates/kod/BookingServiceTest.php.txt`](../templates/kod/BookingServiceTest.php.txt).
+Fail penuh (20+ ujian): `templates/kod/BookingServiceTest.php.txt` (modul **Templat & Rujukan**).
 
 ### 3.4 Ujian fungsian HTTP dengan Shield
 
@@ -599,7 +599,7 @@ Badge:
 
 > ⚠️ **Kesilapan lazim:** Dialog pengesahan dianggap kawalan keselamatan. Ia hanya **UX**. Penyerang menghantar POST terus tanpa JavaScript — server (filter + `canTransitionTo()`) yang menjaga.
 
-Layout akhir: [`templates/kod/layout-main.php.txt`](../templates/kod/layout-main.php.txt).
+Layout akhir: `templates/kod/layout-main.php.txt` (modul **Templat & Rujukan**).
 
 ### 4.2 Definition of Done — M1
 
@@ -674,5 +674,5 @@ Esok **Hari 7 — Modul Pas (Bahagian 1)**: Model/Entity `PassApplication` & `Pa
 - Pastikan tag `m1-siap` wujud dan `composer test -- tests/tlk` hijau — esok kita tidak kembali ke TLK.
 - Semak `php.ini`: `upload_max_filesize ≥ 8M`, `post_max_size ≥ 16M` (`php -i | grep -E "upload_max|post_max"`).
 - Sediakan 3 fail sintetik untuk ujian muat naik: satu PDF kecil (< 2 MB), satu JPG, dan satu fail > 2 MB (cth PDF besar). **Jangan** guna dokumen peribadi sebenar.
-- Baca SPEC §2.2 (BR-PAS-01..06) dan [`../nota/07-muat-naik-fail-selamat.md`](../nota/07-muat-naik-fail-selamat.md).
+- Baca SPEC §2.2 (BR-PAS-01..06) dan [`../docs/nota-07-muat-naik-fail-selamat.md`](../docs/nota-07-muat-naik-fail-selamat.md).
 - Perhatikan: `ReferenceNumberService::next('PAS')` dan `StatusLogModel::record('PAS', …)` akan digunakan semula **tanpa perubahan**.

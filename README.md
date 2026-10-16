@@ -36,7 +36,7 @@ Hari 1–3: keperluan, carta alir, acceptance criteria, ERD, wireframe. Hari 4: 
 |-------|------------------------------------------------|------------------------|
 | Tempoh & skop | 15 hari, Parking + Permit Kerja | **10 hari padat** ikut tentatif, 4 modul (TLK, Pas, Laporan, Statistik) |
 | Objektif | Fokus umum per hari | **Objektif boleh diukur per sesi** + semakan kendiri + ✅ checkpoint lab |
-| Nota | README ringkas; lab "diperdalam kemudian" | Nota konsep penuh, lab langkah-demi-langkah, nota penceramah, nota topikal `nota/` |
+| Nota | README ringkas; lab "diperdalam kemudian" | Nota konsep penuh, lab langkah-demi-langkah, nota penceramah, nota topikal `docs/nota-*` |
 | Stack | CI4 + auth sendiri | **CI 4.6+ · PHP 8.2 enum · Shield (groups/permissions) · Service layer · Entities** |
 | Integriti data | Semakan pertindihan dalam controller | **Transaksi + `SELECT … FOR UPDATE`**, jadual `reference_sequences`, satu jadual audit `status_logs` |
 | Laporan/Statistik | Sebahagian dashboard modul | **Modul khusus**: 3 laporan + eksport PDF/Excel; dashboard Chart.js + cache + invalidasi |
@@ -46,9 +46,9 @@ Hari 1–3: keperluan, carta alir, acceptance criteria, ERD, wireframe. Hari 4: 
 ## Struktur
 
 ```text
-SPEC-KURSUS.md  JADUAL.md  KOLABORASI.md  CLAUDE.md
+JADUAL.md  CLAUDE.md
 hari-1/ … hari-10/     README.md · lab.md · nota-penceramah.md
-nota/                  nota topikal (MVC, migration, model/enum, validasi, transaksi, Shield, upload, laporan, cache, ujian, keselamatan, Git)
+docs/nota-NN-*.md      nota topikal (MVC, migration, model/enum, validasi, transaksi, Shield, upload, laporan, cache, ujian, keselamatan, Git)
 templates/dokumen/     URS, acceptance criteria, kamus data, kes ujian, UAT sign-off
 templates/kod/         kod rujukan jurulatih (*.php.txt) — kunci jawapan
 docs/                  persediaan, tugasan persediaan, pustaka prompt, rubrik capstone, glosari
@@ -59,7 +59,7 @@ slides/                ci-kkm-10.html (buka terus dalam pelayar)
 
 - Prosa **Bahasa Melayu**; kod & istilah teknikal **English**.
 - Data **sintetik sahaja** — tiada data KKM sebenar. Tiada rahsia dalam repo.
-- Disiplin AI: **faham dahulu, terima kemudian** — lihat [`KOLABORASI.md`](./KOLABORASI.md).
+- Disiplin AI: **faham dahulu, terima kemudian** — lihat [`docs/kolaborasi.md`](./docs/kolaborasi.md).
 
 ---
 

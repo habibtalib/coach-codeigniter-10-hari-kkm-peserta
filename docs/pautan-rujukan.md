@@ -1,7 +1,7 @@
 # Pautan Rujukan Rasmi — ikut hari
 
-> Semua pautan disemak pada September 2026. Dokumentasi CodeIgniter merujuk **versi terkini 4.x** (serasi 4.6+). Jika contoh dalam dokumentasi berbeza dengan nota kursus, **SPEC-KURSUS.md menentukan nama**, dokumentasi rasmi menentukan **API**.
-> Nota topikal: [`../nota/README.md`](../nota/README.md)
+> Semua pautan disemak pada September 2026. Dokumentasi CodeIgniter merujuk **versi terkini 4.x** (serasi 4.6+). Jika contoh dalam dokumentasi berbeza dengan nota kursus, **docs/spesifikasi-sistem.md menentukan nama**, dokumentasi rasmi menentukan **API**.
+> Nota topikal: [`nota.md`](nota.md)
 
 ## Rujukan teras (buka sepanjang kursus)
 

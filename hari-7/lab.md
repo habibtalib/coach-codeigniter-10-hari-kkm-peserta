@@ -1,8 +1,8 @@
 # Lab Hari 7 — Modul Pas (1): Model, CRUD & Muat Naik Selamat
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [📖 Nota Hari 7](./README.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 Nota Hari 7](./README.md)
 
-> Bekerja **berpasangan** (driver/navigator — tukar setiap sesi). Semua arahan dijalankan dari **akar projek CI4** anda (folder yang ada `spark`). Rujukan lengkap jurulatih: [`templates/kod/`](../templates/kod/). **Salin hanya selepas anda boleh menerangkan setiap baris** (KOLABORASI §3).
+> Bekerja **berpasangan** (driver/navigator — tukar setiap sesi). Semua arahan dijalankan dari **akar projek CI4** anda (folder yang ada `spark`). Rujukan lengkap jurulatih: `templates/kod/` (modul **Templat & Rujukan**). **Salin hanya selepas anda boleh menerangkan setiap baris** (KOLABORASI §3).
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
@@ -72,10 +72,10 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
 ### Langkah
 
 1. **Cipta `app/Enums/PassType.php`**. Tiga `case` tepat seperti SPEC: `kenderaan`, `kakitangan`, `kontraktor`. Tambah `label()`, `requiresVehicle()`, `values()`, `options()`.
-   Rujukan: [`PassType.php.txt`](../templates/kod/PassType.php.txt).
+   Rujukan: `PassType.php.txt` (modul **Templat & Rujukan**).
 
 2. **Cipta `app/Enums/PassStatus.php`**. Lima `case`: `submitted`, `under_review`, `approved`, `rejected`, `expired`. Tulis `allowedTransitions()` **sendiri dahulu** berdasarkan rajah SPEC §2.2, kemudian `canTransitionTo()`, `label()`, `badge()`, `isFinal()`, `values()`, `options()`.
-   Rujukan: [`PassStatus.php.txt`](../templates/kod/PassStatus.php.txt).
+   Rujukan: `PassStatus.php.txt` (modul **Templat & Rujukan**).
 
 3. **Uji enum dengan segera** menggunakan skrip kecil (tidak di-commit):
 
@@ -105,7 +105,7 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
    ```
 
 4. **Cipta `app/Entities/PassApplication.php`** dengan `$dates`, `$casts` (`'?integer'` untuk FK pilihan), `statusEnum()`, `typeEnum()`, `isOwnedBy()`, `displayStatus()`.
-   Rujukan: [`PassApplication-Entity.php.txt`](../templates/kod/PassApplication-Entity.php.txt).
+   Rujukan: `PassApplication-Entity.php.txt` (modul **Templat & Rujukan**).
 
 5. **Cipta `app/Models/PassApplicationModel.php`**:
    - `$returnType = PassApplication::class`, `$useTimestamps = true`, `$useSoftDeletes = false`.
@@ -114,7 +114,7 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
    - Skop `ownedBy()`, `withStatus()`, `withApplicant()`.
 
 6. **Cipta `app/Models/PassDocumentModel.php`** (`$returnType = 'array'`, rule `mime` `in_list[...]`, `size_bytes` `less_than_equal_to[2097152]`, kaedah `forApplication()`).
-   Rujukan kedua-dua model: [`PassApplicationModel.php.txt`](../templates/kod/PassApplicationModel.php.txt) (fail mengandungi dua kelas — pisahkan).
+   Rujukan kedua-dua model: `PassApplicationModel.php.txt` (modul **Templat & Rujukan**) (fail mengandungi dua kelas — pisahkan).
 
 7. **Uji validasi Model** melalui route sementara (buang selepas checkpoint). Tambah dalam `app/Config/Routes.php`:
 
@@ -238,7 +238,7 @@ Membina `/pas/permohonan` (senarai skop pemilik, filter status, pagination) dan 
    }
    ```
 
-4. **Cipta `app/Controllers/Pas/ApplicationController.php`** dengan `index()`, `show()` dan pembantu `findVisibleOr404()`. Salin bahagian berkaitan dari [`ApplicationController-upload.php.txt`](../templates/kod/ApplicationController-upload.php.txt). Untuk hari ini, `show()` memulangkan **dua** variable sahaja:
+4. **Cipta `app/Controllers/Pas/ApplicationController.php`** dengan `index()`, `show()` dan pembantu `findVisibleOr404()`. Salin bahagian berkaitan dari `ApplicationController-upload.php.txt` (modul **Templat & Rujukan**). Untuk hari ini, `show()` memulangkan **dua** variable sahaja:
 
    ```php
    public function show(string $id): string
@@ -254,7 +254,7 @@ Membina `/pas/permohonan` (senarai skop pemilik, filter status, pagination) dan 
 
    (`history` dan `actions` ditambah esok, Hari 8.)
 
-5. **Tajuk halaman, kemudian `app/Views/pas/index.php`.** View Pas memberi tajuk melalui `section('title')`, tetapi layout Hari 4/6 hanya membaca `$title`. Kemas kini dahulu bahagian atas `app/Views/layouts/main.php` (seperti [`layout-main.php.txt`](../templates/kod/layout-main.php.txt)):
+5. **Tajuk halaman, kemudian `app/Views/pas/index.php`.** View Pas memberi tajuk melalui `section('title')`, tetapi layout Hari 4/6 hanya membaca `$title`. Kemas kini dahulu bahagian atas `app/Views/layouts/main.php` (seperti `layout-main.php.txt` (modul **Templat & Rujukan**)):
 
    ```php
    <?php
@@ -429,7 +429,7 @@ Membina borang permohonan dengan 1–3 dokumen yang disimpan secara selamat (BR-
 
 ### Langkah
 
-1. **Lengkapkan `PassWorkflowService`** dengan kaedah Hari 7 dari [`PassWorkflowService.php.txt`](../templates/kod/PassWorkflowService.php.txt):
+1. **Lengkapkan `PassWorkflowService`** dengan kaedah Hari 7 dari `PassWorkflowService.php.txt` (modul **Templat & Rujukan**):
    - pemalar `UPLOAD_DIR`, `MAX_FILES`, `ALLOWED_EXT`
    - `submit()` — semakan → `move()` → transaksi → `status_logs` → pembersihan dalam `catch`
    - `documentPath()` — `realpath()` + semakan awalan
@@ -690,4 +690,4 @@ ls writable/uploads/pas/ | head         # nama rawak sahaja
 git status                              # bersih; writable/uploads tidak dijejak
 ```
 
-Pasangan yang ketinggalan: salin dari [`templates/kod/`](../templates/kod/) **selepas** jurulatih/rakan menerangkan setiap bahagian — dan tandakan dalam commit (`PAS: … (rujuk templat)`).
+Pasangan yang ketinggalan: salin dari `templates/kod/` (modul **Templat & Rujukan**) **selepas** jurulatih/rakan menerangkan setiap bahagian — dan tandakan dalam commit (`PAS: … (rujuk templat)`).

@@ -1,7 +1,7 @@
 # Jira Track — Pair Backlog & Sprints (Optional)
 
 > **Optional side track.** This page shows how a pair manages the 10 days of work in **Jira Cloud** (Free plan): a backlog from the Day 1–2 requirements, sprints matched to modules M1–M4, and links between Jira cards and Git branches and commits. It **does not replace** any course deliverable: `docs/keperluan-awal.md`, `docs/acceptance-criteria.md` and `docs/pelan-kerja.md` stay the source of truth. Jira is a tracking view on top of them.
-> Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Schedule: [`JADUAL.md`](../JADUAL.md) · Working agreement: [`KOLABORASI.md`](../KOLABORASI.md) · Related tracks: [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
+> Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Schedule: [`JADUAL.md`](../JADUAL.md) · Working agreement: [`docs/kolaborasi.md`](kolaborasi.md) · Related tracks: [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
 
 > ⚠️ **Finish before Day 4.** Coding starts on Day 4. Setup and the backlog happen on Days 1–2, stories with acceptance criteria on Day 2, and sprint planning on Day 4 S4 before the first line of module code.
 
@@ -18,7 +18,7 @@ At the office, most IT teams track work in a tool such as Jira. This track build
 | **Story** | One confirmed FR, written from the user's point of view, with the Day 2 acceptance criteria |
 | **Sprint** | One block of work with a goal: Sprint 1 = M1, Sprint 2 = M2–M4 |
 | **Stand-up** | The 08:30 recap every morning — three questions |
-| **Board** | To Do → In Progress → In Review → Done; "Done" means it passes the DoD ([`KOLABORASI.md`](../KOLABORASI.md) §2) |
+| **Board** | To Do → In Progress → In Review → Done; "Done" means it passes the DoD ([`docs/kolaborasi.md`](kolaborasi.md) §2) |
 
 **Core rule:** every piece of work has a card. If you are working on something that isn't on the board, stop and create its card first.
 
@@ -295,7 +295,7 @@ Blockers are recorded as a comment on the card or as a new Bug. That day's drive
 
 A team-managed Scrum board starts with To Do, In Progress and Done. Add an **In Review** column in the board settings (board ••• menu → column configuration; menu labels may differ).
 
-| Column | Enters when | Link to the DoD ([`KOLABORASI.md`](../KOLABORASI.md) §2) |
+| Column | Enters when | Link to the DoD ([`docs/kolaborasi.md`](kolaborasi.md) §2) |
 |-------|---------------|------------------------------------------------------|
 | **To Do** | The Story is in the sprint, the AC are clear | The AC exist — DoD line 1 can be tested |
 | **In Progress** | The `feat/TLKPAS-nn-…` branch is created, the driver starts typing | — |
@@ -378,7 +378,7 @@ For pairs who know GitLab Issues/Boards ([`trek-gitlab.md`](./trek-gitlab.md)):
 
 ## Links
 
-- Course: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · [`JADUAL.md`](../JADUAL.md) · [`KOLABORASI.md`](../KOLABORASI.md)
+- Course: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · [`JADUAL.md`](../JADUAL.md) · [`docs/kolaborasi.md`](kolaborasi.md)
 - Days: [`hari-1/lab.md`](../hari-1/lab.md) (Lab 1.4 FR/NFR + MoSCoW) · [`hari-2/README.md`](../hari-2/README.md) (S3 acceptance criteria) · [`hari-2/lab.md`](../hari-2/lab.md) · [`hari-4/lab.md`](../hari-4/lab.md) (Lab 4.4 work plan) · [`hari-10/lab.md`](../hari-10/lab.md) (Lab 10.4 retrospective)
 - Docs: [`README.md`](./README.md) · [`senarai-semak-modul.md`](./senarai-semak-modul.md) · [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md) · [`glosari.md`](./glosari.md)
 

@@ -1,6 +1,6 @@
 # 09 · Statistics, Chart.js & Cache
 
-> Topic notes (cross-day reference) · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Index: [`README.md`](./README.md)
+> Topic notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Notes objectives
 
@@ -441,4 +441,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), 2021 editi
 The book uses `cache()->save()`; this note uses `cache()->remember()`. Chart.js is not in the book.
 
 ---
-**Used on Day 10** — S1 (dashboard, KPI cards & 4 Chart.js charts) and S2 (aggregate queries & basic caching + invalidation). Related notes: [02 · Migration, Seeder & Query Builder](./02-migration-seeder-dan-query-builder.md) · [05 · Service Layer & Transactions](./05-service-layer-dan-transaksi.md) · [08 · Reports & Export](./08-laporan-eksport-pdf-excel.md)
+**Used on Day 10** — S1 (dashboard, KPI cards & 4 Chart.js charts) and S2 (aggregate queries & basic caching + invalidation). Related notes: [02 · Migration, Seeder & Query Builder](./nota-02-migration-seeder-dan-query-builder.md) · [05 · Service Layer & Transactions](./nota-05-service-layer-dan-transaksi.md) · [08 · Reports & Export](./nota-08-laporan-eksport-pdf-excel.md)

@@ -1,6 +1,6 @@
 # Tutorial Rangka Aplikasi CI4 — Mula Awal (pilihan)
 
-[🛠️ Persediaan](./persediaan.md) · [🧪 Lab Hari 4](../hari-4/lab.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🤝 KOLABORASI](../KOLABORASI.md) · [🧪 Nota 10 · Ujian](../nota/10-ujian-phpunit-ci4.md)
+[🛠️ Persediaan](./persediaan.md) · [🧪 Lab Hari 4](../hari-4/lab.md) · [📘 SPEC](spesifikasi-sistem.md) · [🤝 KOLABORASI](kolaborasi.md) · [🧪 Nota 10 · Ujian](nota-10-ujian-phpunit-ci4.md)
 
 > **Pilihan, bukan wajib.** Hari 1–3 hanya keperluan (URS, carta alir, ERD). Binaan sebenar bermula pada Hari 4 ([Lab 4.2](../hari-4/lab.md) dan [Lab 4.3](../hari-4/lab.md)). Halaman ini memberi anda **permulaan awal**: Bahagian A ialah projek latihan CI4 asas pada Hari 1; Bahagian B–G membina rangka aplikasi sebenar dalam repo pasangan, dengan nama, arahan, kunci `.env`, nama DB dan path fail **sama** dengan Lab 4.2/4.3.
 
@@ -212,7 +212,7 @@ Repo `~/latihan/sistem-tlk-pas` (`C:\Users\<nama>\latihan\sistem-tlk-pas`) dari 
    php spark --version
    ```
 
-2. **Kebersihan projek.** Cipta `.gitattributes` dan `.editorconfig` di akar projek dalam VS Code (*File → New File*). Kandungannya ada dalam Lab 4.2 langkah 1 (template: [`gitattributes.txt`](../templates/kod/gitattributes.txt), [`editorconfig.txt`](../templates/kod/editorconfig.txt)). `* text=auto eol=lf` memastikan fail di-commit dengan hujung baris LF walaupun Git Windows anda `core.autocrlf true`. Kemudian:
+2. **Kebersihan projek.** Cipta `.gitattributes` dan `.editorconfig` di akar projek dalam VS Code (*File → New File*). Kandungannya ada dalam Lab 4.2 langkah 1 (template: `gitattributes.txt` (modul **Templat & Rujukan**), `editorconfig.txt` (modul **Templat & Rujukan**)). `* text=auto eol=lf` memastikan fail di-commit dengan hujung baris LF walaupun Git Windows anda `core.autocrlf true`. Kemudian:
 
    ```bash
    git add .gitattributes .editorconfig

@@ -12,9 +12,9 @@
 
 | BM | English | Catatan · Notes |
 |----|---------|-----------------|
-| `README.md`, `JADUAL.md`, `SPEC-KURSUS.md`, `KOLABORASI.md` | `README.en.md`, `JADUAL.en.md`, `SPEC-KURSUS.en.md`, `KOLABORASI.en.md` | |
+| `README.md`, `JADUAL.md`, `docs/spesifikasi-sistem.md`, `docs/kolaborasi.md` | `README.en.md`, `JADUAL.en.md`, `docs/spesifikasi-sistem.en.md`, `docs/kolaborasi.en.md` | |
 | `hari-N/README.md`, `lab.md`, `nota-penceramah.md` | `hari-N/README.en.md`, `lab.en.md`, `nota-penceramah.en.md` | |
-| `nota/NN-*.md`, `nota/README.md` | `nota/NN-*.en.md`, `nota/README.en.md` | |
+| `nota/NN-*.md`, `docs/nota.md` | `nota/NN-*.en.md`, `docs/nota.en.md` | |
 | `docs/*.md` | `docs/*.en.md` | Kecuali · Except `docs/terjemahan.md` (halaman ini, dwibahasa · this page, bilingual) |
 | `templates/dokumen/*.md` | `templates/dokumen/*.en.md` | |
 | `slides/README.md` | `slides/README.en.md` | |
@@ -101,7 +101,7 @@
 
 ```bash
 node scripts/semak-terjemahan.mjs                       # semua pasangan + laporan liputan · every pair + coverage report
-node scripts/semak-terjemahan.mjs nota/05-service-layer-dan-transaksi.en.md   # satu pasangan · one pair
+node scripts/semak-terjemahan.mjs docs/nota-05-service-layer-dan-transaksi.en.md   # satu pasangan · one pair
 ```
 
 **BM:** Pemeriksa membandingkan urutan tajuk (aras, emoji, nombor, nombor lab, kod sesi, skop kuiz, tag masa), soalan dan pilihan kuiz, `>` penjelasan, item tugasan dan `<details>` per seksyen, serta blok kod tanpa komen (`text` dan `mermaid` tidak dibandingkan). Bilangan baris jadual dan kod sebaris yang hilang dilaporkan sebagai amaran.

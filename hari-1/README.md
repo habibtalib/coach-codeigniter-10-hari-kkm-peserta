@@ -1,6 +1,6 @@
 # Hari 1 — Project Kickoff & Requirement Deep Dive
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [🧪 Lab Hari 1](./lab.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 1](./lab.md)
 
 > **Hari ini tiada kod PHP.** Ini disengajakan. Kita akan membina sistem TLK dan Pas selama 10 hari — dan setiap baris kod yang ditulis pada Hari 5–10 hanya betul jika **keperluannya betul**. Hari ini kita belajar *bertanya*, *mendengar* dan *menulis keperluan* yang boleh diuji.
 
@@ -148,7 +148,7 @@ quadrantChart
 | Peranan | Siapa |
 |---------|-------|
 | **Pemilik sistem** (*system owner*) | Jurulatih atau wakil jabatan — menjawab soalan domain, mengesahkan URS (Hari 2), menerima demo (Hari 10) |
-| **Pasangan pembangun** | Anda — driver/navigator, tukar setiap sesi ([`KOLABORASI.md`](../KOLABORASI.md) §4) |
+| **Pasangan pembangun** | Anda — driver/navigator, tukar setiap sesi ([`docs/kolaborasi.md`](../docs/kolaborasi.md) §4) |
 | **Jurulatih** | Menyemak di setiap ✅ checkpoint |
 
 ⚠️ **Kesilapan lazim:** Menganggap jurulatih "tahu jawapannya" lalu tidak bertanya. Apabila jurulatih memakai "topi pemilik sistem", dia hanya menjawab **apa yang ditanya**. Keperluan tersembunyi hanya muncul jika anda bertanya soalan yang betul — sama seperti projek sebenar.

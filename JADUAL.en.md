@@ -1,6 +1,6 @@
 # JADUAL — Official 10-Day Programme (CI-KKM-10)
 
-> Follows the **Tentative Schedule for the KKM CodeIgniter Course** (RH Dynamic Resources). Fixed breaks every day: **10:30–10:45** (morning) · **12:30–14:30** (lunch). No afternoon break. Canon: [`SPEC-KURSUS.md`](./SPEC-KURSUS.md).
+> Follows the **Tentative Schedule for the KKM CodeIgniter Course** (RH Dynamic Resources). Fixed breaks every day: **10:30–10:45** (morning) · **12:30–14:30** (lunch). No afternoon break. Canon: [`docs/spesifikasi-sistem.md`](./docs/spesifikasi-sistem.md).
 
 ## Phase summary
 

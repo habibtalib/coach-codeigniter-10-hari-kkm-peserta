@@ -1,6 +1,6 @@
 # 06 · Shield: Pengesahan (Authn) & Kawalan Akses Berperanan (RBAC)
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -36,7 +36,7 @@ php spark routes            # sahkan /login, /logout, /register wujud
 
 `shield:setup` menambah `service('auth')->routes($routes);` dalam `Routes.php` dan mendaftar alias filter Shield (`session`, `tokens`, `chain`, `group`, `permission`, `auth-rates`, `force-reset`) secara automatik melalui *Registrar* Shield — anda **tidak perlu** menaip alias itu sendiri dalam `Config\Filters`.
 
-> Medan tambahan `users` (`full_name`, `staff_no`, `department_id`, `phone`) — lihat [nota 02](./02-migration-seeder-dan-query-builder.md). Untuk menyimpannya melalui Shield, jana model sendiri: `php spark shield:model UserModel`, tambah medan ke `$allowedFields`, dan tetapkan `Config\Auth::$userProvider = \App\Models\UserModel::class`.
+> Medan tambahan `users` (`full_name`, `staff_no`, `department_id`, `phone`) — lihat [nota 02](./nota-02-migration-seeder-dan-query-builder.md). Untuk menyimpannya melalui Shield, jana model sendiri: `php spark shield:model UserModel`, tambah medan ke `$allowedFields`, dan tetapkan `Config\Auth::$userProvider = \App\Models\UserModel::class`.
 
 ---
 
@@ -111,7 +111,7 @@ $user->addGroup('reviewer');   // mesti nama yang wujud dalam $groups
 
 ## 4. Lapisan 1: filter laluan (`app/Config/Routes.php`)
 
-Filter berjalan **sebelum** controller (lihat [nota 01](./01-mvc-dan-kitaran-request-ci4.md)). Jika gagal, controller langsung tidak dipanggil.
+Filter berjalan **sebelum** controller (lihat [nota 01](./nota-01-mvc-dan-kitaran-request-ci4.md)). Jika gagal, controller langsung tidak dipanggil.
 
 ```php
 use App\Controllers\Admin\SlotController;
@@ -222,7 +222,7 @@ class ApplicationController extends BaseController
 
 **404 atau 403?** 403 memberitahu penyerang "rekod ini wujud tetapi bukan milik anda" — maklumat itu membantu penyerang meneka ID. Untuk rekod milik orang lain, **404** lebih selamat. Untuk route peranan (cth `/statistik`), 403/redirect adalah wajar kerana kewujudan route bukan rahsia.
 
-Semakan yang sama **wajib** pada muat turun dokumen `/pas/permohonan/dokumen/{id}` — lihat [nota 07](./07-muat-naik-fail-selamat.md).
+Semakan yang sama **wajib** pada muat turun dokumen `/pas/permohonan/dokumen/{id}` — lihat [nota 07](./nota-07-muat-naik-fail-selamat.md).
 
 ---
 
@@ -254,7 +254,7 @@ Ini hanya untuk **UX** (pengguna tidak nampak butang yang tidak boleh ditekan). 
 
 ## 8. Menguji akses (ringkas)
 
-Setiap route dilindungi perlu **dua** ujian: positif (peranan betul → 200) dan negatif (peranan salah → bukan 200). Gunakan `actingAs()` dari `CodeIgniter\Shield\Test\AuthenticationTesting`. Contoh penuh: [nota 10](./10-ujian-phpunit-ci4.md).
+Setiap route dilindungi perlu **dua** ujian: positif (peranan betul → 200) dan negatif (peranan salah → bukan 200). Gunakan `actingAs()` dari `CodeIgniter\Shield\Test\AuthenticationTesting`. Contoh penuh: [nota 10](./nota-10-ujian-phpunit-ci4.md).
 
 ---
 
@@ -290,4 +290,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Buku terbit sebelum Shield; groups, permissions dan `auth()` hanya dalam nota ini dan dokumentasi Shield.
 
 ---
-**Digunakan pada Hari 8** — S2 (groups/permissions + filter route + semakan pemilikan) dan S3 (ujian akses positif & negatif). Turut Hari 4 S2 (pasang Shield & `UserSeeder`) dan Hari 10 (`permission:statistik.view`). Nota berkaitan: [01 Kitaran request](./01-mvc-dan-kitaran-request-ci4.md) · [07 Muat naik](./07-muat-naik-fail-selamat.md) · [11 Keselamatan](./11-keselamatan-aplikasi-web.md)
+**Digunakan pada Hari 8** — S2 (groups/permissions + filter route + semakan pemilikan) dan S3 (ujian akses positif & negatif). Turut Hari 4 S2 (pasang Shield & `UserSeeder`) dan Hari 10 (`permission:statistik.view`). Nota berkaitan: [01 Kitaran request](./nota-01-mvc-dan-kitaran-request-ci4.md) · [07 Muat naik](./nota-07-muat-naik-fail-selamat.md) · [11 Keselamatan](./nota-11-keselamatan-aplikasi-web.md)

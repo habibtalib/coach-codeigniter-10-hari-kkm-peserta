@@ -1,6 +1,6 @@
 # 06 · Shield: Authentication (Authn) & Role-Based Access Control (RBAC)
 
-> Topical notes (reference across days) · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Index: [`README.md`](./README.md)
+> Topical notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Notes objectives
 
@@ -36,7 +36,7 @@ php spark routes            # confirm /login, /logout, /register exist
 
 `shield:setup` adds `service('auth')->routes($routes);` to `Routes.php` and registers the Shield filter aliases (`session`, `tokens`, `chain`, `group`, `permission`, `auth-rates`, `force-reset`) automatically through the Shield *Registrar* — you **do not need** to type those aliases yourself in `Config\Filters`.
 
-> Extra `users` fields (`full_name`, `staff_no`, `department_id`, `phone`) — see [notes 02](./02-migration-seeder-dan-query-builder.md). To save them through Shield, generate your own model: `php spark shield:model UserModel`, add the fields to `$allowedFields`, and set `Config\Auth::$userProvider = \App\Models\UserModel::class`.
+> Extra `users` fields (`full_name`, `staff_no`, `department_id`, `phone`) — see [notes 02](./nota-02-migration-seeder-dan-query-builder.md). To save them through Shield, generate your own model: `php spark shield:model UserModel`, add the fields to `$allowedFields`, and set `Config\Auth::$userProvider = \App\Models\UserModel::class`.
 
 ---
 
@@ -111,7 +111,7 @@ $user->addGroup('reviewer');   // must be a name that exists in $groups
 
 ## 4. Layer 1: route filters (`app/Config/Routes.php`)
 
-Filters run **before** the controller (see [notes 01](./01-mvc-dan-kitaran-request-ci4.md)). If one fails, the controller is not called at all.
+Filters run **before** the controller (see [notes 01](./nota-01-mvc-dan-kitaran-request-ci4.md)). If one fails, the controller is not called at all.
 
 ```php
 use App\Controllers\Admin\SlotController;
@@ -222,7 +222,7 @@ class ApplicationController extends BaseController
 
 **404 or 403?** A 403 tells the attacker "this record exists but is not yours" — that information helps the attacker guess IDs. For records owned by someone else, **404** is safer. For role routes (e.g. `/statistik`), 403/redirect is fine because the existence of the route is not a secret.
 
-The same check is **mandatory** on document downloads `/pas/permohonan/dokumen/{id}` — see [notes 07](./07-muat-naik-fail-selamat.md).
+The same check is **mandatory** on document downloads `/pas/permohonan/dokumen/{id}` — see [notes 07](./nota-07-muat-naik-fail-selamat.md).
 
 ---
 
@@ -254,7 +254,7 @@ This is only for **UX** (users do not see a button they cannot press). An attack
 
 ## 8. Testing access (briefly)
 
-Every protected route needs **two** tests: positive (correct role → 200) and negative (wrong role → not 200). Use `actingAs()` from `CodeIgniter\Shield\Test\AuthenticationTesting`. Full example: [notes 10](./10-ujian-phpunit-ci4.md).
+Every protected route needs **two** tests: positive (correct role → 200) and negative (wrong role → not 200). Use `actingAs()` from `CodeIgniter\Shield\Test\AuthenticationTesting`. Full example: [notes 10](./nota-10-ujian-phpunit-ci4.md).
 
 ---
 
@@ -290,4 +290,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), 2021 editi
 The book predates Shield; groups, permissions and `auth()` are only in this note and the Shield docs.
 
 ---
-**Used on Day 8** — S2 (groups/permissions + route filters + ownership check) and S3 (positive & negative access tests). Also Day 4 S2 (install Shield & `UserSeeder`) and Day 10 (`permission:statistik.view`). Related notes: [01 Request lifecycle](./01-mvc-dan-kitaran-request-ci4.md) · [07 Upload](./07-muat-naik-fail-selamat.md) · [11 Security](./11-keselamatan-aplikasi-web.md)
+**Used on Day 8** — S2 (groups/permissions + route filters + ownership check) and S3 (positive & negative access tests). Also Day 4 S2 (install Shield & `UserSeeder`) and Day 10 (`permission:statistik.view`). Related notes: [01 Request lifecycle](./nota-01-mvc-dan-kitaran-request-ci4.md) · [07 Upload](./nota-07-muat-naik-fail-selamat.md) · [11 Security](./nota-11-keselamatan-aplikasi-web.md)

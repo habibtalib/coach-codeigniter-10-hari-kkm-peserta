@@ -1,6 +1,6 @@
 # 04 · Validation and Forms
 
-> Topical notes (reference across days) · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Index: [`README.md`](./README.md)
+> Topical notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Notes objectives
 
@@ -128,9 +128,9 @@ Built-in rules used often in the project:
 | `is_not_unique[table.field]` | Reference **must exist** | `slot_id`, `vehicle_id` |
 | `is_unique[table.field,id,{id}]` | Must be unique (ignore its own record on update) | `vehicles.plate_no` |
 | `regex_match[/…/]` | Special format | plate `WXX 1234` |
-| `uploaded`, `max_size`, `ext_in`, `mime_in` | Files | see [notes 07](./07-muat-naik-fail-selamat.md) |
+| `uploaded`, `max_size`, `ext_in`, `mime_in` | Files | see [notes 07](./nota-07-muat-naik-fail-selamat.md) |
 
-> **Tip:** generate the `in_list` list from the enum so it is not repeated: `'in_list[' . implode(',', \App\Enums\PassType::values()) . ']'` (add `values()` to the enum as in [notes 03](./03-model-entity-dan-enum.md)).
+> **Tip:** generate the `in_list` list from the enum so it is not repeated: `'in_list[' . implode(',', \App\Enums\PassType::values()) . ']'` (add `values()` to the enum as in [notes 03](./nota-03-model-entity-dan-enum.md)).
 
 ---
 
@@ -332,4 +332,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), 2021 editi
 The book uses `validate()`; this course uses `validateData()` (CI 4.2+) so the checked data is explicit.
 
 ---
-**Used on Day 5** — S3 (TLK (Special Vehicle Parking) booking form + server validation + custom rule BR-TLK-03); **Day 7** — S3 (Pass application form + file validation). Related notes: [03 · Model](./03-model-entity-dan-enum.md) · [07 · File upload](./07-muat-naik-fail-selamat.md) · [11 · Security](./11-keselamatan-aplikasi-web.md)
+**Used on Day 5** — S3 (TLK (Special Vehicle Parking) booking form + server validation + custom rule BR-TLK-03); **Day 7** — S3 (Pass application form + file validation). Related notes: [03 · Model](./nota-03-model-entity-dan-enum.md) · [07 · File upload](./nota-07-muat-naik-fail-selamat.md) · [11 · Security](./nota-11-keselamatan-aplikasi-web.md)

@@ -1,6 +1,6 @@
 # 03 · Model, Entity dan Enum
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -353,4 +353,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Backed enum (PHP 8.1) tiada dalam buku; ikut nota ini.
 
 ---
-**Digunakan pada Hari 5** — S1 (Model + Entity + enum TLK); **Hari 7** — S1 (Model/Entity `PassApplication` & `PassDocument`, enum `PassStatus`/`PassType`). Nota berkaitan: [02 · Migration](./02-migration-seeder-dan-query-builder.md) · [04 · Validasi](./04-validasi-dan-borang.md) · [05 · Service](./05-service-layer-dan-transaksi.md)
+**Digunakan pada Hari 5** — S1 (Model + Entity + enum TLK); **Hari 7** — S1 (Model/Entity `PassApplication` & `PassDocument`, enum `PassStatus`/`PassType`). Nota berkaitan: [02 · Migration](./nota-02-migration-seeder-dan-query-builder.md) · [04 · Validasi](./nota-04-validasi-dan-borang.md) · [05 · Service](./nota-05-service-layer-dan-transaksi.md)

@@ -1,6 +1,6 @@
 # Hari 5 — Modul TLK (Bahagian 1): Model, CRUD & Borang Tempahan
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [🧪 Lab Hari 5](./lab.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 5](./lab.md)
 
 > Semalam kita ada database kosong yang betul. Hari ini kita beri ia **tingkah laku**: enum yang menjadi satu-satunya sumber status, Model yang menolak data buruk, CRUD slot untuk admin, dan borang tempahan yang menghasilkan nombor rujukan **`TLK-2026-0001`** yang pertama. Esok (Hari 6) kita jadikannya **selamat serentak** dan lengkap dengan kelulusan.
 
@@ -270,7 +270,7 @@ $routes->group('admin/slot', ['namespace' => 'App\Controllers\Admin', 'filter' =
 | Nama route (`'as'`) | View guna `url_to('admin.slot.edit', $id)` — URL boleh berubah tanpa mengubah view |
 | Padam = `POST …/delete` | Pautan `GET` untuk padam boleh dicetuskan oleh crawler / `<img src>`. Tindakan yang mengubah data → POST + CSRF |
 
-Fail route penuh untuk TLK: [`templates/kod/Routes-tlk.php.txt`](../templates/kod/Routes-tlk.php.txt).
+Fail route penuh untuk TLK: `templates/kod/Routes-tlk.php.txt` (modul **Templat & Rujukan**).
 
 ### 2.2 Corak Post/Redirect/Get (PRG)
 
@@ -562,7 +562,7 @@ Perkara penting:
 - **Cuba semula** (maks 3 kali) pada ralat 1213/1205 **hanya** jika `next()` memiliki transaksi. Jika dipanggil dalam transaksi `BookingService` (esok), deadlock telah me-rollback semua kerja pemanggil — pemanggil yang mengendalikannya.
 - Tiada input pengguna dalam SQL mentah — `$prefix`/`$year` diikat melalui `?`. Nama jadual dari kod kita sendiri.
 
-Fail penuh: [`templates/kod/ReferenceNumberService.php.txt`](../templates/kod/ReferenceNumberService.php.txt).
+Fail penuh: `templates/kod/ReferenceNumberService.php.txt` (modul **Templat & Rujukan**).
 
 ### 3.4 `BookingService` versi 1 — controller kekal nipis
 
@@ -718,5 +718,5 @@ Esok **Hari 6 — Modul TLK (Bahagian 2)**: semakan ketersediaan, anti-pertindih
   database.tests.port = 3306
   ```
 
-- Baca [`../nota/05-service-layer-dan-transaksi.md`](../nota/05-service-layer-dan-transaksi.md) dan [`../nota/10-ujian-phpunit-ci4.md`](../nota/10-ujian-phpunit-ci4.md).
+- Baca [`../docs/nota-05-service-layer-dan-transaksi.md`](../docs/nota-05-service-layer-dan-transaksi.md) dan [`../docs/nota-10-ujian-phpunit-ci4.md`](../docs/nota-10-ujian-phpunit-ci4.md).
 - Fikirkan: *"Dua pemohon menekan Hantar untuk slot A-01, 1–10 Okt, pada saat yang sama. Kod hari ini — apa yang berlaku?"*

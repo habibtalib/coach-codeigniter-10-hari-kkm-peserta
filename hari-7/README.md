@@ -1,6 +1,6 @@
 # Hari 7 — Modul Pas (Bahagian 1): Model, CRUD & Muat Naik Dokumen Selamat
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [🧪 Lab Hari 7](./lab.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 7](./lab.md)
 
 > **Hari ini kita mula membina Modul Pas (M2).** Corak asas sama seperti TLK (Hari 5–6): enum → entity → model → controller nipis → service. Yang **baharu** dan paling berisiko ialah **muat naik fail**. Fail daripada pengguna ialah input yang paling berbahaya dalam aplikasi web: ia boleh menjadi skrip, boleh terlalu besar, boleh menulis ganti fail lain. Hari ini kita bina muat naik yang **selamat secara lalai** dan buktikannya dengan ujian sempadan.
 
@@ -579,7 +579,7 @@ Setiap kes yang gagal → satu baris dengan format *Langkah untuk hasilkan semul
 - [ ] `docs/ujian-manual-pas.md` — ≥ 10 kes, semua Lulus (atau pepijat direkod)
 - [ ] Commit pada branch `feat/pas-permohonan` dengan prefix `PAS:`
 
-Rujukan penuh jurulatih: [`templates/kod/`](../templates/kod/) — `PassStatus`, `PassType`, `PassApplication-Entity`, `PassApplicationModel`, `PassWorkflowService`, `ApplicationController-upload`, `Routes-pas`. Nota topikal: [07 Muat naik fail selamat](../nota/07-muat-naik-fail-selamat.md) · [03 Model, Entity & Enum](../nota/03-model-entity-dan-enum.md) · [11 Keselamatan](../nota/11-keselamatan-aplikasi-web.md).
+Rujukan penuh jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — `PassStatus`, `PassType`, `PassApplication-Entity`, `PassApplicationModel`, `PassWorkflowService`, `ApplicationController-upload`, `Routes-pas`. Nota topikal: [07 Muat naik fail selamat](../docs/nota-07-muat-naik-fail-selamat.md) · [03 Model, Entity & Enum](../docs/nota-03-model-entity-dan-enum.md) · [11 Keselamatan](../docs/nota-11-keselamatan-aplikasi-web.md).
 
 ---
 
@@ -628,5 +628,5 @@ Hari 8 menyiapkan Modul Pas: aliran **semak → lulus/tolak**, **RBAC Shield**, 
 
 - Pastikan sekurang-kurangnya **3 permohonan** berstatus `submitted` wujud (guna `pemohon1` dan `pemohon2`) — ia akan menjadi data demo esok.
 - Log masuk sekali sebagai `penyemak@latihan.test` dan `pelulus@latihan.test` (kata laluan `Latihan@2026`) untuk memastikan akaun seeder berfungsi.
-- Baca semula [nota 06 — Shield auth & RBAC](../nota/06-shield-auth-dan-rbac.md) §2–§4 (groups, permissions, `$matrix`).
+- Baca semula [nota 06 — Shield auth & RBAC](../docs/nota-06-shield-auth-dan-rbac.md) §2–§4 (groups, permissions, `$matrix`).
 - Soalan untuk difikirkan: *Jika `reviewer` boleh membuka `/pas/semakan`, apakah yang menghalangnya daripada POST ke `/pas/semakan/5/approve`?*

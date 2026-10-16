@@ -1,6 +1,6 @@
 # 04 · Validasi dan Borang
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -128,9 +128,9 @@ Peraturan terbina yang kerap digunakan dalam projek:
 | `is_not_unique[table.field]` | Rujukan **mesti wujud** | `slot_id`, `vehicle_id` |
 | `is_unique[table.field,id,{id}]` | Mesti unik (abaikan rekod sendiri semasa kemas kini) | `vehicles.plate_no` |
 | `regex_match[/…/]` | Format khas | plat `WXX 1234` |
-| `uploaded`, `max_size`, `ext_in`, `mime_in` | Fail | lihat [nota 07](./07-muat-naik-fail-selamat.md) |
+| `uploaded`, `max_size`, `ext_in`, `mime_in` | Fail | lihat [nota 07](./nota-07-muat-naik-fail-selamat.md) |
 
-> **Tip:** jana senarai `in_list` daripada enum supaya tidak berulang: `'in_list[' . implode(',', \App\Enums\PassType::values()) . ']'` (tambah `values()` pada enum seperti dalam [nota 03](./03-model-entity-dan-enum.md)).
+> **Tip:** jana senarai `in_list` daripada enum supaya tidak berulang: `'in_list[' . implode(',', \App\Enums\PassType::values()) . ']'` (tambah `values()` pada enum seperti dalam [nota 03](./nota-03-model-entity-dan-enum.md)).
 
 ---
 
@@ -332,4 +332,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Buku guna `validate()`; kursus ini guna `validateData()` (CI 4.2+) supaya data yang disemak jelas.
 
 ---
-**Digunakan pada Hari 5** — S3 (borang tempahan TLK + validasi server + peraturan tersuai BR-TLK-03); **Hari 7** — S3 (borang permohonan Pas + validasi fail). Nota berkaitan: [03 · Model](./03-model-entity-dan-enum.md) · [07 · Muat naik fail](./07-muat-naik-fail-selamat.md) · [11 · Keselamatan](./11-keselamatan-aplikasi-web.md)
+**Digunakan pada Hari 5** — S3 (borang tempahan TLK + validasi server + peraturan tersuai BR-TLK-03); **Hari 7** — S3 (borang permohonan Pas + validasi fail). Nota berkaitan: [03 · Model](./nota-03-model-entity-dan-enum.md) · [07 · Muat naik fail](./nota-07-muat-naik-fail-selamat.md) · [11 · Keselamatan](./nota-11-keselamatan-aplikasi-web.md)

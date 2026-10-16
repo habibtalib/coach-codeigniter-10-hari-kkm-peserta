@@ -1,17 +1,17 @@
 # Optional Track — KKM GitLab: Pair Repo & Merge Requests
 
-[📅 Schedule](../JADUAL.md) · [🤝 KOLABORASI](../KOLABORASI.md) · [🌿 Note 12 · Git](../nota/12-git-aliran-kerja.md) · [🛠️ Setup](./persediaan.md) · [📋 Jira Track](./trek-jira.md) · [💡 Design Thinking Track](./trek-design-thinking.md)
+[📅 Schedule](../JADUAL.md) · [🤝 KOLABORASI](kolaborasi.md) · [🌿 Note 12 · Git](nota-12-git-aliran-kerja.md) · [🛠️ Setup](./persediaan.md) · [📋 Jira Track](./trek-jira.md) · [💡 Design Thinking Track](./trek-design-thinking.md)
 
 > **Optional track.** The core labs keep local merges (`git merge --no-ff`) and pass without GitLab. This track puts the pair's repo on **KKM's GitLab** (self-managed) and replaces the local merge with a **merge request (MR)** that your partner reviews.
 
-The local Git workflow (branches, commits, merges, conflicts) is explained in [Note 12](../nota/12-git-aliran-kerja.md). This page only adds a GitLab layer on top.
+The local Git workflow (branches, commits, merges, conflicts) is explained in [Note 12](nota-12-git-aliran-kerja.md). This page only adds a GitLab layer on top.
 
 ---
 
 ## 1. Purpose & when
 
 - **Connect** the `~/latihan/sistem-tlk-pas` repo (Lab 1.0) to one *private* project on KKM's GitLab.
-- **Protect** `main` and **merge** changes through MRs that your partner reviews ([KOLABORASI §2](../KOLABORASI.md)).
+- **Protect** `main` and **merge** changes through MRs that your partner reviews ([KOLABORASI §2](kolaborasi.md)).
 
 | When | What | Minutes |
 |------|------|---------|
@@ -89,7 +89,7 @@ Pair rule: no direct pushes to `main` after §5. Every change goes through an MR
 
 1. **Branch & push:** `git switch -c setup/ahli-pasangan`, add both partners' names to `README.md`, commit `SETUP: ahli pasangan`, then `git push -u origin setup/ahli-pasangan`. Optional: `git push -o merge_request.create -u origin setup/ahli-pasangan` opens the MR straight away.
 2. **Open the MR:** GitLab shows *Create merge request* → *Target branch*: `main` → *Reviewer*: your partner → *Create merge request*.
-3. **The partner reviews** the *Changes* tab against the Definition of Done ([KOLABORASI §2](../KOLABORASI.md)): AC pass, tests green, no `.env`/secrets, the code can be explained. Fixes = new commits on the same branch + `git push`.
+3. **The partner reviews** the *Changes* tab against the Definition of Done ([KOLABORASI §2](kolaborasi.md)): AC pass, tests green, no `.env`/secrets, the code can be explained. Fixes = new commits on the same branch + `git push`.
 4. **The partner clicks** *Approve*, then *Merge*. The author **never** merges their own MR. On GitLab Free, *Approve* is optional and doesn't block merging; required approval rules are a Premium feature.
 5. **Both partners:** `git switch main && git pull && git branch -d setup/ahli-pasangan`.
 
@@ -117,7 +117,7 @@ Mapping to the core labs:
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `.env` or `vendor/` shows in the *Changes* tab | `git add .` without checking | Don't merge; follow [Note 12 §9](../nota/12-git-aliran-kerja.md) and **rotate** the secret |
+| `.env` or `vendor/` shows in the *Changes* tab | `git add .` without checking | Don't merge; follow [Note 12 §9](nota-12-git-aliran-kerja.md) and **rotate** the secret |
 | Other users can see the project | *Visibility Level* is not Private | *Settings* → *General* → *Visibility* → **Private** |
 | The author merges their own MR | GitLab Free doesn't block it | The partner clicks *Merge*; the trainer checks `git log --merges` |
 

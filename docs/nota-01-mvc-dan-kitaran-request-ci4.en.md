@@ -1,6 +1,6 @@
 # 01 · MVC and the CodeIgniter 4 Request Cycle
 
-> Topic notes (reference across days) · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Index: [`README.md`](./README.md)
+> Topic notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Objectives of these notes
 
@@ -21,7 +21,7 @@ MVC separates three responsibilities so that a change in one place does not brea
 | **View** | HTML display only — no queries, no business logic | `app/Views/tlk/index.php` |
 | **Controller** | Receive request → call service → return view/redirect | `Tlk\BookingController` |
 
-Our project adds one more layer: **Service** (`BookingService`, `PassWorkflowService`, …) for business logic. The reason: rules such as BR-TLK-01 (no overlap) must be used from the controller, a Spark command **and** PHPUnit tests. If that logic is trapped in a controller, it cannot be reused and is hard to test. See [`05-service-layer-dan-transaksi.md`](./05-service-layer-dan-transaksi.md).
+Our project adds one more layer: **Service** (`BookingService`, `PassWorkflowService`, …) for business logic. The reason: rules such as BR-TLK-01 (no overlap) must be used from the controller, a Spark command **and** PHPUnit tests. If that logic is trapped in a controller, it cannot be reused and is hard to test. See [`05-service-layer-dan-transaksi.md`](./nota-05-service-layer-dan-transaksi.md).
 
 > **SPEC §5 principle:** *Thin controllers. Business logic in Services. Model = data access + `$validationRules`. Enum = the single source of status.*
 
@@ -231,7 +231,7 @@ CI4 provides **View Layouts** — one skeleton file (navbar, Bootstrap CSS) and 
 <?= $this->endSection() ?>
 ```
 
-**Why `esc()` every time?** All data that comes from users (booking reason, name, plate number) must be escaped before it is displayed, to prevent XSS. `esc()` turns `<script>` into `&lt;script&gt;`. See [`11-keselamatan-aplikasi-web.md`](./11-keselamatan-aplikasi-web.md).
+**Why `esc()` every time?** All data that comes from users (booking reason, name, plate number) must be escaped before it is displayed, to prevent XSS. `esc()` turns `<script>` into `&lt;script&gt;`. See [`11-keselamatan-aplikasi-web.md`](./nota-11-keselamatan-aplikasi-web.md).
 
 ---
 
@@ -259,7 +259,7 @@ public array $globals = [
 
 The Shield filters (`session`, `group`, `permission`) are registered automatically by the Shield package. Arguments after the colon are passed to the filter: `group:reviewer,approver,admin` means "any one of these groups".
 
-**Why is a filter not enough on its own?** A filter answers the question *"can this user access this URL?"*. It does **not** answer *"can this user access record #42?"*. Applicants A and B both pass the `session` filter on `/pas/permohonan/42` — it is the ownership check in the controller/service (BR-PAS-04) that stops A from seeing B's application. See [`06-shield-auth-dan-rbac.md`](./06-shield-auth-dan-rbac.md).
+**Why is a filter not enough on its own?** A filter answers the question *"can this user access this URL?"*. It does **not** answer *"can this user access record #42?"*. Applicants A and B both pass the `session` filter on `/pas/permohonan/42` — it is the ownership check in the controller/service (BR-PAS-04) that stops A from seeing B's application. See [`06-shield-auth-dan-rbac.md`](./nota-06-shield-auth-dan-rbac.md).
 
 ---
 
@@ -315,4 +315,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), 2021 editi
 The book turns auto-routing off by hand (`setAutoRoute(false)`, p. 19); since CI 4.2 it is off by default.
 
 ---
-**Used on Day 4** — S1 (explaining the MVC request flow while reviewing the assignment) & S2 (project structure, `.env`, Bootstrap layout); **Day 5** — S2 (basic CRUD controllers & views). Related notes: [02 · Migration](./02-migration-seeder-dan-query-builder.md) · [05 · Service](./05-service-layer-dan-transaksi.md) · [06 · Shield](./06-shield-auth-dan-rbac.md)
+**Used on Day 4** — S1 (explaining the MVC request flow while reviewing the assignment) & S2 (project structure, `.env`, Bootstrap layout); **Day 5** — S2 (basic CRUD controllers & views). Related notes: [02 · Migration](./nota-02-migration-seeder-dan-query-builder.md) · [05 · Service](./nota-05-service-layer-dan-transaksi.md) · [06 · Shield](./nota-06-shield-auth-dan-rbac.md)

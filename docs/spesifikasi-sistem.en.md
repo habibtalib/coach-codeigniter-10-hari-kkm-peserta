@@ -219,7 +219,7 @@ Fixed daily rhythm (from the tentative schedule): 08:30–09:00 recap · S1 09:0
 | Pass documents | `doc_type = 'sokongan'`; form field `documents[]` |
 | Cache | `StatisticsService::CACHE_KEY = 'stat_dashboard'`, TTL 600 s; services call `cache()->delete(StatisticsService::CACHE_KEY)` after `transCommit()` (`StatisticsService::forget()` is an equivalent wrapper) |
 | Environment | `app.appTimezone = 'Asia/Kuala_Lumpur'`; CSRF enabled manually in `Filters::$globals`; MySQL test DB `kkm_latihan_test` (not SQLite — no `FOR UPDATE`), empty `DBPrefix` |
-| Capstone rubric | Functionality 30 · Security 20 · Code quality 20 · Testing 15 · Demo 15 ([`docs/rubrik-capstone.md`](./docs/rubrik-capstone.md)) |
+| Capstone rubric | Functionality 30 · Security 20 · Code quality 20 · Testing 15 · Demo 15 ([`docs/rubrik-capstone.md`](./rubrik-capstone.md)) |
 
 The reference code has been run on CodeIgniter 4.7.4 + Shield 1.4.1 + PHP 8.4 + MySQL (PHPUnit tests pass); "4.6+" remains valid.
 

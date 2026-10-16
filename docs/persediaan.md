@@ -3,7 +3,7 @@
 > **Dua tarikh akhir:**
 > - **Sebelum Hari 1:** Git, VS Code (+ extension **Markdown Preview Mermaid Support**), pelayar moden; Windows: Git Bash sebagai terminal lalai VS Code (§5). Lab Hari 1 menggunakan Git dan pratonton Mermaid.
 > - **Sebelum Hari 4** (Development Kickoff): stack PHP — PHP 8.2+, PHP extension, Composer, MySQL/MariaDB, Laragon/Herd dan ujian asap CI4 (§6). Hari 1–3 tidak menulis kod, jadi gunakan masa itu untuk membetulkan persekitaran — jangan tunggu pagi Hari 4.
-> Kanun stack: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) §1.
+> Kanun stack: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §1.
 
 ## Kenapa perlu disediakan awal?
 
@@ -255,7 +255,7 @@ mysql -u kkm_dev -p -e "SHOW DATABASES LIKE 'kkm_latihan%';"
 
 > 🪟 **Windows:** dalam terminal VS Code (Git Bash), `mysql -p` bertanya kata laluan seperti biasa. Dalam tetingkap Git Bash berasingan (mintty), `mysql` boleh tergantung tanpa prompt — tambah `winpty` di hadapan: `winpty mysql -u kkm_dev -p`.
 
-> **Kenapa MySQL untuk ujian, bukan SQLite?** BR-TLK-05 memerlukan `SELECT … FOR UPDATE`, yang tidak disokong SQLite. Lihat [`../nota/10-ujian-phpunit-ci4.md`](../nota/10-ujian-phpunit-ci4.md).
+> **Kenapa MySQL untuk ujian, bukan SQLite?** BR-TLK-05 memerlukan `SELECT … FOR UPDATE`, yang tidak disokong SQLite. Lihat [`nota-10-ujian-phpunit-ci4.md`](nota-10-ujian-phpunit-ci4.md).
 
 Alat GUI (pilih satu): HeidiSQL (Laragon: butang **Database**), phpMyAdmin (perlu Apache Laragon), TablePlus, DBeaver, atau MySQL Workbench.
 

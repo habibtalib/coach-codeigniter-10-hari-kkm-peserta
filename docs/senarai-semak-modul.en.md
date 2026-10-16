@@ -1,6 +1,6 @@
 # Module Checklist M1–M4
 
-> Use it at the **end of every build session** (S4 of Days 5–10) and before the trainer's ✅ checkpoint. Each row maps to the **Definition of Done** ([`KOLABORASI.md`](../KOLABORASI.md) §2) and to the business rules **`BR-*`** ([`SPEC-KURSUS.md`](../SPEC-KURSUS.md) §2).
+> Use it at the **end of every build session** (S4 of Days 5–10) and before the trainer's ✅ checkpoint. Each row maps to the **Definition of Done** ([`docs/kolaborasi.md`](kolaborasi.md) §2) and to the business rules **`BR-*`** ([`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §2).
 > Copy this file into your project repo (`docs/semakan-modul.md`) and tick `[x]` together with your pair. Only tick a row if **both** the driver and the navigator can explain it.
 
 ## DoD legend
@@ -151,6 +151,6 @@
 | [ ] | `vendor/bin/phpunit` — all green | D5 |
 | [ ] | UAT script (template in `templates/dokumen/`) run; bugs recorded & fixed | D1 |
 | [ ] | `git log` — no `.env`, no real data, prefixed commits | D6 |
-| [ ] | Security checklist [`../nota/11-keselamatan-aplikasi-web.md`](../nota/11-keselamatan-aplikasi-web.md) worked through | D3 |
+| [ ] | Security checklist [`nota-11-keselamatan-aplikasi-web.md`](nota-11-keselamatan-aplikasi-web.md) worked through | D3 |
 | [ ] | Each pair member can explain one end-to-end flow (apply → approve → report → statistics) | D7 |
 | [ ] | Rubric: [`rubrik-capstone.md`](./rubrik-capstone.md) read | — |

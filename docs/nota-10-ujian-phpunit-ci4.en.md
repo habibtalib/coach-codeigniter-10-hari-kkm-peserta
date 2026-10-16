@@ -1,6 +1,6 @@
 # 10 · PHPUnit Testing in CodeIgniter 4
 
-> Topical notes (cross-day reference) · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Index: [`README.md`](./README.md)
+> Topical notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Note objectives
 
@@ -17,7 +17,7 @@ Manual testing (clicking around in the browser) easily misses edge cases and has
 
 - **Prove** that business rules (BR-TLK-01 no overlap, BR-PAS-04 ownership) are still correct after a refactor.
 - **Act as living documentation** — the test name describes the expected behaviour.
-- Are a **Definition of Done** requirement: "Related PHPUnit tests pass (`vendor/bin/phpunit`)" ([`KOLABORASI.md`](../KOLABORASI.md) §2).
+- Are a **Definition of Done** requirement: "Related PHPUnit tests pass (`vendor/bin/phpunit`)" ([`docs/kolaborasi.md`](kolaborasi.md) §2).
 
 ---
 
@@ -226,7 +226,7 @@ final class SlotAvailabilityServiceTest extends CIUnitTestCase
 }
 ```
 
-> `hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool` is the same method as in [note 02](./02-migration-seeder-dan-query-builder.md) and [note 05](./05-service-layer-dan-transaksi.md) — `true` means **overlapping** (slot not available).
+> `hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool` is the same method as in [note 02](./nota-02-migration-seeder-dan-query-builder.md) and [note 05](./nota-05-service-layer-dan-transaksi.md) — `true` means **overlapping** (slot not available).
 
 ---
 
@@ -434,4 +434,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), 2021 editi
 The book uses `CIDatabaseTestCase` (p. 53), which is now deprecated; use `CIUnitTestCase` + `DatabaseTestTrait` as in this note.
 
 ---
-**Used on Day 6** (S3 — TLK (Special Vehicle Parking) overlap & status transition tests), **Day 8** (S3 — positive/negative access tests & Pass ownership) and **Day 10** (S3 — final system tests & the bug-fix cycle). Related notes: [05 · Service Layer & Transactions](./05-service-layer-dan-transaksi.md) · [06 · Shield Auth & RBAC](./06-shield-auth-dan-rbac.md) · [03 · Model, Entity & Enum](./03-model-entity-dan-enum.md)
+**Used on Day 6** (S3 — TLK (Special Vehicle Parking) overlap & status transition tests), **Day 8** (S3 — positive/negative access tests & Pass ownership) and **Day 10** (S3 — final system tests & the bug-fix cycle). Related notes: [05 · Service Layer & Transactions](./nota-05-service-layer-dan-transaksi.md) · [06 · Shield Auth & RBAC](./nota-06-shield-auth-dan-rbac.md) · [03 · Model, Entity & Enum](./nota-03-model-entity-dan-enum.md)

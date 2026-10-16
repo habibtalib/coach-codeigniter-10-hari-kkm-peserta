@@ -1,6 +1,6 @@
 # Hari 8 — Modul Pas (Bahagian 2): Aliran Kelulusan, RBAC Shield & Ujian Akses
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md) · [🧪 Lab Hari 8](./lab.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 8](./lab.md)
 
 > **Hari ini Modul Pas menjadi lengkap (M2 siap).** Semalam pemohon boleh menghantar permohonan. Hari ini **dua pegawai** mengambil alih: penyemak memulakan semakan, pelulus membuat keputusan — dan sistem **memastikan** setiap orang hanya boleh menekan butang yang menjadi haknya, setiap perubahan direkod, dan semua ini dibuktikan dengan ujian automatik.
 
@@ -445,7 +445,7 @@ Tiga tetingkap pelayar (biasa, inkognito, pelayar kedua) — satu untuk setiap p
 
 ### 4.2 Definition of Done — M2
 
-Semak terhadap [KOLABORASI §2](../KOLABORASI.md):
+Semak terhadap [KOLABORASI §2](../docs/kolaborasi.md):
 
 - [ ] Acceptance criteria URS Pas (Hari 2) lulus diuji manual (`docs/ujian-manual-pas.md` + demo).
 - [ ] Validasi di server: borang (Hari 7), catatan penolakan (hari ini), fail (BR-PAS-02).
@@ -475,7 +475,7 @@ foreach ($ids as $id) {
 }
 ```
 
-`status_logs.actor_id` wajib (FK), jadi command menggunakan `--actor <id>` atau admin pertama. Pada server sebenar ia dijadualkan dengan cron (`10 0 * * * cd /var/www/app && php spark pas:expire`). Server Windows: Task Scheduler, dalam Command Prompt sebagai pentadbir — bukan Git Bash (`schtasks /create /tn KKM-PasExpire /sc daily /st 00:10 /tr "cmd /c cd /d C:\laragon\www\app && php spark pas:expire"`). Rujukan: [`ExpirePassesCommand.php.txt`](../templates/kod/ExpirePassesCommand.php.txt).
+`status_logs.actor_id` wajib (FK), jadi command menggunakan `--actor <id>` atau admin pertama. Pada server sebenar ia dijadualkan dengan cron (`10 0 * * * cd /var/www/app && php spark pas:expire`). Server Windows: Task Scheduler, dalam Command Prompt sebagai pentadbir — bukan Git Bash (`schtasks /create /tn KKM-PasExpire /sc daily /st 00:10 /tr "cmd /c cd /d C:\laragon\www\app && php spark pas:expire"`). Rujukan: `ExpirePassesCommand.php.txt` (modul **Templat & Rujukan**).
 
 ### 🎯 Kuiz S4
 
@@ -506,7 +506,7 @@ foreach ($ids as $id) {
 - [ ] Demo 3 peranan lulus; branch `feat/pas-kelulusan` digabung ke `main` — **M2 siap**
 - [ ] ⭐ `app/Commands/ExpirePassesCommand.php`
 
-Rujukan penuh jurulatih: [`templates/kod/`](../templates/kod/) — `PassWorkflowService`, `ReviewController`, `AuthGroups`, `Routes-pas`, `status-timeline-view`, `PassAccessTest`, `ExpirePassesCommand`. Nota topikal: [06 Shield auth & RBAC](../nota/06-shield-auth-dan-rbac.md) · [05 Service & transaksi](../nota/05-service-layer-dan-transaksi.md) · [10 Ujian PHPUnit](../nota/10-ujian-phpunit-ci4.md).
+Rujukan penuh jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — `PassWorkflowService`, `ReviewController`, `AuthGroups`, `Routes-pas`, `status-timeline-view`, `PassAccessTest`, `ExpirePassesCommand`. Nota topikal: [06 Shield auth & RBAC](../docs/nota-06-shield-auth-dan-rbac.md) · [05 Service & transaksi](../docs/nota-05-service-layer-dan-transaksi.md) · [10 Ujian PHPUnit](../docs/nota-10-ujian-phpunit-ci4.md).
 
 ---
 

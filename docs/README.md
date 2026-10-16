@@ -1,6 +1,6 @@
 # Dokumen Sokongan — CI-KKM-10
 
-> Indeks semua bahan sokongan di luar folder `hari-N/`. Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Jadual: [`JADUAL.md`](../JADUAL.md) · Kontrak kerja: [`KOLABORASI.md`](../KOLABORASI.md) · Nota topikal: [`../nota/README.md`](../nota/README.md)
+> Indeks semua bahan sokongan di luar folder `hari-N/`. Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Jadual: [`JADUAL.md`](../JADUAL.md) · Kontrak kerja: [`docs/kolaborasi.md`](kolaborasi.md) · Nota topikal: [`nota.md`](nota.md)
 
 ## `docs/` — rujukan peserta & jurulatih
 
@@ -14,6 +14,10 @@
 | [`senarai-semak-modul.md`](./senarai-semak-modul.md) | Senarai semak kemajuan M1–M4 dipetakan kepada Definition of Done & peraturan `BR-*` | Hujung setiap sesi pembinaan; sebelum demo |
 | [`rubrik-capstone.md`](./rubrik-capstone.md) | Rubrik penilaian demo capstone Hari 10 | Hari 9 (baca), Hari 10 S4 (dinilai) |
 | [`glosari.md`](./glosari.md) | Glosari istilah BM ↔ English | Bila berjumpa istilah baharu |
+| [`spesifikasi-sistem.md`](./spesifikasi-sistem.md) | Spesifikasi sistem: stack, peraturan `BR-*`, enum status, skema jadual & medan, peranan Shield, route | Setiap kali menulis migration, model, enum atau route |
+| [`kolaborasi.md`](./kolaborasi.md) | Aliran kerja Git, Definition of Done, disiplin AI | Setiap commit & merge request |
+| [`nota.md`](./nota.md) | Indeks nota topikal `nota-01` … `nota-12` (MVC, migration, model/enum, validation, transaksi, Shield, upload, laporan, cache, ujian, keselamatan, Git) | Ikut pautan dalam lab |
+| [`rujukan-keperluan.md`](./rujukan-keperluan.md) | Bahan keperluan & reka bentuk asal (carta alir, AC, URS) — bacaan pilihan | Bila mahu teori keperluan |
 
 ## Trek sampingan (pilihan)
 
@@ -29,8 +33,8 @@ Tidak dikira dalam kemajuan atau penilaian. Siapkan sebelum Hari 4; langkah akhi
 
 | Folder | Kandungan | Siapa guna |
 |--------|-----------|-----------|
-| [`../templates/dokumen/`](../templates/dokumen/) | Templat URS, acceptance criteria (Given/When/Then), kamus data, kes ujian manual, skrip UAT | Peserta — Hari 1–3, 5, 7, 10 |
-| [`../templates/kod/`](../templates/kod/) | Rujukan kod CI4 (`*.php.txt`) — migration, model, enum, service, controller | **Jurulatih** — untuk menyemak kerja peserta. Peserta menaip kod sendiri. |
+| `../templates/dokumen/` (modul **Templat & Rujukan**) | Templat URS, acceptance criteria (Given/When/Then), kamus data, kes ujian manual, skrip UAT | Peserta — Hari 1–3, 5, 7, 10 |
+| `../templates/kod/` (modul **Templat & Rujukan**) | Rujukan kod CI4 (`*.php.txt`) — migration, model, enum, service, controller | **Jurulatih** — untuk menyemak kerja peserta. Peserta menaip kod sendiri. |
 
 > Fail `*.php.txt` sengaja bukan `.php` supaya tidak disalin terus ke `app/`. Peraturan KOLABORASI §3 terpakai: peserta mesti boleh menerangkan setiap baris.
 
@@ -38,7 +42,7 @@ Tidak dikira dalam kemajuan atau penilaian. Siapkan sebelum Hari 4; langkah akhi
 
 | Lokasi | Kandungan |
 |--------|-----------|
-| [`../slides/`](../slides/) | Dek slaid HTML *self-contained* (tiada internet diperlukan) — buka terus dalam pelayar. Satu dek merangkumi 10 hari; navigasi dengan kekunci anak panah. |
+| Slaid (pelatih.my → halaman Hari) | Dek slaid HTML *self-contained* (tiada internet diperlukan) — buka terus dalam pelayar. Satu dek merangkumi 10 hari; navigasi dengan kekunci anak panah. |
 
 ## Aliran bacaan disyorkan
 

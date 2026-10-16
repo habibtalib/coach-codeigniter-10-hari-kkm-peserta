@@ -1,6 +1,6 @@
 # CI4 App Skeleton Tutorial — Head Start (optional)
 
-[🛠️ Setup](./persediaan.md) · [🧪 Day 4 Lab](../hari-4/lab.md) · [📘 SPEC](../SPEC-KURSUS.md) · [🤝 KOLABORASI](../KOLABORASI.md) · [🧪 Note 10 · Testing](../nota/10-ujian-phpunit-ci4.md)
+[🛠️ Setup](./persediaan.md) · [🧪 Day 4 Lab](../hari-4/lab.md) · [📘 SPEC](spesifikasi-sistem.md) · [🤝 KOLABORASI](kolaborasi.md) · [🧪 Note 10 · Testing](nota-10-ujian-phpunit-ci4.md)
 
 > **Optional, not required.** Days 1–3 are requirements only (URS, flowcharts, ERD). The real build starts on Day 4 ([Lab 4.2](../hari-4/lab.md) and [Lab 4.3](../hari-4/lab.md)). This page gives you a **head start**: Part A is a CI4 basics practice project on Day 1; Parts B–G build the real app skeleton in the pair repo, with names, commands, `.env` keys, DB names and file paths **the same** as in Lab 4.2/4.3.
 
@@ -212,7 +212,7 @@ The `~/latihan/sistem-tlk-pas` repo (`C:\Users\<nama>\latihan\sistem-tlk-pas`) f
    php spark --version
    ```
 
-2. **Project hygiene.** Create `.gitattributes` and `.editorconfig` in the project root in VS Code (*File → New File*). Their content is in Lab 4.2 step 1 (templates: [`gitattributes.txt`](../templates/kod/gitattributes.txt), [`editorconfig.txt`](../templates/kod/editorconfig.txt)). `* text=auto eol=lf` makes sure files are committed with LF line endings even though your Windows Git has `core.autocrlf true`. Then:
+2. **Project hygiene.** Create `.gitattributes` and `.editorconfig` in the project root in VS Code (*File → New File*). Their content is in Lab 4.2 step 1 (templates: `gitattributes.txt` (**Templat & Rujukan** module), `editorconfig.txt` (**Templat & Rujukan** module)). `* text=auto eol=lf` makes sure files are committed with LF line endings even though your Windows Git has `core.autocrlf true`. Then:
 
    ```bash
    git add .gitattributes .editorconfig

@@ -1,8 +1,8 @@
 # Lab Day 7 — Pass Module (1): Model, CRUD & Secure Upload
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../SPEC-KURSUS.md) · [📖 Day 7 notes](./README.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 7 notes](./README.md)
 
-> Work **in pairs** (driver/navigator — swap every session). Run every command from the **root of your CI4 project** (the folder that contains `spark`). Full trainer reference: [`templates/kod/`](../templates/kod/). **Copy only after you can explain every line** (KOLABORASI §3).
+> Work **in pairs** (driver/navigator — swap every session). Run every command from the **root of your CI4 project** (the folder that contains `spark`). Full trainer reference: `templates/kod/` (**Templat & Rujukan** module). **Copy only after you can explain every line** (KOLABORASI §3).
 
 | Lab | Session | Time | Outcome |
 |-----|---------|------|---------|
@@ -72,10 +72,10 @@ Write `PassType`, `PassStatus`, the `PassApplication` Entity, `PassApplicationMo
 ### Steps
 
 1. **Create `app/Enums/PassType.php`**. Three `case`s exactly as in the SPEC: `kenderaan`, `kakitangan`, `kontraktor`. Add `label()`, `requiresVehicle()`, `values()`, `options()`.
-   Reference: [`PassType.php.txt`](../templates/kod/PassType.php.txt).
+   Reference: `PassType.php.txt` (**Templat & Rujukan** module).
 
 2. **Create `app/Enums/PassStatus.php`**. Five `case`s: `submitted`, `under_review`, `approved`, `rejected`, `expired`. Write `allowedTransitions()` **yourself first** from the SPEC §2.2 diagram, then `canTransitionTo()`, `label()`, `badge()`, `isFinal()`, `values()`, `options()`.
-   Reference: [`PassStatus.php.txt`](../templates/kod/PassStatus.php.txt).
+   Reference: `PassStatus.php.txt` (**Templat & Rujukan** module).
 
 3. **Test the enum straight away** with a small script (not committed):
 
@@ -105,7 +105,7 @@ Write `PassType`, `PassStatus`, the `PassApplication` Entity, `PassApplicationMo
    ```
 
 4. **Create `app/Entities/PassApplication.php`** with `$dates`, `$casts` (`'?integer'` for optional FKs), `statusEnum()`, `typeEnum()`, `isOwnedBy()`, `displayStatus()`.
-   Reference: [`PassApplication-Entity.php.txt`](../templates/kod/PassApplication-Entity.php.txt).
+   Reference: `PassApplication-Entity.php.txt` (**Templat & Rujukan** module).
 
 5. **Create `app/Models/PassApplicationModel.php`**:
    - `$returnType = PassApplication::class`, `$useTimestamps = true`, `$useSoftDeletes = false`.
@@ -114,7 +114,7 @@ Write `PassType`, `PassStatus`, the `PassApplication` Entity, `PassApplicationMo
    - Scopes `ownedBy()`, `withStatus()`, `withApplicant()`.
 
 6. **Create `app/Models/PassDocumentModel.php`** (`$returnType = 'array'`, rule `mime` `in_list[...]`, `size_bytes` `less_than_equal_to[2097152]`, method `forApplication()`).
-   Reference for both models: [`PassApplicationModel.php.txt`](../templates/kod/PassApplicationModel.php.txt) (the file holds two classes — split them).
+   Reference for both models: `PassApplicationModel.php.txt` (**Templat & Rujukan** module) (the file holds two classes — split them).
 
 7. **Test Model validation** through a temporary route (remove it after the checkpoint). Add to `app/Config/Routes.php`:
 
@@ -238,7 +238,7 @@ Build `/pas/permohonan` (owner-scoped list, status filter, pagination) and `/pas
    }
    ```
 
-4. **Create `app/Controllers/Pas/ApplicationController.php`** with `index()`, `show()` and the helper `findVisibleOr404()`. Copy the relevant parts from [`ApplicationController-upload.php.txt`](../templates/kod/ApplicationController-upload.php.txt). For today, `show()` returns **two** variables only:
+4. **Create `app/Controllers/Pas/ApplicationController.php`** with `index()`, `show()` and the helper `findVisibleOr404()`. Copy the relevant parts from `ApplicationController-upload.php.txt` (**Templat & Rujukan** module). For today, `show()` returns **two** variables only:
 
    ```php
    public function show(string $id): string
@@ -254,7 +254,7 @@ Build `/pas/permohonan` (owner-scoped list, status filter, pagination) and `/pas
 
    (`history` and `actions` are added tomorrow, Day 8.)
 
-5. **Page title, then `app/Views/pas/index.php`.** Pas views set the title via `section('title')`, but the Day 4/6 layout only reads `$title`. First update the top of `app/Views/layouts/main.php` (as in [`layout-main.php.txt`](../templates/kod/layout-main.php.txt)):
+5. **Page title, then `app/Views/pas/index.php`.** Pas views set the title via `section('title')`, but the Day 4/6 layout only reads `$title`. First update the top of `app/Views/layouts/main.php` (as in `layout-main.php.txt` (**Templat & Rujukan** module)):
 
    ```php
    <?php
@@ -429,7 +429,7 @@ Build the application form with 1–3 documents stored securely (BR-PAS-02), the
 
 ### Steps
 
-1. **Complete `PassWorkflowService`** with the Day 7 methods from [`PassWorkflowService.php.txt`](../templates/kod/PassWorkflowService.php.txt):
+1. **Complete `PassWorkflowService`** with the Day 7 methods from `PassWorkflowService.php.txt` (**Templat & Rujukan** module):
    - constants `UPLOAD_DIR`, `MAX_FILES`, `ALLOWED_EXT`
    - `submit()` — checks → `move()` → transaction → `status_logs` → clean-up in `catch`
    - `documentPath()` — `realpath()` + prefix check
@@ -690,4 +690,4 @@ ls writable/uploads/pas/ | head         # random names only
 git status                              # clean; writable/uploads not tracked
 ```
 
-Pairs who fall behind: copy from [`templates/kod/`](../templates/kod/) **after** the trainer/a peer has explained each part — and mark it in the commit (`PAS: … (rujuk templat)`).
+Pairs who fall behind: copy from `templates/kod/` (**Templat & Rujukan** module) **after** the trainer/a peer has explained each part — and mark it in the commit (`PAS: … (rujuk templat)`).

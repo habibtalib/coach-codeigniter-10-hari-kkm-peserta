@@ -1,6 +1,6 @@
 # URS — User Requirement Specification: TLK & Pass System
 
-> **Template.** Copy to `docs/URS-v1.md` (Day 2 Lab 2.4). Replace every `<…>`. Delete the "Guide" blocks once filled in. Refer to [`SPEC-KURSUS.md`](../../SPEC-KURSUS.md) for status names, roles and BRs — **do not** invent new values.
+> **Template.** Copy to `docs/URS-v1.md` (Day 2 Lab 2.4). Replace every `<…>`. Delete the "Guide" blocks once filled in. Refer to [`docs/spesifikasi-sistem.md`](../../docs/spesifikasi-sistem.md) for status names, roles and BRs — **do not** invent new values.
 
 ---
 

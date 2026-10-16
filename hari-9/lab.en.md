@@ -1,9 +1,9 @@
 # Lab Day 9 — Report Module (M3)
 
-[← Day 9 README](./README.md) · [SPEC canon](../SPEC-KURSUS.md) · [Schedule](../JADUAL.md)
+[← Day 9 README](./README.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [Schedule](../JADUAL.md)
 
 > **Working branch:** `git switch main && git pull && git switch -c feat/laporan`
-> **Commit prefix:** `RPT:` · **Trainer reference code:** [`templates/kod/`](../templates/kod/) (use it to **check**, not to copy wholesale — you must be able to explain every line).
+> **Commit prefix:** `RPT:` · **Trainer reference code:** `templates/kod/` (**Templat & Rujukan** module) (use it to **check**, not to copy wholesale — you must be able to explain every line).
 
 | Lab | Session | Duration | Outcome |
 |-----|---------|----------|---------|
@@ -29,7 +29,7 @@
 
 ### Steps
 
-**0. Prepare the demo data (10 min).** The reports and the charts (Day 10) need data across months and statuses. Copy [`DemoDataSeeder.php.txt`](../templates/kod/DemoDataSeeder.php.txt) to `app/Database/Seeds/DemoDataSeeder.php` (copy it as is — this is data, not a writing exercise), then add its call at the end of `DatabaseSeeder::run()`:
+**0. Prepare the demo data (10 min).** The reports and the charts (Day 10) need data across months and statuses. Copy `DemoDataSeeder.php.txt` (**Templat & Rujukan** module) to `app/Database/Seeds/DemoDataSeeder.php` (copy it as is — this is data, not a writing exercise), then add its call at the end of `DatabaseSeeder::run()`:
 
 ```php
 $this->call(DemoDataSeeder::class);     // Days 9–10: demo data for Reports/Statistics (≥ 20 bookings, ≥ 15 passes)
@@ -60,7 +60,7 @@ php spark db:seed DatabaseSeeder
 | Who can view it (permission) | | | |
 ```
 
-**2. Add the routes.** Open `app/Config/Routes.php` and add the report group (see [`Routes-laporan-statistik.php.txt`](../templates/kod/Routes-laporan-statistik.php.txt)):
+**2. Add the routes.** Open `app/Config/Routes.php` and add the report group (see `Routes-laporan-statistik.php.txt` (**Templat & Rujukan** module)):
 
 ```php
 $routes->group('laporan', [
@@ -98,7 +98,7 @@ For now, make `bookings()`, `passes()`, `usage()` return `view('laporan/index', 
 - The status/category/pass type dropdowns are built from the enum's `::cases()` and `->label()` — **not** from a hand-typed list.
 - The **Reset** button = a link to `current_url()` without the query string.
 
-Full reference: [`report-filter-view.php.txt`](../templates/kod/report-filter-view.php.txt).
+Full reference: `report-filter-view.php.txt` (**Templat & Rujukan** module).
 
 **5. Add a menu link** in `layouts/main.php` only if the user has the permission:
 
@@ -187,7 +187,7 @@ class ReportService
 | `sort=b.id; DROP TABLE users` | `'sort' => 'start_date'` (default) |
 | `dir=sideways` | `'dir' => 'desc'` (default) |
 
-Core helper (see [`ReportService.php.txt`](../templates/kod/ReportService.php.txt) §1 and §Pembantu (Helpers)):
+Core helper (see `ReportService.php.txt` (**Templat & Rujukan** module) §1 and §Pembantu (Helpers)):
 
 ```php
 private function validDate(?string $value): ?string
@@ -356,7 +356,7 @@ public function pdf(string $title, array $columns, iterable $rows, array $meta):
 public function xlsx(string $title, array $columns, iterable $rows, array $meta): string
 ```
 
-`$meta = ['filters' => 'ringkasan penapis', 'user' => 'nama pengguna', 'generated_at' => 'd/m/Y H:i']` (filter summary, user name, generation time). Both return a **binary string**; the controller sends the response. Reference: [`ExportService.php.txt`](../templates/kod/ExportService.php.txt).
+`$meta = ['filters' => 'ringkasan penapis', 'user' => 'nama pengguna', 'generated_at' => 'd/m/Y H:i']` (filter summary, user name, generation time). Both return a **binary string**; the controller sends the response. Reference: `ExportService.php.txt` (**Templat & Rujukan** module).
 
 **3. Create the PDF view** `app/Views/laporan/pdf.php` — plain HTML, **without** the Bootstrap layout:
 
@@ -372,7 +372,7 @@ public function xlsx(string $title, array $columns, iterable $rows, array $meta)
 <footer>Dijana pada <?= esc($meta['generated_at']) ?> oleh <?= esc($meta['user']) ?></footer>
 ```
 
-Full reference: [`report-pdf-view.php.txt`](../templates/kod/report-pdf-view.php.txt).
+Full reference: `report-pdf-view.php.txt` (**Templat & Rujukan** module).
 
 **4. Add `exportRows()` to `ReportService`** — count first, reject if over the limit, then return a Generator:
 
@@ -527,7 +527,7 @@ final class ReportServiceTest extends CIUnitTestCase
 | `testEksportSamaJumlahDenganPaparanHtml` | `count(iterator_to_array(exportRows)) === paginate total` |
 | `testRpt03KadarPenggunaanJun2026` | Zone A = `25.0` |
 
-Full reference: [`ReportServiceTest.php.txt`](../templates/kod/ReportServiceTest.php.txt).
+Full reference: `ReportServiceTest.php.txt` (**Templat & Rujukan** module).
 
 **4. Run them.**
 

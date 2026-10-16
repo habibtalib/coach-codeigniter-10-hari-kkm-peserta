@@ -1,6 +1,6 @@
 # 12 · Git — One Branch, One Feature Workflow
 
-> Topical notes (cross-day reference) · Canon: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Working agreement: [`KOLABORASI.md`](../KOLABORASI.md) · Index: [`README.md`](./README.md)
+> Topical notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Working agreement: [`docs/kolaborasi.md`](kolaborasi.md) · Index: [`README.md`](./nota.md)
 
 ## Note objectives
 
@@ -82,7 +82,7 @@ build/
 
 ---
 
-## 3. The daily cycle (KOLABORASI.md §1)
+## 3. The daily cycle (docs/kolaborasi.md §1)
 
 ```bash
 # 1. Start from the latest main
@@ -273,7 +273,7 @@ Check: `git log --all --oneline -- .env` should be empty for a clean repo.
 ## 10. Pair work (driver/navigator)
 
 - The **driver** types; the **navigator** reads, checks the SPEC and catches mistakes.
-- Swap roles every session (KOLABORASI.md §4). Before swapping: commit & push, then the partner runs `git pull`.
+- Swap roles every session (docs/kolaborasi.md §4). Before swapping: commit & push, then the partner runs `git pull`.
 - Credit both in the commit (optional):
   ```text
   TLK: booking list with pagination
@@ -308,4 +308,4 @@ Check: `git log --all --oneline -- .env` should be empty for a clean repo.
 - Mermaid — gitGraph: <https://mermaid.js.org/syntax/gitgraph.html>
 
 ---
-**Used on Day 4** (S4 — task split, Git branches & Definition of Done) **and throughout Days 5–10** (every feature of the TLK (Special Vehicle Parking), Pass, Report and Statistics modules). Related notes: [11 · Web Application Security](./11-keselamatan-aplikasi-web.md) · [10 · PHPUnit Testing](./10-ujian-phpunit-ci4.md) · [02 · Migration, Seeder & Query Builder](./02-migration-seeder-dan-query-builder.md)
+**Used on Day 4** (S4 — task split, Git branches & Definition of Done) **and throughout Days 5–10** (every feature of the TLK (Special Vehicle Parking), Pass, Report and Statistics modules). Related notes: [11 · Web Application Security](./nota-11-keselamatan-aplikasi-web.md) · [10 · PHPUnit Testing](./nota-10-ujian-phpunit-ci4.md) · [02 · Migration, Seeder & Query Builder](./nota-02-migration-seeder-dan-query-builder.md)

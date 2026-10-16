@@ -1,8 +1,8 @@
 # Rujukan — Keperluan & Reka Bentuk (bacaan pilihan)
 
-[← Indeks docs](./README.md) · [📘 Kanun SPEC](../SPEC-KURSUS.md)
+[← Indeks docs](./README.md) · [📘 Kanun SPEC](spesifikasi-sistem.md)
 
-> Mulai Hari 2 S2 kursus ini hands-on dalam projek `kelas-ci-<nama>`. Bahan keperluan & reka bentuk yang asal (carta alir as-is/to-be, acceptance criteria, URS v1.0, ERD, kamus data, wireframe) disimpan di sini sebagai **bacaan pilihan**. Ia tidak dikira dalam kemajuan. Untuk membina modul, guna [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) (BR, enum, skema) sebagai sumber kebenaran.
+> Mulai Hari 2 S2 kursus ini hands-on dalam projek `kelas-ci-<nama>`. Bahan keperluan & reka bentuk yang asal (carta alir as-is/to-be, acceptance criteria, URS v1.0, ERD, kamus data, wireframe) disimpan di sini sebagai **bacaan pilihan**. Ia tidak dikira dalam kemajuan. Untuk membina modul, guna [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) (BR, enum, skema) sebagai sumber kebenaran.
 
 ## Bahagian 1 — Proses, acceptance criteria & URS (asal Hari 2 S2–S4)
 
@@ -279,7 +279,7 @@ Senario: Pemohon tidak boleh lihat permohonan orang lain
 
 **User Requirements Specification** — dokumen yang menyatakan **apa** yang pengguna perlukan, dipersetujui dan ditandatangani oleh pemilik sistem. Ia **bukan** reka bentuk teknikal (itu ERD Hari 3 dan kod Hari 4+).
 
-Templat penuh: [`templates/dokumen/urs-templat.md`](../templates/dokumen/urs-templat.md).
+Templat penuh: `templates/dokumen/urs-templat.md` (modul **Templat & Rujukan**).
 
 #### 4.2 Struktur URS v1.0
 
@@ -389,7 +389,7 @@ Menulis AC yang boleh diuji untuk sekurang-kurangnya 8 FR utama, termasuk senari
 
 #### Prasyarat
 - `docs/keperluan-awal.md` v0.9.
-- Baca README §3.1–3.5 dan [`acceptance-criteria-templat.md`](../templates/dokumen/acceptance-criteria-templat.md).
+- Baca README §3.1–3.5 dan `acceptance-criteria-templat.md` (modul **Templat & Rujukan**).
 
 #### Langkah
 1. Cipta `docs/acceptance-criteria.md` berdasarkan templat.
@@ -452,10 +452,10 @@ Menghimpun semua dokumen Hari 1–2 menjadi URS v1.0 lengkap dengan matriks jeja
 
 #### Prasyarat
 - Lab 2.1–2.3 siap.
-- [`templates/dokumen/urs-templat.md`](../templates/dokumen/urs-templat.md).
+- `templates/dokumen/urs-templat.md` (modul **Templat & Rujukan**).
 
 #### Langkah
-1. Cipta fail `docs/URS-v1.md` dan salin kandungan templat `templates/dokumen/urs-templat.md` (jurulatih akan kongsi).
+1. Cipta fail `docs/URS-v1.md` dan salin kandungan templat `templates/dokumen/urs-templat.md` (modul **Templat & Rujukan**).
 2. Isi bahagian 1–4 (maklumat dokumen, pengenalan/skop, pihak berkepentingan, glosari) dari `docs/carta-skop.md`. Glosari mesti ada label BM bagi **semua** nilai `BookingStatus` dan `PassStatus`.
 3. Bahagian 5: **pautkan** ke `docs/carta-alir.md` (jangan salin semula) atau tampal hanya dua carta to-be.
 4. Bahagian 6: senaraikan BR-TLK-01..06 dan BR-PAS-01..06 dalam bahasa pengguna.

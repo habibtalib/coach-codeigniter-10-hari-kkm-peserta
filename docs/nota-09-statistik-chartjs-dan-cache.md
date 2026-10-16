@@ -1,6 +1,6 @@
 # 09 · Statistik, Chart.js & Cache
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`SPEC-KURSUS.md`](../SPEC-KURSUS.md) · Indeks: [`README.md`](./README.md)
+> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -441,4 +441,4 @@ Lonnie Ezell, [Leanpub](https://leanpub.com/codeigniter4foundations), edisi 2021
 Buku guna `cache()->save()`; nota ini guna `cache()->remember()`. Chart.js tiada dalam buku.
 
 ---
-**Digunakan pada Hari 10** — S1 (dashboard, kad KPI & 4 carta Chart.js) dan S2 (aggregate query & caching asas + invalidasi). Nota berkaitan: [02 · Migration, Seeder & Query Builder](./02-migration-seeder-dan-query-builder.md) · [05 · Service Layer & Transaksi](./05-service-layer-dan-transaksi.md) · [08 · Laporan & Eksport](./08-laporan-eksport-pdf-excel.md)
+**Digunakan pada Hari 10** — S1 (dashboard, kad KPI & 4 carta Chart.js) dan S2 (aggregate query & caching asas + invalidasi). Nota berkaitan: [02 · Migration, Seeder & Query Builder](./nota-02-migration-seeder-dan-query-builder.md) · [05 · Service Layer & Transaksi](./nota-05-service-layer-dan-transaksi.md) · [08 · Laporan & Eksport](./nota-08-laporan-eksport-pdf-excel.md)

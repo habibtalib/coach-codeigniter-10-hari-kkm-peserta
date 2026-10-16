@@ -1,8 +1,8 @@
 # Day 8 Lab — Pass Module (2): Approval Flow, RBAC & Access Tests
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../SPEC-KURSUS.md) · [📖 Day 8 Notes](./README.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 8 Notes](./README.md)
 
-> Work **in pairs** (swap driver/navigator every session). Run every command from the **CI4 project root**. Trainer reference: [`templates/kod/`](../templates/kod/) — copy from it **only** once you can explain every line (KOLABORASI §3).
+> Work **in pairs** (swap driver/navigator every session). Run every command from the **CI4 project root**. Trainer reference: `templates/kod/` (**Templat & Rujukan** module) — copy from it **only** once you can explain every line (KOLABORASI §3).
 
 | Lab | Session | Time | Output |
 |-----|---------|------|--------|
@@ -52,7 +52,7 @@ Implement `startReview()`, `approve()` and `reject()` through one locked `transi
 
 ### Steps
 
-1. **Add the Day 8 methods to `app/Services/PassWorkflowService.php`** from [`PassWorkflowService.php.txt`](../templates/kod/PassWorkflowService.php.txt):
+1. **Add the Day 8 methods to `app/Services/PassWorkflowService.php`** from `PassWorkflowService.php.txt` (**Templat & Rujukan** module):
    - the constant `REMARKS_MIN = 10`
    - `startReview()`, `approve()`, `reject()`, `history()`
    - `transition()` (private)
@@ -62,7 +62,7 @@ Implement `startReview()`, `approve()` and `reject()` through one locked `transi
 
 2. Before you go on, the navigator explains to the driver (out loud, 2 minutes): *"Why is the status read AFTER `FOR UPDATE`, and what happens if `record()` returns `false`?"*
 
-3. **Create `app/Controllers/Pas/ReviewController.php`** from [`ReviewController.php.txt`](../templates/kod/ReviewController.php.txt): `index()`, `review()`, `approve()`, `reject()`, `act()`, `defaultQueue()`.
+3. **Create `app/Controllers/Pas/ReviewController.php`** from `ReviewController.php.txt` (**Templat & Rujukan** module): `index()`, `review()`, `approve()`, `reject()`, `act()`, `defaultQueue()`.
 
 4. **Add the routes** in `app/Config/Routes.php` — for now with the **group** filter only:
 
@@ -129,7 +129,7 @@ Implement `startReview()`, `approve()` and `reject()` through one locked `transi
    <?= $this->endSection() ?>
    ```
 
-6. **Update `ApplicationController::show()`** so that it passes `history` and `actions` (see the template [`ApplicationController-upload.php.txt`](../templates/kod/ApplicationController-upload.php.txt)):
+6. **Update `ApplicationController::show()`** so that it passes `history` and `actions` (see the template `ApplicationController-upload.php.txt` (**Templat & Rujukan** module)):
 
    ```php
    public function show(string $id): string
@@ -249,9 +249,9 @@ Configure `AuthGroups` exactly as in SPEC §4, add a `permission:` filter per ac
    curl -i -X POST http://localhost:8080/pas/semakan/5/approve -b "ci_session=<nilai>" -d "csrf_test_name=<token>&remarks=serangan"
    ```
 
-2. **Check `app/Config/AuthGroups.php`** against SPEC §4 and [`AuthGroups.php.txt`](../templates/kod/AuthGroups.php.txt): 4 groups, 8 permissions, an exact `$matrix`. `$defaultGroup = 'applicant'`.
+2. **Check `app/Config/AuthGroups.php`** against SPEC §4 and `AuthGroups.php.txt` (**Templat & Rujukan** module): 4 groups, 8 permissions, an exact `$matrix`. `$defaultGroup = 'applicant'`.
 
-3. **Add a `permission:` filter per route** in `app/Config/Routes.php` (compare with [`Routes-pas.php.txt`](../templates/kod/Routes-pas.php.txt)):
+3. **Add a `permission:` filter per route** in `app/Config/Routes.php` (compare with `Routes-pas.php.txt` (**Templat & Rujukan** module)):
 
    ```php
    // pas/permohonan
@@ -338,11 +338,11 @@ Configure `AuthGroups` exactly as in SPEC §4, add a `permission:` filter per ac
 Show the `status_logs` history on the details page, and write a `PassAccessTest` that tests positive & negative access for every role (≥ 13 green tests).
 
 ### Prerequisites
-- Lab 8.2 is done. The MySQL test database (`kkm_latihan_test`) has been configured since Day 6 ([note 10](../nota/10-ujian-phpunit-ci4.md) §3).
+- Lab 8.2 is done. The MySQL test database (`kkm_latihan_test`) has been configured since Day 6 ([note 10](../docs/nota-10-ujian-phpunit-ci4.md) §3).
 
 ### Steps
 
-1. **Create `app/Views/partials/status_timeline.php`** from [`status-timeline-view.php.txt`](../templates/kod/status-timeline-view.php.txt).
+1. **Create `app/Views/partials/status_timeline.php`** from `status-timeline-view.php.txt` (**Templat & Rujukan** module).
 
 2. **Show it in `app/Views/pas/show.php`** — after the action panel, before the "Kembali" (Back) link:
 
@@ -358,7 +358,7 @@ Show the `status_logs` history on the details page, and write a `PassAccessTest`
    mkdir -p tests/feature/Pas
    ```
 
-   Copy [`PassAccessTest.php.txt`](../templates/kod/PassAccessTest.php.txt) to `tests/feature/Pas/PassAccessTest.php`. **Read every test** with your partner and mark in the README §3.2 table which matrix cells are covered.
+   Copy `PassAccessTest.php.txt` (**Templat & Rujukan** module) to `tests/feature/Pas/PassAccessTest.php`. **Read every test** with your partner and mark in the README §3.2 table which matrix cells are covered.
 
 5. **Run:**
 
@@ -449,7 +449,7 @@ Demo the Pass flow end to end with 3 roles in 5 minutes, confirm the DoD, and me
    ```
 
 4. **⭐ Optional — `php spark pas:expire`:**
-   1. Copy [`ExpirePassesCommand.php.txt`](../templates/kod/ExpirePassesCommand.php.txt) to `app/Commands/ExpirePassesCommand.php`.
+   1. Copy `ExpirePassesCommand.php.txt` (**Templat & Rujukan** module) to `app/Commands/ExpirePassesCommand.php`.
    2. `php spark list | grep pas` → `pas:expire` is listed under the **Pas** group.
    3. Prepare the data: `UPDATE pass_applications SET valid_until = CURDATE() - INTERVAL 1 DAY WHERE id = <id A>;`
    4. Open `pemohon1`'s list — the badge already shows **Tamat Tempoh** (Expired, from `displayStatus()`), even though the DB still says `approved`.
@@ -485,4 +485,4 @@ php spark routes | grep pas/              # 9 Pass routes; review routes with pe
 composer test -- --testdox | tail -20   # all green
 ```
 
-Pairs who fall behind: use [`templates/kod/`](../templates/kod/) following the catch-up plan in the trainer notes — but **Lab 8.2 step 1 (the DevTools attack)** must be done yourselves: it is the main lesson of the day.
+Pairs who fall behind: use `templates/kod/` (**Templat & Rujukan** module) following the catch-up plan in the trainer notes — but **Lab 8.2 step 1 (the DevTools attack)** must be done yourselves: it is the main lesson of the day.
