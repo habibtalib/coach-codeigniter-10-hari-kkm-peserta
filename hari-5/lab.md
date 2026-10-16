@@ -1,6 +1,6 @@
 # Lab Hari 5 — Modul TLK (Bahagian 1)
 
-[⬅️ README Hari 5](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**)
+[⬅️ README Hari 5](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 > **Peraturan lab:** kerja individu dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. **Cuba manual dahulu** — baca mesej ralat penuh (Whoops page menunjukkan fail & baris). Selepas 10 minit buntu: tanya jurulatih atau guna AI untuk *menerangkan* ralat. Template `templates/kod/*.php.txt` untuk **menyemak** selepas anda cuba.
 
@@ -147,12 +147,12 @@ Menulis enum `BookingStatus` & `SlotCategory`, Entity `SlotBooking` dan Model TL
 6. Model — jana dan isi:
 
    ```bash
-   php spark make:model DepartmentModel
-   php spark make:model ParkingZoneModel
-   php spark make:model ParkingSlotModel
+   php spark make:model ParkingSlotModel --table parking_slots
    php spark make:model VehicleModel
-   php spark make:model SlotBookingModel
+   php spark make:model SlotBookingModel --table slot_bookings
    ```
+
+   > `DepartmentModel` dan `ParkingZoneModel` sudah wujud dari Lab 3.3–3.4 — buka dan tambah sahaja kaedah dalam jadual di bawah. Tanpa `--table`, nama jadual lalai salah (`parkingslots`); lihat [Arahan spark](../docs/arahan-spark.md).
 
    > `make:model` menjana banyak tetapan lalai. **Padam** yang tidak digunakan supaya anda boleh membaca Model dalam satu skrin.
 

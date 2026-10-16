@@ -1,6 +1,6 @@
 # Day 8 Lab — Pass Module (2): Approval Flow, RBAC & Access Tests
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 8 Notes](./README.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 8 Notes](./README.md) · [⚡ spark commands](../docs/arahan-spark.md)
 
 > Work **individually** in `kelas-ci-<nama>`; show your output to the trainer or the person next to you before ticking it off. Run every command from the **CI4 project root**. Trainer reference: `templates/kod/` (**Templat & Rujukan** module) — copy from it **only** once you can explain every line (KOLABORASI §3).
 

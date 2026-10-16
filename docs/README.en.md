@@ -21,6 +21,7 @@
 | [`rujukan-keperluan.md`](./rujukan-keperluan.md) | The original requirements & design material (flowcharts, AC, URS) — optional reading | When you want the requirements theory |
 | [`erd-rujukan.md`](./erd-rujukan.md) | A finished ERD for the 10 tables, matching SPEC §3 — no need to draw it yourself | When writing migrations & models (Lab 3.2, Lab 4.3) |
 | [`kod-rujukan-hari-3.md`](./kod-rujukan-hari-3.md) | Full reference code for Labs 3.2–3.4 — open it after 10 minutes stuck | Day 3, when stuck |
+| [`arahan-spark.md`](./arahan-spark.md) | `php spark` commands — generate controllers, models, migrations, seeders, filters, tests; database & inspection commands | Every time you create a new file (Day 2 onwards) |
 
 ## Side tracks (optional)
 

@@ -1,6 +1,6 @@
 # Lab Hari 3 — Database, Migration, Model & Carian
 
-[📅 Jadual](../JADUAL.md) · [📘 Spesifikasi](../docs/spesifikasi-sistem.md) · [📖 README Hari 3](./README.md)
+[📅 Jadual](../JADUAL.md) · [📘 Spesifikasi](../docs/spesifikasi-sistem.md) · [📖 README Hari 3](./README.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 | Lab | Sesi | Hasil |
 |-----|------|-------|

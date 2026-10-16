@@ -1,6 +1,6 @@
 # Lab Hari 2 — Pengesahan Keperluan & Projek CI Anda di GitLab
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 README Hari 2](./README.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 README Hari 2](./README.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 | Lab | Sesi | Hasil |
 |-----|------|-------|

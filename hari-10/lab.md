@@ -1,6 +1,6 @@
 # Lab Hari 10 — Statistik (M4) & Capstone
 
-[← README Hari 10](./README.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [Jadual](../JADUAL.md) · [Rubrik Capstone](../docs/rubrik-capstone.md)
+[← README Hari 10](./README.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [Jadual](../JADUAL.md) · [Rubrik Capstone](../docs/rubrik-capstone.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 > **Branch kerja:** `git switch main && git pull && git switch -c feat/statistik`
 > **Prefix commit:** `STAT:` (dashboard/cache) · `FIX:` (pembetulan pepijat UAT)

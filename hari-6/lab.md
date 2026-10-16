@@ -1,6 +1,6 @@
 # Lab Hari 6 — Modul TLK (Bahagian 2)
 
-[⬅️ README Hari 6](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**)
+[⬅️ README Hari 6](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 > **Peraturan lab:** hari ini tentang **ketepatan di bawah tekanan**, bukan kelajuan. Tulis query pertindihan & transaksi **sendiri dahulu**; bandingkan dengan template hanya selepas checkpoint. AI boleh membantu menerangkan `Lock wait timeout` atau `errno` — tetapi anda mesti boleh menerangkan kenapa kunci diambil mengikut tertib pengguna → slot.
 

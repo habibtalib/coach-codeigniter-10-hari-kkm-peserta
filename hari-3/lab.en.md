@@ -1,6 +1,6 @@
 # Day 3 Lab — Database, Migrations, Models & Search
 
-[📅 Schedule](../JADUAL.md) · [📘 Specification](../docs/spesifikasi-sistem.md) · [📖 Day 3 README](./README.md)
+[📅 Schedule](../JADUAL.md) · [📘 Specification](../docs/spesifikasi-sistem.md) · [📖 Day 3 README](./README.md) · [⚡ spark commands](../docs/arahan-spark.md)
 
 | Lab | Session | Output |
 |-----|---------|--------|

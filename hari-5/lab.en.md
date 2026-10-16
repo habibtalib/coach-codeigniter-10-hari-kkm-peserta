@@ -1,6 +1,6 @@
 # Lab Day 5 — TLK Module (Part 1)
 
-[⬅️ README Day 5](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module)
+[⬅️ README Day 5](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module) · [⚡ spark commands](../docs/arahan-spark.md)
 
 > **Lab rules:** individual work in `kelas-ci-<nama>`; show your output to the trainer or the person next to you before ticking it off. **Try it by hand first** — read the full error message (the Whoops page shows the file & line). After 10 minutes stuck: ask the trainer or use AI to *explain* the error. The `templates/kod/*.php.txt` templates are for **checking** after you have tried.
 
@@ -147,12 +147,12 @@ Write the `BookingStatus` & `SlotCategory` enums, the `SlotBooking` Entity and t
 6. Models — generate and fill them in:
 
    ```bash
-   php spark make:model DepartmentModel
-   php spark make:model ParkingZoneModel
-   php spark make:model ParkingSlotModel
+   php spark make:model ParkingSlotModel --table parking_slots
    php spark make:model VehicleModel
-   php spark make:model SlotBookingModel
+   php spark make:model SlotBookingModel --table slot_bookings
    ```
+
+   > `DepartmentModel` and `ParkingZoneModel` already exist from Labs 3.3–3.4 — open them and just add the methods in the table below. Without `--table`, the default table name is wrong (`parkingslots`); see [spark commands](../docs/arahan-spark.md).
 
    > `make:model` generates many default settings. **Delete** the ones you don't use so you can read the Model on one screen.
 

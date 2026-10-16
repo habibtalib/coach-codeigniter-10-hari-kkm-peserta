@@ -1,6 +1,6 @@
 # Lab Hari 9 — Modul Laporan (M3)
 
-[← README Hari 9](./README.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [Jadual](../JADUAL.md)
+[← README Hari 9](./README.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [Jadual](../JADUAL.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 > **Branch kerja:** `git switch main && git pull && git switch -c feat/laporan`
 > **Prefix commit:** `RPT:` · **Kod rujukan jurulatih:** `templates/kod/` (modul **Templat & Rujukan**) (guna untuk **semak**, bukan salin bulat-bulat — anda mesti boleh menerangkan setiap baris).

@@ -1,6 +1,6 @@
 # Day 10 Lab — Statistics (M4) & Capstone
 
-[← Day 10 README](./README.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [Schedule](../JADUAL.md) · [Capstone Rubric](../docs/rubrik-capstone.md)
+[← Day 10 README](./README.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [Schedule](../JADUAL.md) · [Capstone Rubric](../docs/rubrik-capstone.md) · [⚡ spark commands](../docs/arahan-spark.md)
 
 > **Working branch:** `git switch main && git pull && git switch -c feat/statistik`
 > **Commit prefix:** `STAT:` (dashboard/cache) · `FIX:` (UAT bug fixes)

@@ -1,6 +1,6 @@
 # Lab Day 9 — Report Module (M3)
 
-[← Day 9 README](./README.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [Schedule](../JADUAL.md)
+[← Day 9 README](./README.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [Schedule](../JADUAL.md) · [⚡ spark commands](../docs/arahan-spark.md)
 
 > **Working branch:** `git switch main && git pull && git switch -c feat/laporan`
 > **Commit prefix:** `RPT:` · **Trainer reference code:** `templates/kod/` (**Templat & Rujukan** module) (use it to **check**, not to copy wholesale — you must be able to explain every line).

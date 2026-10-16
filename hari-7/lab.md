@@ -1,6 +1,6 @@
 # Lab Hari 7 — Modul Pas (1): Model, CRUD & Muat Naik Selamat
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 Nota Hari 7](./README.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 Nota Hari 7](./README.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 > Kerja **individu** dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. Semua arahan dijalankan dari **akar projek CI4** anda (folder yang ada `spark`). Rujukan lengkap jurulatih: `templates/kod/` (modul **Templat & Rujukan**). **Salin hanya selepas anda boleh menerangkan setiap baris** (KOLABORASI §3).
 

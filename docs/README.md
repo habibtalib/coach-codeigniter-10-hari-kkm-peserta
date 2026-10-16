@@ -21,6 +21,7 @@
 | [`rujukan-keperluan.md`](./rujukan-keperluan.md) | Bahan keperluan & reka bentuk asal (carta alir, AC, URS) — bacaan pilihan | Bila mahu teori keperluan |
 | [`erd-rujukan.md`](./erd-rujukan.md) | ERD siap untuk 10 jadual, sepadan SPEC §3 — tidak perlu dilukis sendiri | Semasa menulis migration & model (Lab 3.2, Lab 4.3) |
 | [`kod-rujukan-hari-3.md`](./kod-rujukan-hari-3.md) | Kod rujukan penuh Lab 3.2–3.4 — buka selepas 10 minit buntu | Hari 3, bila tersekat |
+| [`arahan-spark.md`](./arahan-spark.md) | Arahan `php spark` — jana controller, model, migration, seeder, filter, ujian; arahan database & semakan | Setiap kali mencipta fail baharu (Hari 2 ke atas) |
 
 ## Trek sampingan (pilihan)
 

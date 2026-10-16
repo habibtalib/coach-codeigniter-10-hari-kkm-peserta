@@ -1,6 +1,6 @@
 # Lab Hari 8 — Modul Pas (2): Aliran Kelulusan, RBAC & Ujian Akses
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 Nota Hari 8](./README.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 Nota Hari 8](./README.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 > Kerja **individu** dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. Semua arahan dari **akar projek CI4**. Rujukan jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — salin **hanya** selepas anda boleh menerangkan setiap baris (KOLABORASI §3).
 

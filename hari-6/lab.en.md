@@ -1,6 +1,6 @@
 # Lab Day 6 — TLK Module (Part 2)
 
-[⬅️ README Day 6](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module)
+[⬅️ README Day 6](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module) · [⚡ spark commands](../docs/arahan-spark.md)
 
 > **Lab rules:** today is about **accuracy under pressure**, not speed. Write the overlap query and the transaction **yourself first**; compare with the template only after the checkpoint. AI can help explain `Lock wait timeout` or `errno` — but you must be able to explain why the locks are taken in the order user → slot.
 
