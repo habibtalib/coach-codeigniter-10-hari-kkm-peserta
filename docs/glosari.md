@@ -173,5 +173,5 @@ Kekal Bahasa Melayu: ralat, sesi (sesi kelas), pengesahan (oleh pemilik sistem),
 | Tolak / tarik | Push / pull | `git push`, `git pull` | |
 | Permintaan gabung | Pull request / merge request | PR / MR | |
 | Simpanan sementara | Stash | `git stash` | |
-| Pemandu / navigator | Driver / navigator | | Pengaturcaraan berpasangan |
+| Pemandu / navigator | Driver / navigator | | Pengaturcaraan berpasangan — **pilihan**; kursus ini kerja individu dalam `kelas-ci-<nama>` |
 | Pembantu AI | AI assistant | Claude Code | [`pustaka-prompt.md`](./pustaka-prompt.md) |

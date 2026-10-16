@@ -2,7 +2,7 @@
 
 [← Indeks docs](./README.md) · [📘 Kanun SPEC](spesifikasi-sistem.md) · [📅 Jadual](../JADUAL.md) · [🧪 Lab Hari 1](../hari-1/lab.md)
 
-> **Trek sampingan opsyenal — siapkan sebelum Hari 4.** Halaman ini **tidak menggantikan** lab teras Hari 1–3. Ia mengambil hasil lab yang anda sudah ada (temu bual, pain point, FR, AC, wireframe) dan menambah lima langkah Design Thinking supaya setiap keperluan boleh dijejak kembali kepada **masalah sebenar seorang pengguna**. Skop kursus tetap (4 modul, SPEC), jadi kita **tidak** guna Design Thinking untuk mencipta ciri baharu, tetapi untuk menajamkan keperluan dan reka bentuk skrin.
+> **Trek sampingan opsyenal — siapkan sebelum Hari 4.** Halaman ini **tidak menggantikan** lab teras. Ia mengambil hasil Hari 1 (temu bual, pain point, FR) dan bahan rujukan (carta alir, AC, wireframe dalam [`rujukan-keperluan.md`](./rujukan-keperluan.md)) dan menambah lima langkah Design Thinking supaya setiap keperluan boleh dijejak kembali kepada **masalah sebenar seorang pengguna**. Skop kursus tetap (4 modul, SPEC), jadi kita **tidak** guna Design Thinking untuk mencipta ciri baharu, tetapi untuk menajamkan keperluan dan reka bentuk skrin.
 
 Lima peringkat:
 
@@ -13,15 +13,15 @@ Empathize → Define → Ideate → Prototype → Test
 
 ## Bila dan di mana
 
-| Peringkat | Selepas / semasa | Anggaran masa (kendiri) | Hasil dalam repo pasangan |
+| Peringkat | Selepas / semasa | Anggaran masa (kendiri) | Hasil dalam repo `kelas-ci-<nama>` |
 |-----------|------------------|-------------------------|---------------------------|
 | 1. Empathize | Selepas Hari 1 S2 (Lab 1.2) dan S3 (Lab 1.3) | 30 minit | `docs/dt/01-persona-empati.md` |
 | 2. Define | Hari 1 S4 (Lab 1.4) → Hari 2 S1 (Lab 2.1) | 30 minit | `docs/dt/02-masalah-hmw.md` |
-| 3. Ideate | Hari 2 (S2 carta to-be, S3 AC) | 30 minit | `docs/dt/03-idea.md` |
-| 4. Prototype | Hari 3 S3 (Lab 3.3 wireframe) | 20 minit | `docs/dt/04-prototaip.md` |
-| 5. Test | Hari 3 S4 (Lab 3.4) · ulang pada Hari 10 S3 (UAT) | 40 minit | `docs/dt/05-ujian.md` |
+| 3. Ideate | Hari 2 (bacaan: carta to-be & AC, [`rujukan-keperluan.md`](./rujukan-keperluan.md) Bahagian 1) | 30 minit | `docs/dt/03-idea.md` |
+| 4. Prototype | Hari 3 (bacaan: wireframe, [`rujukan-keperluan.md`](./rujukan-keperluan.md) Bahagian 3 S3) | 20 minit | `docs/dt/04-prototaip.md` |
+| 5. Test | Hari 3, selepas kelas · ulang pada Hari 10 S3 (UAT) | 40 minit | `docs/dt/05-ujian.md` |
 
-> **Di mana fail disimpan:** `docs/dt/` ialah folder dalam **repo projek pasangan anda sendiri** (`~/latihan/sistem-tlk-pas/docs/dt/`, repo yang dicipta dalam Lab 1.0), **bukan** folder `docs/` halaman kursus ini. Commit dengan awalan `SETUP:` seperti lab Hari 1–3, cth `git commit -m "SETUP: DT persona & empathy map"`.
+> **Di mana fail disimpan:** `docs/dt/` ialah folder dalam **repo anda sendiri** (`~/latihan/kelas-ci-<nama>/docs/dt/`, repo yang dicipta dalam Lab 2.2), **bukan** folder `docs/` halaman kursus ini. Commit dengan awalan `DOCS:`, cth `git commit -m "DOCS: DT persona & empathy map"`.
 
 Input utama ialah nota temu bual anda dengan pemilik sistem dalam persona (Puan Noraini untuk TLK, Encik Faizal untuk Pas) dalam `docs/temubual-tlk.md` dan `docs/temubual-pas.md`. Persona Design Thinking di bawah ialah **pengguna akhir rekaan** (pemohon, penyemak), bukan pemilik sistem. Semua nama dan data adalah **sintetik**.
 
@@ -93,7 +93,7 @@ Menulis **1 kad persona** dan **1 empathy map** (Says / Thinks / Does / Feels) b
 ## 2. Define — takrif masalah
 
 ### 🎯 Objektif
-Menulis **≥ 2 ayat masalah** (1 TLK, 1 Pas) berformat *[pengguna] perlu [keperluan] kerana [pandangan]* dan menukar setiap satu kepada **≥ 3 soalan How-Might-We (HMW)**, setiap HMW dijejak kepada satu `PP-xx` dan sekurang-kurangnya satu FR dalam `docs/keperluan-awal.md`.
+Menulis **≥ 2 ayat masalah** (1 TLK, 1 Pas) berformat *[pengguna] perlu [keperluan] kerana [pandangan]* dan menukar setiap satu kepada **≥ 3 soalan How-Might-We (HMW)**, setiap HMW dijejak kepada satu `PP-xx` dan sekurang-kurangnya satu FR dalam [`rujukan-keperluan.md`](./rujukan-keperluan.md).
 
 ### Langkah
 1. Dari empathy map, pilih kekecewaan yang paling kerap muncul atau paling berat kesannya.
@@ -148,15 +148,15 @@ Contoh ini sebahagian sahaja; fail anda perlu ≥ 3 HMW bagi setiap ayat masalah
 ## 3. Ideate — jana dan pilih idea
 
 ### 🎯 Objektif
-Menjana **≥ 8 idea** bagi satu HMW dengan Crazy 8s, membandingkan **2 pilihan** terbaik dengan jadual kriteria, dan memilih satu melalui undian titik (*dot voting*). Idea terpilih ditanda sebagai titik penambahbaikan ⚡ dalam carta to-be (`docs/carta-alir.md`, Lab 2.2).
+Menjana **≥ 8 idea** bagi satu HMW dengan Crazy 8s, membandingkan **2 pilihan** terbaik dengan jadual kriteria, dan memilih satu melalui undian titik (*dot voting*). Idea terpilih ditanda sebagai titik penambahbaikan ⚡ pada salinan carta to-be TLK ([`rujukan-keperluan.md`](./rujukan-keperluan.md) Bahagian 1 §2.4) dalam `docs/dt/03-idea.md`.
 
 ### Langkah
 1. Pilih satu HMW (cth HMW-01). Lipat kertas A4 kepada 8 petak.
 2. **Crazy 8s:** 8 lakaran dalam 8 minit, satu minit setiap petak. Kuantiti dahulu, kualiti kemudian.
-3. Setiap ahli pasangan terangkan lakaran (1 minit setiap seorang). Gabung idea yang sama.
+3. Terangkan lakaran anda kepada rakan sebelah, dan dengar lakarannya (1 minit setiap seorang). Gabung idea yang sama.
 4. Pilih 2 calon. Bandingkan dengan kriteria tetap: sepadan SPEC/BR, masa bina Hari 5–8, kesan kepada persona.
 5. **Dot voting:** setiap orang ada 3 titik; boleh letak lebih dari satu titik pada satu idea. Idea dengan titik terbanyak dipilih; seri → kriteria "sepadan SPEC" menang.
-6. Kemas kini carta to-be dengan nod ⚡ dan tulis AC negative path baharu jika idea mendedahkan kes yang belum ada (Lab 2.3).
+6. Kemas kini carta to-be dengan nod ⚡ dan tulis AC negative path baharu jika idea mendedahkan kes yang belum ada (contoh AC: [`rujukan-keperluan.md`](./rujukan-keperluan.md) Bahagian 1 S3).
 
 ### Templat
 ```markdown
@@ -176,7 +176,7 @@ Menjana **≥ 8 idea** bagi satu HMW dengan Crazy 8s, membandingkan **2 pilihan*
 | Risiko | | |
 
 ## Dot voting (3 titik setiap orang)
-| Idea | Driver | Navigator | Jumlah |
+| Idea | Anda | Rakan | Jumlah |
 |------|--------|-----------|--------|
 ```
 
@@ -188,7 +188,7 @@ Menjana **≥ 8 idea** bagi satu HMW dengan Crazy 8s, membandingkan **2 pilihan*
 | Kesan kepada persona | Tinggi: Cik Hidayah nampak slot kosong dahulu | Sederhana: mesej "Slot tidak tersedia bagi julat tarikh ini" selepas hantar |
 | Risiko | Paparan ketersediaan boleh lapuk; semakan dalam transaksi (BR-TLK-05) tetap wajib | Pemohon cuba berulang kali |
 
-| Idea | Driver | Navigator | Jumlah |
+| Idea | Anda | Rakan | Jumlah |
 |------|--------|-----------|--------|
 | A — halaman ketersediaan | ●● | ●● | 4 |
 | B — tolak selepas hantar | ● | — | 1 |
@@ -211,13 +211,13 @@ Keputusan: **A + B bersama.** A memperbaiki pengalaman; B kekal sebagai pertahan
 ## 4. Prototype — lakar untuk belajar
 
 ### 🎯 Objektif
-Memetakan **perjalanan pengguna to-be** persona sebagai carta Mermaid `journey` merentas wireframe W1–W2 (dan W4–W5 untuk Pas), dan menandakan dalam `docs/wireframe.md` elemen skrin yang menjawab setiap HMW terpilih (≥ 1 elemen setiap HMW).
+Memetakan **perjalanan pengguna to-be** persona sebagai carta Mermaid `journey` merentas wireframe W1–W2 (dan W4–W5 untuk Pas), dan menandakan dalam `docs/dt/04-prototaip.md` elemen skrin yang menjawab setiap HMW terpilih (≥ 1 elemen setiap HMW).
 
 ### Langkah
-1. Siapkan wireframe Lab 3.3 dahulu. Peringkat ini **tidak** melukis skrin baharu; ia menambah lapisan "kenapa" pada skrin sedia ada.
+1. Lakar W1–W2 secara kasar dahulu, ikut [`rujukan-keperluan.md`](./rujukan-keperluan.md) Bahagian 3 S3 (contoh W2 dan W5). Peringkat ini **tidak** mencipta ciri baharu; ia menambah lapisan "kenapa" pada skrin itu.
 2. Lukis carta `journey` to-be: satu `section` setiap fasa (sebelum mohon, mohon, selepas hantar), skor 1–5 = jangkaan perasaan persona.
 3. Langkah dengan skor ≤ 2 ialah calon ujian di peringkat Test.
-4. Dalam `docs/wireframe.md`, tambah baris `HMW:` di bawah setiap skrin yang berkaitan, cth `HMW-01 → senarai Slot hanya slot aktif & kosong`.
+4. Dalam `docs/dt/04-prototaip.md`, tambah baris `HMW:` di bawah setiap skrin yang berkaitan, cth `HMW-01 → senarai Slot hanya slot aktif & kosong`.
 5. Sediakan prototaip kertas (cetak atau lakar W1, W2) untuk ujian lorong.
 
 ### Templat
@@ -260,8 +260,8 @@ journey
 
 ### Semak kendiri
 - [ ] Carta `journey` dipaparkan tanpa ralat (pratonton VS Code atau mermaid.live).
-- [ ] Setiap HMW terpilih ada ≥ 1 elemen skrin dalam `docs/wireframe.md`.
-- [ ] Tiada medan baharu dalam wireframe yang tiada dalam `docs/kamus-data.md`.
+- [ ] Setiap HMW terpilih ada ≥ 1 elemen skrin dalam `docs/dt/04-prototaip.md`.
+- [ ] Tiada medan baharu dalam wireframe yang tiada dalam [`erd-rujukan.md`](./erd-rujukan.md).
 
 ### ⚠️ Kesilapan lazim
 - **Prototaip terlalu cantik.** Warna dan ikon membuat penguji mengulas rupa, bukan aliran. Kekal kotak kelabu (Hari 3 §3.1).
@@ -273,14 +273,14 @@ journey
 ## 5. Test — uji dengan orang sebenar
 
 ### 🎯 Objektif
-Menjalankan **ujian lorong** (*hallway test*) 10 minit dengan **≥ 2 penguji** dari pasangan lain menggunakan prototaip kertas, merekod setiap dapatan dengan keterukan (1–3), dan menutup setiap dapatan keterukan 3 dengan satu tindakan (betulkan wireframe, CR atau soalan terbuka) sebelum Hari 4.
+Menjalankan **ujian lorong** (*hallway test*) 10 minit dengan **≥ 2 penguji** (rakan sekelas, bukan diri sendiri) menggunakan prototaip kertas, merekod setiap dapatan dengan keterukan (1–3), dan menutup setiap dapatan keterukan 3 dengan satu tindakan (betulkan wireframe, CR atau soalan terbuka) sebelum Hari 4.
 
 ### Langkah
 1. Pilih 3 tugasan daripada langkah journey dengan skor ≤ 3.
 2. Baca skrip kepada penguji. **Jangan bantu** dan jangan terangkan skrin; minta dia "fikir dengan kuat".
 3. Pencatat merekod: berjaya/tidak, masa, apa yang mengelirukan, petikan.
 4. Kelaskan keterukan: 1 = kosmetik, 2 = melambatkan, 3 = tidak dapat siapkan tugasan.
-5. Bawa dapatan keterukan 2–3 ke Lab 3.4 (semakan silang reka bentuk).
+5. Kongsi dapatan keterukan 2–3 dengan jurulatih (sebagai soalan terbuka atau CR).
 6. **Hari 10 S3:** gunakan skrip yang sama sebagai asas skrip UAT (Lab 10.3), kali ini pada aplikasi sebenar, dan bandingkan dapatan.
 
 ### Templat
@@ -316,27 +316,27 @@ Persona untuk penguji: "Anda Cik Hidayah, hamil 6 bulan, perlu slot dari 2026-11
 
 | # | Penguji | Tugasan | Berjaya? | Masa | Apa mengelirukan / petikan | Keterukan (1–3) | Tindakan |
 |---|---------|---------|----------|------|----------------------------|-----------------|----------|
-| D1 | Pasangan C | T1 | Ya | 1:40 | Tempoh 88 hari; ragu tentang had: "Boleh ke 3 bulan?" | 2 | Nota had 90 hari dipindah ke sebelah medan tarikh |
-| D2 | Pasangan C | T2 | Tidak | 3:00 | Mesej ralat di atas halaman, tidak nampak | 3 | Mesej dipindah ke bawah medan tarikh (W2) |
-| D3 | Pasangan D | T3 | Ya | 0:30 | — | — | — |
-| D4 | Pasangan D | T1 | Ya | 2:10 | "Kalau saya batal sebelum lulus?" | 2 | Soalan terbuka → BR-TLK-06 (pending tidak boleh dibatal) |
+| D1 | Rakan C | T1 | Ya | 1:40 | Tempoh 88 hari; ragu tentang had: "Boleh ke 3 bulan?" | 2 | Nota had 90 hari dipindah ke sebelah medan tarikh |
+| D2 | Rakan C | T2 | Tidak | 3:00 | Mesej ralat di atas halaman, tidak nampak | 3 | Mesej dipindah ke bawah medan tarikh (W2) |
+| D3 | Rakan D | T3 | Ya | 0:30 | — | — | — |
+| D4 | Rakan D | T1 | Ya | 2:10 | "Kalau saya batal sebelum lulus?" | 2 | Soalan terbuka → BR-TLK-06 (pending tidak boleh dibatal) |
 
 ### Semak kendiri
-- [ ] ≥ 2 penguji dari pasangan lain; tiada seorang pun ahli pasangan sendiri.
+- [ ] ≥ 2 penguji dari kalangan rakan sekelas; bukan diri sendiri.
 - [ ] Setiap dapatan ada keterukan dan tindakan (atau "—" jika berjaya tanpa isu).
 - [ ] Semua dapatan keterukan 3 ditutup sebelum Hari 4.
 - [ ] Skrip disimpan untuk digunakan semula pada Hari 10 S3.
 
 ### ⚠️ Kesilapan lazim
 - **Membantu penguji.** "Klik sini" merosakkan ujian. Catat di mana dia tersekat; itulah dapatan.
-- **Menguji dengan diri sendiri.** Pereka tahu jawapan. Penguji mesti dari pasangan lain.
+- **Menguji dengan diri sendiri.** Pereka tahu jawapan. Penguji mesti orang lain.
 - **Dapatan tanpa tindakan.** Jadual dapatan tanpa lajur Tindakan ialah laporan, bukan penambahbaikan.
 
 ---
 
 ## Jambatan: pain → HMW → FR → AC
 
-Setiap baris di bawah menjejak satu masalah sebenar sehingga ke ujian yang boleh lulus/gagal. Gunakan pola ini untuk menyemak matriks jejak URS (Hari 2 §4.3).
+Setiap baris di bawah menjejak satu masalah sebenar sehingga ke ujian yang boleh lulus/gagal. Gunakan pola ini untuk menyemak matriks jejak URS ([`rujukan-keperluan.md`](./rujukan-keperluan.md) Bahagian 1 §4.3).
 
 | Pain (PP-xx) | HMW | Keperluan (FR-xx) | Acceptance criterion (Given/When/Then) | BR |
 |--------------|-----|-------------------|----------------------------------------|----|
@@ -352,11 +352,11 @@ Setiap baris di bawah menjejak satu masalah sebenar sehingga ke ujian yang boleh
 
 - [ ] `docs/dt/01-persona-empati.md` — 1 persona + 1 empathy map (TLK), disokong pain point.
 - [ ] `docs/dt/02-masalah-hmw.md` — ≥ 2 ayat masalah (TLK, Pas) + ≥ 3 HMW setiap satu, dijejak ke FR.
-- [ ] `docs/dt/03-idea.md` — Crazy 8s, perbandingan 2 pilihan, dot voting; idea terpilih = nod ⚡ dalam `docs/carta-alir.md`.
+- [ ] `docs/dt/03-idea.md` — Crazy 8s, perbandingan 2 pilihan, dot voting; idea terpilih = nod ⚡ pada carta to-be dalam fail yang sama.
 - [ ] `docs/dt/04-prototaip.md` — carta `journey` to-be dipaparkan tanpa ralat; elemen skrin ↔ HMW.
 - [ ] `docs/dt/05-ujian.md` — ≥ 2 penguji; semua dapatan keterukan 3 ditutup.
 - [ ] Jadual jambatan pain → HMW → FR → AC dikemas kini dengan ≥ 3 baris anda sendiri.
-- [ ] Semua fail di-commit dalam repo pasangan (`git log --oneline` menunjukkan commit `SETUP: DT …`).
+- [ ] Semua fail di-commit dalam repo `kelas-ci-<nama>` (`git log --oneline` menunjukkan commit `DOCS: DT …`).
 
 ---
 
@@ -364,8 +364,8 @@ Setiap baris di bawah menjejak satu masalah sebenar sehingga ke ujian yang boleh
 
 **Bahan kursus berkaitan**
 - [Hari 1 README](../hari-1/README.md) §2.1 (temu bual), §2.3 (pain point), §4 (FR/NFR, MoSCoW) · [Lab Hari 1](../hari-1/lab.md) Lab 1.2–1.4
-- [Hari 2 README](../hari-2/README.md) §1 (pengesahan), §2 (as-is/to-be), §3 (AC Given/When/Then), §4.3 (matriks jejak) · [Lab Hari 2](../hari-2/lab.md)
-- [Hari 3 README](../hari-3/README.md) §3 (wireframe) · [Lab Hari 3](../hari-3/lab.md) Lab 3.3–3.4
+- [Hari 2 README](../hari-2/README.md) §1 (pengesahan) · [Lab Hari 2](../hari-2/lab.md) Lab 2.1 · [`rujukan-keperluan.md`](./rujukan-keperluan.md) Bahagian 1 (as-is/to-be, AC Given/When/Then, matriks jejak)
+- [`rujukan-keperluan.md`](./rujukan-keperluan.md) Bahagian 3 S3 (wireframe) · [`erd-rujukan.md`](./erd-rujukan.md) (ERD siap)
 - [Lab Hari 10](../hari-10/lab.md) Lab 10.3 (UAT)
 - Templat acceptance criteria (modul **Templat & Rujukan**) · Templat URS (modul **Templat & Rujukan**)
 - [Spesifikasi sistem](spesifikasi-sistem.md) §2 (BR-TLK-01..06, BR-PAS-01..06) · [Glosari](./glosari.md)

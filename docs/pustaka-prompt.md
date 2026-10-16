@@ -50,7 +50,7 @@ flowchart LR
 | **AI-08** | Semakan pra-commit (DoD) | Semak | 5–10 |
 | **AI-09** | Cadangkan kes ujian | Ujian | 6, 8, 9, 10 |
 | **AI-10** | Bantu tulis ujian gagal dahulu (reproduce pepijat) | Ujian | 6, 8, 10 |
-| **AI-11** | Semak ERD / migration terhadap kamus data | Reka | 3, 4 |
+| **AI-11** | Semak migration terhadap ERD rujukan | Reka | 3, 4 |
 | **AI-12** | Tukar lakaran kepada Mermaid | Reka | 1–3 |
 | **AI-13** | Boilerplate kecil yang dibenarkan | Bina | 4–10 |
 | **AI-14** | Kuiz saya | Faham | Recap harian |
@@ -84,7 +84,7 @@ Tolong:
 JANGAN tulis semula keseluruhan fail saya.
 ```
 
-- **Selepas:** Sahkan punca dengan cara yang dicadangkan **sebelum** mengubah kod. Catat punca sebenar dalam log pepijat pasangan anda.
+- **Selepas:** Sahkan punca dengan cara yang dicadangkan **sebelum** mengubah kod. Catat punca sebenar dalam log pepijat anda.
 
 ### AI-02 — Terangkan kod ini baris demi baris
 
@@ -100,7 +100,7 @@ Jika ada sintaks CodeIgniter 3 atau amalan lapuk, nyatakan.
 [tampal kod — maksimum ~40 baris]
 ```
 
-- **Selepas:** Terangkan kod itu kepada pasangan anda **tanpa melihat** jawapan AI. Tidak boleh? Ulang dengan soalan susulan.
+- **Selepas:** Terangkan kod itu kepada jurulatih atau rakan sebelah **tanpa melihat** jawapan AI. Tidak boleh? Ulang dengan soalan susulan.
 
 ### AI-03 — Terangkan konsep dengan contoh domain TLK/Pas
 
@@ -175,7 +175,7 @@ Beri perhatian khusus: adakah semakan pertindihan dan kelulusan dalam SATU trans
 dengan SELECT ... FOR UPDATE (BR-TLK-05)?
 ```
 
-- **Selepas:** Kemas kini [`senarai-semak-modul.md`](./senarai-semak-modul.md). Setiap "Tidak" → tugasan untuk pasangan anda.
+- **Selepas:** Kemas kini [`senarai-semak-modul.md`](./senarai-semak-modul.md). Setiap "Tidak" → tugasan untuk anda.
 
 ### AI-06 — Semakan keselamatan muat naik fail
 
@@ -225,7 +225,7 @@ Senaraikan ujian akses positif & negatif yang perlu saya tulis.
 ### AI-08 — Semakan pra-commit (DoD)
 
 - **Bila guna:** Sebelum `git commit` bagi ciri yang lengkap / sebelum merge.
-- **Jangan:** Jadikan ini pengganti semakan jurulatih atau pasangan.
+- **Jangan:** Jadikan ini pengganti semakan jurulatih atau komen rakan pada MR.
 
 ```bash
 git diff --staged > /tmp/diff.txt   # pastikan tiada .env dalam diff!
@@ -260,8 +260,8 @@ berformat "<PREFIX>: <ringkasan>" (TLK/PAS/RPT/STAT/SETUP/FIX).
 ```prompt title="AI-09"
 Untuk fungsi/ciri berikut dalam CodeIgniter 4.6, cadangkan kes ujian PHPUnit.
 Ciri: <BookingService::approve() — lulus tempahan TLK, semak pertindihan BR-TLK-01>
-Acceptance criteria (Given/When/Then) dari URS:
-[tampal AC]
+Peraturan BR-* berkaitan (docs/spesifikasi-sistem.md):
+[tampal peraturan BR]
 
 Beri jadual | # | Jenis (unit/feature) | Given | When | Then | Peraturan BR |
 Sertakan: laluan gembira, kes sempadan tarikh (hari sama, bertindih 1 hari, bersebelahan),
@@ -291,19 +291,19 @@ JANGAN betulkan kod aplikasi — saya akan baiki sendiri selepas ujian merah.
 
 ## D · Reka
 
-### AI-11 — Semak ERD / migration terhadap kamus data
+### AI-11 — Semak migration terhadap ERD rujukan
 
-- **Bila guna:** Hari 3 S4 (ERD) dan Hari 4 S3 (migration).
+- **Bila guna:** Hari 3 S2 (migration pertama) dan Hari 4 S3 (8 migration lagi).
 - **Jangan:** Minta AI menjana semua migration — anda perlu faham susunan FK.
 
 ```prompt title="AI-11"
-Bandingkan migration CodeIgniter 4.6 saya dengan skema kanun (docs/spesifikasi-sistem.md §3, dilampirkan).
+Bandingkan migration CodeIgniter 4.6 saya dengan skema kanun (docs/spesifikasi-sistem.md §3 dan docs/erd-rujukan.md, dilampirkan).
 Laporkan dalam jadual: | Jadual | Medan | Dalam SPEC | Dalam migration | Isu |
 Semak: jenis & panjang, NULL, UNIQUE, INDEX, FK (onDelete), deleted_at hanya di mana
 dinyatakan, utf8mb4. Semak juga SUSUNAN migration (jadual induk sebelum jadual anak).
 Senaraikan isu sahaja.
 
-[tampal SPEC §3]
+[tampal SPEC §3 dan erd-rujukan.md]
 [tampal migration]
 ```
 
@@ -365,7 +365,7 @@ model kereta biasa di Malaysia, warna). Tiada data sebenar. Format: array PHP.
 
 Sebelum menerima apa-apa cadangan, jawab ya kepada **semua**:
 
-- [ ] Saya boleh terangkan **setiap baris** kepada pasangan saya tanpa melihat jawapan AI.
+- [ ] Saya boleh terangkan **setiap baris** kepada jurulatih atau rakan sebelah tanpa melihat jawapan AI.
 - [ ] Saya tahu **kenapa** penyelesaian ini betul, bukan sekadar "ia berjalan".
 - [ ] Sintaks ini **CodeIgniter 4.6** (bukan CI3) dan nama sepadan **SPEC**.
 - [ ] Saya sudah **menguji** (manual atau PHPUnit) — termasuk satu kes negatif.

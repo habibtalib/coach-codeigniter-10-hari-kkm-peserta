@@ -2,7 +2,7 @@
 
 [📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 7 notes](./README.md)
 
-> Work **in pairs** (driver/navigator — swap every session). Run every command from the **root of your CI4 project** (the folder that contains `spark`). Full trainer reference: `templates/kod/` (**Templat & Rujukan** module). **Copy only after you can explain every line** (KOLABORASI §3).
+> Work **individually** in `kelas-ci-<nama>`; show your output to the trainer or the person next to you before ticking it off. Run every command from the **root of your CI4 project** (the folder that contains `spark`). Full trainer reference: `templates/kod/` (**Templat & Rujukan** module). **Copy only after you can explain every line** (KOLABORASI §3).
 
 | Lab | Session | Time | Outcome |
 |-----|---------|------|---------|
@@ -145,12 +145,12 @@ Write `PassType`, `PassStatus`, the `PassApplication` Entity, `PassApplicationMo
 |---------|-------|-----|
 | `Fatal error: Constant expression contains invalid operations` | `implode()` in the default value of `$validationRules` | Fill it in inside `protected function initialize(): void` |
 | `UnhandledMatchError` in `label()` | New `case` without a `match` arm | Add the arm; this is a safety feature, not a bug |
-| `Class "App\Enums\PassStatus" not found` | File name/namespace mismatch (e.g. `app/enums/`) | Folder `app/Enums/` (capital E), `namespace App\Enums;`. 🪟 Windows ignores upper/lower case, so `app/enums` works on your laptop but fails on a Linux server and on your partner's macOS laptop. Fix it through Git: `git mv app/enums app/Enums-tmp && git mv app/Enums-tmp app/Enums` |
+| `Class "App\Enums\PassStatus" not found` | File name/namespace mismatch (e.g. `app/enums/`) | Folder `app/Enums/` (capital E), `namespace App\Enums;`. 🪟 Windows ignores upper/lower case, so `app/enums` works on your laptop but fails on a Linux server and on a colleague's macOS laptop. Fix it through Git: `git mv app/enums app/Enums-tmp && git mv app/Enums-tmp app/Enums` |
 | `ValueError: "Approved" is not a valid backing value` | `PassStatus::from('Approved')` — DB values are lowercase | Use `->value` when saving; `from()` is only for DB data |
 | `/cuba-model-pas` → `"ok": 5` (it succeeded!) | `$validationRules` is empty — `initialize()` not called / misspelt | Exact name `initialize`, visibility `protected` |
 
 ### ⭐ Bonus challenge
-- Add `PassStatus::forRole(string $group): array` that returns the statuses relevant to each role's queue. Does this belong in the enum or in the Service? Discuss with your partner.
+- Add `PassStatus::forRole(string $group): array` that returns the statuses relevant to each role's queue. Does this belong in the enum or in the Service? Discuss with the trainer or the person next to you.
 - Write a PHPUnit unit test `tests/unit/Enums/PassStatusTest.php` with a `#[DataProvider]` attribute for **all 25** (5×5) `canTransitionTo()` pairs.
 
 ---
@@ -437,7 +437,7 @@ Build the application form with 1–3 documents stored securely (BR-PAS-02), the
 
    Add the `use` statements you need (`PassStatus`, `PassType`, `VehicleModel`, `UploadedFile`, `PageNotFoundException`, `InvalidArgumentException`, `RuntimeException`, `Throwable`). **Do not** copy the Day 8 methods (`startReview`, `approve`, `reject`, `transition`) yet.
 
-   Before you continue, the navigator explains out loud: *"Why are the files moved BEFORE `transBegin()`, and what happens to the files if `record()` fails?"*
+   Before you continue, explain out loud to the trainer or the person next to you: *"Why are the files moved BEFORE `transBegin()`, and what happens to the files if `record()` fails?"*
 
 2. **Add `new()`, `create()`, `download()`, `rules()`, `uploadedFiles()`** to `ApplicationController` (see the template). Make sure you have `protected $helpers = ['form', 'url'];`.
 
@@ -545,7 +545,7 @@ Build the application form with 1–3 documents stored securely (BR-PAS-02), the
 7. **Confirm in three places:**
 
    ```bash
-   cd ~/latihan/sistem-tlk-pas          # back to the project folder (step 5 left you in ~/ujian-pas)
+   cd ~/latihan/kelas-ci-<nama>         # back to the project folder (step 5 left you in ~/ujian-pas)
    ls -la writable/uploads/pas/          # 2 files, random names e.g. 1727251200_3f2a9c1e7b0d4a5c6e81.pdf
    ls public/ | grep -i upload            # NO output
    ```
@@ -629,7 +629,7 @@ Run at least 10 (target 17) boundary test cases for upload, validation and owner
    Copy-Item surat-sokongan.pdf surat-2.pdf; Copy-Item surat-sokongan.pdf surat-3.pdf
    ```
 
-2. **Create `docs/ujian-manual-pas.md`** and copy the table below. Run each case; fill in the *Actual* and *Result* columns. After **every** case, check `ls writable/uploads/pas/ | wc -l` from the **project folder** (`cd ~/latihan/sistem-tlk-pas`, not `~/ujian-pas`) — the count only goes up for cases that are expected to succeed.
+2. **Create `docs/ujian-manual-pas.md`** and copy the table below. Run each case; fill in the *Actual* and *Result* columns. After **every** case, check `ls writable/uploads/pas/ | wc -l` from the **project folder** (`cd ~/latihan/kelas-ci-<nama>`, not `~/ujian-pas`) — the count only goes up for cases that are expected to succeed.
 
    | ID | Case | Steps | Expected | Actual | Result |
    |----|------|-------|----------|--------|--------|
@@ -660,7 +660,7 @@ Run at least 10 (target 17) boundary test cases for upload, validation and owner
 ### ✅ Checkpoint 7.4
 - [ ] `docs/ujian-manual-pas.md` contains ≥ 10 cases with the *Actual* & *Result* columns filled in.
 - [ ] UT-PAS-04, 08, 09: **no** new file in `writable/uploads/pas/` and no new `pass_applications` record.
-- [ ] Each pair can explain to the trainer the **OWASP risk** prevented by UT-PAS-07, 09, 15 and 16.
+- [ ] You can explain to the trainer the **OWASP risk** prevented by UT-PAS-07, 09, 15 and 16.
 - [ ] Commit: `git add docs/ && git commit -m "PAS: kes ujian manual muat naik & pemilikan"` and `git push -u origin feat/pas-permohonan`.
 
 ### 🧯 Troubleshooting
@@ -690,4 +690,4 @@ ls writable/uploads/pas/ | head         # random names only
 git status                              # clean; writable/uploads not tracked
 ```
 
-Pairs who fall behind: copy from `templates/kod/` (**Templat & Rujukan** module) **after** the trainer/a peer has explained each part — and mark it in the commit (`PAS: … (rujuk templat)`).
+Participants who fall behind: copy from `templates/kod/` (**Templat & Rujukan** module) **after** the trainer/a peer has explained each part — and mark it in the commit (`PAS: … (rujuk templat)`).

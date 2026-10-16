@@ -32,25 +32,25 @@
 | 14:30–16:00 | S3 | Route, controller & layout view | Membina MVC pertama, route berparameter, layout; `php spark routes` |
 | 16:00–17:00 | S4 | Borang, validation & CSRF; wrap-up | Membina borang `/daftar` dengan validation, flash & CSRF |
 
-## Hari 3 — Database Design & UI/UX Foundation · [nota](./hari-3/README.md)
+## Hari 3 — Database, Migration, Model & Carian · [nota](./hari-3/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 2 | — |
-| 09:00–10:30 | S1 | ERD keseluruhan sistem | Mengenal pasti entiti & kardinaliti; melukis ERD Mermaid |
-| 10:45–12:30 | S2 | Jadual, medan & hubungan | Menulis kamus data (jenis, null, index, FK) & menormalkan ke 3NF |
-| 14:30–16:00 | S3 | Wireframe/mockup UI/UX skrin utama | Melakar wireframe 6 skrin utama mengikut aliran pengguna |
-| 16:00–17:00 | S4 | Semakan ERD & wireframe bersama jurulatih; wrap-up | Membetulkan reka bentuk berdasarkan semakan; menerima **tugasan persediaan** |
+| 09:00–10:30 | S1 | Database MySQL & `.env` | Mencipta database & pengguna `kkm_dev`; menyambung projek |
+| 10:45–12:30 | S2 | Migration & seeder pertama | Menulis migration `departments` & `parking_zones`; seeder idempoten |
+| 14:30–16:00 | S3 | Model & halaman `/jabatan` | Membina model dengan validation; senarai & borang baharu |
+| 16:00–17:00 | S4 | Carian & pagination `/zon`; wrap-up | Membina carian Query Builder & pagination secara berdikari |
 
-## Hari 4 — Assignment Review & Development Kickoff · [nota](./hari-4/README.md)
+## Hari 4 — Development Kickoff: Shield, Skema Penuh & Aliran Git · [nota](./hari-4/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 3 | — |
-| 09:00–10:30 | S1 | Semakan tugasan persediaan peserta | Mendemokan tugasan; menjelaskan aliran request MVC CI4 |
-| 10:45–12:30 | S2 | Persekitaran CI4 (struktur projek, `.env`) + Shield | Mencipta projek, konfigur `.env`, memasang Shield & layout Bootstrap |
-| 14:30–16:00 | S3 | Migration awal daripada ERD | Menukar ERD kepada migration + seeder; `php spark migrate` berjaya |
-| 16:00–17:00 | S4 | Pembahagian tugas/modul; wrap-up | Menerima tugasan modul, branch Git & Definition of Done |
+| 09:00–10:30 | S1 | Demo repo sendiri & kitaran request | Mendemokan repo GitLab & `/zon`; menjejak aliran request MVC CI4 dengan Debug Toolbar |
+| 10:45–12:30 | S2 | Struktur projek, `.env` + Shield | Melengkapkan `.env`, memasang Shield, peranan & layout Bootstrap |
+| 14:30–16:00 | S3 | Migration & seeder daripada ERD rujukan | Menulis 8 migration baki + seeder; `php spark migrate` berjaya |
+| 16:00–17:00 | S4 | Aliran Git solo & merge request; wrap-up | Push `SETUP:`, membuka MR pertama, pelan branch & Definition of Done |
 
 ## Hari 5 — Modul TLK (Bahagian 1) · [nota](./hari-5/README.md)
 

@@ -20,7 +20,7 @@
 | Sukar undur | `down()` + `php spark migrate:rollback` |
 | Tidak disemak dalam PR | Kod PHP — disemak dalam Git seperti kod lain |
 
-Migration ialah **sejarah skema dalam bentuk kod**. Setiap pasangan boleh bina semula DB yang sama dengan satu arahan.
+Migration ialah **sejarah skema dalam bentuk kod**. Setiap peserta (dan server) boleh bina semula DB yang sama dengan satu arahan.
 
 ---
 
@@ -146,7 +146,7 @@ php spark migrate:refresh --all  # rollback semua + migrate semula (DB latihan s
 
 ## 4. Seeder — data sintetik boleh diulang
 
-Seeder memberi setiap pasangan data **yang sama** untuk diuji. `DatabaseSeeder` memanggil semua:
+Seeder memberi setiap peserta data **yang sama** untuk diuji. `DatabaseSeeder` memanggil semua:
 
 ```php
 <?php

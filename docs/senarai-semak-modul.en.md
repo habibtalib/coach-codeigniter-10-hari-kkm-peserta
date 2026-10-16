@@ -1,13 +1,13 @@
 # Module Checklist M1–M4
 
 > Use it at the **end of every build session** (S4 of Days 5–10) and before the trainer's ✅ checkpoint. Each row maps to the **Definition of Done** ([`docs/kolaborasi.md`](kolaborasi.md) §2) and to the business rules **`BR-*`** ([`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §2).
-> Copy this file into your project repo (`docs/semakan-modul.md`) and tick `[x]` together with your pair. Only tick a row if **both** the driver and the navigator can explain it.
+> Copy this file into your project repo (`docs/semakan-modul.md`) and tick `[x]` yourself. Only tick a row if you can explain it to the trainer or a neighbour without looking at your notes.
 
 ## DoD legend
 
 | Code | Definition of Done criterion |
 |-----|-----------------------------|
-| **D1** | Acceptance criteria (Given/When/Then) from the URS pass manual testing |
+| **D1** | The related BR-* rules in [`spesifikasi-sistem.md`](./spesifikasi-sistem.md) are tested and pass (manual + PHPUnit) |
 | **D2** | Validation on the **server** (Model rules / Validation) — not JS only |
 | **D3** | Access controlled on the server (filter + ownership check) |
 | **D4** | Status transitions recorded in `status_logs` |
@@ -152,5 +152,5 @@
 | [ ] | UAT script (template in `templates/dokumen/`) run; bugs recorded & fixed | D1 |
 | [ ] | `git log` — no `.env`, no real data, prefixed commits | D6 |
 | [ ] | Security checklist [`nota-11-keselamatan-aplikasi-web.md`](nota-11-keselamatan-aplikasi-web.md) worked through | D3 |
-| [ ] | Each pair member can explain one end-to-end flow (apply → approve → report → statistics) | D7 |
+| [ ] | You can explain one end-to-end flow (apply → approve → report → statistics) | D7 |
 | [ ] | Rubric: [`rubrik-capstone.md`](./rubrik-capstone.md) read | — |

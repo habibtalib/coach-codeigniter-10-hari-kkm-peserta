@@ -2,7 +2,7 @@
 
 [⬅️ README Day 5](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module)
 
-> **Lab rules:** the navigator reads the steps & SPEC, the driver types. **Try it by hand first** — read the full error message (the Whoops page shows the file & line). After 10 minutes stuck: ask the trainer or use AI to *explain* the error. The `templates/kod/*.php.txt` templates are for **checking** after you have tried.
+> **Lab rules:** individual work in `kelas-ci-<nama>`; show your output to the trainer or the person next to you before ticking it off. **Try it by hand first** — read the full error message (the Whoops page shows the file & line). After 10 minutes stuck: ask the trainer or use AI to *explain* the error. The `templates/kod/*.php.txt` templates are for **checking** after you have tried.
 
 | Lab | Session | Branch | Result |
 |-----|------|--------|-------|
@@ -254,7 +254,7 @@ Write the `BookingStatus` & `SlotCategory` enums, the `SlotBooking` Entity and t
 
 ### ✅ Checkpoint
 - `composer test -- --no-coverage tests/tlk/BookingStatusTest.php` → `OK (5 tests, …)` (`OK (6 tests, …)` if the ⭐ challenge test is added).
-- The navigator can answer: *"Why is `status` in `$allowedFields` even though the applicant cannot set it?"* (README §1.3).
+- You can answer: *"Why is `status` in `$allowedFields` even though the applicant cannot set it?"* (README §1.3).
 - Compare with `BookingStatus.php.txt` (**Templat & Rujukan** module), `SlotCategory.php.txt` (**Templat & Rujukan** module), `SlotBooking-Entity.php.txt` (**Templat & Rujukan** module), `SlotBookingModel.php.txt` (**Templat & Rujukan** module).
 
 ### 🧯 Troubleshooting

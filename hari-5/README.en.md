@@ -627,7 +627,7 @@ public static function bookingService(bool $getShared = true): BookingService
 
 ### 4.1 Why manual testing first?
 
-Automated tests (Day 6) only test what we **thought** to test. Structured manual testing — from the URS acceptance criteria — finds things we did not think of (wrong labels, broken links, English messages).
+Automated tests (Day 6) only test what we **thought** to test. Structured manual testing — based on the BR-TLK rules in [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §2 — finds things we did not think of (wrong labels, broken links, English messages).
 
 ### 4.2 Test case format
 
@@ -660,7 +660,7 @@ The full list of ±14 cases is in [Lab 5.4](./lab.md#lab-54--ujian-manual--rekod
 
 2. Why is structured manual testing done **before** automated PHPUnit testing (Day 6)?
    - [ ] Because PHPUnit cannot be installed yet on Day 5
-   - [x] Because automated tests only test what we thought to test; manual testing from the AC finds unexpected issues (wrong labels, broken links, English messages)
+   - [x] Because automated tests only test what we thought to test; manual testing from the BR-* rules finds unexpected issues (wrong labels, broken links, English messages)
    - [ ] Because manual testing replaces the need for automated testing
    - [ ] Because manual testing is faster and cheaper than automated testing, so PHPUnit is only needed for critical modules
    > Both are needed. Manual testing exposes issues nobody thought of; bugs found later follow the cycle *reproduce → failing test → fix → passing test*.

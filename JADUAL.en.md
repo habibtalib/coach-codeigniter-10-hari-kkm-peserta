@@ -32,25 +32,25 @@
 | 14:30–16:00 | S3 | Route, controller & layout view | Build the first MVC flow, a route parameter, a layout; `php spark routes` |
 | 16:00–17:00 | S4 | Form, validation & CSRF; wrap-up | Build a `/daftar` form with validation, flash & CSRF |
 
-## Day 3 — Database Design & UI/UX Foundation · [notes](./hari-3/README.md)
+## Day 3 — Database, Migrations, Models & Search · [notes](./hari-3/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 2 recap | — |
-| 09:00–10:30 | S1 | Whole-system ERD | Identify entities & cardinality; draw a Mermaid ERD |
-| 10:45–12:30 | S2 | Tables, fields & relationships | Write a data dictionary (type, null, index, FK) & normalise to 3NF |
-| 14:30–16:00 | S3 | UI/UX wireframes/mockups of the main screens | Sketch wireframes of the 6 main screens following the user flow |
-| 16:00–17:00 | S4 | Review the ERD & wireframes with the trainer; wrap-up | Correct the design based on the review; receive the **pre-course assignment** |
+| 09:00–10:30 | S1 | MySQL database & `.env` | Create the databases & the `kkm_dev` user; connect the project |
+| 10:45–12:30 | S2 | First migrations & seeders | Write the `departments` & `parking_zones` migrations; idempotent seeders |
+| 14:30–16:00 | S3 | Model & the `/jabatan` pages | Build a model with validation; list & new form |
+| 16:00–17:00 | S4 | `/zon` search & pagination; wrap-up | Build a Query Builder search & pagination on your own |
 
-## Day 4 — Assignment Review & Development Kickoff · [notes](./hari-4/README.md)
+## Day 4 — Development Kickoff: Shield, Full Schema & Git Flow · [notes](./hari-4/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 3 recap | — |
-| 09:00–10:30 | S1 | Review the participants' pre-course assignments | Demo the assignment; explain the CI4 MVC request flow |
-| 10:45–12:30 | S2 | CI4 environment (project structure, `.env`) + Shield | Create the project, configure `.env`, install Shield & a Bootstrap layout |
-| 14:30–16:00 | S3 | Initial migrations from the ERD | Turn the ERD into migrations + seeders; `php spark migrate` succeeds |
-| 16:00–17:00 | S4 | Division of tasks/modules; wrap-up | Receive module tasks, Git branches & the Definition of Done |
+| 09:00–10:30 | S1 | Own-repo demo & the request cycle | Demo your GitLab repo & `/zon`; trace the CI4 MVC request flow with the Debug Toolbar |
+| 10:45–12:30 | S2 | Project structure, `.env` + Shield | Complete `.env`, install Shield, roles & the Bootstrap layout |
+| 14:30–16:00 | S3 | Migrations & seeders from the reference ERD | Write the 8 remaining migrations + seeders; `php spark migrate` succeeds |
+| 16:00–17:00 | S4 | Solo Git flow & merge request; wrap-up | Push `SETUP:`, open the first MR, branch plan & the Definition of Done |
 
 ## Day 5 — TLK Module (Part 1) · [notes](./hari-5/README.md)
 

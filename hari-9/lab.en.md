@@ -46,7 +46,7 @@ php spark migrate:refresh --all
 php spark db:seed DatabaseSeeder
 ```
 
-**1. Write the spec cards (15 min, in pairs).** Copy this table into `docs/laporan-spec.md` in your project repo and fill in every cell. Look at README §1.2 **after** you have tried it yourself.
+**1. Write the spec cards (15 min).** Copy this table into `docs/laporan-spec.md` in your project repo and fill in every cell. Look at README §1.2 **after** you have tried it yourself.
 
 ```markdown
 | | RPT-01 | RPT-02 | RPT-03 |
@@ -605,7 +605,7 @@ php spark laporan:explain pas "" 2026-09-01 2026-09-30
 
 ```bash
 git add -A && git commit -m "RPT: ujian jumlah laporan = SQL + arahan laporan:explain"
-git push -u origin feat/laporan    # open a PR → peer review → merge into main
+git push -u origin feat/laporan    # open an MR to main → trainer/neighbour comments → you merge
 ```
 
 ### ✅ Checkpoint 9.4 — **M3 done**
@@ -626,7 +626,7 @@ git push -u origin feat/laporan    # open a PR → peer review → merge into ma
 | `getCompiledSelect()` followed by `get()` returns every row without filters | `getCompiledSelect()` (default) **resets** the builder | Use a new builder, or `getCompiledSelect(false)` |
 
 ### ⭐ Bonus challenge
-- Generate 50,000 synthetic bookings (a separate seeder `BulkBookingSeeder`, using `insertBatch()` in batches of 1,000), time RPT-02 with only a date filter, then propose (in a **new** migration, not by changing the old one) `INDEX(created_at)` on `pass_applications`. Run `laporan:explain` before/after and present the difference in `type`/`rows`. Record it as a recommendation to the system owner — schema changes must be recorded in the data dictionary.
+- Generate 50,000 synthetic bookings (a separate seeder `BulkBookingSeeder`, using `insertBatch()` in batches of 1,000), time RPT-02 with only a date filter, then propose (in a **new** migration, not by changing the old one) `INDEX(created_at)` on `pass_applications`. Run `laporan:explain` before/after and present the difference in `type`/`rows`. Record it as a recommendation to the system owner — schema changes must be recorded in `docs/log-keputusan.md`.
 - Add a test `testEksportMelebihiHadDitolak`: make the limit a constructor parameter (`?array $exportLimit = null`), create the service with the limit `['pdf' => 2, 'xlsx' => 2]`, and `expectException(\LengthException::class)`. (Why does a subclass that overrides `const EXPORT_LIMIT` have no effect if the code calls `self::EXPORT_LIMIT`? Hint: `self::` vs `static::`.)
 
 ---
@@ -644,4 +644,4 @@ git log --oneline -5                                              # today's RPT:
 - [ ] `?export=pdf` and `?export=xlsx` download files that open, for all three reports; `pemohon1@latihan.test` is refused.
 - [ ] `composer test` is green, including `tests/Services/ReportServiceTest.php` (≥ 7 tests).
 - [ ] `php spark laporan:explain tempahan approved 2026-06-01 2026-06-30` shows a `key` that is not `NULL` for table `b`.
-- [ ] `git status --short` is empty and the `feat/laporan` branch has been pushed (PR opened).
+- [ ] `git status --short` is empty and the `feat/laporan` branch has been pushed (MR to `main` opened).

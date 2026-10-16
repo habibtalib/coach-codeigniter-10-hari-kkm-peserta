@@ -846,132 +846,70 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <!-- ============================ DAY 3 ============================ -->
 
-<section class="slide dark divider" data-label="Day 3 · ERD &amp; UI/UX">
-  <div class="eyebrow">Day 3 · Phase A — Understand &amp; Design</div>
-  <h1>Database Design &amp; UI/UX Foundation</h1>
-  <div><span class="chip m-a">Phase A · ERD + wireframes</span></div>
+<section class="slide dark divider" data-label="Day 3 · Database &amp; Models">
+  <div class="eyebrow">Day 3 · Phase A — Build CI basics</div>
+  <h1>Database, Migrations, Models &amp; Search</h1>
+  <div><span class="chip m-a">Phase A · kelas-ci-&lt;nama&gt;</span></div>
   <div class="sessions">
-    <div><i>S1</i>Whole-system ERD</div>
-    <div><i>S2</i>Tables, fields &amp; relationships</div>
-    <div><i>S3</i>Wireframes / mockups of the main screens</div>
-    <div><i>S4</i>ERD &amp; wireframe review; preparation assignment</div>
+    <div><i>S1</i>MySQL database &amp; <code>.env</code></div>
+    <div><i>S2</i>First migrations &amp; seeders</div>
+    <div><i>S3</i>Model &amp; the <code>/jabatan</code> pages</div>
+    <div><i>S4</i><code>/zon</code> search &amp; pagination</div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="daynum">03</div>
-  <aside class="notes"><p>Hari terakhir Fasa A. Reka bentuk yang disahkan hari ini terus menjadi migration pada Hari 4 — jadi ketepatan nama jadual dan medan sangat penting.</p></aside>
+  <aside class="notes"><p>Hari hands-on kedua. Reka bentuk jadual sudah siap dalam docs/erd-rujukan.md — peserta tidak melukis ERD. Semua kerja dalam repo kelas-ci-nama dan push setiap lab.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 3 · Today's objectives</div>
   <h2>By the end of today, you can…</h2>
   <ul class="checks">
-    <li><span><em>S1</em>Identify entities &amp; cardinality and draw the ERD in Mermaid.</span></li>
-    <li><span><em>S2</em>Write a data dictionary (type, null, index, FK) and normalise to 3NF.</span></li>
-    <li><span><em>S3</em>Sketch wireframes of the 6 main screens following the user flow.</span></li>
-    <li><span><em>S4</em>Fix the design based on review and take on the preparation assignment.</span></li>
+    <li><span><em>S1</em>Create the <code>kkm_latihan</code> database &amp; the <code>kkm_dev</code> user, and connect the project through <code>.env</code>.</span></li>
+    <li><span><em>S2</em>Write the <code>departments</code> &amp; <code>parking_zones</code> migrations exactly as in specification §3, and idempotent seeders.</span></li>
+    <li><span><em>S3</em>Build a model with <code>$allowedFields</code>, timestamps &amp; validation; a list page + a new-record form.</span></li>
+    <li><span><em>S4</em>Build a Query Builder search with pagination on your own.</span></li>
   </ul>
-  <aside class="notes"><p>Nama jadual dan medan mesti sepadan dengan docs/spesifikasi-sistem.md. Peserta boleh mencadang, tetapi versi muktamad ialah yang di dalam SPEC supaya semua lab selari.</p></aside>
+  <aside class="notes"><p>Checkpoint lab hari ini terikat pada Kuiz hari — soalan output sebenar. Semakan rawak: buka 3 repo GitLab peserta setiap sesi.</p></aside>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 3 · S1 — ERD</div>
-  <h2>Entities &amp; relationships in Mermaid</h2>
+  <div class="eyebrow">Day 3 · S1–S2 — Labs 3.1–3.2</div>
+  <h2>Database, migrations &amp; seeders</h2>
   <div class="split l">
-    <div class="codewrap"><div class="codebar">erd.mmd<span class="lang">mermaid</span></div>
-<pre class="code sm" data-lang="mermaid"><span class="k">erDiagram</span>
-    departments   <span class="o">||--o{</span> users             : <span class="s">"ada"</span>
-    users         <span class="o">||--o{</span> vehicles          : <span class="s">"memiliki"</span>
-    parking_zones <span class="o">||--o{</span> parking_slots     : <span class="s">"mengandungi"</span>
-    parking_slots <span class="o">||--o{</span> slot_bookings     : <span class="s">"ditempah"</span>
-    users         <span class="o">||--o{</span> slot_bookings     : <span class="s">"memohon"</span>
-    vehicles      <span class="o">||--o{</span> slot_bookings     : <span class="s">"digunakan"</span>
-    users         <span class="o">||--o{</span> pass_applications : <span class="s">"memohon"</span>
-    vehicles      <span class="o">|o--o{</span> pass_applications : <span class="s">"untuk"</span>
-    pass_applications <span class="o">||--o{</span> pass_documents : <span class="s">"lampiran"</span>
-    slot_bookings {
-        <span class="t">varchar</span> ref_no <span class="k">UK</span>
-        <span class="t">int</span>     slot_id <span class="k">FK</span>
-        <span class="t">date</span>    start_date
-        <span class="t">date</span>    end_date
-        <span class="t">varchar</span> status
-    }</pre></div>
+    <ol class="steps tight"><li><div><b>Database</b><span><code>mysql -u root</code> → <code>kkm_latihan</code>, <code>kkm_latihan_test</code>, user <code>kkm_dev</code>.</span></div></li><li><div><b><code>.env</code></b><span><code>database.default.*</code> → <code>php spark db:table --show</code>: <i>Database has no tables!</i></span></div></li><li><div><b>Migration</b><span><code>make:migration CreateDepartmentsTable</code> + <code>CreateParkingZonesTable</code> → <code>migrate</code>.</span></div></li><li><div><b>Test</b><span><code>migrate:status</code> → <code>rollback</code> → <code>migrate</code>.</span></div></li><li><div><b>Seeder</b><span><code>ignore(true)</code> → <code>db:seed</code> dua kali = 4 rows, not 8.</span></div></li></ol>
     <div class="stack">
-      <div class="card flat"><h3>One-to-many</h3><p>One zone ↦ many slots; one slot ↦ many bookings (on different dates).</p></div>
-      <div class="card flat"><h3>Optional (<code>|o</code>)</h3><p><code>vehicle_id</code> on a pass can be NULL — a staff pass without a vehicle.</p></div>
-      <div class="card flat"><h3>Supporting tables</h3><p><code>status_logs</code> &amp; <code>reference_sequences</code> — discussed in S2.</p></div>
+      <div class="callout warn"><span class="i">⚠️</span><div><code>.env</code> holds the database password — it never goes into Git. Never use <code>root</code> in <code>.env</code>.</div></div>
+      <div class="callout tip"><span class="i">💡</span><div><code>db:table --show</code> also lists the <code>migrations</code> table — CI creates it on the first <code>migrate</code>.</div></div>
     </div>
   </div>
-  <aside class="notes"><p>Bina ERD secara berperingkat di papan: mulakan dengan users dan parking, kemudian pas. Tanya kardinaliti untuk setiap garisan: "Boleh satu slot ada dua tempahan?" — ya, pada tarikh berbeza.</p></aside>
+  <aside class="notes"><p>Demo langsung Lab 3.1 langkah 2–4 dan CreateDepartmentsTable. Ralat lazim: MySQL Laragon belum Start, mysql tergantung dalam mintty, # masih di depan baris .env, Duplicate entry kerana lupa ignore(true).</p></aside>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 3 · S2 — Data dictionary</div>
-  <h2 class="wide">Data dictionary: <code style="font-size:.72em">slot_bookings</code></h2>
-  <table class="t">
-    <tr><th>Field</th><th>Type</th><th>Null</th><th>Constraint / index</th></tr>
-    <tr><td><code>ref_no</code></td><td>VARCHAR(20)</td><td>No</td><td>UNIQUE · <code>TLK-2026-0001</code></td></tr>
-    <tr><td><code>user_id</code> · <code>vehicle_id</code> · <code>slot_id</code></td><td>INT UNSIGNED</td><td>No</td><td>FK → users, vehicles, parking_slots</td></tr>
-    <tr><td><code>start_date</code> · <code>end_date</code></td><td>DATE</td><td>No</td><td>INDEX(<code>slot_id</code>, <code>start_date</code>, <code>end_date</code>)</td></tr>
-    <tr><td><code>status</code></td><td>VARCHAR(20)</td><td>No</td><td>DEFAULT <code>pending</code> · INDEX(<code>status</code>)</td></tr>
-    <tr><td><code>decided_by</code> · <code>decided_at</code></td><td>INT UNSIGNED · DATETIME</td><td>Yes</td><td>FK → users (approver)</td></tr>
-    <tr><td><code>created_at</code> · <code>updated_at</code></td><td>DATETIME</td><td>Yes</td><td>filled automatically by the Model</td></tr>
-  </table>
-  <p class="small muted mt16">The composite index supports the Day 6 overlap query · status is stored as VARCHAR, controlled by a PHP enum — not a MySQL ENUM.</p>
-  <aside class="notes"><p>Tanya: kenapa index (slot_id, start_date, end_date)? Kerana setiap permohonan akan menjalankan query pertindihan pada slot tertentu. Kenapa VARCHAR bukan ENUM MySQL? Menambah status tidak memerlukan ALTER TABLE; enum PHP menjadi sumber kebenaran.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 3 · S2 — Design decisions</div>
-  <h2>3NF and three key decisions</h2>
-  <div class="grid c3">
-    <div class="card top m-tlk"><span class="ico">🧾</span><h3>One <code>status_logs</code></h3><p>A <code>module</code> field (<code>TLK</code>/<code>PAS</code>) + <code>record_id</code>. One audit table for both modules.</p></div>
-    <div class="card top m-pas"><span class="ico">🔢</span><h3><code>reference_sequences</code></h3><p>UNIQUE(<code>prefix</code>, <code>year</code>) + <code>last_number</code>. Race-free reference numbers.</p></div>
-    <div class="card top m-rpt"><span class="ico">🗂️</span><h3>Selective soft delete</h3><p><code>deleted_at</code> only on <code>parking_slots</code> — booking history stays valid.</p></div>
-  </div>
-  <div class="callout tip mt24"><span class="i">💡</span><div><b>3NF in short:</b> every field depends on the key, the whole key, and nothing but the key. The zone name is not copied into <code>slot_bookings</code> — it comes through a join.</div></div>
-  <aside class="notes"><p>Keputusan ini akan muncul semula: status_logs pada Hari 6 dan 8, reference_sequences pada Hari 5, soft delete pada CRUD slot admin.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 3 · S3 — Wireframes</div>
-  <h2>Six main screens following the user flow</h2>
-  <div class="grid c3" style="gap:14px">
-    <div class="card flat"><span class="k">/tlk/tempahan/new</span><h3>TLK booking form</h3><p>Zone → slot → dates → vehicle → reason.</p></div>
-    <div class="card flat"><span class="k">/tlk/tempahan</span><h3>My bookings list</h3><p>Status badge, pagination, cancel button.</p></div>
-    <div class="card flat"><span class="k">/tlk/keputusan</span><h3>Approver queue</h3><p><span class="st pending">pending</span> bookings + approve/reject.</p></div>
-    <div class="card flat"><span class="k">/pas/permohonan/new</span><h3>Pass form + documents</h3><p>Pass type, validity period, up to 3 files.</p></div>
-    <div class="card flat"><span class="k">/pas/semakan</span><h3>Pass review</h3><p>Details, documents, status timeline.</p></div>
-    <div class="card flat"><span class="k">/statistik</span><h3>Dashboard</h3><p>4 KPI cards + 4 charts.</p></div>
-  </div>
-  <aside class="notes"><p>Wireframe hitam-putih sahaja — draw.io atau Excalidraw. Fokus pada medan dan tindakan, bukan warna. Setiap skrin mesti dipetakan kepada sekurang-kurangnya satu FR.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 3 · S4 — Preparation assignment</div>
-  <h2>Before Day 4, every pair…</h2>
+  <div class="eyebrow">Day 3 · S3–S4 — Labs 3.3–3.4</div>
+  <h2>Model, <code>/jabatan</code> &amp; <code>/zon</code> search</h2>
   <div class="split l">
-    <ol class="steps tight">
-      <li><div><b>Install the environment</b><span>PHP 8.2+, Composer, MySQL 8 / MariaDB 10.6+, Git. Windows: Laragon + Git Bash.</span></div></li>
-      <li><div><b>Run an empty appstarter</b><span><code>composer create-project codeigniter4/appstarter</code> → <code>php spark serve</code>.</span></div></li>
-      <li><div><b>Fix the ERD &amp; wireframes</b><span>Following today's trainer review notes.</span></div></li>
-      <li><div><b>Prepare a 5-minute demo</b><span>Show the running project + final ERD on Day 4 S1.</span></div></li>
-    </ol>
-    <div class="callout warn"><span class="i">⚠️</span><div>Check the PHP extensions: <code>intl</code>, <code>mbstring</code>, <code>mysqlnd</code>, <code>gd</code>, <code>zip</code>. Without <code>intl</code>, CI4 will not run.</div></div>
+    <ol class="steps tight"><li><div><b>DepartmentModel</b><span><code>$allowedFields</code>, <code>$useTimestamps</code>, <code>is_unique[departments.code,id,{id}]</code>.</span></div></li><li><div><b>/jabatan</b><span>List + <code>/jabatan/baharu</code>; <code>insert()</code> fails → <code>errors()</code> → PRG.</span></div></li><li><div><b>ParkingZoneModel</b><span><code>groupStart()->like()->orLike()->groupEnd()</code>.</span></div></li><li><div><b>/zon</b><span><code>GET ?q=</code> + <code>paginate(2)</code> + <code>$pager->links()</code>.</span></div></li></ol>
+    <div class="stack">
+      <div class="callout warn"><span class="i">🔍</span><div>Try <code>' OR 1=1 --</code> in the search: the Query Builder escapes it, so it is just text.</div></div>
+      <div class="callout tip"><span class="i">💡</span><div>Validation now lives in the <b>model</b> — every form &amp; service that writes the table goes through the same rules.</div></div>
+    </div>
   </div>
-  <aside class="notes"><p>Tugasan ini disemak pada Hari 4 S1. Pasangan yang gagal memasang persekitaran perlu dibantu awal pagi — jangan biarkan mereka ketinggalan pada hari pertama pembangunan.</p></aside>
+  <aside class="notes"><p>Lab 3.4 berdikari — jurulatih hanya menjawab soalan. Jawapan Kuiz hari: 3 jadual termasuk migrations; Batch 1; The Kod field must contain a unique value.; KLINIK → zon B; OR 1=1 → Tiada zon sepadan.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 3 · Today's outputs</div>
-  <h2>Check before you go home</h2>
+  <h2>Check before you leave</h2>
   <ul class="checks done">
-    <li><span>Complete <b>Mermaid ERD</b> with cardinality for every SPEC table.</span></li>
-    <li><span>Data dictionary (type, null, index, FK) in 3NF.</span></li>
-    <li><span>Wireframes of the 6 main screens, each mapped to an FR.</span></li>
-    <li><span>Preparation assignment received and understood.</span></li>
+    <li><span>The <code>kkm_latihan</code> database connected through <code>.env</code> (not committed).</span></li>
+    <li><span>The <code>departments</code> + <code>parking_zones</code> migrations and idempotent seeders.</span></li>
+    <li><span><code>/jabatan</code> (list &amp; new form) and <code>/zon</code> (search &amp; pagination).</span></li>
+    <li><span>GitLab: <code>DB:</code>, <code>JABATAN:</code>, <code>ZON:</code> commits; Day quiz passed.</span></li>
   </ul>
-  <div class="callout tip mt24"><span class="i">🏁</span><div><b>Phase A complete:</b> signed-off URS + ERD + wireframes. Tomorrow we start writing code.</div></div>
-  <aside class="notes"><p>Raikan penamat Fasa A. Ringkaskan: kita tahu apa yang dibina, untuk siapa, dan bagaimana data disusun. Esok semua ini menjadi kod CI4.</p></aside>
+  <div class="callout tip mt24"><span class="i">🏁</span><div><b>Phase A done:</b> your own CI4 project on GitLab with forms, a database and models. Tomorrow: Shield, a Bootstrap layout and 8 more tables.</div></div>
+  <aside class="notes"><p>Raikan penamat Fasa A. Setiap peserta sudah membina corak model + controller + view sekali dari awal; Hari 4–10 mengulang corak yang sama pada jadual yang lebih besar.</p></aside>
 </section>
 
 

@@ -1,27 +1,27 @@
-# Preparation Assignment — Before Day 4
+# Preparation Assignment — Self-Study (Optional)
 
 [📅 Schedule](../JADUAL.md) · [📘 SPEC canon](spesifikasi-sistem.md) · [📖 Day 3](../hari-3/README.md) · [🤝 COLLABORATION](kolaborasi.md)
 
 | Item | Value |
 |---------|-------|
-| Handed out | Day 3, S4 (16:00–17:00) |
-| Deadline | **Day 4, 08:30** |
-| Reviewed | Day 4, S1 (09:00–10:30) — 3-minute demo per pair + random questions |
-| Work | Task **T1** individual (every laptop must work); **T2–T4** in pairs |
-| Estimated time | 4–6 hours |
-| Marks | 100 (see the [Rubric](#scoring-rubric)) — **not an exam**; the aim is to make sure everyone starts Day 4 from the same line |
+| Status | **Optional** — self-study, not submitted and not marked |
+| When | Any time: before the course, the evenings of Days 2–3, or while you wait |
+| Work | Individual, on your own laptop |
+| Estimated time | T1: 15 minutes · T2: 2–3 hours |
+| Link to the course | The required work happens in your `kelas-ci-<nama>` project ([Day 2 Lab 2.2](../hari-2/lab.md#lab-22--projek-ci-anda-di-gitlab-s2) onward). Day 4 S1 does **not** review this page |
 
 ## 🎯 Why this assignment
 
-Day 4 S2 goes straight into creating a real CI4 project, installing Shield and writing migrations from your ERD. If your environment does not work, or you have never seen the **Route → Controller → Model → View** flow, you will fall behind for the whole of Phase B. This assignment makes sure that:
+From Day 2 you build your own application in `kelas-ci-<nama>`: route → controller → view (Lab 2.3), a form (Lab 2.4), the database and models (Day 3). This page gives two extra exercises for anyone who wants more time:
 
-1. Your laptop is **ready** (T1).
-2. You have already seen CI4 working end to end once (T2).
-3. Your design (ERD) and requirements (AC) are **ready** to be turned into code (T3, T4).
+1. Make sure your laptop is **ready** before class (T1).
+2. See the **Route → Controller → Model → View** flow once more in a separate project, following the official CI4 tutorial (T2).
+
+> 📚 The old tasks T3 (refine the ERD) and T4 (acceptance criteria) have been removed. A finished ERD is in [`erd-rujukan.md`](./erd-rujukan.md); the original ERD, data dictionary and AC material is now optional reading in [`rujukan-keperluan.md`](./rujukan-keperluan.md).
 
 ---
 
-## T1 — Install the environment (individual)
+## T1 — Check the environment
 
 ### Checklist
 
@@ -62,9 +62,9 @@ done
 
 > 💡 **Windows tip:** If `intl` shows TIADA (missing), open `php.ini` (Laragon: *Menu → PHP → php.ini*; or location: `php --ini`), find `;extension=intl`, remove the `;`, save, then close and reopen the terminal.
 
-### Evidence
+### Result
 
-Save the output of all five commands + the extension check to `docs/tugasan/T1-persekitaran.txt` in your pair's documentation repo (one file per member: `T1-persekitaran-<nama>.txt`).
+Every line shows `OK` and all five commands print a version. Any `TIADA` (missing) or an error? Fix it with [`persediaan.md`](./persediaan.md) or tell the trainer **before** Day 2 S2 — Lab 2.2 needs working PHP, Composer and Git.
 
 ---
 
@@ -74,7 +74,7 @@ Reference: <https://codeigniter.com/user_guide/tutorial/index.html>
 
 You will build a small **news** application that uses the same patterns as the TLK (Special Vehicle Parking)/Pass system: route → controller → model → view, a form with validation, and CSRF.
 
-### Parts you must complete
+### Tutorial parts
 
 | # | Tutorial part | Visible result |
 |---|-------------------|--------------------------|
@@ -101,8 +101,9 @@ You will build a small **news** application that uses the same patterns as the T
    ```
 3. **Synthetic data only** for the news (e.g. "Latihan CI4 Hari 1", "Ujian slug berita"). No real names or real news.
 4. If you use Git for `ci-news`, make sure `.env` is **not** committed (`git check-ignore .env` must print `.env`).
+5. Build `ci-news` in a **separate** folder (e.g. `~/latihan/ci-news`), not inside `kelas-ci-<nama>`. Do not push `ci-news` to your course repo.
 
-### Reflection questions (answer in `docs/tugasan/T2-refleksi.md`, 3–5 sentences each)
+### Reflection questions (for yourself, 3–5 sentences each)
 
 1. Trace one request to `/news/latihan-ci4`: which files are called, in what order? (Routes → … → View)
 2. What does `$allowedFields` do in `NewsModel`? What would happen without it?
@@ -110,91 +111,9 @@ You will build a small **news** application that uses the same patterns as the T
 4. The `news/new` form contains `csrf_field()`. What does CSRF prevent?
 5. In the TLK system, what corresponds to `News`, `NewsModel` and the `news` table? (Hint: SPEC §5.)
 
-### Evidence
+Compare your answers with the code in `kelas-ci-<nama>`: `Hello` and `Daftar` (Day 2), `DepartmentModel` and `Jabatan` (Day 3) use the same patterns.
 
-- Screenshots in `docs/tugasan/`: `T2a-welcome.png`, `T2b-about.png`, `T2c-news-list.png`, `T2d-validation-error.png`, `T2d-news-created.png`
-- `docs/tugasan/T2-refleksi.md`
-- The `ci-news` project running on your laptop for the Day 4 demo
-
-> ⚠️ **AI discipline (COLLABORATION §3):** AI is allowed for **explaining errors**. Do not ask AI to generate the whole tutorial. On Day 4 the trainer will point to **one random line** in `News.php` or `NewsModel.php` — you must be able to explain it.
-
----
-
-## T3 — Refine the ERD (in pairs)
-
-### Steps
-
-1. Open `docs/semakan-reka-bentuk.md` (Day 3 Lab 3.4). Make sure **all** items E1–E8 now Pass.
-2. Update `docs/erd.md`:
-   - Mermaid ERD with 10 tables and 13 relationships, matching SPEC §3.
-   - Add a `## Urutan migration` section — list the order in which tables are created so that every FK refers to a table that already exists. State where the extra `users` fields (`full_name`, `staff_no`, `department_id`, `phone`) are added relative to the Shield tables.
-   - Add a `## Perubahan sejak Hari 3` section — a list of what changed and why.
-3. Update `docs/kamus-data.md` so it is consistent with the ERD.
-4. Commit: `SETUP: perhalusi ERD & kamus data untuk migration`.
-
-### Evidence
-
-`docs/erd.md` and `docs/kamus-data.md` updated; a commit dated after Day 3.
-
----
-
-## T4 — Write 3 new acceptance criteria (in pairs)
-
-Write **3 new ACs** (not copies from Day 2) in `docs/acceptance-criteria.md`, section `## AC Tugasan Persediaan`. Requirements:
-
-| # | Requirement |
-|---|--------|
-| 1 | One AC for an **FR-TLK** that has no AC yet (e.g. cancellation `approved → cancelled`, expiry, or admin slot CRUD) |
-| 2 | One AC for an **FR-PAS** that tests **role access** (e.g. a `reviewer` tries to approve; an `applicant` tries to open `/pas/semakan`) |
-| 3 | One **boundary** AC (🟡) for any BR — with an `Contoh:` table of at least 3 rows |
-
-Each AC: ID `AC-…`, Given (concrete data from the *Data ujian asas* (base test data)), one When, an observable Then, FR & BR references.
-
----
-
-## 📤 How to submit
-
-1. Make sure this structure exists in your pair's documentation repo:
-   ```text
-   docs/
-   ├── erd.md                     # T3
-   ├── kamus-data.md              # T3
-   ├── acceptance-criteria.md     # T4 (new section)
-   └── tugasan/
-       ├── T1-persekitaran-<nama1>.txt
-       ├── T1-persekitaran-<nama2>.txt
-       ├── T2a-welcome.png … T2d-news-created.png
-       └── T2-refleksi.md
-   ```
-2. Commit & tag:
-   ```bash
-   git add docs/ && git commit -m "SETUP: tugasan persediaan Hari 4"
-   git tag tugasan-persediaan
-   ```
-3. Bring your laptop with `ci-news` ready for `php spark serve`.
-
----
-
-## Scoring rubric
-
-| Task | Criterion | Excellent | Satisfactory | Needs help | Marks |
-|---------|----------|-----------|-----------|---------------|--------|
-| **T1** Environment | Versions & extensions | PHP ≥ 8.2, all 11 extensions OK, Composer 2, MySQL 8/MariaDB 10.6+, Git configured (Windows: Git Bash default terminal) — **(20)** | All software present; 1–2 non-required extensions missing (`gd`/`zip`) — **(14)** | PHP < 8.2, or `intl`/`mbstring` missing, or MySQL not running — **(0–7)** | /20 |
-| **T2** CI4 tutorial | 2a–2d working | All four work in a live demo; validation & CSRF work — **(20)** | 2a–2c work; 2d partial — **(13)** | Only 2a/2b — **(0–6)** | /20 |
-| | Reflection & understanding | 5 questions answered correctly; can explain a random line with confidence — **(20)** | 3–4 questions correct; line explained with a little help — **(13)** | < 3 questions; cannot explain the line — **(0–6)** | /20 |
-| **T3** ERD | Accuracy & migration order | ERD 100% matches SPEC §3; migration order correct; changes recorded — **(20)** | 1–2 small errors (field spelling, cardinality); order almost correct — **(13)** | Tables/fields missing or `users.role` still present; no order — **(0–6)** | /20 |
-| **T4** AC | Quality of the 3 ACs | 3 ACs meet requirements 1–3; concrete data; one When; observable Then — **(20)** | 3 ACs present; one requirement not met or one vague Then — **(13)** | < 3 ACs or not testable — **(0–6)** | /20 |
-| | | | | **Total** | **/100** |
-
-### Interpreting the marks
-
-| Range | Meaning | Day 4 action |
-|-------|--------|-----------------|
-| 80–100 | Fully ready | May take the ⭐ extra Day 4 challenges |
-| 60–79 | Ready with small gaps | Fix the gaps during S2 with help from peers |
-| < 60 | Needs support | Environment clinic with the trainer at the start of S2; paired with an "Excellent" participant |
-
-> **T1 and T2a are the entry gate.** If your laptop cannot run `php spark serve` at 09:00 on Day 4, the trainer will help **before** anything else — tell the trainer as early as possible (the evening of Day 3) if you are stuck.
+> ⚠️ **AI discipline (COLLABORATION §3):** AI is allowed for **explaining errors**. Do not ask AI to generate the whole tutorial. Test yourself: pick one random line in `News.php` or `NewsModel.php` — can you explain it without help?
 
 ---
 
@@ -215,4 +134,4 @@ Each AC: ID `AC-…`, Given (concrete data from the *Data ujian asas* (base test
 
 ## ❓ Questions?
 
-Add questions to `docs/soalan-terbuka.md` or contact the trainer through the course group. Do not wait until the morning of Day 4 if your environment fails.
+Ask the trainer through the course group. If your environment fails, say so as early as possible — do not wait until Lab 2.2.

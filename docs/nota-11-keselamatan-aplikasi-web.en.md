@@ -203,7 +203,7 @@ composer audit          # check for known vulnerabilities in installed packages
 composer outdated -D    # direct packages that have a newer version
 ```
 
-Commit `composer.lock` so that every pair and every server installs **exactly** the same versions.
+Commit `composer.lock` so that every laptop and every server installs **exactly** the same versions.
 
 ---
 

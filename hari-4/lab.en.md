@@ -2,146 +2,92 @@
 
 [⬅️ Day 4 README](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · [🤝 COLLABORATION](../docs/kolaborasi.md) · 🧩 Code templates (**Templat & Rujukan** module)
 
-> **Lab rule:** try **manually first** (read the error, check the SPEC, ask the navigator). Use AI (Claude Code) only after 10 minutes stuck — and only to *explain*, not to generate whole files. The templates in `templates/kod/` are for **checking**, not copying.
+> **Lab rule:** try **manually first** (read the error, check the specification, ask your neighbour). Use AI (Claude Code) only after 10 minutes stuck — and only to *explain*, not to generate whole files. The templates in `templates/kod/` are for **checking**, not copying.
 
 | Lab | Session | Time | Outcome |
 |-----|------|------|-------|
-| 4.1 | S1 | 09:00–10:30 | Assignment demo + request lifecycle trace |
-| 4.2 | S2 | 10:45–12:30 | CI4 project + `.env` + Shield + layout |
-| 4.3 | S3 | 14:30–16:00 | 10 migrations + 5 seeders + login |
-| 4.4 | S4 | 16:00–17:00 | Work plan, Git branches, `SETUP:` commit |
+| 4.1 | S1 | 09:00–10:30 | `kelas-ci-<nama>` project demo + request lifecycle trace |
+| 4.2 | S2 | 10:45–12:30 | Tests + Shield + Bootstrap layout (same project) |
+| 4.3 | S3 | 14:30–16:00 | 8 more migrations (10 in total) + seeders + login |
+| 4.4 | S4 | 16:00–17:00 | Work plan, branch + merge request, fresh clone |
 
 ---
 
-## Lab 4.1 — Assignment Demo & Request Lifecycle Trace (S1)
+## Lab 4.1 — Project Demo & Request Lifecycle Trace (S1)
 
 ### 🎯 Objective
-Demo the news application from the pre-course assignment and explain the 7 steps of the CI4 request lifecycle with evidence from the Debug Toolbar.
+Demo your `kelas-ci-<nama>` project (GitLab + `/zon`) and explain the 7 steps of the CI4 request lifecycle with evidence from the Debug Toolbar.
 
 ### Prerequisites
 - 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
-- Assignments T1–T4 ([`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md)) complete
-- News application running: `php spark serve` → `http://localhost:8080/news`
-- `~/latihan/kelas-ci-<nama>` with the `/daftar` form ([Lab 2.4](../hari-2/lab.en.md#lab-24--form-validation--csrf-s4)) — a 1-minute demo together with the news app
+- [Lab 3.4](../hari-3/lab.en.md#lab-34--zone-search--pagination-s4) done: `/zon` works and GitLab shows the `ZON:` commit.
 
 ### Steps
 
-1. Open `http://localhost:8080/news`. Click the 🔥 **Debug Toolbar** icon (bottom-right corner — it only appears when `CI_ENVIRONMENT = development`).
+1. `php spark serve`, open `http://localhost:8080/zon?q=aras`. Click the 🔥 **Debug Toolbar** icon (bottom-right corner — it only appears when `CI_ENVIRONMENT = development`).
 2. **Timeline** tab — find and note the time for: `Routing`, `Before Filters`, `Controller`, `After Filters`.
-3. **Routes** tab — note the controller & method matched for `/news`.
-4. **Database** tab — copy the SQL query that ran. Find the line in `NewsModel` that generates it.
-5. **Views** tab — list the view files that were loaded (including `templates/header`).
+3. **Routes** tab — note the controller & method matched for `/zon`.
+4. **Database** tab — copy the SQL query that ran (it has `LIKE '%aras%'`). Find the `ParkingZoneModel` method that generates it.
+5. **Views** tab — list the view files that were loaded (`zon/index`, `layout`, and the pager view).
 6. Terminal:
 
    ```bash
    php spark routes
    ```
 
-   Match the `news/(:segment)` row to its controller method.
-7. Fill in this table in `docs/kitaran-request.md` (copy it into your repo):
+   Match the `zon` row to the controller method, and read the *Before Filters* column.
+7. Create `docs/kitaran-request.md` in your project and fill in this table:
 
-   | # | Step | File | Evidence (Toolbar/`spark routes`) |
+   | # | Langkah | Fail | Bukti (Toolbar/`spark routes`) |
    |---|---------|------|-------------------------------|
    | 1 | Front controller | `public/index.php` | |
    | 2 | Routing | | |
-   | 3 | Before filter | | |
+   | 3 | Filter before | | |
    | 4 | Controller | | |
    | 5 | Model | | |
    | 6 | View | | |
    | 7 | Response | | |
 
-8. 3-minute demo to the trainer: show the application, then explain the table above.
+8. Commit and push (`git add docs/kitaran-request.md && git commit -m "DOCS: kitaran request /zon" && git push`), then give the trainer a 3-minute demo: your GitLab project page, `/zon?q=aras`, and the table above.
 
 ### ✅ Checkpoint
-- `docs/kitaran-request.md` has all 7 rows filled in with evidence.
-- You can answer: *"If I add the `session` filter to the `/news` route, which step changes and what happens to a user who is not logged in?"*
+- `docs/kitaran-request.md` complete with 7 rows of evidence, pushed to GitLab.
+- You can answer: *"If I add the `session` filter to the `/zon` route, which step changes and what happens to a user who is not logged in?"*
 
 ### 🧯 Troubleshooting
 
 | Symptom | Cause | Fix |
 |--------|-------|--------------|
-| Debug Toolbar does not appear | `CI_ENVIRONMENT` is not `development` / no `.env` | `cp env .env`, uncomment `CI_ENVIRONMENT = development` |
-| `404 - Can't find a route for 'GET: news'` | Route not added yet / *auto routing* is off | Add `$routes->get('news', [News::class, 'index']);` |
+| The Debug Toolbar does not appear | `CI_ENVIRONMENT` is not `development` / no `.env` | `cp env .env`, uncomment `CI_ENVIRONMENT = development` |
+| `404 - Can't find a route for 'GET: zon'` | Lab 3.4 not finished or the route is missing | Add `$routes->get('zon', 'Zon::index');` |
 | `Unable to connect to the database` | Wrong `.env` | Check `database.default.*`; try `hostname = 127.0.0.1` |
-| `The required PHP extension "sqlite3" is not loaded` on `composer test` (Windows) | The appstarter's `tests` database group is still SQLite; Laragon does not enable `sqlite3` | The course tests on MySQL: copy the `database.tests.*` block from [`nota/10`](../docs/nota-10-ujian-phpunit-ci4.md) §3 into `.env` (database `kkm_latihan_test`) — Day 6 sets it too. Verified on Windows: afterwards `composer test` → `OK` |
+| `The required PHP extension "sqlite3" is not loaded` on `composer test` (Windows) | The appstarter's `tests` database group is still SQLite; Laragon does not enable `sqlite3` | The course uses MySQL for tests: copy the `database.tests.*` block from [`nota-10`](../docs/nota-10-ujian-phpunit-ci4.md) §3 into `.env` (database `kkm_latihan_test`) — Day 6 sets it too. Verified on Windows: after that `composer test` → `OK` |
 
 ### ⭐ Bonus challenge
-Add `log_message('info', 'News::show slug={slug}', ['slug' => $slug]);` in the controller, set `app/Config/Logger.php` `$threshold = 7`, then find that line in `writable/logs/log-YYYY-MM-DD.log`.
+Add `log_message('info', 'Zon::index q={q}', ['q' => (string) $q]);` to the controller, set `app/Config/Logger.php` `$threshold = 7`, then find that line in `writable/logs/log-YYYY-MM-DD.log`.
 
 ---
 
 ## Lab 4.2 — CI4 Project, `.env`, Shield & Layout (S2)
 
 ### 🎯 Objective
-Create a CI4 project in the pair's repo, configure `.env`, install Shield with the profile fields & roles from SPEC §4, and build a Bootstrap 5.3 layout.
+Set up tests (`composer test`) in the `kelas-ci-<nama>` project, check `.env`, install Shield with the profile fields & roles from SPEC §4, and build a Bootstrap 5.3 layout.
 
 ### Prerequisites
-- Repo `~/latihan/sistem-tlk-pas` (from Day 1, contains `docs/`)
-- Routes, controllers, a layout view, a form, validation and CSRF are already done in `kelas-ci-<nama>` (Labs 2.2–2.4). This lab adds a database, Shield and Bootstrap to the same project.
-- Databases `kkm_latihan` & `kkm_latihan_test` + user `kkm_dev` ([`docs/persediaan.md`](../docs/persediaan.md) §4)
+- Project `~/latihan/kelas-ci-<nama>` (Days 2–3): `.env` connected to `kkm_latihan`, the `departments` + `parking_zones` migrations already run
+- Routes, controllers, a layout view, a form, validation and CSRF are already done in `kelas-ci-<nama>` (Labs 2.2–2.4). This lab adds tests, Shield and Bootstrap to the same project.
+- Databases `kkm_latihan` & `kkm_latihan_test` + user `kkm_dev` ([Lab 3.1](../hari-3/lab.en.md#lab-31--mysql-database--env-s1))
 - PHP ≥ 8.2 with `intl`, `mbstring`, `mysqli` (`php -m`)
 - `php.ini` (for Pass document uploads, Day 7): `upload_max_filesize = 8M` and `post_max_size = 16M` or more. Check: `php -i | grep -E "upload_max_filesize|post_max_size"`. Find the file with `php --ini`; restart `php spark serve` after changing it.
 
 ### Steps
 
-**A. Create the project in the existing repo**
+**A. Composer tests**
 
-1. `composer create-project` needs an empty folder, so create it in a temporary subfolder and move it:
-
-   ```bash
-   cd ~/latihan/sistem-tlk-pas
-   composer create-project codeigniter4/appstarter ci4-tmp
-   cp -Rn ci4-tmp/. .        # -n: do not overwrite existing files (e.g. your README.md)
-   rm -rf ci4-tmp
-   ```
-
-   🪟 **Windows:** run the block above in Git Bash. Don't use PowerShell `Copy-Item` — it overwrites your `README.md`.
-
-   **Project hygiene (every OS).** Create two files in the project root in VS Code (*File → New File*), so line endings are LF and indentation is the same on Windows, macOS and Linux. `.gitattributes` (template: `gitattributes.txt` (**Templat & Rujukan** module)):
-
-   ```text
-   * text=auto eol=lf
-   *.bat text eol=crlf
-   *.png binary
-   *.jpg binary
-   *.jpeg binary
-   *.gif binary
-   *.ico binary
-   *.pdf binary
-   *.xlsx binary
-   *.zip binary
-   *.woff binary
-   *.woff2 binary
-   *.ttf binary
-   ```
-
-   `.editorconfig` (template: `editorconfig.txt` (**Templat & Rujukan** module)):
-
-   ```ini
-   root = true
-
-   [*]
-   charset = utf-8
-   end_of_line = lf
-   insert_final_newline = true
-   trim_trailing_whitespace = true
-   indent_style = space
-   indent_size = 4
-
-   [*.md]
-   trim_trailing_whitespace = false
-
-   [*.{yml,yaml}]
-   indent_size = 2
-   ```
-
-   Then normalise the files already committed (the Day 1–3 documents) and check the Composer test script:
+1. The project, `.gitattributes` and `.editorconfig` were already created in [Lab 2.2](../hari-2/lab.en.md#lab-22--your-ci-project-on-gitlab-s2). Set up the Composer test script:
 
    ```bash
-   git add .gitattributes .editorconfig
-   git add --renormalize .
-   composer config process-timeout 0    # Composer scripts are not stopped after 300 s (the full suite on a slow laptop)
-   git commit -m "SETUP: .gitattributes + .editorconfig (hujung baris LF)"
+   composer config process-timeout 0    # skrip Composer tidak dihentikan selepas 300 s (suite penuh di laptop perlahan)
    composer run-script --list
    ```
 
@@ -153,29 +99,16 @@ Create a CI4 project in the pair's repo, configure `.env`, install Shield with t
 
    ```bash
    php spark --version
-   ls app public writable spark docs
+   ls app public writable spark
    ```
 
    > Version 4.7.x installed? That's fine — the course needs **4.6+**.
 
-   The `docs/` folder (URS, flowcharts, ERD, data dictionary, wireframes from Days 1–3) now sits in the **root of the CI4 project**. If you followed Lab 1.0 (Day 1), `docs/` is already at `~/latihan/sistem-tlk-pas/docs` — skip this step. If your team's documents are kept in another repo/folder (example below: `~/latihan/dokumen-pasukan`), copy **its contents** here and commit. Type your real path; do not type `<` `>` (in Git Bash they mean *redirect*):
-
-   ```bash
-   mkdir -p docs
-   cp -R ~/latihan/dokumen-pasukan/docs/. ./docs/   # "/." = copy the folder contents, do not create docs/docs
-   # Git Bash: C:\Users\ali\dok → /c/Users/ali/dok
-   git add docs && git commit -m "SETUP: pindah dokumen Hari 1–3 ke projek CI4"
-   ```
+   Commit: `git add composer.json phpunit.dist.xml && git commit -m "SETUP: composer test tanpa coverage"`.
 
 **B. `.env`**
 
-3. Copy the template and edit it:
-
-   ```bash
-   cp env .env          # Windows: in Git Bash, not Notepad
-   ```
-
-   Uncomment & fill in (delete the `#` in front):
+3. `.env` already exists ([Lab 2.2](../hari-2/lab.en.md#lab-22--your-ci-project-on-gitlab-s2), [Lab 3.1](../hari-3/lab.en.md#lab-31--mysql-database--env-s1)). Open it and make sure all these values are there (add any that are missing, e.g. `app.indexPage = ''`; no `#` in front):
 
    ```ini
    CI_ENVIRONMENT = development
@@ -265,7 +198,7 @@ Create a CI4 project in the pair's repo, configure `.env`, install Shield with t
 
 9. `app/Config/AuthGroups.php` — replace `$defaultGroup`, `$groups`, `$permissions`, `$matrix` with the values from SPEC §4 (4 groups: `applicant`, `reviewer`, `approver`, `admin`; 8 permissions: `admin.access`, `tlk.apply`, `tlk.decide`, `pas.apply`, `pas.review`, `pas.approve`, `laporan.view`, `statistik.view`). Write it yourself first based on README §2.3, then check it against `templates/kod/AuthGroups.php.txt` (**Templat & Rujukan** module).
 
-10. `app/Config/Filters.php` — in `$globals['before']`, uncomment `'csrf'`. (`shield:setup` only changes `Security::$csrfProtection = 'session'`; it does **not** turn on the CSRF filter.)
+10. `app/Config/Filters.php` — check that `$globals['before']` still contains `'csrf'` (turned on in Lab 2.4). (`shield:setup` only changes `Security::$csrfProtection = 'session'`; it does **not** turn on the CSRF filter.)
 
 11. `app/Controllers/BaseController.php` — in `initController()`, load the form helpers **before** the `parent::initController(...)` line. If placed after it, the helpers are not loaded and `form_dropdown()` fails on Day 5 (*Call to undefined function*):
 
@@ -389,22 +322,21 @@ Create a CI4 project in the pair's repo, configure `.env`, install Shield with t
 ## Lab 4.3 — Migrations & Seeders from the ERD (S3)
 
 ### 🎯 Objective
-Turn the Day 3 ERD into 10 migrations (FK, UNIQUE, INDEX), write 5 idempotent seeders, and log in as a synthetic user.
+Complete the 10 migrations of specification §3 (2 from Lab 3.2 + 8 new, with FK, UNIQUE, INDEX), complete the idempotent seeders, and log in as a synthetic user.
 
 ### Prerequisites
 - Lab 4.2 checkpoint passed (the Shield tables already exist)
-- `docs/erd.md` & `docs/kamus-data.md` open side by side (the navigator reads, the driver types)
+- [`erd-rujukan.md`](../docs/erd-rujukan.md) and [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §3 open side by side
+- `departments` + `parking_zones` and `DepartmentSeeder`/`ParkingSeeder`/`DatabaseSeeder` already exist from [Lab 3.2](../hari-3/lab.en.md#lab-32--first-migrations--seeders-s2)
 
 ### Steps
 
 **A. Migrations — in FK order**
 
-1. Generate the 10 files **one by one, in this order** (the timestamp decides the run order):
+1. Generate the 8 new files **one by one, in this order** (the timestamp decides the run order; `CreateDepartmentsTable` and `CreateParkingZonesTable` from Lab 3.2 are earlier, so the FK order stays correct):
 
    ```bash
-   php spark make:migration CreateDepartmentsTable
    php spark make:migration AddProfileFieldsToUsers
-   php spark make:migration CreateParkingZonesTable
    php spark make:migration CreateParkingSlotsTable
    php spark make:migration CreateVehiclesTable
    php spark make:migration CreateSlotBookingsTable
@@ -414,28 +346,7 @@ Turn the Day 3 ERD into 10 migrations (FK, UNIQUE, INDEX), write 5 idempotent se
    php spark make:migration CreateReferenceSequencesTable
    ```
 
-2. Write `CreateDepartmentsTable` together (the trainer demos it live):
-
-   ```php
-   public function up(): void
-   {
-       $this->forge->addField([
-           'id'         => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
-           'code'       => ['type' => 'VARCHAR', 'constraint' => 20],
-           'name'       => ['type' => 'VARCHAR', 'constraint' => 150],
-           'created_at' => ['type' => 'DATETIME', 'null' => true],
-           'updated_at' => ['type' => 'DATETIME', 'null' => true],
-       ]);
-       $this->forge->addPrimaryKey('id');
-       $this->forge->addUniqueKey('code');
-       $this->forge->createTable('departments', false, ['ENGINE' => 'InnoDB']);
-   }
-
-   public function down(): void
-   {
-       $this->forge->dropTable('departments', true);
-   }
-   ```
+2. Reopen `CreateDepartmentsTable` from Lab 3.2: the same `addField` + `addPrimaryKey` + `addUniqueKey` + `createTable(…, false, ['ENGINE' => 'InnoDB'])` pattern, with a `down()` that drops the table, is used for the 8 new files.
 
 3. Write `AddProfileFieldsToUsers` (README §3.3 — `addColumn` + `processIndexes`). `down()`:
 
@@ -457,7 +368,7 @@ Turn the Day 3 ERD into 10 migrations (FK, UNIQUE, INDEX), write 5 idempotent se
    php spark migrate
    ```
 
-5. Write the remaining 8 migrations based on your data dictionary. Checklist for each file:
+5. Write the remaining 7 migrations based on [`erd-rujukan.md`](../docs/erd-rujukan.md) and specification §3. Checklist for each file:
    - [ ] Table & field names **exactly** as in SPEC §3
    - [ ] `id` INT UNSIGNED AI + `created_at`/`updated_at` DATETIME NULL
    - [ ] Only `parking_slots` has `deleted_at`; `status_logs` has only `created_at` (audit records are never updated)
@@ -466,7 +377,7 @@ Turn the Day 3 ERD into 10 migrations (FK, UNIQUE, INDEX), write 5 idempotent se
    - [ ] Every FK: the same INT UNSIGNED type as the parent; `ON DELETE` chosen for a reason
    - [ ] `down()` removes what `up()` creates
 
-   > ⏱️ **Falling behind?** If you are not done by minute 60 of the session, follow the trainer's catch-up plan: copy the `up()`/`down()` blocks from `templates/kod/migration-core-tables.php.txt` (**Templat & Rujukan** module) into the files generated by `make:migration` (keep the class names), then the navigator explains one FK and one `ON DELETE` to the trainer.
+   > ⏱️ **Falling behind?** If you are not done by minute 60 of the session, follow the trainer's catch-up plan: copy the `up()`/`down()` blocks from `templates/kod/migration-core-tables.php.txt` (**Templat & Rujukan** module) into the files generated by `make:migration` (keep the class names), then explain one FK and one `ON DELETE` to the trainer.
 
 6. Run them all:
 
@@ -480,38 +391,15 @@ Turn the Day 3 ERD into 10 migrations (FK, UNIQUE, INDEX), write 5 idempotent se
 7. Generate:
 
    ```bash
-   php spark make:seeder DepartmentSeeder
    php spark make:seeder UserSeeder
-   php spark make:seeder ParkingSeeder
    php spark make:seeder VehicleSeeder
-   php spark make:seeder DatabaseSeeder
    ```
 
-8. `DepartmentSeeder` (the `INSERT IGNORE` pattern — repeat it for Parking/Vehicle):
-
-   ```php
-   public function run(): void
-   {
-       $now  = date('Y-m-d H:i:s');
-       $rows = [
-           ['code' => 'BTM', 'name' => 'Bahagian Teknologi Maklumat (Latihan)'],
-           ['code' => 'BKW', 'name' => 'Bahagian Kewangan (Latihan)'],
-           ['code' => 'BSM', 'name' => 'Bahagian Sumber Manusia (Latihan)'],
-           ['code' => 'BPA', 'name' => 'Bahagian Pengurusan Aset (Latihan)'],
-       ];
-
-       foreach ($rows as &$row) {
-           $row['created_at'] = $row['updated_at'] = $now;
-       }
-       unset($row);
-
-       $this->db->table('departments')->ignore(true)->insertBatch($rows);
-   }
-   ```
+8. `DepartmentSeeder` already exists from Lab 3.2 (4 departments). The same `ignore(true)->insertBatch()` pattern is repeated for slots and vehicles below.
 
 9. `UserSeeder` — write it based on README §3.4 (5 users, groups, `Latihan@2026`, `department_id` looked up by `code`, skip if the e-mail exists). Check it against `templates/kod/UserSeeder.php.txt` (**Templat & Rujukan** module).
 
-10. `ParkingSeeder` — zones `A` *Blok Utama* (Main Block), `B` *Blok Klinik* (Clinic Block), `C` *Parkir Bertingkat* (Multi-storey Car Park); 4 slots per zone (`A-01`…`C-04`) covering all five categories `oku`, `mengandung`, `pegawai_kanan`, `kenderaan_rasmi`, `pelawat_vip`. Get `zone_id` with:
+10. `ParkingSeeder` — zones `A`, `B`, `C` were already filled in Lab 3.2. Add to the same file, after the zone `insertBatch`: 4 slots per zone (`A-01`…`C-04`) covering all five categories `oku`, `mengandung`, `pegawai_kanan`, `kenderaan_rasmi`, `pelawat_vip`. Get `zone_id` with:
 
     ```php
     $zoneIds = array_column(
@@ -523,7 +411,7 @@ Turn the Day 3 ERD into 10 migrations (FK, UNIQUE, INDEX), write 5 idempotent se
 
 11. `VehicleSeeder` — made-up plates only: `pemohon1` → `WXX 1234` & `WXX 5678`; `pemohon2` → `VXX 2468`; `pelulus` → `WXY 1357`; `admin` → `BXX 9090`. Find users with `auth()->getProvider()->findByCredentials(['email' => …])`.
 
-12. `DatabaseSeeder`:
+12. `DatabaseSeeder` — update the file from Lab 3.2 so the order is:
 
     ```php
     public function run(): void
@@ -578,7 +466,7 @@ Turn the Day 3 ERD into 10 migrations (FK, UNIQUE, INDEX), write 5 idempotent se
 ## Lab 4.4 — Task Split, Git Branches & DoD (S4)
 
 ### 🎯 Objective
-Produce the pair's work plan and push a clean `SETUP:` commit to `main`.
+Push clean `SETUP:` commits to GitLab, write your work plan, try the branch → merge request into your own `main` flow once, and prove the repo is complete with a fresh clone.
 
 ### Prerequisites
 - Lab 4.3 checkpoint passed
@@ -596,35 +484,28 @@ Produce the pair's work plan and push a clean `SETUP:` commit to `main`.
 
    ```bash
    git add composer.json composer.lock spark env public app/Config app/Controllers app/Views builds preload.php phpunit*.dist* tests writable .gitignore LICENSE
-   git commit -m "SETUP: projek CI4 + Shield + layout Bootstrap"
+   git commit -m "SETUP: Shield + layout Bootstrap"
    git add app
-   git commit -m "SETUP: 10 migration SPEC §3 + 5 seeder sintetik"
+   git commit -m "SETUP: 8 migration SPEC §3 + seeder sintetik"
    ```
 
-   > `writable` is committed only to keep the folder structure: the `cache/`, `logs/`, `session/`, `uploads/`, `debugbar/` subfolders contain only `index.html` (the appstarter `.gitignore` ignores everything else), so logs and sessions are not committed. Without it, a fresh clone (step 6) has no `writable/` and fails.
+   > `writable` is committed only to keep the folder structure: the `cache/`, `logs/`, `session/`, `uploads/`, `debugbar/` subfolders hold only `index.html` (the appstarter's `.gitignore` ignores everything else), so logs and sessions are not committed. Without it, a fresh clone (step 6) has no `writable/` and fails.
 
    > CI 4.6 names the test file `phpunit.xml.dist`; 4.7+ uses `phpunit.dist.xml`. The `phpunit*.dist*` pattern adds whichever exists.
 
-3. Push to the remote (if the pair's repo has an internal GitLab/GitHub remote):
+3. Push to GitLab:
 
    ```bash
-   git push -u origin main
+   git push
    ```
 
 4. Create `docs/pelan-kerja.md`:
 
    ```markdown
-   # Pair Work Plan — <name A> & <name B>
+   # Pelan Kerja — <nama>
 
-   ## Driver rotation
-   | Day | S1 | S2 | S3 | S4 |
-   |------|----|----|----|----|
-   | 5 | A | B | A | B |
-   | 6 | B | A | B | A |
-   | … | | | | |
-
-   ## Branches
-   | Day | Branch | Status |
+   ## Cabang
+   | Hari | Cabang | Status |
    |------|--------|--------|
    | 5 | feat/tlk-model | ⬜ |
    | 5 | feat/tlk-crud | ⬜ |
@@ -633,46 +514,65 @@ Produce the pair's work plan and push a clean `SETUP:` commit to `main`.
    | 6 | feat/tlk-keputusan | ⬜ |
    | 6 | feat/tlk-ujian | ⬜ |
 
-   ## Definition of Done (copy from COLLABORATION §2)
+   ## Definition of Done (salin dari kolaborasi §2)
    - [ ] …
    ```
 
-5. Try the branch flow once (5-minute exercise):
+5. Try the branch + merge request flow once (a 10-minute exercise):
 
    ```bash
-   git switch -c feat/tlk-model
-   git commit --allow-empty -m "TLK: mula cabang model"
+   git switch -c feat/pelan-kerja
+   git add docs/pelan-kerja.md
+   git commit -m "DOCS: pelan kerja + DoD"
+   git push -u origin feat/pelan-kerja
+   ```
+
+   On GitLab: **Create merge request** (target: `main` of your own repo) → ask the trainer (a Reporter since Lab 2.2) or your neighbour for one comment → **Merge**. Invite your neighbour first: *Members → Invite members*, role **Reporter**. Then:
+
+   ```bash
    git switch main
-   git merge --no-ff feat/tlk-model -m "Merge feat/tlk-model"
+   git pull
    git log --oneline --graph -5
    ```
 
-6. The **second** pair clones your repo (or you re-clone it into another folder) and follows the *fresh-clone recipe*:
+6. **Fresh clone** into another folder to prove the repo is complete. The clone uses the test database so every table is built from empty (its tables are dropped again every time the tests run, so it is safe to use). Stop the original project's `php spark serve` first (`Ctrl+C`):
 
    ```bash
+   cd ~/latihan
+   git clone https://<gitlab-kkm>/<pengguna>/kelas-ci-<nama>.git kelas-ci-<nama>-klon
+   cd kelas-ci-<nama>-klon
    composer install
-   cp env .env          # fill in database.default.*
+   cp ../kelas-ci-<nama>/.env .env
+   ```
+
+   In the clone's `.env`, change **one** line: `database.default.database = kkm_latihan_test`. Then:
+
+   ```bash
    php spark migrate --all
    php spark db:seed DatabaseSeeder
    php spark serve
    ```
 
+   Log in as `pelulus@latihan.test` / `Latihan@2026`. It works? Delete the clone folder: `cd ~/latihan && rm -rf kelas-ci-<nama>-klon`.
+
 ### ✅ Checkpoint
-- `git log --oneline` shows ≥ 2 `SETUP:` commits.
+- `git log --oneline` shows ≥ 2 `SETUP:` commits and one `feat/pelan-kerja` merge on GitLab.
 - `git ls-files | grep -c "^\.env$"` → `0`.
-- The fresh-clone recipe (step 6) works all the way to login — **this proves your migrations & seeders are complete**.
-- `docs/pelan-kerja.md` exists and both members can name 3 DoD items without looking.
+- The fresh-clone recipe (step 6) works up to login — **this proves your migrations & seeders are complete**.
+- `docs/pelan-kerja.md` exists and you can name 3 DoD items without looking.
 
 ### 🧯 Troubleshooting
 
 | Symptom | Cause | Fix |
 |--------|-------|--------------|
-| `.env` listed in `git status` | The appstarter `.gitignore` was overwritten by the Day 1 `.gitignore` | Add the lines `.env` and `/vendor/` to `.gitignore` |
-| `.env` already committed | Accidental `git add .` | `git rm --cached .env` → commit → **change the DB password** (it has already leaked into the history) |
-| `composer install` fails on a fresh clone | `composer.lock` was not committed | Commit `composer.lock` |
+| `.env` listed in `git status` | The appstarter's `.gitignore` was changed | Add the lines `.env` and `/vendor/` to `.gitignore` |
+| `.env` already committed | An accidental `git add -f` | `git rm --cached .env` → commit → **change the DB password** (it has already leaked into the history) |
+| `composer install` fails on the fresh clone | `composer.lock` was not committed | Commit `composer.lock` |
+| No *Merge* button on GitLab | Your account is not a Maintainer of the project, or the MR is still *Draft* | The project is in your own namespace (you are the Owner); remove the *Draft* mark |
+| `migrate --all` on the clone → `Nothing to migrate` | The clone's `.env` still points to `kkm_latihan` | Change `database.default.database = kkm_latihan_test` |
 
 ### ⭐ Bonus challenge
-Protect `main`: set up a *protected branch* on the internal GitLab/GitHub so changes only go in through a *merge request* reviewed by your pair partner.
+Protect `main` on GitLab (*Settings → Repository → Protected branches*: *Allowed to push* = **No one**) so every change from Day 5 onward goes through a merge request.
 
 ---
 

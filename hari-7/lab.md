@@ -2,7 +2,7 @@
 
 [📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 Nota Hari 7](./README.md)
 
-> Bekerja **berpasangan** (driver/navigator — tukar setiap sesi). Semua arahan dijalankan dari **akar projek CI4** anda (folder yang ada `spark`). Rujukan lengkap jurulatih: `templates/kod/` (modul **Templat & Rujukan**). **Salin hanya selepas anda boleh menerangkan setiap baris** (KOLABORASI §3).
+> Kerja **individu** dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. Semua arahan dijalankan dari **akar projek CI4** anda (folder yang ada `spark`). Rujukan lengkap jurulatih: `templates/kod/` (modul **Templat & Rujukan**). **Salin hanya selepas anda boleh menerangkan setiap baris** (KOLABORASI §3).
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
@@ -145,12 +145,12 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
 |--------|-------|--------------|
 | `Fatal error: Constant expression contains invalid operations` | `implode()` dalam nilai lalai `$validationRules` | Isi dalam `protected function initialize(): void` |
 | `UnhandledMatchError` dalam `label()` | `case` baharu tanpa cabang `match` | Tambah cabang; ini ciri keselamatan, bukan pepijat |
-| `Class "App\Enums\PassStatus" not found` | Nama fail/namespace tidak sepadan (cth `app/enums/`) | Folder `app/Enums/` (E besar), `namespace App\Enums;`. 🪟 Windows tidak membezakan huruf besar/kecil, jadi `app/enums` berfungsi di laptop tetapi gagal di server Linux dan di laptop pasangan macOS. Betulkan melalui Git: `git mv app/enums app/Enums-tmp && git mv app/Enums-tmp app/Enums` |
+| `Class "App\Enums\PassStatus" not found` | Nama fail/namespace tidak sepadan (cth `app/enums/`) | Folder `app/Enums/` (E besar), `namespace App\Enums;`. 🪟 Windows tidak membezakan huruf besar/kecil, jadi `app/enums` berfungsi di laptop tetapi gagal di server Linux dan di laptop macOS rakan sekerja. Betulkan melalui Git: `git mv app/enums app/Enums-tmp && git mv app/Enums-tmp app/Enums` |
 | `ValueError: "Approved" is not a valid backing value` | `PassStatus::from('Approved')` — nilai DB ialah huruf kecil | Guna `->value` semasa simpan; `from()` hanya untuk data DB |
 | `/cuba-model-pas` → `"ok": 5` (berjaya!) | `$validationRules` kosong — `initialize()` tidak dipanggil / tersalah nama | Nama tepat `initialize`, keterlihatan `protected` |
 
 ### ⭐ Cabaran tambahan
-- Tambah `PassStatus::forRole(string $group): array` yang memulangkan status yang relevan untuk baris gilir setiap peranan. Adakah ini patut dalam enum atau Service? Bincang dengan pasangan.
+- Tambah `PassStatus::forRole(string $group): array` yang memulangkan status yang relevan untuk baris gilir setiap peranan. Adakah ini patut dalam enum atau Service? Bincang dengan jurulatih atau rakan sebelah.
 - Tulis ujian PHPUnit unit `tests/unit/Enums/PassStatusTest.php` dengan atribut `#[DataProvider]` untuk **semua 25** pasangan (5×5) `canTransitionTo()`.
 
 ---
@@ -437,7 +437,7 @@ Membina borang permohonan dengan 1–3 dokumen yang disimpan secara selamat (BR-
 
    Tambah `use` yang diperlukan (`PassStatus`, `PassType`, `VehicleModel`, `UploadedFile`, `PageNotFoundException`, `InvalidArgumentException`, `RuntimeException`, `Throwable`). **Jangan** salin kaedah Hari 8 (`startReview`, `approve`, `reject`, `transition`) lagi.
 
-   Sebelum meneruskan, navigator menerangkan dengan lisan: *"Kenapa fail dipindah SEBELUM `transBegin()`, dan apa yang berlaku kepada fail jika `record()` gagal?"*
+   Sebelum meneruskan, terangkan dengan lisan kepada jurulatih atau rakan sebelah: *"Kenapa fail dipindah SEBELUM `transBegin()`, dan apa yang berlaku kepada fail jika `record()` gagal?"*
 
 2. **Tambah `new()`, `create()`, `download()`, `rules()`, `uploadedFiles()`** dalam `ApplicationController` (rujuk template). Pastikan `protected $helpers = ['form', 'url'];`.
 
@@ -545,7 +545,7 @@ Membina borang permohonan dengan 1–3 dokumen yang disimpan secara selamat (BR-
 7. **Sahkan di tiga tempat:**
 
    ```bash
-   cd ~/latihan/sistem-tlk-pas          # kembali ke folder projek (langkah 5 berada di ~/ujian-pas)
+   cd ~/latihan/kelas-ci-<nama>         # kembali ke folder projek (langkah 5 berada di ~/ujian-pas)
    ls -la writable/uploads/pas/          # 2 fail, nama rawak cth 1727251200_3f2a9c1e7b0d4a5c6e81.pdf
    ls public/ | grep -i upload            # TIADA output
    ```
@@ -629,7 +629,7 @@ Menjalankan sekurang-kurangnya 10 (sasaran 17) kes ujian sempadan untuk muat nai
    Copy-Item surat-sokongan.pdf surat-2.pdf; Copy-Item surat-sokongan.pdf surat-3.pdf
    ```
 
-2. **Cipta `docs/ujian-manual-pas.md`** dan salin jadual di bawah. Jalankan setiap kes; isi lajur *Sebenar* dan *Keputusan*. Selepas **setiap** kes, semak `ls writable/uploads/pas/ | wc -l` dari **folder projek** (`cd ~/latihan/sistem-tlk-pas`, bukan `~/ujian-pas`) — bilangan hanya bertambah untuk kes yang dijangka berjaya.
+2. **Cipta `docs/ujian-manual-pas.md`** dan salin jadual di bawah. Jalankan setiap kes; isi lajur *Sebenar* dan *Keputusan*. Selepas **setiap** kes, semak `ls writable/uploads/pas/ | wc -l` dari **folder projek** (`cd ~/latihan/kelas-ci-<nama>`, bukan `~/ujian-pas`) — bilangan hanya bertambah untuk kes yang dijangka berjaya.
 
    | ID | Kes | Langkah | Dijangka | Sebenar | Keputusan |
    |----|-----|---------|----------|---------|-----------|
@@ -660,7 +660,7 @@ Menjalankan sekurang-kurangnya 10 (sasaran 17) kes ujian sempadan untuk muat nai
 ### ✅ Checkpoint 7.4
 - [ ] `docs/ujian-manual-pas.md` mengandungi ≥ 10 kes dengan lajur *Sebenar* & *Keputusan* diisi.
 - [ ] UT-PAS-04, 08, 09: **tiada** fail baharu di `writable/uploads/pas/` dan tiada rekod `pass_applications` baharu.
-- [ ] Setiap pasangan boleh menerangkan kepada jurulatih **risiko OWASP** yang dicegah oleh UT-PAS-07, 09, 15 dan 16.
+- [ ] Anda boleh menerangkan kepada jurulatih **risiko OWASP** yang dicegah oleh UT-PAS-07, 09, 15 dan 16.
 - [ ] Commit: `git add docs/ && git commit -m "PAS: kes ujian manual muat naik & pemilikan"` dan `git push -u origin feat/pas-permohonan`.
 
 ### 🧯 Masalah lazim
@@ -690,4 +690,4 @@ ls writable/uploads/pas/ | head         # nama rawak sahaja
 git status                              # bersih; writable/uploads tidak dijejak
 ```
 
-Pasangan yang ketinggalan: salin dari `templates/kod/` (modul **Templat & Rujukan**) **selepas** jurulatih/rakan menerangkan setiap bahagian — dan tandakan dalam commit (`PAS: … (rujuk templat)`).
+Peserta yang ketinggalan: salin dari `templates/kod/` (modul **Templat & Rujukan**) **selepas** jurulatih/rakan menerangkan setiap bahagian — dan tandakan dalam commit (`PAS: … (rujuk templat)`).

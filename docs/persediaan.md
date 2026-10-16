@@ -1,13 +1,13 @@
-# Persediaan Persekitaran — sebelum Hari 1 & Hari 4
+# Persediaan Persekitaran — sebelum Hari 1 & Hari 2
 
 > **Dua tarikh akhir:**
 > - **Sebelum Hari 1:** Git, VS Code (+ extension **Markdown Preview Mermaid Support**), pelayar moden; Windows: Git Bash sebagai terminal lalai VS Code (§5). Lab Hari 1 menggunakan Git dan pratonton Mermaid.
-> - **Sebelum Hari 4** (Development Kickoff): stack PHP — PHP 8.2+, PHP extension, Composer, MySQL/MariaDB, Laragon/Herd dan ujian asap CI4 (§6). Hari 1–3 tidak menulis kod, jadi gunakan masa itu untuk membetulkan persekitaran — jangan tunggu pagi Hari 4.
+> - **Sebelum Hari 2** (projek `kelas-ci-<nama>`, Lab 2.2): stack PHP — PHP 8.2+, PHP extension, Composer, MySQL/MariaDB, Laragon/Herd dan ujian asap CI4 (§6). Hari 1 S4 (Lab 1.5) sudah mencuba CI4; mulai Hari 2 anda menulis kod setiap hari dalam projek sendiri `kelas-ci-<nama>` di GitLab, dan Hari 3 memerlukan MySQL. Betulkan persekitaran pada malam Hari 1 — jangan tunggu pagi Hari 2.
 > Kanun stack: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §1.
 
 ## Kenapa perlu disediakan awal?
 
-Pengalaman kursus lepas: **30–60 minit pertama Hari 4 hilang** kerana PHP extension tidak aktif, port MySQL bertembung, atau Composer tersekat di belakang proksi. Setiap minit itu diambil daripada masa membina migration. Senarai semak ini memastikan anda tiba dengan persekitaran yang **disahkan**, bukan "rasanya dah install".
+Pengalaman kursus lepas: **30–60 minit pertama hari koding pertama hilang** kerana PHP extension tidak aktif, port MySQL bertembung, atau Composer tersekat di belakang proksi. Setiap minit itu diambil daripada masa membina projek `kelas-ci-<nama>`. Senarai semak ini memastikan anda tiba dengan persekitaran yang **disahkan**, bukan "rasanya dah install".
 
 ---
 
@@ -15,16 +15,16 @@ Pengalaman kursus lepas: **30–60 minit pertama Hari 4 hilang** kerana PHP exte
 
 | # | Perkara | Versi minimum | Arahan semak | Siap sebelum | ✅ |
 |---|---------|---------------|--------------|--------------|----|
-| 1 | PHP (CLI) | **8.2** | `php -v` | Hari 4 | [ ] |
-| 2 | PHP extension | `intl`, `mbstring`, `mysqlnd`, `mysqli`, `gd`, `zip`, `curl`, `xml` (+ `dom`, `fileinfo`, `json`) | `php -m` | Hari 4 | [ ] |
-| 3 | Composer | **2.x** | `composer -V` | Hari 4 | [ ] |
-| 4 | MySQL / MariaDB | **MySQL 8.0** / **MariaDB 10.6** | `mysql --version` | Hari 4 | [ ] |
+| 1 | PHP (CLI) | **8.2** | `php -v` | Hari 2 | [ ] |
+| 2 | PHP extension | `intl`, `mbstring`, `mysqlnd`, `mysqli`, `gd`, `zip`, `curl`, `xml` (+ `dom`, `fileinfo`, `json`) | `php -m` | Hari 2 | [ ] |
+| 3 | Composer | **2.x** | `composer -V` | Hari 2 | [ ] |
+| 4 | MySQL / MariaDB | **MySQL 8.0** / **MariaDB 10.6** | `mysql --version` | Hari 3 | [ ] |
 | 5 | Git | 2.30+ | `git --version` | **Hari 1** | [ ] |
-| 6 | VS Code + extension (termasuk Mermaid) | terkini | lihat §5 | **Hari 1** (Intelephense: Hari 4) | [ ] |
+| 6 | VS Code + extension (termasuk Mermaid) | terkini | lihat §5 | **Hari 1** (Intelephense: Hari 2) | [ ] |
 | 7 | Pelayar moden | Chrome/Edge/Firefox terkini | — | **Hari 1** | [ ] |
-| 8 | Windows: **Laragon** + **Git Bash** sebagai terminal lalai VS Code · macOS (opsyenal): Herd | Laragon 8 | §2, §5 | Git Bash: **Hari 1** · Laragon/Herd: Hari 4 | [ ] |
-| 9 | Ujian asap: projek CI4 kosong berjalan | CI **4.6+** | §6 | Hari 4 | [ ] |
-| 10 | *Pilihan* — [trek GitLab](./trek-gitlab.md): akaun GitLab KKM (daripada IT KKM) + kunci SSH | — | `ssh -T git@<gitlab-kkm>` | Hari 4 | — |
+| 8 | Windows: **Laragon** + **Git Bash** sebagai terminal lalai VS Code · macOS (opsyenal): Herd | Laragon 8 | §2, §5 | Git Bash: **Hari 1** · Laragon/Herd: Hari 2 | [ ] |
+| 9 | Ujian asap: projek CI4 kosong berjalan | CI **4.6+** | §6 | Hari 2 | [ ] |
+| 10 | Akaun GitLab KKM (GitLab KKM, daripada IT KKM) — [repo `kelas-ci-<nama>`](./trek-gitlab.md) | — | log masuk `https://<gitlab-kkm>` | Hari 2 | [ ] |
 | 11 | *Pilihan* — [trek Jira](./trek-jira.md): akaun Jira Cloud (e-mel) | — | log masuk `*.atlassian.net` | Hari 4 | — |
 
 ### Kenapa setiap sambungan PHP diperlukan?
@@ -315,7 +315,7 @@ Terminal lalai VS Code di Windows ialah PowerShell. Kebanyakan arahan kursus (`&
 |-----------|----|--------|
 | **PHP Intelephense** | `bmewburn.vscode-intelephense-client` | Autolengkap, *go to definition* untuk kelas CI4 & Shield, amaran jenis |
 | **Markdown Preview Mermaid Support** | `bierner.markdown-mermaid` | Papar carta skop, carta alir dan ERD Mermaid dalam pratonton Markdown (**dari Hari 1**). Tiada internet/sambungan? Lakar di kertas atau tulis sebagai jadual dahulu, pratonton kemudian |
-| EditorConfig | `EditorConfig.EditorConfig` | Inden konsisten antara pasangan |
+| EditorConfig | `EditorConfig.EditorConfig` | Inden konsisten antara laptop |
 | GitLens (opsyenal) | `eamodio.gitlens` | Lihat sejarah baris & branch |
 | Claude Code (opsyenal) | — | Pembantu AI mengikut [`pustaka-prompt.md`](./pustaka-prompt.md) |
 
@@ -378,7 +378,7 @@ php spark db:table --show
 
 Output dijangka: senarai jadual kosong **tanpa ralat** connection (contoh: `No tables found` atau jadual kosong). Ralat `Unable to connect` → lihat §8.
 
-Selesai? Padam folder `ujian-asap/` — projek sebenar dicipta pada Hari 4.
+Selesai? Padam folder `ujian-asap/` — projek sebenar `kelas-ci-<nama>` dicipta pada Hari 2 (Lab 2.2).
 
 ---
 
@@ -418,7 +418,7 @@ Windows: guna Laragon (§2). macOS: Herd **tidak wajib** — `php spark serve` s
 | Halaman `Whoops!` tanpa butiran | `CI_ENVIRONMENT` bukan `development` | Pastikan fail bernama `.env` (bukan `env`) dan `CI_ENVIRONMENT = development` |
 | Mermaid tidak dipapar dalam VS Code | Extension tiada | Pasang `bierner.markdown-mermaid`, buka pratonton `Ctrl+Shift+V`. Tiada internet: lakar di kertas atau tulis sebagai jadual, pratonton kemudian (atau <https://mermaid.live>) |
 
-Masih tersekat? Catat **arahan + output penuh** dan hantar kepada jurulatih sebelum Hari 4. Anda juga boleh guna prompt **AI-01 Terangkan ralat** dalam [`pustaka-prompt.md`](./pustaka-prompt.md).
+Masih tersekat? Catat **arahan + output penuh** dan hantar kepada jurulatih sebelum Hari 2. Anda juga boleh guna prompt **AI-01 Terangkan ralat** dalam [`pustaka-prompt.md`](./pustaka-prompt.md).
 
 ---
 

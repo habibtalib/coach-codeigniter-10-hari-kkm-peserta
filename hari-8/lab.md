@@ -2,7 +2,7 @@
 
 [📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 Nota Hari 8](./README.md)
 
-> Bekerja **berpasangan** (tukar driver/navigator setiap sesi). Semua arahan dari **akar projek CI4**. Rujukan jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — salin **hanya** selepas anda boleh menerangkan setiap baris (KOLABORASI §3).
+> Kerja **individu** dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. Semua arahan dari **akar projek CI4**. Rujukan jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — salin **hanya** selepas anda boleh menerangkan setiap baris (KOLABORASI §3).
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
@@ -60,7 +60,7 @@ Melaksanakan `startReview()`, `approve()`, `reject()` melalui satu `transition()
 
    **Untuk lab ini, JANGAN salin baris `$this->authorize(...)`** dalam ketiga-tiga kaedah awam (atau komen-kan). Kita akan menambahnya dalam Lab 8.2 selepas melihat sendiri kenapa ia perlu.
 
-2. Sebelum meneruskan, navigator menerangkan kepada driver (lisan, 2 minit): *"Kenapa status dibaca SELEPAS `FOR UPDATE`, dan apa berlaku jika `record()` memulangkan `false`?"*
+2. Sebelum meneruskan, terangkan kepada jurulatih atau rakan sebelah (lisan, 2 minit): *"Kenapa status dibaca SELEPAS `FOR UPDATE`, dan apa berlaku jika `record()` memulangkan `false`?"*
 
 3. **Cipta `app/Controllers/Pas/ReviewController.php`** dari `ReviewController.php.txt` (modul **Templat & Rujukan**): `index()`, `review()`, `approve()`, `reject()`, `act()`, `defaultQueue()`.
 
@@ -310,7 +310,7 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
 - [ ] UT-PAS-20 (selepas) — penyemak tidak boleh meluluskan melalui DevTools/curl; status kekal.
 - [ ] Langkah 8 — tanpa filter route, Service memulangkan **403**; filter sudah dipulihkan.
 - [ ] UT-PAS-21 hingga 26 lulus.
-- [ ] Setiap ahli boleh menerangkan: *filter route vs `authorize()` vs `canView()` — apa yang setiap satu lindungi*.
+- [ ] Anda boleh menerangkan: *filter route vs `authorize()` vs `canView()` — apa yang setiap satu lindungi*.
 - [ ] Commit: `git add app/ docs/ && git commit -m "PAS: RBAC Shield — permission per tindakan + authorize() dalam Service"`
 
 ### 🧯 Masalah lazim
@@ -358,7 +358,7 @@ Memaparkan sejarah `status_logs` pada halaman butiran, dan menulis `PassAccessTe
    mkdir -p tests/feature/Pas
    ```
 
-   Salin `PassAccessTest.php.txt` (modul **Templat & Rujukan**) ke `tests/feature/Pas/PassAccessTest.php`. **Baca setiap ujian** bersama pasangan dan tanda dalam jadual README §3.2 sel matriks mana yang diliputi.
+   Salin `PassAccessTest.php.txt` (modul **Templat & Rujukan**) ke `tests/feature/Pas/PassAccessTest.php`. **Baca setiap ujian** satu per satu dan tanda dalam jadual README §3.2 sel matriks mana yang diliputi.
 
 5. **Jalankan:**
 
@@ -435,9 +435,9 @@ Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahk
 
 ### Langkah
 
-1. **Latih skrip demo** (README §4.1) dua kali — sekali setiap ahli sebagai pembentang. Sediakan tiga tetingkap pelayar lebih awal (log masuk `pemohon1`, `penyemak`, `pelulus`) dan satu terminal.
+1. **Latih skrip demo** (README §4.1) dua kali sebelum demo. Sediakan tiga tetingkap pelayar lebih awal (log masuk `pemohon1`, `penyemak`, `pelulus`) dan satu terminal.
 
-2. **Demo kepada pasangan jiran** (5 minit). Pasangan jiran memegang **senarai semak DoD** (README §4.2) dan menandakan setiap item yang dibuktikan semasa demo. Tukar peranan.
+2. **Demo kepada rakan sebelah** (5 minit). Rakan sebelah memegang **senarai semak DoD** (README §4.2) dan menandakan setiap item yang dibuktikan semasa demo. Tukar peranan.
 
 3. **Gabung ke `main`:**
 
@@ -458,7 +458,7 @@ Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahk
    7. Jalankan sekali lagi → "Tiada pas untuk ditamatkan".
 
 ### ✅ Checkpoint 8.4
-- [ ] Demo 5 minit lulus semua item DoD (ditandatangani pasangan jiran).
+- [ ] Demo 5 minit lulus semua item DoD (ditandatangani rakan sebelah).
 - [ ] `main` mengandungi M1 + M2; `composer test` hijau pada `main`.
 - [ ] ⭐ `pas:expire` menukar pas tamat tempoh dengan log.
 
@@ -485,4 +485,4 @@ php spark routes | grep pas/              # 9 laluan Pas; semakan dengan permiss
 composer test -- --testdox | tail -20   # semua hijau
 ```
 
-Pasangan yang ketinggalan: gunakan `templates/kod/` (modul **Templat & Rujukan**) mengikut pelan kejar dalam nota penceramah — tetapi **Lab 8.2 langkah 1 (serangan DevTools)** wajib dibuat sendiri: itu pelajaran utama hari ini.
+Peserta yang ketinggalan: gunakan `templates/kod/` (modul **Templat & Rujukan**) mengikut pelan kejar dalam nota penceramah — tetapi **Lab 8.2 langkah 1 (serangan DevTools)** wajib dibuat sendiri: itu pelajaran utama hari ini.

@@ -147,7 +147,7 @@ The `/tlk/tempahan/ketersediaan` view is a **GET** form (filters in the URL → 
 
 ### 🎯 Quiz S1
 
-1. Slot `A-01` has an `approved` booking for 10–20 Oct. Your partner writes the overlap check as follows. Which new application will be **wrongly accepted**?
+1. Slot `A-01` has an `approved` booking for 10–20 Oct. A colleague writes the overlap check as follows. Which new application will be **wrongly accepted**?
    ```php
    $builder->where('slot_id', $slotId)
        ->whereIn('status', BookingStatus::active())
@@ -605,13 +605,13 @@ Final layout: `templates/kod/layout-main.php.txt` (**Templat & Rujukan** module)
 
 | DoD (KOLABORASI §2) | M1 evidence |
 |---------------------|----------|
-| URS AC pass manual testing | `docs/ujian-manual-tlk.md` — 16/16 ✅ (including TM-TLK-16) |
+| BR-TLK rules ([SPEC](../docs/spesifikasi-sistem.md) §2) pass manual testing | `docs/ujian-manual-tlk.md` — 16/16 ✅ (including TM-TLK-16) |
 | Server-side validation | `BookingRules` + `BookingService::assertValidPeriod()` |
 | Access controlled on the server | `session`, `permission:tlk.apply`, `permission:tlk.decide`, `group:admin` + `isOwnedBy()` |
 | Status transitions logged | `status_logs` — history displayed |
 | PHPUnit tests pass | `composer test -- tests/tlk` green |
 | No secrets in commits | `git ls-files | grep .env` empty |
-| Can be explained | Every member explains `transition()` line by line |
+| Can be explained | You explain `transition()` line by line |
 
 ### 🎯 Quiz S4
 

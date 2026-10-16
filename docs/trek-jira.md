@@ -1,6 +1,6 @@
-# Trek Jira — Backlog & Sprint Pasangan (Pilihan)
+# Trek Jira — Backlog & Sprint Anda (Pilihan)
 
-> **Trek sampingan pilihan.** Halaman ini menunjukkan cara pasangan menguruskan kerja 10 hari dalam **Jira Cloud** (pelan Free): backlog daripada keperluan Hari 1–2, sprint yang dipadankan dengan modul M1–M4, dan pautan antara kad Jira dengan branch dan commit Git. Ia **tidak menggantikan** mana-mana deliverable kursus: `docs/keperluan-awal.md`, `docs/acceptance-criteria.md` dan `docs/pelan-kerja.md` kekal sebagai sumber kebenaran. Jira ialah paparan penjejakan di atasnya.
+> **Trek sampingan pilihan.** Halaman ini menunjukkan cara anda menguruskan kerja 10 hari dalam **Jira Cloud** (pelan Free): backlog daripada keperluan rujukan, sprint yang dipadankan dengan modul M1–M4, dan pautan antara kad Jira dengan branch dan commit Git. Ia **tidak menggantikan** mana-mana deliverable kursus: [`rujukan-keperluan.md`](./rujukan-keperluan.md) (FR & AC), peraturan BR-* dalam [`spesifikasi-sistem.md`](./spesifikasi-sistem.md) dan `docs/pelan-kerja.md` kekal sebagai sumber kebenaran. Jira ialah paparan penjejakan di atasnya.
 > Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Jadual: [`JADUAL.md`](../JADUAL.md) · Kontrak kerja: [`docs/kolaborasi.md`](kolaborasi.md) · Trek berkaitan: [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
 
 > ⚠️ **Siap sebelum Hari 4.** Kod bermula Hari 4. Persediaan dan backlog dibuat Hari 1–2, story dengan acceptance criteria Hari 2, dan sprint planning Hari 4 S4 sebelum baris kod pertama modul.
@@ -13,9 +13,9 @@ Di pejabat, kebanyakan pasukan IT menjejak kerja dalam alat seperti Jira. Trek i
 
 | Konsep | Maksud dalam kursus ini |
 |--------|-------------------------|
-| **Backlog** | Senarai kerja belum siap, disusun ikut keutamaan — datang terus daripada FR dalam `docs/keperluan-awal.md` |
+| **Backlog** | Senarai kerja belum siap, disusun ikut keutamaan — datang terus daripada FR dalam [`rujukan-keperluan.md`](./rujukan-keperluan.md) |
 | **Epic** | Satu modul (M1 TLK, M2 Pas, M3 Laporan, M4 Statistik) |
-| **Story** | Satu FR yang disahkan, ditulis dari sudut pengguna, dengan acceptance criteria Hari 2 |
+| **Story** | Satu FR yang disahkan, ditulis dari sudut pengguna, dengan acceptance criteria daripada [`rujukan-keperluan.md`](./rujukan-keperluan.md) |
 | **Sprint** | Satu blok kerja bermatlamat: Sprint 1 = M1, Sprint 2 = M2–M4 |
 | **Stand-up** | Recap 08:30 setiap pagi — tiga soalan |
 | **Board** | To Do → In Progress → In Review → Done; "Done" bermaksud lulus DoD ([`docs/kolaborasi.md`](kolaborasi.md) §2) |
@@ -28,10 +28,10 @@ Di pejabat, kebanyakan pasukan IT menjejak kerja dalam alat seperti Jira. Trek i
 
 | Hari / sesi | Langkah | Minit |
 |-------------|---------|-------|
-| Hari 1 S4 (selepas Lab 1.4) | Cipta site Jira Free, space Scrum `TLKPAS`, jemput pasangan (§4) | 20 |
+| Hari 1 S4 (selepas Lab 1.4) | Cipta site Jira Free, space Scrum `TLKPAS`, jemput jurulatih (§4) | 20 |
 | Recap Hari 2 (08:30) | Cipta 4 Epic M1–M4 (§5.1) | 10 |
 | Hari 2 S1 (selepas pengesahan FR) | Cipta Story daripada FR yang **disahkan** sahaja (§5.2); FR ditolak tidak masuk | 20 |
-| Hari 2 S3 (selepas Lab 2.3) | Tampal AC Given/When/Then ke Description setiap Story (§5.4) | 20 |
+| Hari 2 S3 | Tampal AC Given/When/Then ([`rujukan-keperluan.md`](./rujukan-keperluan.md) Bahagian 1 S3) ke Description setiap Story (§5.4) | 20 |
 | Hari 2 S4 | Priority ikut MoSCoW, label, story point melalui planning poker (§5.3–5.6) | 25 |
 | Hari 3 S4 (pilihan) | Tambah Task persediaan Hari 4 (projek CI4, migration, seeder) | 10 |
 | Hari 4 S4 | Sprint planning bersama `docs/pelan-kerja.md`; mulakan Sprint 1 (§7.2) | 25 |
@@ -43,15 +43,15 @@ Jumlah ≈ 2.5 jam sepanjang 10 hari, kebanyakannya dalam masa wrap-up. Langkah 
 
 ## 3. Hasil akhir
 
-Menjelang Hari 4 S4, pasangan mempunyai:
+Menjelang Hari 4 S4, anda mempunyai:
 
 | Hasil | Bukti |
 |-------|-------|
-| Satu site Jira Cloud Free dengan kedua-dua ahli pasangan | Kedua-dua nama tersenarai dalam akses space |
+| Satu site Jira Cloud Free milik anda | Nama anda (dan jurulatih, jika dijemput) tersenarai dalam akses space |
 | Space Scrum berkunci `TLKPAS` | Kunci work item berbentuk `TLKPAS-12` |
 | 4 Epic (M1–M4) | Setiap Story ada Epic sebagai parent |
 | Satu Story setiap FR disahkan | Bilangan Story = bilangan FR disahkan dalam `docs/log-keputusan.md` |
-| AC dalam Description setiap Story Must | AC sama dengan `docs/acceptance-criteria.md` |
+| AC dalam Description setiap Story Must | AC sama dengan contoh dalam `rujukan-keperluan.md` |
 | Priority, label dan story point pada setiap Story | Tiada Story tanpa anggaran dalam backlog |
 | Sprint 1 bermula dengan Story M1 sahaja | Board sprint menunjukkan Story TLK di To Do |
 
@@ -63,7 +63,7 @@ Disemak pada 2026-10-15 daripada halaman rasmi Atlassian (lihat bahagian Sumber)
 
 | Perkara | Pelan Free |
 |---------|-----------|
-| Pengguna | Sehingga **10 pengguna** — cukup untuk satu pasangan dan jurulatih |
+| Pengguna | Sehingga **10 pengguna** — cukup untuk anda, jurulatih dan beberapa rakan |
 | Storan | **2 GB** fail |
 | Ciri agile | Board Scrum dan Kanban, backlog, laporan agile |
 | Sokongan | Komuniti Atlassian sahaja |
@@ -73,8 +73,8 @@ Disemak pada 2026-10-15 daripada halaman rasmi Atlassian (lihat bahagian Sumber)
 
 ### 4.2 Cipta site & space
 
-1. Seorang ahli pasangan (pemilik site) membuka <https://www.atlassian.com/software/jira/free> dan mendaftar dengan e-mel sendiri. Pemilik site menjadi pentadbir Jira — perlu untuk import CSV (§6).
-2. Pilih nama site yang neutral, cth `latihan-tlkpas-pasangan3` (jadi `latihan-tlkpas-pasangan3.atlassian.net`). Jangan guna nama agensi.
+1. Anda (pemilik site) membuka <https://www.atlassian.com/software/jira/free> dan mendaftar dengan e-mel sendiri. Pemilik site menjadi pentadbir Jira — perlu untuk import CSV (§6).
+2. Pilih nama site yang neutral, cth `latihan-tlkpas-aminah` (jadi `latihan-tlkpas-aminah.atlassian.net`). Jangan guna nama agensi.
 3. Dalam navigasi sisi, halakan tetikus ke **Spaces** → **Create space**.
 4. Pilih kategori **Software development** → template **Scrum** → **Use template**.
 5. Pilih **Team-managed** (konfigurasi ringkas, sesuai pelan Free).
@@ -95,15 +95,15 @@ Guna empat work type ini sahaja:
 | **Task** | Kerja teknikal tanpa muka pengguna | `Tulis migration slot_bookings` |
 | **Bug** | Kelakuan salah yang dijumpai semasa ujian | `Tempahan 91 hari diterima (BR-TLK-03)` |
 
-Subtask dibenarkan di bawah Story jika pasangan mahu memecah kerja, tetapi tidak wajib.
+Subtask dibenarkan di bawah Story jika anda mahu memecah kerja, tetapi tidak wajib.
 
-### 4.4 Jemput pasangan
+### 4.4 Jemput jurulatih (pilihan)
 
-1. Pemilik site menjemput ahli kedua ke site (ikon gear / tetapan pentadbiran → jemput pengguna dengan e-mel).
-2. Selepas jemputan diterima: ••• di sebelah nama space → **Space settings** → **Access** → **Add people** → pilih ahli kedua → peranan **Administrator** (kedua-dua ahli boleh mengurus board dan sprint).
-3. Jika jurulatih mahu menyemak, jemput jurulatih dengan peranan **Viewer**.
+1. Pemilik site menjemput jurulatih ke site (ikon gear / tetapan pentadbiran → jemput pengguna dengan e-mel).
+2. Selepas jemputan diterima: ••• di sebelah nama space → **Space settings** → **Access** → **Add people** → pilih jurulatih → peranan **Viewer**.
+3. Rakan sebelah yang mahu mengulas kad anda boleh dijemput dengan peranan **Viewer** juga. Anda sahaja yang mengurus board dan sprint.
 
-✅ Ahli kedua boleh mencipta work item dan menyeretnya di board.
+✅ Jurulatih boleh membuka board dan backlog anda tanpa mengubahnya.
 
 ## 5. Backlog daripada artefak kursus
 
@@ -135,7 +135,7 @@ Sebagai <peranan>, saya mahu <tindakan>, supaya <nilai>.
 Peraturan:
 - Peranan dalam Story ialah peranan SPEC §4 (`applicant`/pemohon, `reviewer`/penyemak, `approver`/pelulus, `admin`/pentadbir).
 - Story tidak menyebut nama kelas (`BookingService`) — itu reka bentuk. Kerja teknikal masuk sebagai **Task**.
-- ID FR anda mungkin berbeza daripada contoh ini. Ikut `docs/keperluan-awal.md` anda sendiri.
+- ID FR anda mungkin berbeza daripada contoh ini. Ikut FR dalam `rujukan-keperluan.md`.
 
 ### 5.3 MoSCoW → Priority
 
@@ -150,10 +150,10 @@ Peraturan:
 
 ### 5.4 Acceptance criteria dalam Description
 
-Salin AC daripada `docs/acceptance-criteria.md` ke Description, di bawah baris jejak:
+Salin AC daripada [`rujukan-keperluan.md`](./rujukan-keperluan.md) ke Description, di bawah baris jejak:
 
 ```gherkin
-# FR-TLK-03 · BR-TLK-01 · sumber: docs/acceptance-criteria.md
+# FR-TLK-03 · BR-TLK-01 · sumber: docs/rujukan-keperluan.md
 Senario: Tempahan bertindih ditolak
   Given slot A-01 ada tempahan approved 2026-10-01 hingga 2026-10-10
   When  pemohon2@latihan.test memohon slot A-01 dari 2026-10-05 hingga 2026-10-15
@@ -177,9 +177,9 @@ Fail Markdown kekal sebagai sumber. Jika AC berubah, kemas kini fail dahulu, kem
 
 Story point mengukur **saiz relatif** (kerumitan + ketidakpastian), bukan jam. Guna siri Fibonacci: `1 · 2 · 3 · 5 · 8 · 13`.
 
-1. Pilih satu Story kecil yang kedua-dua ahli faham sebagai rujukan = **2 mata** (cth senarai tempahan sendiri dengan pagination).
+1. Bersama rakan sebelah (backlog anda sama kerana spesifikasi sama), pilih satu Story kecil yang anda berdua faham sebagai rujukan = **2 mata** (cth senarai tempahan sendiri dengan pagination).
 2. Untuk setiap Story: baca Summary dan AC kuat-kuat.
-3. Kedua-dua ahli memilih nombor secara senyap (jari, kad atau aplikasi), kemudian dedahkan serentak.
+3. Anda dan rakan memilih nombor secara senyap (jari, kad atau aplikasi), kemudian dedahkan serentak.
 4. Jika sama → isi **Story point estimate**. Jika berbeza → nombor tertinggi menerangkan risikonya dahulu, kemudian undi semula sekali.
 5. Story **> 13** terlalu besar — pecahkan kepada dua Story.
 
@@ -222,7 +222,7 @@ Contoh ini selari dengan SPEC §2 dan contoh AC Hari 2.
 
 ## 6. Import CSV (pilihan)
 
-Jika backlog sudah lengkap dalam `docs/keperluan-awal.md`, import CSV lebih cepat daripada menaip satu demi satu. Hanya **pentadbir Jira** (pemilik site) boleh mengimport.
+Jika backlog sudah lengkap (FR dalam `docs/rujukan-keperluan.md`), import CSV lebih cepat daripada menaip satu demi satu. Hanya **pentadbir Jira** (pemilik site) boleh mengimport.
 
 ### 6.1 Contoh CSV
 
@@ -234,7 +234,7 @@ Work item ID,Summary,Issue Type,Priority,Description,Labels,Labels,Story Points,
 2,M2 — Pas,Epic,High,"Modul M2, Sprint 2 (Hari 7–8)",pas,,,
 3,M3 — Laporan,Epic,Medium,"Modul M3, Sprint 2 (Hari 9)",laporan,,,
 4,M4 — Statistik,Epic,Medium,"Modul M4, Sprint 2 (Hari 10)",statistik,,,
-10,"Sebagai pemohon, saya mahu sistem menolak tempahan yang bertindih, supaya slot yang diluluskan untuk saya tidak dituntut orang lain",Story,High,"FR-TLK-03 · BR-TLK-01. AC: lihat docs/acceptance-criteria.md AC-TLK-03-01..04",tlk,br-tlk-01,5,1
+10,"Sebagai pemohon, saya mahu sistem menolak tempahan yang bertindih, supaya slot yang diluluskan untuk saya tidak dituntut orang lain",Story,High,"FR-TLK-03 · BR-TLK-01. AC: lihat docs/rujukan-keperluan.md AC-TLK-03-01..04",tlk,br-tlk-01,5,1
 11,"Sebagai pemohon, saya mahu sistem menolak tarikh tempahan yang tidak sah, supaya tempahan saya sentiasa dalam tempoh yang dibenarkan",Story,High,"FR-TLK-05 · BR-TLK-03. AC: AC-TLK-05-01..05",tlk,br-tlk-03,3,1
 20,"Sebagai pemohon, saya mahu memuat naik dokumen sokongan PDF/JPG/PNG, supaya penyemak boleh menilai permohonan tanpa kertas",Story,High,"FR-PAS-02 · BR-PAS-02. AC: AC-PAS-02-01..02",pas,br-pas-02,5,2
 ```
@@ -269,20 +269,20 @@ Lakukan **bersama** Lab 4.4 ([`hari-4/lab.md`](../hari-4/lab.md)), selepas `docs
 
 1. Backlog → **Create sprint** → namakan `Sprint 1 — M1 TLK`.
 2. Seret Story Must M1 dan Task Hari 4 ke Sprint 1, ikut susunan keutamaan.
-3. Semak kapasiti: jika jumlah mata jauh melebihi apa yang pasangan yakin boleh siap dalam Hari 5–6, alih Should ke backlog.
+3. Semak kapasiti: jika jumlah mata jauh melebihi apa yang anda yakin boleh siap dalam Hari 5–6, alih Should ke backlog.
 4. Padankan dengan `docs/pelan-kerja.md`: setiap baris dalam jadual **Cabang** mendapat kunci Story (cth `feat/TLKPAS-12-borang-tempahan`). Satu branch = satu Story.
 5. **Start sprint** → tarikh mula Hari 4, tarikh tamat Hari 6 → tulis matlamat sprint: *"M1 TLK siap dan lulus DoD."*
 6. Sprint 2 dicipta dan dimulakan pada recap Hari 7 dengan cara yang sama.
 
 ### 7.3 Stand-up harian
 
-Pada recap 08:30 (Hari 5–10), pasangan berdiri di depan board selama 5 minit. Setiap ahli menjawab:
+Pada recap 08:30 (Hari 5–10), anda membuka board selama 5 minit dan menjawab (kepada jurulatih atau rakan sebelah):
 
 1. Apa yang saya siapkan semalam (kad mana bergerak)?
 2. Apa yang saya akan kerjakan hari ini (kad mana)?
 3. Apa yang menghalang saya?
 
-Halangan direkod sebagai komen pada kad atau sebagai Bug baharu. Giliran driver hari itu ikut `docs/pelan-kerja.md`.
+Halangan direkod sebagai komen pada kad atau sebagai Bug baharu.
 
 ### 7.4 Sprint review & retrospektif
 
@@ -298,8 +298,8 @@ Board Scrum team-managed bermula dengan To Do, In Progress dan Done. Tambah laju
 | Lajur | Masuk apabila | Kaitan DoD ([`docs/kolaborasi.md`](kolaborasi.md) §2) |
 |-------|---------------|------------------------------------------------------|
 | **To Do** | Story ada dalam sprint, AC jelas | AC wujud — syarat DoD baris 1 boleh diuji |
-| **In Progress** | Branch `feat/TLKPAS-nn-…` dicipta, driver mula menaip | — |
-| **In Review** | Merge request / PR dibuka; navigator menyemak | Semak validasi server, akses, `status_logs`, ujian PHPUnit, tiada `.env` |
+| **In Progress** | Branch `feat/TLKPAS-nn-…` dicipta, anda mula menaip | — |
+| **In Review** | Merge request dibuka ke `main` anda; jurulatih atau rakan sebelah memberi komen | Semak validasi server, akses, `status_logs`, ujian PHPUnit, tiada `.env` |
 | **Done** | Digabung ke `main` dan **semua** item DoD bertanda | Semua 7 item DoD; peserta boleh menerangkan setiap baris |
 
 Gunakan [`senarai-semak-modul.md`](./senarai-semak-modul.md) (D1–D7) semasa In Review.
@@ -330,15 +330,15 @@ Tulis kunci dalam **huruf besar** (`TLKPAS-12`, bukan `tlkpas-12`). Letakkan kun
 
 ### 8.2 Panel Development (GitLab for Jira Cloud)
 
-Jika repo pasangan di GitLab KKM ([`trek-gitlab.md`](./trek-gitlab.md)), aplikasi **GitLab for Jira Cloud** boleh memaparkan branch, commit dan MR yang menyebut kunci dalam panel **Development** setiap work item. Ini **pilihan; tanya jurulatih / IT KKM** — peraturan §8.1 tetap berguna tanpa aplikasi itu kerana kunci dalam sejarah Git boleh dicari.
+Repo `kelas-ci-<nama>` anda sudah di GitLab KKM ([`trek-gitlab.md`](./trek-gitlab.md)), jadi aplikasi **GitLab for Jira Cloud** boleh memaparkan branch, commit dan MR yang menyebut kunci dalam panel **Development** setiap work item. Ini **pilihan; tanya jurulatih / IT KKM** — peraturan §8.1 tetap berguna tanpa aplikasi itu kerana kunci dalam sejarah Git boleh dicari.
 
-- GitLab self-managed perlu boleh dicapai dari internet melalui HTTPS (GitLab 15.7+), dan **admin GitLab** KKM mesti mencipta aplikasi OAuth. Pasangan tidak boleh memasangnya sendiri.
+- GitLab self-managed perlu boleh dicapai dari internet melalui HTTPS (GitLab 15.7+), dan **admin GitLab** KKM mesti mencipta aplikasi OAuth. Peserta tidak boleh memasangnya sendiri.
 - Kunci perlu ada dalam nama branch, mesej commit atau tajuk MR; sesuatu mesti di-push selepas sambungan supaya Jira menyegerak.
 - Lakukan selepas trek GitLab siap, bukan sebelum Hari 4 S4.
 
 ## 9. Pemetaan GitLab ↔ Jira
 
-Bagi pasangan yang biasa dengan GitLab Issues/Boards ([`trek-gitlab.md`](./trek-gitlab.md)):
+Bagi peserta yang biasa dengan GitLab Issues/Boards ([`trek-gitlab.md`](./trek-gitlab.md)):
 
 | GitLab Issues / Boards | Jira | Nota |
 |------------------------|------|------|
@@ -352,7 +352,7 @@ Bagi pasangan yang biasa dengan GitLab Issues/Boards ([`trek-gitlab.md`](./trek-
 | Assignee | Assignee | |
 | `Closes #14` dalam MR | `TLKPAS-12` dalam branch, commit, tajuk MR | Panel Development perlu GitLab for Jira Cloud |
 
-> Pilih **satu** alat sebagai sumber kebenaran backlog. Jika pasangan guna kedua-dua trek, GitLab mengurus kod dan MR; Jira mengurus backlog dan sprint.
+> Pilih **satu** alat sebagai sumber kebenaran backlog. Jika anda guna GitLab Issues dan Jira, GitLab mengurus kod dan MR; Jira mengurus backlog dan sprint.
 
 ## 10. Tiga kesilapan lazim
 
@@ -360,15 +360,15 @@ Bagi pasangan yang biasa dengan GitLab Issues/Boards ([`trek-gitlab.md`](./trek-
 |-----------|--------------|----------|
 | Story ditulis sebagai tugas teknikal (`Bina BookingService`) | Tiada nilai pengguna; tidak boleh diuji dengan AC | Tulis semula sebagai *Sebagai … saya mahu … supaya …*; pindah kerja teknikal ke Task |
 | Kad diseret ke Done sebaik kod berjalan | Done tanpa DoD menyembunyikan ujian dan semakan akses yang belum dibuat | Kad ke In Review dahulu; Done hanya selepas semua item DoD bertanda dan digabung ke `main` |
-| Dua backlog berbeza (Jira + `pelan-kerja.md` + GitLab Issues) | Kad dan fail tidak selari; pasangan tidak tahu mana yang betul | Satu sumber kebenaran; `pelan-kerja.md` merujuk kunci Jira, bukan senarai kerja berasingan |
+| Dua backlog berbeza (Jira + `pelan-kerja.md` + GitLab Issues) | Kad dan fail tidak selari; anda tidak tahu mana yang betul | Satu sumber kebenaran; `pelan-kerja.md` merujuk kunci Jira, bukan senarai kerja berasingan |
 
 ## Semakan — Siap sebelum Hari 4
 
-- [ ] Site Jira Cloud Free wujud; kedua-dua ahli pasangan boleh log masuk.
+- [ ] Site Jira Cloud Free wujud dan anda boleh log masuk; jurulatih dijemput sebagai Viewer (pilihan).
 - [ ] Space Scrum team-managed berkunci `TLKPAS`; Estimation dihidupkan dengan Story points.
 - [ ] 4 Epic M1–M4 dicipta.
-- [ ] Setiap FR disahkan dalam `docs/keperluan-awal.md` ada satu Story berformat *Sebagai … saya mahu … supaya …*, dengan Epic sebagai parent.
-- [ ] Setiap Story Must ada AC Given/When/Then dalam Description, sama dengan `docs/acceptance-criteria.md`.
+- [ ] Setiap FR disahkan dalam `docs/log-keputusan.md` ada satu Story berformat *Sebagai … saya mahu … supaya …*, dengan Epic sebagai parent.
+- [ ] Setiap Story Must ada AC Given/When/Then dalam Description, ikut contoh dalam `rujukan-keperluan.md`.
 - [ ] Setiap Story ada Priority ikut MoSCoW, label modul dan story point (Fibonacci, ≤ 13).
 - [ ] Item Won't berlabel `wont` dan tidak berada dalam mana-mana sprint.
 - [ ] Lajur board: To Do → In Progress → In Review → Done.
@@ -379,7 +379,7 @@ Bagi pasangan yang biasa dengan GitLab Issues/Boards ([`trek-gitlab.md`](./trek-
 ## Pautan
 
 - Kursus: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · [`JADUAL.md`](../JADUAL.md) · [`docs/kolaborasi.md`](kolaborasi.md)
-- Hari: [`hari-1/lab.md`](../hari-1/lab.md) (Lab 1.4 FR/NFR + MoSCoW) · [`hari-2/README.md`](../hari-2/README.md) (S3 acceptance criteria) · [`hari-2/lab.md`](../hari-2/lab.md) · [`hari-4/lab.md`](../hari-4/lab.md) (Lab 4.4 pelan kerja) · [`hari-10/lab.md`](../hari-10/lab.md) (Lab 10.4 retrospektif)
+- Hari: [`hari-1/lab.md`](../hari-1/lab.md) (Lab 1.4 FR/NFR + MoSCoW) · [`rujukan-keperluan.md`](./rujukan-keperluan.md) (acceptance criteria) · [`hari-2/lab.md`](../hari-2/lab.md) · [`hari-4/lab.md`](../hari-4/lab.md) (Lab 4.4 pelan kerja) · [`hari-10/lab.md`](../hari-10/lab.md) (Lab 10.4 retrospektif)
 - Docs: [`README.md`](./README.md) · [`senarai-semak-modul.md`](./senarai-semak-modul.md) · [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md) · [`glosari.md`](./glosari.md)
 
 ## Sumber

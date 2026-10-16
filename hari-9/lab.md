@@ -46,7 +46,7 @@ php spark migrate:refresh --all
 php spark db:seed DatabaseSeeder
 ```
 
-**1. Tulis kad spesifikasi (15 min, berpasangan).** Salin jadual ini ke `docs/laporan-spec.md` dalam repo projek anda dan lengkapkan setiap sel. Rujuk README §1.2 **selepas** anda cuba sendiri.
+**1. Tulis kad spesifikasi (15 min).** Salin jadual ini ke `docs/laporan-spec.md` dalam repo projek anda dan lengkapkan setiap sel. Rujuk README §1.2 **selepas** anda cuba sendiri.
 
 ```markdown
 | | RPT-01 | RPT-02 | RPT-03 |
@@ -605,7 +605,7 @@ php spark laporan:explain pas "" 2026-09-01 2026-09-30
 
 ```bash
 git add -A && git commit -m "RPT: ujian jumlah laporan = SQL + arahan laporan:explain"
-git push -u origin feat/laporan    # buka PR → semakan rakan → merge ke main
+git push -u origin feat/laporan    # buka MR ke main → jurulatih/rakan sebelah komen → anda merge
 ```
 
 ### ✅ Checkpoint 9.4 — **M3 siap**
@@ -626,7 +626,7 @@ git push -u origin feat/laporan    # buka PR → semakan rakan → merge ke main
 | `getCompiledSelect()` kemudian `get()` pulang semua baris tanpa filter | `getCompiledSelect()` (lalai) **reset** builder | Guna builder baharu, atau `getCompiledSelect(false)` |
 
 ### ⭐ Cabaran tambahan
-- Jana 50,000 tempahan sintetik (seeder berasingan `BulkBookingSeeder`, guna `insertBatch()` berkelompok 1,000), ukur masa RPT-02 dengan filter tarikh sahaja, kemudian cadangkan (dalam migration **baharu**, bukan ubah yang lama) `INDEX(created_at)` pada `pass_applications`. Jalankan `laporan:explain` sebelum/selepas dan bentangkan perbezaan `type`/`rows`. Catat sebagai cadangan kepada pemilik sistem — perubahan skema mesti direkod dalam kamus data.
+- Jana 50,000 tempahan sintetik (seeder berasingan `BulkBookingSeeder`, guna `insertBatch()` berkelompok 1,000), ukur masa RPT-02 dengan filter tarikh sahaja, kemudian cadangkan (dalam migration **baharu**, bukan ubah yang lama) `INDEX(created_at)` pada `pass_applications`. Jalankan `laporan:explain` sebelum/selepas dan bentangkan perbezaan `type`/`rows`. Catat sebagai cadangan kepada pemilik sistem — perubahan skema mesti direkod dalam `docs/log-keputusan.md`.
 - Tambah ujian `testEksportMelebihiHadDitolak`: jadikan had sebagai parameter constructor (`?array $exportLimit = null`), cipta service dengan had `['pdf' => 2, 'xlsx' => 2]`, dan `expectException(\LengthException::class)`. (Kenapa subclass yang mengatasi `const EXPORT_LIMIT` tidak berkesan jika kod memanggil `self::EXPORT_LIMIT`? Petunjuk: `self::` vs `static::`.)
 
 ---
@@ -644,4 +644,4 @@ git log --oneline -5                                              # commit RPT: 
 - [ ] `?export=pdf` dan `?export=xlsx` memuat turun fail yang boleh dibuka bagi ketiga-tiga laporan; `pemohon1@latihan.test` ditolak.
 - [ ] `composer test` hijau, termasuk `tests/Services/ReportServiceTest.php` (≥ 7 ujian).
 - [ ] `php spark laporan:explain tempahan approved 2026-06-01 2026-06-30` menunjukkan `key` bukan `NULL` untuk jadual `b`.
-- [ ] `git status --short` kosong dan branch `feat/laporan` sudah di-push (PR dibuka).
+- [ ] `git status --short` kosong dan branch `feat/laporan` sudah di-push (MR ke `main` dibuka).

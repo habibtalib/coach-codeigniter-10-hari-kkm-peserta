@@ -2,24 +2,25 @@
 
 [← docs](./README.md) · [Hari 10 README](../hari-10/README.md) · [SPEC](spesifikasi-sistem.md) · [KOLABORASI (DoD)](kolaborasi.md)
 
-> **Bila:** Hari 10 S4 (16:00–17:00). **Siapa dinilai:** setiap **pasangan** (markah pasangan) + satu catatan **individu** (segmen "terangkan kod"). **Siapa menilai:** panel = jurulatih (pengerusi) + pemilik sistem/wakil.
+> **Bila:** Hari 10 S4 (16:00–17:00). **Siapa dinilai:** setiap **peserta secara individu** — satu helaian markah setiap peserta, untuk projek sendiri `kelas-ci-<nama>`. **Siapa menilai:** panel = jurulatih (pengerusi) + pemilik sistem/wakil.
 > **Baca awal:** peserta membaca rubrik ini pada akhir Hari 9 supaya tiada kejutan.
 
 ---
 
-## 1. Format demo (15 minit)
+## 1. Format demo (8 minit setiap peserta)
 
 | Minit | Segmen | Kriteria utama dinilai |
 |-------|--------|------------------------|
-| 0–1 | Pengenalan: pasangan, tag `v1.0-capstone`, satu ayat skop | E |
-| 1–4 | **M1 TLK**: mohon → pertindihan ditolak → lulus → `TLK-2026-####` | A1 |
-| 4–7 | **M2 Pas**: mohon + dokumen → semak → lulus/tolak → garis masa | A2, B |
-| 7–9 | **M3 Laporan**: tapis → pagination kekal filter → PDF & Excel sama jumlah | A3 |
-| 9–11 | **M4 Statistik**: 4 KPI + 4 carta → ubah status → dashboard dikemas kini | A4 |
-| 11–13 | **Terangkan kod**: panel pilih fail + baris; ahli pasangan menerangkan | C, E (+ catatan individu) |
-| 13–15 | Soal jawab + bukti ujian (`vendor/bin/phpunit`) + akses negatif | B, D, E |
+| 0–1 | **Pengenalan**: nama, repo `kelas-ci-<nama>`, tag `v1.0-capstone`, satu ayat "apa yang saya bina" | E |
+| 1–3 | **M1 TLK**: mohon → pertindihan ditolak → lulus → `TLK-2026-####` | A1, B |
+| 3–5 | **M2 Pas**: mohon + dokumen → semak → lulus/tolak → garis masa `status_logs` | A2, B |
+| 5–6 | **M3 Laporan**: tapis → pagination kekal filter → PDF & Excel sama jumlah | A3 |
+| 6–7 | **M4 Statistik**: 4 KPI + 4 carta → ubah status → dashboard dikemas kini | A4 |
+| 7–8 | **Terangkan kod**: panel pilih **satu fail + satu baris**; peserta menerangkan sendiri | C, E (§4.3) |
 
-Pada minit **15:00** demo berhenti. Segmen yang tidak ditunjukkan = tidak dinilai (markah Tahap 1 bagi kriteria berkaitan, melainkan panel melihat bukti dalam soal jawab).
+**Penjaga masa** memberi isyarat pada minit **1, 3, 5, 6 dan 7**. Pada minit **8:00** demo berhenti — walaupun di tengah ayat. Segmen yang tidak ditunjukkan = tidak dinilai (markah Tahap 1 bagi kriteria berkaitan). Gate G1–G2 dan akses negatif ditunjukkan dalam segmen M1/M2; bukti ujian (`composer test` hijau, kriteria D) dan gate G3–G5 disemak panel di laptop peserta selepas minit 8, semasa mengisi helaian markah.
+
+**Bilangan panel** (~6 peserta setiap panel): **≤ 6 peserta → 1 panel**; **7–12 → 2 panel** selari; **13–18 → 3 panel**. Setiap peserta mendapat **markah individu**.
 
 ---
 
@@ -29,7 +30,7 @@ Sebarang **❌** di bawah menghadkan keputusan kepada **"Lulus bersyarat"** (mak
 
 | # | Gate | Cara panel menyemak |
 |---|------|---------------------|
-| G1 | Pengguna `applicant` **tidak** boleh membuka rekod milik pemohon lain (BR-PAS-04) | Minta pasangan tukar id dalam URL sebagai `pemohon2` |
+| G1 | Pengguna `applicant` **tidak** boleh membuka rekod milik pemohon lain (BR-PAS-04) | Minta peserta tukar id dalam URL sebagai `pemohon2` |
 | G2 | Route dilindungi di **server**: `applicant` tidak boleh buka `/tlk/keputusan`, `/pas/semakan`, `/laporan/*`, `/statistik` | Taip URL terus |
 | G3 | Tiada `.env`, kata laluan atau data sebenar dalam repo | `git ls-files \| grep -E "(^\|/)\.env$"` → kosong |
 | G4 | Fail muat naik **tidak** dalam `public/` | `ls public/` / `find public -name "*.pdf"` |
@@ -55,7 +56,7 @@ Setiap kriteria dinilai **Tahap 1–4**. Markah kriteria = (Tahap ÷ 4) × Pembe
 
 | Tahap 4 | Tahap 3 | Tahap 2 | Tahap 1 |
 |---------|---------|---------|---------|
-| G1–G5 lulus; CSRF global; `esc()` konsisten; filter `group:`/`permission:` pada setiap route group **dan** semakan pemilikan dalam service; muat naik selamat (BR-PAS-02); senarai semak K1–K10 dengan bukti | G1–G5 lulus; 1–2 item K tidak dibuktikan | Satu gate gagal tetapi dikenal pasti oleh pasangan sendiri | Lebih daripada satu gate gagal |
+| G1–G5 lulus; CSRF global; `esc()` konsisten; filter `group:`/`permission:` pada setiap route group **dan** semakan pemilikan dalam service; muat naik selamat (BR-PAS-02); senarai semak K1–K10 dengan bukti | G1–G5 lulus; 1–2 item K tidak dibuktikan | Satu gate gagal tetapi dikenal pasti oleh peserta sendiri | Lebih daripada satu gate gagal |
 
 ### C. Kualiti kod & seni bina — 20 markah
 
@@ -67,21 +68,21 @@ Setiap kriteria dinilai **Tahap 1–4**. Markah kriteria = (Tahap ÷ 4) × Pembe
 
 | Tahap 4 | Tahap 3 | Tahap 2 | Tahap 1 |
 |---------|---------|---------|---------|
-| `vendor/bin/phpunit` hijau di hadapan panel; ujian meliputi pertindihan, peralihan status, akses negatif, jumlah laporan = SQL, invalidasi cache; ≥ 1 pepijat UAT dengan ujian merah→hijau | Hijau; 3–4 kawasan di atas diliputi | Beberapa ujian; ada yang merah/dilangkau | Tiada ujian berjalan |
+| `composer test` hijau di hadapan panel; ujian meliputi pertindihan, peralihan status, akses negatif, jumlah laporan = SQL, invalidasi cache; ≥ 1 pepijat UAT dengan ujian merah→hijau | Hijau; 3–4 kawasan di atas diliputi | Beberapa ujian; ada yang merah/dilangkau | Tiada ujian berjalan |
 
 ### E. Demo & penerangan — 15 markah
 
 | Tahap 4 | Tahap 3 | Tahap 2 | Tahap 1 |
 |---------|---------|---------|---------|
-| Dalam masa; aliran lancar ikut peranan; **kedua-dua** ahli menerangkan baris kod: *apa + kenapa + apa jadi jika dibuang*; menjawab "bagaimana jika…" dengan jujur | Dalam masa; penerangan *apa + kenapa* | Melebihi masa atau hanya seorang yang menerangkan; penerangan *apa* sahaja | Tidak dapat menerangkan kod sendiri |
+| Dalam masa (8:00); aliran lancar ikut peranan; peserta menerangkan baris kod **sendiri**: *apa + kenapa + apa jadi jika dibuang*; menjawab "bagaimana jika…" dengan jujur | Dalam masa; penerangan *apa + kenapa* | Melebihi masa atau perlu dibantu menerangkan; penerangan *apa* sahaja | Tidak dapat menerangkan kod sendiri |
 
 ---
 
-## 4. Helaian markah (satu setiap pasangan)
+## 4. Helaian markah (satu setiap peserta)
 
-Salin jadual ini (atau cetak) untuk setiap pasangan.
+Salin jadual ini (atau cetak) untuk setiap peserta.
 
-**Pasangan:** `______________________` & `______________________`  **Panel:** `A / B / C`  **Masa mula:** `__:__`  **Tag Git:** `v1.0-capstone` ☐
+**Peserta:** `______________________`  **Repo:** `kelas-ci-______________`  **Panel:** `A / B / C`  **Masa mula:** `__:__`  **Tag Git:** `v1.0-capstone` ☐
 
 ### 4.1 Gate kritikal
 
@@ -105,12 +106,11 @@ Salin jadual ini (atau cetak) untuk setiap pasangan.
 
 **Contoh pengiraan:** A3 Tahap 3 → 3 ÷ 4 × 7 = **5.25**; B Tahap 4 → 4 ÷ 4 × 20 = **20**.
 
-### 4.3 Catatan individu — "terangkan kod" (minit 11–13)
+### 4.3 Terangkan kod (minit 7–8)
 
-| Peserta | Fail / baris dipilih panel | Tahap (1–4) | Memenuhi kriteria sijil #4? |
-|---------|----------------------------|:-----------:|:---------------------------:|
-| | | | ☐ Ya ☐ Tidak |
-| | | | ☐ Ya ☐ Tidak |
+| Fail / baris dipilih panel | Tahap (1–4) | Memenuhi kriteria sijil #4? |
+|----------------------------|:-----------:|:---------------------------:|
+| | | ☐ Ya ☐ Tidak |
 
 ### 4.4 Keputusan
 
@@ -131,14 +131,14 @@ Salin jadual ini (atau cetak) untuk setiap pasangan.
 
 ## 5. Jadual konsolidasi (jurulatih, selepas S4)
 
-| # | Pasangan | Panel | A Kefungsian (30) | B Keselamatan (20) | C Kualiti kod (20) | D Ujian (15) | E Demo (15) | Jumlah | Gate | Keputusan | Sijil tamat (peserta 1 / 2) |
-|---|----------|-------|------------------:|-------------------:|-------------------:|-------------:|------------:|-------:|:----:|-----------|-----------------------------|
-| 1 | | | | | | | | | | | ☐ / ☐ |
-| 2 | | | | | | | | | | | ☐ / ☐ |
-| 3 | | | | | | | | | | | ☐ / ☐ |
-| 4 | | | | | | | | | | | ☐ / ☐ |
-| 5 | | | | | | | | | | | ☐ / ☐ |
-| 6 | | | | | | | | | | | ☐ / ☐ |
+| # | Peserta | Repo `kelas-ci-<nama>` | Panel | A Kefungsian (30) | B Keselamatan (20) | C Kualiti kod (20) | D Ujian (15) | E Demo (15) | Jumlah | Gate | Keputusan | Sijil tamat |
+|---|---------|------------------------|-------|------------------:|-------------------:|-------------------:|-------------:|------------:|-------:|:----:|-----------|:-----------:|
+| 1 | | | | | | | | | | | | ☐ |
+| 2 | | | | | | | | | | | | ☐ |
+| 3 | | | | | | | | | | | | ☐ |
+| 4 | | | | | | | | | | | | ☐ |
+| 5 | | | | | | | | | | | | ☐ |
+| 6 | | | | | | | | | | | | ☐ |
 
 ---
 
@@ -156,5 +156,5 @@ Kriteria sijil tamat kursus (Hari 10 README §4.3) menggunakan rubrik ini sepert
 
 - Sebelum demo pertama, panel menilai **satu contoh bersama** (demo jurulatih 3 minit atau rakaman) dan menyepakati Tahap 3 bagi A3 dan E.
 - Beri markah **berdasarkan apa yang ditunjukkan**, bukan apa yang didakwa. "Ia berfungsi di laptop saya semalam" = tidak ditunjukkan.
-- Pemilik sistem memberi pandangan utama untuk **A** (kefungsian ikut URS); jurulatih untuk **B**, **C**, **D**; **E** dipersetujui bersama.
+- Pemilik sistem memberi pandangan utama untuk **A** (kefungsian ikut spesifikasi BR-*); jurulatih untuk **B**, **C**, **D**; **E** dipersetujui bersama.
 - Selisih > 1 tahap antara ahli panel → bincang 1 minit; jika masih berbeza, ambil tahap yang lebih rendah dan catat sebabnya.

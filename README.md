@@ -13,7 +13,13 @@ Bahan coaching lengkap (nota, lab hands-on, nota penceramah, templat, slaid) unt
 | M3 | **Laporan** | 9 | 3 laporan bertapis + eksport PDF/Excel |
 | M4 | **Statistik** | 10 | Dashboard KPI + carta merentas modul, cache |
 
-Hari 1–3: keperluan, carta alir, acceptance criteria, ERD, wireframe. Hari 4: persekitaran CI4 + migration. Hari 10 ditutup dengan **demo capstone kepada pemilik sistem**.
+Peta kursus ([`JADUAL.md`](./JADUAL.md) § Ringkasan fasa):
+
+| Fasa | Hari | Fokus |
+|------|------|-------|
+| **A — Fahami & Bina Asas CI** | 1–3 | Keperluan (Hari 1 + S1 Hari 2); mulai Hari 2 setiap peserta membina dalam projek private sendiri **`kelas-ci-<nama>`** di GitLab KKM: route, view, borang, database & migration pertama |
+| **B — Sedia & Bina** | 4–8 | Shield, baki migration, aliran Git solo (MR ke `main` sendiri), **M1 TLK**, **M2 Pas** |
+| **C — Lapor & Serah** | 9–10 | **M3 Laporan**, **M4 Statistik**, ujian akhir; Hari 10 ditutup dengan **demo capstone individu kepada pemilik sistem** |
 
 ## Mula di sini
 
@@ -51,7 +57,7 @@ hari-1/ … hari-10/     README.md · lab.md · nota-penceramah.md
 docs/nota-NN-*.md      nota topikal (MVC, migration, model/enum, validasi, transaksi, Shield, upload, laporan, cache, ujian, keselamatan, Git)
 templates/dokumen/     URS, acceptance criteria, kamus data, kes ujian, UAT sign-off
 templates/kod/         kod rujukan jurulatih (*.php.txt) — kunci jawapan
-docs/                  persediaan, tugasan persediaan, pustaka prompt, rubrik capstone, glosari
+docs/                  persediaan, repo kelas-ci (trek-gitlab), ERD rujukan, pustaka prompt, rubrik capstone, glosari
 slides/                ci-kkm-10.html (buka terus dalam pelayar)
 ```
 

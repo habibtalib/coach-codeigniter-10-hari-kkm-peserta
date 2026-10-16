@@ -2,7 +2,7 @@
 
 [⬅️ README Hari 5](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**)
 
-> **Peraturan lab:** navigator membaca langkah & SPEC, driver menaip. **Cuba manual dahulu** — baca mesej ralat penuh (Whoops page menunjukkan fail & baris). Selepas 10 minit buntu: tanya jurulatih atau guna AI untuk *menerangkan* ralat. Template `templates/kod/*.php.txt` untuk **menyemak** selepas anda cuba.
+> **Peraturan lab:** kerja individu dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. **Cuba manual dahulu** — baca mesej ralat penuh (Whoops page menunjukkan fail & baris). Selepas 10 minit buntu: tanya jurulatih atau guna AI untuk *menerangkan* ralat. Template `templates/kod/*.php.txt` untuk **menyemak** selepas anda cuba.
 
 | Lab | Sesi | Branch | Hasil |
 |-----|------|--------|-------|
@@ -254,7 +254,7 @@ Menulis enum `BookingStatus` & `SlotCategory`, Entity `SlotBooking` dan Model TL
 
 ### ✅ Checkpoint
 - `composer test -- --no-coverage tests/tlk/BookingStatusTest.php` → `OK (5 tests, …)` (`OK (6 tests, …)` jika ujian cabaran ⭐ ditambah).
-- Navigator boleh menjawab: *"Kenapa `status` ada dalam `$allowedFields` tetapi pemohon tidak boleh menetapkannya?"* (README §1.3).
+- Anda boleh menjawab: *"Kenapa `status` ada dalam `$allowedFields` tetapi pemohon tidak boleh menetapkannya?"* (README §1.3).
 - Bandingkan dengan `BookingStatus.php.txt` (modul **Templat & Rujukan**), `SlotCategory.php.txt` (modul **Templat & Rujukan**), `SlotBooking-Entity.php.txt` (modul **Templat & Rujukan**), `SlotBookingModel.php.txt` (modul **Templat & Rujukan**).
 
 ### 🧯 Masalah lazim

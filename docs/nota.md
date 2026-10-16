@@ -31,8 +31,8 @@
 
 | Hari | Tajuk | Nota utama | Nota sokongan |
 |------|-------|-----------|---------------|
-| 1–3 | Keperluan, proses, ERD, wireframe | — (lihat `hari-1/` … `hari-3/`) | [02](./nota-02-migration-seeder-dan-query-builder.md) (baca ERD → migration sebagai persediaan) |
-| 4 | Assignment Review & Development Kickoff | [01](./nota-01-mvc-dan-kitaran-request-ci4.md), [02](./nota-02-migration-seeder-dan-query-builder.md), [06](./nota-06-shield-auth-dan-rbac.md) | [12](./nota-12-git-aliran-kerja.md), [11](./nota-11-keselamatan-aplikasi-web.md) |
+| 1–3 | Keperluan (Hari 1) · `kelas-ci-<nama>`: route, borang, database & migration pertama (Hari 2–3) | [01](./nota-01-mvc-dan-kitaran-request-ci4.md), [04](./nota-04-validasi-dan-borang.md), [02](./nota-02-migration-seeder-dan-query-builder.md) | [12](./nota-12-git-aliran-kerja.md) |
+| 4 | Demo projek sendiri, Shield, 8 migration lagi & aliran Git solo | [01](./nota-01-mvc-dan-kitaran-request-ci4.md), [02](./nota-02-migration-seeder-dan-query-builder.md), [06](./nota-06-shield-auth-dan-rbac.md) | [12](./nota-12-git-aliran-kerja.md), [11](./nota-11-keselamatan-aplikasi-web.md) |
 | 5 | TLK (1) | [03](./nota-03-model-entity-dan-enum.md), [04](./nota-04-validasi-dan-borang.md) | [01](./nota-01-mvc-dan-kitaran-request-ci4.md) |
 | 6 | TLK (2) | [05](./nota-05-service-layer-dan-transaksi.md), [10](./nota-10-ujian-phpunit-ci4.md) | [02](./nota-02-migration-seeder-dan-query-builder.md) |
 | 7 | Pas (1) | [07](./nota-07-muat-naik-fail-selamat.md), [04](./nota-04-validasi-dan-borang.md) | [03](./nota-03-model-entity-dan-enum.md), [11](./nota-11-keselamatan-aplikasi-web.md) |

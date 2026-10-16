@@ -428,7 +428,7 @@ public function testPenyemakTidakBolehLuluskan(): void
 
 ## S4 — Wrap-up Modul Pas: Demo 3 Peranan (16:00–17:00)
 
-### 4.1 Skrip demo (5 minit setiap pasangan)
+### 4.1 Skrip demo (5 minit setiap peserta)
 
 Tiga tetingkap pelayar (biasa, inkognito, pelayar kedua) — satu untuk setiap peranan:
 
@@ -447,13 +447,13 @@ Tiga tetingkap pelayar (biasa, inkognito, pelayar kedua) — satu untuk setiap p
 
 Semak terhadap [KOLABORASI §2](../docs/kolaborasi.md):
 
-- [ ] Acceptance criteria URS Pas (Hari 2) lulus diuji manual (`docs/ujian-manual-pas.md` + demo).
+- [ ] Peraturan BR-PAS ([SPEC](../docs/spesifikasi-sistem.md) §2) lulus diuji manual (`docs/ujian-manual-pas.md` + demo).
 - [ ] Validasi di server: borang (Hari 7), catatan penolakan (hari ini), fail (BR-PAS-02).
 - [ ] Akses dikawal di server: filter route + `authorize()` + `canView()`.
 - [ ] Setiap peralihan direkod dalam `status_logs` (BR-PAS-05) — termasuk penciptaan.
 - [ ] `composer test` lulus.
 - [ ] Tiada `.env`/rahsia; data sintetik sahaja.
-- [ ] Setiap ahli pasangan boleh menerangkan `transition()` dan tiga lapisan akses.
+- [ ] Anda boleh menerangkan `transition()` dan tiga lapisan akses.
 
 ### 4.3 ⭐ Tamat tempoh automatik: `php spark pas:expire`
 

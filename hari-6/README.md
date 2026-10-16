@@ -147,7 +147,7 @@ Paparan `/tlk/tempahan/ketersediaan` ialah borang **GET** (filter dalam URL → 
 
 ### 🎯 Kuiz S1
 
-1. Slot `A-01` ada tempahan `approved` 10–20 Okt. Pasangan anda menulis semakan pertindihan seperti berikut. Permohonan baharu manakah yang akan **tersilap diterima**?
+1. Slot `A-01` ada tempahan `approved` 10–20 Okt. Rakan sekerja anda menulis semakan pertindihan seperti berikut. Permohonan baharu manakah yang akan **tersilap diterima**?
    ```php
    $builder->where('slot_id', $slotId)
        ->whereIn('status', BookingStatus::active())
@@ -605,13 +605,13 @@ Layout akhir: `templates/kod/layout-main.php.txt` (modul **Templat & Rujukan**).
 
 | DoD (KOLABORASI §2) | Bukti M1 |
 |---------------------|----------|
-| AC URS lulus diuji manual | `docs/ujian-manual-tlk.md` — 16/16 ✅ (termasuk TM-TLK-16) |
+| Peraturan BR-TLK ([SPEC](../docs/spesifikasi-sistem.md) §2) lulus diuji manual | `docs/ujian-manual-tlk.md` — 16/16 ✅ (termasuk TM-TLK-16) |
 | Validasi di server | `BookingRules` + `BookingService::assertValidPeriod()` |
 | Akses dikawal di server | `session`, `permission:tlk.apply`, `permission:tlk.decide`, `group:admin` + `isOwnedBy()` |
 | Peralihan status dilog | `status_logs` — sejarah dipapar |
 | Ujian PHPUnit lulus | `composer test -- tests/tlk` hijau |
 | Tiada rahsia dalam commit | `git ls-files | grep .env` kosong |
-| Boleh diterangkan | Setiap ahli menerangkan `transition()` baris demi baris |
+| Boleh diterangkan | Anda menerangkan `transition()` baris demi baris |
 
 ### 🎯 Kuiz S4
 

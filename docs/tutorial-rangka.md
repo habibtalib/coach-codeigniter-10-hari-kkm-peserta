@@ -2,23 +2,23 @@
 
 [🛠️ Persediaan](./persediaan.md) · [🧪 Lab Hari 4](../hari-4/lab.md) · [📘 SPEC](spesifikasi-sistem.md) · [🤝 KOLABORASI](kolaborasi.md) · [🧪 Nota 10 · Ujian](nota-10-ujian-phpunit-ci4.md)
 
-> **Pilihan, bukan wajib.** Hari 1–3 hanya keperluan (URS, carta alir, ERD). Binaan sebenar bermula pada Hari 4 ([Lab 4.2](../hari-4/lab.md) dan [Lab 4.3](../hari-4/lab.md)). Halaman ini memberi anda **permulaan awal**: Bahagian A ialah projek latihan CI4 asas pada Hari 1; Bahagian B–G membina rangka aplikasi sebenar dalam repo pasangan, dengan nama, arahan, kunci `.env`, nama DB dan path fail **sama** dengan Lab 4.2/4.3.
+> **Pilihan, bukan wajib.** Mulai Hari 2 anda membina dalam projek sendiri `kelas-ci-<nama>` ([Lab 2.2](../hari-2/lab.md#lab-22--projek-ci-anda-di-gitlab-s2)–2.4, [Lab 3.1](../hari-3/lab.md#lab-31--database-mysql--env-s1)–3.4, [Lab 4.2](../hari-4/lab.md)–4.3). Halaman ini mengumpulkan langkah rangka di satu tempat, untuk **mula awal** atau ulang kaji: Bahagian A ialah projek latihan CI4 asas pada Hari 1; Bahagian B–G membina rangka aplikasi dalam `kelas-ci-<nama>`, dengan nama, arahan, kunci `.env`, nama DB dan path fail **sama** dengan lab yang dipetakan dalam jadual di bawah.
 
 **Platform kursus: Windows + Laragon + Git Bash** ([`persediaan.md`](./persediaan.md) §2, §5). Taip semua blok `bash` dalam terminal **Git Bash** VS Code (`echo $SHELL` → `/usr/bin/bash`). Jika arahan berbeza dalam Command Prompt, bentuk `bat` diberi di sebelahnya. Dalam Git Bash, `~` = `C:\Users\<nama>`, dan `C:\Users\<nama>\latihan` ditulis `/c/Users/<nama>/latihan`.
 
 Arahan CI4 dan Shield disahkan dengan CodeIgniter **4.7.5** + Shield **1.4.1** pada 2026-10-15. Kursus memerlukan CI **4.6+** dan PHP **8.2+**.
 
-| Bahagian | Apa | Folder | Bila | Minit |
-|----------|-----|--------|------|-------|
-| A | CI4 asas: welcome page, `.env`, route → controller → view | `~/latihan/ci4-asas` (latihan) | Hari 1 (Lab 1.5); projek sebenar `kelas-ci-<nama>` bermula Hari 2 (Lab 2.2–2.4) | ±40 |
-| B | Projek CI4 dalam repo pasangan + struktur folder | `~/latihan/sistem-tlk-pas` | Sebelum Hari 4 | 20 |
-| C | `.env` database | `~/latihan/sistem-tlk-pas` | Selepas [`persediaan.md`](./persediaan.md) §4 | 10 |
-| D | Pasang Shield | `~/latihan/sistem-tlk-pas` | Selepas C | 20 |
-| E | Route → controller `Home` → view dengan layout | `~/latihan/sistem-tlk-pas` | Selepas D | 20 |
-| F | Migration pertama + seeder (satu jadual) | `~/latihan/sistem-tlk-pas` | Selepas E | 20 |
-| G | Ujian asap `composer test` | `~/latihan/sistem-tlk-pas` | Selepas F | 10 |
+| Bahagian | Apa | Folder | Lab | Minit |
+|----------|-----|--------|-----|-------|
+| A | CI4 asas: welcome page, `.env`, route → controller → view | `~/latihan/ci4-asas` (latihan) | Hari 1 (Lab 1.5) | ±40 |
+| B | Projek `kelas-ci-<nama>` di GitLab + struktur folder | `~/latihan/kelas-ci-<nama>` | Hari 2 (Lab 2.2) | 20 |
+| C | `.env` database | `~/latihan/kelas-ci-<nama>` | Hari 3 (Lab 3.1) | 10 |
+| D | Pasang Shield | `~/latihan/kelas-ci-<nama>` | Hari 4 (Lab 4.2) | 20 |
+| E | Route → controller `Home` → view dengan layout | `~/latihan/kelas-ci-<nama>` | Hari 2 (Lab 2.3, layout asas) · Hari 4 (Lab 4.2, layout Bootstrap) | 20 |
+| F | Migration pertama + seeder (`departments`, `parking_zones`) | `~/latihan/kelas-ci-<nama>` | Hari 3 (Lab 3.2) | 20 |
+| G | Ujian asap `composer test` | `~/latihan/kelas-ci-<nama>` | Hari 4 (Lab 4.2) | 10 |
 
-> **Dua folder, dua tujuan.** `ci4-asas` ialah projek **latihan sahaja** untuk Hari 1 — bukan repo Git dan boleh dipadam bila-bila masa. Projek sebenar ialah `kelas-ci-<nama>` di GitLab, dicipta dalam Lab 2.2 Hari 2. Rangka sebenar dibina dalam repo pasangan `sistem-tlk-pas` (Lab 1.0). Kedua-dua folder tidak perlu berada dalam `C:\laragon\www`: kursus menghidangkan aplikasi dengan `php spark serve`, bukan Apache Laragon.
+> **Dua folder, dua tujuan.** `ci4-asas` ialah projek **latihan sahaja** untuk Hari 1 — bukan repo Git dan boleh dipadam bila-bila masa. Projek sebenar ialah `kelas-ci-<nama>`: repo private anda di GitLab (GitLab KKM), dicipta dalam Lab 2.2 Hari 2 dan digunakan hingga Hari 10. Bahagian B–G semuanya dalam folder ini. Tertib kursus ialah B → C → F → D → E → G (Bahagian F dibuat pada Hari 3, sebelum Shield). Kedua-dua folder tidak perlu berada dalam `C:\laragon\www`: kursus menghidangkan aplikasi dengan `php spark serve`, bukan Apache Laragon.
 
 ---
 
@@ -190,62 +190,59 @@ Command Prompt: `rmdir /s /q %USERPROFILE%\latihan\ci4-asas`.
 
 ---
 
-## Bahagian B — Projek CI4 dalam repo pasangan & struktur folder
+## Bahagian B — Projek `kelas-ci-<nama>` di GitLab & struktur folder
 
 ### 🎯 Matlamat
 
-Mencipta projek CI4 sebenar dalam repo pasangan `~/latihan/sistem-tlk-pas` (sama dengan Lab 4.2 langkah 1), membuat commit yang bersih, dan menerangkan fungsi setiap folder utama.
+Mencipta projek CI4 `~/latihan/kelas-ci-<nama>` (sama dengan Lab 2.2), push commit pertama yang bersih ke projek private anda di GitLab KKM, dan menerangkan fungsi setiap folder utama.
 
 ### Prasyarat
 
-Repo `~/latihan/sistem-tlk-pas` (`C:\Users\<nama>\latihan\sistem-tlk-pas`) dari Lab 1.0, dengan `README.md` dan `docs/`. Repo sudah ada Git — **jangan** `git init` lagi.
+- Projek **kosong** `kelas-ci-<nama>` di GitLab KKM: Private, dalam namespace anda, **tanpa** README, jurulatih ditambah sebagai Reporter ([Lab 2.2](../hari-2/lab.md#lab-22--projek-ci-anda-di-gitlab-s2) langkah 1–2, [`trek-gitlab.md`](./trek-gitlab.md)).
+- Identiti Git sudah ditetapkan: `git config --global user.name`, `user.email`, `init.defaultBranch main` (Lab 2.2 langkah 3).
+- `<nama>` = nama pendek anda, huruf kecil tanpa ruang (cth `kelas-ci-aminah`). Jangan taip `<` `>` — dalam Git Bash ia bermaksud redirect.
 
 ### Langkah
 
-1. **Cipta projek dalam repo sedia ada.** `composer create-project` memerlukan folder kosong, jadi cipta dalam subfolder sementara dan pindahkan. Jalankan dalam **Git Bash** sahaja — Command Prompt tiada `cp -n`, dan `Copy-Item` PowerShell menulis ganti `README.md` anda:
+1. **Cipta projek:**
 
    ```bash
-   cd ~/latihan/sistem-tlk-pas
-   composer create-project codeigniter4/appstarter ci4-tmp
-   cp -Rn ci4-tmp/. .        # -n: jangan tulis ganti fail sedia ada (cth README.md anda)
-   rm -rf ci4-tmp
+   mkdir -p ~/latihan && cd ~/latihan
+   composer create-project codeigniter4/appstarter kelas-ci-<nama>
+   cd kelas-ci-<nama>
    php spark --version
    ```
 
-2. **Kebersihan projek.** Cipta `.gitattributes` dan `.editorconfig` di akar projek dalam VS Code (*File → New File*). Kandungannya ada dalam Lab 4.2 langkah 1 (template: `gitattributes.txt` (modul **Templat & Rujukan**), `editorconfig.txt` (modul **Templat & Rujukan**)). `* text=auto eol=lf` memastikan fail di-commit dengan hujung baris LF walaupun Git Windows anda `core.autocrlf true`. Kemudian:
+2. **Mod pembangunan dan kebersihan projek.** `cp env .env`, buka `.env` dalam VS Code (`code .`), buang `#` dan tetapkan `CI_ENVIRONMENT = development`. Kemudian cipta `.gitattributes` dan `.editorconfig` di akar projek (*File → New File*) **sebelum** commit pertama. Kandungannya ada dalam Lab 2.2 langkah 6 (template: `gitattributes.txt` (modul **Templat & Rujukan**), `editorconfig.txt` (modul **Templat & Rujukan**)). `* text=auto eol=lf` memastikan fail di-commit dengan hujung baris LF walaupun Git Windows anda `core.autocrlf true`.
+
+3. **Mula repo, semak `.gitignore`, commit dan push.** `.gitignore` appstarter mesti mengabaikan `.env`, `vendor/` dan kandungan `writable/`:
 
    ```bash
-   git add .gitattributes .editorconfig
-   git add --renormalize .
-   composer config process-timeout 0    # skrip Composer tidak dihentikan selepas 300 s
-   git commit -m "SETUP: .gitattributes + .editorconfig (hujung baris LF)"
-   ```
-
-   **Buang blok coverage** (Lab 4.2 langkah 1). Laptop kursus tiada Xdebug/PCOV, dan `phpunit.dist.xml` appstarter meminta laporan coverage dengan `failOnWarning="true"`, jadi `composer test` keluar dengan kod 1 walaupun semua ujian lulus. Dalam VS Code, buka `phpunit.dist.xml` dan padam seluruh blok `<coverage …> … </coverage>` (biarkan `<source>`, `<testsuites>` dan `<php>`). Fail ini di-commit dalam langkah 3.
-
-3. **Semak `.gitignore`, kemudian commit projek.** `.gitignore` appstarter mesti mengabaikan `.env`, `vendor/` dan kandungan `writable/`:
-
-   ```bash
+   git init --initial-branch=main
    git check-ignore -v .env vendor/autoload.php writable/logs/ujian.log
    ```
 
-   Ketiga-tiga baris mesti dicetak. Commit projek (senarai fail Lab 4.4 langkah 2, dengan seluruh folder `app`):
+   Ketiga-tiga baris mesti dicetak. Commit projek dan push ke GitLab (URL HTTPS dari halaman projek kosong anda):
 
    ```bash
-   git add composer.json composer.lock spark env public app builds preload.php phpunit*.dist* tests writable .gitignore LICENSE
+   git add .
    git status --short | grep -E "\.env$|^.. vendor/" || echo "OK: tiada fail sulit/vendor"
    git commit -m "SETUP: projek CI4 appstarter"
+   git remote add origin https://<gitlab-kkm>/<pengguna>/kelas-ci-<nama>.git
+   git push -u origin main
    ```
+
+   Pada push pertama, **Git Credential Manager** membuka tetingkap log masuk: log masuk dengan akaun GitLab KKM anda. Kata laluan ditolak? Cipta *Personal Access Token* (skop `write_repository`) dan guna token sebagai kata laluan ([`trek-gitlab.md`](./trek-gitlab.md)).
 
 4. **Lawatan folder.** Buka folder projek dalam VS Code dan bandingkan dengan peta ini:
 
    ```text
-   sistem-tlk-pas\
+   kelas-ci-<nama>\
    ├── app\
    │   ├── Config\          tetapan: Routes.php, Database.php, Filters.php, Auth.php (selepas Shield)
    │   ├── Controllers\     Home.php, BaseController.php
    │   ├── Models\          model (UserModel.php selepas Shield)
-   │   ├── Views\           templat HTML (welcome_message.php, layouts\, partials\)
+   │   ├── Views\           templat HTML (welcome_message.php, layout.php, layouts\, partials\)
    │   └── Database\
    │       ├── Migrations\  perubahan skema, satu fail = satu langkah
    │       └── Seeds\       data sintetik
@@ -253,7 +250,6 @@ Repo `~/latihan/sistem-tlk-pas` (`C:\Users\<nama>\latihan\sistem-tlk-pas`) dari 
    ├── writable\            cache, logs, session, uploads (CI4 menulis di sini)
    ├── tests\               ujian PHPUnit (contoh appstarter)
    ├── vendor\              pakej Composer (JANGAN sunting, JANGAN commit)
-   ├── docs\                dokumen Hari 1–3 anda
    ├── env                  templat; .env = salinan setempat anda (tidak di-commit)
    └── spark                alat baris arahan CI4
    ```
@@ -267,23 +263,22 @@ Repo `~/latihan/sistem-tlk-pas` (`C:\Users\<nama>\latihan\sistem-tlk-pas`) dari 
 ### Anda patut nampak
 
 - `git check-ignore` mencetak tiga baris `.gitignore:…`.
-- `git log --oneline` → commit `SETUP: mula repo dokumen` (Lab 1.0) + dua commit `SETUP:` baharu.
+- `git log --oneline` → satu commit `SETUP: projek CI4 appstarter`; halaman projek GitLab menunjukkan `app/`, `public/`, `spark` — **tiada** `.env` dan **tiada** `vendor/`.
 - `php spark list` → kumpulan arahan `Database` (`migrate`, `db:seed`, `db:table`) dan `Generators` (`make:migration`, `make:seeder`).
 
 ### 🧯 Masalah lazim
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| `Project directory "…" is not empty` | `create-project` terus ke folder repo | Guna subfolder `ci4-tmp` seperti langkah 1 |
-| `README.md` anda hilang / diganti README CodeIgniter | Disalin dengan PowerShell / Explorer, bukan `cp -Rn` | `git checkout -- README.md` |
-| `git check-ignore` tidak mencetak `.env` | `.gitignore` tiada / tertimpa | Pastikan `.gitignore` appstarter disalin (`ls -a`); tambah baris `.env` dan `/vendor/` |
-| `Could not open input file: spark` | Terminal bukan di akar projek | `cd ~/latihan/sistem-tlk-pas` |
+| `! [rejected] main -> main (fetch first)` | Projek GitLab dicipta **dengan** README | Padam projek dan cipta semula tanpa README, atau `git pull --rebase origin main` dahulu |
+| `remote: HTTP Basic: Access denied` | Kata laluan ditolak (SSO/2FA) atau kelayakan lama tersimpan | Personal Access Token sebagai kata laluan; padam kelayakan lama dalam Windows *Credential Manager* |
+| `git check-ignore` tidak mencetak `.env` | `.gitignore` tiada / tertimpa | Pastikan `.gitignore` appstarter wujud (`ls -a`); tambah baris `.env` dan `/vendor/` |
+| `Could not open input file: spark` | Terminal bukan di akar projek | `cd ~/latihan/kelas-ci-<nama>` |
 | `warning: in the working copy of '…', LF will be replaced by CRLF` | `core.autocrlf true` Git Windows | Amaran sahaja; `.gitattributes` (langkah 2) menetapkan LF dalam repo |
 
 ### Commit
 
 ```text
-SETUP: .gitattributes + .editorconfig (hujung baris LF)
 SETUP: projek CI4 appstarter
 ```
 
@@ -293,19 +288,20 @@ SETUP: projek CI4 appstarter
 
 ### 🎯 Matlamat
 
-Menyambung projek ke database `kkm_latihan` dengan pengguna `kkm_dev`, seperti Lab 4.2 langkah 3–5.
+Menyambung `kelas-ci-<nama>` ke database `kkm_latihan` dengan pengguna `kkm_dev`, seperti Lab 3.1 langkah 3–5 (dan Lab 4.2 langkah 3 untuk `app.indexPage`).
 
 ### Prasyarat
 
-- Database `kkm_latihan` & `kkm_latihan_test` + pengguna `kkm_dev` sudah dicipta ([`persediaan.md`](./persediaan.md) §4).
+- Database `kkm_latihan` & `kkm_latihan_test` + pengguna `kkm_dev` sudah dicipta (Lab 3.1 langkah 2 atau [`persediaan.md`](./persediaan.md) §4).
+- `.env` sudah wujud dari Bahagian B (Lab 2.2 langkah 5).
 - MySQL Laragon berjalan: **Start All** (Apache dinyahtanda, §2 langkah 3) atau *Menu → MySQL → Start MySQL*.
 
 ### Langkah
 
-1. Salin template (Command Prompt: `copy env .env`), kemudian buka `.env` dalam VS Code:
+1. Buka `.env` sedia ada dalam VS Code. **Jangan** jalankan `cp env .env` lagi — ia menulis ganti tetapan anda. Sahkan fail wujud:
 
    ```bash
-   cp env .env
+   ls -a | grep -x .env
    ```
 
 2. Nyahkomen & isi (nilai ini juga dipapar pada halaman kohort anda):
@@ -412,7 +408,7 @@ Memasang CodeIgniter Shield, menjana `UserModel` sendiri, mematikan daftar sendi
    public string $userProvider = \App\Models\UserModel::class;
    ```
 
-4. `app/Config/Filters.php` — dalam `$globals['before']`, nyahkomen `'csrf'`.
+4. `app/Config/Filters.php` — semak `$globals['before']` masih mengandungi `'csrf'` (dihidupkan dalam Lab 2.4 langkah 6; `shield:setup` tidak menghidupkannya).
 
 5. `app/Controllers/BaseController.php` — dalam `initController()`, letak helper **sebelum** `parent::initController(...)`:
 
@@ -430,7 +426,7 @@ php spark db:table --show
 ```
 
 - Route `login` (GET & POST) dan `logout` wujud.
-- Jadual `users`, `auth_identities`, `auth_groups_users`, `settings`, `migrations` wujud.
+- Jadual `users`, `auth_identities`, `auth_groups_users`, `settings`, `migrations` wujud (serta `departments` dan `parking_zones` jika Bahagian F / Lab 3.2 sudah dibuat).
 
 ### 🧯 Masalah lazim
 
@@ -446,15 +442,16 @@ php spark db:table --show
 ```bash
 git add composer.json composer.lock app
 git commit -m "SETUP: pasang Shield + UserModel + Auth/Filters"
+git push
 ```
 
 ---
 
-## Bahagian E — Laluan → controller `Home` → view dengan layout
+## Bahagian E — Route → controller `Home` → view dengan layout
 
 ### 🎯 Matlamat
 
-Membina aliran **route → controller → view** dengan satu layout Bootstrap 5.3 (`$this->extend` / `$this->section`), dan melindungi `/` dengan filter `session` (Lab 4.2 langkah 12–16).
+Membina aliran **route → controller → view** dengan satu layout Bootstrap 5.3 (`$this->extend` / `$this->section`), dan melindungi `/` dengan filter `session` (Lab 4.2 langkah 12–16). Konsep layout asas sudah anda bina dalam Lab 2.3 (`app/Views/layout.php`); view lama (`hello`, `daftar`, `jabatan`, `zon`) kekal menggunakannya.
 
 ### Langkah
 
@@ -528,15 +525,16 @@ Membina aliran **route → controller → view** dengan satu layout Bootstrap 5.
 ```bash
 git add app/Views app/Controllers app/Config/Routes.php
 git commit -m "SETUP: layout Bootstrap + halaman utama dilindungi"
+git push
 ```
 
 ---
 
-## Bahagian F — Migration pertama + seeder (satu jadual)
+## Bahagian F — Migration pertama + seeder (`departments`, `parking_zones`)
 
 ### 🎯 Matlamat
 
-Menulis **satu** migration (`departments`) dan seeder idempoten sebagai corak. Sembilan migration lain kekal untuk Lab 4.3.
+Menulis migration `departments` dan `parking_zones` serta seeder idempoten sebagai corak (Lab 3.2). Lapan migration lain kekal untuk Lab 4.3.
 
 ### Langkah
 
@@ -544,10 +542,13 @@ Menulis **satu** migration (`departments`) dan seeder idempoten sebagai corak. S
 
    ```bash
    php spark make:migration CreateDepartmentsTable
+   php spark make:migration CreateParkingZonesTable
    php spark make:seeder DepartmentSeeder
+   php spark make:seeder ParkingSeeder
+   php spark make:seeder DatabaseSeeder
    ```
 
-2. Isi `up()`/`down()` dalam `app/Database/Migrations/*_CreateDepartmentsTable.php` (`*` = cap masa) dengan kod Lab 4.3 langkah 2 (`id`, `code` UNIQUE, `name`, `created_at`, `updated_at`; `dropTable('departments', true)` dalam `down()`).
+2. Isi `up()`/`down()` dalam `app/Database/Migrations/*_CreateDepartmentsTable.php` dan `*_CreateParkingZonesTable.php` (`*` = cap masa) dengan kod Lab 3.2 langkah 2–3 (`id`, `code` UNIQUE, `name`, `location` untuk zon, `created_at`, `updated_at`; `dropTable(…, true)` dalam `down()`).
 
 3. Kitaran pendek — jalankan, semak, undur, jalankan semula:
 
@@ -558,11 +559,11 @@ Menulis **satu** migration (`departments`) dan seeder idempoten sebagai corak. S
    php spark migrate
    ```
 
-4. Isi `app/Database/Seeds/DepartmentSeeder.php` dengan kod Lab 4.3 langkah 8 (4 bahagian `BTM`, `BKW`, `BSM`, `BPA`; `->ignore(true)->insertBatch()`). Jalankan **dua kali**:
+4. Isi tiga seeder dengan kod Lab 3.2 langkah 5 (4 bahagian `BTM`, `BKW`, `BSM`, `BPA`; 3 zon `A`, `B`, `C`; `->ignore(true)->insertBatch()`; `DatabaseSeeder` memanggil kedua-duanya). Jalankan **dua kali**:
 
    ```bash
-   php spark db:seed DepartmentSeeder
-   php spark db:seed DepartmentSeeder
+   php spark db:seed DatabaseSeeder
+   php spark db:seed DatabaseSeeder
    php spark db:table departments
    ```
 
@@ -572,12 +573,14 @@ Menulis **satu** migration (`departments`) dan seeder idempoten sebagai corak. S
 
 ```text
 Running: (App) 2026-10-15-040102_App\Database\Migrations\CreateDepartmentsTable
+Running: (App) 2026-10-15-040110_App\Database\Migrations\CreateParkingZonesTable
 Seeded: App\Database\Seeds\DepartmentSeeder
-Seeded: App\Database\Seeds\DepartmentSeeder
+Seeded: App\Database\Seeds\ParkingSeeder
+Seeded: App\Database\Seeds\DatabaseSeeder
 ```
 
-- `php spark migrate:status` → satu baris namespace `App` (`CreateDepartmentsTable`) dengan tarikh *Migrated On*.
-- `departments` → **4** baris selepas dua larian, tanpa `Duplicate entry`.
+- `php spark migrate:status` → dua baris namespace `App` (`CreateDepartmentsTable`, `CreateParkingZonesTable`) dengan tarikh *Migrated On*.
+- `departments` → **4** baris dan `parking_zones` → **3** baris selepas dua larian, tanpa `Duplicate entry`.
 
 ### 🧯 Masalah lazim
 
@@ -586,12 +589,14 @@ Seeded: App\Database\Seeds\DepartmentSeeder
 | `Nothing to migrate` selepas mengubah fail | Fail sudah direkod dalam jadual `migrations` | `php spark migrate:rollback` → `php spark migrate` |
 | `Duplicate entry 'BTM' for key 'code'` pada seed kedua | `insertBatch()` tanpa `ignore(true)` | Guna `->ignore(true)->insertBatch()` |
 | `Table 'departments' already exists` semasa `migrate` | `make:migration CreateDepartmentsTable` dijalankan dua kali | Padam fail pendua (cap masa lebih baharu) dalam `app/Database/Migrations/` |
+| `Class "App\Database\Seeds\DepartmentSeeder" not found` | Nama fail ≠ nama kelas | Fail `DepartmentSeeder.php`, kelas `DepartmentSeeder` |
 
 ### Commit
 
 ```bash
 git add app/Database
-git commit -m "SETUP: migration departments + DepartmentSeeder"
+git commit -m "DB: migration departments + parking_zones, seeder"
+git push
 ```
 
 ---
@@ -604,7 +609,13 @@ Menjalankan ujian contoh appstarter pada database **ujian** MySQL, bukan DB pemb
 
 ### Langkah
 
-1. Tambah kumpulan `tests` ke `.env` (sama dengan README Hari 6 §3.2). `DatabaseTestTrait` memadam semula jadual — **jangan** halakan ke `kkm_latihan`:
+1. **Buang blok coverage** (Lab 4.2 langkah 1). Laptop kursus tiada Xdebug/PCOV, dan `phpunit.dist.xml` appstarter meminta laporan coverage dengan `failOnWarning="true"`, jadi `composer test` keluar dengan kod 1 walaupun semua ujian lulus. Dalam VS Code, buka `phpunit.dist.xml` dan padam seluruh blok `<coverage …> … </coverage>` (biarkan `<source>`, `<testsuites>` dan `<php>`). Kemudian:
+
+   ```bash
+   composer config process-timeout 0    # skrip Composer tidak dihentikan selepas 300 s
+   ```
+
+2. Tambah kumpulan `tests` ke `.env` (sama dengan README Hari 6 §3.2). `DatabaseTestTrait` memadam semula jadual — **jangan** halakan ke `kkm_latihan`:
 
    ```ini
    database.tests.hostname = localhost
@@ -618,7 +629,7 @@ Menjalankan ujian contoh appstarter pada database **ujian** MySQL, bukan DB pemb
 
    Tanpa blok ini, kumpulan `tests` appstarter guna SQLite, dan Laragon tidak menghidupkan extension `sqlite3`.
 
-2. Jalankan:
+3. Jalankan:
 
    ```bash
    composer test
@@ -635,23 +646,29 @@ OK (5 tests, 7 assertions)
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| `No code coverage driver available` + `Script phpunit … returned with error code 1` | Blok `<coverage>` masih dalam `phpunit.dist.xml` (`failOnWarning="true"`, tiada Xdebug/PCOV) | Padam blok `<coverage …> … </coverage>` (Bahagian B langkah 2) |
-| `The required PHP extension "sqlite3" is not loaded` | Kumpulan `tests` masih SQLite lalai appstarter | Langkah 1 belum dibuat |
+| `No code coverage driver available` + `Script phpunit … returned with error code 1` | Blok `<coverage>` masih dalam `phpunit.dist.xml` (`failOnWarning="true"`, tiada Xdebug/PCOV) | Padam blok `<coverage …> … </coverage>` (langkah 1) |
+| `The required PHP extension "sqlite3" is not loaded` | Kumpulan `tests` masih SQLite lalai appstarter | Langkah 2 belum dibuat |
 | `Access denied for user 'kkm_dev'@'localhost' to database 'kkm_latihan_test'` | `GRANT` untuk DB ujian tiada | Ulang `GRANT … kkm_latihan_test.*` di [`persediaan.md`](./persediaan.md) §4 |
-| `The process … exceeded the timeout of 300 seconds` | `process-timeout` Composer lalai | `composer config process-timeout 0` (Bahagian B langkah 2) |
+| `The process … exceeded the timeout of 300 seconds` | `process-timeout` Composer lalai | `composer config process-timeout 0` (langkah 1) |
 
 ### Commit
 
-Tiada — perubahan hanya dalam `.env`. Sahkan `git status --short` kosong.
+```bash
+git add composer.json phpunit.dist.xml
+git commit -m "SETUP: composer test tanpa coverage"
+git push
+```
+
+`.env` tidak di-commit. Sahkan `git status --short` kosong.
 
 ---
 
 ## Semakan kendiri
 
 - [ ] <http://localhost:8080/> mengalih ke `/login` tanpa `index.php`.
-- [ ] `php spark migrate:status` → Shield, Settings dan `CreateDepartmentsTable` semua telah dijalankan.
+- [ ] `php spark migrate:status` → Shield, Settings, `CreateDepartmentsTable` dan `CreateParkingZonesTable` semua telah dijalankan.
 - [ ] `composer test` → `OK`, `echo $?` → `0`.
-- [ ] `git log --oneline` → commit `SETUP:` bagi Bahagian B, D, E dan F; `git ls-files | grep -c "^\.env$"` → `0`.
+- [ ] Halaman GitLab `kelas-ci-<nama>` menunjukkan commit Bahagian B, D, E, F dan G; `git ls-files | grep -c "^\.env$"` → `0`.
 
 ---
 
@@ -659,12 +676,12 @@ Tiada — perubahan hanya dalam `.env`. Sahkan `git status --short` kosong.
 
 [Lab 4.2](../hari-4/lab.md) dan [Lab 4.3](../hari-4/lab.md) kekal **sumber kebenaran**. Jika anda sudah buat tutorial ini:
 
-- **Baca imbas** Lab 4.2/4.3 dan sahkan setiap ✅ Checkpoint pada projek `sistem-tlk-pas` anda. Mana-mana yang gagal → ikut langkah lab.
-- **Langkau** yang sudah siap: `composer create-project` (Lab 4.2 langkah 1), `shield:setup`, `make:migration CreateDepartmentsTable` dan `make:seeder DepartmentSeeder`. Menjalankannya semula mencipta fail pendua.
-- **Masih perlu** pada Hari 4: `AuthGroups.php` (Lab 4.2 langkah 9), 9 migration lain bermula dengan `AddProfileFieldsToUsers`, dan 4 seeder lain (Lab 4.3).
-- Lab 4.4 langkah 2 akan berkata `nothing to commit` untuk fail yang sudah anda commit — itu normal; checkpoint ≥ 2 commit `SETUP:` sudah dipenuhi.
+- **Baca imbas** Lab 4.2/4.3 dan sahkan setiap ✅ Checkpoint pada projek `kelas-ci-<nama>` anda. Mana-mana yang gagal → ikut langkah lab.
+- **Langkau** yang sudah siap: blok coverage (Lab 4.2 langkah 1), `shield:setup`, `shield:model UserModel` dan layout Bootstrap. Menjalankan `shield:setup` atau `make:migration` semula mencipta fail pendua.
+- **Masih perlu** pada Hari 4: `AuthGroups.php` (Lab 4.2 langkah 9), 8 migration lain bermula dengan `AddProfileFieldsToUsers`, dan seeder lain (Lab 4.3).
+- Commit lab untuk fail yang sudah anda commit akan berkata `nothing to commit` — itu normal.
 - `ci4-asas` (Bahagian A) tidak digunakan pada Hari 4 — padam jika belum.
-- Hari 4 menetapkan `.gitattributes`, `.env` dan Shield bersama — anda boleh membantu pasangan anda.
+- Anda boleh membantu rakan sebelah yang tersekat pada `.env` atau Shield.
 
 ---
 

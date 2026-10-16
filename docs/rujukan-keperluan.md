@@ -487,3 +487,558 @@ Menghimpun semua dokumen Hari 1–2 menjadi URS v1.0 lengkap dengan matriks jeja
 #### ⭐ Cabaran tambahan
 Tambah bahagian **"Keperluan laporan"** ringkas dalam URS yang memetakan RPT-01..03 (SPEC §2.3) kepada filter dan pengguna, supaya Hari 9 bermula dengan keperluan yang sudah disahkan.
 
+---
+
+## Bahagian 3 — ERD, kamus data & wireframe (asal Hari 3)
+
+### S1 — ERD Keseluruhan Sistem (09:00–10:30)
+
+#### 1.1 Dari kata nama kepada entiti
+
+Semalam anda disuruh menyenaraikan kata nama dalam URS. Tapis senarai itu:
+
+| Kata nama dalam URS | Entiti? | Sebab |
+|---------------------|---------|-------|
+| Pemohon, penyemak, pelulus, pentadbir | ➡️ `users` (satu entiti) | Mereka **orang yang sama jenis** — perbezaan ialah **peranan** (Shield groups), bukan jadual |
+| Jabatan | ✅ `departments` | Ada atribut sendiri (kod, nama), dikongsi ramai pengguna |
+| Zon | ✅ `parking_zones` | Ada kod, nama, lokasi |
+| Slot | ✅ `parking_slots` | Ada nombor, kategori, status aktif |
+| Kenderaan | ✅ `vehicles` | Seorang boleh ada banyak kenderaan |
+| Tempahan | ✅ `slot_bookings` | Transaksi utama M1 |
+| Permohonan pas | ✅ `pass_applications` | Transaksi utama M2 |
+| Dokumen sokongan | ✅ `pass_documents` | Satu permohonan, sehingga 3 dokumen |
+| Sejarah status | ✅ `status_logs` | Jejak audit (BR-PAS-05) untuk **kedua-dua** modul |
+| Nombor rujukan | ✅ `reference_sequences` | Kaunter per prefix & tahun (`TLK`/`PAS`, 2026) |
+| Kategori slot, status, jenis pas | ❌ bukan jadual | Nilai tetap → **enum PHP** (`SlotCategory`, `BookingStatus`, `PassStatus`, `PassType`) disimpan sebagai `VARCHAR(20)` |
+| Laporan, statistik | ❌ bukan jadual | Dikira daripada data sedia ada (M3/M4) |
+
+> 💡 **Tip:** Peranan **bukan** medan dalam `users`. Shield menyimpannya dalam jadual `auth_groups_users` sendiri. Jangan tambah `users.role` — ia akan bercanggah dengan Shield.
+
+#### 1.2 Kardinaliti
+
+| Hubungan | Kardinaliti | Dibaca sebagai | FK di |
+|----------|-------------|----------------|-------|
+| `departments` — `users` | 0..1 : N | Seorang pengguna **mungkin** ada satu jabatan; satu jabatan ada ramai pengguna | `users.department_id` (NULL) |
+| `users` — `vehicles` | 1 : N | Seorang pengguna boleh daftar banyak kenderaan | `vehicles.user_id` |
+| `parking_zones` — `parking_slots` | 1 : N | Satu zon ada banyak slot | `parking_slots.zone_id` |
+| `parking_slots` — `slot_bookings` | 1 : N | Satu slot ditempah banyak kali (tarikh berbeza) | `slot_bookings.slot_id` |
+| `users` — `slot_bookings` (pemohon) | 1 : N | | `slot_bookings.user_id` |
+| `vehicles` — `slot_bookings` | 1 : N | | `slot_bookings.vehicle_id` |
+| `users` — `slot_bookings` (pemutus) | 0..1 : N | Tempahan `pending` belum diputuskan | `slot_bookings.decided_by` (NULL) |
+| `users` — `pass_applications` (pemohon) | 1 : N | | `pass_applications.user_id` |
+| `vehicles` — `pass_applications` | 0..1 : N | Hanya pas `kenderaan` perlu kenderaan | `pass_applications.vehicle_id` (NULL) |
+| `users` — `pass_applications` (penyemak / pelulus) | 0..1 : N | Diisi apabila status berubah | `reviewed_by`, `approved_by` (NULL) |
+| `pass_applications` — `pass_documents` | 1 : N (maks 3) | Had 3 dikuatkuasa oleh **kod** (BR-PAS-02), bukan DB | `pass_documents.application_id` |
+| `users` — `status_logs` | 1 : N | Setiap log ada pelaku | `status_logs.actor_id` |
+| `status_logs` — tempahan/permohonan | polimorfik | `module` + `record_id` menunjuk ke `slot_bookings` **atau** `pass_applications` | tiada FK DB |
+
+**Notasi crow's foot dalam Mermaid:**
+
+| Sintaks | Maksud |
+|---------|--------|
+| `\|\|--o{` | tepat satu → sifar atau banyak |
+| `\|o--o{` | sifar atau satu → sifar atau banyak |
+| `\|\|--\|{` | tepat satu → satu atau banyak |
+| `\|\|--\|\|` | tepat satu → tepat satu |
+
+
+> ERD rujukan penuh: [`erd-rujukan.md`](./erd-rujukan.md).
+
+
+### S2 — Jadual, Medan & Hubungan; Kamus Data & 3NF (10:45–12:30)
+
+#### 2.1 Apa itu kamus data
+
+ERD menunjukkan **bentuk**; kamus data menunjukkan **butiran** yang diperlukan untuk menulis migration. Setiap medan ada:
+
+| Lajur kamus | Contoh | Menjadi (Hari 4) |
+|-------------|--------|------------------|
+| Medan | `start_date` | kunci dalam `addField()` |
+| Jenis & panjang | `DATE` | `'type' => 'DATE'` |
+| NULL? | Tidak | `'null' => false` |
+| Lalai | — | `'default' => …` |
+| Kunci / index | `INDEX(slot_id, start_date, end_date)` | `addKey([...])` |
+| FK → rujukan | — | `addForeignKey(...)` |
+| Peraturan / enum | ≥ hari ini (BR-TLK-03) | `$validationRules` Model |
+| Keterangan | Tarikh mula tempahan | Komen / dokumentasi |
+
+Templat penuh: `templates/dokumen/kamus-data-templat.md` (modul **Templat & Rujukan**).
+
+#### 2.2 Worked example — `slot_bookings`
+
+| Medan | Jenis | NULL | Lalai | Kunci/Index | FK → | Peraturan / enum | Keterangan |
+|-------|-------|------|-------|-------------|------|------------------|------------|
+| `id` | INT UNSIGNED AI | Tidak | — | PK | — | — | Kunci dalaman |
+| `ref_no` | VARCHAR(20) | Tidak | — | UNIQUE | — | `TLK-{YYYY}-{0000}` | Dijana `ReferenceNumberService` |
+| `user_id` | INT UNSIGNED | Tidak | — | FK | `users.id` | pemilik = pengguna log masuk | Pemohon |
+| `vehicle_id` | INT UNSIGNED | Tidak | — | FK | `vehicles.id` | kenderaan milik pemohon | Kenderaan digunakan |
+| `slot_id` | INT UNSIGNED | Tidak | — | FK + INDEX(`slot_id`,`start_date`,`end_date`) | `parking_slots.id` | slot `is_active = 1` | Slot ditempah |
+| `start_date` | DATE | Tidak | — | (dalam index di atas) | — | ≥ hari ini (BR-TLK-03) | Tarikh mula |
+| `end_date` | DATE | Tidak | — | (dalam index di atas) | — | ≥ `start_date`; `end_date − start_date` ≤ 90 | Tarikh tamat |
+| `reason` | TEXT | Tidak | — | — | — | wajib | Sebab/justifikasi kelayakan |
+| `status` | VARCHAR(20) | Tidak | `pending` | INDEX | — | `BookingStatus` | Status semasa |
+| `decided_by` | INT UNSIGNED | Ya | NULL | FK | `users.id` | diisi apabila lulus/tolak | Pelulus |
+| `decided_at` | DATETIME | Ya | NULL | — | — | diisi bersama `decided_by` | Masa keputusan |
+| `created_at` | DATETIME | Ya | NULL | — | — | diurus Model (`$useTimestamps`) | |
+| `updated_at` | DATETIME | Ya | NULL | — | — | diurus Model | |
+
+**Kenapa index komposit `(slot_id, start_date, end_date)`?** Query semakan pertindihan (Hari 6) berbentuk:
+
+```sql
+SELECT id FROM slot_bookings
+WHERE slot_id = ?
+  AND status IN ('pending', 'approved')
+  AND start_date <= ?   -- :end permohonan baharu
+  AND end_date   >= ?   -- :start permohonan baharu
+FOR UPDATE;
+```
+
+Index bermula dengan `slot_id` — MySQL terus melompat ke tempahan slot itu sahaja, bukan mengimbas seluruh jadual. (Nota: `?` ialah binding — kita tidak sekali-kali mencantum input pengguna ke dalam SQL. SPEC §9.)
+
+#### 2.3 Cadangan peraturan `ON DELETE`
+
+| FK | Cadangan | Sebab |
+|----|----------|-------|
+| `users.department_id` → `departments` | `SET NULL` | Jabatan dibubar tidak patut memadam pengguna |
+| `vehicles.user_id` → `users` | `CASCADE` | Kenderaan tiada makna tanpa pemilik (tetapi lihat baris seterusnya) |
+| `slot_bookings.*` (`user_id`, `vehicle_id`, `slot_id`) | `RESTRICT` | Rekod transaksi & audit **tidak boleh hilang**; slot dinyahaktif (`is_active`/soft delete), bukan dipadam |
+| `slot_bookings.decided_by`, `pass_applications.reviewed_by/approved_by` | `SET NULL` | Pelulus bersara tidak memadam keputusan (log masih ada dalam `status_logs`) |
+| `pass_applications.user_id` | `RESTRICT` | Audit |
+| `pass_documents.application_id` | `CASCADE` | Dokumen milik permohonan sepenuhnya |
+| `status_logs.actor_id` | `RESTRICT` | Jejak audit mesti kekal |
+
+> 💡 **Tip:** `parking_slots` menggunakan **soft delete** (`deleted_at`) kerana slot yang ditutup masih dirujuk oleh tempahan lama. Soft delete + `RESTRICT` = sejarah selamat.
+
+#### 2.4 Normalisasi ke 3NF — worked example
+
+Kerani Unit Keselamatan menyimpan hamparan Excel ini (data rekaan):
+
+| No | Nama | No Staf | Jabatan | Nama Jabatan | Plat 1 | Plat 2 | Zon | Nama Zon | Slot | Kategori | Mula | Tamat | Status | Lulus Oleh |
+|----|------|---------|---------|--------------|--------|--------|-----|----------|------|----------|------|-------|--------|------------|
+| 1 | Aminah Latihan | S1001 | JKP | Jabatan Kejururawatan | WXX 1234 | WXA 9001 | A | Lobi Utama | A-01 | mengandung | 2026-10-01 | 2026-12-30 | approved | Noraini |
+| 2 | Badrul Contoh | S1002 | JPT | Jabatan Pentadbiran | WXY 5678 | | A | Lobi Utama | A-02 | oku | 2026-10-05 | 2026-11-05 | pending | |
+| 3 | Aminah Latihan | S1001 | JKP | Jabatan Kejururawatan | WXX 1234 | WXA 9001 | B | Blok Pentadbiran | B-03 | mengandung | 2027-01-02 | 2027-02-01 | pending | |
+
+**Masalah:** nama Aminah dan nama jabatannya diulang (anomali kemas kini — tukar nama jabatan perlu diubah di banyak baris); "Plat 1 / Plat 2" ialah kumpulan berulang; nama zon diulang.
+
+**1NF — setiap sel satu nilai, tiada kumpulan berulang**
+`Plat 1`, `Plat 2` → pisahkan kepada jadual **`vehicles`** (satu baris setiap plat, dengan `user_id`).
+
+**2NF — tiada dependency separa pada kunci komposit**
+Jika kunci hamparan dianggap `(No Staf, Slot, Mula)`, maka `Nama` bergantung hanya pada `No Staf` (sebahagian kunci) → pindah ke **`users`** (`full_name`, `staff_no`). `Kategori` bergantung hanya pada `Slot` → pindah ke **`parking_slots`**.
+
+**3NF — tiada dependency transitif (medan bukan kunci bergantung pada medan bukan kunci)**
+- `Nama Jabatan` bergantung pada `Jabatan` (kod), bukan pada pengguna → **`departments`** (`code`, `name`); `users.department_id`.
+- `Nama Zon` bergantung pada `Zon` → **`parking_zones`** (`code`, `name`, `location`); `parking_slots.zone_id`.
+- `Lulus Oleh` ialah orang → `decided_by` FK ke `users`.
+
+**Hasil:** tepat jadual dalam SPEC §3 — `departments`, `users`, `vehicles`, `parking_zones`, `parking_slots`, `slot_bookings`.
+
+```mermaid
+flowchart LR
+    X["Hamparan rata<br/>15 lajur"] -->|"1NF: pisah plat"| V["vehicles"]
+    X -->|"2NF: bergantung No Staf"| U["users"]
+    X -->|"2NF: bergantung Slot"| S["parking_slots"]
+    U -->|"3NF: nama jabatan"| D["departments"]
+    S -->|"3NF: nama zon"| Z["parking_zones"]
+    X -->|"baki: fakta tempahan"| B["slot_bookings"]
+```
+
+⚠️ **Kesilapan lazim:**
+- **Denormalisasi "untuk senang"**: menyimpan `zone_name` dalam `slot_bookings` supaya laporan tidak perlu JOIN. Laporan Hari 9 **akan** menggunakan JOIN — itu tugas `ReportService`.
+- **Menyimpan nilai terbitan**: `duration_days` dalam `slot_bookings`. Ia boleh dikira daripada `start_date`/`end_date`; menyimpannya berisiko tidak konsisten.
+- **Menyimpan fail dalam DB** (BLOB). `pass_documents` menyimpan **path** sahaja (`stored_path`); fail di `writable/uploads/pas/` (BR-PAS-02).
+
+#### 2.5 Kamus ringkas jadual lain (untuk anda lengkapkan dalam lab)
+
+| Jadual | Kunci unik | Nota khas |
+|--------|------------|-----------|
+| `departments` | `code` | Diisi oleh seeder |
+| `users` | `staff_no` (NULL dibenarkan — kontraktor tiada no staf) | Jadual Shield + 4 medan tambahan |
+| `parking_zones` | `code` | |
+| `parking_slots` | (`zone_id`, `slot_no`) | Slot `A-01` boleh wujud di zon A dan (secara teori) nombor sama di zon lain; `deleted_at` |
+| `vehicles` | `plate_no` | Plat rekaan sahaja (`WXX 1234`) |
+| `pass_applications` | `ref_no` | 3 pasang pelaku/masa: pemohon (`user_id`/`created_at`), `reviewed_by`/`reviewed_at`, `approved_by`/`approved_at` |
+| `pass_documents` | — | `mime`, `size_bytes` disimpan untuk semakan & paparan |
+| `status_logs` | — | `from_status` NULL untuk rekod pertama (cipta → `pending`/`submitted`) |
+| `reference_sequences` | (`prefix`, `year`) | Satu baris setiap prefix setahun |
+
+
+### S3 — Wireframe UI/UX Skrin Utama (14:30–16:00)
+
+#### 3.1 Wireframe kesetiaan rendah (low-fidelity)
+
+Wireframe = lakaran **struktur** skrin: apa kandungan, di mana, dan apa tindakan. **Bukan** warna, fon atau logo. Gunakan draw.io atau Excalidraw — atau kertas.
+
+| Prinsip | Maksud dalam sistem ini |
+|---------|-------------------------|
+| Kandungan dahulu | Setiap medan borang mesti wujud dalam kamus data. Tiada medan "rekaan" dalam UI. |
+| Satu tugas utama setiap skrin | Borang tempahan = mohon. Jangan campur senarai dan kelulusan. |
+| Label BM, nilai EN di belakang | Pengguna nampak "Menunggu"; DB menyimpan `pending` |
+| Peranan menentukan menu | `applicant` tidak nampak "Keputusan TLK" — **dan** server juga menyekatnya (SPEC §4) |
+| Ralat dekat medan | Mesej validasi di bawah medan berkaitan, bukan hanya di atas halaman |
+| Status = badge berwarna konsisten | `pending`/`submitted` kuning · `under_review` biru · `approved` hijau · `rejected` merah · `cancelled`/`expired` kelabu |
+
+#### 3.2 Aliran pengguna → skrin
+
+```mermaid
+flowchart LR
+    L["Log masuk<br/>Shield"] --> M{"Peranan?"}
+    M -- applicant --> W1["W1 Senarai tempahan saya<br/>/tlk/tempahan"]
+    W1 --> W2["W2 Borang tempahan<br/>/tlk/tempahan/new"]
+    M -- applicant --> W4["W4 Borang permohonan pas<br/>/pas/permohonan/new"]
+    M -- approver --> W3["W3 Keputusan TLK<br/>/tlk/keputusan"]
+    M -->|"reviewer / approver"| W5["W5 Semakan pas + garis masa<br/>/pas/semakan"]
+    M -->|"approver / admin"| W6["W6 Dashboard statistik<br/>/statistik"]
+```
+
+#### 3.3 Enam skrin utama
+
+| # | Skrin | URL (SPEC §6) | Peranan | FR utama |
+|---|-------|---------------|---------|----------|
+| W1 | Senarai tempahan saya | `/tlk/tempahan` | `applicant` | FR-TLK-06, FR-TLK-08 |
+| W2 | Borang tempahan TLK | `/tlk/tempahan/new` | `applicant` | FR-TLK-01, 03, 04, 05 |
+| W3 | Senarai keputusan TLK | `/tlk/keputusan` | `approver`, `admin` | FR-TLK-07 |
+| W4 | Borang permohonan pas + muat naik | `/pas/permohonan/new` | `applicant` | FR-PAS-01, 02 |
+| W5 | Semakan pas (butiran + dokumen + garis masa + tindakan) | dibuka dari `/pas/semakan` | `reviewer`, `approver`, `admin` | FR-PAS-05..08 |
+| W6 | Dashboard statistik | `/statistik` | `approver`, `admin` | FR-STAT |
+
+#### 3.4 Contoh wireframe W2 — Borang tempahan TLK
+
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│ [≡] Sistem TLK & Pas   TLK ▾  Pas ▾            pemohon1 ▾ [Log keluar]│
+├──────────────────────────────────────────────────────────────────────┤
+│ Utama › Tempahan saya › Mohon baharu                                  │
+│                                                                      │
+│  Mohon Tempat Letak Kenderaan Khas                                    │
+│  ┌────────────────────────────────────────────────────────────────┐  │
+│  │ ⓘ Satu tempahan aktif sahaja. Tempoh maksimum 90 hari.         │  │
+│  └────────────────────────────────────────────────────────────────┘  │
+│  Zon *            [ A — Lobi Utama              ▾ ]                   │
+│  Slot *           [ A-01 (Ibu mengandung)       ▾ ]  ← slot aktif    │
+│  Kenderaan *      [ WXX 1234 — Myvi Putih       ▾ ]  [+ Daftar baru] │
+│  Tarikh mula *    [ 2026-10-01 📅 ]                                   │
+│  Tarikh tamat *   [ 2026-12-30 📅 ]                                   │
+│                   ⚠ Slot tidak tersedia bagi julat tarikh ini        │
+│  Sebab *          [                                              ]    │
+│                   [                                              ]    │
+│                                                                      │
+│                              [ Batal ]   [ Hantar permohonan ]        │
+└──────────────────────────────────────────────────────────────────────┘
+ Medan → slot_bookings: slot_id, vehicle_id, start_date, end_date, reason
+ Dijana sistem (tidak dalam borang): ref_no, user_id, status=pending
+```
+
+> 💡 **Tip:** Perhatikan medan yang **tiada** dalam borang: `user_id`, `status`, `ref_no`, `decided_by`. Jika ia dihantar dari borang, pengguna boleh memalsukannya (mass assignment). Wireframe yang baik menandakan medan "dijana sistem" secara jelas — Hari 5 ia menjadi `$allowedFields` yang ketat.
+
+#### 3.5 Contoh wireframe W5 — Semakan pas
+
+```text
+┌──────────────────────────────────────────────────────────────────────┐
+│ Semakan Pas › PAS-2026-0003                        [Dalam Semakan]   │
+├───────────────────────────────────┬──────────────────────────────────┤
+│ Pemohon : Badrul Contoh (S1002)    │ Garis masa status                │
+│ Jabatan : Jabatan Pentadbiran      │ ● 2026-10-02 09:14  — → Dihantar │
+│ Jenis   : Kenderaan                │   oleh pemohon2                  │
+│ Kenderaan: WXY 5678                │ ● 2026-10-02 11:40  Dihantar →   │
+│ Sah     : 2026-10-05 → 2027-10-04  │   Dalam Semakan oleh penyemak    │
+│ Tujuan  : Pelekat kawasan staf     │                                  │
+├───────────────────────────────────┤                                  │
+│ Dokumen (2/3)                      │                                  │
+│ 📄 geran.pdf       412 KB [Muat turun]                                │
+│ 🖼 lesen.jpg       1.1 MB [Muat turun]                                │
+├───────────────────────────────────┴──────────────────────────────────┤
+│ Catatan (wajib jika tolak, min 10 aksara)                             │
+│ [                                                                  ]  │
+│                          [ Tolak ]   [ Lulus ]  ← ikut peranan       │
+└──────────────────────────────────────────────────────────────────────┘
+ Butang "Lulus" untuk pemegang pas.approve (approver; admin melalui pas.*);
+ "Tolak" untuk reviewer/approver/admin.
+ Muat turun melalui controller (semak akses), bukan pautan terus ke fail.
+```
+
+⚠️ **Kesilapan lazim:**
+- Wireframe dengan butang yang tiada FR (cth "Edit permohonan" — pemilik sistem kata tidak boleh edit selepas hantar).
+- Tiada ruang untuk **mesej ralat** dan **keadaan kosong** ("Tiada tempahan lagi. [Mohon baharu]").
+- Menunjukkan butang Lulus kepada `reviewer` (tiada `pas.approve`). Butang ikut kebenaran — dan pelayan menyemak semula.
+- Terlalu cantik terlalu awal. Jika anda memilih warna, anda sudah terlalu jauh untuk hari ini.
+
+> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Prototype](../docs/trek-design-thinking.md): lukis *journey map*, kemudian terjemahkan kepada wireframe. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
+
+
+### S4 — Semakan Reka Bentuk & Tugasan Persediaan (16:00–17:00)
+
+#### 4.1 Senarai semak semakan ERD
+
+| # | Semakan | Rujuk |
+|---|---------|-------|
+| E1 | 10 jadual, nama **tepat** (`slot_bookings`, bukan `bookings`) | SPEC §3 |
+| E2 | Setiap medan SPEC wujud, ejaan tepat (`valid_until`, bukan `valid_to`) | SPEC §3 |
+| E3 | PK, FK, UK ditanda; kunci unik komposit dinyatakan | SPEC §3 |
+| E4 | FK NULL ditanda `\|o` pada sisi induk | S1 §1.2 |
+| E5 | Tiada `users.role`; tiada jadual peranan sendiri | SPEC §4 |
+| E6 | `status_logs` polimorfik diterangkan (tiada FK `record_id`) | S1 §1.4 |
+| E7 | `deleted_at` hanya pada `parking_slots` (selain jadual Shield) | SPEC §3 |
+| E8 | ERD dipaparkan tanpa ralat | mermaid.live |
+
+#### 4.2 Senarai semak semakan wireframe
+
+| # | Semakan |
+|---|---------|
+| U1 | 6 skrin wujud; setiap satu ada URL & peranan |
+| U2 | Setiap medan borang wujud dalam kamus data; medan dijana sistem ditanda |
+| U3 | Label status dalam BM mengikut SPEC (Menunggu, Diluluskan, Dalam Semakan, …) |
+| U4 | Ruang mesej ralat & keadaan kosong |
+| U5 | Tindakan ikut peranan (butang Lulus hanya pemegang `pas.approve`: `approver`, `admin`) |
+| U6 | Skrin W4 menunjukkan had fail: `pdf/jpg/png`, ≤ 2 MB, maks 3 |
+
+#### 4.3 Tugasan persediaan
+
+Diedarkan hari ini, disemak **Hari 4 S1 (09:00)**. Butiran penuh & rubrik: [`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md).
+
+| # | Tugasan | Anggaran masa |
+|---|---------|---------------|
+| T1 | Lengkapkan persekitaran mengikut senarai semak: PHP 8.2+ & Composer sudah disediakan dalam [Lab 1.5](../hari-1/lab.md#lab-15--ci4-asas-di-laptop-dalam-kelas-s4) Hari 1 — tambah MySQL/MariaDB & Git (belum buat Lab 1.5? buat dahulu) | 30 minit–1 jam |
+| T2 | Siapkan tutorial rasmi CI4 *Build Your First Application* (aplikasi berita) | 2–3 jam |
+| T3 | Perhalusi ERD pasangan anda berdasarkan semakan hari ini | 30 minit |
+| T4 | Tulis 3 acceptance criteria baharu (Given/When/Then) | 30 minit |
+
+> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Test](../docs/trek-design-thinking.md): buat hallway test wireframe dengan seorang rakan. [GitLab](../docs/trek-gitlab.md): log masuk, kunci SSH, projek *private* dan MR pertama. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
+
+---
+
+## Bahagian 4 — Lab asal Hari 3 (3.1–3.4)
+
+### Lab 3.1 — ERD Mermaid
+
+#### 🎯 Objektif
+Mengenal pasti entiti dan kardinaliti dari URS, kemudian melukis ERD Mermaid yang sepadan 100% dengan SPEC §3.
+
+#### Prasyarat
+- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- `docs/URS-v1.md` (Hari 2) dan senarai kata nama (persediaan semalam).
+- Baca README §1.1–1.2.
+
+#### Langkah
+1. **Tanpa melihat SPEC §3 (15 minit):** Pada kertas, senaraikan entiti dari kata nama URS anda. Lukis kotak dan garisan. Tulis kardinaliti di setiap hujung.
+2. **Bandingkan (5 minit):** Buka SPEC §3. Senaraikan dalam `docs/erd.md` bahagian `## Apa yang saya terlepas`:
+   ```markdown
+   ## Apa yang saya terlepas (lakaran pertama vs SPEC)
+   - Tidak terfikir `reference_sequences` — saya anggap ref_no dijana dari id
+   - Saya buat jadual `roles` — salah, peranan dalam Shield
+   ```
+3. Cipta ERD dalam `docs/erd.md`. Mulakan dengan dua jadual dan satu hubungan, pratonton, kemudian tambah:
+   ```mermaid
+   erDiagram
+       parking_zones {
+           int id PK
+           varchar code UK "VARCHAR(10)"
+           varchar name "VARCHAR(100)"
+           varchar location "VARCHAR(150)"
+           datetime created_at
+           datetime updated_at
+       }
+       parking_slots {
+           int id PK
+           int zone_id FK
+           varchar slot_no "VARCHAR(10)"
+           varchar category "VARCHAR(20) SlotCategory"
+           tinyint is_active "DEFAULT 1"
+           datetime created_at
+           datetime updated_at
+           datetime deleted_at
+       }
+       parking_zones ||--o{ parking_slots : "zone_id"
+   ```
+4. Tambah baki 8 jadual **satu demi satu**, pratonton selepas setiap jadual. Susunan disyorkan: `departments` → `users` → `vehicles` → `slot_bookings` → `pass_applications` → `pass_documents` → `status_logs` → `reference_sequences`.
+5. Tambah semua hubungan. Perhatikan `|o--o{` untuk FK NULL (`department_id`, `decided_by`, `vehicle_id` dalam `pass_applications`, `reviewed_by`, `approved_by`).
+6. Di bawah ERD, tambah jadual kardinaliti (README §1.2) dan **terangkan dengan ayat anda sendiri** tiga keputusan reka bentuk (README §1.4 a, b, c).
+7. Commit: `SETUP: ERD Mermaid sistem TLK & Pas`.
+
+#### ✅ Checkpoint
+- ERD dipaparkan tanpa ralat di mermaid.live.
+- **10 jadual** — kira: `departments`, `users`, `parking_zones`, `parking_slots`, `vehicles`, `slot_bookings`, `pass_applications`, `pass_documents`, `status_logs`, `reference_sequences`.
+- Semak silang dengan skrip ringkas (jalankan dalam folder repo anda):
+  ```bash
+  for t in departments users parking_zones parking_slots vehicles slot_bookings \
+           pass_applications pass_documents status_logs reference_sequences; do
+    grep -Eq "^[[:space:]]*$t \{" docs/erd.md && echo "OK  $t" || echo "TIADA $t"
+  done
+  ```
+  Semua baris mesti `OK`.
+- 13 hubungan (termasuk dua hubungan `users`–`pass_applications` untuk `reviewed_by` dan `approved_by`).
+- Tiada `users.role`.
+
+#### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Parse error` pada baris atribut (terutama dalam pemapar Mermaid versi lama) | Jenis mengandungi `(` seperti `varchar(20)` | Untuk keserasian semua pemapar, tulis jenis ringkas `varchar` dan letak panjang dalam komen `"VARCHAR(20)"` |
+| Ralat pada `PK FK` | Berbilang kunci tanpa koma | Guna `PK`, `FK`, `UK` huruf besar; berbilang dipisah koma: `PK, FK` |
+| Diagram terlalu lebar untuk dibaca | 10 jadual dengan semua medan | Normal. Untuk pembentangan, buat versi kedua tanpa `created_at`/`updated_at` |
+| Ralat pada baris hubungan | Label hubungan tertinggal (Mermaid mewajibkan `: label`) | `users \|\|--o{ vehicles : "user_id"` |
+
+#### ⭐ Cabaran tambahan
+Tambah ERD kedua **khusus Shield** yang menunjukkan hubungan `users` dengan `auth_identities` dan `auth_groups_users` (rujuk dokumentasi Shield). Terangkan kenapa e-mel pengguna tidak berada dalam `users`.
+
+---
+
+### Lab 3.2 — Kamus Data & Normalisasi
+
+#### 🎯 Objektif
+Menulis kamus data lengkap untuk 5 jadual teras dalam sesi (baki 5 jadual disiapkan sebelum Hari 4, 08:30) dan membuktikan skema berada dalam 3NF melalui latihan normalisasi.
+
+#### Prasyarat
+- Lab 3.1 siap.
+- `templates/dokumen/kamus-data-templat.md` (modul **Templat & Rujukan**), README §2.
+
+#### Langkah
+1. Cipta fail `docs/kamus-data.md` dan salin kandungan templat `templates/dokumen/kamus-data-templat.md` (modul **Templat & Rujukan**) ke dalamnya (bahagian `## Jadual: <nama_jadual>` diulang untuk setiap jadual).
+2. **Dalam sesi — 5 jadual teras, bahagi kerja dalam pasangan:** driver menulis `parking_slots` dan `slot_bookings`; navigator menyemak terhadap SPEC. Tukar untuk `pass_applications`, `pass_documents`, `status_logs`.
+   **Baki 5 jadual** (`departments`, `users`, `parking_zones`, `vehicles`, `reference_sequences`) — latihan pilihan; bandingkan dengan ERD siap dalam [`docs/erd-rujukan.md`](../docs/erd-rujukan.md). Jadual ini kecil; README §2.5 memberi kunci unik dan nota khasnya.
+3. Untuk setiap jadual isi **semua** lajur: Medan, Jenis, NULL, Lalai, Kunci/Index, FK →, Peraturan/enum, Keterangan. Gunakan `slot_bookings` dalam README §2.2 sebagai contoh.
+4. Isi lajur **Peraturan** dengan rujukan BR, cth:
+   - `pass_documents.mime` → `application/pdf`, `image/jpeg`, `image/png` (BR-PAS-02)
+   - `pass_documents.size_bytes` → ≤ 2,097,152 (BR-PAS-02)
+   - `status_logs.remarks` → wajib ≥ 10 aksara jika `to_status = rejected` — kedua-dua modul: BR-PAS-03 untuk Pas, SPEC §9 untuk penolakan tempahan TLK
+5. Isi bahagian **Peraturan ON DELETE** (README §2.3) — anda boleh bersetuju atau tidak dengan cadangan, tetapi **tulis sebab**.
+6. **Latihan normalisasi (25 minit):** Dalam bahagian `## Normalisasi`, ambil hamparan Pas di bawah (data rekaan) dan normalkan ke 3NF. Tunjukkan jadual yang terhasil pada setiap langkah 1NF → 2NF → 3NF.
+
+   | No Rujukan | Nama Pemohon | No Staf | Kod Jabatan | Nama Jabatan | Jenis Pas | Plat | Model Kenderaan | Dok 1 | Dok 2 | Dok 3 | Status | Disemak Oleh | Dilulus Oleh |
+   |------------|--------------|---------|-------------|--------------|-----------|------|-----------------|-------|-------|-------|--------|--------------|--------------|
+   | PAS-2026-0001 | Aminah Latihan | S1001 | JKP | Jabatan Kejururawatan | kenderaan | WXX 1234 | Myvi | geran.pdf | ic.jpg | | approved | Faizal | Noraini |
+   | PAS-2026-0002 | Chong Rekaan | — | — | — | kontraktor | | | lantikan.pdf | ic.png | permit.pdf | under_review | Faizal | |
+
+7. Tulis satu perenggan: **"Jadual SPEC mana yang terhasil daripada normalisasi ini, dan mana yang tidak (dan kenapa)?"** (Petunjuk: `status_logs` dan `reference_sequences` tidak muncul dari normalisasi — ia muncul dari keperluan audit dan nombor rujukan.)
+8. Commit: `SETUP: kamus data + normalisasi 3NF`.
+
+#### ✅ Checkpoint
+- 5 jadual teras (`parking_slots`, `slot_bookings`, `pass_applications`, `pass_documents`, `status_logs`) dalam kamus data; tiada sel kosong dalam lajur Jenis dan NULL. Baki 5 jadual dijadualkan sebelum Hari 4.
+- Setiap FK mempunyai peraturan `ON DELETE` dan sebab.
+- Semua medan UNIQUE dalam 5 jadual teras (termasuk komposit `(zone_id, slot_no)`) disenaraikan; `(prefix, year)` ditambah bersama `reference_sequences` sebelum Hari 4.
+- Latihan normalisasi menghasilkan sekurang-kurangnya `users`, `departments`, `vehicles`, `pass_applications`, `pass_documents`.
+- Jenis & panjang sepadan SPEC (cth `pass_documents.mime` VARCHAR(80), `status_logs.module` VARCHAR(5)).
+
+#### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Dok 1/2/3` dijadikan 3 lajur dalam `pass_applications` | Tidak mengenal kumpulan berulang | 1NF: kumpulan berulang → jadual anak `pass_documents` |
+| "Disemak Oleh" dijadikan teks nama | Menyimpan nilai, bukan rujukan | FK `reviewed_by` → `users.id` |
+| Tidak pasti NULL atau tidak | Keperluan tidak jelas | Tanya: "Adakah nilai ini wujud **pada saat rekod dicipta**?" `decided_at` tidak → NULL |
+| Kontraktor tiada no staf — pecahkan UNIQUE? | UNIQUE vs NULL | MySQL membenarkan banyak NULL dalam lajur UNIQUE — sebab itu `staff_no` UNIQUE **NULL** |
+
+#### ⭐ Cabaran tambahan
+Anggarkan saiz data selepas 3 tahun (200 tempahan TLK + 500 permohonan pas setahun, purata 2 dokumen, purata 3 log status setiap rekod). Berapa baris `status_logs`? Adakah `INDEX(module, record_id)` perlu? Terangkan.
+
+---
+
+### Lab 3.3 — Wireframe 6 Skrin Utama
+
+#### 🎯 Objektif
+Melakar wireframe kesetiaan rendah bagi 6 skrin utama mengikut aliran pengguna to-be, dengan setiap medan dipetakan ke kamus data.
+
+#### Prasyarat
+- `docs/carta-alir.md` (to-be) dan `docs/kamus-data.md`.
+- draw.io (<https://app.diagrams.net>) atau Excalidraw (<https://excalidraw.com>) — atau kertas + foto.
+- Baca README §3.
+
+#### Langkah
+1. Cipta `docs/wireframe/` dan `docs/wireframe.md`. Dalam `wireframe.md` tampal jadual 6 skrin (README §3.3) dan carta aliran pengguna (README §3.2).
+2. **Lakar layout induk dahulu (10 minit):** bar navigasi (menu ikut peranan), breadcrumb, kawasan kandungan, kawasan flash message. Semua skrin guna layout ini (Hari 4 ia menjadi `app/Views/layouts/main.php`).
+3. **Lakar 6 skrin (60 minit — ~10 minit setiap satu).** Setiap skrin mesti ada:
+   - Tajuk skrin + breadcrumb
+   - Semua medan/lajur (nama BM) — dipetakan ke medan kamus data
+   - Butang tindakan (ikut peranan)
+   - Ruang mesej ralat **dan** keadaan kosong
+   - Nota di tepi: `URL`, `Peranan`, `FR`
+
+   | Skrin | Wajib ada |
+   |-------|-----------|
+   | W1 Senarai tempahan saya | Lajur: No Rujukan, Slot, Tarikh, Status (badge BM), Tindakan (Batal hanya jika Diluluskan); pagination; butang "Mohon baharu" |
+   | W2 Borang tempahan | Zon (filter senarai Slot sahaja — tidak disimpan; zon diterbitkan melalui `slot_id → parking_slots.zone_id`), Slot (aktif sahaja), Kenderaan, Tarikh mula, Tarikh tamat, Sebab; nota had 90 hari & 1 tempahan aktif |
+   | W3 Keputusan TLK | Senarai tempahan; filter status (lalai Menunggu); butang Lulus/Tolak + catatan |
+   | W4 Borang pas | Jenis pas, Kenderaan (muncul jika `kenderaan`), Tujuan, Sah dari/hingga, 3 slot muat naik + nota format/saiz |
+   | W5 Semakan pas | Butiran, senarai dokumen (muat turun), garis masa `status_logs`, catatan, butang ikut peranan |
+   | W6 Dashboard statistik | 4 kad KPI + 4 kawasan carta (SPEC §2.4) |
+
+4. Eksport setiap skrin sebagai PNG: `docs/wireframe/W1-senarai-tempahan.png`, `W2-borang-tempahan.png`, `W3-keputusan-tlk.png`, `W4-borang-pas.png`, `W5-semakan-pas.png`, `W6-dashboard-statistik.png`. Simpan juga fail sumber (`.drawio` / `.excalidraw`).
+5. Pautkan imej dalam `docs/wireframe.md`:
+   ```markdown
+   ### W2 — Borang tempahan TLK
+   URL: `/tlk/tempahan/new` · Peranan: `applicant` · FR: FR-TLK-01, 03, 04, 05
+   ![W2](wireframe/W2-borang-tempahan.png)
+   Medan dijana sistem (bukan input): `ref_no`, `user_id`, `status`
+   ```
+6. **Ujian jalan kertas (10 minit):** Seorang dari pasangan lain berlakon sebagai `pemohon1` dan "klik" melalui W1 → W2 → W1 menggunakan lakaran anda. Catat di mana dia keliru.
+7. Commit: `SETUP: wireframe 6 skrin utama`.
+
+#### ✅ Checkpoint
+- 6 fail PNG + sumber dalam `docs/wireframe/`.
+- Setiap medan borang W2 dan W4 wujud dalam `docs/kamus-data.md` (kecuali Zon di W2 — penapis paparan, ditanda "tidak disimpan").
+- W2 dan W4 **tidak** mengandungi `user_id`, `status` atau `ref_no` sebagai input.
+- Label status BM tepat: Menunggu, Diluluskan, Ditolak, Dibatalkan, Tamat Tempoh, Dihantar, Dalam Semakan.
+- W5 menunjukkan butang berbeza untuk `reviewer` dan `approver`.
+- Ujian jalan kertas dijalankan; sekurang-kurangnya 1 penambahbaikan dibuat.
+
+#### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| Terlalu lama pada satu skrin | Menghias (warna, ikon, fon) | Kotak kelabu & teks sahaja. Had 10 minit setiap skrin |
+| Medan dalam wireframe tiada dalam DB | Reka UI sebelum semak kamus data | Sama ada buang medan, atau buka CR (jangan tambah medan senyap) |
+| Draw.io tidak dapat dibuka (rangkaian) | Sekatan internet | Guna aplikasi desktop draw.io atau kertas + foto telefon |
+| Dashboard W6 kosong kerana "belum tahu data" | Keliru | Lakar kotak berlabel: "Carta bar: tempahan ikut bulan" — cukup |
+
+#### ⭐ Cabaran tambahan
+Lakar skrin ke-7: **W7 Laporan RPT-01** (`/laporan/tempahan`) dengan borang filter GET (julat tarikh, zon, kategori, status), jadual berpagination, dan butang Eksport PDF / Excel (SPEC §2.3).
+
+---
+
+### Lab 3.4 — Semakan Silang Reka Bentuk
+
+#### 🎯 Objektif
+Menyemak ERD dan wireframe pasangan lain menggunakan senarai semak, membetulkan reka bentuk sendiri, dan memahami tugasan persediaan.
+
+#### Prasyarat
+- Lab 3.1–3.3 siap.
+- README §4.1–4.2.
+
+#### Langkah
+1. Cipta `docs/semakan-reka-bentuk.md`:
+   ```markdown
+   # Semakan Reka Bentuk — Hari 3
+   Disemak oleh: Pasangan __ · Tarikh: 2026-__-__
+
+   | # | Semakan | Lulus/Gagal | Catatan |
+   |---|---------|-------------|---------|
+   | E1 | 10 jadual, nama tepat | | |
+   ...
+   | U6 | W4 papar had fail | | |
+
+   ## Pembetulan yang dibuat
+   | # | Apa diubah | Fail | Commit |
+   ```
+2. **Semakan silang (20 minit):** Tukar laptop dengan pasangan lain. Semak ERD & wireframe mereka dengan senarai E1–E8 dan U1–U6. Isi dalam fail **mereka**.
+3. **Semakan jurulatih (bergilir):** Jurulatih memilih 2 item secara rawak dan meminta anda **menerangkan** (cth "Kenapa `vehicle_id` NULL di sini?").
+4. **Betulkan (20 minit):** Pulang ke laptop sendiri. Betulkan setiap item "Gagal". Rekod dalam jadual "Pembetulan".
+5. Baca [`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md) bersama pasangan. Tulis sebarang soalan di hujung `docs/soalan-terbuka.md`.
+6. Commit dan tag:
+   ```bash
+   git add docs/ && git commit -m "SETUP: semakan reka bentuk Hari 3"
+   git tag reka-bentuk-v1.0
+   ```
+
+#### ✅ Checkpoint
+- Semua 14 item (E1–E8, U1–U6) bertanda Lulus selepas pembetulan.
+- Anda boleh menerangkan mana-mana medan dalam ERD kepada jurulatih tanpa melihat nota.
+- `git tag` menunjukkan `urs-v1.0` dan `reka-bentuk-v1.0`.
+- Anda tahu 4 tugasan persediaan dan tarikh akhirnya (Hari 4, 08:30).
+
+#### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| Penyemak "lulus semua" dengan cepat | Tidak benar-benar menyemak | Jurulatih memilih rawak 2 item untuk disahkan semula |
+| Bertengkar tentang pilihan `ON DELETE` | Kedua-dua pihak ada logik | Terima jika sebab ditulis; SPEC tidak mengunci `ON DELETE` |
+| Tidak sempat betulkan wireframe | Masa | Utamakan ERD & kamus data — esok ia menjadi migration |
+
+#### ⭐ Cabaran tambahan
+Tulis draf **migration pertama** di atas kertas (pseudo-susunan): senaraikan urutan jadual yang mesti dicipta supaya setiap FK merujuk jadual yang sudah wujud. (Petunjuk: `departments` sebelum `users`? — `users` dicipta oleh Shield; medan tambahan ditambah kemudian.)

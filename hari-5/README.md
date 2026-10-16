@@ -627,7 +627,7 @@ public static function bookingService(bool $getShared = true): BookingService
 
 ### 4.1 Kenapa ujian manual dahulu?
 
-Ujian automatik (Hari 6) hanya menguji apa yang kita **fikir** untuk diuji. Ujian manual berstruktur — dari acceptance criteria URS — menemui perkara yang tidak kita fikirkan (label salah, pautan pecah, mesej Inggeris).
+Ujian automatik (Hari 6) hanya menguji apa yang kita **fikir** untuk diuji. Ujian manual berstruktur — berdasarkan peraturan BR-TLK dalam [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §2 — menemui perkara yang tidak kita fikirkan (label salah, pautan pecah, mesej Inggeris).
 
 ### 4.2 Format kes ujian
 
@@ -660,7 +660,7 @@ Senarai penuh ±14 kes dalam [Lab 5.4](./lab.md#lab-54--ujian-manual--rekod-pepi
 
 2. Kenapa ujian manual berstruktur dibuat **sebelum** ujian automatik PHPUnit (Hari 6)?
    - [ ] Kerana PHPUnit belum boleh dipasang pada Hari 5
-   - [x] Kerana ujian automatik hanya menguji apa yang kita fikir untuk diuji; ujian manual daripada AC menemui isu yang tidak dijangka (label salah, pautan pecah, mesej Inggeris)
+   - [x] Kerana ujian automatik hanya menguji apa yang kita fikir untuk diuji; ujian manual daripada peraturan BR-* menemui isu yang tidak dijangka (label salah, pautan pecah, mesej Inggeris)
    - [ ] Kerana ujian manual menggantikan keperluan ujian automatik
    - [ ] Kerana ujian manual lebih cepat dan lebih murah daripada ujian automatik, jadi PHPUnit hanya perlu untuk modul yang kritikal sahaja
    > Kedua-duanya diperlukan. Ujian manual mendedahkan isu yang tidak terfikir; pepijat yang ditemui kemudian mengikut kitaran *reproduce → ujian gagal → baiki → ujian lulus*.

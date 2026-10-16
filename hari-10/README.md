@@ -17,7 +17,7 @@ Di akhir hari ini, peserta boleh:
 | O3 | **Menggunakan** `cache()->remember('stat_dashboard', 600, …)` dan **menambah** `cache()->delete('stat_dashboard')` selepas setiap perubahan status dalam `BookingService` & `PassWorkflowService`, serta **menerangkan** tukar-ganti (tradeoff) invalidasi cache. | S2 |
 | O4 | **Melaksanakan** skrip UAT merentas 4 modul mengikut peranan dan merekod keputusan dalam templat UAT. | S3 |
 | O5 | **Membaiki** pepijat menggunakan kitaran *reproduce → ujian gagal → baiki → ujian lulus*, dan **mengesahkan** senarai semak keselamatan akhir (CSRF, `esc()`, `.env`, muat naik luar `public/`, filter route). | S3 |
-| O6 | **Mendemokan** sistem hujung-ke-hujung dalam 15 minit, **menerangkan** baris kod yang dipilih panel, dan **menyumbang** kepada retrospektif Start/Stop/Continue. | S4 |
+| O6 | **Mendemokan** sistem hujung-ke-hujung dalam 8 minit, **menerangkan** baris kod yang dipilih panel, dan **menyumbang** kepada retrospektif Start/Stop/Continue. | S4 |
 
 ---
 
@@ -297,9 +297,9 @@ Jika cache dikosongkan sebelum `COMMIT`, permintaan lain boleh membina semula ca
 
 ### 3.1 UAT — menguji sebagai pengguna, bukan sebagai pembangun
 
-UAT (User Acceptance Testing) menjawab soalan pemilik sistem: "*Adakah sistem ini melakukan apa yang kita setuju dalam URS?*" Ia **bukan** ujian unit. Ia dijalankan melalui pelayar, mengikut peranan, dengan data sintetik.
+UAT (User Acceptance Testing) menjawab soalan pemilik sistem: "*Adakah sistem ini mematuhi peraturan BR-TLK/BR-PAS dalam [SPEC](../docs/spesifikasi-sistem.md) §2?*" (contoh acceptance criteria: [`rujukan-keperluan.md`](../docs/rujukan-keperluan.md)). Ia **bukan** ujian unit. Ia dijalankan melalui pelayar, mengikut peranan, dengan data sintetik.
 
-Dua templat (ditulis Hari 2, digunakan hari ini):
+Dua templat (disediakan dalam modul **Templat & Rujukan**):
 
 - `templates/dokumen/kes-ujian-templat.md` (modul **Templat & Rujukan**) — kes ujian terperinci (TC-…) + **log pepijat**.
 - `templates/dokumen/uat-signoff-templat.md` (modul **Templat & Rujukan**) — senario UAT-01..10 + keputusan penerimaan + tandatangan.
@@ -326,7 +326,7 @@ Jalankan **mengikut tertib** — setiap langkah menyediakan data untuk langkah s
 | 14 | `penyemak@latihan.test` | RPT-02 tapis status Diluluskan → eksport PDF & Excel | Jumlah skrin = PDF = Excel = `COUNT(*)` | UAT-09 |
 | 15 | `admin@latihan.test` | RPT-03 bulan semasa; bandingkan dengan carta "Penggunaan ikut zon" | Peratus **sama** | UAT-09, UAT-10 |
 
-> 💡 **Tip:** Satu orang *memandu* (klik), seorang lagi *merekod* (isi "Hasil sebenar" dan status ✅/❌) dalam templat. Jangan baiki pepijat semasa UAT — **rekod dahulu**, baiki kemudian mengikut keterukan.
+> 💡 **Tip:** Selepas **setiap** langkah, terus isi "Hasil sebenar" dan status ✅/❌ dalam templat sebelum klik langkah seterusnya. Jangan baiki pepijat semasa UAT — **rekod dahulu**, baiki kemudian mengikut keterukan.
 
 ### 3.3 Kitaran pembetulan pepijat (KOLABORASI §3)
 
@@ -399,17 +399,17 @@ Rujukan mendalam: [`docs/nota-11-keselamatan-aplikasi-web.md`](../docs/nota-11-k
 
 ## S4 · Demo capstone kepada pemilik sistem & penutup (16:00–17:00)
 
-### 4.1 Format demo — 15 minit setiap pasangan
+### 4.1 Format demo — 8 minit setiap peserta
 
 | Minit | Segmen | Apa yang panel mahu lihat |
 |-------|--------|---------------------------|
-| 0–1 | **Pengenalan** | Nama pasangan, branch/tag Git (`v1.0-capstone`), satu ayat "apa yang kami bina" |
-| 1–4 | **M1 TLK** | Pemohon mohon → pertindihan ditolak → pelulus lulus → `TLK-2026-####` |
-| 4–7 | **M2 Pas** | Mohon + dokumen → penyemak → pelulus → garis masa `status_logs` |
-| 7–9 | **M3 Laporan** | Tapis RPT-01/02 → halaman 2 kekal filter → PDF & Excel dengan jumlah sama |
-| 9–11 | **M4 Statistik** | 4 KPI + 4 carta; lulus satu permohonan pas → KPI "Pas menunggu" berubah serta-merta (invalidasi) |
-| 11–13 | **Terangkan kod** | Panel pilih **satu fail + satu baris**; mana-mana ahli pasangan menerangkan |
-| 13–15 | **Soal jawab & markah** | Panel isi rubrik; pasangan seterusnya bersedia |
+| 0–1 | **Pengenalan** | Nama, repo `kelas-ci-<nama>`, tag Git (`v1.0-capstone`), satu ayat "apa yang saya bina" |
+| 1–3 | **M1 TLK** | Pemohon mohon → pertindihan ditolak → pelulus lulus → `TLK-2026-####` |
+| 3–5 | **M2 Pas** | Mohon + dokumen → penyemak → pelulus → garis masa `status_logs` |
+| 5–6 | **M3 Laporan** | Tapis RPT-01/02 → halaman 2 kekal filter → PDF & Excel dengan jumlah sama |
+| 6–7 | **M4 Statistik** | 4 KPI + 4 carta; lulus satu permohonan pas → KPI "Pas menunggu" berubah serta-merta (invalidasi) |
+| 7–8 | **Terangkan kod** | Panel pilih **satu fail + satu baris**; peserta menerangkan sendiri |
+| Selepas 8 | **Markah** | Panel isi rubrik; peserta seterusnya bersedia |
 
 Rubrik penuh & helaian markah: [`docs/rubrik-capstone.md`](../docs/rubrik-capstone.md). Ringkasan pemberat:
 
@@ -442,23 +442,23 @@ Sijil **tamat kursus** dikeluarkan kepada peserta yang memenuhi **semua** kriter
 | # | Kriteria | Bukti |
 |---|----------|-------|
 | 1 | Kehadiran **≥ 80 %** sesi (≥ 32 daripada 40 sesi S1–S4) | Senarai kehadiran harian |
-| 2 | Modul **M1–M4** didemo dalam capstone oleh pasangan peserta | Helaian markah rubrik |
-| 3 | Markah capstone pasangan **≥ 60 / 100** dan **tiada** kegagalan gate kritikal yang tidak dibaiki | [`rubrik-capstone.md`](../docs/rubrik-capstone.md) |
-| 4 | Peserta **sendiri** menerangkan sekurang-kurangnya satu baris kod dengan betul semasa demo (segmen 11–13) | Catatan panel |
+| 2 | Modul **M1–M4** didemo dalam capstone oleh peserta sendiri | Helaian markah rubrik |
+| 3 | Markah capstone peserta **≥ 60 / 100** dan **tiada** kegagalan gate kritikal yang tidak dibaiki | [`rubrik-capstone.md`](../docs/rubrik-capstone.md) |
+| 4 | Peserta **sendiri** menerangkan sekurang-kurangnya satu baris kod dengan betul semasa demo (segmen 7–8) | Catatan panel |
 | 5 | Repo diserahkan: tag `v1.0-capstone`, `composer test` hijau, tiada `.env`/data sebenar | Pautan repo / arkib zip |
 
 Peserta yang tidak memenuhi kriteria 2–5 tetapi hadir ≥ 80 % menerima **sijil penyertaan** dan pelan tindakan susulan (satu modul untuk disiapkan dalam 2 minggu, disemak jurulatih).
 
 ### 🎯 Kuiz S4
 
-1. Sebuah pasangan mendapat 78/100 dalam rubrik capstone, tetapi semasa demo panel mendapati `pemohon2` boleh membuka permohonan `pemohon1`. Apakah kesannya?
+1. Seorang peserta mendapat 78/100 dalam rubrik capstone, tetapi semasa demo panel mendapati `pemohon2` boleh membuka permohonan `pemohon1`. Apakah kesannya?
    - [ ] Tiada — markah melebihi 60, jadi lulus penuh
    - [x] Ia kegagalan gate kritikal — keputusan dihadkan kepada *Lulus bersyarat* sehingga dibaiki
    - [ ] Hanya markah kriteria B (Keselamatan & kawalan akses) dikurangkan; keputusan kekal lulus penuh kerana jumlah masih ≥ 60
-   - [ ] Pasangan terus gagal kursus tanpa peluang membaiki
+   - [ ] Peserta terus gagal kursus tanpa peluang membaiki
    > Terdapat 5 gate kritikal (cth pemohon tidak boleh melihat rekod orang lain, `.env` tidak dalam Git). Sijil tamat kursus memerlukan tiada kegagalan gate kritikal yang tidak dibaiki. Pilihan "hanya markah kriteria B dikurangkan" salah kerana gate kritikal menghadkan keputusan tanpa mengira jumlah markah.
 
-2. Seorang peserta hadir 30 daripada 40 sesi. Pasangannya mendapat 85/100 tanpa kegagalan gate, dan dia sendiri menerangkan satu baris kod dengan betul. Adakah dia layak menerima **sijil tamat kursus**?
+2. Seorang peserta hadir 30 daripada 40 sesi. Dia mendapat 85/100 tanpa kegagalan gate, dan dia sendiri menerangkan satu baris kod dengan betul. Adakah dia layak menerima **sijil tamat kursus**?
    - [ ] Ya, kerana markah capstone melebihi 60
    - [ ] Ya, kerana dia menerangkan kod dengan betul
    - [x] Tidak — kehadiran 75 % kurang daripada syarat ≥ 80 % (≥ 32 daripada 40 sesi)
@@ -477,7 +477,7 @@ Peserta yang tidak memenuhi kriteria 2–5 tetapi hadir ≥ 80 % menerima **siji
 - [ ] `tests/Services/StatisticsCacheTest.php` — hijau (dan **pernah** merah tanpa invalidasi)
 - [ ] `docs/UAT-signoff.md` diisi; log pepijat dengan ≥ 1 pepijat ditutup melalui kitaran ujian-gagal
 - [ ] Senarai semak keselamatan K1–K10 ditanda
-- [ ] Tag `v1.0-capstone`; demo 15 minit; helaian markah ditandatangani → **M4 siap** · **Sistem lengkap** 🎓
+- [ ] Tag `v1.0-capstone`; demo 8 minit; helaian markah ditandatangani → **M4 siap** · **Sistem lengkap** 🎓
 
 ---
 
@@ -547,7 +547,7 @@ Tahniah — anda telah membina sistem 4 modul dari keperluan hingga demo. Sistem
 
 ### C. Amalan yang dibawa pulang
 
-1. **Keperluan → AC → ujian** sebelum kod.
+1. **Peraturan (BR-*) → AC → ujian** sebelum kod.
 2. **Satu pintu** untuk perubahan status (service + enum + `status_logs`).
 3. **Server** yang menguatkuasa akses — bukan butang yang disembunyikan.
 4. **Ujian gagal dahulu** untuk setiap pepijat.

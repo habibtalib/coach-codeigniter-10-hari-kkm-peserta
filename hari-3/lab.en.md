@@ -1,268 +1,407 @@
-# Day 3 Lab — ERD, Data Dictionary, Wireframes & Design Review
+# Day 3 Lab — Database, Migrations, Models & Search
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 3 README](./README.md)
+[📅 Schedule](../JADUAL.md) · [📘 Specification](../docs/spesifikasi-sistem.md) · [📖 Day 3 README](./README.md)
 
 | Lab | Session | Output |
 |-----|---------|--------|
-| [Lab 3.1](#lab-31--mermaid-erd) | S1 | `docs/erd.md` |
-| [Lab 3.2](#lab-32--data-dictionary--normalisation) | S2 | `docs/kamus-data.md` |
-| [Lab 3.3](#lab-33--wireframes-for-the-6-main-screens) | S3 | `docs/wireframe/`, `docs/wireframe.md` |
-| [Lab 3.4](#lab-34--design-cross-review) | S4 | `docs/semakan-reka-bentuk.md` |
+| [Lab 3.1](#lab-31--mysql-database--env-s1) | S1 | Databases `kkm_latihan` + `kkm_latihan_test`, user `kkm_dev`, `.env` connected |
+| [Lab 3.2](#lab-32--first-migrations--seeders-s2) | S2 | Migrations for `departments` + `parking_zones`, idempotent seeders; commit pushed |
+| [Lab 3.3](#lab-33--model--the-jabatan-pages-s3) | S3 | `DepartmentModel` + `/jabatan` (list & new form); commit pushed |
+| [Lab 3.4](#lab-34--zone-search--pagination-s4) | S4 | `/zon` with `?q=` search & pagination; commit pushed |
 
-> **Today's rule:** SPEC §3 is the final answer for table & field names. Your job is not to invent a new schema — it is to **rebuild** that schema from your own URS, understand **why** each part exists, and find what you missed.
-
----
-
-## Lab 3.1 — Mermaid ERD
-
-### 🎯 Objective
-Identify the entities and cardinalities from the URS, then draw a Mermaid ERD that matches SPEC §3 100%.
-
-### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
-- `docs/URS-v1.md` (Day 2) and the list of nouns (yesterday's preparation).
-- Read README §1.1–1.2.
-
-### Steps
-1. **Without looking at SPEC §3 (15 min):** On paper, list the entities from the nouns in your URS. Draw boxes and lines. Write the cardinality at each end.
-2. **Compare (5 min):** Open SPEC §3. In `docs/erd.md`, list them under a `## Apa yang saya terlepas` section:
-   ```markdown
-   ## What I missed (first sketch vs SPEC)
-   - Did not think of `reference_sequences` — I assumed ref_no was generated from the id
-   - I made a `roles` table — wrong, roles live in Shield
-   ```
-3. Create the ERD in `docs/erd.md`. Start with two tables and one relationship, preview it, then add more:
-   ```mermaid
-   erDiagram
-       parking_zones {
-           int id PK
-           varchar code UK "VARCHAR(10)"
-           varchar name "VARCHAR(100)"
-           varchar location "VARCHAR(150)"
-           datetime created_at
-           datetime updated_at
-       }
-       parking_slots {
-           int id PK
-           int zone_id FK
-           varchar slot_no "VARCHAR(10)"
-           varchar category "VARCHAR(20) SlotCategory"
-           tinyint is_active "DEFAULT 1"
-           datetime created_at
-           datetime updated_at
-           datetime deleted_at
-       }
-       parking_zones ||--o{ parking_slots : "zone_id"
-   ```
-4. Add the remaining 8 tables **one at a time**, previewing after each table. Suggested order: `departments` → `users` → `vehicles` → `slot_bookings` → `pass_applications` → `pass_documents` → `status_logs` → `reference_sequences`.
-5. Add all the relationships. Watch for `|o--o{` on NULL FKs (`department_id`, `decided_by`, `vehicle_id` in `pass_applications`, `reviewed_by`, `approved_by`).
-6. Below the ERD, add the cardinality table (README §1.2) and **explain in your own words** three design decisions (README §1.4 a, b, c).
-7. Commit: `SETUP: ERD Mermaid sistem TLK & Pas` (TLK = Special Vehicle Parking, *Tempat Letak Kenderaan Khas*).
-
-### ✅ Checkpoint
-- [ ] The ERD renders without errors on mermaid.live.
-- [ ] **10 tables** — count them: `departments`, `users`, `parking_zones`, `parking_slots`, `vehicles`, `slot_bookings`, `pass_applications`, `pass_documents`, `status_logs`, `reference_sequences`.
-- [ ] Cross-check with a short script (run it in your repo folder):
-  ```bash
-  for t in departments users parking_zones parking_slots vehicles slot_bookings \
-           pass_applications pass_documents status_logs reference_sequences; do
-    grep -Eq "^[[:space:]]*$t \{" docs/erd.md && echo "OK  $t" || echo "TIADA $t"
-  done
-  ```
-  Every line must be `OK`.
-- [ ] 13 relationships (including the two `users`–`pass_applications` relationships for `reviewed_by` and `approved_by`).
-- [ ] No `users.role`.
-
-### 🧯 Troubleshooting
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `Parse error` on an attribute line (especially in older Mermaid renderers) | The type contains `(`, as in `varchar(20)` | To work in every renderer, write the short type `varchar` and put the length in a comment `"VARCHAR(20)"` |
-| Error on `PK FK` | Several keys without a comma | Use upper-case `PK`, `FK`, `UK`; separate several with commas: `PK, FK` |
-| The diagram is too wide to read | 10 tables with every field | Normal. For presenting, make a second version without `created_at`/`updated_at` |
-| Error on a relationship line | The relationship label is missing (Mermaid requires `: label`) | `users \|\|--o{ vehicles : "user_id"` |
-
-### ⭐ Bonus challenge
-Add a second ERD **just for Shield** that shows how `users` relates to `auth_identities` and `auth_groups_users` (see the Shield documentation). Explain why the user's email is not stored in `users`.
+> All work happens in your **individual** project `~/latihan/kelas-ci-<nama>` (Day 2). Tables & fields follow [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §3 and [`erd-rujukan.md`](../docs/erd-rujukan.md) — you do not draw the ERD yourself. The original ERD/data dictionary/wireframe material is now optional reading in [`rujukan-keperluan.md`](../docs/rujukan-keperluan.md).
 
 ---
 
-## Lab 3.2 — Data Dictionary & Normalisation
+## Lab 3.1 — MySQL database & `.env` (S1)
 
 ### 🎯 Objective
-Write a complete data dictionary for 5 core tables in the session (the other 5 tables are finished before Day 4, 08:30) and prove the schema is in 3NF through a normalisation exercise.
+Create the development and test databases with a dedicated user `kkm_dev`, connect the `kelas-ci-<nama>` project through `.env`, and confirm the connection with `php spark db:table --show`.
 
 ### Prerequisites
-- Lab 3.1 is done.
-- `templates/dokumen/kamus-data-templat.md` (**Templat & Rujukan** module), README §2.
+- [Lab 2.4](../hari-2/lab.en.md#lab-24--form-validation--csrf-s4) done: GitLab shows 4 commits.
+- Laragon → **Start All** (MySQL green). A Git Bash terminal in VS Code.
+
+> 🔍 **Proof of work:** the platform ticks today's lab checkpoints when you **pass the Day quiz** — its questions can only be answered by running the code.
 
 ### Steps
-1. Create the file `docs/kamus-data.md` and copy the contents of the template `templates/dokumen/kamus-data-templat.md` (**Templat & Rujukan** module) into it (the `## Jadual: <nama_jadual>` section is repeated for each table).
-2. **In the session — 5 core tables, split the work in your pair:** the driver writes `parking_slots` and `slot_bookings`; the navigator checks against the SPEC. Swap for `pass_applications`, `pass_documents`, `status_logs`.
-   **The other 5 tables** (`departments`, `users`, `parking_zones`, `vehicles`, `reference_sequences`) — finish them before **Day 4, 08:30** together with preparation task T3 ([`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md)). These tables are small; README §2.5 gives their unique keys and special notes.
-3. For every table fill in **all** the columns: Field, Type, NULL, Default, Key/Index, FK →, Rule/enum, Description. Use `slot_bookings` in README §2.2 as the example.
-4. Fill in the **Rule** column with BR references, e.g.:
-   - `pass_documents.mime` → `application/pdf`, `image/jpeg`, `image/png` (BR-PAS-02)
-   - `pass_documents.size_bytes` → ≤ 2,097,152 (BR-PAS-02)
-   - `status_logs.remarks` → required, ≥ 10 characters, when `to_status = rejected` — in both modules: BR-PAS-03 for Pass, SPEC §9 for TLK booking rejections
-5. Fill in the **ON DELETE rules** section (README §2.3) — you may agree or disagree with the suggestions, but **write down the reason**.
-6. **Normalisation exercise (25 min):** In the `## Normalisasi` section, take the Pass spreadsheet below (made-up data) and normalise it to 3NF. Show the resulting tables at each step 1NF → 2NF → 3NF.
-
-   | Reference No | Applicant Name | Staff No | Department Code | Department Name | Pass Type | Plate | Vehicle Model | Doc 1 | Doc 2 | Doc 3 | Status | Reviewed By | Approved By |
-   |------------|--------------|---------|-------------|--------------|-----------|------|-----------------|-------|-------|-------|--------|--------------|--------------|
-   | PAS-2026-0001 | Aminah Latihan | S1001 | JKP | Jabatan Kejururawatan | kenderaan | WXX 1234 | Myvi | geran.pdf | ic.jpg | | approved | Faizal | Noraini |
-   | PAS-2026-0002 | Chong Rekaan | — | — | — | kontraktor | | | lantikan.pdf | ic.png | permit.pdf | under_review | Faizal | |
-
-7. Write one paragraph: **"Which SPEC tables come out of this normalisation, and which do not (and why)?"** (Hint: `status_logs` and `reference_sequences` do not come out of normalisation — they come from the audit requirement and the reference numbers.)
-8. Commit: `SETUP: kamus data + normalisasi 3NF`.
-
-### ✅ Checkpoint
-- [ ] 5 core tables (`parking_slots`, `slot_bookings`, `pass_applications`, `pass_documents`, `status_logs`) in the data dictionary; no empty cells in the Type and NULL columns. The other 5 tables are scheduled before Day 4.
-- [ ] Every FK has an `ON DELETE` rule and a reason.
-- [ ] All UNIQUE fields in the 5 core tables (including the composite `(zone_id, slot_no)`) are listed; `(prefix, year)` is added with `reference_sequences` before Day 4.
-- [ ] The normalisation exercise produces at least `users`, `departments`, `vehicles`, `pass_applications`, `pass_documents`.
-- [ ] Types & lengths match the SPEC (e.g. `pass_documents.mime` VARCHAR(80), `status_logs.module` VARCHAR(5)).
-
-### 🧯 Troubleshooting
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `Dok 1/2/3` becomes 3 columns in `pass_applications` | The repeating group was not recognised | 1NF: repeating group → child table `pass_documents` |
-| "Reviewed By" becomes a name as text | Storing a value, not a reference | FK `reviewed_by` → `users.id` |
-| Not sure whether it is NULL or not | The requirement is unclear | Ask: "Does this value exist **at the moment the record is created**?" `decided_at` does not → NULL |
-| A contractor has no staff number — does that break UNIQUE? | UNIQUE vs NULL | MySQL allows many NULLs in a UNIQUE column — that is why `staff_no` is UNIQUE **NULL** |
-
-### ⭐ Bonus challenge
-Estimate the data size after 3 years (200 TLK bookings + 500 pass applications a year, an average of 2 documents, an average of 3 status logs per record). How many `status_logs` rows? Is `INDEX(module, record_id)` needed? Explain.
-
----
-
-## Lab 3.3 — Wireframes for the 6 Main Screens
-
-### 🎯 Objective
-Sketch low-fidelity wireframes of the 6 main screens following the to-be user flow, with every field mapped to the data dictionary.
-
-### Prerequisites
-- `docs/carta-alir.md` (to-be) and `docs/kamus-data.md`.
-- draw.io (<https://app.diagrams.net>) or Excalidraw (<https://excalidraw.com>) — or paper + a photo.
-- Read README §3.
-
-### Steps
-1. Create `docs/wireframe/` and `docs/wireframe.md`. In `wireframe.md`, paste the table of 6 screens (README §3.3) and the user flow chart (README §3.2).
-2. **Sketch the master layout first (10 min):** navigation bar (menu by role), breadcrumb, content area, flash message area. Every screen uses this layout (on Day 4 it becomes `app/Views/layouts/main.php`).
-3. **Sketch the 6 screens (60 min — ~10 min each).** Every screen must have:
-   - Screen title + breadcrumb
-   - Every field/column (Malay names) — mapped to a data dictionary field
-   - Action buttons (by role)
-   - Space for error messages **and** the empty state
-   - Side notes: `URL`, `Peranan`, `FR`
-
-   | Screen | Must have |
-   |--------|-----------|
-   | W1 My bookings list | Columns: Reference No, Slot, Date, Status (Malay badge), Action (Cancel only if Approved); pagination; a "New application" button |
-   | W2 Booking form | Zone (filters the Slot list only — not stored; the zone is derived through `slot_id → parking_slots.zone_id`), Slot (active only), Vehicle, Start date, End date, Reason; a note on the 90-day limit & 1 active booking |
-   | W3 TLK decision | List of bookings; status filter (default Menunggu); Approve/Reject buttons + remarks |
-   | W4 Pass form | Pass type, Vehicle (appears if `kenderaan`), Purpose, Valid from/to, 3 upload slots + a note on format/size |
-   | W5 Pass review | Details, list of documents (download), `status_logs` timeline, remarks, buttons by role |
-   | W6 Statistics dashboard | 4 KPI cards + 4 chart areas (SPEC §2.4) |
-
-4. Export every screen as a PNG: `docs/wireframe/W1-senarai-tempahan.png`, `W2-borang-tempahan.png`, `W3-keputusan-tlk.png`, `W4-borang-pas.png`, `W5-semakan-pas.png`, `W6-dashboard-statistik.png`. Also keep the source files (`.drawio` / `.excalidraw`).
-5. Link the images in `docs/wireframe.md`:
-   ```markdown
-   ### W2 — TLK booking form
-   URL: `/tlk/tempahan/new` · Role: `applicant` · FR: FR-TLK-01, 03, 04, 05
-   ![W2](wireframe/W2-borang-tempahan.png)
-   System-generated fields (not input): `ref_no`, `user_id`, `status`
-   ```
-6. **Paper walkthrough test (10 min):** Someone from another pair plays `pemohon1` and "clicks" through W1 → W2 → W1 using your sketches. Note where they get confused.
-7. Commit: `SETUP: wireframe 6 skrin utama`.
-
-### ✅ Checkpoint
-- [ ] 6 PNG files + sources in `docs/wireframe/`.
-- [ ] Every field on the W2 and W4 forms exists in `docs/kamus-data.md` (except Zone on W2 — a display filter, marked "not stored").
-- [ ] W2 and W4 do **not** contain `user_id`, `status` or `ref_no` as inputs.
-- [ ] The Malay status labels are exact: Menunggu, Diluluskan, Ditolak, Dibatalkan, Tamat Tempoh, Dihantar, Dalam Semakan.
-- [ ] W5 shows different buttons for `reviewer` and `approver`.
-- [ ] The paper walkthrough test was run; at least 1 improvement was made.
-
-### 🧯 Troubleshooting
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| Too long on one screen | Decorating (colours, icons, fonts) | Grey boxes & text only. Limit of 10 minutes per screen |
-| A wireframe field is not in the DB | UI designed before checking the data dictionary | Either remove the field, or open a CR (do not add a field silently) |
-| draw.io cannot be opened (network) | Internet blocked | Use the draw.io desktop app, or paper + a phone photo |
-| The W6 dashboard is empty because "we don't know the data yet" | Confusion | Sketch labelled boxes: "Bar chart: bookings by month" — that is enough |
-
-### ⭐ Bonus challenge
-Sketch a 7th screen: **W7 Report RPT-01** (`/laporan/tempahan`) with a GET filter form (date range, zone, category, status), a paginated table, and Export PDF / Excel buttons (SPEC §2.3).
-
----
-
-## Lab 3.4 — Design Cross-Review
-
-### 🎯 Objective
-Review another pair's ERD and wireframes with a checklist, fix your own design, and understand the preparation assignment.
-
-### Prerequisites
-- Labs 3.1–3.3 are done.
-- README §4.1–4.2.
-
-### Steps
-1. Create `docs/semakan-reka-bentuk.md`:
-   ```markdown
-   # Design Review — Day 3
-   Reviewed by: Pair __ · Date: 2026-__-__
-
-   | # | Check | Pass/Fail | Notes |
-   |---|-------|-----------|-------|
-   | E1 | 10 tables, exact names | | |
-   ...
-   | U6 | W4 shows the file limits | | |
-
-   ## Fixes made
-   | # | What changed | File | Commit |
-   ```
-2. **Cross-review (20 min):** Swap laptops with another pair. Review their ERD & wireframes with the E1–E8 and U1–U6 lists. Fill it in in **their** file.
-3. **Trainer review (in turns):** The trainer picks 2 items at random and asks you to **explain** them (e.g. "Why is `vehicle_id` NULL here?").
-4. **Fix (20 min):** Go back to your own laptop. Fix every "Fail" item. Record it in the "Fixes" table.
-5. Read [`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md) with your partner. Write any questions at the end of `docs/soalan-terbuka.md`.
-6. Commit and tag:
+1. **Check MySQL:**
    ```bash
-   git add docs/ && git commit -m "SETUP: semakan reka bentuk Hari 3"
-   git tag reka-bentuk-v1.0
+   mysql --version
    ```
+   `mysql: command not found`? Laragon → *Menu → Tools → Path → Add Laragon to Path*, close VS Code and open it again.
+2. **Create the databases & user** (once only; skip if you already did [`persediaan.md`](../docs/persediaan.md) §4). Laragon: user `root` with no password:
+   ```bash
+   mysql -u root <<'SQL'
+   CREATE DATABASE IF NOT EXISTS kkm_latihan      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE DATABASE IF NOT EXISTS kkm_latihan_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE USER IF NOT EXISTS 'kkm_dev'@'localhost' IDENTIFIED BY 'Latihan@2026';
+   GRANT ALL PRIVILEGES ON kkm_latihan.*      TO 'kkm_dev'@'localhost';
+   GRANT ALL PRIVILEGES ON kkm_latihan_test.* TO 'kkm_dev'@'localhost';
+   FLUSH PRIVILEGES;
+   SQL
+   mysql -u kkm_dev -p -e "SHOW DATABASES LIKE 'kkm_latihan%';"
+   ```
+   Password `Latihan@2026`. The output lists `kkm_latihan` and `kkm_latihan_test`. Training data only — **never** use a real password.
+3. **Connect `.env`.** Open `.env` in VS Code and add below `CI_ENVIRONMENT`:
+   ```ini
+   app.baseURL = 'http://localhost:8080/'
+   app.appTimezone = 'Asia/Kuala_Lumpur'
+
+   database.default.hostname = localhost
+   database.default.database = kkm_latihan
+   database.default.username = kkm_dev
+   database.default.password = Latihan@2026
+   database.default.DBDriver = MySQLi
+   database.default.DBPrefix =
+   database.default.port = 3306
+   database.default.charset = utf8mb4
+   database.default.DBCollat = utf8mb4_unicode_ci
+   ```
+4. **Test the connection:**
+   ```bash
+   php spark db:table --show
+   ```
+   The new database is still empty: CI prints *Database has no tables!* — that means the connection **worked**. The error *Unable to connect* means `.env` is wrong.
+5. **`.env` stays secret:**
+   ```bash
+   git status --short
+   git check-ignore -v .env
+   ```
+   `git status` does not list `.env`; `git check-ignore` shows the `.gitignore` line that ignores it. There is nothing to commit in this lab.
 
 ### ✅ Checkpoint
-- [ ] All 14 items (E1–E8, U1–U6) are marked Pass after the fixes.
-- [ ] You can explain any field in the ERD to the trainer without looking at your notes.
-- [ ] `git tag` shows `urs-v1.0` and `reka-bentuk-v1.0`.
-- [ ] You know the 4 preparation tasks and their deadline (Day 4, 08:30).
+- [ ] `SHOW DATABASES LIKE 'kkm_latihan%'` as `kkm_dev` lists two databases (Quiz day).
+- [ ] `php spark db:table --show` prints *Database has no tables!* with no connection error (Quiz day).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
-|---------|-------|-----|
-| The reviewer "passes everything" quickly | Not really reviewing | The trainer picks 2 items at random to confirm again |
-| Arguing about the `ON DELETE` choice | Both sides have a point | Accept it if the reason is written down; the SPEC does not fix `ON DELETE` |
-| No time to fix the wireframes | Time | Put the ERD & data dictionary first — tomorrow they become migrations |
+|--------|-------|--------------|
+| `ERROR 2003 … Can't connect to MySQL server` | Laragon's MySQL has not started | Laragon → **Start All**; wait for MySQL to turn green |
+| `ERROR 1045 Access denied for user 'root'` | MySQL root has a password (not the Laragon default) | `mysql -u root -p` and enter your root password |
+| `mysql` hangs with no prompt | A separate Git Bash window (mintty) | Use the VS Code terminal, or `winpty mysql -u kkm_dev -p` |
+| `Unable to connect to the database` | Wrong `.env` values or a `#` still in front | Check every `database.default.*` line; try `hostname = 127.0.0.1` |
+| `Access denied for user 'kkm_dev'` | The password in `.env` does not match | It must be `Latihan@2026` (capital L) |
 
 ### ⭐ Bonus challenge
-Write a draft of the **first migration** on paper (as a pseudo-order): list the order in which the tables must be created so that every FK points to a table that already exists. (Hint: `departments` before `users`? — `users` is created by Shield; the extra fields are added later.)
+Open HeidiSQL (Laragon → **Database** button), sign in as `kkm_dev` and look at both databases. Why does this course not use `root` in `.env`?
+
+---
+
+## Lab 3.2 — First migrations & seeders (S2)
+
+### 🎯 Objective
+Write migrations for `departments` and `parking_zones` **exactly** as in specification §3, test `migrate` / `rollback`, and fill synthetic data with seeders that can be run again and again.
+
+### Prerequisites
+- [Lab 3.1](#lab-31--mysql-database--env-s1) done.
+- Keep [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §3 open next to you.
+
+### Steps
+1. **Generate two migrations** (order matters — the timestamp decides the run order):
+   ```bash
+   php spark make:migration CreateDepartmentsTable
+   php spark make:migration CreateParkingZonesTable
+   ```
+2. **`CreateDepartmentsTable`** — fill in the generated file in `app/Database/Migrations/`:
+
+   Hints: `$this->forge->addField([...])` with `id` INT 11 UNSIGNED `auto_increment`, `code` VARCHAR 20, `name` VARCHAR 150, `created_at`/`updated_at` DATETIME `null` → `addPrimaryKey('id')` → `addUniqueKey('code')` → `createTable('departments', false, ['ENGINE' => 'InnoDB'])`.
+
+   ```php
+   public function up(): void
+   {
+       // TODO: addField — id, code, name, created_at, updated_at
+       // TODO: addPrimaryKey, addUniqueKey('code'), createTable('departments', …)
+   }
+   public function down(): void { /* TODO: dropTable('departments', true) */ }
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.2-2](../docs/kod-rujukan-hari-3.en.md#32-2--createdepartmentstable)
+3. **`CreateParkingZonesTable`** — the same pattern, fields per specification §3 (`code` VARCHAR(10) UNIQUE, `name` VARCHAR(100), `location` VARCHAR(150)):
+
+   Hints: the same as `CreateDepartmentsTable`, fields `code` VARCHAR 10 UNIQUE, `name` VARCHAR 100, `location` VARCHAR 150.
+
+   ```php
+   public function up(): void
+   {
+       // TODO: addField — id, code, name, location, created_at, updated_at
+       // TODO: addPrimaryKey, addUniqueKey('code'), createTable('parking_zones', …)
+   }
+   public function down(): void { /* TODO: dropTable('parking_zones', true) */ }
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.2-3](../docs/kod-rujukan-hari-3.en.md#32-3--createparkingzonestable)
+4. **Run, check, roll back, run again** (a short loop):
+   ```bash
+   php spark migrate
+   php spark migrate:status
+   php spark db:table --show
+   php spark migrate:rollback
+   php spark migrate
+   php spark migrate:status
+   php spark db:table departments --metadata
+   ```
+   Note the **number of tables** in `db:table --show` and the value of the **Batch** column after rollback + migrate — Day quiz questions.
+5. **Seeders.** Generate three files:
+   ```bash
+   php spark make:seeder DepartmentSeeder
+   php spark make:seeder ParkingSeeder
+   php spark make:seeder DatabaseSeeder
+   ```
+   `DepartmentSeeder` — `ignore(true)` makes it `INSERT IGNORE`, so a second run adds no duplicate rows:
+
+   Data (copy exactly — the Day quiz depends on it): `BTM` Bahagian Teknologi Maklumat (Latihan) · `BKW` Bahagian Kewangan (Latihan) · `BSM` Bahagian Sumber Manusia (Latihan) · `BPA` Bahagian Pengurusan Aset (Latihan). Fill `created_at` and `updated_at` with `date('Y-m-d H:i:s')`.
+
+   ```php
+   public function run(): void
+   {
+       $rows = [/* TODO: 4 jabatan di atas + created_at/updated_at */];
+       // TODO: table('departments')->ignore(true)->insertBatch($rows)
+   }
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.2-5a](../docs/kod-rujukan-hari-3.en.md#32-5a--departmentseeder)
+   `ParkingSeeder` — three zones (Day 4 adds slots in the same file):
+
+   Data (copy exactly): `A` Blok Utama — *Aras G, pintu masuk utama* · `B` Blok Klinik — *Sebelah klinik pakar* · `C` Parkir Bertingkat — *Aras 1–3, bangunan parkir*.
+
+   ```php
+   public function run(): void
+   {
+       $zones = [/* TODO: zon A, B, C di atas + created_at/updated_at */];
+       // TODO: table('parking_zones')->ignore(true)->insertBatch($zones)
+   }
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.2-5b](../docs/kod-rujukan-hari-3.en.md#32-5b--parkingseeder)
+   `DatabaseSeeder` — calls the other seeders in order:
+
+   Hints: `$this->call(DepartmentSeeder::class)` — parent first.
+
+   ```php
+   public function run(): void
+   {
+       // TODO: $this->call(DepartmentSeeder::class) dan ParkingSeeder
+   }
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.2-5c](../docs/kod-rujukan-hari-3.en.md#32-5c--databaseseeder)
+6. **Run it twice** (idempotency test):
+   ```bash
+   php spark db:seed DatabaseSeeder
+   php spark db:seed DatabaseSeeder
+   php spark db:table departments
+   ```
+   `departments` must have **4** rows, not 8.
+7. Commit and push:
+   ```bash
+   git add . && git commit -m "DB: migration departments + parking_zones, seeder" && git push
+   ```
+
+### ✅ Checkpoint
+- [ ] `php spark migrate:status` shows 2 `App` migrations with a *Migrated On* date (Quiz day).
+- [ ] After `db:seed` twice, `departments` has 4 rows and `parking_zones` 3 rows (Quiz day).
+- [ ] GitLab shows the commit `DB: migration departments + parking_zones, seeder` (Quiz day).
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| `migrate` does nothing | The class in the file does not match the file name, or the namespace is wrong | Class name = the part after the timestamp (`CreateDepartmentsTable`); namespace `App\Database\Migrations` |
+| `Table 'departments' already exists` | The table was created by hand or the migration ran twice with different timestamps | `php spark migrate:rollback`, delete the duplicate file, `php spark migrate` |
+| `Duplicate entry 'BTM' for key 'code'` on the second run | `ignore(true)` is missing | `$this->db->table('departments')->ignore(true)->insertBatch($rows)` |
+| `Class "App\Database\Seeds\DepartmentSeeder" not found` | File name ≠ class name | File `DepartmentSeeder.php`, class `DepartmentSeeder` |
+
+### ⭐ Bonus challenge
+Run `php spark migrate:refresh` and then `php spark db:seed DatabaseSeeder`. What does `refresh` do, and why must it **never** be run on a production database?
+
+---
+
+## Lab 3.3 — Model & the `/jabatan` pages (S3)
+
+### 🎯 Objective
+Build `DepartmentModel` with `$allowedFields`, `$useTimestamps` and validation, then the `/jabatan` page (list) and `/jabatan/baharu` (form) using the layout and the PRG pattern from Lab 2.4.
+
+### Prerequisites
+- [Lab 3.2](#lab-32--first-migrations--seeders-s2) done: `departments` has 4 rows.
+
+### Steps
+1. **Model** `app/Models/DepartmentModel.php`:
+
+   Generate the file: `php spark make:model DepartmentModel`. Hints: `$allowedFields = ['code', 'name']`; `$useTimestamps = true`; rule `code` = `required|alpha_numeric|max_length[20]|is_unique[departments.code,id,{id}]` (label `Kod`), `name` = `required|min_length[3]|max_length[150]` (label `Nama`).
+
+   ```php
+   class DepartmentModel extends Model
+   {
+       // TODO: $table, $returnType = 'array', $allowedFields, $useTimestamps
+       // TODO: $validationRules — code (label Kod) & name (label Nama)
+   }
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.3-1](../docs/kod-rujukan-hari-3.en.md#33-1--departmentmodel)
+   - `$allowedFields` — only these fields can be filled from input (safe mass assignment).
+   - `$useTimestamps` — `created_at`/`updated_at` are filled automatically.
+   - `is_unique[departments.code,id,{id}]` — the code must be unique (except the record itself during an update).
+2. **Routes** in `app/Config/Routes.php`:
+   ```php
+   $routes->get('jabatan', 'Jabatan::index');
+   $routes->get('jabatan/baharu', 'Jabatan::baharu');
+   $routes->post('jabatan', 'Jabatan::simpan');
+   ```
+3. **Controller** `app/Controllers/Jabatan.php`:
+
+   Generate the file: `php spark make:controller Jabatan`. Hints: `model(DepartmentModel::class)->orderBy('code')->findAll()`; `$this->request->getPost(['code', 'name'])`; `insert()` returns `false` on failure → `redirect()->to('jabatan/baharu')->withInput()->with('errors', $model->errors())`; success → `redirect()->to('jabatan')->with('berjaya', 'Jabatan ' . $data['code'] . ' disimpan.')`.
+
+   ```php
+   class Jabatan extends BaseController
+   {
+       protected $helpers = ['form'];
+       // TODO: index() — senarai ikut code; baharu() — borang
+       // TODO: simpan() — insert(); gagal → withInput + errors; berjaya → flash
+   }
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.3-3](../docs/kod-rujukan-hari-3.en.md#33-3--jabatan)
+   Validation happens in the **model**: `insert()` returns `false` and `$model->errors()` gives the messages per field.
+4. **List view** `app/Views/jabatan/index.php`:
+
+   Hints: the same as `daftar.php` (Lab 2.4): `session()->getFlashdata('berjaya')`, `site_url('jabatan/baharu')`, every value through `esc()`.
+
+   ```php
+   <?= $this->extend('layout') ?>
+   <?= $this->section('content') ?>
+   <!-- TODO: h1, flash 'berjaya', pautan + Jabatan baharu -->
+   <!-- TODO: jadual Kod | Nama | Dicipta — foreach $jabatan, esc() -->
+   <?= $this->endSection() ?>
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.3-4](../docs/kod-rujukan-hari-3.en.md#33-4--jabatanindexphp)
+5. **Form view** `app/Views/jabatan/baharu.php`:
+
+   Hints: inputs `name="code"` and `name="name"` with `esc(old('code'))`; field errors `$errors['code']` / `$errors['name']` in a `<span class="ralat">`.
+
+   ```php
+   <?= $this->extend('layout') ?>
+   <?= $this->section('content') ?>
+   <!-- TODO: $errors = session()->getFlashdata('errors') ?? [] -->
+   <!-- TODO: form POST jabatan + csrf_field(); code & name + old() + ralat -->
+   <?= $this->endSection() ?>
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.3-5](../docs/kod-rujukan-hari-3.en.md#33-5--jabatanbaharuphp)
+6. **Test.** `php spark serve`, open <http://localhost:8080/jabatan> (4 departments, ordered by code). Click **+ Jabatan baharu**:
+   - Submit empty → Kod and Nama errors.
+   - Submit Kod `BTM` → note the **exact** error message under Kod (a Day quiz question).
+   - Submit Kod `BPP`, Nama `Bahagian Perolehan (Latihan)` → back to the list with *"Jabatan BPP disimpan."* and the **Dicipta** column holding a date and time.
+7. Commit and push:
+   ```bash
+   git add . && git commit -m "JABATAN: model, senarai & borang baharu" && git push
+   ```
+
+### ✅ Checkpoint
+- [ ] `/jabatan` lists departments from the database through `DepartmentModel` (Quiz day).
+- [ ] A duplicate code is refused with the model's validation message; a new department is saved with an automatic `created_at` (Quiz day).
+- [ ] GitLab shows the commit `JABATAN: model, senarai & borang baharu` (Quiz day).
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| *The Kod field is required.* even though Kod is filled in | The form's `name` attribute does not match the model field | `name="code"` and `name="name"` exactly, the same as `$allowedFields` |
+| A duplicate code is not refused | `is_unique` missing or the wrong table name | `is_unique[departments.code,id,{id}]` |
+| Errors are not shown | Missing `->with('errors', $model->errors())` or no `withInput()` | Follow `simpan()` above |
+| The Dicipta column is empty | `$useTimestamps` missing | `protected $useTimestamps = true;` |
+| *The action you requested is not allowed.* | The form has no `csrf_field()` (global CSRF from Lab 2.4) | Add `<?= csrf_field() ?>` |
+
+### ⭐ Bonus challenge
+Add `/jabatan/(:num)/edit` (GET a filled form, POST `update($id, $data)`) with its own routes and view. Why does `{id}` in `is_unique` matter now?
+
+---
+
+## Lab 3.4 — Zone search & pagination (S4)
+
+### 🎯 Objective
+Build `/zon` **on your own** with the Lab 3.3 pattern: a `ParkingZoneModel` with a Query Builder search method (`like()` / `orLike()` inside `groupStart()`), a `GET ?q=` search form, and pagination.
+
+### Prerequisites
+- [Lab 3.3](#lab-33--model--the-jabatan-pages-s3) done.
+
+### Steps
+1. **Model** `app/Models/ParkingZoneModel.php` with a `cari()` method:
+
+   Generate the file: `php spark make:model ParkingZoneModel`. Hints: `$table = 'parking_zones'`, `$allowedFields = ['code', 'name', 'location']`, `$useTimestamps = true`; `trim((string) $q)`; `like('name', $q)`, `orLike('location', $q)`, `orLike('code', $q)`.
+
+   ```php
+   public function cari(?string $q): static
+   {
+       // TODO: jika $q tidak kosong: groupStart()->like()->orLike()->orLike()->groupEnd()
+       // TODO: return $this->orderBy('code');
+   }
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.4-1](../docs/kod-rujukan-hari-3.en.md#34-1--parkingzonemodel)
+2. **Controller** `app/Controllers/Zon.php` — 2 zones per page so pagination shows with 3 zones:
+
+   Generate the file: `php spark make:controller Zon`. Hints: `$model = model(ParkingZoneModel::class)`; pass `'pager' => $model->pager` after `paginate()`.
+
+   ```php
+   public function index(): string
+   {
+       // TODO: $q dari getGet('q'); $zon = $model->cari($q)->paginate(2)
+       // TODO: view('zon/index', [zon, pager, q, tajuk])
+   }
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.4-2](../docs/kod-rujukan-hari-3.en.md#34-2--zon)
+3. **Route:**
+   ```php
+   $routes->get('zon', 'Zon::index');
+   ```
+4. **View** `app/Views/zon/index.php`:
+
+   Hints: `<form method="get" action="<?= site_url('zon') ?>">`; `$zon === []` for no results (*Tiada zon sepadan dengan "…".*); `<?= $pager->links() ?>`.
+
+   ```php
+   <?= $this->extend('layout') ?>
+   <?= $this->section('content') ?>
+   <!-- TODO: borang GET zon dengan input q (value esc($q)) -->
+   <!-- TODO: tiada hasil → mesej; ada → jadual + $pager->links() -->
+   <?= $this->endSection() ?>
+   ```
+
+   Stuck for more than 10 minutes? Full reference code: [3.4-4](../docs/kod-rujukan-hari-3.en.md#34-4--zonindexphp)
+5. **Test and note** (Day quiz questions):
+   - <http://localhost:8080/zon> → page 1 (A, B) and a link to page 2 (C).
+   - <http://localhost:8080/zon?q=KLINIK> (capital letters) — which zone is shown?
+   - <http://localhost:8080/zon?q=aras> — the pagination links still carry `q=aras`.
+   - Type `' OR 1=1 --` in the search box — what is shown?
+6. Commit and push:
+   ```bash
+   git add . && git commit -m "ZON: carian + pagination" && git push
+   ```
+
+### ✅ Checkpoint
+- [ ] `/zon` shows 2 zones per page with pagination links (Quiz day).
+- [ ] The `?q=` search filters by name, location or code, and the input `' OR 1=1 --` does not break the query (Quiz day).
+- [ ] GitLab shows the commit `ZON: carian + pagination` (Quiz day).
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| *Undefined variable $pager* | `pager` not passed to the view | `'pager' => $model->pager` after `paginate()` |
+| The search shows every zone | `cari()` called on a different model from the one that runs `paginate()` | Use the same `$model`: `$model->cari($q)->paginate(2)` |
+| Page 2 loses the search | The form uses `method="post"` | Search uses `GET` so `?q=` stays in the URL |
+| `orLike` matches records outside the search when there are other conditions | No `groupStart()` / `groupEnd()` | Wrap `like()`/`orLike()` in a group |
+
+### ⭐ Bonus challenge
+Show the number of results: *"3 zon dijumpai"* using `$pager->getTotal()`. Then open the *Database* tab in the Debug Toolbar: look at the real `LIKE` query CI builds for `?q=aras`.
 
 ---
 
 ## Self-check — end of day
 
 ```bash
-ls docs/ docs/wireframe/
-# docs/: erd.md  kamus-data.md  semakan-reka-bentuk.md  wireframe.md  wireframe/ ... (Day 1–2 files)
-# docs/wireframe/: W1-senarai-tempahan.png … W6-dashboard-statistik.png + source files
-grep -cE '^[[:space:]]*[a-z_]+ \{' docs/erd.md   # 10
-grep -c '^## Jadual:' docs/kamus-data.md           # ≥ 5 (10 before Day 4)
-git log --oneline | wc -l
-git tag                                            # urs-v1.0  reka-bentuk-v1.0
+cd ~/latihan/kelas-ci-<nama>
+php spark migrate:status        # 2 migration App, Batch 1
+php spark db:table --show       # departments, migrations, parking_zones
+php spark routes                # jabatan (GET/POST), jabatan/baharu, zon
+git log --oneline | head -4     # ZON, JABATAN, DB, CI-ASAS
 ```
-
-- [ ] `ls docs/` shows `erd.md`, `kamus-data.md`, `wireframe.md`, `semakan-reka-bentuk.md` and the `wireframe/` folder with 6 PNGs + sources.
-- [ ] The ERD renders without errors in mermaid.live; the `grep` above counts **10** tables.
-- [ ] Data dictionary: 5 core tables complete (no empty cells in Type/NULL); the other 5 are scheduled before Day 4, 08:30.
-- [ ] The `## Normalisasi` section shows the steps 1NF → 2NF → 3NF.
-- [ ] `git log --oneline | wc -l` has gone up by at least 4 since the end of Day 2 (ERD, data dictionary, wireframes, review).
-- [ ] `git tag` shows `urs-v1.0` and `reka-bentuk-v1.0`.

@@ -646,7 +646,7 @@ Write the integration test `BookingServiceTest` (overlap, BR-TLK-03/04, transiti
    composer test -- --no-coverage --testdox tests/tlk/BookingServiceTest.php
    ```
 
-4. `tests/tlk/DecisionAccessTest.php` — HTTP feature test (copy it, then **explain each test to your partner**):
+4. `tests/tlk/DecisionAccessTest.php` — HTTP feature test (copy it, then **explain each test to the trainer or the person next to you**):
 
    ```php
    <?php
@@ -884,7 +884,7 @@ Polish the TLK module UI (badges, flash messages, confirmation, Bootstrap pagina
 
 6. **Short accessibility checklist:** every `<input>` has a `<label for>`; icon buttons have text; badge colour is not the only cue (a text label is always present).
 
-7. **M1 demo (5 min per pair)** — script:
+7. **M1 demo (5 min per participant)** — script:
 
    **Prerequisite:** `pemohon1` and `pemohon2` still have active bookings from Lab 6.1–6.2. Without this step, steps 1–2 hit BR-TLK-04 (*"Anda sudah mempunyai satu tempahan aktif…"*), not BR-TLK-01. Clear them through the application so `status_logs` stays complete: `pelulus` → `/tlk/keputusan` → *Tolak* (Reject) each `pending` booking (reason ≥ 10 characters); applicant → details → *Batalkan* (Cancel) each `approved` booking. Confirm:
 

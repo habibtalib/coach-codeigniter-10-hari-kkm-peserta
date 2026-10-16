@@ -1,27 +1,27 @@
-# Tugasan Persediaan — Sebelum Hari 4
+# Tugasan Persediaan — Latihan Kendiri (Pilihan)
 
 [📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](spesifikasi-sistem.md) · [📖 Hari 3](../hari-3/README.md) · [🤝 KOLABORASI](kolaborasi.md)
 
 | Perkara | Nilai |
 |---------|-------|
-| Diedarkan | Hari 3, S4 (16:00–17:00) |
-| Tarikh akhir | **Hari 4, 08:30** |
-| Disemak | Hari 4, S1 (09:00–10:30) — demo 3 minit setiap pasangan + soalan rawak |
-| Kerja | Tugasan **T1** individu (setiap laptop mesti berfungsi); **T2–T4** berpasangan |
-| Anggaran masa | 4–6 jam |
-| Markah | 100 (lihat [Rubrik](#rubrik-pemarkahan)) — **bukan peperiksaan**; tujuan: memastikan semua orang bermula Hari 4 dari garisan yang sama |
+| Status | **Pilihan** — latihan kendiri, tidak dihantar dan tidak dimarkah |
+| Bila | Bila-bila masa: sebelum kursus, malam Hari 2–3, atau semasa menunggu |
+| Kerja | Individu, di laptop anda sendiri |
+| Anggaran masa | T1: 15 minit · T2: 2–3 jam |
+| Hubungan dengan kursus | Kerja wajib berlaku dalam projek `kelas-ci-<nama>` anda ([Hari 2 Lab 2.2](../hari-2/lab.md#lab-22--projek-ci-anda-di-gitlab-s2) dan seterusnya). Hari 4 S1 **tidak** menyemak halaman ini |
 
 ## 🎯 Kenapa tugasan ini
 
-Hari 4 S2 terus mencipta projek CI4 sebenar, memasang Shield dan menulis migration daripada ERD anda. Jika persekitaran tidak berfungsi atau aliran **Route → Controller → Model → View** belum pernah dilihat, anda akan ketinggalan sepanjang Fasa B. Tugasan ini memastikan:
+Mulai Hari 2 anda membina aplikasi sendiri dalam `kelas-ci-<nama>`: route → controller → view (Lab 2.3), borang (Lab 2.4), database dan model (Hari 3). Halaman ini memberi dua latihan tambahan untuk sesiapa yang mahu lebih masa:
 
-1. Laptop anda **sedia** (T1).
-2. Anda sudah melihat CI4 berfungsi hujung-ke-hujung sekali (T2).
-3. Reka bentuk anda (ERD) dan keperluan (AC) **bersedia** untuk ditukar kepada kod (T3, T4).
+1. Pastikan laptop anda **sedia** sebelum kelas (T1).
+2. Lihat aliran **Route → Controller → Model → View** sekali lagi dalam projek berasingan, ikut tutorial rasmi CI4 (T2).
+
+> 📚 Tugasan lama T3 (perhalusi ERD) dan T4 (acceptance criteria) telah dibuang. ERD siap tersedia dalam [`erd-rujukan.md`](./erd-rujukan.md); bahan ERD, kamus data dan AC yang asal kini bacaan pilihan dalam [`rujukan-keperluan.md`](./rujukan-keperluan.md).
 
 ---
 
-## T1 — Pasang persekitaran (individu)
+## T1 — Semak persekitaran
 
 ### Senarai semak
 
@@ -62,9 +62,9 @@ done
 
 > 💡 **Tip Windows:** Jika `intl` TIADA, buka `php.ini` (Laragon: *Menu → PHP → php.ini*; atau lokasi: `php --ini`), cari `;extension=intl`, buang `;`, simpan, tutup dan buka semula terminal.
 
-### Bukti
+### Hasil
 
-Simpan output kelima-lima arahan + semakan extension ke `docs/tugasan/T1-persekitaran.txt` dalam repo dokumen pasangan anda (satu fail setiap ahli: `T1-persekitaran-<nama>.txt`).
+Semua baris `OK` dan kelima-lima arahan mencetak versi. Ada `TIADA` atau ralat? Betulkan ikut [`persediaan.md`](./persediaan.md) atau beritahu jurulatih **sebelum** Hari 2 S2 — Lab 2.2 memerlukan PHP, Composer dan Git yang berfungsi.
 
 ---
 
@@ -74,7 +74,7 @@ Rujukan: <https://codeigniter.com/user_guide/tutorial/index.html>
 
 Anda akan membina aplikasi **berita** kecil yang menggunakan corak yang sama dengan sistem TLK/Pas: route → controller → model → view, borang dengan validasi, dan CSRF.
 
-### Bahagian yang wajib disiapkan
+### Bahagian tutorial
 
 | # | Bahagian tutorial | Hasil yang boleh dilihat |
 |---|-------------------|--------------------------|
@@ -101,8 +101,9 @@ Anda akan membina aplikasi **berita** kecil yang menggunakan corak yang sama den
    ```
 3. **Data sintetik sahaja** untuk berita (cth "Latihan CI4 Hari 1", "Ujian slug berita"). Tiada nama atau berita sebenar.
 4. Jika anda menggunakan Git untuk `ci-news`, pastikan `.env` **tidak** dicommit (`git check-ignore .env` mesti mencetak `.env`).
+5. Bina `ci-news` dalam folder **berasingan** (cth `~/latihan/ci-news`), bukan di dalam `kelas-ci-<nama>`. Jangan push `ci-news` ke repo kursus anda.
 
-### Soalan refleksi (jawab dalam `docs/tugasan/T2-refleksi.md`, 3–5 ayat setiap satu)
+### Soalan refleksi (untuk diri sendiri, 3–5 ayat setiap satu)
 
 1. Surih satu permintaan ke `/news/latihan-ci4`: fail mana dipanggil, dalam susunan apa? (Routes → … → View)
 2. Apa fungsi `$allowedFields` dalam `NewsModel`? Apa akan berlaku jika ia tiada?
@@ -110,91 +111,9 @@ Anda akan membina aplikasi **berita** kecil yang menggunakan corak yang sama den
 4. Borang `news/new` mengandungi `csrf_field()`. Apa yang dihalang oleh CSRF?
 5. Dalam sistem TLK, apakah padanan bagi `News`, `NewsModel` dan jadual `news`? (Petunjuk: SPEC §5.)
 
-### Bukti
+Bandingkan jawapan anda dengan kod `kelas-ci-<nama>`: `Hello` dan `Daftar` (Hari 2), `DepartmentModel` dan `Jabatan` (Hari 3) menggunakan corak yang sama.
 
-- Tangkapan skrin dalam `docs/tugasan/`: `T2a-welcome.png`, `T2b-about.png`, `T2c-news-list.png`, `T2d-validation-error.png`, `T2d-news-created.png`
-- `docs/tugasan/T2-refleksi.md`
-- Projek `ci-news` berjalan di laptop untuk demo Hari 4
-
-> ⚠️ **Disiplin AI (KOLABORASI §3):** AI dibenarkan untuk **menerangkan ralat**. Jangan minta AI menjana keseluruhan tutorial. Pada Hari 4, jurulatih akan menunjuk **satu baris rawak** dalam `News.php` atau `NewsModel.php` — anda mesti boleh menerangkannya.
-
----
-
-## T3 — Perhalusi ERD (berpasangan)
-
-### Langkah
-
-1. Buka `docs/semakan-reka-bentuk.md` (Hari 3 Lab 3.4). Pastikan **semua** item E1–E8 kini Lulus.
-2. Kemas kini `docs/erd.md`:
-   - ERD Mermaid 10 jadual, 13 hubungan, sepadan SPEC §3.
-   - Tambah bahagian `## Urutan migration` — senaraikan susunan jadual dicipta supaya setiap FK merujuk jadual yang telah wujud. Nyatakan di mana medan tambahan `users` (`full_name`, `staff_no`, `department_id`, `phone`) ditambah berbanding jadual Shield.
-   - Tambah bahagian `## Perubahan sejak Hari 3` — senarai apa yang diubah dan kenapa.
-3. Kemas kini `docs/kamus-data.md` supaya selaras dengan ERD.
-4. Commit: `SETUP: perhalusi ERD & kamus data untuk migration`.
-
-### Bukti
-
-`docs/erd.md` dan `docs/kamus-data.md` dikemas kini; commit bertarikh selepas Hari 3.
-
----
-
-## T4 — Tulis 3 acceptance criteria baharu (berpasangan)
-
-Tulis **3 AC baharu** (bukan salinan dari Hari 2) dalam `docs/acceptance-criteria.md`, bahagian `## AC Tugasan Persediaan`. Syarat:
-
-| # | Syarat |
-|---|--------|
-| 1 | Satu AC untuk **FR-TLK** yang belum ada AC (cth pembatalan `approved → cancelled`, tamat tempoh, atau CRUD slot admin) |
-| 2 | Satu AC untuk **FR-PAS** yang menguji **akses peranan** (cth `reviewer` cuba meluluskan; `applicant` cuba buka `/pas/semakan`) |
-| 3 | Satu AC jenis **sempadan** (🟡) untuk mana-mana BR — dengan jadual `Contoh:` sekurang-kurangnya 3 baris |
-
-Setiap AC: ID `AC-…`, Given (data konkrit dari *Data ujian asas*), satu When, Then boleh diperhatikan, rujukan FR & BR.
-
----
-
-## 📤 Cara menghantar
-
-1. Pastikan struktur ini wujud dalam repo dokumen pasangan anda:
-   ```text
-   docs/
-   ├── erd.md                     # T3
-   ├── kamus-data.md              # T3
-   ├── acceptance-criteria.md     # T4 (bahagian baharu)
-   └── tugasan/
-       ├── T1-persekitaran-<nama1>.txt
-       ├── T1-persekitaran-<nama2>.txt
-       ├── T2a-welcome.png … T2d-news-created.png
-       └── T2-refleksi.md
-   ```
-2. Commit & tag:
-   ```bash
-   git add docs/ && git commit -m "SETUP: tugasan persediaan Hari 4"
-   git tag tugasan-persediaan
-   ```
-3. Bawa laptop dengan `ci-news` sedia untuk `php spark serve`.
-
----
-
-## Rubrik pemarkahan
-
-| Tugasan | Kriteria | Cemerlang | Memuaskan | Perlu bantuan | Markah |
-|---------|----------|-----------|-----------|---------------|--------|
-| **T1** Persekitaran | Versi & extension | PHP ≥ 8.2, semua 11 extension OK, Composer 2, MySQL 8/MariaDB 10.6+, Git dikonfigur (Windows: Git Bash terminal lalai) — **(20)** | Semua perisian ada; 1–2 extension bukan-wajib tiada (`gd`/`zip`) — **(14)** | PHP < 8.2, atau `intl`/`mbstring` tiada, atau MySQL tidak berjalan — **(0–7)** | /20 |
-| **T2** Tutorial CI4 | 2a–2d berfungsi | Keempat-empat berfungsi dalam demo langsung; validasi & CSRF berfungsi — **(20)** | 2a–2c berfungsi; 2d separa — **(13)** | Hanya 2a/2b — **(0–6)** | /20 |
-| | Refleksi & kefahaman | 5 soalan dijawab tepat; boleh menerangkan baris rawak dengan yakin — **(20)** | 3–4 soalan tepat; penerangan baris dengan sedikit bantuan — **(13)** | < 3 soalan; tidak dapat menerangkan baris — **(0–6)** | /20 |
-| **T3** ERD | Ketepatan & urutan migration | ERD 100% sepadan SPEC §3; urutan migration betul; perubahan direkod — **(20)** | 1–2 ralat kecil (ejaan medan, kardinaliti); urutan hampir betul — **(13)** | Jadual/medan hilang atau `users.role` masih ada; tiada urutan — **(0–6)** | /20 |
-| **T4** AC | Kualiti 3 AC | 3 AC memenuhi syarat 1–3; data konkrit; satu When; Then boleh diperhatikan — **(20)** | 3 AC ada; satu syarat tidak dipenuhi atau satu Then kabur — **(13)** | < 3 AC atau tidak boleh diuji — **(0–6)** | /20 |
-| | | | | **Jumlah** | **/100** |
-
-### Tafsiran markah
-
-| Julat | Maksud | Tindakan Hari 4 |
-|-------|--------|-----------------|
-| 80–100 | Sedia sepenuhnya | Boleh mengambil ⭐ cabaran tambahan Hari 4 |
-| 60–79 | Sedia dengan jurang kecil | Betulkan jurang semasa S2 dengan bantuan rakan |
-| < 60 | Perlu sokongan | Klinik persekitaran bersama jurulatih awal S2; dipasangkan dengan peserta "Cemerlang" |
-
-> **T1 dan T2a adalah pintu masuk.** Jika laptop tidak dapat menjalankan `php spark serve` pada 09:00 Hari 4, jurulatih akan membantu **sebelum** apa-apa lagi — beritahu jurulatih seawal mungkin (malam Hari 3) jika anda tersekat.
+> ⚠️ **Disiplin AI (KOLABORASI §3):** AI dibenarkan untuk **menerangkan ralat**. Jangan minta AI menjana keseluruhan tutorial. Uji diri: pilih satu baris rawak dalam `News.php` atau `NewsModel.php` — bolehkah anda menerangkannya tanpa bantuan?
 
 ---
 
@@ -215,4 +134,4 @@ Setiap AC: ID `AC-…`, Given (data konkrit dari *Data ujian asas*), satu When, 
 
 ## ❓ Soalan?
 
-Tambah soalan dalam `docs/soalan-terbuka.md` atau hubungi jurulatih melalui kumpulan kursus. Jangan tunggu sehingga pagi Hari 4 jika persekitaran gagal.
+Tanya jurulatih melalui kumpulan kursus. Jika persekitaran gagal, beritahu seawal mungkin — jangan tunggu sehingga Lab 2.2.

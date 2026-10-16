@@ -446,7 +446,7 @@ Cara membaca lajur utama:
 
 SPEC §3 sudah menyediakan `INDEX(status)` dan `INDEX(slot_id, start_date, end_date)` pada `slot_bookings`, serta `INDEX(status)` pada `pass_applications`. Filter RPT-02 mengikut `created_at` **tiada** index — pada 500 baris latihan ia tidak ketara, pada 500,000 baris ia ketara. Lab S4 menunjukkan cara mengukur sebelum memutuskan.
 
-> 💡 **Tip:** Index mempercepat `SELECT` tetapi memperlahankan `INSERT/UPDATE` dan memakan ruang. **Ukur dahulu** (EXPLAIN + Debug Toolbar → tab *Database*), baru tambah. Index tambahan ialah keputusan reka bentuk — rekod dalam kamus data.
+> 💡 **Tip:** Index mempercepat `SELECT` tetapi memperlahankan `INSERT/UPDATE` dan memakan ruang. **Ukur dahulu** (EXPLAIN + Debug Toolbar → tab *Database*), baru tambah. Index tambahan ialah keputusan reka bentuk — rekod dalam `docs/log-keputusan.md` (Hari 2).
 
 ### 🎯 Kuiz S4
 
@@ -461,7 +461,7 @@ SPEC §3 sudah menyediakan `INDEX(status)` dan `INDEX(slot_id, start_date, end_d
    - [ ] Query menggunakan index dengan cekap — `ALL` bermaksud semua index yang sesuai digunakan, dan `key = NULL` bermaksud tiada index tambahan diperlukan
    - [ ] Query gagal dan tiada baris dipulangkan
    - [ ] MySQL menggunakan cache
-   - [x] Imbasan penuh jadual — tiada index digunakan; ukur dan pertimbangkan index (rekod keputusan dalam kamus data)
+   - [x] Imbasan penuh jadual — tiada index digunakan; ukur dan pertimbangkan index (rekod keputusan dalam `docs/pelan-kerja.md`)
    > `type` yang baik ialah `const`, `eq_ref`, `ref` atau `range` dengan `key` bernama. Index mempercepat `SELECT` tetapi memperlahankan `INSERT/UPDATE` — ukur dahulu sebelum menambah.
 
 ---
@@ -522,5 +522,5 @@ Hari 10 ialah hari terakhir: **Statistik + Capstone**.
 1. Pastikan **M1, M2, M3** sudah di-merge ke `main` dan `composer test` hijau.
 2. Jalankan `php spark db:seed DatabaseSeeder` semula supaya ada data sintetik yang cukup (sekurang-kurangnya 2 zon, 20 tempahan, 15 permohonan pas pelbagai status) — carta kosong tidak meyakinkan semasa demo.
 3. Baca sekali imbas dokumentasi Chart.js 4 *Getting Started*: <https://www.chartjs.org/docs/latest/getting-started/>.
-4. Setiap pasangan: senaraikan **3 perkara** yang paling anda banggakan dan **1 pepijat** yang masih diketahui — ia bahan untuk demo & retrospektif esok.
+4. Setiap peserta: senaraikan **3 perkara** yang paling anda banggakan dan **1 pepijat** yang masih diketahui — ia bahan untuk demo & retrospektif esok.
 5. Semak templat UAT: `templates/dokumen/uat-signoff-templat.md` (modul **Templat & Rujukan**) dan `templates/dokumen/kes-ujian-templat.md` (modul **Templat & Rujukan**).

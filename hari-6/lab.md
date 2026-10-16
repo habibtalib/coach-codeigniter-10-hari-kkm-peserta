@@ -646,7 +646,7 @@ Menulis ujian integrasi `BookingServiceTest` (pertindihan, BR-TLK-03/04, peralih
    composer test -- --no-coverage --testdox tests/tlk/BookingServiceTest.php
    ```
 
-4. `tests/tlk/DecisionAccessTest.php` — ujian fungsian HTTP (salin, kemudian **terangkan setiap ujian kepada pasangan**):
+4. `tests/tlk/DecisionAccessTest.php` — ujian fungsian HTTP (salin, kemudian **terangkan setiap ujian kepada jurulatih atau rakan sebelah**):
 
    ```php
    <?php
@@ -884,7 +884,7 @@ Menggilap UI Modul TLK (badge, flash, pengesahan, pagination Bootstrap, menu iku
 
 6. **Senarai semak aksesibiliti ringkas:** setiap `<input>` ada `<label for>`; butang ikon ada teks; warna badge bukan satu-satunya petunjuk (label teks sentiasa ada).
 
-7. **Demo M1 (5 minit setiap pasangan)** — skrip:
+7. **Demo M1 (5 minit setiap peserta)** — skrip:
 
    **Prasyarat:** `pemohon1` dan `pemohon2` masih ada tempahan aktif dari Lab 6.1–6.2. Tanpa langkah ini, langkah 1–2 terkena BR-TLK-04 (*"Anda sudah mempunyai satu tempahan aktif…"*), bukan BR-TLK-01. Kosongkan melalui aplikasi supaya `status_logs` lengkap: `pelulus` → `/tlk/keputusan` → *Tolak* setiap tempahan `pending` (sebab ≥ 10 aksara); pemohon → butiran → *Batalkan* setiap tempahan `approved`. Sahkan:
 

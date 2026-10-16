@@ -20,7 +20,7 @@
 | Hard to undo | `down()` + `php spark migrate:rollback` |
 | Not reviewed in a PR | PHP code — reviewed in Git like any other code |
 
-A migration is **the schema's history in the form of code**. Every pair can rebuild the same DB with one command.
+A migration is **the schema's history in the form of code**. Every participant (and the server) can rebuild the same DB with one command.
 
 ---
 
@@ -146,7 +146,7 @@ php spark migrate:refresh --all  # roll back everything + migrate again (trainin
 
 ## 4. Seeders — repeatable synthetic data
 
-A seeder gives every pair **the same** data to test with. `DatabaseSeeder` calls all of them:
+A seeder gives every participant **the same** data to test with. `DatabaseSeeder` calls all of them:
 
 ```php
 <?php

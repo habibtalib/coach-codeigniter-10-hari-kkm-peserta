@@ -17,7 +17,7 @@ By the end of today, participants can:
 | O3 | **Use** `cache()->remember('stat_dashboard', 600, …)` and **add** `cache()->delete('stat_dashboard')` after every status change in `BookingService` & `PassWorkflowService`, and **explain** the *tradeoffs* of cache invalidation. | S2 |
 | O4 | **Run** a UAT script across the 4 modules by role and record the results in the UAT template. | S3 |
 | O5 | **Fix** bugs using the *reproduce → failing test → fix → passing test* cycle, and **verify** the final security checklist (CSRF, `esc()`, `.env`, uploads outside `public/`, route filters). | S3 |
-| O6 | **Demo** the system end-to-end in 15 minutes, **explain** the line of code chosen by the panel, and **contribute** to a Start/Stop/Continue retrospective. | S4 |
+| O6 | **Demo** the system end-to-end in 8 minutes, **explain** the line of code chosen by the panel, and **contribute** to a Start/Stop/Continue retrospective. | S4 |
 
 ---
 
@@ -297,9 +297,9 @@ If the cache is cleared before `COMMIT`, another request can rebuild the cache f
 
 ### 3.1 UAT — testing as a user, not as a developer
 
-UAT (*User Acceptance Testing*) answers the system owner's question: "*Does this system do what we agreed in the URS?*" It is **not** a unit test. It is run through the browser, by role, with synthetic data.
+UAT (*User Acceptance Testing*) answers the system owner's question: "*Does this system follow the BR-TLK/BR-PAS rules in [SPEC](../docs/spesifikasi-sistem.md) §2?*" (acceptance criteria examples: [`rujukan-keperluan.md`](../docs/rujukan-keperluan.md)). It is **not** a unit test. It is run through the browser, by role, with synthetic data.
 
-Two templates (written on Day 2, used today):
+Two templates (provided in the **Templat & Rujukan** module):
 
 - `templates/dokumen/kes-ujian-templat.md` (**Templat & Rujukan** module) — detailed test cases (TC-…) + a **bug log**.
 - `templates/dokumen/uat-signoff-templat.md` (**Templat & Rujukan** module) — scenarios UAT-01..10 + the acceptance decision + signatures.
@@ -326,7 +326,7 @@ Run it **in order** — each step prepares the data for the next step. Use a sep
 | 14 | `penyemak@latihan.test` | RPT-02 filter status Approved → export PDF & Excel | Screen total = PDF = Excel = `COUNT(*)` | UAT-09 |
 | 15 | `admin@latihan.test` | RPT-03 for the current month; compare with the "Utilisation by zone" chart | **Same** percentage | UAT-09, UAT-10 |
 
-> 💡 **Tip:** One person *drives* (clicks), the other *records* (fills in "Actual result" and the ✅/❌ status) in the template. Don't fix bugs during UAT — **record first**, fix later by severity.
+> 💡 **Tip:** After **every** step, fill in "Actual result" and the ✅/❌ status in the template before you click the next step. Don't fix bugs during UAT — **record first**, fix later by severity.
 
 ### 3.3 The bug-fixing cycle (KOLABORASI §3)
 
@@ -399,17 +399,17 @@ In-depth reference: [`docs/nota-11-keselamatan-aplikasi-web.md`](../docs/nota-11
 
 ## S4 · Capstone demo to the system owner & closing (16:00–17:00)
 
-### 4.1 Demo format — 15 minutes per pair
+### 4.1 Demo format — 8 minutes per participant
 
 | Minute | Segment | What the panel wants to see |
 |-------|--------|---------------------------|
-| 0–1 | **Introduction** | Pair names, Git branch/tag (`v1.0-capstone`), one sentence on "what we built" |
-| 1–4 | **M1 TLK** | Applicant applies → overlap rejected → approver approves → `TLK-2026-####` |
-| 4–7 | **M2 Pass** | Application + documents → reviewer → approver → `status_logs` timeline |
-| 7–9 | **M3 Reports** | Filter RPT-01/02 → page 2 keeps the filters → PDF & Excel with the same totals |
-| 9–11 | **M4 Statistics** | 4 KPIs + 4 charts; approve one pass application → the "Passes pending" KPI changes immediately (invalidation) |
-| 11–13 | **Explain the code** | The panel picks **one file + one line**; any member of the pair explains it |
-| 13–15 | **Q&A & marking** | The panel fills in the rubric; the next pair gets ready |
+| 0–1 | **Introduction** | Name, repo `kelas-ci-<nama>`, Git tag (`v1.0-capstone`), one sentence on "what I built" |
+| 1–3 | **M1 TLK** | Applicant applies → overlap rejected → approver approves → `TLK-2026-####` |
+| 3–5 | **M2 Pass** | Application + documents → reviewer → approver → `status_logs` timeline |
+| 5–6 | **M3 Reports** | Filter RPT-01/02 → page 2 keeps the filters → PDF & Excel with the same totals |
+| 6–7 | **M4 Statistics** | 4 KPIs + 4 charts; approve one pass application → the "Passes pending" KPI changes immediately (invalidation) |
+| 7–8 | **Explain the code** | The panel picks **one file + one line**; the participant explains it personally |
+| After 8 | **Marking** | The panel fills in the rubric; the next participant gets ready |
 
 Full rubric & mark sheet: [`docs/rubrik-capstone.md`](../docs/rubrik-capstone.md). Summary of weightings:
 
@@ -442,23 +442,23 @@ The **course completion** certificate is issued to participants who meet **all**
 | # | Criterion | Evidence |
 |---|----------|-------|
 | 1 | Attendance **≥ 80 %** of sessions (≥ 32 of 40 sessions S1–S4) | Daily attendance list |
-| 2 | Modules **M1–M4** demoed in the capstone by the participant's pair | Rubric mark sheet |
-| 3 | The pair's capstone mark is **≥ 60 / 100** and there is **no** unfixed critical *gate* failure | [`rubrik-capstone.md`](../docs/rubrik-capstone.md) |
-| 4 | The participant **personally** explains at least one line of code correctly during the demo (segment 11–13) | Panel notes |
+| 2 | Modules **M1–M4** demoed in the capstone by the participant personally | Rubric mark sheet |
+| 3 | The participant's capstone mark is **≥ 60 / 100** and there is **no** unfixed critical *gate* failure | [`rubrik-capstone.md`](../docs/rubrik-capstone.md) |
+| 4 | The participant **personally** explains at least one line of code correctly during the demo (segment 7–8) | Panel notes |
 | 5 | Repo handed over: tag `v1.0-capstone`, `composer test` green, no `.env`/real data | Repo link / zip archive |
 
 Participants who do not meet criteria 2–5 but attend ≥ 80 % receive a **certificate of participation** and a follow-up action plan (one module to complete within 2 weeks, reviewed by the trainer).
 
 ### 🎯 Quiz S4
 
-1. A pair scores 78/100 on the capstone rubric, but during the demo the panel finds that `pemohon2` can open `pemohon1`'s application. What is the effect?
+1. A participant scores 78/100 on the capstone rubric, but during the demo the panel finds that `pemohon2` can open `pemohon1`'s application. What is the effect?
    - [ ] None — the mark is above 60, so it is a full pass
    - [x] It is a critical *gate* failure — the result is limited to *Conditional pass* until it is fixed
    - [ ] Only the marks for criterion B (Security & access control) are reduced; the result stays a full pass because the total is still ≥ 60
-   - [ ] The pair fails the course outright with no chance to fix it
+   - [ ] The participant fails the course outright with no chance to fix it
    > There are 5 critical gates (e.g. an applicant must not be able to see other people's records, `.env` not in Git). The course completion certificate requires no unfixed critical gate failures. The "only criterion B marks are reduced" option is wrong because a critical gate limits the result whatever the total mark.
 
-2. A participant attended 30 of 40 sessions. Their pair scored 85/100 with no gate failures, and they personally explained one line of code correctly. Are they eligible for the **course completion certificate**?
+2. A participant attended 30 of 40 sessions. They scored 85/100 with no gate failures, and they personally explained one line of code correctly. Are they eligible for the **course completion certificate**?
    - [ ] Yes, because the capstone mark is above 60
    - [ ] Yes, because they explained the code correctly
    - [x] No — 75 % attendance is below the ≥ 80 % requirement (≥ 32 of 40 sessions)
@@ -477,7 +477,7 @@ Participants who do not meet criteria 2–5 but attend ≥ 80 % receive a **cert
 - [ ] `tests/Services/StatisticsCacheTest.php` — green (and **was** red without invalidation)
 - [ ] `docs/UAT-signoff.md` filled in; bug log with ≥ 1 bug closed through the failing-test cycle
 - [ ] Security checklist K1–K10 ticked
-- [ ] Tag `v1.0-capstone`; 15-minute demo; mark sheet signed → **M4 done** · **System complete** 🎓
+- [ ] Tag `v1.0-capstone`; 8-minute demo; mark sheet signed → **M4 done** · **System complete** 🎓
 
 ---
 
@@ -547,7 +547,7 @@ Congratulations — you have built a 4-module system from requirements to demo. 
 
 ### C. Practices to take home
 
-1. **Requirements → AC → tests** before code.
+1. **Rules (BR-*) → AC → tests** before code.
 2. **One door** for status changes (service + enum + `status_logs`).
 3. The **server** enforces access — not hidden buttons.
 4. **Failing test first** for every bug.

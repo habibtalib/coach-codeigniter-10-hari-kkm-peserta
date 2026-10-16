@@ -1,13 +1,13 @@
 # Senarai Semak Modul M1–M4
 
 > Guna di **hujung setiap sesi pembinaan** (S4 Hari 5–10) dan sebelum ✅ checkpoint jurulatih. Setiap baris dipetakan kepada **Definition of Done** ([`docs/kolaborasi.md`](kolaborasi.md) §2) dan peraturan perniagaan **`BR-*`** ([`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §2).
-> Salin fail ini ke repo projek anda (`docs/semakan-modul.md`) dan tandakan `[x]` bersama pasangan. Satu baris hanya ditanda jika **kedua-dua** driver dan navigator boleh menerangkannya.
+> Salin fail ini ke repo projek anda (`docs/semakan-modul.md`) dan tandakan `[x]` sendiri. Satu baris hanya ditanda jika anda boleh menerangkannya kepada jurulatih atau rakan sebelah tanpa melihat nota.
 
 ## Legenda DoD
 
 | Kod | Kriteria Definition of Done |
 |-----|-----------------------------|
-| **D1** | Acceptance criteria (Given/When/Then) dari URS lulus diuji manual |
+| **D1** | Peraturan BR-* berkaitan dalam [`spesifikasi-sistem.md`](./spesifikasi-sistem.md) diuji dan lulus (manual + PHPUnit) |
 | **D2** | Validasi di **server** (Model rules / Validation) — bukan JS sahaja |
 | **D3** | Akses dikawal di server (filter + semakan pemilikan) |
 | **D4** | Peralihan status direkod dalam `status_logs` |
@@ -152,5 +152,5 @@
 | [ ] | Skrip UAT (templat `templates/dokumen/`) dijalankan; pepijat dicatat & dibaiki | D1 |
 | [ ] | `git log` — tiada `.env`, tiada data sebenar, commit berprefix | D6 |
 | [ ] | Senarai semak keselamatan [`nota-11-keselamatan-aplikasi-web.md`](nota-11-keselamatan-aplikasi-web.md) dilalui | D3 |
-| [ ] | Setiap ahli pasangan boleh menerangkan satu aliran hujung-ke-hujung (mohon → lulus → laporan → statistik) | D7 |
+| [ ] | Anda boleh menerangkan satu aliran hujung-ke-hujung (mohon → lulus → laporan → statistik) | D7 |
 | [ ] | Rubrik: [`rubrik-capstone.md`](./rubrik-capstone.md) dibaca | — |

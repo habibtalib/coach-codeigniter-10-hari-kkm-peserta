@@ -203,7 +203,7 @@ composer audit          # semak kelemahan diketahui dalam pakej terpasang
 composer outdated -D    # pakej langsung yang ada versi baharu
 ```
 
-Commit `composer.lock` supaya semua pasangan dan server memasang versi **tepat** yang sama.
+Commit `composer.lock` supaya semua laptop dan server memasang versi **tepat** yang sama.
 
 ---
 

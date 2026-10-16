@@ -11,7 +11,7 @@
 | 10.1 | S1 | 75 min | `StatisticsService` (tanpa cache) · `/statistik` + `/statistik/data` · 4 KPI · 4 carta |
 | 10.2 | S2 | 90 min | `remember()` · invalidasi dalam `BookingService` & `PassWorkflowService` · `StatisticsCacheTest` |
 | 10.3 | S3 | 85 min | UAT diisi · ≥ 1 pepijat dibaiki melalui ujian gagal · senarai semak keselamatan · tag `v1.0-capstone` |
-| 10.4 | S4 | 60 min | Demo 15 minit · retrospektif |
+| 10.4 | S4 | 60 min | Demo 8 minit · retrospektif |
 
 ---
 
@@ -336,7 +336,7 @@ Tempat yang mesti ada (dalam template rujukan Hari 5–6):
 | `submit()` | `null → submitted` ("Pas menunggu" +1) |
 | `transition()` (dipanggil oleh `startReview()`, `approve()`, `reject()`, `expire()`) | semua peralihan lain, termasuk `pas:expire` |
 
-> ✋ **Berhenti & fikir (2 min, berpasangan):** Kenapa bukan di dalam blok `try` **sebelum** `transCommit()`? Kenapa bukan dalam controller? Tulis jawapan anda dalam mesej commit. (Jawapan: README §2.4; controller bukan satu-satunya pemanggil — Spark `pas:expire` tidak melalui controller.)
+> ✋ **Berhenti & fikir (2 min):** Kenapa bukan di dalam blok `try` **sebelum** `transCommit()`? Kenapa bukan dalam controller? Tulis jawapan anda dalam mesej commit. (Jawapan: README §2.4; controller bukan satu-satunya pemanggil — Spark `pas:expire` tidak melalui controller.)
 
 **8. Jalankan semula.**
 
@@ -389,7 +389,7 @@ composer test                                                # SEMUA hijau — t
 
 **1. Sediakan 5 tetingkap** (incognito/profil berasingan): `pemohon1`, `pemohon2`, `penyemak`, `pelulus`, `admin` (kata laluan `Latihan@2026`).
 
-**2. Jalankan skrip UAT** dalam README §3.2 (15 langkah) **mengikut tertib**. Pemandu klik; perekod isi lajur *Keputusan* & *Catatan* dalam `docs/UAT-signoff.md` §4 (UAT-01..UAT-10). Lajur terakhir jadual README §3.2 memetakan setiap langkah kepada ID UAT (cth langkah 1 & 5 → UAT-01; langkah 4, 6, 11 & 15 → UAT-10). Tanda satu ID UAT ✅ hanya jika **semua** langkah yang dipetakan kepadanya lulus. Masa sasaran: 35 minit.
+**2. Jalankan skrip UAT** dalam README §3.2 (15 langkah) **mengikut tertib**. Klik setiap langkah sendiri, dan isi lajur *Keputusan* & *Catatan* sebelum langkah seterusnya dalam `docs/UAT-signoff.md` §4 (UAT-01..UAT-10). Lajur terakhir jadual README §3.2 memetakan setiap langkah kepada ID UAT (cth langkah 1 & 5 → UAT-01; langkah 4, 6, 11 & 15 → UAT-10). Tanda satu ID UAT ✅ hanya jika **semua** langkah yang dipetakan kepadanya lulus. Masa sasaran: 35 minit.
 
 **3. Rekod setiap kegagalan** dalam *Log pepijat* (`docs/kes-ujian-akhir.md`) — `BUG-001`, `BUG-002`, … dengan keterukan Tinggi/Sederhana/Rendah. **Jangan baiki lagi.**
 
@@ -401,7 +401,7 @@ git switch -c fix/bug-001-<ringkas>
 
 | Langkah | Tindakan | Bukti |
 |---------|----------|-------|
-| a. Reproduce | Tulis langkah tepat + data dalam log pepijat | Rakan boleh ulang dalam < 2 min |
+| a. Reproduce | Tulis langkah tepat + data dalam log pepijat | Jurulatih/rakan sebelah boleh ulang dalam < 2 min |
 | b. Ujian gagal | Tulis ujian PHPUnit (unit/service atau `FeatureTestTrait`) | `composer test -- --filter <namaUjian>` **merah** — simpan tangkapan terminal |
 | c. Baiki | Perubahan **minimum** | `git diff` kecil & fokus |
 | d. Lulus | Ujian tadi hijau **+** `composer test` semua hijau | Tangkapan terminal |
@@ -444,7 +444,7 @@ git tag -a v1.0-capstone -m "Capstone CI-KKM-10"
 git push origin main --tags
 ```
 
-Tulis **skrip demo 1 halaman** (ikut format README §4.1) dan pastikan kedua-dua ahli boleh menerangkan mana-mana fail.
+Tulis **skrip demo 1 halaman** (ikut format README §4.1) dan pastikan anda boleh menerangkan mana-mana fail.
 
 ### ✅ Checkpoint 10.3
 - [ ] `docs/UAT-signoff.md` §4: UAT-01..UAT-10 semuanya bertanda (✅/❌/⚠️) — tiada ⬜.
@@ -472,7 +472,7 @@ Tulis **skrip demo 1 halaman** (ikut format README §4.1) dan pastikan kedua-dua
 ## Lab 10.4 — Demo capstone & retrospektif (S4)
 
 ### 🎯 Objektif
-- Mendemokan sistem hujung-ke-hujung dalam 15 minit mengikut format.
+- Mendemokan sistem hujung-ke-hujung dalam 8 minit mengikut format.
 - Menerangkan satu baris kod yang dipilih panel.
 - Menyumbang ≥ 3 kad retrospektif (Start/Stop/Continue).
 
@@ -485,19 +485,19 @@ Tulis **skrip demo 1 halaman** (ikut format README §4.1) dan pastikan kedua-dua
 
 **1. 10 minit sebelum giliran:** `php spark serve` berjalan; zum pelayar 125 %; tutup notifikasi; buka `docs/UAT-signoff.md`.
 
-**2. Demo 15 minit** — ikut jadual segmen README §4.1. Penjaga masa panel akan memberi isyarat pada minit 4, 7, 9, 11 dan 13.
+**2. Demo 8 minit** — ikut jadual segmen README §4.1. Penjaga masa panel akan memberi isyarat pada minit 1, 3, 5, 6 dan 7.
 
-**3. Segmen "Terangkan kod" (minit 11–13).** Panel memilih satu fail dan satu baris (cth `ReportService::applySort()`, `BookingService::transition()`, `dashboard.php` `draw()`). **Mana-mana** ahli pasangan menjawab: *apa baris ini buat, kenapa ia di sini, apa jadi jika dibuang?*
+**3. Segmen "Terangkan kod" (minit 7–8).** Panel memilih satu fail dan satu baris (cth `ReportService::applySort()`, `BookingService::transition()`, `dashboard.php` `draw()`). **Anda sendiri** menjawab: *apa baris ini buat, kenapa ia di sini, apa jadi jika dibuang?*
 
-**4. Soal jawab (minit 13–15).** Jawab dengan jujur — "kami belum sempat, pelan kami ialah …" lebih bernilai daripada meneka.
+**4. Soal jawab (jika panel bertanya semasa demo).** Jawab dengan jujur — "saya belum sempat, pelan saya ialah …" lebih bernilai daripada meneka.
 
 **5. Retrospektif.** Tulis ≥ 1 kad bagi setiap lajur **Start / Stop / Continue** (kad kuning = diri sendiri, kad biru = kursus). Tampal pada papan. Undi 3 titik pada kad yang paling penting.
 
 **6. Serah repo.** Hantar pautan repo / arkib zip (tanpa `vendor/`, tanpa `.env`, tanpa `writable/uploads/`) kepada jurulatih.
 
 ### ✅ Checkpoint 10.4
-- [ ] Demo selesai dalam ≤ 15 minit; keempat-empat modul ditunjukkan.
-- [ ] Panel menandatangani helaian markah pasangan.
+- [ ] Demo selesai dalam ≤ 8 minit; keempat-empat modul ditunjukkan.
+- [ ] Panel menandatangani helaian markah anda.
 - [ ] ≥ 3 kad retrospektif ditampal.
 - [ ] Repo diserahkan.
 

@@ -446,7 +446,7 @@ How to read the main columns:
 
 SPEC §3 already provides `INDEX(status)` and `INDEX(slot_id, start_date, end_date)` on `slot_bookings`, and `INDEX(status)` on `pass_applications`. The RPT-02 filter on `created_at` has **no** index — with 500 training rows it is not noticeable, with 500,000 rows it is. The S4 lab shows how to measure before deciding.
 
-> 💡 **Tip:** An index speeds up `SELECT` but slows down `INSERT/UPDATE` and takes up space. **Measure first** (EXPLAIN + Debug Toolbar → *Database* tab), then add. An extra index is a design decision — record it in the data dictionary.
+> 💡 **Tip:** An index speeds up `SELECT` but slows down `INSERT/UPDATE` and takes up space. **Measure first** (EXPLAIN + Debug Toolbar → *Database* tab), then add. An extra index is a design decision — record it in `docs/log-keputusan.md` (Day 2).
 
 ### 🎯 Quiz S4
 
@@ -461,7 +461,7 @@ SPEC §3 already provides `INDEX(status)` and `INDEX(slot_id, start_date, end_da
    - [ ] The query uses an index efficiently — `ALL` means every suitable index is used, and `key = NULL` means no extra index is needed
    - [ ] The query failed and no rows were returned
    - [ ] MySQL is using a cache
-   - [x] A full table scan — no index is used; measure and consider an index (record the decision in the data dictionary)
+   - [x] A full table scan — no index is used; measure and consider an index (record the decision in `docs/pelan-kerja.md`)
    > A good `type` is `const`, `eq_ref`, `ref` or `range` with a named `key`. An index speeds up `SELECT` but slows down `INSERT/UPDATE` — measure first before adding one.
 
 ---
@@ -522,5 +522,5 @@ Day 10 is the last day: **Statistics + Capstone**.
 1. Make sure **M1, M2, M3** are merged into `main` and `composer test` is green.
 2. Run `php spark db:seed DatabaseSeeder` again so there is enough synthetic data (at least 2 zones, 20 bookings, 15 pass applications with various statuses) — empty charts are not convincing during the demo.
 3. Skim the Chart.js 4 *Getting Started* documentation: <https://www.chartjs.org/docs/latest/getting-started/>.
-4. Each pair: list the **3 things** you are proudest of and **1 bug** that is still known — material for tomorrow's demo & retrospective.
+4. Each participant: list the **3 things** you are proudest of and **1 bug** that is still known — material for tomorrow's demo & retrospective.
 5. Review the UAT templates: `templates/dokumen/uat-signoff-templat.md` (**Templat & Rujukan** module) and `templates/dokumen/kes-ujian-templat.md` (**Templat & Rujukan** module).

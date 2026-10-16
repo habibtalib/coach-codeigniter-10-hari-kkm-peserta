@@ -5,15 +5,15 @@
 ## Objektif nota
 
 - **Mencipta** branch ciri, membuat commit kecil bermesej jelas mengikut prefix kursus, dan menggabungkannya ke `main`.
-- **Menerangkan** kenapa satu ciri = satu branch mengurangkan risiko semasa kerja berpasangan.
-- **Menyelesaikan** konflik merge asas (cth dalam `app/Config/Routes.php`) tanpa kehilangan kerja rakan.
+- **Menerangkan** kenapa satu ciri = satu branch mengurangkan risiko, walaupun anda bekerja seorang dalam `kelas-ci-<nama>`.
+- **Menyelesaikan** konflik merge asas (cth dalam `app/Config/Routes.php`) tanpa kehilangan kerja dari branch lain.
 - **Memulihkan** keadaan jika `.env` atau rahsia ter-commit.
 
 ---
 
 ## 1. Kenapa aliran kerja yang berdisiplin?
 
-Sepanjang Hari 4–10 anda membina 4 modul berpasangan (driver/navigator). Tanpa disiplin Git:
+Sepanjang Hari 4–10 anda membina 4 modul dalam repo sendiri `kelas-ci-<nama>`. Tanpa disiplin Git:
 - Kod separuh siap bercampur dengan kod stabil di `main` → demo gagal.
 - Sukar mengesan **bila** pepijat masuk dan **siapa** mengubahnya.
 - Tiada cara mudah "undur" satu ciri tanpa menjejaskan yang lain.
@@ -155,7 +155,7 @@ git show HEAD                       # isi commit terakhir
 
 ```bash
 git switch main
-git pull                                   # dapatkan kerja pasangan lain dahulu
+git pull                                   # dapatkan perubahan terkini (cth MR yang di-merge di GitLab) dahulu
 git merge --no-ff feat/tlk-borang-tempahan # --no-ff: kekalkan commit merge sebagai penanda ciri
 composer test                              # ujian mesti lulus SELEPAS merge
 php spark migrate                          # jika ada migration baharu
@@ -173,7 +173,7 @@ git branch -d feat/tlk-borang-tempahan     # buang cabang setempat yang sudah di
 
 ## 7. Menyelesaikan konflik — contoh `Routes.php`
 
-Situasi: Pasangan A menambah route TLK, Pasangan B menambah route Pas, kedua-duanya pada baris yang sama dalam `app/Config/Routes.php`.
+Situasi: branch `feat/tlk-crud` menambah route TLK, branch `feat/pas-permohonan` menambah route Pas, kedua-duanya pada baris yang sama dalam `app/Config/Routes.php`.
 
 ```bash
 git switch main && git pull
@@ -233,7 +233,7 @@ Jika keliru dan mahu mula semula: `git merge --abort`.
 
 **Mengurangkan konflik:** pull `main` kerap; pecahkan `Routes.php` kepada blok ikut modul dengan komen penanda (`// ── TLK ──`, `// ── PAS ──`); jangan format semula keseluruhan fail dalam commit ciri.
 
-> Konflik migration: jangan sunting migration yang sudah dijalankan oleh pasangan lain — cipta migration **baharu** (`php spark make:migration AddXToY`).
+> Konflik migration: jangan sunting migration yang sudah dijalankan (di laptop lain atau di server) — cipta migration **baharu** (`php spark make:migration AddXToY`).
 
 ---
 
@@ -270,15 +270,15 @@ Semak: `git log --all --oneline -- .env` sepatutnya kosong untuk repo yang bersi
 
 ---
 
-## 10. Kerja berpasangan (driver/navigator)
+## 10. Semakan rakan (pilihan)
 
-- **Driver** menaip; **navigator** membaca, menyemak SPEC, menangkap kesilapan.
-- Tukar peranan setiap sesi (docs/kolaborasi.md §4). Sebelum tukar: commit & push, pasangan `git pull`.
-- Kredit kedua-dua dalam commit (pilihan):
+- Anda menaip sendiri; jurulatih atau rakan sebelah menyemak melalui komen merge request (docs/kolaborasi.md §4).
+- Selepas MR di-merge di GitLab: `git switch main` dan `git pull` sebelum branch seterusnya.
+- Jika rakan banyak membantu, kredit mereka dalam commit (pilihan):
   ```text
   TLK: senarai tempahan dengan pagination
 
-  Co-authored-by: Rakan Pasangan <rakan.pasangan@latihan.test>
+  Co-authored-by: Rakan Sebelah <rakan.sebelah@latihan.test>
   ```
 
 ---
@@ -292,7 +292,7 @@ Semak: `git log --all --oneline -- .env` sepatutnya kosong untuk repo yang bersi
 | Satu commit besar "siap semua" | Sukar disemak & diundur | Commit kecil ikut langkah logik |
 | Merge tanpa `git pull` dahulu | Push ditolak / konflik lebih besar | `git switch main && git pull` sebelum merge |
 | Penanda `<<<<<<<` tertinggal dalam fail | Ralat sintaks PHP | `php -l`, `git diff --check` sebelum commit |
-| Sunting migration lama yang sudah dijalankan | Skema pasangan tidak sepadan | Cipta migration baharu |
+| Sunting migration lama yang sudah dijalankan | Skema laptop lain/server tidak sepadan | Cipta migration baharu |
 | `push --force` pada branch dikongsi | Kerja rakan hilang | Jangan; guna `git revert`/merge |
 | `.env` di-commit | Rahsia bocor | `git rm --cached .env` + rotate rahsia |
 

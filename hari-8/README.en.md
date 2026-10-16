@@ -428,7 +428,7 @@ public function testPenyemakTidakBolehLuluskan(): void
 
 ## S4 — Pass Module Wrap-up: 3-Role Demo (16:00–17:00)
 
-### 4.1 Demo script (5 minutes per pair)
+### 4.1 Demo script (5 minutes per participant)
 
 Three browser windows (normal, incognito, a second browser) — one for each role:
 
@@ -447,13 +447,13 @@ Three browser windows (normal, incognito, a second browser) — one for each rol
 
 Check against [KOLABORASI §2](../docs/kolaborasi.md):
 
-- [ ] The Pass URS acceptance criteria (Day 2) pass manual testing (`docs/ujian-manual-pas.md` + demo).
+- [ ] The BR-PAS rules ([SPEC](../docs/spesifikasi-sistem.md) §2) pass manual testing (`docs/ujian-manual-pas.md` + demo).
 - [ ] Server-side validation: form (Day 7), rejection note (today), files (BR-PAS-02).
 - [ ] Access controlled on the server: route filters + `authorize()` + `canView()`.
 - [ ] Every transition is recorded in `status_logs` (BR-PAS-05) — including creation.
 - [ ] `composer test` passes.
 - [ ] No `.env`/secrets; synthetic data only.
-- [ ] Each member of the pair can explain `transition()` and the three access layers.
+- [ ] You can explain `transition()` and the three access layers.
 
 ### 4.3 ⭐ Automatic expiry: `php spark pas:expire`
 

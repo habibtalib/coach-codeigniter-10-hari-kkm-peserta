@@ -5,15 +5,15 @@
 ## Note objectives
 
 - **Create** a feature branch, make small commits with clear messages using the course prefixes, and merge it into `main`.
-- **Explain** why one feature = one branch reduces risk during pair work.
-- **Resolve** basic merge conflicts (e.g. in `app/Config/Routes.php`) without losing your partner's work.
+- **Explain** why one feature = one branch reduces risk, even when you work alone in `kelas-ci-<nama>`.
+- **Resolve** basic merge conflicts (e.g. in `app/Config/Routes.php`) without losing the work from another branch.
 - **Recover** if `.env` or a secret gets committed.
 
 ---
 
 ## 1. Why a disciplined workflow?
 
-Throughout Days 4–10 you build 4 modules in pairs (driver/navigator). Without Git discipline:
+Throughout Days 4–10 you build 4 modules in your own repo `kelas-ci-<nama>`. Without Git discipline:
 - Half-finished code mixes with stable code on `main` → the demo fails.
 - It is hard to trace **when** a bug came in and **who** changed it.
 - There is no easy way to "undo" one feature without affecting the others.
@@ -155,7 +155,7 @@ git show HEAD                       # contents of the last commit
 
 ```bash
 git switch main
-git pull                                   # get the other pair's work first
+git pull                                   # get the latest changes (e.g. an MR merged on GitLab) first
 git merge --no-ff feat/tlk-borang-tempahan # --no-ff: keep a merge commit as a feature marker
 composer test                              # tests must pass AFTER the merge
 php spark migrate                          # if there are new migrations
@@ -173,7 +173,7 @@ git branch -d feat/tlk-borang-tempahan     # delete the local branch that has be
 
 ## 7. Resolving conflicts — a `Routes.php` example
 
-Situation: Pair A adds TLK routes, Pair B adds Pass routes, both on the same lines in `app/Config/Routes.php`.
+Situation: branch `feat/tlk-crud` adds TLK routes, branch `feat/pas-permohonan` adds Pass routes, both on the same lines in `app/Config/Routes.php`.
 
 ```bash
 git switch main && git pull
@@ -233,7 +233,7 @@ If you get confused and want to start again: `git merge --abort`.
 
 **Reducing conflicts:** pull `main` often; split `Routes.php` into blocks per module with marker comments (`// ── TLK ──`, `// ── PAS ──`); don't reformat the whole file in a feature commit.
 
-> Migration conflicts: don't edit a migration that the other pair has already run — create a **new** migration (`php spark make:migration AddXToY`).
+> Migration conflicts: don't edit a migration that has already been run (on another laptop or on the server) — create a **new** migration (`php spark make:migration AddXToY`).
 
 ---
 
@@ -270,15 +270,15 @@ Check: `git log --all --oneline -- .env` should be empty for a clean repo.
 
 ---
 
-## 10. Pair work (driver/navigator)
+## 10. Peer review (optional)
 
-- The **driver** types; the **navigator** reads, checks the SPEC and catches mistakes.
-- Swap roles every session (docs/kolaborasi.md §4). Before swapping: commit & push, then the partner runs `git pull`.
-- Credit both in the commit (optional):
+- You type yourself; the trainer or your neighbour reviews through merge request comments (docs/kolaborasi.md §4).
+- After the MR is merged on GitLab: `git switch main` and `git pull` before the next branch.
+- If a neighbour helped a lot, credit them in the commit (optional):
   ```text
   TLK: booking list with pagination
 
-  Co-authored-by: Rakan Pasangan <rakan.pasangan@latihan.test>
+  Co-authored-by: Rakan Sebelah <rakan.sebelah@latihan.test>
   ```
 
 ---
@@ -292,7 +292,7 @@ Check: `git log --all --oneline -- .env` should be empty for a clean repo.
 | One big "siap semua" ("all done") commit | Hard to review & undo | Small commits by logical step |
 | Merging without `git pull` first | Push rejected / bigger conflicts | `git switch main && git pull` before merging |
 | `<<<<<<<` markers left in a file | PHP syntax error | `php -l`, `git diff --check` before committing |
-| Editing an old migration that has already run | The pair's schemas don't match | Create a new migration |
+| Editing an old migration that has already run | The schema on other laptops/the server doesn't match | Create a new migration |
 | `push --force` on a shared branch | Partner's work is lost | Don't; use `git revert`/merge |
 | `.env` committed | Secrets leaked | `git rm --cached .env` + rotate the secrets |
 

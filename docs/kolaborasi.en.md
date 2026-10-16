@@ -9,8 +9,10 @@ git switch main && git pull
 git switch -c feat/tlk-borang-tempahan      # one feature = one branch
 # … work, small & frequent commits …
 git commit -m "TLK: tambah validasi tarikh tempahan"
-git push -u origin feat/tlk-borang-tempahan # open a PR/merge request
+git push -u origin feat/tlk-borang-tempahan # open a merge request into your main
 ```
+
+Every feature goes through a **merge request (MR) into the `main` of your own project** `kelas-ci-<nama>` ([`trek-gitlab.md`](./trek-gitlab.md) §6). Ask the trainer or a neighbour for at least one comment, answer it, then merge it yourself. On Days 2–3 you push straight to `main`; the MR flow starts on Day 4 S4.
 
 Commit prefixes: `TLK:` · `PAS:` · `RPT:` · `STAT:` · `SETUP:` · `FIX:`.
 
@@ -18,7 +20,7 @@ Commit prefixes: `TLK:` · `PAS:` · `RPT:` · `STAT:` · `SETUP:` · `FIX:`.
 
 A feature is "done" only when:
 
-- [ ] The acceptance criteria (Given/When/Then) from the URS **pass** manual testing.
+- [ ] The related BR-* rules in [`spesifikasi-sistem.md`](./spesifikasi-sistem.md) are **tested** and pass (manual + PHPUnit).
 - [ ] Validation runs on the **server** (Model rules / Validation) — not JavaScript only.
 - [ ] Access is controlled on the server (filter + ownership check).
 - [ ] Status transitions are recorded in `status_logs` (where relevant).
@@ -33,9 +35,9 @@ Run the tests with `composer test` (= `vendor/bin/phpunit`; it works the same in
 Claude Code (or any AI) **is allowed** to: explain errors, suggest tests, review logic, generate small boilerplate.
 **Not allowed:** generating a whole module to copy. A suggestion is accepted **only** after the participant can explain it. On an error: **reproduce → failing test → fix → passing test**.
 
-## 4. Division of work (recommended, Day 4)
+## 4. Individual work & review
 
-Participants work **in pairs** (driver/navigator, swap every session). Every pair builds all four modules in their own repo; the trainer checks at each ✅ checkpoint. Fast pairs take on the extra ⭐ challenges.
+Every participant works **alone** in the private project `kelas-ci-<nama>` and builds all four modules. The trainer (a Reporter in your project) checks at each ✅ checkpoint and comments on MRs. Help a neighbour by explaining, not by typing for them. Fast participants take on the extra ⭐ challenges.
 
 ## 5. Security & data
 

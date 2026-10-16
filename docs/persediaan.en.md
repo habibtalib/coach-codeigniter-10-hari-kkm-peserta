@@ -1,13 +1,13 @@
-# Environment Setup — before Day 1 & Day 4
+# Environment Setup — before Day 1 & Day 2
 
 > **Two deadlines:**
 > - **Before Day 1:** Git, VS Code (+ the **Markdown Preview Mermaid Support** extension), a modern browser; Windows: Git Bash as the VS Code default terminal (§5). The Day 1 labs use Git and the Mermaid preview.
-> - **Before Day 4** (Development Kickoff): the PHP stack — PHP 8.2+, PHP extensions, Composer, MySQL/MariaDB, Laragon/Herd and the CI4 smoke test (§6). Days 1–3 involve no coding, so use that time to fix your environment — don't wait until the morning of Day 4.
+> - **Before Day 2** (the `kelas-ci-<nama>` project, Lab 2.2): the PHP stack — PHP 8.2+, PHP extensions, Composer, MySQL/MariaDB, Laragon/Herd and the CI4 smoke test (§6). Day 1 S4 (Lab 1.5) already tries CI4; from Day 2 you write code every day in your own `kelas-ci-<nama>` project on GitLab, and Day 3 needs MySQL. Fix your environment on the evening of Day 1 — don't wait until the morning of Day 2.
 > Stack canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §1.
 
 ## Why set it up early?
 
-Experience from past courses: **the first 30–60 minutes of Day 4 are lost** because a PHP extension is not enabled, the MySQL port clashes, or Composer gets stuck behind a proxy. Every one of those minutes is taken from time for building migrations. This checklist makes sure you arrive with a **verified** environment, not one you "think is installed".
+Experience from past courses: **the first 30–60 minutes of the first coding day are lost** because a PHP extension is not enabled, the MySQL port clashes, or Composer gets stuck behind a proxy. Every one of those minutes is taken from time for building the `kelas-ci-<nama>` project. This checklist makes sure you arrive with a **verified** environment, not one you "think is installed".
 
 ---
 
@@ -15,16 +15,16 @@ Experience from past courses: **the first 30–60 minutes of Day 4 are lost** be
 
 | # | Item | Minimum version | Check command | Ready before | ✅ |
 |---|---------|---------------|--------------|--------------|----|
-| 1 | PHP (CLI) | **8.2** | `php -v` | Day 4 | [ ] |
-| 2 | PHP extensions | `intl`, `mbstring`, `mysqlnd`, `mysqli`, `gd`, `zip`, `curl`, `xml` (+ `dom`, `fileinfo`, `json`) | `php -m` | Day 4 | [ ] |
-| 3 | Composer | **2.x** | `composer -V` | Day 4 | [ ] |
-| 4 | MySQL / MariaDB | **MySQL 8.0** / **MariaDB 10.6** | `mysql --version` | Day 4 | [ ] |
+| 1 | PHP (CLI) | **8.2** | `php -v` | Day 2 | [ ] |
+| 2 | PHP extensions | `intl`, `mbstring`, `mysqlnd`, `mysqli`, `gd`, `zip`, `curl`, `xml` (+ `dom`, `fileinfo`, `json`) | `php -m` | Day 2 | [ ] |
+| 3 | Composer | **2.x** | `composer -V` | Day 2 | [ ] |
+| 4 | MySQL / MariaDB | **MySQL 8.0** / **MariaDB 10.6** | `mysql --version` | Day 3 | [ ] |
 | 5 | Git | 2.30+ | `git --version` | **Day 1** | [ ] |
-| 6 | VS Code + extensions (including Mermaid) | latest | see §5 | **Day 1** (Intelephense: Day 4) | [ ] |
+| 6 | VS Code + extensions (including Mermaid) | latest | see §5 | **Day 1** (Intelephense: Day 2) | [ ] |
 | 7 | Modern browser | latest Chrome/Edge/Firefox | — | **Day 1** | [ ] |
-| 8 | Windows: **Laragon** + **Git Bash** as the VS Code default terminal · macOS (optional): Herd | Laragon 8 | §2, §5 | Git Bash: **Day 1** · Laragon/Herd: Day 4 | [ ] |
-| 9 | Smoke test: empty CI4 project runs | CI **4.6+** | §6 | Day 4 | [ ] |
-| 10 | *Optional* — [GitLab track](./trek-gitlab.md): KKM GitLab account (from KKM IT) + SSH key | — | `ssh -T git@<gitlab-kkm>` | Day 4 | — |
+| 8 | Windows: **Laragon** + **Git Bash** as the VS Code default terminal · macOS (optional): Herd | Laragon 8 | §2, §5 | Git Bash: **Day 1** · Laragon/Herd: Day 2 | [ ] |
+| 9 | Smoke test: empty CI4 project runs | CI **4.6+** | §6 | Day 2 | [ ] |
+| 10 | KKM GitLab account (GitLab KKM, from KKM IT) — [the `kelas-ci-<nama>` repo](./trek-gitlab.md) | — | log in to `https://<gitlab-kkm>` | Day 2 | [ ] |
 | 11 | *Optional* — [Jira track](./trek-jira.md): Jira Cloud account (email) | — | sign in to `*.atlassian.net` | Day 4 | — |
 
 ### Why is each PHP extension needed?
@@ -315,7 +315,7 @@ The VS Code default terminal on Windows is PowerShell. Most course commands (`&&
 |-----------|----|--------|
 | **PHP Intelephense** | `bmewburn.vscode-intelephense-client` | Autocomplete, *go to definition* for CI4 & Shield classes, type warnings |
 | **Markdown Preview Mermaid Support** | `bierner.markdown-mermaid` | Shows Mermaid scope charts, flowcharts and ERDs in the Markdown preview (**from Day 1**). No internet/extension? Sketch on paper or write it as a table first, preview later |
-| EditorConfig | `EditorConfig.EditorConfig` | Consistent indentation between pair partners |
+| EditorConfig | `EditorConfig.EditorConfig` | Consistent indentation across laptops |
 | GitLens (optional) | `eamodio.gitlens` | See line & branch history |
 | Claude Code (optional) | — | AI assistant, following [`pustaka-prompt.md`](./pustaka-prompt.md) |
 
@@ -378,7 +378,7 @@ php spark db:table --show
 
 Expected output: an empty table list **with no** connection error (for example: `No tables found` or an empty table). An `Unable to connect` error → see §8.
 
-Done? Delete the `ujian-asap/` folder — the real project is created on Day 4.
+Done? Delete the `ujian-asap/` folder — the real project `kelas-ci-<nama>` is created on Day 2 (Lab 2.2).
 
 ---
 
@@ -418,7 +418,7 @@ Windows: use Laragon (§2). macOS: Herd is **not required** — `php spark serve
 | `Whoops!` page with no details | `CI_ENVIRONMENT` is not `development` | Make sure the file is named `.env` (not `env`) and `CI_ENVIRONMENT = development` |
 | Mermaid not shown in VS Code | Extension missing | Install `bierner.markdown-mermaid`, open the preview with `Ctrl+Shift+V`. No internet: sketch on paper or write it as a table, preview later (or <https://mermaid.live>) |
 
-Still stuck? Note down the **command + full output** and send it to the trainer before Day 4. You can also use prompt **AI-01 Explain an error** in [`pustaka-prompt.md`](./pustaka-prompt.md).
+Still stuck? Note down the **command + full output** and send it to the trainer before Day 2. You can also use prompt **AI-01 Explain an error** in [`pustaka-prompt.md`](./pustaka-prompt.md).
 
 ---
 

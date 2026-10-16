@@ -31,8 +31,8 @@
 
 | Day | Title | Main notes | Supporting notes |
 |------|-------|-----------|---------------|
-| 1–3 | Requirements, process, ERD, wireframe | — (see `hari-1/` … `hari-3/`) | [02](./nota-02-migration-seeder-dan-query-builder.md) (read ERD → migration as preparation) |
-| 4 | Assignment Review & Development Kickoff | [01](./nota-01-mvc-dan-kitaran-request-ci4.md), [02](./nota-02-migration-seeder-dan-query-builder.md), [06](./nota-06-shield-auth-dan-rbac.md) | [12](./nota-12-git-aliran-kerja.md), [11](./nota-11-keselamatan-aplikasi-web.md) |
+| 1–3 | Requirements (Day 1) · `kelas-ci-<nama>`: routes, forms, database & first migrations (Days 2–3) | [01](./nota-01-mvc-dan-kitaran-request-ci4.md), [04](./nota-04-validasi-dan-borang.md), [02](./nota-02-migration-seeder-dan-query-builder.md) | [12](./nota-12-git-aliran-kerja.md) |
+| 4 | Demo your own project, Shield, 8 more migrations & the solo Git flow | [01](./nota-01-mvc-dan-kitaran-request-ci4.md), [02](./nota-02-migration-seeder-dan-query-builder.md), [06](./nota-06-shield-auth-dan-rbac.md) | [12](./nota-12-git-aliran-kerja.md), [11](./nota-11-keselamatan-aplikasi-web.md) |
 | 5 | TLK (1) | [03](./nota-03-model-entity-dan-enum.md), [04](./nota-04-validasi-dan-borang.md) | [01](./nota-01-mvc-dan-kitaran-request-ci4.md) |
 | 6 | TLK (2) | [05](./nota-05-service-layer-dan-transaksi.md), [10](./nota-10-ujian-phpunit-ci4.md) | [02](./nota-02-migration-seeder-dan-query-builder.md) |
 | 7 | Pass (1) | [07](./nota-07-muat-naik-fail-selamat.md), [04](./nota-04-validasi-dan-borang.md) | [03](./nota-03-model-entity-dan-enum.md), [11](./nota-11-keselamatan-aplikasi-web.md) |

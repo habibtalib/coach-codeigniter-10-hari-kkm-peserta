@@ -11,7 +11,7 @@
 | 10.1 | S1 | 75 min | `StatisticsService` (no cache) · `/statistik` + `/statistik/data` · 4 KPIs · 4 charts |
 | 10.2 | S2 | 90 min | `remember()` · invalidation in `BookingService` & `PassWorkflowService` · `StatisticsCacheTest` |
 | 10.3 | S3 | 85 min | UAT filled in · ≥ 1 bug fixed through a failing test · security checklist · tag `v1.0-capstone` |
-| 10.4 | S4 | 60 min | 15-minute demo · retrospective |
+| 10.4 | S4 | 60 min | 8-minute demo · retrospective |
 
 ---
 
@@ -336,7 +336,7 @@ Places where it must go (in the Day 5–6 reference template):
 | `submit()` | `null → submitted` ("Pas menunggu" (Pending passes) +1) |
 | `transition()` (called by `startReview()`, `approve()`, `reject()`, `expire()`) | all other transitions, including `pas:expire` |
 
-> ✋ **Stop & think (2 min, in pairs):** Why not inside the `try` block **before** `transCommit()`? Why not in the controller? Write your answer in the commit message. (Answer: README §2.4; the controller is not the only caller — the Spark command `pas:expire` does not go through a controller.)
+> ✋ **Stop & think (2 min):** Why not inside the `try` block **before** `transCommit()`? Why not in the controller? Write your answer in the commit message. (Answer: README §2.4; the controller is not the only caller — the Spark command `pas:expire` does not go through a controller.)
 
 **8. Run it again.**
 
@@ -389,7 +389,7 @@ composer test                                                # ALL green — no 
 
 **1. Prepare 5 windows** (incognito/separate profiles): `pemohon1`, `pemohon2`, `penyemak`, `pelulus`, `admin` (password `Latihan@2026`).
 
-**2. Run the UAT script** in README §3.2 (15 steps) **in order**. The driver clicks; the recorder fills in the *Keputusan* (Result) & *Catatan* (Notes) columns in `docs/UAT-signoff.md` §4 (UAT-01..UAT-10). The last column of the README §3.2 table maps each step to a UAT ID (e.g. steps 1 & 5 → UAT-01; steps 4, 6, 11 & 15 → UAT-10). Mark a UAT ID ✅ only if **all** the steps mapped to it pass. Target time: 35 minutes.
+**2. Run the UAT script** in README §3.2 (15 steps) **in order**. Click each step yourself, and fill in the *Keputusan* (Result) & *Catatan* (Notes) columns before the next step in `docs/UAT-signoff.md` §4 (UAT-01..UAT-10). The last column of the README §3.2 table maps each step to a UAT ID (e.g. steps 1 & 5 → UAT-01; steps 4, 6, 11 & 15 → UAT-10). Mark a UAT ID ✅ only if **all** the steps mapped to it pass. Target time: 35 minutes.
 
 **3. Record every failure** in the *Bug log* (`docs/kes-ujian-akhir.md`) — `BUG-001`, `BUG-002`, … with severity High/Medium/Low. **Don't fix anything yet.**
 
@@ -401,7 +401,7 @@ git switch -c fix/bug-001-<ringkas>
 
 | Step | Action | Evidence |
 |---------|----------|-------|
-| a. Reproduce | Write the exact steps + data in the bug log | A colleague can repeat it in < 2 min |
+| a. Reproduce | Write the exact steps + data in the bug log | The trainer/the person next to you can repeat it in < 2 min |
 | b. Failing test | Write a PHPUnit test (unit/service or `FeatureTestTrait`) | `composer test -- --filter <namaUjian>` **red** — keep a terminal screenshot |
 | c. Fix | A **minimal** change | A small & focused `git diff` |
 | d. Pass | That test is green **+** all of `composer test` is green | Terminal screenshot |
@@ -409,7 +409,7 @@ git switch -c fix/bug-001-<ringkas>
 
 > **No bugs found?** The trainer will give you a "planted bug" (see the BUG-007 example in README §3.3). Practise the full cycle on that bug.
 
-**5. Security checklist K1–K10** (README §3.4), ~10 minutes. Tick K1–K10 yourselves: run the evidence commands below (K2, K3, K4, K5, K7) and check the remaining Ks visually. The trainer then **spot-checks 3 Ks** on your machine — K3 always, plus 2 of the trainer's choice — so every tick must be provable on the spot.
+**5. Security checklist K1–K10** (README §3.4), ~10 minutes. Tick K1–K10 yourself: run the evidence commands below (K2, K3, K4, K5, K7) and check the remaining Ks visually. The trainer then **spot-checks 3 Ks** on your machine — K3 always, plus 2 of the trainer's choice — so every tick must be provable on the spot.
 
 ```bash
 # K2 — output without esc() (every remaining line must be justified; ignore app/Views/errors/)
@@ -444,7 +444,7 @@ git tag -a v1.0-capstone -m "Capstone CI-KKM-10"
 git push origin main --tags
 ```
 
-Write a **1-page demo script** (following the format in README §4.1) and make sure both members can explain any file.
+Write a **1-page demo script** (following the format in README §4.1) and make sure you can explain any file.
 
 ### ✅ Checkpoint 10.3
 - [ ] `docs/UAT-signoff.md` §4: UAT-01..UAT-10 are all marked (✅/❌/⚠️) — no ⬜.
@@ -460,7 +460,7 @@ Write a **1-page demo script** (following the format in README §4.1) and make s
 | UAT fails because of yesterday's data (e.g. slot already booked) | The DB is not clean | `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder` |
 | `The action you requested is not allowed.` during UAT | Form left open too long → CSRF token expired, or `csrf_field()` missing | Reload the form; if it keeps happening, check that the form has `csrf_field()` |
 | Feature test fails with `Config\Security::$csrfProtection is set to 'cookie'` | Shield configuration | `app/Config/Security.php` → `$csrfProtection = 'session'` (Day 4) |
-| Tests pass on your machine but fail on your partner's | Depends on seed data/today's date | Own fixtures in the test; relative (`+1 day`) or fixed dates |
+| Tests pass on your machine but fail on a neighbour's machine | Depends on seed data/today's date | Own fixtures in the test; relative (`+1 day`) or fixed dates |
 | `git tag` rejected: *already exists* | Tag created before the fix | `git tag -d v1.0-capstone && git tag -a v1.0-capstone -m "…"` (before pushing) |
 
 ### ⭐ Bonus challenge
@@ -472,7 +472,7 @@ Write a **1-page demo script** (following the format in README §4.1) and make s
 ## Lab 10.4 — Capstone demo & retrospective (S4)
 
 ### 🎯 Objective
-- Demo the system end to end in 15 minutes, following the format.
+- Demo the system end to end in 8 minutes, following the format.
 - Explain one line of code chosen by the panel.
 - Contribute ≥ 3 retrospective cards (Start/Stop/Continue).
 
@@ -485,19 +485,19 @@ Write a **1-page demo script** (following the format in README §4.1) and make s
 
 **1. 10 minutes before your turn:** `php spark serve` running; browser zoom 125 %; notifications off; `docs/UAT-signoff.md` open.
 
-**2. 15-minute demo** — follow the segment schedule in README §4.1. The panel's timekeeper will signal at minutes 4, 7, 9, 11 and 13.
+**2. 8-minute demo** — follow the segment schedule in README §4.1. The panel's timekeeper will signal at minutes 1, 3, 5, 6 and 7.
 
-**3. "Explain the code" segment (minutes 11–13).** The panel picks one file and one line (e.g. `ReportService::applySort()`, `BookingService::transition()`, `dashboard.php` `draw()`). **Either** member of the pair answers: *what does this line do, why is it here, what happens if it is removed?*
+**3. "Explain the code" segment (minutes 7–8).** The panel picks one file and one line (e.g. `ReportService::applySort()`, `BookingService::transition()`, `dashboard.php` `draw()`). **You yourself** answer: *what does this line do, why is it here, what happens if it is removed?*
 
-**4. Q&A (minutes 13–15).** Answer honestly — "we didn't get to it yet, our plan is …" is worth more than guessing.
+**4. Q&A (if the panel asks during the demo).** Answer honestly — "I didn't get to it yet, my plan is …" is worth more than guessing.
 
 **5. Retrospective.** Write ≥ 1 card for each column **Start / Stop / Continue** (yellow card = yourself, blue card = the course). Stick them on the board. Vote with 3 dots on the cards that matter most.
 
 **6. Hand over the repo.** Send the repo link / zip archive (without `vendor/`, without `.env`, without `writable/uploads/`) to the trainer.
 
 ### ✅ Checkpoint 10.4
-- [ ] Demo finished in ≤ 15 minutes; all four modules shown.
-- [ ] The panel signs the pair's score sheet.
+- [ ] Demo finished in ≤ 8 minutes; all four modules shown.
+- [ ] The panel signs your score sheet.
 - [ ] ≥ 3 retrospective cards posted.
 - [ ] Repo handed over.
 

@@ -13,7 +13,13 @@ Complete coaching material (notes, hands-on labs, trainer notes, templates, slid
 | M3 | **Report** | 9 | 3 filtered reports + PDF/Excel export |
 | M4 | **Statistics** | 10 | KPI dashboard + cross-module charts, cache |
 
-Days 1–3: requirements, process flows, acceptance criteria, ERD, wireframes. Day 4: CI4 environment + migrations. Day 10 closes with a **capstone demo to the system owner**.
+Course map ([`JADUAL.md`](./JADUAL.md) § Phase summary):
+
+| Phase | Days | Focus |
+|-------|------|-------|
+| **A — Understand & Build CI Basics** | 1–3 | Requirements (Day 1 + Day 2 S1); from Day 2 every participant builds in their own private project **`kelas-ci-<nama>`** on KKM's GitLab: routes, views, forms, database & first migrations |
+| **B — Set Up & Build** | 4–8 | Shield, the remaining migrations, the solo Git flow (MRs into your own `main`), **M1 TLK**, **M2 Pass** |
+| **C — Report & Hand Over** | 9–10 | **M3 Report**, **M4 Statistics**, final testing; Day 10 closes with an **individual capstone demo to the system owner** |
 
 ## Start here
 
@@ -51,7 +57,7 @@ hari-1/ … hari-10/     README.md · lab.md · nota-penceramah.md
 docs/nota-NN-*.md      topical notes (MVC, migration, model/enum, validation, transactions, Shield, upload, reports, cache, testing, security, Git)
 templates/dokumen/     URS, acceptance criteria, data dictionary, test cases, UAT sign-off
 templates/kod/         trainer reference code (*.php.txt) — answer key
-docs/                  setup, pre-course assignment, prompt library, capstone rubric, glossary
+docs/                  setup, kelas-ci repo (trek-gitlab), reference ERD, prompt library, capstone rubric, glossary
 slides/                ci-kkm-10.html (open directly in the browser)
 ```
 

@@ -2,7 +2,7 @@
 
 [📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 8 Notes](./README.md)
 
-> Work **in pairs** (swap driver/navigator every session). Run every command from the **CI4 project root**. Trainer reference: `templates/kod/` (**Templat & Rujukan** module) — copy from it **only** once you can explain every line (KOLABORASI §3).
+> Work **individually** in `kelas-ci-<nama>`; show your output to the trainer or the person next to you before ticking it off. Run every command from the **CI4 project root**. Trainer reference: `templates/kod/` (**Templat & Rujukan** module) — copy from it **only** once you can explain every line (KOLABORASI §3).
 
 | Lab | Session | Time | Output |
 |-----|---------|------|--------|
@@ -60,7 +60,7 @@ Implement `startReview()`, `approve()` and `reject()` through one locked `transi
 
    **For this lab, do NOT copy the `$this->authorize(...)` lines** in the three public methods (or comment them out). We will add them in Lab 8.2 after you have seen for yourself why they are needed.
 
-2. Before you go on, the navigator explains to the driver (out loud, 2 minutes): *"Why is the status read AFTER `FOR UPDATE`, and what happens if `record()` returns `false`?"*
+2. Before you go on, explain to the trainer or the person next to you (out loud, 2 minutes): *"Why is the status read AFTER `FOR UPDATE`, and what happens if `record()` returns `false`?"*
 
 3. **Create `app/Controllers/Pas/ReviewController.php`** from `ReviewController.php.txt` (**Templat & Rujukan** module): `index()`, `review()`, `approve()`, `reject()`, `act()`, `defaultQueue()`.
 
@@ -310,7 +310,7 @@ Configure `AuthGroups` exactly as in SPEC §4, add a `permission:` filter per ac
 - [ ] UT-PAS-20 (after) — the reviewer cannot approve through DevTools/curl; the status is unchanged.
 - [ ] Step 8 — without the route filter, the Service returns **403**; the filter has been restored.
 - [ ] UT-PAS-21 to 26 pass.
-- [ ] Every member can explain: *route filter vs `authorize()` vs `canView()` — what each one protects*.
+- [ ] You can explain: *route filter vs `authorize()` vs `canView()` — what each one protects*.
 - [ ] Commit: `git add app/ docs/ && git commit -m "PAS: RBAC Shield — permission per tindakan + authorize() dalam Service"`
 
 ### 🧯 Troubleshooting
@@ -358,7 +358,7 @@ Show the `status_logs` history on the details page, and write a `PassAccessTest`
    mkdir -p tests/feature/Pas
    ```
 
-   Copy `PassAccessTest.php.txt` (**Templat & Rujukan** module) to `tests/feature/Pas/PassAccessTest.php`. **Read every test** with your partner and mark in the README §3.2 table which matrix cells are covered.
+   Copy `PassAccessTest.php.txt` (**Templat & Rujukan** module) to `tests/feature/Pas/PassAccessTest.php`. **Read every test** one by one and mark in the README §3.2 table which matrix cells are covered.
 
 5. **Run:**
 
@@ -435,9 +435,9 @@ Demo the Pass flow end to end with 3 roles in 5 minutes, confirm the DoD, and me
 
 ### Steps
 
-1. **Rehearse the demo script** (README §4.1) twice — once with each member as presenter. Prepare three browser windows in advance (logged in as `pemohon1`, `penyemak`, `pelulus`) and one terminal.
+1. **Rehearse the demo script** (README §4.1) twice before the demo. Prepare three browser windows in advance (logged in as `pemohon1`, `penyemak`, `pelulus`) and one terminal.
 
-2. **Demo to the neighbouring pair** (5 minutes). The neighbouring pair holds the **DoD checklist** (README §4.2) and ticks every item proven during the demo. Swap roles.
+2. **Demo to the person next to you** (5 minutes). Your neighbour holds the **DoD checklist** (README §4.2) and ticks every item proven during the demo. Swap roles.
 
 3. **Merge into `main`:**
 
@@ -458,7 +458,7 @@ Demo the Pass flow end to end with 3 roles in 5 minutes, confirm the DoD, and me
    7. Run it again → "Tiada pas untuk ditamatkan" (no passes to expire).
 
 ### ✅ Checkpoint 8.4
-- [ ] The 5-minute demo passes every DoD item (signed off by the neighbouring pair).
+- [ ] The 5-minute demo passes every DoD item (signed off by the person next to you).
 - [ ] `main` contains M1 + M2; `composer test` is green on `main`.
 - [ ] ⭐ `pas:expire` changes expired passes, with a log.
 
@@ -485,4 +485,4 @@ php spark routes | grep pas/              # 9 Pass routes; review routes with pe
 composer test -- --testdox | tail -20   # all green
 ```
 
-Pairs who fall behind: use `templates/kod/` (**Templat & Rujukan** module) following the catch-up plan in the trainer notes — but **Lab 8.2 step 1 (the DevTools attack)** must be done yourselves: it is the main lesson of the day.
+Participants who fall behind: use `templates/kod/` (**Templat & Rujukan** module) following the catch-up plan in the trainer notes — but **Lab 8.2 step 1 (the DevTools attack)** must be done yourself: it is the main lesson of the day.

@@ -1,6 +1,6 @@
-# Jira Track — Pair Backlog & Sprints (Optional)
+# Jira Track — Your Backlog & Sprints (Optional)
 
-> **Optional side track.** This page shows how a pair manages the 10 days of work in **Jira Cloud** (Free plan): a backlog from the Day 1–2 requirements, sprints matched to modules M1–M4, and links between Jira cards and Git branches and commits. It **does not replace** any course deliverable: `docs/keperluan-awal.md`, `docs/acceptance-criteria.md` and `docs/pelan-kerja.md` stay the source of truth. Jira is a tracking view on top of them.
+> **Optional side track.** This page shows how you manage the 10 days of work in **Jira Cloud** (Free plan): a backlog from the reference requirements, sprints matched to modules M1–M4, and links between Jira cards and Git branches and commits. It **does not replace** any course deliverable: [`rujukan-keperluan.md`](./rujukan-keperluan.md) (FRs & AC), the BR-* rules in [`spesifikasi-sistem.md`](./spesifikasi-sistem.md) and `docs/pelan-kerja.md` stay the source of truth. Jira is a tracking view on top of them.
 > Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Schedule: [`JADUAL.md`](../JADUAL.md) · Working agreement: [`docs/kolaborasi.md`](kolaborasi.md) · Related tracks: [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
 
 > ⚠️ **Finish before Day 4.** Coding starts on Day 4. Setup and the backlog happen on Days 1–2, stories with acceptance criteria on Day 2, and sprint planning on Day 4 S4 before the first line of module code.
@@ -13,9 +13,9 @@ At the office, most IT teams track work in a tool such as Jira. This track build
 
 | Concept | What it means in this course |
 |--------|-------------------------|
-| **Backlog** | The list of unfinished work, ordered by priority — comes straight from the FRs in `docs/keperluan-awal.md` |
+| **Backlog** | The list of unfinished work, ordered by priority — comes straight from the FRs in [`rujukan-keperluan.md`](./rujukan-keperluan.md) |
 | **Epic** | One module (M1 TLK, M2 Pass, M3 Report, M4 Statistics) |
-| **Story** | One confirmed FR, written from the user's point of view, with the Day 2 acceptance criteria |
+| **Story** | One confirmed FR, written from the user's point of view, with the acceptance criteria from [`rujukan-keperluan.md`](./rujukan-keperluan.md) |
 | **Sprint** | One block of work with a goal: Sprint 1 = M1, Sprint 2 = M2–M4 |
 | **Stand-up** | The 08:30 recap every morning — three questions |
 | **Board** | To Do → In Progress → In Review → Done; "Done" means it passes the DoD ([`docs/kolaborasi.md`](kolaborasi.md) §2) |
@@ -28,10 +28,10 @@ At the office, most IT teams track work in a tool such as Jira. This track build
 
 | Day / session | Step | Minutes |
 |-------------|---------|-------|
-| Day 1 S4 (after Lab 1.4) | Create the Jira Free site, the Scrum space `TLKPAS`, invite your partner (§4) | 20 |
+| Day 1 S4 (after Lab 1.4) | Create the Jira Free site, the Scrum space `TLKPAS`, invite the trainer (§4) | 20 |
 | Day 2 recap (08:30) | Create 4 Epics M1–M4 (§5.1) | 10 |
 | Day 2 S1 (after FR sign-off) | Create Stories from **confirmed** FRs only (§5.2); rejected FRs stay out | 20 |
-| Day 2 S3 (after Lab 2.3) | Paste the Given/When/Then AC into each Story's Description (§5.4) | 20 |
+| Day 2 S3 | Paste the Given/When/Then AC ([`rujukan-keperluan.md`](./rujukan-keperluan.md) Part 1 S3) into each Story's Description (§5.4) | 20 |
 | Day 2 S4 | Priority from MoSCoW, labels, story points through planning poker (§5.3–5.6) | 25 |
 | Day 3 S4 (optional) | Add the Day 4 setup Tasks (CI4 project, migrations, seeders) | 10 |
 | Day 4 S4 | Sprint planning together with `docs/pelan-kerja.md`; start Sprint 1 (§7.2) | 25 |
@@ -43,15 +43,15 @@ Total ≈ 2.5 hours over 10 days, mostly in wrap-up time. The Day 1–4 steps ar
 
 ## 3. What you end with
 
-By Day 4 S4, the pair has:
+By Day 4 S4, you have:
 
 | Result | Evidence |
 |-------|-------|
-| One Jira Cloud Free site with both partners | Both names are listed in the space access |
+| One Jira Cloud Free site of your own | Your name (and the trainer's, if invited) is listed in the space access |
 | A Scrum space with the key `TLKPAS` | Work item keys look like `TLKPAS-12` |
 | 4 Epics (M1–M4) | Every Story has an Epic as its parent |
 | One Story per confirmed FR | Number of Stories = number of confirmed FRs in `docs/log-keputusan.md` |
-| AC in the Description of every Must Story | The AC match `docs/acceptance-criteria.md` |
+| AC in the Description of every Must Story | The AC match the examples in `rujukan-keperluan.md` |
 | Priority, labels and story points on every Story | No unestimated Story in the backlog |
 | Sprint 1 started with M1 Stories only | The sprint board shows the TLK Stories in To Do |
 
@@ -63,7 +63,7 @@ Checked on 2026-10-15 against the official Atlassian pages (see Sources):
 
 | Item | Free plan |
 |---------|-----------|
-| Users | Up to **10 users** — enough for one pair and the trainer |
+| Users | Up to **10 users** — enough for you, the trainer and a few colleagues |
 | Storage | **2 GB** of files |
 | Agile features | Scrum and Kanban boards, backlog, agile reporting |
 | Support | Atlassian Community only |
@@ -73,8 +73,8 @@ Checked on 2026-10-15 against the official Atlassian pages (see Sources):
 
 ### 4.2 Create the site & space
 
-1. One partner (the site owner) opens <https://www.atlassian.com/software/jira/free> and signs up with their own email. The site owner becomes the Jira administrator — needed for the CSV import (§6).
-2. Choose a neutral site name, e.g. `latihan-tlkpas-pasangan3` (giving `latihan-tlkpas-pasangan3.atlassian.net`). Don't use an agency name.
+1. You (the site owner) open <https://www.atlassian.com/software/jira/free> and sign up with your own email. The site owner becomes the Jira administrator — needed for the CSV import (§6).
+2. Choose a neutral site name, e.g. `latihan-tlkpas-aminah` (giving `latihan-tlkpas-aminah.atlassian.net`). Don't use an agency name.
 3. In the side navigation, hover over **Spaces** → **Create space**.
 4. Choose the **Software development** category → the **Scrum** template → **Use template**.
 5. Choose **Team-managed** (simple configuration, suits the Free plan).
@@ -95,15 +95,15 @@ Use these four work types only:
 | **Task** | Technical work with no user-facing side | `Tulis migration slot_bookings` |
 | **Bug** | Wrong behaviour found during testing | `Tempahan 91 hari diterima (BR-TLK-03)` |
 
-Subtasks are allowed under a Story if the pair wants to split the work, but they are not required.
+Subtasks are allowed under a Story if you want to split the work, but they are not required.
 
-### 4.4 Invite your partner
+### 4.4 Invite the trainer (optional)
 
-1. The site owner invites the second partner to the site (gear icon / admin settings → invite user by email).
-2. After the invitation is accepted: ••• next to the space name → **Space settings** → **Access** → **Add people** → choose the second partner → role **Administrator** (both partners can manage the board and sprints).
-3. If the trainer wants to review, invite the trainer with the **Viewer** role.
+1. The site owner invites the trainer to the site (gear icon / admin settings → invite user by email).
+2. After the invitation is accepted: ••• next to the space name → **Space settings** → **Access** → **Add people** → choose the trainer → role **Viewer**.
+3. A neighbour who wants to comment on your cards can also be invited with the **Viewer** role. Only you manage the board and sprints.
 
-✅ The second partner can create work items and drag them on the board.
+✅ The trainer can open your board and backlog without changing them.
 
 ## 5. Backlog from the course artefacts
 
@@ -135,7 +135,7 @@ As a <role>, I want <action>, so that <value>.
 Rules:
 - The role in a Story is a SPEC §4 role (`applicant`, `reviewer`, `approver`, `admin`).
 - A Story doesn't name a class (`BookingService`) — that is design. Technical work goes in as a **Task**.
-- Your FR IDs may differ from these examples. Follow your own `docs/keperluan-awal.md`.
+- Your FR IDs may differ from these examples. Follow the FRs in `rujukan-keperluan.md`.
 
 ### 5.3 MoSCoW → Priority
 
@@ -150,10 +150,10 @@ Rules:
 
 ### 5.4 Acceptance criteria in the Description
 
-Copy the AC from `docs/acceptance-criteria.md` into the Description, under a trace line:
+Copy the AC from [`rujukan-keperluan.md`](./rujukan-keperluan.md) into the Description, under a trace line:
 
 ```gherkin
-# FR-TLK-03 · BR-TLK-01 · source: docs/acceptance-criteria.md
+# FR-TLK-03 · BR-TLK-01 · source: docs/rujukan-keperluan.md
 Scenario: Overlapping booking is rejected
   Given slot A-01 has an approved booking 2026-10-01 to 2026-10-10
   When  pemohon2@latihan.test applies for slot A-01 from 2026-10-05 to 2026-10-15
@@ -177,9 +177,9 @@ The Markdown file stays the source. If the AC change, update the file first, the
 
 Story points measure **relative size** (complexity + uncertainty), not hours. Use the Fibonacci series: `1 · 2 · 3 · 5 · 8 · 13`.
 
-1. Pick one small Story both partners understand as the reference = **2 points** (e.g. the list of your own bookings with pagination).
+1. With a neighbour (your backlogs are the same because the spec is the same), pick one small Story you both understand as the reference = **2 points** (e.g. the list of your own bookings with pagination).
 2. For each Story: read the Summary and AC out loud.
-3. Both partners pick a number silently (fingers, cards or an app), then reveal at the same time.
+3. You and your neighbour pick a number silently (fingers, cards or an app), then reveal at the same time.
 4. If they match → fill in **Story point estimate**. If they differ → the higher number explains the risk first, then vote once more.
 5. A Story **> 13** is too big — split it into two Stories.
 
@@ -222,7 +222,7 @@ These examples match SPEC §2 and the Day 2 AC examples.
 
 ## 6. CSV import (optional)
 
-If the backlog is already complete in `docs/keperluan-awal.md`, a CSV import is faster than typing cards one by one. Only a **Jira administrator** (the site owner) can import.
+If the backlog is already complete (the FRs in `docs/rujukan-keperluan.md`), a CSV import is faster than typing cards one by one. Only a **Jira administrator** (the site owner) can import.
 
 ### 6.1 Example CSV
 
@@ -234,7 +234,7 @@ Work item ID,Summary,Issue Type,Priority,Description,Labels,Labels,Story Points,
 2,M2 — Pas,Epic,High,"Module M2, Sprint 2 (Days 7–8)",pas,,,
 3,M3 — Laporan,Epic,Medium,"Module M3, Sprint 2 (Day 9)",laporan,,,
 4,M4 — Statistik,Epic,Medium,"Module M4, Sprint 2 (Day 10)",statistik,,,
-10,"As an applicant, I want the system to reject overlapping bookings, so that a slot approved for me isn't claimed by someone else",Story,High,"FR-TLK-03 · BR-TLK-01. AC: see docs/acceptance-criteria.md AC-TLK-03-01..04",tlk,br-tlk-01,5,1
+10,"As an applicant, I want the system to reject overlapping bookings, so that a slot approved for me isn't claimed by someone else",Story,High,"FR-TLK-03 · BR-TLK-01. AC: see docs/rujukan-keperluan.md AC-TLK-03-01..04",tlk,br-tlk-01,5,1
 11,"As an applicant, I want the system to reject invalid booking dates, so that my booking always stays within the allowed period",Story,High,"FR-TLK-05 · BR-TLK-03. AC: AC-TLK-05-01..05",tlk,br-tlk-03,3,1
 20,"As an applicant, I want to upload PDF/JPG/PNG supporting documents, so that the reviewer can assess the application without paper",Story,High,"FR-PAS-02 · BR-PAS-02. AC: AC-PAS-02-01..02",pas,br-pas-02,5,2
 ```
@@ -269,20 +269,20 @@ Do it **together with** Lab 4.4 ([`hari-4/lab.md`](../hari-4/lab.md)), after `do
 
 1. Backlog → **Create sprint** → name it `Sprint 1 — M1 TLK`.
 2. Drag the M1 Must Stories and the Day 4 Tasks into Sprint 1, in priority order.
-3. Check capacity: if the total points are well beyond what the pair is confident it can finish on Days 5–6, move Shoulds back to the backlog.
+3. Check capacity: if the total points are well beyond what you are confident you can finish on Days 5–6, move Shoulds back to the backlog.
 4. Match it with `docs/pelan-kerja.md`: every row in the **Cabang** (branches) table gets a Story key (e.g. `feat/TLKPAS-12-borang-tempahan`). One branch = one Story.
 5. **Start sprint** → start date Day 4, end date Day 6 → write the sprint goal: *"M1 TLK finished and passing the DoD."*
 6. Sprint 2 is created and started at the Day 7 recap in the same way.
 
 ### 7.3 Daily stand-up
 
-At the 08:30 recap (Days 5–10), the pair stands in front of the board for 5 minutes. Each partner answers:
+At the 08:30 recap (Days 5–10), you open the board for 5 minutes and answer (to the trainer or a neighbour):
 
 1. What did I finish yesterday (which cards moved)?
 2. What will I work on today (which cards)?
 3. What is blocking me?
 
-Blockers are recorded as a comment on the card or as a new Bug. That day's driver rota follows `docs/pelan-kerja.md`.
+Blockers are recorded as a comment on the card or as a new Bug.
 
 ### 7.4 Sprint review & retrospective
 
@@ -298,8 +298,8 @@ A team-managed Scrum board starts with To Do, In Progress and Done. Add an **In 
 | Column | Enters when | Link to the DoD ([`docs/kolaborasi.md`](kolaborasi.md) §2) |
 |-------|---------------|------------------------------------------------------|
 | **To Do** | The Story is in the sprint, the AC are clear | The AC exist — DoD line 1 can be tested |
-| **In Progress** | The `feat/TLKPAS-nn-…` branch is created, the driver starts typing | — |
-| **In Review** | A merge request / PR is opened; the navigator reviews | Check server validation, access, `status_logs`, PHPUnit tests, no `.env` |
+| **In Progress** | The `feat/TLKPAS-nn-…` branch is created, you start typing | — |
+| **In Review** | A merge request into your `main` is opened; the trainer or a neighbour comments | Check server validation, access, `status_logs`, PHPUnit tests, no `.env` |
 | **Done** | Merged into `main` and **every** DoD item ticked | All 7 DoD items; participants can explain every line |
 
 Use [`senarai-semak-modul.md`](./senarai-semak-modul.md) (D1–D7) during In Review.
@@ -330,15 +330,15 @@ Write the key in **uppercase** (`TLKPAS-12`, not `tlkpas-12`). Put the same key 
 
 ### 8.2 Development panel (GitLab for Jira Cloud)
 
-If the pair's repo is on KKM's GitLab ([`trek-gitlab.md`](./trek-gitlab.md)), the **GitLab for Jira Cloud** app can show the branches, commits and MRs that mention a key in the **Development** panel of each work item. This is **optional; ask the trainer / KKM IT** — the §8.1 rule is still useful without the app, because the keys in the Git history are searchable.
+Your `kelas-ci-<nama>` repo is already on KKM's GitLab ([`trek-gitlab.md`](./trek-gitlab.md)), so the **GitLab for Jira Cloud** app can show the branches, commits and MRs that mention a key in the **Development** panel of each work item. This is **optional; ask the trainer / KKM IT** — the §8.1 rule is still useful without the app, because the keys in the Git history are searchable.
 
-- A self-managed GitLab must be reachable from the internet over HTTPS (GitLab 15.7+), and KKM's **GitLab admin** must create an OAuth application. The pair can't install it themselves.
+- A self-managed GitLab must be reachable from the internet over HTTPS (GitLab 15.7+), and KKM's **GitLab admin** must create an OAuth application. Participants can't install it themselves.
 - The key must be in the branch name, the commit message or the MR title; something must be pushed after connecting so that Jira syncs.
 - Do this after the GitLab track is done, not before Day 4 S4.
 
 ## 9. GitLab ↔ Jira mapping
 
-For pairs who know GitLab Issues/Boards ([`trek-gitlab.md`](./trek-gitlab.md)):
+For participants who know GitLab Issues/Boards ([`trek-gitlab.md`](./trek-gitlab.md)):
 
 | GitLab Issues / Boards | Jira | Notes |
 |------------------------|------|------|
@@ -352,7 +352,7 @@ For pairs who know GitLab Issues/Boards ([`trek-gitlab.md`](./trek-gitlab.md)):
 | Assignee | Assignee | |
 | `Closes #14` in an MR | `TLKPAS-12` in the branch, commit, MR title | The Development panel needs GitLab for Jira Cloud |
 
-> Choose **one** tool as the backlog's source of truth. If the pair uses both tracks, GitLab manages code and MRs; Jira manages the backlog and sprints.
+> Choose **one** tool as the backlog's source of truth. If you use both GitLab Issues and Jira, GitLab manages code and MRs; Jira manages the backlog and sprints.
 
 ## 10. Three common mistakes
 
@@ -360,15 +360,15 @@ For pairs who know GitLab Issues/Boards ([`trek-gitlab.md`](./trek-gitlab.md)):
 |-----------|--------------|----------|
 | A Story written as a technical task (`Bina BookingService`) | No user value; can't be tested with AC | Rewrite it as *As a … I want … so that …*; move the technical work into a Task |
 | A card dragged to Done as soon as the code runs | Done without the DoD hides tests and access checks not yet done | Move the card to In Review first; Done only after every DoD item is ticked and it is merged into `main` |
-| Two different backlogs (Jira + `pelan-kerja.md` + GitLab Issues) | Cards and files drift apart; the pair doesn't know which is right | One source of truth; `pelan-kerja.md` refers to Jira keys, not a separate work list |
+| Two different backlogs (Jira + `pelan-kerja.md` + GitLab Issues) | Cards and files drift apart; you don't know which is right | One source of truth; `pelan-kerja.md` refers to Jira keys, not a separate work list |
 
 ## Checklist — Done before Day 4
 
-- [ ] The Jira Cloud Free site exists; both partners can log in.
+- [ ] The Jira Cloud Free site exists and you can log in; the trainer is invited as Viewer (optional).
 - [ ] A team-managed Scrum space with the key `TLKPAS`; Estimation turned on with Story points.
 - [ ] 4 Epics M1–M4 created.
-- [ ] Every confirmed FR in `docs/keperluan-awal.md` has one Story in *As a … I want … so that …* format, with an Epic as its parent.
-- [ ] Every Must Story has Given/When/Then AC in its Description, matching `docs/acceptance-criteria.md`.
+- [ ] Every FR confirmed in `docs/log-keputusan.md` has one Story in *As a … I want … so that …* format, with an Epic as its parent.
+- [ ] Every Must Story has Given/When/Then AC in its Description, following the examples in `rujukan-keperluan.md`.
 - [ ] Every Story has a Priority from MoSCoW, a module label and story points (Fibonacci, ≤ 13).
 - [ ] Won't items are labelled `wont` and are not in any sprint.
 - [ ] Board columns: To Do → In Progress → In Review → Done.
@@ -379,7 +379,7 @@ For pairs who know GitLab Issues/Boards ([`trek-gitlab.md`](./trek-gitlab.md)):
 ## Links
 
 - Course: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · [`JADUAL.md`](../JADUAL.md) · [`docs/kolaborasi.md`](kolaborasi.md)
-- Days: [`hari-1/lab.md`](../hari-1/lab.md) (Lab 1.4 FR/NFR + MoSCoW) · [`hari-2/README.md`](../hari-2/README.md) (S3 acceptance criteria) · [`hari-2/lab.md`](../hari-2/lab.md) · [`hari-4/lab.md`](../hari-4/lab.md) (Lab 4.4 work plan) · [`hari-10/lab.md`](../hari-10/lab.md) (Lab 10.4 retrospective)
+- Days: [`hari-1/lab.md`](../hari-1/lab.md) (Lab 1.4 FR/NFR + MoSCoW) · [`rujukan-keperluan.md`](./rujukan-keperluan.md) (acceptance criteria) · [`hari-2/lab.md`](../hari-2/lab.md) · [`hari-4/lab.md`](../hari-4/lab.md) (Lab 4.4 work plan) · [`hari-10/lab.md`](../hari-10/lab.md) (Lab 10.4 retrospective)
 - Docs: [`README.md`](./README.md) · [`senarai-semak-modul.md`](./senarai-semak-modul.md) · [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md) · [`glosari.md`](./glosari.md)
 
 ## Sources

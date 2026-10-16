@@ -50,7 +50,7 @@ flowchart LR
 | **AI-08** | Pre-commit review (DoD) | Review | 5–10 |
 | **AI-09** | Suggest test cases | Test | 6, 8, 9, 10 |
 | **AI-10** | Help write a failing test first (reproduce a bug) | Test | 6, 8, 10 |
-| **AI-11** | Check the ERD / migrations against the data dictionary | Design | 3, 4 |
+| **AI-11** | Check the migrations against the reference ERD | Design | 3, 4 |
 | **AI-12** | Convert a sketch to Mermaid | Design | 1–3 |
 | **AI-13** | Small permitted boilerplate | Build | 4–10 |
 | **AI-14** | Quiz me | Understand | Daily recap |
@@ -84,7 +84,7 @@ Please:
 DO NOT rewrite my whole file.
 ```
 
-- **After:** Verify the cause with the suggested method **before** changing the code. Record the real cause in your pair's bug log.
+- **After:** Verify the cause with the suggested method **before** changing the code. Record the real cause in your bug log.
 
 ### AI-02 — Explain this code line by line
 
@@ -100,7 +100,7 @@ If there is CodeIgniter 3 syntax or an outdated practice, say so.
 [paste the code — maximum ~40 lines]
 ```
 
-- **After:** Explain the code to your partner **without looking at** the AI answer. Can't? Repeat with a follow-up question.
+- **After:** Explain the code to the trainer or a neighbour **without looking at** the AI answer. Can't? Repeat with a follow-up question.
 
 ### AI-03 — Explain a concept with a TLK/Pass domain example
 
@@ -175,7 +175,7 @@ Pay special attention: are the overlap check and the approval in ONE transaction
 with SELECT ... FOR UPDATE (BR-TLK-05)?
 ```
 
-- **After:** Update [`senarai-semak-modul.md`](./senarai-semak-modul.md). Every "Not met" → a task for your partner.
+- **After:** Update [`senarai-semak-modul.md`](./senarai-semak-modul.md). Every "Not met" → a task for you.
 
 ### AI-06 — File upload security review
 
@@ -225,7 +225,7 @@ List the positive & negative access tests I need to write.
 ### AI-08 — Pre-commit review (DoD)
 
 - **When to use:** Before `git commit` for a complete feature / before a merge.
-- **Don't:** Use this as a replacement for a trainer or partner review.
+- **Don't:** Use this as a replacement for a trainer review or a colleague's MR comment.
 
 ```bash
 git diff --staged > /tmp/diff.txt   # make sure there is no .env in the diff!
@@ -260,8 +260,8 @@ in the format "<PREFIX>: <summary>" (TLK/PAS/RPT/STAT/SETUP/FIX).
 ```prompt title="AI-09"
 For the following function/feature in CodeIgniter 4.6, suggest PHPUnit test cases.
 Feature: <BookingService::approve() — approve a TLK booking, check overlap BR-TLK-01>
-Acceptance criteria (Given/When/Then) from the URS:
-[paste the AC]
+The related BR-* rules (docs/spesifikasi-sistem.md):
+[paste the BR rules]
 
 Give a table | # | Type (unit/feature) | Given | When | Then | BR rule |
 Include: the happy path, date edge cases (same day, overlapping by 1 day, adjacent),
@@ -291,19 +291,19 @@ DO NOT fix the application code — I will fix it myself after the test is red.
 
 ## D · Design
 
-### AI-11 — Check the ERD / migrations against the data dictionary
+### AI-11 — Check the migrations against the reference ERD
 
-- **When to use:** Day 3 S4 (ERD) and Day 4 S3 (migrations).
+- **When to use:** Day 3 S2 (first migrations) and Day 4 S3 (8 more migrations).
 - **Don't:** Ask the AI to generate all the migrations — you need to understand the FK order.
 
 ```prompt title="AI-11"
-Compare my CodeIgniter 4.6 migrations with the canonical schema (docs/spesifikasi-sistem.md §3, attached).
+Compare my CodeIgniter 4.6 migrations with the canonical schema (docs/spesifikasi-sistem.md §3 and docs/erd-rujukan.md, attached).
 Report in a table: | Table | Field | In SPEC | In migration | Issue |
 Check: type & length, NULL, UNIQUE, INDEX, FK (onDelete), deleted_at only where
 specified, utf8mb4. Also check the migration ORDER (parent tables before child tables).
 List issues only.
 
-[paste SPEC §3]
+[paste SPEC §3 and erd-rujukan.md]
 [paste the migrations]
 ```
 
@@ -365,7 +365,7 @@ common car models in Malaysia, colour). No real data. Format: PHP array.
 
 Before accepting any suggestion, answer yes to **all** of these:
 
-- [ ] I can explain **every line** to my partner without looking at the AI answer.
+- [ ] I can explain **every line** to the trainer or a neighbour without looking at the AI answer.
 - [ ] I know **why** this solution is correct, not just that "it runs".
 - [ ] This syntax is **CodeIgniter 4.6** (not CI3) and the names match the **SPEC**.
 - [ ] I have **tested** it (manually or with PHPUnit) — including one negative case.

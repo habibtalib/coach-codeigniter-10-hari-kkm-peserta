@@ -173,5 +173,5 @@ Stay in Malay: ralat (error), sesi (class session), pengesahan (owner sign-off),
 | Tolak / tarik | Push / pull | `git push`, `git pull` | |
 | Permintaan gabung | Pull request / merge request | PR / MR | |
 | Simpanan sementara | Stash | `git stash` | |
-| Pemandu / navigator | Driver / navigator | | Pair programming |
+| Pemandu / navigator | Driver / navigator | | Pair programming — **optional**; this course is individual work in `kelas-ci-<nama>` |
 | Pembantu AI | AI assistant | Claude Code | [`pustaka-prompt.md`](./pustaka-prompt.md) |

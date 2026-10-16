@@ -1,268 +1,407 @@
-# Lab Hari 3 — ERD, Kamus Data, Wireframe & Semakan Reka Bentuk
+# Lab Hari 3 — Database, Migration, Model & Carian
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 README Hari 3](./README.md)
+[📅 Jadual](../JADUAL.md) · [📘 Spesifikasi](../docs/spesifikasi-sistem.md) · [📖 README Hari 3](./README.md)
 
 | Lab | Sesi | Hasil |
 |-----|------|-------|
-| [Lab 3.1](#lab-31--erd-mermaid) | S1 | `docs/erd.md` |
-| [Lab 3.2](#lab-32--kamus-data--normalisasi) | S2 | `docs/kamus-data.md` |
-| [Lab 3.3](#lab-33--wireframe-6-skrin-utama) | S3 | `docs/wireframe/`, `docs/wireframe.md` |
-| [Lab 3.4](#lab-34--semakan-silang-reka-bentuk) | S4 | `docs/semakan-reka-bentuk.md` |
+| [Lab 3.1](#lab-31--database-mysql--env-s1) | S1 | Database `kkm_latihan` + `kkm_latihan_test`, pengguna `kkm_dev`, `.env` bersambung |
+| [Lab 3.2](#lab-32--migration--seeder-pertama-s2) | S2 | Migration `departments` + `parking_zones`, seeder idempoten; commit di-push |
+| [Lab 3.3](#lab-33--model--halaman-jabatan-s3) | S3 | `DepartmentModel` + `/jabatan` (senarai & borang baharu); commit di-push |
+| [Lab 3.4](#lab-34--carian--pagination-zon-s4) | S4 | `/zon` dengan carian `?q=` & pagination; commit di-push |
 
-> **Peraturan hari ini:** SPEC §3 ialah jawapan akhir untuk nama jadual & medan. Tugas anda bukan mencipta skema baharu — tetapi **membina semula** skema itu dari URS anda sendiri, memahami **kenapa** setiap bahagian wujud, dan menemui apa yang anda terlepas.
-
----
-
-## Lab 3.1 — ERD Mermaid
-
-### 🎯 Objektif
-Mengenal pasti entiti dan kardinaliti dari URS, kemudian melukis ERD Mermaid yang sepadan 100% dengan SPEC §3.
-
-### Prasyarat
-- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
-- `docs/URS-v1.md` (Hari 2) dan senarai kata nama (persediaan semalam).
-- Baca README §1.1–1.2.
-
-### Langkah
-1. **Tanpa melihat SPEC §3 (15 minit):** Pada kertas, senaraikan entiti dari kata nama URS anda. Lukis kotak dan garisan. Tulis kardinaliti di setiap hujung.
-2. **Bandingkan (5 minit):** Buka SPEC §3. Senaraikan dalam `docs/erd.md` bahagian `## Apa yang saya terlepas`:
-   ```markdown
-   ## Apa yang saya terlepas (lakaran pertama vs SPEC)
-   - Tidak terfikir `reference_sequences` — saya anggap ref_no dijana dari id
-   - Saya buat jadual `roles` — salah, peranan dalam Shield
-   ```
-3. Cipta ERD dalam `docs/erd.md`. Mulakan dengan dua jadual dan satu hubungan, pratonton, kemudian tambah:
-   ```mermaid
-   erDiagram
-       parking_zones {
-           int id PK
-           varchar code UK "VARCHAR(10)"
-           varchar name "VARCHAR(100)"
-           varchar location "VARCHAR(150)"
-           datetime created_at
-           datetime updated_at
-       }
-       parking_slots {
-           int id PK
-           int zone_id FK
-           varchar slot_no "VARCHAR(10)"
-           varchar category "VARCHAR(20) SlotCategory"
-           tinyint is_active "DEFAULT 1"
-           datetime created_at
-           datetime updated_at
-           datetime deleted_at
-       }
-       parking_zones ||--o{ parking_slots : "zone_id"
-   ```
-4. Tambah baki 8 jadual **satu demi satu**, pratonton selepas setiap jadual. Susunan disyorkan: `departments` → `users` → `vehicles` → `slot_bookings` → `pass_applications` → `pass_documents` → `status_logs` → `reference_sequences`.
-5. Tambah semua hubungan. Perhatikan `|o--o{` untuk FK NULL (`department_id`, `decided_by`, `vehicle_id` dalam `pass_applications`, `reviewed_by`, `approved_by`).
-6. Di bawah ERD, tambah jadual kardinaliti (README §1.2) dan **terangkan dengan ayat anda sendiri** tiga keputusan reka bentuk (README §1.4 a, b, c).
-7. Commit: `SETUP: ERD Mermaid sistem TLK & Pas`.
-
-### ✅ Checkpoint
-- [ ] ERD dipaparkan tanpa ralat di mermaid.live.
-- [ ] **10 jadual** — kira: `departments`, `users`, `parking_zones`, `parking_slots`, `vehicles`, `slot_bookings`, `pass_applications`, `pass_documents`, `status_logs`, `reference_sequences`.
-- [ ] Semak silang dengan skrip ringkas (jalankan dalam folder repo anda):
-  ```bash
-  for t in departments users parking_zones parking_slots vehicles slot_bookings \
-           pass_applications pass_documents status_logs reference_sequences; do
-    grep -Eq "^[[:space:]]*$t \{" docs/erd.md && echo "OK  $t" || echo "TIADA $t"
-  done
-  ```
-  Semua baris mesti `OK`.
-- [ ] 13 hubungan (termasuk dua hubungan `users`–`pass_applications` untuk `reviewed_by` dan `approved_by`).
-- [ ] Tiada `users.role`.
-
-### 🧯 Masalah lazim
-| Gejala | Punca | Penyelesaian |
-|--------|-------|--------------|
-| `Parse error` pada baris atribut (terutama dalam pemapar Mermaid versi lama) | Jenis mengandungi `(` seperti `varchar(20)` | Untuk keserasian semua pemapar, tulis jenis ringkas `varchar` dan letak panjang dalam komen `"VARCHAR(20)"` |
-| Ralat pada `PK FK` | Berbilang kunci tanpa koma | Guna `PK`, `FK`, `UK` huruf besar; berbilang dipisah koma: `PK, FK` |
-| Diagram terlalu lebar untuk dibaca | 10 jadual dengan semua medan | Normal. Untuk pembentangan, buat versi kedua tanpa `created_at`/`updated_at` |
-| Ralat pada baris hubungan | Label hubungan tertinggal (Mermaid mewajibkan `: label`) | `users \|\|--o{ vehicles : "user_id"` |
-
-### ⭐ Cabaran tambahan
-Tambah ERD kedua **khusus Shield** yang menunjukkan hubungan `users` dengan `auth_identities` dan `auth_groups_users` (rujuk dokumentasi Shield). Terangkan kenapa e-mel pengguna tidak berada dalam `users`.
+> Semua kerja dalam projek **individu** `~/latihan/kelas-ci-<nama>` (Hari 2). Jadual & medan ikut [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §3 dan [`erd-rujukan.md`](../docs/erd-rujukan.md) — anda tidak perlu melukis ERD sendiri. Bahan ERD/kamus data/wireframe yang asal kini bacaan pilihan dalam [`rujukan-keperluan.md`](../docs/rujukan-keperluan.md).
 
 ---
 
-## Lab 3.2 — Kamus Data & Normalisasi
+## Lab 3.1 — Database MySQL & `.env` (S1)
 
 ### 🎯 Objektif
-Menulis kamus data lengkap untuk 5 jadual teras dalam sesi (baki 5 jadual disiapkan sebelum Hari 4, 08:30) dan membuktikan skema berada dalam 3NF melalui latihan normalisasi.
+Mencipta database pembangunan dan ujian dengan pengguna khusus `kkm_dev`, menyambung projek `kelas-ci-<nama>` melalui `.env`, dan mengesahkan connection dengan `php spark db:table --show`.
 
 ### Prasyarat
-- Lab 3.1 siap.
-- `templates/dokumen/kamus-data-templat.md` (modul **Templat & Rujukan**), README §2.
+- [Lab 2.4](../hari-2/lab.md#lab-24--borang-validation--csrf-s4) siap: GitLab menunjukkan 4 commit.
+- Laragon → **Start All** (MySQL hijau). Terminal Git Bash dalam VS Code.
+
+> 🔍 **Bukti kerja:** platform menanda checkpoint lab hari ini apabila anda **lulus Kuiz hari** — soalannya hanya boleh dijawab dengan menjalankan kod.
 
 ### Langkah
-1. Cipta fail `docs/kamus-data.md` dan salin kandungan templat `templates/dokumen/kamus-data-templat.md` (modul **Templat & Rujukan**) ke dalamnya (bahagian `## Jadual: <nama_jadual>` diulang untuk setiap jadual).
-2. **Dalam sesi — 5 jadual teras, bahagi kerja dalam pasangan:** driver menulis `parking_slots` dan `slot_bookings`; navigator menyemak terhadap SPEC. Tukar untuk `pass_applications`, `pass_documents`, `status_logs`.
-   **Baki 5 jadual** (`departments`, `users`, `parking_zones`, `vehicles`, `reference_sequences`) — siapkan sebelum **Hari 4, 08:30** bersama tugasan persediaan T3 ([`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md)). Jadual ini kecil; README §2.5 memberi kunci unik dan nota khasnya.
-3. Untuk setiap jadual isi **semua** lajur: Medan, Jenis, NULL, Lalai, Kunci/Index, FK →, Peraturan/enum, Keterangan. Gunakan `slot_bookings` dalam README §2.2 sebagai contoh.
-4. Isi lajur **Peraturan** dengan rujukan BR, cth:
-   - `pass_documents.mime` → `application/pdf`, `image/jpeg`, `image/png` (BR-PAS-02)
-   - `pass_documents.size_bytes` → ≤ 2,097,152 (BR-PAS-02)
-   - `status_logs.remarks` → wajib ≥ 10 aksara jika `to_status = rejected` — kedua-dua modul: BR-PAS-03 untuk Pas, SPEC §9 untuk penolakan tempahan TLK
-5. Isi bahagian **Peraturan ON DELETE** (README §2.3) — anda boleh bersetuju atau tidak dengan cadangan, tetapi **tulis sebab**.
-6. **Latihan normalisasi (25 minit):** Dalam bahagian `## Normalisasi`, ambil hamparan Pas di bawah (data rekaan) dan normalkan ke 3NF. Tunjukkan jadual yang terhasil pada setiap langkah 1NF → 2NF → 3NF.
-
-   | No Rujukan | Nama Pemohon | No Staf | Kod Jabatan | Nama Jabatan | Jenis Pas | Plat | Model Kenderaan | Dok 1 | Dok 2 | Dok 3 | Status | Disemak Oleh | Dilulus Oleh |
-   |------------|--------------|---------|-------------|--------------|-----------|------|-----------------|-------|-------|-------|--------|--------------|--------------|
-   | PAS-2026-0001 | Aminah Latihan | S1001 | JKP | Jabatan Kejururawatan | kenderaan | WXX 1234 | Myvi | geran.pdf | ic.jpg | | approved | Faizal | Noraini |
-   | PAS-2026-0002 | Chong Rekaan | — | — | — | kontraktor | | | lantikan.pdf | ic.png | permit.pdf | under_review | Faizal | |
-
-7. Tulis satu perenggan: **"Jadual SPEC mana yang terhasil daripada normalisasi ini, dan mana yang tidak (dan kenapa)?"** (Petunjuk: `status_logs` dan `reference_sequences` tidak muncul dari normalisasi — ia muncul dari keperluan audit dan nombor rujukan.)
-8. Commit: `SETUP: kamus data + normalisasi 3NF`.
-
-### ✅ Checkpoint
-- [ ] 5 jadual teras (`parking_slots`, `slot_bookings`, `pass_applications`, `pass_documents`, `status_logs`) dalam kamus data; tiada sel kosong dalam lajur Jenis dan NULL. Baki 5 jadual dijadualkan sebelum Hari 4.
-- [ ] Setiap FK mempunyai peraturan `ON DELETE` dan sebab.
-- [ ] Semua medan UNIQUE dalam 5 jadual teras (termasuk komposit `(zone_id, slot_no)`) disenaraikan; `(prefix, year)` ditambah bersama `reference_sequences` sebelum Hari 4.
-- [ ] Latihan normalisasi menghasilkan sekurang-kurangnya `users`, `departments`, `vehicles`, `pass_applications`, `pass_documents`.
-- [ ] Jenis & panjang sepadan SPEC (cth `pass_documents.mime` VARCHAR(80), `status_logs.module` VARCHAR(5)).
-
-### 🧯 Masalah lazim
-| Gejala | Punca | Penyelesaian |
-|--------|-------|--------------|
-| `Dok 1/2/3` dijadikan 3 lajur dalam `pass_applications` | Tidak mengenal kumpulan berulang | 1NF: kumpulan berulang → jadual anak `pass_documents` |
-| "Disemak Oleh" dijadikan teks nama | Menyimpan nilai, bukan rujukan | FK `reviewed_by` → `users.id` |
-| Tidak pasti NULL atau tidak | Keperluan tidak jelas | Tanya: "Adakah nilai ini wujud **pada saat rekod dicipta**?" `decided_at` tidak → NULL |
-| Kontraktor tiada no staf — pecahkan UNIQUE? | UNIQUE vs NULL | MySQL membenarkan banyak NULL dalam lajur UNIQUE — sebab itu `staff_no` UNIQUE **NULL** |
-
-### ⭐ Cabaran tambahan
-Anggarkan saiz data selepas 3 tahun (200 tempahan TLK + 500 permohonan pas setahun, purata 2 dokumen, purata 3 log status setiap rekod). Berapa baris `status_logs`? Adakah `INDEX(module, record_id)` perlu? Terangkan.
-
----
-
-## Lab 3.3 — Wireframe 6 Skrin Utama
-
-### 🎯 Objektif
-Melakar wireframe kesetiaan rendah bagi 6 skrin utama mengikut aliran pengguna to-be, dengan setiap medan dipetakan ke kamus data.
-
-### Prasyarat
-- `docs/carta-alir.md` (to-be) dan `docs/kamus-data.md`.
-- draw.io (<https://app.diagrams.net>) atau Excalidraw (<https://excalidraw.com>) — atau kertas + foto.
-- Baca README §3.
-
-### Langkah
-1. Cipta `docs/wireframe/` dan `docs/wireframe.md`. Dalam `wireframe.md` tampal jadual 6 skrin (README §3.3) dan carta aliran pengguna (README §3.2).
-2. **Lakar layout induk dahulu (10 minit):** bar navigasi (menu ikut peranan), breadcrumb, kawasan kandungan, kawasan flash message. Semua skrin guna layout ini (Hari 4 ia menjadi `app/Views/layouts/main.php`).
-3. **Lakar 6 skrin (60 minit — ~10 minit setiap satu).** Setiap skrin mesti ada:
-   - Tajuk skrin + breadcrumb
-   - Semua medan/lajur (nama BM) — dipetakan ke medan kamus data
-   - Butang tindakan (ikut peranan)
-   - Ruang mesej ralat **dan** keadaan kosong
-   - Nota di tepi: `URL`, `Peranan`, `FR`
-
-   | Skrin | Wajib ada |
-   |-------|-----------|
-   | W1 Senarai tempahan saya | Lajur: No Rujukan, Slot, Tarikh, Status (badge BM), Tindakan (Batal hanya jika Diluluskan); pagination; butang "Mohon baharu" |
-   | W2 Borang tempahan | Zon (filter senarai Slot sahaja — tidak disimpan; zon diterbitkan melalui `slot_id → parking_slots.zone_id`), Slot (aktif sahaja), Kenderaan, Tarikh mula, Tarikh tamat, Sebab; nota had 90 hari & 1 tempahan aktif |
-   | W3 Keputusan TLK | Senarai tempahan; filter status (lalai Menunggu); butang Lulus/Tolak + catatan |
-   | W4 Borang pas | Jenis pas, Kenderaan (muncul jika `kenderaan`), Tujuan, Sah dari/hingga, 3 slot muat naik + nota format/saiz |
-   | W5 Semakan pas | Butiran, senarai dokumen (muat turun), garis masa `status_logs`, catatan, butang ikut peranan |
-   | W6 Dashboard statistik | 4 kad KPI + 4 kawasan carta (SPEC §2.4) |
-
-4. Eksport setiap skrin sebagai PNG: `docs/wireframe/W1-senarai-tempahan.png`, `W2-borang-tempahan.png`, `W3-keputusan-tlk.png`, `W4-borang-pas.png`, `W5-semakan-pas.png`, `W6-dashboard-statistik.png`. Simpan juga fail sumber (`.drawio` / `.excalidraw`).
-5. Pautkan imej dalam `docs/wireframe.md`:
-   ```markdown
-   ### W2 — Borang tempahan TLK
-   URL: `/tlk/tempahan/new` · Peranan: `applicant` · FR: FR-TLK-01, 03, 04, 05
-   ![W2](wireframe/W2-borang-tempahan.png)
-   Medan dijana sistem (bukan input): `ref_no`, `user_id`, `status`
-   ```
-6. **Ujian jalan kertas (10 minit):** Seorang dari pasangan lain berlakon sebagai `pemohon1` dan "klik" melalui W1 → W2 → W1 menggunakan lakaran anda. Catat di mana dia keliru.
-7. Commit: `SETUP: wireframe 6 skrin utama`.
-
-### ✅ Checkpoint
-- [ ] 6 fail PNG + sumber dalam `docs/wireframe/`.
-- [ ] Setiap medan borang W2 dan W4 wujud dalam `docs/kamus-data.md` (kecuali Zon di W2 — penapis paparan, ditanda "tidak disimpan").
-- [ ] W2 dan W4 **tidak** mengandungi `user_id`, `status` atau `ref_no` sebagai input.
-- [ ] Label status BM tepat: Menunggu, Diluluskan, Ditolak, Dibatalkan, Tamat Tempoh, Dihantar, Dalam Semakan.
-- [ ] W5 menunjukkan butang berbeza untuk `reviewer` dan `approver`.
-- [ ] Ujian jalan kertas dijalankan; sekurang-kurangnya 1 penambahbaikan dibuat.
-
-### 🧯 Masalah lazim
-| Gejala | Punca | Penyelesaian |
-|--------|-------|--------------|
-| Terlalu lama pada satu skrin | Menghias (warna, ikon, fon) | Kotak kelabu & teks sahaja. Had 10 minit setiap skrin |
-| Medan dalam wireframe tiada dalam DB | Reka UI sebelum semak kamus data | Sama ada buang medan, atau buka CR (jangan tambah medan senyap) |
-| Draw.io tidak dapat dibuka (rangkaian) | Sekatan internet | Guna aplikasi desktop draw.io atau kertas + foto telefon |
-| Dashboard W6 kosong kerana "belum tahu data" | Keliru | Lakar kotak berlabel: "Carta bar: tempahan ikut bulan" — cukup |
-
-### ⭐ Cabaran tambahan
-Lakar skrin ke-7: **W7 Laporan RPT-01** (`/laporan/tempahan`) dengan borang filter GET (julat tarikh, zon, kategori, status), jadual berpagination, dan butang Eksport PDF / Excel (SPEC §2.3).
-
----
-
-## Lab 3.4 — Semakan Silang Reka Bentuk
-
-### 🎯 Objektif
-Menyemak ERD dan wireframe pasangan lain menggunakan senarai semak, membetulkan reka bentuk sendiri, dan memahami tugasan persediaan.
-
-### Prasyarat
-- Lab 3.1–3.3 siap.
-- README §4.1–4.2.
-
-### Langkah
-1. Cipta `docs/semakan-reka-bentuk.md`:
-   ```markdown
-   # Semakan Reka Bentuk — Hari 3
-   Disemak oleh: Pasangan __ · Tarikh: 2026-__-__
-
-   | # | Semakan | Lulus/Gagal | Catatan |
-   |---|---------|-------------|---------|
-   | E1 | 10 jadual, nama tepat | | |
-   ...
-   | U6 | W4 papar had fail | | |
-
-   ## Pembetulan yang dibuat
-   | # | Apa diubah | Fail | Commit |
-   ```
-2. **Semakan silang (20 minit):** Tukar laptop dengan pasangan lain. Semak ERD & wireframe mereka dengan senarai E1–E8 dan U1–U6. Isi dalam fail **mereka**.
-3. **Semakan jurulatih (bergilir):** Jurulatih memilih 2 item secara rawak dan meminta anda **menerangkan** (cth "Kenapa `vehicle_id` NULL di sini?").
-4. **Betulkan (20 minit):** Pulang ke laptop sendiri. Betulkan setiap item "Gagal". Rekod dalam jadual "Pembetulan".
-5. Baca [`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md) bersama pasangan. Tulis sebarang soalan di hujung `docs/soalan-terbuka.md`.
-6. Commit dan tag:
+1. **Semak MySQL:**
    ```bash
-   git add docs/ && git commit -m "SETUP: semakan reka bentuk Hari 3"
-   git tag reka-bentuk-v1.0
+   mysql --version
    ```
+   `mysql: command not found`? Laragon → *Menu → Tools → Path → Add Laragon to Path*, tutup VS Code dan buka semula.
+2. **Cipta database & pengguna** (sekali sahaja; langkau jika anda sudah buat [`persediaan.md`](../docs/persediaan.md) §4). Laragon: pengguna `root` tanpa kata laluan:
+   ```bash
+   mysql -u root <<'SQL'
+   CREATE DATABASE IF NOT EXISTS kkm_latihan      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE DATABASE IF NOT EXISTS kkm_latihan_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE USER IF NOT EXISTS 'kkm_dev'@'localhost' IDENTIFIED BY 'Latihan@2026';
+   GRANT ALL PRIVILEGES ON kkm_latihan.*      TO 'kkm_dev'@'localhost';
+   GRANT ALL PRIVILEGES ON kkm_latihan_test.* TO 'kkm_dev'@'localhost';
+   FLUSH PRIVILEGES;
+   SQL
+   mysql -u kkm_dev -p -e "SHOW DATABASES LIKE 'kkm_latihan%';"
+   ```
+   Kata laluan `Latihan@2026`. Output menyenaraikan `kkm_latihan` dan `kkm_latihan_test`. Data latihan sahaja — **jangan** guna kata laluan sebenar.
+3. **Sambung `.env`.** Buka `.env` dalam VS Code dan tambah di bawah `CI_ENVIRONMENT`:
+   ```ini
+   app.baseURL = 'http://localhost:8080/'
+   app.appTimezone = 'Asia/Kuala_Lumpur'
+
+   database.default.hostname = localhost
+   database.default.database = kkm_latihan
+   database.default.username = kkm_dev
+   database.default.password = Latihan@2026
+   database.default.DBDriver = MySQLi
+   database.default.DBPrefix =
+   database.default.port = 3306
+   database.default.charset = utf8mb4
+   database.default.DBCollat = utf8mb4_unicode_ci
+   ```
+4. **Uji connection:**
+   ```bash
+   php spark db:table --show
+   ```
+   Database baharu masih kosong: CI mencetak *Database has no tables!* — itu tanda connection **berjaya**. Ralat *Unable to connect* bermaksud `.env` salah.
+5. **`.env` kekal rahsia:**
+   ```bash
+   git status --short
+   git check-ignore -v .env
+   ```
+   `git status` tidak menyenaraikan `.env`; `git check-ignore` menunjukkan baris `.gitignore` yang mengabaikannya. Tiada fail untuk di-commit dalam lab ini.
 
 ### ✅ Checkpoint
-- [ ] Semua 14 item (E1–E8, U1–U6) bertanda Lulus selepas pembetulan.
-- [ ] Anda boleh menerangkan mana-mana medan dalam ERD kepada jurulatih tanpa melihat nota.
-- [ ] `git tag` menunjukkan `urs-v1.0` dan `reka-bentuk-v1.0`.
-- [ ] Anda tahu 4 tugasan persediaan dan tarikh akhirnya (Hari 4, 08:30).
+- [ ] `SHOW DATABASES LIKE 'kkm_latihan%'` sebagai `kkm_dev` menyenaraikan dua database (Kuiz hari).
+- [ ] `php spark db:table --show` mencetak *Database has no tables!* tanpa ralat connection (Kuiz hari).
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| Penyemak "lulus semua" dengan cepat | Tidak benar-benar menyemak | Jurulatih memilih rawak 2 item untuk disahkan semula |
-| Bertengkar tentang pilihan `ON DELETE` | Kedua-dua pihak ada logik | Terima jika sebab ditulis; SPEC tidak mengunci `ON DELETE` |
-| Tidak sempat betulkan wireframe | Masa | Utamakan ERD & kamus data — esok ia menjadi migration |
+| `ERROR 2003 … Can't connect to MySQL server` | MySQL Laragon belum dimulakan | Laragon → **Start All**; tunggu MySQL hijau |
+| `ERROR 1045 Access denied for user 'root'` | MySQL root ada kata laluan (bukan Laragon lalai) | `mysql -u root -p` dan masukkan kata laluan root anda |
+| `mysql` tergantung tanpa prompt | Tetingkap Git Bash berasingan (mintty) | Guna terminal VS Code, atau `winpty mysql -u kkm_dev -p` |
+| `Unable to connect to the database` | Nilai `.env` salah atau `#` masih ada | Semak setiap baris `database.default.*`; cuba `hostname = 127.0.0.1` |
+| `Access denied for user 'kkm_dev'` | Kata laluan dalam `.env` tidak sama | Mesti `Latihan@2026` (huruf besar L) |
 
 ### ⭐ Cabaran tambahan
-Tulis draf **migration pertama** di atas kertas (pseudo-susunan): senaraikan urutan jadual yang mesti dicipta supaya setiap FK merujuk jadual yang sudah wujud. (Petunjuk: `departments` sebelum `users`? — `users` dicipta oleh Shield; medan tambahan ditambah kemudian.)
+Buka HeidiSQL (Laragon → butang **Database**), log masuk sebagai `kkm_dev` dan lihat kedua-dua database. Kenapa kursus ini tidak menggunakan `root` dalam `.env`?
+
+---
+
+## Lab 3.2 — Migration & seeder pertama (S2)
+
+### 🎯 Objektif
+Menulis migration bagi `departments` dan `parking_zones` **tepat** seperti spesifikasi §3, menguji `migrate` / `rollback`, dan mengisi data sintetik dengan seeder yang boleh dijalankan berulang kali.
+
+### Prasyarat
+- [Lab 3.1](#lab-31--database-mysql--env-s1) siap.
+- Buka [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §3 di sebelah.
+
+### Langkah
+1. **Jana dua migration** (tertib penting — cap masa menentukan tertib larian):
+   ```bash
+   php spark make:migration CreateDepartmentsTable
+   php spark make:migration CreateParkingZonesTable
+   ```
+2. **`CreateDepartmentsTable`** — isi fail yang dijana dalam `app/Database/Migrations/`:
+
+   Petunjuk: `$this->forge->addField([...])` dengan `id` INT 11 UNSIGNED `auto_increment`, `code` VARCHAR 20, `name` VARCHAR 150, `created_at`/`updated_at` DATETIME `null` → `addPrimaryKey('id')` → `addUniqueKey('code')` → `createTable('departments', false, ['ENGINE' => 'InnoDB'])`.
+
+   ```php
+   public function up(): void
+   {
+       // TODO: addField — id, code, name, created_at, updated_at
+       // TODO: addPrimaryKey, addUniqueKey('code'), createTable('departments', …)
+   }
+   public function down(): void { /* TODO: dropTable('departments', true) */ }
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.2-2](../docs/kod-rujukan-hari-3.md#32-2--createdepartmentstable)
+3. **`CreateParkingZonesTable`** — corak yang sama, medan ikut spesifikasi §3 (`code` VARCHAR(10) UNIQUE, `name` VARCHAR(100), `location` VARCHAR(150)):
+
+   Petunjuk: sama seperti `CreateDepartmentsTable`, medan `code` VARCHAR 10 UNIQUE, `name` VARCHAR 100, `location` VARCHAR 150.
+
+   ```php
+   public function up(): void
+   {
+       // TODO: addField — id, code, name, location, created_at, updated_at
+       // TODO: addPrimaryKey, addUniqueKey('code'), createTable('parking_zones', …)
+   }
+   public function down(): void { /* TODO: dropTable('parking_zones', true) */ }
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.2-3](../docs/kod-rujukan-hari-3.md#32-3--createparkingzonestable)
+4. **Jalankan, semak, undur, jalankan semula** (kitaran pendek):
+   ```bash
+   php spark migrate
+   php spark migrate:status
+   php spark db:table --show
+   php spark migrate:rollback
+   php spark migrate
+   php spark migrate:status
+   php spark db:table departments --metadata
+   ```
+   Catat **bilangan jadual** dalam `db:table --show` dan nilai lajur **Batch** selepas rollback + migrate — soalan Kuiz hari.
+5. **Seeder.** Jana tiga fail:
+   ```bash
+   php spark make:seeder DepartmentSeeder
+   php spark make:seeder ParkingSeeder
+   php spark make:seeder DatabaseSeeder
+   ```
+   `DepartmentSeeder` — `ignore(true)` menjadikan `INSERT IGNORE`, jadi larian kedua tidak menambah baris berganda:
+
+   Data (salin tepat — Kuiz hari bergantung padanya): `BTM` Bahagian Teknologi Maklumat (Latihan) · `BKW` Bahagian Kewangan (Latihan) · `BSM` Bahagian Sumber Manusia (Latihan) · `BPA` Bahagian Pengurusan Aset (Latihan). Isi `created_at` dan `updated_at` dengan `date('Y-m-d H:i:s')`.
+
+   ```php
+   public function run(): void
+   {
+       $rows = [/* TODO: 4 jabatan di atas + created_at/updated_at */];
+       // TODO: table('departments')->ignore(true)->insertBatch($rows)
+   }
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.2-5a](../docs/kod-rujukan-hari-3.md#32-5a--departmentseeder)
+   `ParkingSeeder` — tiga zon (Hari 4 menambah slot dalam fail yang sama):
+
+   Data (salin tepat): `A` Blok Utama — *Aras G, pintu masuk utama* · `B` Blok Klinik — *Sebelah klinik pakar* · `C` Parkir Bertingkat — *Aras 1–3, bangunan parkir*.
+
+   ```php
+   public function run(): void
+   {
+       $zones = [/* TODO: zon A, B, C di atas + created_at/updated_at */];
+       // TODO: table('parking_zones')->ignore(true)->insertBatch($zones)
+   }
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.2-5b](../docs/kod-rujukan-hari-3.md#32-5b--parkingseeder)
+   `DatabaseSeeder` — memanggil seeder lain mengikut tertib:
+
+   Petunjuk: `$this->call(DepartmentSeeder::class)` — induk dahulu.
+
+   ```php
+   public function run(): void
+   {
+       // TODO: $this->call(DepartmentSeeder::class) dan ParkingSeeder
+   }
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.2-5c](../docs/kod-rujukan-hari-3.md#32-5c--databaseseeder)
+6. **Jalankan dua kali** (ujian idempoten):
+   ```bash
+   php spark db:seed DatabaseSeeder
+   php spark db:seed DatabaseSeeder
+   php spark db:table departments
+   ```
+   `departments` mesti ada **4** baris, bukan 8.
+7. Commit dan push:
+   ```bash
+   git add . && git commit -m "DB: migration departments + parking_zones, seeder" && git push
+   ```
+
+### ✅ Checkpoint
+- [ ] `php spark migrate:status` menunjukkan 2 migration `App` dengan tarikh *Migrated On* (Kuiz hari).
+- [ ] Selepas `db:seed` dua kali, `departments` ada 4 baris dan `parking_zones` 3 baris (Kuiz hari).
+- [ ] GitLab menunjukkan commit `DB: migration departments + parking_zones, seeder` (Kuiz hari).
+
+### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `migrate` tidak buat apa-apa | Kelas dalam fail tidak sama dengan nama fail, atau namespace salah | Nama kelas = bahagian selepas cap masa (`CreateDepartmentsTable`); namespace `App\Database\Migrations` |
+| `Table 'departments' already exists` | Jadual dicipta manual atau migration dijalankan dua kali dengan cap masa berbeza | `php spark migrate:rollback`, padam fail berganda, `php spark migrate` |
+| `Duplicate entry 'BTM' for key 'code'` pada larian kedua | `ignore(true)` tertinggal | `$this->db->table('departments')->ignore(true)->insertBatch($rows)` |
+| `Class "App\Database\Seeds\DepartmentSeeder" not found` | Nama fail ≠ nama kelas | Fail `DepartmentSeeder.php`, kelas `DepartmentSeeder` |
+
+### ⭐ Cabaran tambahan
+Jalankan `php spark migrate:refresh` kemudian `php spark db:seed DatabaseSeeder`. Apa yang `refresh` lakukan, dan kenapa ia **tidak boleh** dijalankan pada database production?
+
+---
+
+## Lab 3.3 — Model & halaman `/jabatan` (S3)
+
+### 🎯 Objektif
+Membina `DepartmentModel` dengan `$allowedFields`, `$useTimestamps` dan validation, kemudian halaman `/jabatan` (senarai) dan `/jabatan/baharu` (borang) menggunakan layout dan corak PRG dari Lab 2.4.
+
+### Prasyarat
+- [Lab 3.2](#lab-32--migration--seeder-pertama-s2) siap: `departments` ada 4 baris.
+
+### Langkah
+1. **Model** `app/Models/DepartmentModel.php`:
+
+   Jana fail: `php spark make:model DepartmentModel`. Petunjuk: `$allowedFields = ['code', 'name']`; `$useTimestamps = true`; rule `code` = `required|alpha_numeric|max_length[20]|is_unique[departments.code,id,{id}]` (label `Kod`), `name` = `required|min_length[3]|max_length[150]` (label `Nama`).
+
+   ```php
+   class DepartmentModel extends Model
+   {
+       // TODO: $table, $returnType = 'array', $allowedFields, $useTimestamps
+       // TODO: $validationRules — code (label Kod) & name (label Nama)
+   }
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.3-1](../docs/kod-rujukan-hari-3.md#33-1--departmentmodel)
+   - `$allowedFields` — hanya medan ini boleh diisi dari input (mass assignment selamat).
+   - `$useTimestamps` — `created_at`/`updated_at` diisi automatik.
+   - `is_unique[departments.code,id,{id}]` — kod mesti unik (kecuali rekod sendiri semasa kemas kini).
+2. **Route** dalam `app/Config/Routes.php`:
+   ```php
+   $routes->get('jabatan', 'Jabatan::index');
+   $routes->get('jabatan/baharu', 'Jabatan::baharu');
+   $routes->post('jabatan', 'Jabatan::simpan');
+   ```
+3. **Controller** `app/Controllers/Jabatan.php`:
+
+   Jana fail: `php spark make:controller Jabatan`. Petunjuk: `model(DepartmentModel::class)->orderBy('code')->findAll()`; `$this->request->getPost(['code', 'name'])`; `insert()` memulangkan `false` bila gagal → `redirect()->to('jabatan/baharu')->withInput()->with('errors', $model->errors())`; berjaya → `redirect()->to('jabatan')->with('berjaya', 'Jabatan ' . $data['code'] . ' disimpan.')`.
+
+   ```php
+   class Jabatan extends BaseController
+   {
+       protected $helpers = ['form'];
+       // TODO: index() — senarai ikut code; baharu() — borang
+       // TODO: simpan() — insert(); gagal → withInput + errors; berjaya → flash
+   }
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.3-3](../docs/kod-rujukan-hari-3.md#33-3--jabatan)
+   Validation berlaku dalam **model**: `insert()` memulangkan `false` dan `$model->errors()` memberi mesej ikut medan.
+4. **View senarai** `app/Views/jabatan/index.php`:
+
+   Petunjuk: sama seperti `daftar.php` (Lab 2.4): `session()->getFlashdata('berjaya')`, `site_url('jabatan/baharu')`, setiap nilai melalui `esc()`.
+
+   ```php
+   <?= $this->extend('layout') ?>
+   <?= $this->section('content') ?>
+   <!-- TODO: h1, flash 'berjaya', pautan + Jabatan baharu -->
+   <!-- TODO: jadual Kod | Nama | Dicipta — foreach $jabatan, esc() -->
+   <?= $this->endSection() ?>
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.3-4](../docs/kod-rujukan-hari-3.md#33-4--jabatanindexphp)
+5. **View borang** `app/Views/jabatan/baharu.php`:
+
+   Petunjuk: input `name="code"` dan `name="name"` dengan `esc(old('code'))`; ralat medan `$errors['code']` / `$errors['name']` dalam `<span class="ralat">`.
+
+   ```php
+   <?= $this->extend('layout') ?>
+   <?= $this->section('content') ?>
+   <!-- TODO: $errors = session()->getFlashdata('errors') ?? [] -->
+   <!-- TODO: form POST jabatan + csrf_field(); code & name + old() + ralat -->
+   <?= $this->endSection() ?>
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.3-5](../docs/kod-rujukan-hari-3.md#33-5--jabatanbaharuphp)
+6. **Uji.** `php spark serve`, buka <http://localhost:8080/jabatan> (4 jabatan, susunan ikut kod). Klik **+ Jabatan baharu**:
+   - Hantar kosong → ralat Kod dan Nama.
+   - Hantar Kod `BTM` → catat mesej ralat **tepat** di bawah Kod (soalan Kuiz hari).
+   - Hantar Kod `BPP`, Nama `Bahagian Perolehan (Latihan)` → kembali ke senarai dengan *"Jabatan BPP disimpan."* dan lajur **Dicipta** berisi tarikh masa.
+7. Commit dan push:
+   ```bash
+   git add . && git commit -m "JABATAN: model, senarai & borang baharu" && git push
+   ```
+
+### ✅ Checkpoint
+- [ ] `/jabatan` menyenaraikan jabatan daripada database melalui `DepartmentModel` (Kuiz hari).
+- [ ] Kod berganda ditolak dengan mesej validation model; jabatan baharu disimpan dengan `created_at` automatik (Kuiz hari).
+- [ ] GitLab menunjukkan commit `JABATAN: model, senarai & borang baharu` (Kuiz hari).
+
+### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| *The Kod field is required.* walaupun Kod diisi | Atribut `name` dalam borang tidak sama dengan medan model | `name="code"` dan `name="name"` tepat, sama dengan `$allowedFields` |
+| Kod berganda tidak ditolak | `is_unique` tertinggal atau salah nama jadual | `is_unique[departments.code,id,{id}]` |
+| Ralat tidak dipaparkan | Lupa `->with('errors', $model->errors())` atau tiada `withInput()` | Ikut `simpan()` di atas |
+| Lajur Dicipta kosong | `$useTimestamps` tertinggal | `protected $useTimestamps = true;` |
+| *The action you requested is not allowed.* | Borang tanpa `csrf_field()` (CSRF global dari Lab 2.4) | Tambah `<?= csrf_field() ?>` |
+
+### ⭐ Cabaran tambahan
+Tambah `/jabatan/(:num)/edit` (GET borang terisi, POST `update($id, $data)`) dengan route dan view sendiri. Kenapa `{id}` dalam `is_unique` penting sekarang?
+
+---
+
+## Lab 3.4 — Carian & pagination zon (S4)
+
+### 🎯 Objektif
+Membina `/zon` secara **berdikari** dengan corak Lab 3.3: model `ParkingZoneModel` dengan kaedah carian Query Builder (`like()` / `orLike()` dalam `groupStart()`), borang carian `GET ?q=`, dan pagination.
+
+### Prasyarat
+- [Lab 3.3](#lab-33--model--halaman-jabatan-s3) siap.
+
+### Langkah
+1. **Model** `app/Models/ParkingZoneModel.php` dengan kaedah `cari()`:
+
+   Jana fail: `php spark make:model ParkingZoneModel`. Petunjuk: `$table = 'parking_zones'`, `$allowedFields = ['code', 'name', 'location']`, `$useTimestamps = true`; `trim((string) $q)`; `like('name', $q)`, `orLike('location', $q)`, `orLike('code', $q)`.
+
+   ```php
+   public function cari(?string $q): static
+   {
+       // TODO: jika $q tidak kosong: groupStart()->like()->orLike()->orLike()->groupEnd()
+       // TODO: return $this->orderBy('code');
+   }
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.4-1](../docs/kod-rujukan-hari-3.md#34-1--parkingzonemodel)
+2. **Controller** `app/Controllers/Zon.php` — 2 zon setiap halaman supaya pagination kelihatan dengan 3 zon:
+
+   Jana fail: `php spark make:controller Zon`. Petunjuk: `$model = model(ParkingZoneModel::class)`; hantar `'pager' => $model->pager` selepas `paginate()`.
+
+   ```php
+   public function index(): string
+   {
+       // TODO: $q dari getGet('q'); $zon = $model->cari($q)->paginate(2)
+       // TODO: view('zon/index', [zon, pager, q, tajuk])
+   }
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.4-2](../docs/kod-rujukan-hari-3.md#34-2--zon)
+3. **Route:**
+   ```php
+   $routes->get('zon', 'Zon::index');
+   ```
+4. **View** `app/Views/zon/index.php`:
+
+   Petunjuk: `<form method="get" action="<?= site_url('zon') ?>">`; `$zon === []` untuk tiada hasil (*Tiada zon sepadan dengan "…".*); `<?= $pager->links() ?>`.
+
+   ```php
+   <?= $this->extend('layout') ?>
+   <?= $this->section('content') ?>
+   <!-- TODO: borang GET zon dengan input q (value esc($q)) -->
+   <!-- TODO: tiada hasil → mesej; ada → jadual + $pager->links() -->
+   <?= $this->endSection() ?>
+   ```
+
+   Buntu lebih 10 minit? Kod rujukan penuh: [3.4-4](../docs/kod-rujukan-hari-3.md#34-4--zonindexphp)
+5. **Uji dan catat** (soalan Kuiz hari):
+   - <http://localhost:8080/zon> → halaman 1 (A, B) dan pautan ke halaman 2 (C).
+   - <http://localhost:8080/zon?q=KLINIK> (huruf besar) — zon mana dipaparkan?
+   - <http://localhost:8080/zon?q=aras> — pautan pagination masih membawa `q=aras`.
+   - Taip `' OR 1=1 --` dalam kotak carian — apa yang dipaparkan?
+6. Commit dan push:
+   ```bash
+   git add . && git commit -m "ZON: carian + pagination" && git push
+   ```
+
+### ✅ Checkpoint
+- [ ] `/zon` memaparkan 2 zon setiap halaman dengan pautan pagination (Kuiz hari).
+- [ ] Carian `?q=` menapis ikut nama, lokasi atau kod, dan input `' OR 1=1 --` tidak memecahkan query (Kuiz hari).
+- [ ] GitLab menunjukkan commit `ZON: carian + pagination` (Kuiz hari).
+
+### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| *Undefined variable $pager* | `pager` tidak dihantar ke view | `'pager' => $model->pager` selepas `paginate()` |
+| Carian memaparkan semua zon | `cari()` dipanggil pada model lain daripada yang `paginate()` | Guna `$model` yang sama: `$model->cari($q)->paginate(2)` |
+| Halaman 2 kehilangan carian | Borang `method="post"` | Carian guna `GET` supaya `?q=` kekal dalam URL |
+| `orLike` memadankan rekod luar carian bila ada syarat lain | Tiada `groupStart()` / `groupEnd()` | Balut `like()`/`orLike()` dalam kumpulan |
+
+### ⭐ Cabaran tambahan
+Paparkan bilangan hasil: *"3 zon dijumpai"* menggunakan `$pager->getTotal()`. Kemudian buka tab *Database* dalam Debug Toolbar: lihat query `LIKE` sebenar yang CI jana untuk `?q=aras`.
 
 ---
 
 ## Semakan kendiri — akhir hari
 
 ```bash
-ls docs/ docs/wireframe/
-# docs/: erd.md  kamus-data.md  semakan-reka-bentuk.md  wireframe.md  wireframe/ ... (fail Hari 1–2)
-# docs/wireframe/: W1-senarai-tempahan.png … W6-dashboard-statistik.png + fail sumber
-grep -cE '^[[:space:]]*[a-z_]+ \{' docs/erd.md   # 10
-grep -c '^## Jadual:' docs/kamus-data.md           # ≥ 5 (10 sebelum Hari 4)
-git log --oneline | wc -l
-git tag                                            # urs-v1.0  reka-bentuk-v1.0
+cd ~/latihan/kelas-ci-<nama>
+php spark migrate:status        # 2 migration App, Batch 1
+php spark db:table --show       # departments, migrations, parking_zones
+php spark routes                # jabatan (GET/POST), jabatan/baharu, zon
+git log --oneline | head -4     # ZON, JABATAN, DB, CI-ASAS
 ```
-
-- [ ] `ls docs/` menunjukkan `erd.md`, `kamus-data.md`, `wireframe.md`, `semakan-reka-bentuk.md` dan folder `wireframe/` dengan 6 PNG + sumber.
-- [ ] ERD dipaparkan tanpa ralat di mermaid.live; `grep` di atas mengira **10** jadual.
-- [ ] Kamus data: 5 jadual teras lengkap (tiada sel kosong dalam Jenis/NULL); baki 5 dijadualkan sebelum Hari 4, 08:30.
-- [ ] Bahagian `## Normalisasi` menunjukkan langkah 1NF → 2NF → 3NF.
-- [ ] `git log --oneline | wc -l` bertambah sekurang-kurangnya 4 berbanding akhir Hari 2 (ERD, kamus data, wireframe, semakan).
-- [ ] `git tag` menunjukkan `urs-v1.0` dan `reka-bentuk-v1.0`.
