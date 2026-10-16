@@ -102,6 +102,73 @@ Peraturan: jangan ubah migration yang sudah di-push — tulis migration baharu (
 | `php spark key:generate` | Jana `encryption.key` dalam `.env` |
 | `php spark phpini:check` | Semak tetapan `php.ini` penting (memory, upload) |
 
+## `php spark shell`
+
+Konsol interaktif seperti konsol JavaScript dalam browser: taip satu baris PHP, Enter, terus nampak hasilnya — dengan aplikasi CI4 sudah dimuatkan (model, `$db`, helper, service). CodeIgniter tidak menyediakannya; anda membinanya sekali dengan [PsySH](https://psysh.org) dan satu command.
+
+1. Pasang PsySH sebagai pakej **dev** sahaja:
+
+   ```bash
+   composer require --dev psy/psysh
+   ```
+
+2. Jana `php spark make:command Shell --command shell --group App`, kemudian ganti isi `app/Commands/Shell.php`:
+
+```php
+<?php
+
+namespace App\Commands;
+
+use CodeIgniter\CLI\BaseCommand;
+use CodeIgniter\CLI\CLI;
+use Psy\Configuration;
+use Psy\Shell as PsyShell;
+
+class Shell extends BaseCommand
+{
+    protected $group       = 'App';
+    protected $name        = 'shell';
+    protected $description = 'Konsol PHP interaktif (PsySH) dengan aplikasi CI4 dimuatkan.';
+
+    public function run(array $params)
+    {
+        if (ENVIRONMENT === 'production' || ! class_exists(PsyShell::class)) {
+            CLI::error('shell: development sahaja (composer require --dev psy/psysh).');
+
+            return EXIT_ERROR;
+        }
+
+        $shell = new PsyShell(new Configuration(['updateCheck' => 'never']));
+        $shell->setScopeVariables(['db' => db_connect()]);
+        $shell->run();
+    }
+}
+```
+
+3. Cuba:
+
+```text
+php spark shell
+> model(App\Models\DepartmentModel::class)->findAll()
+> model(App\Models\ParkingZoneModel::class)->cari('klinik')->findAll()
+> $db->table('parking_zones')->countAll()
+> $db->getLastQuery()->getQuery()
+> esc('<b>x</b>')
+> exit
+```
+
+| Perlu | Guna |
+|-------|------|
+| Menguji model, query, validation, helper tanpa browser | `php spark shell` |
+| PHP biasa tanpa CI (fungsi, `date()`, regex) | `php -a` |
+| Seperti `console.log` dalam halaman | `d($pembolehubah)` (Kint, terlipat dalam browser); `dd(...)` = papar dan berhenti |
+| Rekod nilai tanpa mengganggu halaman | `log_message('debug', json_encode($x))` → `writable/logs/` |
+| Query SQL, masa, pembolehubah setiap request | Debug Toolbar (development) |
+
+- Command menolak `ENVIRONMENT = production` dan berhenti jika PsySH tiada — `--dev` bermakna PsySH tidak dipasang di server.
+- `$db` menggunakan connection `default` (`kkm_latihan`); data yang anda ubah di sini **benar-benar berubah**.
+- 🪟 Belum diuji pada Laragon: jika prompt tergantung dalam Git Bash (mintty), guna terminal VS Code atau `winpty php spark shell`. Sejarah/anak panah mungkin tidak berfungsi pada Windows.
+
 ## Urutan biasa untuk satu ciri baharu
 
 ```bash

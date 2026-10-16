@@ -314,6 +314,8 @@ Build `DepartmentModel` with `$allowedFields`, `$useTimestamps` and validation, 
 ### ⭐ Bonus challenge
 Add `/jabatan/(:num)/edit` (GET a filled form, POST `update($id, $data)`) with its own routes and view. Why does `{id}` in `is_unique` matter now?
 
+⭐ **Interactive console:** build `php spark shell` ([spark commands](../docs/arahan-spark.md#php-spark-shell)), then try `model(App\Models\DepartmentModel::class)->insert(['code' => 'UJI', 'name' => 'Ujian'])` twice and read `->errors()` — the same message as in the `/jabatan` form?
+
 ---
 
 ## Lab 3.4 — Zone search & pagination (S4)

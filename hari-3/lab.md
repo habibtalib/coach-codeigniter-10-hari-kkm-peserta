@@ -314,6 +314,8 @@ Membina `DepartmentModel` dengan `$allowedFields`, `$useTimestamps` dan validati
 ### ⭐ Cabaran tambahan
 Tambah `/jabatan/(:num)/edit` (GET borang terisi, POST `update($id, $data)`) dengan route dan view sendiri. Kenapa `{id}` dalam `is_unique` penting sekarang?
 
+⭐ **Konsol interaktif:** bina `php spark shell` ([Arahan spark](../docs/arahan-spark.md#php-spark-shell)), kemudian cuba `model(App\Models\DepartmentModel::class)->insert(['code' => 'UJI', 'name' => 'Ujian'])` dua kali dan baca `->errors()` — mesej yang sama seperti dalam borang `/jabatan`?
+
 ---
 
 ## Lab 3.4 — Carian & pagination zon (S4)

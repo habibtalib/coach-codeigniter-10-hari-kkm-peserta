@@ -102,6 +102,73 @@ Rule: never change a migration that has been pushed — write a new migration (`
 | `php spark key:generate` | Generates `encryption.key` in `.env` |
 | `php spark phpini:check` | Checks the important `php.ini` settings (memory, upload) |
 
+## `php spark shell`
+
+An interactive console like the browser's JavaScript console: type one line of PHP, press Enter, see the result straight away — with the CI4 app already loaded (models, `$db`, helpers, services). CodeIgniter doesn't ship one; you build it once with [PsySH](https://psysh.org) and one command.
+
+1. Install PsySH as a **dev** package only:
+
+   ```bash
+   composer require --dev psy/psysh
+   ```
+
+2. Generate `php spark make:command Shell --command shell --group App`, then replace the contents of `app/Commands/Shell.php`:
+
+```php
+<?php
+
+namespace App\Commands;
+
+use CodeIgniter\CLI\BaseCommand;
+use CodeIgniter\CLI\CLI;
+use Psy\Configuration;
+use Psy\Shell as PsyShell;
+
+class Shell extends BaseCommand
+{
+    protected $group       = 'App';
+    protected $name        = 'shell';
+    protected $description = 'Konsol PHP interaktif (PsySH) dengan aplikasi CI4 dimuatkan.';
+
+    public function run(array $params)
+    {
+        if (ENVIRONMENT === 'production' || ! class_exists(PsyShell::class)) {
+            CLI::error('shell: development sahaja (composer require --dev psy/psysh).');
+
+            return EXIT_ERROR;
+        }
+
+        $shell = new PsyShell(new Configuration(['updateCheck' => 'never']));
+        $shell->setScopeVariables(['db' => db_connect()]);
+        $shell->run();
+    }
+}
+```
+
+3. Try it:
+
+```text
+php spark shell
+> model(App\Models\DepartmentModel::class)->findAll()
+> model(App\Models\ParkingZoneModel::class)->cari('klinik')->findAll()
+> $db->table('parking_zones')->countAll()
+> $db->getLastQuery()->getQuery()
+> esc('<b>x</b>')
+> exit
+```
+
+| Need | Use |
+|-------|------|
+| Testing models, queries, validation, helpers without a browser | `php spark shell` |
+| Plain PHP without CI (functions, `date()`, regex) | `php -a` |
+| Like `console.log` in a page | `d($variable)` (Kint, collapsible in the browser); `dd(...)` = dump and stop |
+| Recording a value without disturbing the page | `log_message('debug', json_encode($x))` → `writable/logs/` |
+| SQL queries, timing, variables for each request | Debug Toolbar (development) |
+
+- The command refuses `ENVIRONMENT = production` and stops if PsySH is missing — `--dev` means PsySH is not installed on the server.
+- `$db` uses the `default` connection (`kkm_latihan`); data you change here **really changes**.
+- 🪟 Not yet tested on Laragon: if the prompt hangs in Git Bash (mintty), use the VS Code terminal or `winpty php spark shell`. History/arrow keys may not work on Windows.
+
 ## The usual order for a new feature
 
 ```bash
