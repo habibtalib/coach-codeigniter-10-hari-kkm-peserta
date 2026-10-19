@@ -17,7 +17,7 @@ php spark make:model --help
 | `php spark list` | Lists every command, by group (`Database`, `Generators`, `Shield`, …) |
 | `php spark help <command>` | Arguments and options (`--table`, `--force`, …) for one command |
 
-- **Generators only create a skeleton.** The new file holds an empty class with `// TODO` or `//` — you still write the body yourself.
+- **Generators only create a skeleton.** The new file holds an empty class with `// TODO` or `//` — the body comes from the lab.
 - **Existing files are not overwritten.** The command prints `File exists` and stops. `--force` overwrites — never use it on a file you have already changed.
 - **Full names, no `--suffix`.** This course writes full class names: `DepartmentModel`, `DepartmentSeeder`, `RoleFilter`. The `--suffix` option appends `Model`/`Seeder`/`Controller` automatically, but for controllers that gives `JabatanController`, not `Jabatan` as in the labs.
 

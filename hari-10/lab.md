@@ -65,13 +65,16 @@ use DateTimeImmutable;
 class StatisticsService
 {
     public const CACHE_KEY = 'stat_dashboard';
-    public const CACHE_TTL = 600;
+
+    public const CACHE_TTL = 600; // saat = 10 minit (SPEC §2.4)
 
     private const MONTHS_BM = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'];
 
     private BaseConnection $db;
+
     private DateTimeImmutable $now;
 
+    /** $now boleh disuntik dalam ujian supaya keputusan tidak bergantung pada tarikh hari ini. */
     public function __construct(?BaseConnection $db = null, ?DateTimeImmutable $now = null, private ?ReportService $reports = null)
     {
         $this->db      = $db ?? db_connect();
@@ -79,44 +82,109 @@ class StatisticsService
         $this->reports ??= new ReportService($this->db);
     }
 
+    /**
+     * Pintu masuk tunggal untuk controller.
+     *
+     * @return array{generated_at: string, kpi: array<string, int|float|null>, charts: array<string, array>}
+     */
     public function dashboard(): array
     {
         return $this->build();          // Lab 10.2 akan membalut dengan cache()->remember()
     }
 
+    /** Kira semua data TANPA cache (public supaya boleh diuji terus). */
     public function build(): array
     {
         return [
             'generated_at' => $this->now->format('d/m/Y H:i:s'),
-            'kpi'    => [ /* 4 KPI */ ],
-            'charts' => [ /* 4 dataset */ ],
+            'kpi'          => [
+                'active_bookings'     => $this->activeBookings(),
+                'slot_utilisation'    => $this->slotUtilisationToday(),
+                'pending_passes'      => $this->pendingPasses(),
+                'avg_days_to_approve' => $this->avgDaysToApprove(),
+            ],
+            'charts' => [
+                'bookings_by_month' => $this->bookingsByMonth(),
+                'pass_status'       => $this->passStatus(),
+                'usage_by_zone'     => $this->usageByZone(),
+                'pass_trend'        => $this->passTrend12Months(),
+            ],
         ];
     }
 }
 ```
 
-**3. Tulis 4 KPI** sebagai kaedah peribadi. Semak takrif di README §1.1. Dua contoh:
+`build()` memanggil 8 kaedah peribadi yang anda tambah dalam langkah 3–4, **dalam kelas ini, sebelum `}` terakhir**. Halaman hanya berfungsi selepas langkah 4.
+
+**3. Tulis 4 KPI** sebagai kaedah peribadi. Semak takrif di README §1.1. Tambah keempat-empatnya:
+
+`app/Services/StatisticsService.php`
 
 ```php
-private function activeBookings(): int
-{
-    return $this->db->table('slot_bookings')
-        ->whereIn('status', BookingStatus::active())     // ['pending', 'approved'] — BR-TLK-04
-        ->countAllResults();
-}
+    // ------------------------------------------------------------------
+    // KPI
+    // ------------------------------------------------------------------
 
-private function avgDaysToApprove(): ?float
-{
-    $row = $this->db->table('pass_applications')
-        ->select('AVG(TIMESTAMPDIFF(HOUR, created_at, approved_at)) / 24 AS avg_days', false)
-        ->where('approved_at IS NOT NULL')
-        ->get()->getRowArray();
+    /** Tempahan aktif = pending + approved (takrif sama seperti BR-TLK-04). */
+    private function activeBookings(): int
+    {
+        return $this->db->table('slot_bookings')
+            ->whereIn('status', BookingStatus::active())   // ['pending', 'approved']
+            ->countAllResults();
+    }
 
-    return isset($row['avg_days']) ? round((float) $row['avg_days'], 1) : null;
-}
+    /** Kadar penggunaan slot HARI INI (%) = slot berbeza yang diduduki ÷ slot aktif × 100. */
+    private function slotUtilisationToday(): float
+    {
+        $today = $this->now->format('Y-m-d');
+
+        $activeSlots = $this->db->table('parking_slots')
+            ->where('is_active', 1)
+            ->where('deleted_at', null)
+            ->countAllResults();
+
+        if ($activeSlots === 0) {
+            return 0.0;
+        }
+
+        // distinct() + countAllResults() → CI4 membungkus sebagai subquery: COUNT(*) FROM (SELECT DISTINCT slot_id ...)
+        $occupied = $this->db->table('slot_bookings')
+            ->select('slot_id')
+            ->distinct()
+            ->where('status', BookingStatus::Approved->value)
+            ->where('start_date <=', $today)
+            ->where('end_date >=', $today)
+            ->countAllResults();
+
+        return round($occupied / $activeSlots * 100, 1);
+    }
+
+    /** Permohonan pas menunggu tindakan = submitted + under_review. */
+    private function pendingPasses(): int
+    {
+        return $this->db->table('pass_applications')
+            ->whereIn('status', [PassStatus::Submitted->value, PassStatus::UnderReview->value])
+            ->countAllResults();
+    }
+
+    /**
+     * Purata hari untuk lulus pas = AVG(approved_at − created_at).
+     * Guna approved_at IS NOT NULL (bukan status = approved) supaya pas yang kini 'expired'
+     * tetapi pernah diluluskan tetap dikira. Jam ÷ 24 → pecahan hari yang lebih tepat.
+     */
+    private function avgDaysToApprove(): ?float
+    {
+        $row = $this->db->table('pass_applications')
+            ->select('AVG(TIMESTAMPDIFF(HOUR, created_at, approved_at)) / 24 AS avg_days', false)
+            ->where('approved_at IS NOT NULL')
+            ->get()
+            ->getRowArray();
+
+        return isset($row['avg_days']) ? round((float) $row['avg_days'], 1) : null; // null = tiada data lagi
+    }
 ```
 
-Tulis sendiri `slotUtilisationToday()` (petunjuk: `->select('slot_id')->distinct()->...->countAllResults()`) dan `pendingPasses()`.
+`slotUtilisationToday()` menggunakan `->select('slot_id')->distinct()->...->countAllResults()`: slot yang ditempah dua kali hari ini dikira sekali sahaja.
 
 **4. Tulis 4 dataset carta.** Format seragam `['labels' => [...], 'data' => [...]]`:
 
@@ -127,9 +195,106 @@ Tulis sendiri `slotUtilisationToday()` (petunjuk: `->select('slot_id')->distinct
 | `usageByZone()` | **Guna semula** `$this->reports->usageByZone(['year'=>..., 'month'=>..., 'sort'=>'utilisation', 'dir'=>'desc'])` | Tiada query baharu |
 | `passTrend12Months()` | `select("DATE_FORMAT(created_at, '%Y-%m') AS ym", false)` 12 bulan terakhir | Isi sifar; label `Okt 25` |
 
-Rujukan penuh: `StatisticsService.php.txt` (modul **Templat & Rujukan**).
+Kod penuh keempat-empat kaedah:
 
-**5. Daftar service & controller nipis.** Dalam `app/Config/Services.php`:
+`app/Services/StatisticsService.php`
+
+```php
+    // ------------------------------------------------------------------
+    // Dataset carta — format seragam: ['labels' => [...], 'data' => [...]]
+    // ------------------------------------------------------------------
+
+    /** (bar) Tempahan dibuat setiap bulan bagi tahun semasa — Jan..Dis, bulan kosong = 0. */
+    private function bookingsByMonth(): array
+    {
+        $year = (int) $this->now->format('Y');
+
+        $rows = $this->db->table('slot_bookings')
+            ->select('MONTH(created_at) AS m', false)
+            ->selectCount('id', 'total')
+            ->where('created_at >=', "{$year}-01-01 00:00:00")
+            ->where('created_at <', ($year + 1) . '-01-01 00:00:00')
+            ->groupBy('m')
+            ->get()
+            ->getResultArray();
+
+        $byMonth = array_column($rows, 'total', 'm');
+        $data    = [];
+
+        for ($m = 1; $m <= 12; $m++) {
+            $data[] = (int) ($byMonth[$m] ?? 0);  // ISI SIFAR — jika tidak, bar teranjak ke bulan salah
+        }
+
+        return ['labels' => self::MONTHS_BM, 'data' => $data, 'year' => $year];
+    }
+
+    /** (doughnut) Taburan status pas. 'keys' = nilai enum (untuk warna di JS), 'labels' = BM. */
+    private function passStatus(): array
+    {
+        $rows = $this->db->table('pass_applications')
+            ->select('status')
+            ->selectCount('id', 'total')
+            ->groupBy('status')
+            ->get()
+            ->getResultArray();
+
+        $counts = array_column($rows, 'total', 'status');
+        $out    = ['keys' => [], 'labels' => [], 'data' => []];
+
+        // Ikut susunan enum (bukan susunan DB) supaya warna & legenda sentiasa konsisten.
+        foreach (PassStatus::cases() as $status) {
+            $out['keys'][]   = $status->value;
+            $out['labels'][] = $status->label();
+            $out['data'][]   = (int) ($counts[$status->value] ?? 0);
+        }
+
+        return $out;
+    }
+
+    /** (bar mendatar) Penggunaan (%) setiap zon bulan semasa — GUNA SEMULA RPT-03. */
+    private function usageByZone(): array
+    {
+        $rows = $this->reports->usageByZone([
+            'year'  => (int) $this->now->format('Y'),
+            'month' => (int) $this->now->format('n'),
+            'sort'  => 'utilisation',
+            'dir'   => 'desc',
+        ]);
+
+        return [
+            'labels' => array_map(static fn (array $r): string => $r['zone_code'] . ' ' . $r['zone_name'], $rows),
+            'data'   => array_map(static fn (array $r): float => (float) $r['utilisation'], $rows),
+        ];
+    }
+
+    /** (line) Bilangan permohonan pas 12 bulan terakhir (termasuk bulan semasa). */
+    private function passTrend12Months(): array
+    {
+        $firstMonth = $this->now->modify('first day of this month')->modify('-11 months')->setTime(0, 0);
+
+        $rows = $this->db->table('pass_applications')
+            ->select("DATE_FORMAT(created_at, '%Y-%m') AS ym", false)
+            ->selectCount('id', 'total')
+            ->where('created_at >=', $firstMonth->format('Y-m-d H:i:s'))
+            ->groupBy('ym')
+            ->get()
+            ->getResultArray();
+
+        $byMonth = array_column($rows, 'total', 'ym');
+        $labels  = [];
+        $data    = [];
+
+        for ($i = 0; $i < 12; $i++) {
+            $month    = $firstMonth->modify("+{$i} months");
+            $labels[] = self::MONTHS_BM[(int) $month->format('n') - 1] . ' ' . $month->format('y');
+            $data[]   = (int) ($byMonth[$month->format('Y-m')] ?? 0);
+        }
+
+        return ['labels' => $labels, 'data' => $data];
+    }
+```
+
+**5. Daftar service & controller nipis.** Dalam `app/Config/Services.php`, dalam kelas `Services`, selepas `exportService()`:
 
 ```php
 public static function statisticsService(bool $getShared = true): \App\Services\StatisticsService
@@ -146,38 +311,250 @@ public static function statisticsService(bool $getShared = true): \App\Services\
 php spark make:controller Statistik/DashboardController
 ```
 
+Gantikan kandungan fail yang dijana dengan:
+
+`app/Controllers/Statistik/DashboardController.php`
+
 ```php
-public function index(): string
-{
-    $stats = service('statisticsService')->dashboard();
+<?php
 
-    return view('statistik/dashboard', [
-        'title'       => 'Dashboard Statistik',
-        'kpi'         => $stats['kpi'],
-        'generatedAt' => $stats['generated_at'],
-    ]);
-}
+declare(strict_types=1);
 
-public function data(): ResponseInterface
+namespace App\Controllers\Statistik;
+
+use App\Controllers\BaseController;
+use CodeIgniter\HTTP\ResponseInterface;
+
+class DashboardController extends BaseController
 {
-    return $this->response
-        ->setHeader('Cache-Control', 'no-store')
-        ->setJSON(service('statisticsService')->dashboard());
+    public function index(): string
+    {
+        $stats = service('statisticsService')->dashboard();
+
+        return view('statistik/dashboard', [
+            'title'       => 'Dashboard Statistik',
+            'kpi'         => $stats['kpi'],
+            'generatedAt' => $stats['generated_at'],
+        ]);
+    }
+
+    public function data(): ResponseInterface
+    {
+        $stats = service('statisticsService')->dashboard();
+
+        // setJSON() → Content-Type: application/json; charset=UTF-8
+        // no-store: pelayar/proksi jangan simpan salinan — cache kita di PELAYAN, bukan klien.
+        return $this->response
+            ->setHeader('Cache-Control', 'no-store')
+            ->setJSON($stats);
+    }
 }
 ```
 
 **6. Semak JSON dahulu, carta kemudian.** Log masuk sebagai `pelulus@latihan.test` dan buka `http://localhost:8080/statistik/data`. Semak: 12 nilai dalam `charts.bookings_by_month.data`, 5 dalam `charts.pass_status.data`, 12 dalam `charts.pass_trend.data`.
 
-**7. View** `app/Views/statistik/dashboard.php`. **Jimat masa (disyorkan):** amali S1 hanya ~30 minit — cipta fail ini dan salin kandungan template `templates/kod/dashboard-view.php.txt` (modul **Templat & Rujukan**) sebagai titik mula, kemudian baca dan sesuaikan; tumpukan masa menulis `StatisticsService`. Pastikan view anda memenuhi senarai ini:
+**7. View** `app/Views/statistik/dashboard.php`. Cipta fail ini dengan kod penuh di bawah, kemudian baca dan pastikan anda boleh menerangkan setiap perkara dalam senarai ini:
 - 4 kad KPI (Bootstrap `card`, `col-sm-6 col-xl-3`) dirender dari `$kpi` dengan `esc()`.
 - 4 `<canvas>` masing-masing dalam `<div style="position: relative; height: 280px">`.
 - Dalam `<?= $this->section('scripts') ?>`: `<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>` (versi **dipin** — jangan `@4` terbuka; atau salinan tempatan `base_url('assets/vendor/chartjs/chart.umd.min.js')`, lihat 🧯) dan skrip `fetch('<?= site_url('statistik/data') ?>')`.
 - Fungsi `draw()` yang memanggil `Chart.getChart(canvas)?.destroy()` sebelum `new Chart(...)`.
 - Carta ketiga: `type: 'bar'` + `options.indexAxis: 'y'`.
 
-Rujukan penuh: `dashboard-view.php.txt` (modul **Templat & Rujukan**).
+Skrip carta masuk ke `section('scripts')`, jadi `app/Views/layouts/main.php` mesti ada `<?= $this->renderSection('scripts') ?>` sebelum `</body>` (layout Hari 6).
 
-**8. Menu.** Dalam `layouts/main.php`, tambah pautan hanya jika `auth()->user()->can('statistik.view')`.
+`app/Views/statistik/dashboard.php`
+
+```php
+<?php
+
+/**
+ * app/Views/statistik/dashboard.php — Hari 10
+ * Kad KPI dirender di pelayan (cepat, berfungsi walaupun JS gagal).
+ * 4 carta dilukis oleh Chart.js 4 daripada JSON /statistik/data.
+ *
+ * @var string                          $title
+ * @var array<string, int|float|null>   $kpi
+ * @var string                          $generatedAt
+ */
+
+$cards = [
+    ['label' => 'Tempahan aktif',            'value' => number_format((int) $kpi['active_bookings']),                  'icon' => 'bi-p-square',        'color' => 'primary'],
+    ['label' => 'Kadar penggunaan slot hari ini', 'value' => number_format((float) $kpi['slot_utilisation'], 1) . ' %', 'icon' => 'bi-speedometer2',   'color' => 'success'],
+    ['label' => 'Permohonan pas menunggu',   'value' => number_format((int) $kpi['pending_passes']),                   'icon' => 'bi-hourglass-split', 'color' => 'warning'],
+    ['label' => 'Purata hari untuk lulus pas', 'value' => $kpi['avg_days_to_approve'] === null ? '—' : number_format((float) $kpi['avg_days_to_approve'], 1) . ' hari', 'icon' => 'bi-stopwatch', 'color' => 'info'],
+];
+?>
+<?= $this->extend('layouts/main') ?>
+
+<?php // <h1> dipapar oleh layouts/main.php daripada $title. Skrip Chart.js masuk ke section 'scripts' (sebelum </body>). ?>
+<?= $this->section('content') ?>
+<div class="d-flex justify-content-end mb-3">
+    <small class="text-muted">
+        Data dijana: <span id="generated-at"><?= esc($generatedAt) ?></span>
+        <span class="badge text-bg-light border">cache 10 minit</span>
+    </small>
+</div>
+
+<!-- ============ KAD KPI ============ -->
+<div class="row g-3 mb-4">
+    <?php foreach ($cards as $c): ?>
+        <div class="col-sm-6 col-xl-3">
+            <div class="card h-100 border-start border-4 border-<?= esc($c['color'], 'attr') ?>">
+                <div class="card-body d-flex align-items-center gap-3">
+                    <i class="bi <?= esc($c['icon'], 'attr') ?> fs-2 text-<?= esc($c['color'], 'attr') ?>" aria-hidden="true"></i>
+                    <div>
+                        <div class="text-muted small"><?= esc($c['label']) ?></div>
+                        <div class="fs-4 fw-semibold"><?= esc($c['value']) ?></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endforeach ?>
+</div>
+
+<div id="chart-error" class="alert alert-danger d-none" role="alert"></div>
+
+<!-- ============ 4 CARTA ============
+     Setiap <canvas> dibalut div berketinggian tetap + maintainAspectRatio:false
+     supaya carta tidak "membesar tanpa henti" dalam grid responsif. -->
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card h-100"><div class="card-body">
+            <h2 class="h6">Tempahan TLK mengikut bulan (<span id="year-label"></span>)</h2>
+            <div style="position: relative; height: 280px;"><canvas id="chartBookingsByMonth" aria-label="Carta bar tempahan mengikut bulan" role="img"></canvas></div>
+        </div></div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100"><div class="card-body">
+            <h2 class="h6">Status permohonan pas</h2>
+            <div style="position: relative; height: 280px;"><canvas id="chartPassStatus" aria-label="Carta doughnut status pas" role="img"></canvas></div>
+        </div></div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100"><div class="card-body">
+            <h2 class="h6">Penggunaan slot mengikut zon — bulan ini (%)</h2>
+            <div style="position: relative; height: 280px;"><canvas id="chartUsageByZone" aria-label="Carta bar mendatar penggunaan zon" role="img"></canvas></div>
+        </div></div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100"><div class="card-body">
+            <h2 class="h6">Trend permohonan pas — 12 bulan</h2>
+            <div style="position: relative; height: 280px;"><canvas id="chartPassTrend" aria-label="Carta garis trend permohonan pas" role="img"></canvas></div>
+        </div></div>
+    </div>
+</div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<?php // Chart.js 4.4.7 DIPIN. Tiada internet? Guna salinan tempatan base_url('assets/vendor/chartjs/chart.umd.min.js') (lihat 🧯). ?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+(() => {
+    'use strict';
+
+    // Warna ikut NILAI enum PassStatus (bukan label) — padan dengan PassStatus::badge() (text-bg-*)
+    const PASS_COLORS = {
+        submitted:    '#6c757d', // secondary
+        under_review: '#0dcaf0', // info
+        approved:     '#198754', // success
+        rejected:     '#dc3545', // danger
+        expired:      '#212529', // dark
+    };
+
+    // Lukis carta pada kanvas; musnahkan carta lama dahulu jika kanvas pernah digunakan
+    // (elak ralat "Canvas is already in use. Chart with ID ... must be destroyed").
+    function draw(canvasId, config) {
+        const canvas = document.getElementById(canvasId);
+        Chart.getChart(canvas)?.destroy();
+        return new Chart(canvas, config);
+    }
+
+    const base = { responsive: true, maintainAspectRatio: false };
+
+    async function load() {
+        const res = await fetch('<?= site_url('statistik/data') ?>', {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'same-origin',
+        });
+
+        // Sesi tamat → Shield redirect ke /login (HTML) → res.json() akan gagal. Semak dahulu.
+        const type = res.headers.get('Content-Type') || '';
+        if (!res.ok || !type.includes('application/json')) {
+            throw new Error('Gagal memuatkan data statistik (HTTP ' + res.status + '). Sila log masuk semula.');
+        }
+
+        const { charts, generated_at: generatedAt } = await res.json();
+        document.getElementById('generated-at').textContent = generatedAt;
+        document.getElementById('year-label').textContent = charts.bookings_by_month.year;
+
+        // 1) BAR — tempahan ikut bulan
+        draw('chartBookingsByMonth', {
+            type: 'bar',
+            data: {
+                labels: charts.bookings_by_month.labels,
+                datasets: [{ label: 'Bil. tempahan', data: charts.bookings_by_month.data, backgroundColor: '#0d6efd' }],
+            },
+            options: { ...base, plugins: { legend: { display: false } },
+                       scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } },
+        });
+
+        // 2) DOUGHNUT — status pas (bahagian daripada keseluruhan)
+        draw('chartPassStatus', {
+            type: 'doughnut',
+            data: {
+                labels: charts.pass_status.labels,
+                datasets: [{
+                    data: charts.pass_status.data,
+                    backgroundColor: charts.pass_status.keys.map(k => PASS_COLORS[k] ?? '#adb5bd'),
+                }],
+            },
+            options: { ...base, plugins: { legend: { position: 'right' } } },
+        });
+
+        // 3) BAR MENDATAR — indexAxis:'y' (label zon panjang lebih mudah dibaca)
+        draw('chartUsageByZone', {
+            type: 'bar',
+            data: {
+                labels: charts.usage_by_zone.labels,
+                datasets: [{ label: 'Penggunaan (%)', data: charts.usage_by_zone.data, backgroundColor: '#198754' }],
+            },
+            options: { ...base, indexAxis: 'y', plugins: { legend: { display: false } },
+                       scales: { x: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } } } },
+        });
+
+        // 4) LINE — trend 12 bulan
+        draw('chartPassTrend', {
+            type: 'line',
+            data: {
+                labels: charts.pass_trend.labels,
+                datasets: [{ label: 'Permohonan pas', data: charts.pass_trend.data,
+                             borderColor: '#6f42c1', backgroundColor: 'rgba(111,66,193,.15)', fill: true, tension: 0.3 }],
+            },
+            options: { ...base, plugins: { legend: { display: false } },
+                       scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } },
+        });
+    }
+
+    load().catch(err => {
+        const box = document.getElementById('chart-error');
+        box.textContent = err.message;      // textContent — bukan innerHTML (elak XSS)
+        box.classList.remove('d-none');
+        console.error(err);
+    });
+})();
+</script>
+<?= $this->endSection() ?>
+```
+
+**8. Menu.** Dalam `app/Views/layouts/main.php`, tambah pautan hanya jika `auth()->user()->can('statistik.view')`. Letak dalam `<ul class="navbar-nav me-auto">`, terus selepas pautan Laporan (Lab 9.1):
+
+`app/Views/layouts/main.php`
+
+```php
+<?php if (auth()->loggedIn() && auth()->user()->can('statistik.view')): ?>
+    <li class="nav-item"><a class="nav-link" href="<?= url_to('statistik') ?>"><i class="bi bi-bar-chart-line"></i> Statistik</a></li>
+<?php endif ?>
+```
 
 **9. Commit.** `git add -A && git commit -m "STAT: StatisticsService, dashboard KPI + 4 carta Chart.js"`
 

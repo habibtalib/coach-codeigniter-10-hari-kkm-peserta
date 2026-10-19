@@ -2,7 +2,7 @@
 
 [⬅️ README Hari 5](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
-> **Peraturan lab:** kerja individu dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. **Cuba manual dahulu** — baca mesej ralat penuh (Whoops page menunjukkan fail & baris). Selepas 10 minit buntu: tanya jurulatih atau guna AI untuk *menerangkan* ralat. Template `templates/kod/*.php.txt` untuk **menyemak** selepas anda cuba.
+> **Peraturan lab:** kerja individu dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. Setiap langkah memberi **kod lengkap untuk disalin**. Baca setiap baris sebelum menjalankannya — anda mesti boleh menerangkannya (KOLABORASI §3). Buntu: baca mesej ralat penuh, tanya jurulatih atau rakan sebelah, atau guna AI untuk *menerangkan* ralat. Whoops page menunjukkan fail & baris.
 
 | Lab | Sesi | Branch | Hasil |
 |-----|------|--------|-------|
@@ -31,52 +31,250 @@ Menulis enum `BookingStatus` & `SlotCategory`, Entity `SlotBooking` dan Model TL
    mkdir -p app/Enums app/Entities app/Services app/Validation tests/tlk
    ```
 
-2. `app/Enums/BookingStatus.php` — tulis berdasarkan README §1.1. Lengkapkan dua kaedah yang tidak ditunjukkan penuh:
+2. **Enum `BookingStatus`** — README §1.1, lengkap dengan `allowedTransitions()`, `isFinal()` (pulang `true` jika `allowedTransitions()` kosong) dan `options()`:
+
+   `app/Enums/BookingStatus.php`
 
    ```php
-   /** @return list<self> */
-   public function allowedTransitions(): array
-   {
-       return match ($this) {
-           self::Pending  => [self::Approved, self::Rejected],
-           self::Approved => [self::Cancelled, self::Expired],
-           self::Rejected, self::Cancelled, self::Expired => [],   // status akhir
-       };
-   }
+   <?php
 
-   /** @return array<string, string> ['pending' => 'Menunggu', ...] */
-   public static function options(): array
+   declare(strict_types=1);
+
+   namespace App\Enums;
+
+   /**
+    * Status tempahan slot TLK (slot_bookings.status).
+    * SATU-SATUNYA sumber kebenaran untuk nilai, label BM, warna badge & peralihan.
+    *
+    *   pending ──► approved ──► cancelled
+    *      │            └──────► expired
+    *      └──────► rejected
+    */
+   enum BookingStatus: string
    {
-       $options = [];
-       foreach (self::cases() as $case) {
-           $options[$case->value] = $case->label();
+       case Pending   = 'pending';
+       case Approved  = 'approved';
+       case Rejected  = 'rejected';
+       case Cancelled = 'cancelled';
+       case Expired   = 'expired';
+
+       /** Label Bahasa Melayu untuk paparan UI. */
+       public function label(): string
+       {
+           return match ($this) {
+               self::Pending   => 'Menunggu',
+               self::Approved  => 'Diluluskan',
+               self::Rejected  => 'Ditolak',
+               self::Cancelled => 'Dibatalkan',
+               self::Expired   => 'Tamat Tempoh',
+           };
        }
-       return $options;
+
+       /** Warna kontekstual Bootstrap 5.3 — guna sebagai `text-bg-{badge}`. */
+       public function badge(): string
+       {
+           return match ($this) {
+               self::Pending   => 'warning',
+               self::Approved  => 'success',
+               self::Rejected  => 'danger',
+               self::Cancelled => 'secondary',
+               self::Expired   => 'dark',
+           };
+       }
+
+       /**
+        * Status yang dibenarkan selepas status semasa.
+        *
+        * @return list<self>
+        */
+       public function allowedTransitions(): array
+       {
+           return match ($this) {
+               self::Pending  => [self::Approved, self::Rejected],
+               self::Approved => [self::Cancelled, self::Expired],
+               // Status akhir (terminal) — tiada peralihan lagi
+               self::Rejected, self::Cancelled, self::Expired => [],
+           };
+       }
+
+       public function canTransitionTo(self $to): bool
+       {
+           return in_array($to, $this->allowedTransitions(), true);
+       }
+
+       public function isFinal(): bool
+       {
+           return $this->allowedTransitions() === [];
+       }
+
+       /**
+        * Status yang dikira "aktif" untuk BR-TLK-01 (pertindihan) & BR-TLK-04 (had 1 aktif).
+        *
+        * @return list<string> ['pending', 'approved']
+        */
+       public static function active(): array
+       {
+           return [self::Pending->value, self::Approved->value];
+       }
+
+       /**
+        * Untuk dropdown penapis: ['pending' => 'Menunggu', ...]
+        *
+        * @return array<string, string>
+        */
+       public static function options(): array
+       {
+           $options = [];
+
+           foreach (self::cases() as $case) {
+               $options[$case->value] = $case->label();
+           }
+
+           return $options;
+       }
    }
    ```
 
-   Tambah juga `isFinal(): bool` (pulang `true` jika `allowedTransitions()` kosong).
+3. **Enum `SlotCategory`** — 5 kes SPEC dengan `label()`, `icon()` (Bootstrap Icons), `options()` untuk dropdown dan `inList()` yang memulangkan `'in_list[oku,mengandung,pegawai_kanan,kenderaan_rasmi,pelawat_vip]'` untuk peraturan validasi:
 
-3. `app/Enums/SlotCategory.php` — 5 kes SPEC (`Oku='oku'`, `Mengandung='mengandung'`, `PegawaiKanan='pegawai_kanan'`, `KenderaanRasmi='kenderaan_rasmi'`, `PelawatVip='pelawat_vip'`) dengan:
-   - `label()` → `OKU`, `Ibu Mengandung`, `Pegawai Kanan`, `Kenderaan Rasmi`, `Pelawat VIP`
-   - `icon()` → `bi-person-wheelchair`, `bi-heart-pulse`, `bi-person-badge`, `bi-car-front`, `bi-star`
-   - `static options(): array` dan `static inList(): string` yang memulangkan `'in_list[oku,mengandung,pegawai_kanan,kenderaan_rasmi,pelawat_vip]'` (petua: `array_column(self::cases(), 'value')`)
-
-4. `app/Entities/SlotBooking.php` — README §1.2. Kaedah `durationDays()`:
+   `app/Enums/SlotCategory.php`
 
    ```php
-   public function durationDays(): int
-   {
-       $start = new \DateTimeImmutable((string) $this->attributes['start_date']);
-       $end   = new \DateTimeImmutable((string) $this->attributes['end_date']);
+   <?php
 
-       return $start->diff($end)->days + 1;   // hari kalendar termasuk hari pertama & terakhir
+   declare(strict_types=1);
+
+   namespace App\Enums;
+
+   /**
+    * Kategori slot letak kenderaan khas (parking_slots.category).
+    */
+   enum SlotCategory: string
+   {
+       case Oku            = 'oku';
+       case Mengandung     = 'mengandung';
+       case PegawaiKanan   = 'pegawai_kanan';
+       case KenderaanRasmi = 'kenderaan_rasmi';
+       case PelawatVip     = 'pelawat_vip';
+
+       public function label(): string
+       {
+           return match ($this) {
+               self::Oku            => 'OKU',
+               self::Mengandung     => 'Ibu Mengandung',
+               self::PegawaiKanan   => 'Pegawai Kanan',
+               self::KenderaanRasmi => 'Kenderaan Rasmi',
+               self::PelawatVip     => 'Pelawat VIP',
+           };
+       }
+
+       /** Ikon Bootstrap Icons untuk paparan. */
+       public function icon(): string
+       {
+           return match ($this) {
+               self::Oku            => 'bi-person-wheelchair',
+               self::Mengandung     => 'bi-heart-pulse',
+               self::PegawaiKanan   => 'bi-person-badge',
+               self::KenderaanRasmi => 'bi-car-front',
+               self::PelawatVip     => 'bi-star',
+           };
+       }
+
+       /** @return array<string, string> ['oku' => 'OKU', ...] */
+       public static function options(): array
+       {
+           $options = [];
+
+           foreach (self::cases() as $case) {
+               $options[$case->value] = $case->label();
+           }
+
+           return $options;
+       }
+
+       /** Untuk peraturan validasi: 'in_list[oku,mengandung,...]' */
+       public static function inList(): string
+       {
+           return 'in_list[' . implode(',', array_column(self::cases(), 'value')) . ']';
+       }
+   }
+   ```
+
+4. **Entity `SlotBooking`** — README §1.2, lengkap dengan `isActive()` (status dalam `BookingStatus::active()`) dan `durationDays()`:
+
+   `app/Entities/SlotBooking.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Entities;
+
+   use App\Enums\BookingStatus;
+   use CodeIgniter\Entity\Entity;
+   use DateTimeImmutable;
+
+   /**
+    * Satu baris slot_bookings.
+    *
+    * start_date/end_date dikekalkan sebagai string 'Y-m-d' (lajur DATE) —
+    * mudah dibanding dan dihantar semula ke borang. decided_at/created_at/
+    * updated_at ditukar kepada CodeIgniter\I18n\Time secara automatik.
+    */
+   class SlotBooking extends Entity
+   {
+       protected $dates = ['decided_at', 'created_at', 'updated_at'];
+
+       protected $casts = [
+           'id'         => 'integer',
+           'user_id'    => 'integer',
+           'vehicle_id' => 'integer',
+           'slot_id'    => 'integer',
+           'decided_by' => '?integer',
+       ];
+
+       public function statusEnum(): BookingStatus
+       {
+           return BookingStatus::from((string) $this->attributes['status']);
+       }
+
+       public function statusLabel(): string
+       {
+           return $this->statusEnum()->label();
+       }
+
+       public function statusBadge(): string
+       {
+           return $this->statusEnum()->badge();
+       }
+
+       public function isActive(): bool
+       {
+           return in_array($this->attributes['status'], BookingStatus::active(), true);
+       }
+
+       public function isOwnedBy(int $userId): bool
+       {
+           return (int) $this->attributes['user_id'] === $userId;
+       }
+
+       /**
+        * Bilangan hari kalendar yang diliputi, termasuk hari pertama & terakhir
+        * (1 Okt hingga 1 Okt = 1 hari) — untuk paparan. Peraturan 90 hari (BR-TLK-03)
+        * pula mengira (end_date − start_date) tanpa +1 — jangan guna kaedah ini untuknya.
+        */
+       public function durationDays(): int
+       {
+           $start = new DateTimeImmutable((string) $this->attributes['start_date']);
+           $end   = new DateTimeImmutable((string) $this->attributes['end_date']);
+
+           return $start->diff($end)->days + 1;
+       }
    }
    ```
 
    > ℹ️ `durationDays()` ialah tempoh **paparan** (inklusif, +1): tempahan maksimum 2026-10-01 → 2026-12-30 dipapar *91 hari*. BR-TLK-03 pula menyemak `end_date − start_date ≤ 90` (beza tarikh, tanpa +1) — jangan guna `durationDays()` untuk peraturan itu.
-
-   Tambah juga `isActive(): bool` (status dalam `BookingStatus::active()`).
 
 5. Ujian unit **tanpa DB** — `tests/tlk/BookingStatusTest.php`:
 
@@ -152,9 +350,9 @@ Menulis enum `BookingStatus` & `SlotCategory`, Entity `SlotBooking` dan Model TL
    php spark make:model SlotBookingModel --table slot_bookings
    ```
 
-   > `DepartmentModel` dan `ParkingZoneModel` sudah wujud dari Lab 3.3–3.4 — buka dan tambah sahaja kaedah dalam jadual di bawah. Tanpa `--table`, nama jadual lalai salah (`parkingslots`); lihat [Arahan spark](../docs/arahan-spark.md).
+   > `DepartmentModel` dari Lab 3.3 tidak berubah. `ParkingZoneModel` dari Lab 3.4 hanya ditambah `dropdown()` — gantikan fail dengan versi di bawah (`cari()` dikekalkan). Tanpa `--table`, nama jadual lalai salah (`parkingslots`); lihat [Arahan spark](../docs/arahan-spark.md).
 
-   > `make:model` menjana banyak tetapan lalai. **Padam** yang tidak digunakan supaya anda boleh membaca Model dalam satu skrin.
+   > `make:model` menjana banyak tetapan lalai. **Gantikan** seluruh kandungan fail yang dijana dengan kod di bawah supaya anda boleh membaca Model dalam satu skrin.
 
    | Model | `$returnType` | Tetapan khas | Kaedah tambahan |
    |-------|---------------|--------------|-----------------|
@@ -164,86 +362,237 @@ Menulis enum `BookingStatus` & `SlotCategory`, Entity `SlotBooking` dan Model TL
    | `VehicleModel` | `array` | — | `dropdownForUser(int $userId)` |
    | `SlotBookingModel` | `SlotBooking::class` | — | `listing()`, `findDetailed(int $id)` |
 
-   `ParkingSlotModel` — bahagian utama:
+   `ParkingZoneModel` — `cari()` dari Lab 3.4 + `dropdown()` untuk borang slot:
+
+   `app/Models/ParkingZoneModel.php`
 
    ```php
-   protected $table          = 'parking_slots';
-   protected $returnType     = 'array';
-   protected $useSoftDeletes = true;
-   protected $allowedFields  = ['zone_id', 'slot_no', 'category', 'is_active'];
-   protected $useTimestamps  = true;
+   <?php
 
-   protected $validationRules = [
-       'id'        => 'permit_empty|is_natural_no_zero',
-       'zone_id'   => 'required|is_natural_no_zero|is_not_unique[parking_zones.id]',
-       'slot_no'   => 'required|alpha_dash|max_length[10]',
-       'category'  => 'required|in_list[oku,mengandung,pegawai_kanan,kenderaan_rasmi,pelawat_vip]',
-       'is_active' => 'permit_empty|in_list[0,1]',
-   ];
+   namespace App\Models;
 
-   protected $validationMessages = [
-       'zone_id'  => ['required' => 'Sila pilih zon.', 'is_not_unique' => 'Zon tidak sah.'],
-       'slot_no'  => ['required' => 'No. slot wajib diisi.', 'alpha_dash' => 'No. slot hanya huruf, nombor, - dan _.'],
-       'category' => ['required' => 'Sila pilih kategori.', 'in_list' => 'Kategori tidak sah.'],
-   ];
+   use CodeIgniter\Model;
 
-   public function withZone(): static
+   class ParkingZoneModel extends Model
    {
-       return $this->select('parking_slots.*, parking_zones.code AS zone_code, parking_zones.name AS zone_name')
-           ->join('parking_zones', 'parking_zones.id = parking_slots.zone_id')
-           ->orderBy('parking_zones.code')
-           ->orderBy('parking_slots.slot_no');
-   }
+       protected $table         = 'parking_zones';
+       protected $returnType    = 'array';
+       protected $allowedFields = ['code', 'name', 'location'];
+       protected $useTimestamps = true;
 
-   /** UNIQUE(zone_id, slot_no) — is_unique CI4 hanya menyemak satu lajur */
-   public function isSlotNoTaken(int $zoneId, string $slotNo, ?int $ignoreId = null): bool
-   {
-       $builder = $this->withDeleted()->where('zone_id', $zoneId)->where('slot_no', $slotNo);
+       public function cari(?string $q): static
+       {
+           $q = trim((string) $q);
 
-       if ($ignoreId !== null) {
-           $builder->where('id !=', $ignoreId);
+           if ($q !== '') {
+               $this->groupStart()
+                   ->like('name', $q)
+                   ->orLike('location', $q)
+                   ->orLike('code', $q)
+                   ->groupEnd();
+           }
+
+           return $this->orderBy('code');
        }
 
-       return $builder->countAllResults() > 0;
-   }
+       /** @return array<int, string> [id => 'A — Blok Utama'] */
+       public function dropdown(): array
+       {
+           $options = [];
 
-   /** [id => 'A / A-01 (OKU)'] — slot aktif sahaja, untuk borang tempahan */
-   public function activeDropdown(): array
-   {
-       $options = [];
+           foreach ($this->orderBy('code')->findAll() as $row) {
+               $options[$row['id']] = $row['code'] . ' — ' . $row['name'];
+           }
 
-       foreach ($this->withZone()->where('parking_slots.is_active', 1)->findAll() as $row) {
-           $options[$row['id']] = sprintf('%s / %s (%s)', $row['zone_code'], $row['slot_no'],
-               \App\Enums\SlotCategory::from($row['category'])->label());
+           return $options;
        }
-
-       return $options;
    }
    ```
 
-   `VehicleModel::dropdownForUser()`:
+   `ParkingSlotModel` — soft delete, peraturan Model dengan mesej BM, `withZone()`, `isSlotNoTaken()` dan `activeDropdown()`:
+
+   `app/Models/ParkingSlotModel.php`
 
    ```php
-   public function dropdownForUser(int $userId): array
-   {
-       $options = [];
+   <?php
 
-       foreach ($this->where('user_id', $userId)->orderBy('plate_no')->findAll() as $v) {
-           $options[$v['id']] = $v['plate_no'] . ' — ' . $v['model'];
+   declare(strict_types=1);
+
+   namespace App\Models;
+
+   use App\Enums\SlotCategory;
+   use CodeIgniter\Model;
+
+   class ParkingSlotModel extends Model
+   {
+       protected $table          = 'parking_slots';
+       protected $returnType     = 'array';
+       protected $useSoftDeletes = true;             // SPEC §3: parking_slots.deleted_at
+       protected $allowedFields  = ['zone_id', 'slot_no', 'category', 'is_active'];
+       protected $useTimestamps  = true;
+
+       protected $validationRules = [
+           'id'        => 'permit_empty|is_natural_no_zero',
+           'zone_id'   => 'required|is_natural_no_zero|is_not_unique[parking_zones.id]',
+           'slot_no'   => 'required|alpha_dash|max_length[10]',
+           'category'  => 'required|in_list[oku,mengandung,pegawai_kanan,kenderaan_rasmi,pelawat_vip]',
+           'is_active' => 'permit_empty|in_list[0,1]',
+       ];
+
+       protected $validationMessages = [
+           'zone_id'  => ['required' => 'Sila pilih zon.', 'is_not_unique' => 'Zon tidak sah.'],
+           'slot_no'  => ['required' => 'No. slot wajib diisi.', 'alpha_dash' => 'No. slot hanya huruf, nombor, - dan _.'],
+           'category' => ['required' => 'Sila pilih kategori.', 'in_list' => 'Kategori tidak sah.'],
+       ];
+
+       public function withZone(): static
+       {
+           return $this->select('parking_slots.*, parking_zones.code AS zone_code, parking_zones.name AS zone_name')
+               ->join('parking_zones', 'parking_zones.id = parking_slots.zone_id')
+               ->orderBy('parking_zones.code')
+               ->orderBy('parking_slots.slot_no');
        }
 
-       return $options;
+       /** UNIQUE(zone_id, slot_no) — is_unique CI4 hanya menyemak satu lajur */
+       public function isSlotNoTaken(int $zoneId, string $slotNo, ?int $ignoreId = null): bool
+       {
+           $builder = $this->withDeleted()->where('zone_id', $zoneId)->where('slot_no', $slotNo);
+
+           if ($ignoreId !== null) {
+               $builder->where('id !=', $ignoreId);
+           }
+
+           return $builder->countAllResults() > 0;
+       }
+
+       /**
+        * [id => 'A / A-01 (OKU)'] — slot aktif sahaja, untuk borang tempahan.
+        *
+        * @return array<int, string>
+        */
+       public function activeDropdown(): array
+       {
+           $options = [];
+
+           foreach ($this->withZone()->where('parking_slots.is_active', 1)->findAll() as $row) {
+               $options[$row['id']] = sprintf(
+                   '%s / %s (%s)',
+                   $row['zone_code'],
+                   $row['slot_no'],
+                   SlotCategory::from($row['category'])->label(),
+               );
+           }
+
+           return $options;
+       }
    }
    ```
 
-   `SlotBookingModel` — README §1.3 (termasuk `listing()`), ditambah:
+   `VehicleModel` — `dropdownForUser()` memulangkan kenderaan milik pengguna sahaja:
+
+   `app/Models/VehicleModel.php`
 
    ```php
-   public function findDetailed(int $id): ?SlotBooking
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Models;
+
+   use CodeIgniter\Model;
+
+   class VehicleModel extends Model
    {
-       return $this->listing()->where('slot_bookings.id', $id)->first();
+       protected $table         = 'vehicles';
+       protected $returnType    = 'array';
+       protected $allowedFields = ['user_id', 'plate_no', 'model', 'color'];
+       protected $useTimestamps = true;
+
+       protected $validationRules = [
+           'user_id'  => 'required|is_natural_no_zero',
+           'plate_no' => 'required|max_length[15]|is_unique[vehicles.plate_no,id,{id}]',
+           'model'    => 'required|max_length[80]',
+           'color'    => 'required|max_length[30]',
+       ];
+
+       /** @return array<int, string> [id => 'WXX 1234 — Proton Saga'] — kenderaan milik pengguna sahaja */
+       public function dropdownForUser(int $userId): array
+       {
+           $options = [];
+
+           foreach ($this->where('user_id', $userId)->orderBy('plate_no')->findAll() as $v) {
+               $options[$v['id']] = $v['plate_no'] . ' — ' . $v['model'];
+           }
+
+           return $options;
+       }
    }
    ```
+
+   `SlotBookingModel` — README §1.3 (termasuk `listing()`) ditambah `findDetailed()`:
+
+   `app/Models/SlotBookingModel.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Models;
+
+   use App\Entities\SlotBooking;
+   use CodeIgniter\Model;
+
+   class SlotBookingModel extends Model
+   {
+       protected $table         = 'slot_bookings';
+       protected $returnType    = SlotBooking::class;
+       protected $allowedFields = [
+           'ref_no', 'user_id', 'vehicle_id', 'slot_id',
+           'start_date', 'end_date', 'reason', 'status',
+           'decided_by', 'decided_at',
+       ];
+       protected $useTimestamps = true;
+
+       // Peraturan asas (format & wajib). Peraturan perniagaan (BR-TLK-01/03/04)
+       // disemak dalam borang (BookingRules) dan BookingService.
+       protected $validationRules = [
+           'ref_no'     => 'required|max_length[20]',
+           'user_id'    => 'required|is_natural_no_zero',
+           'vehicle_id' => 'required|is_natural_no_zero',
+           'slot_id'    => 'required|is_natural_no_zero',
+           'start_date' => 'required|valid_date[Y-m-d]',
+           'end_date'   => 'required|valid_date[Y-m-d]',
+           'reason'     => 'required|min_length[10]|max_length[1000]',
+           'status'     => 'required|in_list[pending,approved,rejected,cancelled,expired]',
+       ];
+
+       /**
+        * Query asas senarai: tempahan + slot + zon + kenderaan + nama pemohon.
+        * Guna: $model->listing()->where(...)->paginate(10)
+        */
+       public function listing(): static
+       {
+           return $this->select(
+               'slot_bookings.*, parking_slots.slot_no, parking_slots.category, '
+               . 'parking_zones.code AS zone_code, vehicles.plate_no, users.full_name AS applicant_name',
+           )
+               ->join('parking_slots', 'parking_slots.id = slot_bookings.slot_id')
+               ->join('parking_zones', 'parking_zones.id = parking_slots.zone_id')
+               ->join('vehicles', 'vehicles.id = slot_bookings.vehicle_id')
+               ->join('users', 'users.id = slot_bookings.user_id')
+               ->orderBy('slot_bookings.created_at', 'DESC')
+               ->orderBy('slot_bookings.id', 'DESC');
+       }
+
+       /** Satu tempahan lengkap dengan maklumat paparan (untuk halaman show). */
+       public function findDetailed(int $id): ?SlotBooking
+       {
+           return $this->listing()->where('slot_bookings.id', $id)->first();
+       }
+   }
+   ```
+
 
 7. Commit:
 
@@ -305,7 +654,9 @@ Membina `Admin/SlotController` (senarai, tambah, ubah, padam lembut) dan `Tlk/Bo
    });
    ```
 
-2. `app/Controllers/Admin/SlotController.php`:
+2. **Controller `Admin/SlotController`** — kaedah `save()` mengikut README §2.2: `getPost()` senarai putih → `validateData()` dengan peraturan Model → `isSlotNoTaken()` + `$this->validator->setError()` → insert/update:
+
+   `app/Controllers/Admin/SlotController.php`
 
    ```php
    <?php
@@ -321,6 +672,9 @@ Membina `Admin/SlotController` (senarai, tambah, ubah, padam lembut) dan `Tlk/Bo
    use CodeIgniter\Exceptions\PageNotFoundException;
    use CodeIgniter\HTTP\RedirectResponse;
 
+   /**
+    * CRUD slot letak kenderaan (admin). Laluan: /admin/slot (filter group:admin).
+    */
    class SlotController extends BaseController
    {
        private ParkingSlotModel $slots;
@@ -381,10 +735,33 @@ Membina `Admin/SlotController` (senarai, tambah, ubah, padam lembut) dan `Tlk/Bo
            ]);
        }
 
+       /**
+        * README §2.2: getPost() senarai putih → validateData() dengan peraturan Model
+        * → isSlotNoTaken() + setError() → insert/update → PRG.
+        */
        private function save(?int $id): RedirectResponse
        {
-           // README §2.2 — tulis kaedah save(): getPost() senarai putih → validateData()
-           // dengan peraturan Model → isSlotNoTaken() + $this->validator->setError() → insert/update
+           $data              = $this->request->getPost(['zone_id', 'slot_no', 'category']);   // senarai putih medan
+           $data['slot_no']   = strtoupper(trim((string) $data['slot_no']));
+           $data['is_active'] = $this->request->getPost('is_active') === '1' ? 1 : 0;           // checkbox
+
+           // 1. Validasi format dengan peraturan Model yang SAMA (satu sumber peraturan)
+           $rules = $this->slots->getValidationRules(['except' => ['id']]);
+
+           if (! $this->validateData($data, $rules, $this->slots->getValidationMessages())) {
+               return redirect()->back()->withInput();          // ralat + input lama dibawa ke borang
+           }
+
+           // 2. UNIQUE(zone_id, slot_no) — semakan komposit, ralat diletak pada medan slot_no
+           if ($this->slots->isSlotNoTaken((int) $data['zone_id'], $data['slot_no'], $id)) {
+               $this->validator->setError('slot_no', 'No. slot ini sudah wujud dalam zon tersebut.');
+
+               return redirect()->back()->withInput();
+           }
+
+           $id === null ? $this->slots->insert($data) : $this->slots->update($id, $data);
+
+           return redirect()->to('admin/slot')->with('success', 'Slot ' . $data['slot_no'] . ' telah disimpan.');
        }
 
        private function findOr404(int $id): array
@@ -492,7 +869,47 @@ Membina `Admin/SlotController` (senarai, tambah, ubah, padam lembut) dan `Tlk/Bo
    <?= $this->endSection() ?>
    ```
 
-5. `app/Controllers/Tlk/BookingController.php` — kaedah `index()` dari README §2.3 (kelas `BookingController extends BaseController`, namespace `App\Controllers\Tlk`).
+5. **Controller `Tlk/BookingController`** — kaedah `index()` dari README §2.3 sahaja buat masa ini (`new()`, `create()` dan `show()` ditambah dalam Lab 5.3):
+
+   `app/Controllers/Tlk/BookingController.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Controllers\Tlk;
+
+   use App\Controllers\BaseController;
+   use App\Enums\BookingStatus;
+   use App\Models\SlotBookingModel;
+
+   /**
+    * Tempahan TLK (pemohon). Controller NIPIS: request → validasi → BookingService → view/redirect.
+    */
+   class BookingController extends BaseController
+   {
+       /** GET /tlk/tempahan — "Tempahan Saya" (SKOP PEMILIK dalam query) */
+       public function index(): string
+       {
+           $model  = model(SlotBookingModel::class);
+           $status = (string) $this->request->getGet('status');
+
+           $query = $model->listing()->where('slot_bookings.user_id', auth()->id());
+
+           if (BookingStatus::tryFrom($status) !== null) {        // input tidak sah → diabaikan
+               $query->where('slot_bookings.status', $status);
+           }
+
+           return view('tlk/booking/index', [
+               'title'    => 'Tempahan Saya',
+               'bookings' => $query->paginate(10),
+               'pager'    => $model->pager,
+               'status'   => $status,
+           ]);
+       }
+   }
+   ```
 
 6. `app/Views/tlk/booking/index.php`:
 
@@ -591,18 +1008,70 @@ Membina borang tempahan dengan validasi server (termasuk BR-TLK-03), `ReferenceN
 
    > Filter `permission:tlk.apply` pada route **ditambah** kepada filter `session` kumpulan. Pelulus (tiada `tlk.apply`) tidak boleh memohon.
 
-2. `app/Validation/BookingRules.php` — README §3.2. Kaedah `parse()`:
+2. **Peraturan validasi `BookingRules`** — README §3.2, lengkap dengan `parse()`:
+
+   `app/Validation/BookingRules.php`
 
    ```php
-   private function parse(?string $value): ?\DateTimeImmutable
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Validation;
+
+   use DateTimeImmutable;
+
+   /**
+    * Peraturan validasi tersuai borang tempahan TLK (BR-TLK-03).
+    * Didaftar dalam Config\Validation::$ruleSets.
+    *
+    *   'start_date' => 'required|valid_date[Y-m-d]|not_past_date',
+    *   'end_date'   => 'required|valid_date[Y-m-d]|date_on_or_after[start_date]|max_period_days[start_date,90]',
+    */
+   class BookingRules
    {
-       if ($value === null || $value === '') {
-           return null;
+       /** Tarikh bukan masa lalu — hari ini dibenarkan. */
+       public function not_past_date(?string $str): bool
+       {
+           $date = $this->parse($str);
+
+           return $date !== null && $date >= new DateTimeImmutable('today');
        }
 
-       $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $value);   // '!' = masa 00:00:00
+       /** Tarikh ini >= tarikh medan lain (cth end_date >= start_date). */
+       public function date_on_or_after(?string $str, string $otherField, array $data): bool
+       {
+           $date  = $this->parse($str);
+           $other = $this->parse($data[$otherField] ?? null);
 
-       return $date === false ? null : $date;
+           return $date === null || $other === null || $date >= $other;
+       }
+
+       /** (tarikh ini − tarikh medan lain) <= N hari. Param: "start_date,90". */
+       public function max_period_days(?string $str, string $params, array $data): bool
+       {
+           [$otherField, $maxDays] = array_map('trim', explode(',', $params)) + [1 => '90'];
+
+           $end   = $this->parse($str);
+           $start = $this->parse($data[$otherField] ?? null);
+
+           if ($end === null || $start === null || $end < $start) {
+               return true;   // biar peraturan lain melapor
+           }
+
+           return $start->diff($end)->days <= (int) $maxDays;   // BR-TLK-03
+       }
+
+       private function parse(?string $value): ?DateTimeImmutable
+       {
+           if ($value === null || $value === '') {
+               return null;
+           }
+
+           $date = DateTimeImmutable::createFromFormat('!Y-m-d', $value);   // '!' = masa 00:00:00
+
+           return $date === false ? null : $date;
+       }
    }
    ```
 
@@ -618,7 +1087,139 @@ Membina borang tempahan dengan validasi server (termasuk BR-TLK-03), `ReferenceN
    ];
    ```
 
-3. `app/Services/ReferenceNumberService.php` — tulis dari README §3.3 (konstruktor menerima `?BaseConnection $db = null` dan guna `db_connect()` jika null). Semak dengan `ReferenceNumberService.php.txt` (modul **Templat & Rujukan**).
+3. **Service `ReferenceNumberService`** — README §3.3. Konstruktor menerima `?BaseConnection $db = null` dan guna `db_connect()` jika null:
+
+   `app/Services/ReferenceNumberService.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Services;
+
+   use CodeIgniter\Database\BaseConnection;
+   use CodeIgniter\Database\Exceptions\DatabaseException;
+   use RuntimeException;
+   use Throwable;
+
+   /**
+    * Menjana nombor rujukan berjujukan per prefix per tahun:
+    *   next('TLK') → 'TLK-2026-0001', 'TLK-2026-0002', ...
+    *   next('PAS') → 'PAS-2026-0001', ...
+    *
+    * Selamat untuk permintaan serentak: baris (prefix, year) dalam
+    * reference_sequences dikunci dengan SELECT ... FOR UPDATE dalam transaksi.
+    * Jika dipanggil DALAM transaksi lain (cth BookingService), transaksi CI4
+    * bersarang — kunci dilepaskan hanya apabila transaksi luar commit/rollback,
+    * dan nombor tidak "hilang" jika tempahan gagal.
+    *
+    * Tertib penting (elak deadlock): SELECT ... FOR UPDATE DAHULU. INSERT IGNORE hanya
+    * jika baris tahun itu belum wujud. Jika INSERT IGNORE dijalankan pada baris yang SUDAH
+    * wujud, InnoDB mengambil kunci S (kongsi); dua permintaan serentak yang kemudian meminta
+    * kunci X pada baris sama akan deadlock (ralat 1213).
+    */
+   class ReferenceNumberService
+   {
+       /** Ralat MySQL/MariaDB: 1213 = deadlock, 1205 = lock wait timeout */
+       private const RETRYABLE = [1213, 1205];
+
+       private const MAX_ATTEMPTS = 3;
+
+       private BaseConnection $db;
+
+       public function __construct(?BaseConnection $db = null)
+       {
+           $this->db = $db ?? db_connect();
+       }
+
+       public function next(string $prefix): string
+       {
+           $prefix = strtoupper(trim($prefix));
+
+           // Cuba semula HANYA jika kita pemilik transaksi (bukan bersarang). Dalam transaksi
+           // luar, deadlock telah me-rollback SEMUA kerja pemanggil — pemanggil mesti mengendalikannya.
+           $ownsTransaction = $this->db->transDepth === 0;
+
+           for ($attempt = 1; ; $attempt++) {
+               try {
+                   return $this->allocate($prefix);
+               } catch (DatabaseException $e) {
+                   if (! $ownsTransaction || $attempt >= self::MAX_ATTEMPTS || ! in_array($e->getCode(), self::RETRYABLE, true)) {
+                       throw $e;
+                   }
+
+                   usleep(random_int(5_000, 50_000));   // undur sebentar sebelum cuba semula
+               }
+           }
+       }
+
+       private function allocate(string $prefix): string
+       {
+           $year = (int) date('Y');
+           $now  = date('Y-m-d H:i:s');
+
+           // Ralat query → exception (bukan `false` senyap) supaya transaksi tidak separuh siap.
+           $this->db->transException(true)->transBegin();
+
+           try {
+               // 1. Kunci baris (prefix, year). Permintaan lain untuk prefix+tahun yang sama
+               //    akan MENUNGGU di sini sehingga kita commit.
+               $row = $this->lockSequence($prefix, $year);
+
+               // 2. Tahun baharu: cipta baris (INSERT IGNORE — selamat jika pihak lain
+               //    mendahului kita), kemudian kunci semula.
+               if ($row === null) {
+                   $this->db->table('reference_sequences')->ignore(true)->insert([
+                       'prefix'      => $prefix,
+                       'year'        => $year,
+                       'last_number' => 0,
+                       'created_at'  => $now,
+                       'updated_at'  => $now,
+                   ]);
+
+                   $row = $this->lockSequence($prefix, $year)
+                       ?? throw new RuntimeException("Gagal mencipta jujukan {$prefix}-{$year}.");
+               }
+
+               $number = (int) $row->last_number + 1;
+
+               // 3. Simpan nombor baharu.
+               $updated = $this->db->table('reference_sequences')
+                   ->where('id', $row->id)
+                   ->update(['last_number' => $number, 'updated_at' => $now]);
+
+               if ($updated === false) {
+                   throw new RuntimeException('Gagal mengemas kini jujukan nombor rujukan.');
+               }
+
+               $this->db->transCommit();
+           } catch (Throwable $e) {
+               $this->db->transRollback();
+
+               throw $e;
+           }
+
+           return sprintf('%s-%d-%04d', $prefix, $year, $number);
+       }
+
+       /** SELECT ... FOR UPDATE. Query Builder CI4 tiada lockForUpdate() — guna query binding. */
+       private function lockSequence(string $prefix, int $year): ?object
+       {
+           $table = $this->db->prefixTable('reference_sequences');
+           $query = $this->db->query(
+               "SELECT id, last_number FROM {$table} WHERE prefix = ? AND year = ? FOR UPDATE",
+               [$prefix, $year],
+           );
+
+           if ($query === false) {   // DBDebug = false: query() pulang false, bukan exception
+               throw new RuntimeException('Gagal mengunci jujukan nombor rujukan.');
+           }
+
+           return $query->getRow();
+       }
+   }
+   ```
 
 4. `app/Services/BookingService.php` — **versi 1** (esok dinaik taraf):
 
@@ -715,39 +1316,136 @@ Membina borang tempahan dengan validasi server (termasuk BR-TLK-03), `ReferenceN
    }
    ```
 
-6. `BookingController` — tambah `new()`, `create()` (README §3.2 + §3.4, termasuk array `$messages` BM untuk setiap peraturan) dan `show()`:
+6. **`BookingController` lengkap** — gantikan fail Lab 5.2 dengan versi ini: `index()` kekal, ditambah `new()`, `create()` (README §3.2 + §3.4), `show()` dengan semakan pemilikan, serta `rules()` dan `messages()` (mesej BM untuk setiap peraturan):
+
+   `app/Controllers/Tlk/BookingController.php`
 
    ```php
-   public function new(): string
-   {
-       return view('tlk/booking/form', [
-           'title'    => 'Mohon Slot Letak Kenderaan Khas',
-           'vehicles' => model(VehicleModel::class)->dropdownForUser(auth()->id()),
-           'slots'    => model(ParkingSlotModel::class)->activeDropdown(),
-       ]);
-   }
+   <?php
 
-   public function show(int $id): string
-   {
-       $booking = model(SlotBookingModel::class)->findDetailed($id);
+   declare(strict_types=1);
 
-       if ($booking === null || ! $booking->isOwnedBy(auth()->id())) {   // semakan PEMILIKAN
-           throw PageNotFoundException::forPageNotFound('Tempahan tidak dijumpai.');
+   namespace App\Controllers\Tlk;
+
+   use App\Controllers\BaseController;
+   use App\Enums\BookingStatus;
+   use App\Models\ParkingSlotModel;
+   use App\Models\SlotBookingModel;
+   use App\Models\VehicleModel;
+   use CodeIgniter\Exceptions\PageNotFoundException;
+   use CodeIgniter\HTTP\RedirectResponse;
+   use DomainException;
+
+   /**
+    * Tempahan TLK (pemohon). Controller NIPIS: request → validasi → BookingService → view/redirect.
+    */
+   class BookingController extends BaseController
+   {
+       /** GET /tlk/tempahan — "Tempahan Saya" (SKOP PEMILIK dalam query) */
+       public function index(): string
+       {
+           $model  = model(SlotBookingModel::class);
+           $status = (string) $this->request->getGet('status');
+
+           $query = $model->listing()->where('slot_bookings.user_id', auth()->id());
+
+           if (BookingStatus::tryFrom($status) !== null) {        // input tidak sah → diabaikan
+               $query->where('slot_bookings.status', $status);
+           }
+
+           return view('tlk/booking/index', [
+               'title'    => 'Tempahan Saya',
+               'bookings' => $query->paginate(10),
+               'pager'    => $model->pager,
+               'status'   => $status,
+           ]);
        }
 
-       return view('tlk/booking/show', ['title' => 'Tempahan ' . $booking->ref_no, 'booking' => $booking]);
+       /** GET /tlk/tempahan/new */
+       public function new(): string
+       {
+           return view('tlk/booking/form', [
+               'title'    => 'Mohon Slot Letak Kenderaan Khas',
+               'vehicles' => model(VehicleModel::class)->dropdownForUser(auth()->id()),
+               'slots'    => model(ParkingSlotModel::class)->activeDropdown(),
+           ]);
+       }
+
+       /** POST /tlk/tempahan */
+       public function create(): RedirectResponse
+       {
+           if (! $this->validate($this->rules(), $this->messages())) {
+               return redirect()->back()->withInput();                      // ralat medan dibawa
+           }
+
+           try {
+               $booking = service('bookingService')->create(auth()->id(), $this->validator->getValidated());
+           } catch (DomainException $e) {
+               return redirect()->back()->withInput()->with('error', $e->getMessage());
+           }
+
+           return redirect()->to(url_to('tlk.show', $booking->id))
+               ->with('success', 'Permohonan ' . $booking->ref_no . ' telah dihantar.');
+       }
+
+       /** GET /tlk/tempahan/{id} */
+       public function show(int $id): string
+       {
+           $booking = model(SlotBookingModel::class)->findDetailed($id);
+
+           if ($booking === null || ! $booking->isOwnedBy(auth()->id())) {   // semakan PEMILIKAN
+               throw PageNotFoundException::forPageNotFound('Tempahan tidak dijumpai.');
+           }
+
+           return view('tlk/booking/show', ['title' => 'Tempahan ' . $booking->ref_no, 'booking' => $booking]);
+       }
+
+       // -----------------------------------------------------------------
+
+       /** @return array<string, string> */
+       private function rules(): array
+       {
+           return [
+               'vehicle_id' => 'required|is_natural_no_zero',
+               'slot_id'    => 'required|is_natural_no_zero|is_not_unique[parking_slots.id]',
+               'start_date' => 'required|valid_date[Y-m-d]|not_past_date',
+               'end_date'   => 'required|valid_date[Y-m-d]|date_on_or_after[start_date]|max_period_days[start_date,90]',
+               'reason'     => 'required|min_length[10]|max_length[1000]',
+           ];
+       }
+
+       /** @return array<string, array<string, string>> mesej BM — kunci = nama peraturan tepat */
+       private function messages(): array
+       {
+           return [
+               'vehicle_id' => [
+                   'required'           => 'Sila pilih kenderaan.',
+                   'is_natural_no_zero' => 'Kenderaan tidak sah.',
+               ],
+               'slot_id' => [
+                   'required'           => 'Sila pilih slot.',
+                   'is_natural_no_zero' => 'Slot tidak sah.',
+                   'is_not_unique'      => 'Slot tidak wujud.',
+               ],
+               'start_date' => [
+                   'required'      => 'Tarikh mula wajib diisi.',
+                   'valid_date'    => 'Format tarikh mula tidak sah.',
+                   'not_past_date' => 'Tarikh mula tidak boleh pada masa lalu.',
+               ],
+               'end_date' => [
+                   'required'         => 'Tarikh tamat wajib diisi.',
+                   'valid_date'       => 'Format tarikh tamat tidak sah.',
+                   'date_on_or_after' => 'Tarikh tamat mesti sama atau selepas tarikh mula.',
+                   'max_period_days'  => 'Tarikh tamat tidak boleh melebihi 90 hari selepas tarikh mula.',
+               ],
+               'reason' => [
+                   'required'   => 'Sebab permohonan wajib diisi.',
+                   'min_length' => 'Sebab permohonan mestilah sekurang-kurangnya 10 aksara.',
+                   'max_length' => 'Sebab permohonan tidak boleh melebihi 1000 aksara.',
+               ],
+           ];
+       }
    }
-   ```
-
-   Contoh `$messages` untuk `end_date`:
-
-   ```php
-   'end_date' => [
-       'required'         => 'Tarikh tamat wajib diisi.',
-       'valid_date'       => 'Format tarikh tamat tidak sah.',
-       'date_on_or_after' => 'Tarikh tamat mesti sama atau selepas tarikh mula.',
-       'max_period_days'  => 'Tarikh tamat tidak boleh melebihi 90 hari selepas tarikh mula.',
-   ],
    ```
 
 7. `app/Views/tlk/booking/form.php`:

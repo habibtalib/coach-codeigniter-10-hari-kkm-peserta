@@ -2,7 +2,7 @@
 
 [⬅️ README Hari 6](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
-> **Peraturan lab:** hari ini tentang **ketepatan di bawah tekanan**, bukan kelajuan. Tulis query pertindihan & transaksi **sendiri dahulu**; bandingkan dengan template hanya selepas checkpoint. AI boleh membantu menerangkan `Lock wait timeout` atau `errno` — tetapi anda mesti boleh menerangkan kenapa kunci diambil mengikut tertib pengguna → slot.
+> **Peraturan lab:** hari ini tentang **ketepatan di bawah tekanan**, bukan kelajuan. Setiap langkah memberi kod lengkap untuk disalin. Isi jadual pertindihan (Lab 6.1 langkah 1) **sebelum** menyalin query, dan baca setiap baris transaksi sebelum menjalankannya. AI boleh membantu menerangkan `Lock wait timeout` atau `errno` — tetapi anda mesti boleh menerangkan kenapa kunci diambil mengikut tertib pengguna → slot.
 
 | Lab | Sesi | Branch | Hasil |
 |-----|------|--------|-------|
@@ -51,6 +51,13 @@ Menulis `SlotAvailabilityService` (`hasOverlap()` & `availableSlots()`) dan papa
    use App\Models\SlotBookingModel;
    use CodeIgniter\Database\BaseBuilder;
 
+   /**
+    * Semakan ketersediaan slot (BR-TLK-01).
+    *
+    * Dua julat [A_start, A_end] dan [B_start, B_end] BERTINDIH jika:
+    *     A_start <= B_end  AND  A_end >= B_start
+    * (tarikh inklusif — hari terakhir tempahan masih dikira digunakan).
+    */
    class SlotAvailabilityService
    {
        public function __construct(
@@ -59,19 +66,57 @@ Menulis `SlotAvailabilityService` (`hasOverlap()` & `availableSlots()`) dan papa
        ) {
        }
 
+       /**
+        * Adakah slot ini sudah ada tempahan aktif (pending/approved) yang bertindih?
+        *
+        * @param int|null $excludeBookingId abaikan tempahan ini (guna semasa lulus)
+        */
        public function hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool
        {
-           // TODO: tulis sendiri — README §1.2. Petua: whereIn('status', BookingStatus::active())
+           $builder = $this->bookings->builder()
+               ->where('slot_id', $slotId)
+               ->whereIn('status', BookingStatus::active())
+               ->where('start_date <=', $end)     // sedia ada bermula sebelum/pada julat baharu tamat
+               ->where('end_date >=', $start);    // sedia ada tamat selepas/pada julat baharu bermula
+
+           if ($excludeBookingId !== null) {
+               $builder->where('id !=', $excludeBookingId);
+           }
+
+           return $builder->countAllResults() > 0;
        }
 
+       /**
+        * Slot aktif yang TIADA tempahan aktif bertindih dalam julat [start, end].
+        *
+        * @return list<array<string, mixed>> baris parking_slots + zone_code, zone_name
+        */
        public function availableSlots(string $start, string $end, ?string $category = null, ?int $zoneId = null): array
        {
-           // TODO: withZone() + is_active + whereNotIn(subquery) + penapis pilihan — README §1.2
+           $query = $this->slots->withZone()
+               ->where('parking_slots.is_active', 1)
+               // Subquery: slot yang SIBUK dalam julat → kecualikan
+               ->whereNotIn('parking_slots.id', static fn (BaseBuilder $sub) => $sub
+                   ->select('slot_id')
+                   ->from('slot_bookings')
+                   ->whereIn('status', BookingStatus::active())
+                   ->where('start_date <=', $end)
+                   ->where('end_date >=', $start));
+
+           if ($category !== null && $category !== '') {
+               $query->where('parking_slots.category', $category);
+           }
+
+           if ($zoneId !== null) {
+               $query->where('parking_slots.zone_id', $zoneId);
+           }
+
+           return $query->findAll();
        }
    }
    ```
 
-3. Daftar dalam `app/Config/Services.php` (tambah `use App\Services\SlotAvailabilityService;`):
+3. Daftar dalam `app/Config/Services.php` — tambah kaedah ini dalam kelas `Services`, selepas `bookingService()` (tambah juga `use App\Services\SlotAvailabilityService;`):
 
    ```php
    public static function slotAvailability(bool $getShared = true): SlotAvailabilityService
@@ -289,7 +334,7 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
 
 **C. `BookingService` versi 2**
 
-3. Tulis semula `app/Services/BookingService.php` mengikut README §2.2–2.3. Senarai semak — tanda setiap satu:
+3. Gantikan seluruh `app/Services/BookingService.php` dengan versi 2 di bawah (README §2.2–2.3 menerangkan setiap bahagian). Senarai semak — tanda setiap satu selepas anda menemuinya dalam kod:
    - [ ] Konstruktor menerima `StatusLogModel $logs`, `SlotAvailabilityService $availability`, `ReferenceNumberService $refNumbers`, `?BaseConnection $db` (lalai `db_connect()`)
    - [ ] `create()`: `assertValidPeriod()` → `assertVehicleOwnedBy()` → `transBegin()` → kunci `users` → kunci `parking_slots` → slot aktif? → BR-TLK-04 → BR-TLK-01 → `next('TLK')` → `insert` → `record(null → pending)` → `transCommit()`
    - [ ] `catch (Throwable $e) { transRollback(); throw $e; }`
@@ -298,16 +343,285 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
    - [ ] `transition()`: kunci baris tempahan → `canTransitionTo()` → jika lulus: kunci slot + `hasOverlap(…, $bookingId)` → `update` → `record()`
    - [ ] `lockRow()` guna `prefixTable()` + binding `?`
 
-   Pembantu `isAdmin()` untuk `cancel()`:
+   `app/Services/BookingService.php`:
 
    ```php
-   private function isAdmin(int $userId): bool
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Services;
+
+   use App\Entities\SlotBooking;
+   use App\Enums\BookingStatus;
+   use App\Models\SlotBookingModel;
+   use App\Models\StatusLogModel;
+   use App\Models\VehicleModel;
+   use CodeIgniter\Database\BaseConnection;
+   use DateTimeImmutable;
+   use DomainException;
+   use RuntimeException;
+   use Throwable;
+
+   /**
+    * Logik perniagaan tempahan TLK. Controller HANYA memanggil kaedah di sini.
+    *
+    *  - BR-TLK-01 tiada pertindihan (SlotAvailabilityService::hasOverlap)
+    *  - BR-TLK-03 (end_date − start_date) ≤ 90 hari, end >= start, start bukan masa lalu (hari ini dibenarkan)
+    *  - BR-TLK-04 maksimum 1 tempahan aktif seorang
+    *  - BR-TLK-05 semakan + tulis dalam SATU transaksi dengan SELECT ... FOR UPDATE
+    *  - BR-TLK-06 hanya 'approved' boleh dibatalkan, oleh pemilik atau admin
+    *
+    * Semua pelanggaran peraturan → DomainException (mesej BM, selamat dipapar).
+    */
+   class BookingService
    {
-       return auth()->getProvider()->findById($userId)?->inGroup('admin') ?? false;
+       public const MODULE   = 'TLK';
+       public const MAX_DAYS = 90;
+
+       private BaseConnection $db;
+
+       public function __construct(
+           private readonly SlotBookingModel $bookings = new SlotBookingModel(),
+           private readonly VehicleModel $vehicles = new VehicleModel(),
+           private readonly StatusLogModel $logs = new StatusLogModel(),
+           private readonly SlotAvailabilityService $availability = new SlotAvailabilityService(),
+           private readonly ReferenceNumberService $refNumbers = new ReferenceNumberService(),
+           ?BaseConnection $db = null,
+       ) {
+           $this->db = $db ?? db_connect();
+       }
+
+       /**
+        * Cipta tempahan baharu berstatus 'pending'.
+        *
+        * @param array{vehicle_id:int|string, slot_id:int|string, start_date:string, end_date:string, reason:string} $data
+        *
+        * @throws DomainException jika mana-mana peraturan perniagaan dilanggar
+        */
+       public function create(int $userId, array $data): SlotBooking
+       {
+           $slotId    = (int) $data['slot_id'];
+           $vehicleId = (int) $data['vehicle_id'];
+           $start     = (string) $data['start_date'];
+           $end       = (string) $data['end_date'];
+
+           $this->assertValidPeriod($start, $end);           // BR-TLK-03 (pertahanan berlapis)
+           $this->assertVehicleOwnedBy($vehicleId, $userId);
+
+           $this->db->transException(true)->transBegin();   // ralat query → exception, bukan `false` senyap
+
+           try {
+               // Susunan kunci TETAP (pengguna → slot) untuk elak deadlock.
+               $this->lockRow('users', $userId);              // BR-TLK-04: serialkan per pemohon
+               $slot = $this->lockRow('parking_slots', $slotId, 'id, is_active, deleted_at');  // BR-TLK-05
+
+               if ($slot === null || $slot->deleted_at !== null || (int) $slot->is_active !== 1) {
+                   throw new DomainException('Slot yang dipilih tidak wujud atau tidak aktif.');
+               }
+
+               if ($this->countActiveForUser($userId) > 0) {
+                   throw new DomainException('Anda sudah mempunyai satu tempahan aktif (Menunggu/Diluluskan). Hanya 1 dibenarkan.');
+               }
+
+               if ($this->availability->hasOverlap($slotId, $start, $end)) {
+                   throw new DomainException('Slot ini sudah ditempah bagi tarikh yang bertindih. Sila pilih slot atau tarikh lain.');
+               }
+
+               $refNo = $this->refNumbers->next(self::MODULE);   // transaksi bersarang
+
+               $id = $this->bookings->insert([
+                   'ref_no'     => $refNo,
+                   'user_id'    => $userId,
+                   'vehicle_id' => $vehicleId,
+                   'slot_id'    => $slotId,
+                   'start_date' => $start,
+                   'end_date'   => $end,
+                   'reason'     => trim((string) $data['reason']),
+                   'status'     => BookingStatus::Pending->value,
+               ]);
+
+               if ($id === false) {
+                   throw new DomainException(implode(' ', $this->bookings->errors()));
+               }
+
+               if (! $this->logs->record(self::MODULE, (int) $id, null, BookingStatus::Pending->value, $userId)) {
+                   throw new RuntimeException('Gagal merekod log status.');
+               }
+
+               $this->db->transCommit();
+           } catch (Throwable $e) {
+               $this->db->transRollback();
+
+               throw $e;
+           }
+
+           return $this->bookings->find($id);
+       }
+
+       /** Pelulus meluluskan tempahan: pending → approved. */
+       public function approve(int $bookingId, int $actorId, ?string $remarks = null): SlotBooking
+       {
+           return $this->transition($bookingId, BookingStatus::Approved, $actorId, $remarks);
+       }
+
+       /** Pelulus menolak tempahan: pending → rejected. Sebab wajib. */
+       public function reject(int $bookingId, int $actorId, string $remarks): SlotBooking
+       {
+           if (mb_strlen(trim($remarks)) < 10) {
+               throw new DomainException('Sebab penolakan wajib diisi (sekurang-kurangnya 10 aksara).');
+           }
+
+           return $this->transition($bookingId, BookingStatus::Rejected, $actorId, $remarks);
+       }
+
+       /**
+        * BR-TLK-06: batal tempahan yang telah DILULUSKAN: approved → cancelled.
+        * Dibenarkan untuk pemilik tempahan atau admin. 'pending' TIDAK boleh dibatalkan
+        * (BookingStatus::canTransitionTo menolaknya).
+        */
+       public function cancel(int $bookingId, int $actorId, ?string $remarks = null): SlotBooking
+       {
+           $booking = $this->bookings->find($bookingId);
+
+           if ($booking === null || (! $booking->isOwnedBy($actorId) && ! $this->isAdmin($actorId))) {
+               // Mesej sama untuk "tiada" & "bukan milik anda" — jangan dedahkan kewujudan rekod.
+               throw new DomainException('Tempahan tidak dijumpai.');
+           }
+
+           return $this->transition($bookingId, BookingStatus::Cancelled, $actorId, $remarks);
+       }
+
+       /**
+        * BR-TLK-03. Awam supaya boleh diuji terus.
+        *
+        * @throws DomainException
+        */
+       public function assertValidPeriod(string $start, string $end): void
+       {
+           $startDate = DateTimeImmutable::createFromFormat('!Y-m-d', $start);
+           $endDate   = DateTimeImmutable::createFromFormat('!Y-m-d', $end);
+
+           if ($startDate === false || $endDate === false) {
+               throw new DomainException('Format tarikh tidak sah (YYYY-MM-DD).');
+           }
+
+           if ($startDate < new DateTimeImmutable('today')) {
+               throw new DomainException('Tarikh mula tidak boleh pada masa lalu.');
+           }
+
+           if ($endDate < $startDate) {
+               throw new DomainException('Tarikh tamat mesti sama atau selepas tarikh mula.');
+           }
+
+           // Kanun: (end_date − start_date) ≤ 90 hari. Tempahan satu hari (end = start) → 0, dibenarkan.
+           if ($startDate->diff($endDate)->days > self::MAX_DAYS) {
+               throw new DomainException('Tarikh tamat tidak boleh melebihi ' . self::MAX_DAYS . ' hari selepas tarikh mula.');
+           }
+       }
+
+       // ------------------------------------------------------------------
+
+       private function transition(int $bookingId, BookingStatus $to, int $actorId, ?string $remarks): SlotBooking
+       {
+           $this->db->transException(true)->transBegin();   // ralat query → exception, bukan `false` senyap
+
+           try {
+               // Kunci baris tempahan: dua pelulus serentak tidak boleh memutuskan rekod sama.
+               $locked = $this->lockRow('slot_bookings', $bookingId, 'id, slot_id, status, start_date, end_date');
+
+               if ($locked === null) {
+                   throw new DomainException('Tempahan tidak dijumpai.');
+               }
+
+               $from = BookingStatus::from($locked->status);
+
+               if (! $from->canTransitionTo($to)) {
+                   throw new DomainException(sprintf(
+                       'Status "%s" tidak boleh ditukar kepada "%s".',
+                       $from->label(),
+                       $to->label(),
+                   ));
+               }
+
+               if ($to === BookingStatus::Approved) {
+                   $this->lockRow('parking_slots', (int) $locked->slot_id);
+
+                   // Pertahanan berlapis BR-TLK-01: semak semula ketika lulus.
+                   if ($this->availability->hasOverlap((int) $locked->slot_id, $locked->start_date, $locked->end_date, $bookingId)) {
+                       throw new DomainException('Tidak boleh lulus: terdapat tempahan aktif lain yang bertindih.');
+                   }
+               }
+
+               $update = ['status' => $to->value];
+
+               if (in_array($to, [BookingStatus::Approved, BookingStatus::Rejected], true)) {
+                   $update['decided_by'] = $actorId;
+                   $update['decided_at'] = date('Y-m-d H:i:s');
+               }
+
+               // Semak SETIAP tulisan: tiada log tanpa perubahan status, tiada perubahan tanpa log (BR-PAS-05 corak sama)
+               if (! $this->bookings->update($bookingId, $update)) {
+                   throw new RuntimeException('Gagal mengemas kini tempahan: ' . implode(' ', $this->bookings->errors()));
+               }
+
+               if (! $this->logs->record(self::MODULE, $bookingId, $from->value, $to->value, $actorId, $remarks)) {
+                   throw new RuntimeException('Gagal merekod log status.');
+               }
+
+               $this->db->transCommit();
+           } catch (Throwable $e) {
+               $this->db->transRollback();
+
+               throw $e;
+           }
+
+           return $this->bookings->find($bookingId);
+       }
+
+       /**
+        * SELECT ... FOR UPDATE pada satu baris (id). Query Builder CI4 tiada
+        * kaedah lockForUpdate(), jadi kita guna query dengan binding (?) —
+        * nama jadual dari kod kita sendiri, BUKAN input pengguna.
+        */
+       private function lockRow(string $table, int $id, string $columns = 'id'): ?object
+       {
+           $sql = sprintf('SELECT %s FROM %s WHERE id = ? FOR UPDATE', $columns, $this->db->prefixTable($table));
+
+           $query = $this->db->query($sql, [$id]);
+
+           if ($query === false) {   // DBDebug = false: query() pulang false, bukan exception
+               throw new RuntimeException("Gagal mengunci baris {$table}#{$id}.");
+           }
+
+           return $query->getRow();
+       }
+
+       private function isAdmin(int $userId): bool
+       {
+           return auth()->getProvider()->findById($userId)?->inGroup('admin') ?? false;
+       }
+
+       private function countActiveForUser(int $userId): int
+       {
+           return $this->bookings->builder()
+               ->where('user_id', $userId)
+               ->whereIn('status', BookingStatus::active())
+               ->countAllResults();
+       }
+
+       private function assertVehicleOwnedBy(int $vehicleId, int $userId): void
+       {
+           $owned = $this->vehicles->where('id', $vehicleId)->where('user_id', $userId)->countAllResults() > 0;
+
+           if (! $owned) {
+               throw new DomainException('Kenderaan yang dipilih bukan milik anda.');
+           }
+       }
    }
    ```
 
-4. Kemas kini `Config\Services::bookingService()` — connection dikongsi untuk kedua-dua service:
+4. Kemas kini `Config\Services::bookingService()` — connection dikongsi untuk kedua-dua service. Gantikan baris `return new BookingService(refNumbers: new ReferenceNumberService(db_connect()));` di hujung kaedah dengan:
 
    ```php
    return new BookingService(
@@ -396,22 +710,89 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
    }
    ```
 
-7. `app/Views/tlk/decision/index.php` — jadual tempahan dengan filter status; untuk setiap baris `pending`: borang **Lulus** (POST, `data-confirm`) dan butang **Tolak** yang membuka baris `collapse` mengandungi input `remarks` (min 10 aksara) + butang *Sahkan Tolak*. Untuk admin, baris `approved` ada borang **Batal** → `tlk.cancel`. Tulis sendiri; rujuk pola dari `tlk/booking/index.php`. Petua bagi baris tolak:
+7. `app/Views/tlk/decision/index.php` — jadual tempahan dengan filter status. Setiap baris `pending` ada borang **Lulus** (POST, `data-confirm`) dan butang **Tolak** yang membuka baris `collapse` mengandungi input `remarks` (min 10 aksara) + butang *Sahkan Tolak*. Untuk admin, baris `approved` ada borang **Batal** → `tlk.cancel`. Badge status dan pautan no. rujukan ditambah dalam Lab 6.4:
 
    ```php
-   <tr class="collapse" id="tolak-<?= $b->id ?>">
-       <td colspan="6" class="bg-light">
-           <form action="<?= url_to('tlk.decision.reject', $b->id) ?>" method="post" class="d-flex gap-2"
-                 data-confirm="Tolak <?= esc($b->ref_no, 'attr') ?>?">
-               <?= csrf_field() ?>
-               <input type="text" name="remarks" class="form-control" minlength="10" required placeholder="Sebab penolakan (min 10 aksara)">
-               <button class="btn btn-danger" type="submit">Sahkan Tolak</button>
-           </form>
-       </td>
-   </tr>
+   <?= $this->extend('layouts/main') ?>
+
+   <?= $this->section('content') ?>
+   <?php
+   use App\Enums\BookingStatus;
+
+   $isAdmin = auth()->user()->inGroup('admin');
+   ?>
+
+   <form method="get" class="d-flex gap-2 mb-3" style="max-width: 420px">
+       <?= form_dropdown('status', ['' => 'Semua status'] + BookingStatus::options(), $status, ['class' => 'form-select', 'aria-label' => 'Tapis status']) ?>
+       <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-funnel"></i> Tapis</button>
+   </form>
+
+   <div class="card">
+       <div class="table-responsive">
+           <table class="table align-middle mb-0">
+               <thead class="table-light">
+               <tr><th>No. Rujukan</th><th>Pemohon</th><th>Slot</th><th>Tempoh</th><th>Status</th><th class="text-end">Tindakan</th></tr>
+               </thead>
+               <tbody>
+               <?php foreach ($bookings as $b): ?>
+                   <?php $current = $b->statusEnum(); ?>
+                   <tr>
+                       <td class="fw-semibold"><?= esc($b->ref_no) ?></td>
+                       <td><?= esc($b->applicant_name ?? '—') ?><div class="small text-muted"><?= esc($b->plate_no) ?></div></td>
+                       <td><?= esc($b->zone_code) ?> / <?= esc($b->slot_no) ?></td>
+                       <td><?= esc($b->start_date) ?> hingga <?= esc($b->end_date) ?> <span class="text-muted small">(<?= $b->durationDays() ?> hari)</span></td>
+                       <td><?= esc($b->statusLabel()) ?></td>
+                       <td class="text-end text-nowrap">
+                           <?php if ($current->canTransitionTo(BookingStatus::Approved)): ?>
+                               <form action="<?= url_to('tlk.decision.approve', $b->id) ?>" method="post" class="d-inline"
+                                     data-confirm="Luluskan <?= esc($b->ref_no, 'attr') ?>?">
+                                   <?= csrf_field() ?>
+                                   <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i> Lulus</button>
+                               </form>
+                           <?php endif ?>
+                           <?php if ($current->canTransitionTo(BookingStatus::Rejected)): ?>
+                               <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="collapse"
+                                       data-bs-target="#tolak-<?= $b->id ?>" aria-expanded="false" aria-controls="tolak-<?= $b->id ?>">
+                                   <i class="bi bi-x-lg"></i> Tolak
+                               </button>
+                           <?php endif ?>
+                           <?php if ($isAdmin && $current->canTransitionTo(BookingStatus::Cancelled)): ?>
+                               <form action="<?= url_to('tlk.cancel', $b->id) ?>" method="post" class="d-inline"
+                                     data-confirm="Batalkan <?= esc($b->ref_no, 'attr') ?>? Tindakan ini tidak boleh diundur.">
+                                   <?= csrf_field() ?>
+                                   <button type="submit" class="btn btn-sm btn-outline-secondary"><i class="bi bi-x-circle"></i> Batal</button>
+                               </form>
+                           <?php endif ?>
+                       </td>
+                   </tr>
+                   <?php if ($current->canTransitionTo(BookingStatus::Rejected)): ?>
+                       <tr class="collapse" id="tolak-<?= $b->id ?>">
+                           <td colspan="6" class="bg-light">
+                               <form action="<?= url_to('tlk.decision.reject', $b->id) ?>" method="post" class="d-flex gap-2"
+                                     data-confirm="Tolak <?= esc($b->ref_no, 'attr') ?>?">
+                                   <?= csrf_field() ?>
+                                   <label for="remarks-<?= $b->id ?>" class="visually-hidden">Sebab penolakan</label>
+                                   <input type="text" name="remarks" id="remarks-<?= $b->id ?>" class="form-control" minlength="10" required
+                                          placeholder="Sebab penolakan (min 10 aksara)">
+                                   <button class="btn btn-danger text-nowrap" type="submit">Sahkan Tolak</button>
+                               </form>
+                           </td>
+                       </tr>
+                   <?php endif ?>
+               <?php endforeach ?>
+               <?php if ($bookings === []): ?>
+                   <tr><td colspan="6" class="text-center text-muted py-4">Tiada tempahan untuk status ini.</td></tr>
+               <?php endif ?>
+               </tbody>
+           </table>
+       </div>
+   </div>
+
+   <div class="mt-3"><?= $pager->links() ?></div>
+   <?= $this->endSection() ?>
    ```
 
-8. `BookingController` — kemas kini `show()` (pelulus/admin boleh lihat; hantar sejarah) dan tambah `cancel()`:
+8. `BookingController` — gantikan `show()` (pelulus/admin boleh lihat; hantar sejarah) dan tambah `cancel()`. Tambah di atas kelas jika belum ada: `use App\Models\StatusLogModel; use App\Services\BookingService; use CodeIgniter\HTTP\RedirectResponse; use DomainException;`
 
    ```php
    public function show(int $id): string
@@ -442,32 +823,73 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
    }
    ```
 
-9. `app/Views/tlk/booking/show.php` — tambah lajur kanan **Sejarah Status** dan butang Batal bersyarat:
+9. Gantikan seluruh `app/Views/tlk/booking/show.php` — dua lajur: butiran tempahan (dengan butang Batal bersyarat) di kiri, **Sejarah Status** di kanan:
 
    ```php
-   <?php if ($booking->statusEnum()->canTransitionTo(BookingStatus::Cancelled)): ?>
-       <form action="<?= url_to('tlk.cancel', $booking->id) ?>" method="post"
-             data-confirm="Batalkan tempahan <?= esc($booking->ref_no, 'attr') ?>? Tindakan ini tidak boleh diundur.">
-           <?= csrf_field() ?>
-           <button type="submit" class="btn btn-outline-danger"><i class="bi bi-x-circle"></i> Batalkan Tempahan</button>
-       </form>
-   <?php endif ?>
+   <?= $this->extend('layouts/main') ?>
 
-   <ul class="list-group list-group-flush">
-       <?php foreach ($history as $log): ?>
-           <?php $to = BookingStatus::from($log['to_status']); ?>
-           <li class="list-group-item">
-               <span class="badge text-bg-<?= esc($to->badge(), 'attr') ?>"><?= esc($to->label()) ?></span>
-               <span class="small text-muted ms-1"><?= esc($log['created_at']) ?> · <?= esc($log['actor_name'] ?? '-') ?></span>
-               <?php if (! empty($log['remarks'])): ?>
-                   <div class="small mt-1"><?= esc($log['remarks']) ?></div>
+   <?= $this->section('content') ?>
+   <?php
+   use App\Enums\BookingStatus;
+   use App\Enums\SlotCategory;
+   ?>
+   <div class="row g-4">
+       <div class="col-lg-7">
+           <div class="card">
+               <div class="card-header d-flex justify-content-between align-items-center">
+                   <span class="fw-semibold"><?= esc($booking->ref_no) ?></span>
+                   <span><?= esc($booking->statusLabel()) ?></span>
+               </div>
+               <div class="card-body">
+                   <dl class="row mb-0">
+                       <dt class="col-sm-4">Pemohon</dt>
+                       <dd class="col-sm-8"><?= esc($booking->applicant_name ?? '—') ?></dd>
+                       <dt class="col-sm-4">Slot</dt>
+                       <dd class="col-sm-8"><?= esc($booking->zone_code) ?> / <?= esc($booking->slot_no) ?> (<?= esc(SlotCategory::from($booking->category)->label()) ?>)</dd>
+                       <dt class="col-sm-4">Kenderaan</dt>
+                       <dd class="col-sm-8"><?= esc($booking->plate_no) ?></dd>
+                       <dt class="col-sm-4">Tempoh</dt>
+                       <dd class="col-sm-8"><?= esc($booking->start_date) ?> hingga <?= esc($booking->end_date) ?> (<?= $booking->durationDays() ?> hari)</dd>
+                       <dt class="col-sm-4">Sebab</dt>
+                       <dd class="col-sm-8"><?= nl2br(esc($booking->reason)) ?></dd>
+                   </dl>
+               </div>
+               <?php if ($booking->statusEnum()->canTransitionTo(BookingStatus::Cancelled)): ?>
+                   <div class="card-footer bg-white">
+                       <form action="<?= url_to('tlk.cancel', $booking->id) ?>" method="post"
+                             data-confirm="Batalkan tempahan <?= esc($booking->ref_no, 'attr') ?>? Tindakan ini tidak boleh diundur.">
+                           <?= csrf_field() ?>
+                           <button type="submit" class="btn btn-outline-danger"><i class="bi bi-x-circle"></i> Batalkan Tempahan</button>
+                       </form>
+                   </div>
                <?php endif ?>
-           </li>
-       <?php endforeach ?>
-   </ul>
-   ```
+           </div>
+       </div>
 
-   (tambah `use App\Enums\BookingStatus;` di atas view)
+       <div class="col-lg-5">
+           <div class="card">
+               <div class="card-header fw-semibold"><i class="bi bi-clock-history"></i> Sejarah Status</div>
+               <ul class="list-group list-group-flush">
+                   <?php foreach ($history as $log): ?>
+                       <?php $to = BookingStatus::from($log['to_status']); ?>
+                       <li class="list-group-item">
+                           <span class="badge text-bg-<?= esc($to->badge(), 'attr') ?>"><?= esc($to->label()) ?></span>
+                           <span class="small text-muted ms-1"><?= esc($log['created_at']) ?> · <?= esc($log['actor_name'] ?? '-') ?></span>
+                           <?php if (! empty($log['remarks'])): ?>
+                               <div class="small mt-1"><?= esc($log['remarks']) ?></div>
+                           <?php endif ?>
+                       </li>
+                   <?php endforeach ?>
+                   <?php if ($history === []): ?>
+                       <li class="list-group-item text-muted fst-italic">Tiada rekod sejarah.</li>
+                   <?php endif ?>
+               </ul>
+           </div>
+       </div>
+   </div>
+   <a href="<?= url_to('tlk.index') ?>" class="btn btn-link mt-3 px-0">&larr; Kembali</a>
+   <?= $this->endSection() ?>
+   ```
 
 **E. Buktikan kunci dengan dua sesi MySQL (demo wajib)**
 
@@ -536,7 +958,7 @@ Menulis ujian integrasi `BookingServiceTest` (pertindihan, BR-TLK-03/04, peralih
    php spark db:table --show --dbgroup tests                            # sambungan ke kkm_latihan_test berjaya
    ```
 
-2. `tests/tlk/BookingServiceTest.php` — mula dengan rangka + pembantu (salin), kemudian tulis ujian **satu demi satu**, jalankan selepas setiap satu:
+2. `tests/tlk/BookingServiceTest.php` — salin rangka + pembantu ini dahulu, kemudian tampal ujian dari langkah 3 **satu demi satu**, jalankan selepas setiap satu:
 
    ```php
    <?php
@@ -623,7 +1045,7 @@ Menulis ujian integrasi `BookingServiceTest` (pertindihan, BR-TLK-03/04, peralih
    }
    ```
 
-3. Tulis ujian ini (nama sebagai panduan; README §3.3 memberi contoh dua daripadanya):
+3. Ujian yang akan anda tambah (README §3.3 menerangkan dua daripadanya):
 
    | # | Ujian | Semak |
    |---|-------|-------|
@@ -640,7 +1062,180 @@ Menulis ujian integrasi `BookingServiceTest` (pertindihan, BR-TLK-03/04, peralih
    | 11 | `testFailedTransitionDoesNotWriteLog` | README §3.3 |
    | 12 | `testOwnerCanCancelApprovedBooking` / `testOtherUserCannotCancelBooking` / `testAdminCanCancelSomeoneElsesApprovedBooking` | Hanya pemilik atau admin |
 
-   Untuk ujian admin: `auth()->getProvider()->findById($adminId)->addGroup('admin');`
+   Tampal kaedah di bawah di tempat baris komen penanda ujian dalam rangka langkah 2, satu ujian pada satu masa. Ujian admin memberi kumpulan `admin` dengan `auth()->getProvider()->findById($adminId)->addGroup('admin');`:
+
+   ```php
+       public function testCreateGeneratesReferencePendingStatusAndLog(): void
+       {
+           $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+
+           $this->assertSame('TLK-' . date('Y') . '-0001', $booking->ref_no);
+           $this->assertSame(BookingStatus::Pending, $booking->statusEnum());
+
+           $this->seeInDatabase('status_logs', [
+               'module'      => 'TLK',
+               'record_id'   => $booking->id,
+               'from_status' => null,
+               'to_status'   => 'pending',
+               'actor_id'    => $this->applicantId,
+           ]);
+       }
+
+       /**
+        * Tempahan sedia ada: hari +10 hingga +20 (jadual Lab 6.1 langkah 1).
+        *
+        * @return array<string, array{int, int, bool}> [mula, tamat, dijangka bertindih?]
+        */
+       public static function rangeProvider(): array
+       {
+           return [
+               'sama tepat'                => [10, 20, true],
+               'bertindih di hujung awal'  => [5, 10, true],    // hari +10 dikongsi
+               'bertindih di hujung akhir' => [20, 25, true],   // hari +20 dikongsi
+               'di dalam'                  => [12, 15, true],
+               'meliputi keseluruhan'      => [5, 25, true],
+               'sebelum (bersebelahan)'    => [5, 9, false],
+               'selepas (bersebelahan)'    => [21, 25, false],
+           ];
+       }
+
+       #[DataProvider('rangeProvider')]
+       public function testOverlapDetection(int $start, int $end, bool $expected): void
+       {
+           $this->service->create($this->applicantId, $this->payload(10, 20));
+
+           $overlap = (new SlotAvailabilityService())->hasOverlap($this->slotId, $this->day($start), $this->day($end));
+
+           $this->assertSame($expected, $overlap);
+       }
+
+       public function testCreateRejectsOverlappingBooking(): void
+       {
+           $this->service->create($this->applicantId, $this->payload(10, 20));
+
+           $this->expectException(DomainException::class);
+           $this->expectExceptionMessage('bertindih');
+
+           $this->service->create($this->otherApplicantId, $this->payload(15, 25, $this->otherVehicleId));
+       }
+
+       public function testRejectedBookingFreesTheSlot(): void
+       {
+           $first = $this->service->create($this->applicantId, $this->payload(10, 20));
+           $this->service->reject($first->id, $this->approverId, 'Dokumen sokongan tidak lengkap.');
+
+           // Status 'rejected' bukan aktif → slot boleh ditempah semula
+           $second = $this->service->create($this->otherApplicantId, $this->payload(10, 20, $this->otherVehicleId));
+
+           $this->assertSame(BookingStatus::Pending, $second->statusEnum());
+       }
+
+       public function testMoreThan90DaysIsRejected(): void
+       {
+           $this->expectException(DomainException::class);
+           $this->expectExceptionMessage('90 hari');
+
+           $this->service->create($this->applicantId, $this->payload(1, 92));   // end − start = 91 hari
+       }
+
+       public function testExactly90DaysIsAllowed(): void
+       {
+           $booking = $this->service->create($this->applicantId, $this->payload(1, 91));   // end − start = 90 hari
+
+           $this->assertSame(BookingStatus::Pending, $booking->statusEnum());
+       }
+
+       public function testSingleDayStartingTodayIsAllowed(): void
+       {
+           $booking = $this->service->create($this->applicantId, $this->payload(0, 0));
+
+           $this->assertSame(1, $booking->durationDays());
+       }
+
+       public function testApplicantCanHaveOnlyOneActiveBooking(): void
+       {
+           $this->db->table('parking_slots')->insert(['zone_id' => $this->zoneId, 'slot_no' => 'T-02', 'category' => 'oku', 'is_active' => 1]);
+           $secondSlot = (int) $this->db->insertID();
+
+           $this->service->create($this->applicantId, $this->payload(10, 20));
+
+           $this->expectException(DomainException::class);
+           $this->expectExceptionMessage('tempahan aktif');
+
+           $this->service->create($this->applicantId, ['slot_id' => $secondSlot] + $this->payload(30, 40));
+       }
+
+       public function testApproveSetsDecisionFieldsAndLogs(): void
+       {
+           $booking  = $this->service->create($this->applicantId, $this->payload(3, 10));
+           $approved = $this->service->approve($booking->id, $this->approverId);
+
+           $this->assertSame(BookingStatus::Approved, $approved->statusEnum());
+           $this->assertSame($this->approverId, $approved->decided_by);
+           $this->assertNotNull($approved->decided_at);
+           $this->seeInDatabase('status_logs', ['record_id' => $booking->id, 'from_status' => 'pending', 'to_status' => 'approved']);
+       }
+
+       public function testCannotApproveRejectedBooking(): void
+       {
+           $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+           $this->service->reject($booking->id, $this->approverId, 'Kategori slot tidak sepadan.');
+
+           $this->expectException(DomainException::class);
+
+           $this->service->approve($booking->id, $this->approverId);
+       }
+
+       public function testFailedTransitionDoesNotWriteLog(): void
+       {
+           $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+
+           try {
+               $this->service->cancel($booking->id, $this->applicantId);   // pending → cancelled TIDAK dibenarkan
+               $this->fail('Sepatutnya DomainException');
+           } catch (DomainException) {
+               // dijangka
+           }
+
+           $this->seeNumRecords(1, 'status_logs', ['record_id' => $booking->id]);   // hanya log 'pending'
+           $this->seeInDatabase('slot_bookings', ['id' => $booking->id, 'status' => 'pending']);
+       }
+
+       public function testOwnerCanCancelApprovedBooking(): void
+       {
+           $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+           $this->service->approve($booking->id, $this->approverId);
+
+           $cancelled = $this->service->cancel($booking->id, $this->applicantId);
+
+           $this->assertSame(BookingStatus::Cancelled, $cancelled->statusEnum());
+           $this->seeNumRecords(3, 'status_logs', ['record_id' => $booking->id]);
+       }
+
+       public function testOtherUserCannotCancelBooking(): void
+       {
+           $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+           $this->service->approve($booking->id, $this->approverId);
+
+           $this->expectException(DomainException::class);
+
+           $this->service->cancel($booking->id, $this->otherApplicantId);
+       }
+
+       public function testAdminCanCancelSomeoneElsesApprovedBooking(): void
+       {
+           $adminId = $this->makeUser('admin_ujian', 'Admin Ujian');
+           auth()->getProvider()->findById($adminId)->addGroup('admin');
+
+           $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+           $this->service->approve($booking->id, $this->approverId);
+
+           $cancelled = $this->service->cancel($booking->id, $adminId, 'Slot diperlukan untuk kerja penyelenggaraan.');
+
+           $this->assertSame(BookingStatus::Cancelled, $cancelled->statusEnum());
+           $this->seeInDatabase('status_logs', ['record_id' => $booking->id, 'to_status' => 'cancelled', 'actor_id' => $adminId]);
+       }
+   ```
 
    ```bash
    composer test -- --no-coverage --testdox tests/tlk/BookingServiceTest.php
@@ -815,10 +1410,16 @@ Menggilap UI Modul TLK (badge, flash, pengesahan, pagination Bootstrap, menu iku
 
 ### Langkah
 
-1. **Badge status** — dalam `tlk/booking/index.php`, `tlk/booking/show.php`, `tlk/decision/index.php` gantikan teks status dengan:
+1. **Badge status** — dalam `tlk/booking/index.php` dan `tlk/decision/index.php`, gantikan baris `<td><?= esc($b->statusLabel()) ?></td>` dengan:
 
    ```php
-   <span class="badge text-bg-<?= esc($b->statusBadge(), 'attr') ?>"><?= esc($b->statusLabel()) ?></span>
+   <td><span class="badge text-bg-<?= esc($b->statusBadge(), 'attr') ?>"><?= esc($b->statusLabel()) ?></span></td>
+   ```
+
+   Dalam `tlk/booking/show.php` (header kad), gantikan `<span><?= esc($booking->statusLabel()) ?></span>` dengan:
+
+   ```php
+   <span class="badge text-bg-<?= esc($booking->statusBadge(), 'attr') ?>"><?= esc($booking->statusLabel()) ?></span>
    ```
 
 2. **Flash** — `partials/flash.php` menjadi boleh ditutup dengan ikon (kekalkan kedua-dua kunci berjaya `success` dan `message` — konvensyen Lab 4):
@@ -840,7 +1441,95 @@ Menggilap UI Modul TLK (badge, flash, pengesahan, pagination Bootstrap, menu iku
    <?php endif ?>
    ```
 
-3. **Layout** — kemas kini `app/Views/layouts/main.php` mengikut `layout-main.php.txt` (modul **Templat & Rujukan**): menu *Tempahan Saya*, *Mohon Slot* (`can('tlk.apply')`), *Slot Kosong*, *Keputusan TLK* (`can('tlk.decide')`), *Urus Slot* (`inGroup('admin')`), dan skrip `data-confirm` sebelum `</body>` (README §4.1).
+3. **Layout** — gantikan seluruh `app/Views/layouts/main.php`: menu *Tempahan Saya*, *Mohon Slot* (`can('tlk.apply')`), *Slot Kosong*, *Keputusan TLK* (`can('tlk.decide')`), *Urus Slot* (`inGroup('admin')`), dan skrip `data-confirm` sebelum `</body>` (README §4.1):
+
+   ```php
+   <?php
+   /**
+    * Layout utama — Bootstrap 5.3 + Bootstrap Icons.
+    * Guna dalam view: <?= $this->extend('layouts/main') ?> + <?= $this->section('content') ?> (kandungan) <?= $this->endSection() ?>
+    *
+    * @var \CodeIgniter\View\View $this
+    * @var string|null            $title
+    */
+   $user = auth()->loggedIn() ? auth()->user() : null;
+   ?>
+   <!doctype html>
+   <html lang="ms">
+   <head>
+       <meta charset="utf-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1">
+       <title><?= esc($title ?? 'Sistem TLK & Pas') ?> · KKM (Latihan)</title>
+       <!-- Tiada internet di makmal? Muat turun fail ke public/assets/ dan tukar href kepada base_url('assets/bootstrap.min.css') -->
+       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+       <?= $this->renderSection('head') ?>
+   </head>
+   <body class="bg-body-tertiary d-flex flex-column min-vh-100">
+
+   <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+       <div class="container">
+           <a class="navbar-brand fw-semibold" href="<?= site_url('/') ?>">
+               <i class="bi bi-p-square-fill"></i> TLK &amp; Pas
+           </a>
+           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navUtama"
+                   aria-controls="navUtama" aria-expanded="false" aria-label="Menu">
+               <span class="navbar-toggler-icon"></span>
+           </button>
+
+           <div class="collapse navbar-collapse" id="navUtama">
+               <?php if ($user !== null): ?>
+                   <ul class="navbar-nav me-auto">
+                       <li class="nav-item"><a class="nav-link" href="<?= url_to('tlk.index') ?>"><i class="bi bi-list-ul"></i> Tempahan Saya</a></li>
+                       <?php if ($user->can('tlk.apply')): ?>
+                           <li class="nav-item"><a class="nav-link" href="<?= url_to('tlk.new') ?>"><i class="bi bi-plus-circle"></i> Mohon Slot</a></li>
+                       <?php endif ?>
+                       <li class="nav-item"><a class="nav-link" href="<?= url_to('tlk.availability') ?>"><i class="bi bi-search"></i> Slot Kosong</a></li>
+                       <?php if ($user->can('tlk.decide')): ?>
+                           <li class="nav-item"><a class="nav-link" href="<?= url_to('tlk.decision.index') ?>"><i class="bi bi-check2-square"></i> Keputusan TLK</a></li>
+                       <?php endif ?>
+                       <?php if ($user->inGroup('admin')): ?>
+                           <li class="nav-item"><a class="nav-link" href="<?= url_to('admin.slot.index') ?>"><i class="bi bi-gear"></i> Urus Slot</a></li>
+                       <?php endif ?>
+                   </ul>
+                   <span class="navbar-text me-3">
+                       <i class="bi bi-person-circle"></i> <?= esc($user->full_name ?? $user->username) ?>
+                   </span>
+                   <a class="btn btn-outline-light btn-sm" href="<?= url_to('logout') ?>"><i class="bi bi-box-arrow-right"></i> Log Keluar</a>
+               <?php endif ?>
+           </div>
+       </div>
+   </nav>
+
+   <main class="container py-4 flex-grow-1">
+       <?php if (! empty($title)): ?>
+           <h1 class="h3 mb-3"><?= esc($title) ?></h1>
+       <?php endif ?>
+
+       <?= $this->include('partials/flash') ?>
+
+       <?= $this->renderSection('content') ?>
+   </main>
+
+   <footer class="py-3 border-top bg-white small text-muted">
+       <div class="container">Sistem latihan CI-KKM-10 · data sintetik sahaja</div>
+   </footer>
+
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+   <script>
+       // Dialog pengesahan: <form data-confirm="Anda pasti?"> — elak klik tidak sengaja.
+       document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+           form.addEventListener('submit', function (event) {
+               if (!window.confirm(form.dataset.confirm)) {
+                   event.preventDefault();
+               }
+           });
+       });
+   </script>
+   <?= $this->renderSection('scripts') ?>
+   </body>
+   </html>
+   ```
 
 4. **Pagination Bootstrap** — cipta `app/Views/pager/bootstrap_full.php`:
 
@@ -880,7 +1569,17 @@ Menggilap UI Modul TLK (badge, flash, pengesahan, pagination Bootstrap, menu iku
    ];
    ```
 
-5. **Pautan** — no. rujukan dalam `tlk/decision/index.php` menjadi pautan ke `url_to('tlk.show', $b->id)`; borang tempahan ada pautan *"Semak slot kosong dahulu"* ke `tlk.availability`.
+5. **Pautan** — dalam `tlk/decision/index.php`, gantikan baris `<td class="fw-semibold"><?= esc($b->ref_no) ?></td>` dengan pautan ke butiran:
+
+   ```php
+   <td class="fw-semibold"><a href="<?= url_to('tlk.show', $b->id) ?>"><?= esc($b->ref_no) ?></a></td>
+   ```
+
+   Dalam `tlk/booking/form.php`, tambah pautan ini terus selepas baris `$invalid` (sebelum `<?php if ($vehicles === []): ?>`):
+
+   ```php
+   <p><a href="<?= url_to('tlk.availability') ?>"><i class="bi bi-search"></i> Semak slot kosong dahulu</a></p>
+   ```
 
 6. **Senarai semak aksesibiliti ringkas:** setiap `<input>` ada `<label for>`; butang ikon ada teks; warna badge bukan satu-satunya petunjuk (label teks sentiasa ada).
 

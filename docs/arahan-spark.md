@@ -17,7 +17,7 @@ php spark make:model --help
 | `php spark list` | Senarai semua arahan, ikut kumpulan (`Database`, `Generators`, `Shield`, …) |
 | `php spark help <arahan>` | Argumen dan pilihan (`--table`, `--force`, …) bagi satu arahan |
 
-- **Penjana hanya mencipta rangka.** Fail baharu mengandungi kelas kosong dengan `// TODO` atau `//` — anda masih menulis isinya sendiri.
+- **Penjana hanya mencipta rangka.** Fail baharu mengandungi kelas kosong dengan `// TODO` atau `//` — isinya disalin daripada lab.
 - **Fail sedia ada tidak ditulis ganti.** Arahan memaparkan `File exists` dan berhenti. `--force` menulis ganti — jangan guna pada fail yang sudah anda ubah.
 - **Nama penuh, tanpa `--suffix`.** Kursus ini menulis nama kelas penuh: `DepartmentModel`, `DepartmentSeeder`, `RoleFilter`. Pilihan `--suffix` menambah `Model`/`Seeder`/`Controller` secara automatik, tetapi untuk controller hasilnya `JabatanController`, bukan `Jabatan` seperti dalam lab.
 

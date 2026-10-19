@@ -2,7 +2,7 @@
 
 [⬅️ Day 4 README](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · [🤝 COLLABORATION](../docs/kolaborasi.md) · 🧩 Code templates (**Templat & Rujukan** module) · [⚡ spark commands](../docs/arahan-spark.md)
 
-> **Lab rule:** try **manually first** (read the error, check the specification, ask your neighbour). Use AI (Claude Code) only after 10 minutes stuck — and only to *explain*, not to generate whole files. The templates in `templates/kod/` are for **checking**, not copying.
+> **Lab rule:** Every step gives **complete code to copy**. Read every line before you run it — you must be able to explain it (KOLABORASI §3). Stuck: read the full error message, ask the trainer or your neighbour, or use AI to *explain* the error.
 
 | Lab | Session | Time | Outcome |
 |-----|------|------|-------|
@@ -93,7 +93,20 @@ Set up tests (`composer test`) in the `kelas-ci-<nama>` project, check `.env`, i
 
    The list must contain `test`. The appstarter `composer.json` already has `"scripts": { "test": "phpunit" }`; if it is missing, add that block. This course runs the tests with `composer test` (the same as `vendor/bin/phpunit`, and it works in Git Bash and the Windows Command Prompt). PHPUnit arguments go after `--`: `composer test -- --filter BookingStatusTest`.
 
-   **Remove the coverage block.** Course laptops have no Xdebug/PCOV, and the appstarter `phpunit.dist.xml` asks for a coverage report with `failOnWarning="true"`. Without this step `composer test` prints *No code coverage driver available* and exits with code 1 even when every test passes. In VS Code, open `phpunit.dist.xml` and delete the whole `<coverage …> … </coverage>` block (keep `<source>`, `<testsuites>` and `<php>`). Check: `composer test` → `OK (…)`, exit code 0 (`echo $?` → `0`).
+   **Remove the coverage block.** Course laptops have no Xdebug/PCOV, and the appstarter `phpunit.dist.xml` asks for a coverage report with `failOnWarning="true"`. Without this step `composer test` prints *No code coverage driver available* and exits with code 1 even when every test passes. In VS Code, open `phpunit.dist.xml` and delete this whole `<coverage …> … </coverage>` block (keep `<source>`, `<testsuites>` and `<php>`):
+
+   ```xml
+   <coverage pathCoverage="false" ignoreDeprecatedCodeUnits="true">
+       <report>
+           <clover outputFile="build/logs/clover.xml"/>
+           <html outputDirectory="build/logs/html"/>
+           <php outputFile="build/logs/coverage.serialized"/>
+           <text outputFile="php://stdout" showUncoveredFiles="false"/>
+       </report>
+   </coverage>
+   ```
+
+   Check: `composer test` → `OK (…)`, exit code 0 (`echo $?` → `0`).
 
 2. Verify:
 
@@ -169,16 +182,34 @@ Set up tests (`composer test`) in the `kelas-ci-<nama>` project, check `.env`, i
    php spark shield:model UserModel
    ```
 
-   Edit `app/Models/UserModel.php` — add the profile fields:
+   Replace the whole content of the generated `app/Models/UserModel.php` with this code (the profile fields are added in `initialize()`):
+
+   `app/Models/UserModel.php`
 
    ```php
-   $this->allowedFields = [
-       ...$this->allowedFields,
-       'full_name',
-       'staff_no',
-       'department_id',
-       'phone',
-   ];
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Models;
+
+   use CodeIgniter\Shield\Models\UserModel as ShieldUserModel;
+
+   class UserModel extends ShieldUserModel
+   {
+       protected function initialize(): void
+       {
+           parent::initialize();
+
+           $this->allowedFields = [
+               ...$this->allowedFields,   // medan Shield asal
+               'full_name',
+               'staff_no',
+               'department_id',
+               'phone',
+           ];
+       }
+   }
    ```
 
 8. `app/Config/Auth.php` — find `$userProvider` and `$allowRegistration`, then change them:
@@ -196,7 +227,63 @@ Set up tests (`composer test`) in the `kelas-ci-<nama>` project, check `.env`, i
 
    🪟 The password is asked interactively. In a separate Git Bash window (not the VS Code terminal), if the prompt does not appear: `winpty php spark shield:user create …`.
 
-9. `app/Config/AuthGroups.php` — replace `$defaultGroup`, `$groups`, `$permissions`, `$matrix` with the values from SPEC §4 (4 groups: `applicant`, `reviewer`, `approver`, `admin`; 8 permissions: `admin.access`, `tlk.apply`, `tlk.decide`, `pas.apply`, `pas.review`, `pas.approve`, `laporan.view`, `statistik.view`). Write it yourself first based on README §2.3, then check it against `templates/kod/AuthGroups.php.txt` (**Templat & Rujukan** module).
+9. `app/Config/AuthGroups.php` — replace the whole content of the file with the code below: the SPEC §4 values (4 groups: `applicant`, `reviewer`, `approver`, `admin`; 8 permissions: `admin.access`, `tlk.apply`, `tlk.decide`, `pas.apply`, `pas.review`, `pas.approve`, `laporan.view`, `statistik.view`). The long comments in the original Shield file are not needed.
+
+   `app/Config/AuthGroups.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace Config;
+
+   use CodeIgniter\Shield\Config\AuthGroups as ShieldAuthGroups;
+
+   class AuthGroups extends ShieldAuthGroups
+   {
+       // Group untuk pengguna baharu (SPEC §4)
+       public string $defaultGroup = 'applicant';
+
+       public array $groups = [
+           'applicant' => [
+               'title'       => 'Pemohon',
+               'description' => 'Kakitangan pemohon',
+           ],
+           'reviewer' => [
+               'title'       => 'Penyemak',
+               'description' => 'Pegawai penyemak pas',
+           ],
+           'approver' => [
+               'title'       => 'Pelulus',
+               'description' => 'Pegawai pelulus pas & tempahan TLK',
+           ],
+           'admin' => [
+               'title'       => 'Pentadbir',
+               'description' => 'Pentadbir sistem',
+           ],
+       ];
+
+       // Setiap permission dalam $matrix mesti diisytihar di sini
+       public array $permissions = [
+           'admin.access'   => 'Akses modul pentadbir (slot, zon, pengguna)',
+           'tlk.apply'      => 'Memohon tempahan TLK',
+           'tlk.decide'     => 'Meluluskan / menolak tempahan TLK',
+           'pas.apply'      => 'Memohon pas',
+           'pas.review'     => 'Menyemak permohonan pas',
+           'pas.approve'    => 'Meluluskan permohonan pas',
+           'laporan.view'   => 'Melihat & mengeksport laporan',
+           'statistik.view' => 'Melihat dashboard statistik',
+       ];
+
+       public array $matrix = [
+           'applicant' => ['tlk.apply', 'pas.apply'],
+           'reviewer'  => ['pas.review', 'laporan.view'],
+           'approver'  => ['tlk.decide', 'pas.approve', 'laporan.view', 'statistik.view'],
+           'admin'     => ['admin.*', 'tlk.*', 'pas.*', 'laporan.*', 'statistik.*'],   // * = semua dalam skop
+       ];
+   }
+   ```
 
 10. `app/Config/Filters.php` — check that `$globals['before']` still contains `'csrf'` (turned on in Lab 2.4). (`shield:setup` only changes `Security::$csrfProtection = 'session'`; it does **not** turn on the CSRF filter.)
 
@@ -278,19 +365,39 @@ Set up tests (`composer test`) in the `kelas-ci-<nama>` project, check `.env`, i
     <?= $this->endSection() ?>
     ```
 
-15. `app/Controllers/Home.php`:
+15. `app/Controllers/Home.php` — replace the whole file:
+
+    `app/Controllers/Home.php`
 
     ```php
-    public function index(): string
+    <?php
+
+    namespace App\Controllers;
+
+    class Home extends BaseController
     {
-        return view('home', ['title' => 'Utama']);
+        public function index(): string
+        {
+            return view('home', ['title' => 'Utama']);
+        }
     }
     ```
 
-16. `app/Config/Routes.php` — protect the home page. Change the `/` line only; `php spark shield:setup` already added `service('auth')->routes($routes);` — do not add it a second time (duplicate routes):
+16. `app/Config/Routes.php` — protect the home page. Only the `/` line changes (`session` `filter` + route name `home`); the `jabatan` and `zon` routes from Day 3 stay. `php spark shield:setup` already added `service('auth')->routes($routes);` at the end — do not add it a second time (duplicate routes). The whole file after the change:
+
+    `app/Config/Routes.php`
 
     ```php
+    <?php
+
+    use CodeIgniter\Router\RouteCollection;
+
+    /** @var RouteCollection $routes */
     $routes->get('/', 'Home::index', ['filter' => 'session', 'as' => 'home']);
+    $routes->get('jabatan', 'Jabatan::index');
+    $routes->get('jabatan/baharu', 'Jabatan::baharu');
+    $routes->post('jabatan', 'Jabatan::simpan');
+    $routes->get('zon', 'Zon::index');
 
     service('auth')->routes($routes);
     ```
@@ -348,14 +455,44 @@ Complete the 10 migrations of specification §3 (2 from Lab 3.2 + 8 new, with FK
 
 2. Reopen `CreateDepartmentsTable` from Lab 3.2: the same `addField` + `addPrimaryKey` + `addUniqueKey` + `createTable(…, false, ['ENGINE' => 'InnoDB'])` pattern, with a `down()` that drops the table, is used for the 8 new files.
 
-3. Write `AddProfileFieldsToUsers` (README §3.3 — `addColumn` + `processIndexes`). `down()`:
+3. Fill in `AddProfileFieldsToUsers` (README §3.3 — `addColumn` + `processIndexes`). Replace the whole content of the generated file:
+
+   `app/Database/Migrations/…_AddProfileFieldsToUsers.php`
 
    ```php
-   public function down(): void
+   <?php
+
+   namespace App\Database\Migrations;
+
+   use CodeIgniter\Database\Migration;
+
+   /**
+    * Jadual `users` dicipta oleh Shield. Kita TIDAK mengubah migration Shield —
+    * kita tambah medan profil melalui migration sendiri.
+    */
+   class AddProfileFieldsToUsers extends Migration
    {
-       $this->forge->dropForeignKey('users', 'users_department_id_fk');
-       $this->forge->dropKey('users', 'users_staff_no_unique', false);
-       $this->forge->dropColumn('users', ['full_name', 'staff_no', 'department_id', 'phone']);
+       public function up(): void
+       {
+           $this->forge->addColumn('users', [
+               'full_name'     => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true, 'after' => 'username'],
+               'staff_no'      => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true, 'after' => 'full_name'],
+               'department_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true, 'after' => 'staff_no'],
+               'phone'         => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true, 'after' => 'department_id'],
+           ]);
+
+           // Tambah UNIQUE + FK pada jadual sedia ada: addKey/addForeignKey + processIndexes()
+           $this->forge->addUniqueKey('staff_no', 'users_staff_no_unique');
+           $this->forge->addForeignKey('department_id', 'departments', 'id', 'CASCADE', 'SET NULL', 'users_department_id_fk');
+           $this->forge->processIndexes('users');
+       }
+
+       public function down(): void
+       {
+           $this->forge->dropForeignKey('users', 'users_department_id_fk');
+           $this->forge->dropKey('users', 'users_staff_no_unique', false);
+           $this->forge->dropColumn('users', ['full_name', 'staff_no', 'department_id', 'phone']);
+       }
    }
    ```
 
@@ -368,7 +505,7 @@ Complete the 10 migrations of specification §3 (2 from Lab 3.2 + 8 new, with FK
    php spark migrate
    ```
 
-5. Write the remaining 7 migrations based on [`erd-rujukan.md`](../docs/erd-rujukan.md) and specification §3. Checklist for each file:
+5. Fill in the remaining 7 migrations with the code below (based on [`erd-rujukan.md`](../docs/erd-rujukan.md) and specification §3). Replace the whole content of each file generated by `make:migration`; the class names already match. Checklist for each file:
    - [ ] Table & field names **exactly** as in SPEC §3
    - [ ] `id` INT UNSIGNED AI + `created_at`/`updated_at` DATETIME NULL
    - [ ] Only `parking_slots` has `deleted_at`; `status_logs` has only `created_at` (audit records are never updated)
@@ -377,7 +514,281 @@ Complete the 10 migrations of specification §3 (2 from Lab 3.2 + 8 new, with FK
    - [ ] Every FK: the same INT UNSIGNED type as the parent; `ON DELETE` chosen for a reason
    - [ ] `down()` removes what `up()` creates
 
-   > ⏱️ **Falling behind?** If you are not done by minute 60 of the session, follow the trainer's catch-up plan: copy the `up()`/`down()` blocks from `templates/kod/migration-core-tables.php.txt` (**Templat & Rujukan** module) into the files generated by `make:migration` (keep the class names), then explain one FK and one `ON DELETE` to the trainer.
+   `app/Database/Migrations/…_CreateParkingSlotsTable.php`
+
+   ```php
+   <?php
+
+   namespace App\Database\Migrations;
+
+   use CodeIgniter\Database\Migration;
+
+   class CreateParkingSlotsTable extends Migration
+   {
+       public function up(): void
+       {
+           $this->forge->addField([
+               'id'         => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+               'zone_id'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+               'slot_no'    => ['type' => 'VARCHAR', 'constraint' => 10],
+               'category'   => ['type' => 'VARCHAR', 'constraint' => 20], // nilai App\Enums\SlotCategory
+               'is_active'  => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 1],
+               'created_at' => ['type' => 'DATETIME', 'null' => true],
+               'updated_at' => ['type' => 'DATETIME', 'null' => true],
+               'deleted_at' => ['type' => 'DATETIME', 'null' => true], // soft delete
+           ]);
+           $this->forge->addPrimaryKey('id');
+           $this->forge->addUniqueKey(['zone_id', 'slot_no']);
+           $this->forge->addForeignKey('zone_id', 'parking_zones', 'id', 'CASCADE', 'RESTRICT');
+           $this->forge->createTable('parking_slots', false, ['ENGINE' => 'InnoDB']);
+       }
+
+       public function down(): void
+       {
+           $this->forge->dropTable('parking_slots', true);
+       }
+   }
+   ```
+
+   `app/Database/Migrations/…_CreateVehiclesTable.php`
+
+   ```php
+   <?php
+
+   namespace App\Database\Migrations;
+
+   use CodeIgniter\Database\Migration;
+
+   class CreateVehiclesTable extends Migration
+   {
+       public function up(): void
+       {
+           $this->forge->addField([
+               'id'         => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+               'user_id'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+               'plate_no'   => ['type' => 'VARCHAR', 'constraint' => 15],
+               'model'      => ['type' => 'VARCHAR', 'constraint' => 80],
+               'color'      => ['type' => 'VARCHAR', 'constraint' => 30],
+               'created_at' => ['type' => 'DATETIME', 'null' => true],
+               'updated_at' => ['type' => 'DATETIME', 'null' => true],
+           ]);
+           $this->forge->addPrimaryKey('id');
+           $this->forge->addUniqueKey('plate_no');
+           $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'RESTRICT');
+           $this->forge->createTable('vehicles', false, ['ENGINE' => 'InnoDB']);
+       }
+
+       public function down(): void
+       {
+           $this->forge->dropTable('vehicles', true);
+       }
+   }
+   ```
+
+   `app/Database/Migrations/…_CreateSlotBookingsTable.php`
+
+   ```php
+   <?php
+
+   namespace App\Database\Migrations;
+
+   use CodeIgniter\Database\Migration;
+
+   class CreateSlotBookingsTable extends Migration
+   {
+       public function up(): void
+       {
+           $this->forge->addField([
+               'id'         => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+               'ref_no'     => ['type' => 'VARCHAR', 'constraint' => 20],
+               'user_id'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+               'vehicle_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+               'slot_id'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+               'start_date' => ['type' => 'DATE'],
+               'end_date'   => ['type' => 'DATE'],
+               'reason'     => ['type' => 'TEXT'],
+               'status'     => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'pending'], // App\Enums\BookingStatus
+               'decided_by' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+               'decided_at' => ['type' => 'DATETIME', 'null' => true],
+               'created_at' => ['type' => 'DATETIME', 'null' => true],
+               'updated_at' => ['type' => 'DATETIME', 'null' => true],
+           ]);
+           $this->forge->addPrimaryKey('id');
+           $this->forge->addUniqueKey('ref_no');
+           // Index komposit untuk query pertindihan (BR-TLK-01)
+           $this->forge->addKey(['slot_id', 'start_date', 'end_date']);
+           $this->forge->addKey('status');
+           $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'RESTRICT');
+           $this->forge->addForeignKey('vehicle_id', 'vehicles', 'id', 'CASCADE', 'RESTRICT');
+           $this->forge->addForeignKey('slot_id', 'parking_slots', 'id', 'CASCADE', 'RESTRICT');
+           $this->forge->addForeignKey('decided_by', 'users', 'id', 'CASCADE', 'SET NULL');
+           $this->forge->createTable('slot_bookings', false, ['ENGINE' => 'InnoDB']);
+       }
+
+       public function down(): void
+       {
+           $this->forge->dropTable('slot_bookings', true);
+       }
+   }
+   ```
+
+   `app/Database/Migrations/…_CreatePassApplicationsTable.php`
+
+   ```php
+   <?php
+
+   namespace App\Database\Migrations;
+
+   use CodeIgniter\Database\Migration;
+
+   class CreatePassApplicationsTable extends Migration
+   {
+       public function up(): void
+       {
+           $this->forge->addField([
+               'id'          => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+               'ref_no'      => ['type' => 'VARCHAR', 'constraint' => 20],
+               'user_id'     => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+               'pass_type'   => ['type' => 'VARCHAR', 'constraint' => 20], // App\Enums\PassType
+               'vehicle_id'  => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+               'purpose'     => ['type' => 'TEXT'],
+               'valid_from'  => ['type' => 'DATE'],
+               'valid_until' => ['type' => 'DATE'],
+               'status'      => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'submitted'], // App\Enums\PassStatus
+               'reviewed_by' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+               'reviewed_at' => ['type' => 'DATETIME', 'null' => true],
+               'approved_by' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+               'approved_at' => ['type' => 'DATETIME', 'null' => true],
+               'created_at'  => ['type' => 'DATETIME', 'null' => true],
+               'updated_at'  => ['type' => 'DATETIME', 'null' => true],
+           ]);
+           $this->forge->addPrimaryKey('id');
+           $this->forge->addUniqueKey('ref_no');
+           $this->forge->addKey('status');
+           $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'RESTRICT');
+           $this->forge->addForeignKey('vehicle_id', 'vehicles', 'id', 'CASCADE', 'SET NULL');
+           $this->forge->addForeignKey('reviewed_by', 'users', 'id', 'CASCADE', 'SET NULL');
+           $this->forge->addForeignKey('approved_by', 'users', 'id', 'CASCADE', 'SET NULL');
+           $this->forge->createTable('pass_applications', false, ['ENGINE' => 'InnoDB']);
+       }
+
+       public function down(): void
+       {
+           $this->forge->dropTable('pass_applications', true);
+       }
+   }
+   ```
+
+   `app/Database/Migrations/…_CreatePassDocumentsTable.php`
+
+   ```php
+   <?php
+
+   namespace App\Database\Migrations;
+
+   use CodeIgniter\Database\Migration;
+
+   class CreatePassDocumentsTable extends Migration
+   {
+       public function up(): void
+       {
+           $this->forge->addField([
+               'id'             => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+               'application_id' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+               'doc_type'       => ['type' => 'VARCHAR', 'constraint' => 30],
+               'original_name'  => ['type' => 'VARCHAR', 'constraint' => 255],
+               'stored_path'    => ['type' => 'VARCHAR', 'constraint' => 255], // path dalam writable/uploads/pas/
+               'mime'           => ['type' => 'VARCHAR', 'constraint' => 80],
+               'size_bytes'     => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+               'created_at'     => ['type' => 'DATETIME', 'null' => true],
+               'updated_at'     => ['type' => 'DATETIME', 'null' => true],
+           ]);
+           $this->forge->addPrimaryKey('id');
+           $this->forge->addForeignKey('application_id', 'pass_applications', 'id', 'CASCADE', 'CASCADE');
+           $this->forge->createTable('pass_documents', false, ['ENGINE' => 'InnoDB']);
+       }
+
+       public function down(): void
+       {
+           $this->forge->dropTable('pass_documents', true);
+       }
+   }
+   ```
+
+   `app/Database/Migrations/…_CreateStatusLogsTable.php`
+
+   ```php
+   <?php
+
+   namespace App\Database\Migrations;
+
+   use CodeIgniter\Database\Migration;
+
+   /**
+    * Satu jadual audit untuk kedua-dua modul (TLK & PAS).
+    * Rekod audit tidak dikemas kini — hanya `created_at`.
+    */
+   class CreateStatusLogsTable extends Migration
+   {
+       public function up(): void
+       {
+           $this->forge->addField([
+               'id'          => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+               'module'      => ['type' => 'VARCHAR', 'constraint' => 5],  // 'TLK' | 'PAS'
+               'record_id'   => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+               'from_status' => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true],
+               'to_status'   => ['type' => 'VARCHAR', 'constraint' => 20],
+               'actor_id'    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
+               'remarks'     => ['type' => 'TEXT', 'null' => true],
+               'created_at'  => ['type' => 'DATETIME', 'null' => true],
+           ]);
+           $this->forge->addPrimaryKey('id');
+           $this->forge->addKey(['module', 'record_id']);
+           $this->forge->addForeignKey('actor_id', 'users', 'id', 'CASCADE', 'RESTRICT');
+           $this->forge->createTable('status_logs', false, ['ENGINE' => 'InnoDB']);
+       }
+
+       public function down(): void
+       {
+           $this->forge->dropTable('status_logs', true);
+       }
+   }
+   ```
+
+   `app/Database/Migrations/…_CreateReferenceSequencesTable.php`
+
+   ```php
+   <?php
+
+   namespace App\Database\Migrations;
+
+   use CodeIgniter\Database\Migration;
+
+   class CreateReferenceSequencesTable extends Migration
+   {
+       public function up(): void
+       {
+           $this->forge->addField([
+               'id'          => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
+               'prefix'      => ['type' => 'VARCHAR', 'constraint' => 5],   // 'TLK' | 'PAS'
+               'year'        => ['type' => 'SMALLINT', 'unsigned' => true],
+               'last_number' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
+               'created_at'  => ['type' => 'DATETIME', 'null' => true],
+               'updated_at'  => ['type' => 'DATETIME', 'null' => true],
+           ]);
+           $this->forge->addPrimaryKey('id');
+           $this->forge->addUniqueKey(['prefix', 'year']);
+           $this->forge->createTable('reference_sequences', false, ['ENGINE' => 'InnoDB']);
+       }
+
+       public function down(): void
+       {
+           $this->forge->dropTable('reference_sequences', true);
+       }
+   }
+   ```
+
+   > ⏱️ Run `php spark migrate` after every one or two files so FK errors are easy to trace. When all are done, explain one FK and one `ON DELETE` to the trainer.
 
 6. Run them all:
 
@@ -397,29 +808,208 @@ Complete the 10 migrations of specification §3 (2 from Lab 3.2 + 8 new, with FK
 
 8. `DepartmentSeeder` already exists from Lab 3.2 (4 departments). The same `ignore(true)->insertBatch()` pattern is repeated for slots and vehicles below.
 
-9. `UserSeeder` — write it based on README §3.4 (5 users, groups, `Latihan@2026`, `department_id` looked up by `code`, skip if the e-mail exists). Check it against `templates/kod/UserSeeder.php.txt` (**Templat & Rujukan** module).
+9. `UserSeeder` — 5 users (README §3.4), groups, `Latihan@2026`, `department_id` looked up by `code`, skip if the e-mail exists. Replace the whole content of the generated file:
 
-10. `ParkingSeeder` — zones `A`, `B`, `C` were already filled in Lab 3.2. Add to the same file, after the zone `insertBatch`: 4 slots per zone (`A-01`…`C-04`) covering all five categories `oku`, `mengandung`, `pegawai_kanan`, `kenderaan_rasmi`, `pelawat_vip`. Get `zone_id` with:
+   `app/Database/Seeds/UserSeeder.php`
+
+   ```php
+   <?php
+
+   namespace App\Database\Seeds;
+
+   use CodeIgniter\Database\Seeder;
+   use CodeIgniter\Shield\Entities\User;
+
+   /**
+    * Pengguna sintetik (SPEC §4). Kata laluan semua: Latihan@2026 (DEMO SAHAJA).
+    * Bergantung pada DepartmentSeeder (department_id).
+    */
+   class UserSeeder extends Seeder
+   {
+       public const PASSWORD = 'Latihan@2026';
+
+       public function run(): void
+       {
+           /** @var \App\Models\UserModel $users */
+           $users = auth()->getProvider();   // = App\Models\UserModel (Config\Auth::$userProvider)
+
+           $deptId = fn (string $code): ?int => ($row = $this->db->table('departments')->where('code', $code)->get()->getRow())
+               ? (int) $row->id
+               : null;
+
+           $people = [
+               ['email' => 'pemohon1@latihan.test', 'username' => 'pemohon1', 'full_name' => 'Aminah binti Latihan', 'staff_no' => 'LT0001', 'dept' => 'BTM', 'phone' => '012-0000001', 'group' => 'applicant'],
+               ['email' => 'pemohon2@latihan.test', 'username' => 'pemohon2', 'full_name' => 'Badrul bin Contoh',    'staff_no' => 'LT0002', 'dept' => 'BKW', 'phone' => '012-0000002', 'group' => 'applicant'],
+               ['email' => 'penyemak@latihan.test', 'username' => 'penyemak', 'full_name' => 'Chong Mei Ling',       'staff_no' => 'LT0003', 'dept' => 'BPA', 'phone' => '012-0000003', 'group' => 'reviewer'],
+               ['email' => 'pelulus@latihan.test',  'username' => 'pelulus',  'full_name' => 'Dr. Devi a/p Sampel',  'staff_no' => 'LT0004', 'dept' => 'BPA', 'phone' => '012-0000004', 'group' => 'approver'],
+               ['email' => 'admin@latihan.test',    'username' => 'admin',    'full_name' => 'Encik Admin Sistem',   'staff_no' => 'LT0005', 'dept' => 'BTM', 'phone' => '012-0000005', 'group' => 'admin'],
+           ];
+
+           foreach ($people as $p) {
+               // Idempoten: langkau jika e-mel sudah wujud
+               if ($users->findByCredentials(['email' => $p['email']]) !== null) {
+                   continue;
+               }
+
+               $user = new User([
+                   'username'      => $p['username'],
+                   'email'         => $p['email'],        // disimpan ke auth_identities oleh Shield
+                   'password'      => self::PASSWORD,     // di-hash oleh Shield (password_hash)
+                   'active'        => 1,
+                   'full_name'     => $p['full_name'],
+                   'staff_no'      => $p['staff_no'],
+                   'department_id' => $deptId($p['dept']),
+                   'phone'         => $p['phone'],
+               ]);
+
+               $users->save($user);
+
+               // Dapatkan semula dengan ID, kemudian tambah ke group Shield
+               $user = $users->findById($users->getInsertID());
+               $user->addGroup($p['group']);
+           }
+       }
+   }
+   ```
+
+10. `ParkingSeeder` — zones `A`, `B`, `C` were already filled in Lab 3.2. Add to the same file, after the zone `insertBatch`: 4 slots per zone (`A-01`…`C-04`) covering all five categories `oku`, `mengandung`, `pegawai_kanan`, `kenderaan_rasmi`, `pelawat_vip`. `zone_id` is looked up with `array_column()`. The whole file after the addition:
+
+    `app/Database/Seeds/ParkingSeeder.php`
 
     ```php
-    $zoneIds = array_column(
-        $this->db->table('parking_zones')->select('id, code')->get()->getResultArray(),
-        'id',
-        'code',
-    );   // ['A' => 1, 'B' => 2, 'C' => 3]
+    <?php
+
+    namespace App\Database\Seeds;
+
+    use CodeIgniter\Database\Seeder;
+
+    class ParkingSeeder extends Seeder
+    {
+        public function run(): void
+        {
+            $now   = date('Y-m-d H:i:s');
+            $zones = [
+                ['code' => 'A', 'name' => 'Blok Utama', 'location' => 'Aras G, pintu masuk utama'],
+                ['code' => 'B', 'name' => 'Blok Klinik', 'location' => 'Sebelah klinik pakar'],
+                ['code' => 'C', 'name' => 'Parkir Bertingkat', 'location' => 'Aras 1–3, bangunan parkir'],
+            ];
+
+            foreach ($zones as &$zone) {
+                $zone['created_at'] = $zone['updated_at'] = $now;
+            }
+            unset($zone);
+
+            $this->db->table('parking_zones')->ignore(true)->insertBatch($zones);
+
+            // Hari 4: 4 slot setiap zon (A-01 … C-04), meliputi kelima-lima kategori
+            $zoneIds = array_column(
+                $this->db->table('parking_zones')->select('id, code')->get()->getResultArray(),
+                'id',
+                'code',
+            );   // ['A' => 1, 'B' => 2, 'C' => 3]
+
+            $layout = [
+                'A' => ['oku', 'mengandung', 'pegawai_kanan', 'kenderaan_rasmi'],
+                'B' => ['oku', 'mengandung', 'pelawat_vip', 'oku'],
+                'C' => ['pegawai_kanan', 'kenderaan_rasmi', 'pelawat_vip', 'mengandung'],
+            ];
+
+            $slots = [];
+
+            foreach ($layout as $code => $categories) {
+                foreach ($categories as $i => $category) {
+                    $slots[] = [
+                        'zone_id'    => $zoneIds[$code],
+                        'slot_no'    => sprintf('%s-%02d', $code, $i + 1),
+                        'category'   => $category,
+                        'is_active'  => 1,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+            }
+
+            // UNIQUE(zone_id, slot_no) → INSERT IGNORE menjadikan seeder idempoten
+            $this->db->table('parking_slots')->ignore(true)->insertBatch($slots);
+        }
+    }
     ```
 
-11. `VehicleSeeder` — made-up plates only: `pemohon1` → `WXX 1234` & `WXX 5678`; `pemohon2` → `VXX 2468`; `pelulus` → `WXY 1357`; `admin` → `BXX 9090`. Find users with `auth()->getProvider()->findByCredentials(['email' => …])`.
+11. `VehicleSeeder` — made-up plates only: `pemohon1` → `WXX 1234` & `WXX 5678`; `pemohon2` → `VXX 2468`; `pelulus` → `WXY 1357`; `admin` → `BXX 9090`. Users are looked up with `auth()->getProvider()->findByCredentials(['email' => …])`. Replace the whole content of the generated file:
 
-12. `DatabaseSeeder` — update the file from Lab 3.2 so the order is:
+    `app/Database/Seeds/VehicleSeeder.php`
 
     ```php
-    public function run(): void
+    <?php
+
+    namespace App\Database\Seeds;
+
+    use CodeIgniter\Database\Seeder;
+
+    /**
+     * Kenderaan sintetik — plat REKAAN sahaja (SPEC §10). Bergantung pada UserSeeder.
+     */
+    class VehicleSeeder extends Seeder
     {
-        $this->call(DepartmentSeeder::class);   // parent first
-        $this->call(UserSeeder::class);         // needs departments
-        $this->call(ParkingSeeder::class);
-        $this->call(VehicleSeeder::class);      // needs users
+        public function run(): void
+        {
+            $users = auth()->getProvider();
+            $now   = date('Y-m-d H:i:s');
+
+            $vehicles = [
+                ['email' => 'pemohon1@latihan.test', 'plate_no' => 'WXX 1234', 'model' => 'Proton Saga',   'color' => 'Putih'],
+                ['email' => 'pemohon1@latihan.test', 'plate_no' => 'WXX 5678', 'model' => 'Perodua Axia',  'color' => 'Merah'],
+                ['email' => 'pemohon2@latihan.test', 'plate_no' => 'VXX 2468', 'model' => 'Perodua Myvi',  'color' => 'Biru'],
+                ['email' => 'pelulus@latihan.test',  'plate_no' => 'WXY 1357', 'model' => 'Honda City',    'color' => 'Kelabu'],
+                ['email' => 'admin@latihan.test',    'plate_no' => 'BXX 9090', 'model' => 'Toyota Vios',   'color' => 'Hitam'],
+            ];
+
+            $rows = [];
+
+            foreach ($vehicles as $v) {
+                $user = $users->findByCredentials(['email' => $v['email']]);
+
+                if ($user === null) {
+                    continue;   // UserSeeder belum dijalankan
+                }
+
+                $rows[] = [
+                    'user_id'    => $user->id,
+                    'plate_no'   => $v['plate_no'],
+                    'model'      => $v['model'],
+                    'color'      => $v['color'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+
+            if ($rows !== []) {
+                $this->db->table('vehicles')->ignore(true)->insertBatch($rows);   // UNIQUE(plate_no)
+            }
+        }
+    }
+    ```
+
+12. `DatabaseSeeder` — replace the file from Lab 3.2 so the order is:
+
+    `app/Database/Seeds/DatabaseSeeder.php`
+
+    ```php
+    <?php
+
+    namespace App\Database\Seeds;
+
+    use CodeIgniter\Database\Seeder;
+
+    class DatabaseSeeder extends Seeder
+    {
+        public function run(): void
+        {
+            $this->call(DepartmentSeeder::class);   // induk dahulu
+            $this->call(UserSeeder::class);         // perlukan departments
+            $this->call(ParkingSeeder::class);
+            $this->call(VehicleSeeder::class);      // perlukan users
+        }
     }
     ```
 
@@ -515,7 +1105,13 @@ Push clean `SETUP:` commits to GitLab, write your work plan, try the branch → 
    | 6 | feat/tlk-ujian | ⬜ |
 
    ## Definition of Done (salin dari kolaborasi §2)
-   - [ ] …
+   - [ ] Peraturan BR-* berkaitan diuji dan lulus (manual + PHPUnit).
+   - [ ] Validasi di server (Model rules / Validation), bukan JavaScript sahaja.
+   - [ ] Akses dikawal di server (filter + semakan pemilikan).
+   - [ ] Peralihan status direkod dalam status_logs (jika berkaitan).
+   - [ ] Ujian PHPUnit berkaitan lulus (composer test).
+   - [ ] Tiada .env/rahsia dalam commit; data sintetik sahaja.
+   - [ ] Saya boleh menerangkan setiap baris kod kepada rakan/jurulatih.
    ```
 
 5. Try the branch + merge request flow once (a 10-minute exercise):

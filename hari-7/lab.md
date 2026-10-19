@@ -2,7 +2,7 @@
 
 [📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 Nota Hari 7](./README.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
-> Kerja **individu** dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. Semua arahan dijalankan dari **akar projek CI4** anda (folder yang ada `spark`). Rujukan lengkap jurulatih: `templates/kod/` (modul **Templat & Rujukan**). **Salin hanya selepas anda boleh menerangkan setiap baris** (KOLABORASI §3).
+> Kerja **individu** dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. Semua arahan dijalankan dari **akar projek CI4** anda (folder yang ada `spark`). Setiap langkah memberi **kod lengkap untuk disalin**. Baca setiap baris sebelum menjalankannya — anda mesti boleh menerangkannya (KOLABORASI §3). Buntu: baca mesej ralat penuh, tanya jurulatih atau rakan sebelah, atau guna AI untuk *menerangkan* ralat.
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
@@ -71,11 +71,168 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
 
 ### Langkah
 
-1. **Cipta `app/Enums/PassType.php`**. Tiga `case` tepat seperti SPEC: `kenderaan`, `kakitangan`, `kontraktor`. Tambah `label()`, `requiresVehicle()`, `values()`, `options()`.
-   Rujukan: `PassType.php.txt` (modul **Templat & Rujukan**).
+1. **Cipta `app/Enums/PassType.php`**. Tiga `case` tepat seperti SPEC: `kenderaan`, `kakitangan`, `kontraktor`, dengan `label()`, `requiresVehicle()`, `values()`, `options()`.
 
-2. **Cipta `app/Enums/PassStatus.php`**. Lima `case`: `submitted`, `under_review`, `approved`, `rejected`, `expired`. Tulis `allowedTransitions()` **sendiri dahulu** berdasarkan rajah SPEC §2.2, kemudian `canTransitionTo()`, `label()`, `badge()`, `isFinal()`, `values()`, `options()`.
-   Rujukan: `PassStatus.php.txt` (modul **Templat & Rujukan**).
+   `app/Enums/PassType.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Enums;
+
+   enum PassType: string
+   {
+       case Kenderaan  = 'kenderaan';    // pas kenderaan / pelekat
+       case Kakitangan = 'kakitangan';   // pas akses kakitangan
+       case Kontraktor = 'kontraktor';   // pas kontraktor berjangka
+
+       /** Label BM untuk paparan */
+       public function label(): string
+       {
+           return match ($this) {
+               self::Kenderaan  => 'Pas Kenderaan (Pelekat)',
+               self::Kakitangan => 'Pas Akses Kakitangan',
+               self::Kontraktor => 'Pas Kontraktor Berjangka',
+           };
+       }
+
+       /**
+        * BR-PAS-06: pas kenderaan WAJIB dipautkan kepada kenderaan milik pemohon
+        * (pass_applications.vehicle_id). Jenis lain: vehicle_id = NULL.
+        */
+       public function requiresVehicle(): bool
+       {
+           return $this === self::Kenderaan;
+       }
+
+       /**
+        * Nilai mentah untuk in_list[] validasi.
+        *
+        * @return list<string>
+        */
+       public static function values(): array
+       {
+           return array_column(self::cases(), 'value');
+       }
+
+       /**
+        * Pilihan untuk <select>: nilai => label BM.
+        *
+        * @return array<string, string>
+        */
+       public static function options(): array
+       {
+           $options = [];
+
+           foreach (self::cases() as $case) {
+               $options[$case->value] = $case->label();
+           }
+
+           return $options;
+       }
+   }
+   ```
+
+2. **Cipta `app/Enums/PassStatus.php`**. Lima `case`: `submitted`, `under_review`, `approved`, `rejected`, `expired`. Sebelum menyalin, lakar `allowedTransitions()` di atas kertas berdasarkan rajah SPEC §2.2, kemudian bandingkan lakaran anda dengan kod di bawah. Kaedah lain: `canTransitionTo()`, `label()`, `badge()`, `isFinal()`, `values()`, `options()`.
+
+   `app/Enums/PassStatus.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Enums;
+
+   enum PassStatus: string
+   {
+       case Submitted   = 'submitted';
+       case UnderReview = 'under_review';
+       case Approved    = 'approved';
+       case Rejected    = 'rejected';
+       case Expired     = 'expired';
+
+       /** Label BM untuk paparan (SPEC §2.2) */
+       public function label(): string
+       {
+           return match ($this) {
+               self::Submitted   => 'Dihantar',
+               self::UnderReview => 'Dalam Semakan',
+               self::Approved    => 'Diluluskan',
+               self::Rejected    => 'Ditolak',
+               self::Expired     => 'Tamat Tempoh',
+           };
+       }
+
+       /** Kelas CSS Bootstrap 5.3 untuk badge — corak sama seperti BookingStatus */
+       public function badge(): string
+       {
+           return match ($this) {
+               self::Submitted   => 'text-bg-secondary',
+               self::UnderReview => 'text-bg-info',
+               self::Approved    => 'text-bg-success',
+               self::Rejected    => 'text-bg-danger',
+               self::Expired     => 'text-bg-dark',
+           };
+       }
+
+       /**
+        * Status seterusnya yang sah dari status semasa.
+        *
+        * @return list<self>
+        */
+       public function allowedTransitions(): array
+       {
+           return match ($this) {
+               self::Submitted   => [self::UnderReview],
+               self::UnderReview => [self::Approved, self::Rejected],
+               self::Approved    => [self::Expired],
+               self::Rejected,
+               self::Expired     => [],               // status akhir
+           };
+       }
+
+       /** BR-PAS-01 — satu-satunya pintu untuk menyemak peralihan */
+       public function canTransitionTo(self $to): bool
+       {
+           return in_array($to, $this->allowedTransitions(), true);
+       }
+
+       /** true jika tiada lagi peralihan yang mungkin (rejected/expired) */
+       public function isFinal(): bool
+       {
+           return $this->allowedTransitions() === [];
+       }
+
+       /**
+        * Nilai mentah untuk in_list[] validasi & whereIn().
+        *
+        * @return list<string>
+        */
+       public static function values(): array
+       {
+           return array_column(self::cases(), 'value');
+       }
+
+       /**
+        * Pilihan untuk <select>: nilai => label BM.
+        *
+        * @return array<string, string>
+        */
+       public static function options(): array
+       {
+           $options = [];
+
+           foreach (self::cases() as $case) {
+               $options[$case->value] = $case->label();
+           }
+
+           return $options;
+       }
+   }
+   ```
 
 3. **Uji enum dengan segera** menggunakan skrip kecil (tidak di-commit):
 
@@ -105,7 +262,79 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
    ```
 
 4. **Cipta `app/Entities/PassApplication.php`** dengan `$dates`, `$casts` (`'?integer'` untuk FK pilihan), `statusEnum()`, `typeEnum()`, `isOwnedBy()`, `displayStatus()`.
-   Rujukan: `PassApplication-Entity.php.txt` (modul **Templat & Rujukan**).
+
+   `app/Entities/PassApplication.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Entities;
+
+   use App\Enums\PassStatus;
+   use App\Enums\PassType;
+   use CodeIgniter\Entity\Entity;
+   use CodeIgniter\I18n\Time;
+
+   class PassApplication extends Entity
+   {
+       /** Medan ini ditukar kepada CodeIgniter\I18n\Time secara automatik */
+       protected $dates = [
+           'valid_from',
+           'valid_until',
+           'reviewed_at',
+           'approved_at',
+           'created_at',
+           'updated_at',
+       ];
+
+       /** '?integer' = boleh NULL (FK pilihan) */
+       protected $casts = [
+           'id'          => 'integer',
+           'user_id'     => 'integer',
+           'vehicle_id'  => '?integer',
+           'reviewed_by' => '?integer',
+           'approved_by' => '?integer',
+       ];
+
+       /** Status sebagai enum — ValueError jika DB mengandungi nilai asing (petanda data rosak) */
+       public function statusEnum(): PassStatus
+       {
+           return PassStatus::from((string) $this->attributes['status']);
+       }
+
+       public function typeEnum(): PassType
+       {
+           return PassType::from((string) $this->attributes['pass_type']);
+       }
+
+       /** BR-PAS-04 — asas semakan pemilikan */
+       public function isOwnedBy(int $userId): bool
+       {
+           return (int) $this->attributes['user_id'] === $userId;
+       }
+
+       /**
+        * SPEC §2.2: expired ditetapkan oleh sistem "(Spark command / semasa papar)".
+        * Semasa papar: pas approved yang valid_until sudah lepas dipaparkan sebagai Tamat Tempoh,
+        * walaupun Spark `pas:expire` belum dijalankan. Nilai DB TIDAK diubah di sini.
+        */
+       public function displayStatus(): PassStatus
+       {
+           $status     = $this->statusEnum();
+           $validUntil = $this->valid_until;   // Time (lihat $dates)
+
+           if ($status === PassStatus::Approved
+               && $validUntil instanceof Time
+               && $validUntil->isBefore(Time::today())) {
+               return PassStatus::Expired;
+           }
+
+           return $status;
+       }
+   }
+   ```
 
 5. **Cipta `app/Models/PassApplicationModel.php`**:
    - `$returnType = PassApplication::class`, `$useTimestamps = true`, `$useSoftDeletes = false`.
@@ -113,8 +342,159 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
    - `$validationRules` diisi dalam `initialize()` (kerana `implode()` enum).
    - Skop `ownedBy()`, `withStatus()`, `withApplicant()`.
 
-6. **Cipta `app/Models/PassDocumentModel.php`** (`$returnType = 'array'`, rule `mime` `in_list[...]`, `size_bytes` `less_than_equal_to[2097152]`, kaedah `forApplication()`).
-   Rujukan kedua-dua model: `PassApplicationModel.php.txt` (modul **Templat & Rujukan**) (fail mengandungi dua kelas — pisahkan).
+   `app/Models/PassApplicationModel.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Models;
+
+   use App\Entities\PassApplication;
+   use App\Enums\PassStatus;
+   use App\Enums\PassType;
+   use CodeIgniter\Model;
+
+   class PassApplicationModel extends Model
+   {
+       protected $table          = 'pass_applications';
+       protected $primaryKey     = 'id';
+       protected $returnType     = PassApplication::class;
+       protected $useSoftDeletes = false;          // SPEC §3: tiada deleted_at untuk jadual ini
+       protected $useTimestamps  = true;           // isi created_at / updated_at automatik
+       protected $dateFormat     = 'datetime';
+
+       /** Senarai putih medan — cegah mass assignment (cth pemohon hantar status=approved) */
+       protected $allowedFields = [
+           'ref_no',
+           'user_id',
+           'pass_type',
+           'vehicle_id',
+           'purpose',
+           'valid_from',
+           'valid_until',
+           'status',
+           'reviewed_by',
+           'reviewed_at',
+           'approved_by',
+           'approved_at',
+       ];
+
+       /** Diisi dalam initialize() kerana in_list[] dibina dari enum (bukan ungkapan pemalar) */
+       protected $validationRules = [];
+
+       protected $validationMessages = [
+           'purpose' => [
+               'min_length' => 'Tujuan permohonan mestilah sekurang-kurangnya 10 aksara.',
+           ],
+       ];
+
+       /** Semasa update separa, hanya medan yang dihantar divalidasi (lalai CI4 = true) */
+       protected $cleanValidationRules = true;
+
+       protected function initialize(): void
+       {
+           $this->validationRules = [
+               'ref_no'      => 'required|max_length[20]|is_unique[pass_applications.ref_no]',
+               'user_id'     => 'required|is_natural_no_zero',
+               'pass_type'   => 'required|in_list[' . implode(',', PassType::values()) . ']',
+               'vehicle_id'  => 'permit_empty|is_natural_no_zero',
+               'purpose'     => 'required|min_length[10]|max_length[2000]',
+               'valid_from'  => 'required|valid_date[Y-m-d]',
+               'valid_until' => 'required|valid_date[Y-m-d]',
+               'status'      => 'required|in_list[' . implode(',', PassStatus::values()) . ']',
+           ];
+       }
+
+       // -----------------------------------------------------------------
+       // Skop query — dipanggil secara berantai, cth:
+       //   $model->ownedBy($uid)->withStatus($s)->orderBy(...)->paginate(10)
+       // Model::__call() memajukan where()/join() kepada Query Builder dan pulang $this.
+       // -----------------------------------------------------------------
+
+       /** BR-PAS-04: senarai pemohon — HANYA rekod miliknya */
+       public function ownedBy(int $userId): static
+       {
+           $this->where('pass_applications.user_id', $userId);
+
+           return $this;
+       }
+
+       /** Penapis status pilihan (null = semua) */
+       public function withStatus(?PassStatus $status): static
+       {
+           if ($status !== null) {
+               $this->where('pass_applications.status', $status->value);
+           }
+
+           return $this;
+       }
+
+       /** Sertakan nama pemohon (untuk senarai semakan pegawai) */
+       public function withApplicant(): static
+       {
+           $this->select('pass_applications.*, users.full_name AS applicant_name')
+               ->join('users', 'users.id = pass_applications.user_id');
+
+           return $this;
+       }
+   }
+   ```
+
+6. **Cipta `app/Models/PassDocumentModel.php`** (`$returnType = 'array'`, rule `mime` `in_list[application/pdf,image/jpeg,image/png]`, `size_bytes` `less_than_equal_to[2097152]`, kaedah `forApplication()`).
+
+   `app/Models/PassDocumentModel.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Models;
+
+   use CodeIgniter\Model;
+
+   class PassDocumentModel extends Model
+   {
+       protected $table          = 'pass_documents';
+       protected $primaryKey     = 'id';
+       protected $returnType     = 'array';
+       protected $useSoftDeletes = false;
+       protected $useTimestamps  = true;
+       protected $dateFormat     = 'datetime';
+
+       protected $allowedFields = [
+           'application_id',
+           'doc_type',
+           'original_name',
+           'stored_path',     // RELATIF kepada WRITEPATH, cth uploads/pas/1727251200_3f2a9c1e7b.pdf
+           'mime',            // dari getMimeType() (kandungan), BUKAN getClientMimeType()
+           'size_bytes',
+       ];
+
+       protected $validationRules = [
+           'application_id' => 'required|is_natural_no_zero',
+           'doc_type'       => 'required|max_length[30]',
+           'original_name'  => 'required|max_length[255]',
+           'stored_path'    => 'required|max_length[255]',
+           'mime'           => 'required|in_list[application/pdf,image/jpeg,image/png]',
+           'size_bytes'     => 'required|is_natural_no_zero|less_than_equal_to[2097152]',  // 2 MB (BR-PAS-02)
+       ];
+
+       /**
+        * Dokumen bagi satu permohonan.
+        *
+        * @return list<array<string, mixed>>
+        */
+       public function forApplication(int $applicationId): array
+       {
+           return $this->where('application_id', $applicationId)
+               ->orderBy('id', 'ASC')
+               ->findAll();
+       }
+   }
+   ```
 
 7. **Uji validasi Model** melalui route sementara (buang selepas checkpoint). Tambah dalam `app/Config/Routes.php`:
 
@@ -238,34 +618,171 @@ Membina `/pas/permohonan` (senarai skop pemilik, filter status, pagination) dan 
    }
    ```
 
-4. **Cipta `app/Controllers/Pas/ApplicationController.php`** dengan `index()`, `show()` dan pembantu `findVisibleOr404()`. Salin bahagian berkaitan dari `ApplicationController-upload.php.txt` (modul **Templat & Rujukan**). Untuk hari ini, `show()` memulangkan **dua** variable sahaja:
+4. **Cipta `app/Controllers/Pas/ApplicationController.php`** dengan `index()`, `show()` dan pembantu `findVisibleOr404()`. Untuk hari ini, `show()` memulangkan **dua** variable sahaja (`application` dan `documents`):
+
+   `app/Controllers/Pas/ApplicationController.php`
 
    ```php
-   public function show(string $id): string
-   {
-       $application = $this->findVisibleOr404((int) $id);
+   <?php
 
-       return view('pas/show', [
-           'application' => $application,
-           'documents'   => model(PassDocumentModel::class)->forApplication($application->id),
-       ]);
+   declare(strict_types=1);
+
+   namespace App\Controllers\Pas;
+
+   use App\Controllers\BaseController;
+   use App\Entities\PassApplication;
+   use App\Enums\PassStatus;
+   use App\Models\PassApplicationModel;
+   use App\Models\PassDocumentModel;
+   use CodeIgniter\Exceptions\PageNotFoundException;
+
+   class ApplicationController extends BaseController
+   {
+       protected $helpers = ['form', 'url'];
+
+       /** GET /pas/permohonan — "Permohonan Saya" (BR-PAS-04: SENTIASA skop pemilik) */
+       public function index(): string
+       {
+           $requested = $this->request->getGet('status');
+           $status    = PassStatus::tryFrom(is_string($requested) ? $requested : '');   // input asing → null
+
+           $model        = model(PassApplicationModel::class);
+           $applications = $model->ownedBy((int) auth()->id())
+               ->withStatus($status)
+               ->orderBy('pass_applications.created_at', 'DESC')
+               ->paginate(10);
+
+           return view('pas/index', [
+               'applications' => $applications,
+               'pager'        => $model->pager,
+               'status'       => $status,
+           ]);
+       }
+
+       /** GET /pas/permohonan/{id} — butiran + dokumen (tindakan & sejarah ditambah Hari 8) */
+       public function show(string $id): string
+       {
+           $application = $this->findVisibleOr404((int) $id);
+
+           return view('pas/show', [
+               'application' => $application,
+               'documents'   => model(PassDocumentModel::class)->forApplication($application->id),
+           ]);
+       }
+
+       // -----------------------------------------------------------------
+
+       /** BR-PAS-04 — 404 (bukan 403) supaya kewujudan ID orang lain tidak didedahkan */
+       private function findVisibleOr404(int $id): PassApplication
+       {
+           $application = model(PassApplicationModel::class)->find($id);
+
+           if ($application === null || ! service('passWorkflowService')->canView(auth()->user(), $application)) {
+               throw PageNotFoundException::forPageNotFound();
+           }
+
+           return $application;
+       }
    }
    ```
 
    (`history` dan `actions` ditambah esok, Hari 8.)
 
-5. **Tajuk halaman, kemudian `app/Views/pas/index.php`.** View Pas memberi tajuk melalui `section('title')`, tetapi layout Hari 4/6 hanya membaca `$title`. Kemas kini dahulu bahagian atas `app/Views/layouts/main.php` (seperti `layout-main.php.txt` (modul **Templat & Rujukan**)):
+5. **Tajuk halaman, kemudian `app/Views/pas/index.php`.** View Pas memberi tajuk melalui `section('title')`, tetapi layout Hari 4/6 hanya membaca `$title`. Gantikan dahulu seluruh kandungan `app/Views/layouts/main.php` dengan versi di bawah. Ia layout Hari 6 dengan tiga tambahan: blok `$sectionTitle`/`$pageTitle` di bahagian atas, `<title>` yang membaca `$pageTitle`, dan menu *Pas Saya*.
+
+   `app/Views/layouts/main.php`
 
    ```php
    <?php
+   /**
+    * Layout utama — Bootstrap 5.3 + Bootstrap Icons.
+    * Guna dalam view: <?= $this->extend('layouts/main') ?> + <?= $this->section('content') ?> ... <?= $this->endSection() ?>
+    *
+    * @var \CodeIgniter\View\View $this
+    * @var string|null            $title
+    */
    $user = auth()->loggedIn() ? auth()->user() : null;
 
-   // View Pas memberi tajuk melalui section('title'); view TLK melalui $title.
+   // View Pas (Hari 7–8) memberi tajuk melalui section('title'); view TLK melalui $title.
    $sectionTitle = trim($this->renderSection('title'));
    $pageTitle    = $title ?? ($sectionTitle !== '' ? $sectionTitle : 'Sistem TLK & Pas');
    ?>
-   <!-- … dalam <head>: -->
-   <title><?= esc($pageTitle) ?> · KKM (Latihan)</title>
+   <!doctype html>
+   <html lang="ms">
+   <head>
+       <meta charset="utf-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1">
+       <title><?= esc($pageTitle) ?> · KKM (Latihan)</title>
+       <!-- Tiada internet di makmal? Muat turun fail ke public/assets/ dan tukar href kepada base_url('assets/...') -->
+       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+       <?= $this->renderSection('head') ?>
+   </head>
+   <body class="bg-body-tertiary d-flex flex-column min-vh-100">
+
+   <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+       <div class="container">
+           <a class="navbar-brand fw-semibold" href="<?= site_url('/') ?>">
+               <i class="bi bi-p-square-fill"></i> TLK &amp; Pas
+           </a>
+           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navUtama"
+                   aria-controls="navUtama" aria-expanded="false" aria-label="Menu">
+               <span class="navbar-toggler-icon"></span>
+           </button>
+
+           <div class="collapse navbar-collapse" id="navUtama">
+               <?php if ($user !== null): ?>
+                   <ul class="navbar-nav me-auto">
+                       <li class="nav-item"><a class="nav-link" href="<?= url_to('tlk.index') ?>"><i class="bi bi-list-ul"></i> Tempahan Saya</a></li>
+                       <?php if ($user->can('tlk.apply')): ?>
+                           <li class="nav-item"><a class="nav-link" href="<?= url_to('tlk.new') ?>"><i class="bi bi-plus-circle"></i> Mohon Slot</a></li>
+                       <?php endif ?>
+                       <li class="nav-item"><a class="nav-link" href="<?= url_to('tlk.availability') ?>"><i class="bi bi-search"></i> Slot Kosong</a></li>
+                       <?php if ($user->can('tlk.decide')): ?>
+                           <li class="nav-item"><a class="nav-link" href="<?= url_to('tlk.decision.index') ?>"><i class="bi bi-check2-square"></i> Keputusan TLK</a></li>
+                       <?php endif ?>
+                       <?php if ($user->inGroup('admin')): ?>
+                           <li class="nav-item"><a class="nav-link" href="<?= url_to('admin.slot.index') ?>"><i class="bi bi-gear"></i> Urus Slot</a></li>
+                       <?php endif ?>
+                       <li class="nav-item"><a class="nav-link" href="<?= url_to('pas.index') ?>"><i class="bi bi-person-vcard"></i> Pas Saya</a></li>
+                   </ul>
+                   <span class="navbar-text me-3">
+                       <i class="bi bi-person-circle"></i> <?= esc($user->full_name ?? $user->username) ?>
+                   </span>
+                   <a class="btn btn-outline-light btn-sm" href="<?= url_to('logout') ?>"><i class="bi bi-box-arrow-right"></i> Log Keluar</a>
+               <?php endif ?>
+           </div>
+       </div>
+   </nav>
+
+   <main class="container py-4 flex-grow-1">
+       <?php if (! empty($title)): ?>
+           <h1 class="h3 mb-3"><?= esc($title) ?></h1>
+       <?php endif ?>
+
+       <?= $this->include('partials/flash') ?>
+
+       <?= $this->renderSection('content') ?>
+   </main>
+
+   <footer class="py-3 border-top bg-white small text-muted">
+       <div class="container">Sistem latihan CI-KKM-10 · data sintetik sahaja</div>
+   </footer>
+
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+   <script>
+       // Dialog pengesahan: <form data-confirm="Anda pasti?"> — elak klik tidak sengaja.
+       document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+           form.addEventListener('submit', function (event) {
+               if (!window.confirm(form.dataset.confirm)) {
+                   event.preventDefault();
+               }
+           });
+       });
+   </script>
+   <?= $this->renderSection('scripts') ?>
+   </body>
+   </html>
    ```
 
    Kemudian cipta `app/Views/pas/index.php`:
@@ -429,17 +946,454 @@ Membina borang permohonan dengan 1–3 dokumen yang disimpan secara selamat (BR-
 
 ### Langkah
 
-1. **Lengkapkan `PassWorkflowService`** dengan kaedah Hari 7 dari `PassWorkflowService.php.txt` (modul **Templat & Rujukan**):
-   - pemalar `UPLOAD_DIR`, `MAX_FILES`, `ALLOWED_EXT`
+1. **Kembangkan `PassWorkflowService` kepada versi Hari 7** — gantikan seluruh kandungan `app/Services/PassWorkflowService.php` dengan kod di bawah. Berbanding Lab 7.2, ia menambah:
+   - pemalar `UPLOAD_DIR`, `MAX_FILES`, `MAX_BYTES`, `ALLOWED_EXT`
    - `submit()` — semakan → `move()` → transaksi → `status_logs` → pembersihan dalam `catch`
    - `documentPath()` — `realpath()` + semakan awalan
    - pembantu peribadi `assertDates()`, `assertVehicle()`, `assertFiles()`, `storeFile()`, `deleteStoredFiles()`
 
-   Tambah `use` yang diperlukan (`PassStatus`, `PassType`, `VehicleModel`, `UploadedFile`, `PageNotFoundException`, `InvalidArgumentException`, `RuntimeException`, `Throwable`). **Jangan** salin kaedah Hari 8 (`startReview`, `approve`, `reject`, `transition`) lagi.
+   `app/Services/PassWorkflowService.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Services;
+
+   use App\Entities\PassApplication;
+   use App\Enums\PassStatus;
+   use App\Enums\PassType;
+   use App\Models\PassApplicationModel;
+   use App\Models\PassDocumentModel;
+   use App\Models\StatusLogModel;
+   use App\Models\VehicleModel;
+   use CodeIgniter\Database\ConnectionInterface;
+   use CodeIgniter\Exceptions\PageNotFoundException;
+   use CodeIgniter\HTTP\Files\UploadedFile;
+   use CodeIgniter\Shield\Entities\User;
+   use InvalidArgumentException;
+   use RuntimeException;
+   use Throwable;
+
+   class PassWorkflowService
+   {
+       public const MODULE        = 'PAS';            // status_logs.module
+       public const UPLOAD_DIR    = 'uploads/pas/';   // relatif kepada WRITEPATH (BR-PAS-02)
+       public const MAX_FILES     = 3;                // BR-PAS-02
+       public const MAX_BYTES     = 2_097_152;        // BR-PAS-02: 2 MB setiap fail
+       public const ALLOWED_EXT   = ['pdf', 'jpg', 'png'];
+       public const STAFF_GROUPS  = ['reviewer', 'approver', 'admin'];
+
+       private readonly PassApplicationModel $applications;
+       private readonly PassDocumentModel $documents;
+       private readonly StatusLogModel $statusLogs;
+
+       public function __construct(
+           private readonly ConnectionInterface $db,
+           private readonly ReferenceNumberService $refs,
+       ) {
+           // Model dibina dengan sambungan YANG SAMA → semua tulisan berada dalam transaksi yang sama
+           $this->applications = new PassApplicationModel($db);
+           $this->documents    = new PassDocumentModel($db);
+           $this->statusLogs   = new StatusLogModel($db);
+       }
+
+       // =================================================================
+       // HARI 7 — cipta permohonan (null → submitted)
+       // =================================================================
+
+       /**
+        * @param array{pass_type:string, vehicle_id?:int|string|null, purpose:string, valid_from:string, valid_until:string} $data
+        * @param list<UploadedFile> $files fail yang SUDAH lulus rules validasi controller
+        *
+        * @throws InvalidArgumentException ralat perniagaan — mesej BM, selamat dipapar kepada pengguna
+        */
+       public function submit(int $userId, array $data, array $files): PassApplication
+       {
+           $type      = PassType::from((string) $data['pass_type']);
+           $vehicleId = empty($data['vehicle_id']) ? null : (int) $data['vehicle_id'];
+
+           // --- Semakan perniagaan SEBELUM menyentuh cakera atau DB --------------
+           // BR-PAS-06
+           $this->assertDates((string) $data['valid_from'], (string) $data['valid_until']);
+           $this->assertVehicle($type, $vehicleId, $userId);
+           $this->assertFiles($files);
+
+           $stored        = [];
+           $inTransaction = false;
+
+           try {
+               // 1) Pindah fail dahulu. Fail sistem TIDAK ikut rollback DB — kita bersihkan sendiri di catch.
+               foreach ($files as $file) {
+                   $stored[] = $this->storeFile($file);
+               }
+
+               // 2) Semua tulisan DB dalam SATU transaksi: permohonan + dokumen + log
+               $this->db->transException(true)->transBegin();   // ralat query → exception
+               $inTransaction = true;
+
+               $refNo = $this->refs->next('PAS');   // PAS-2026-0001 — mesti dalam transaksi (FOR UPDATE)
+
+               $id = $this->applications->insert([
+                   'ref_no'      => $refNo,
+                   'user_id'     => $userId,
+                   'pass_type'   => $type->value,
+                   'vehicle_id'  => $type->requiresVehicle() ? $vehicleId : null,
+                   'purpose'     => trim((string) $data['purpose']),
+                   'valid_from'  => (string) $data['valid_from'],
+                   'valid_until' => (string) $data['valid_until'],
+                   'status'      => PassStatus::Submitted->value,   // BUKAN dari input pengguna
+               ], true);
+
+               if ($id === false) {
+                   throw new RuntimeException('Gagal menyimpan permohonan: ' . implode(' ', $this->applications->errors()));
+               }
+
+               foreach ($stored as $doc) {
+                   if ($this->documents->insert($doc + ['application_id' => (int) $id]) === false) {
+                       throw new RuntimeException('Gagal menyimpan dokumen: ' . implode(' ', $this->documents->errors()));
+                   }
+               }
+
+               // BR-PAS-05: log penciptaan (from_status = NULL)
+               if (! $this->statusLogs->record(self::MODULE, (int) $id, null, PassStatus::Submitted->value, $userId, 'Permohonan dihantar.')) {
+                   throw new RuntimeException('Gagal merekod log status.');
+               }
+
+               $this->db->transCommit();
+           } catch (Throwable $e) {
+               if ($inTransaction) {
+                   $this->db->transRollback();
+               }
+               $this->deleteStoredFiles($stored);   // tiada fail "yatim" di cakera
+
+               throw $e;
+           }
+
+           return $this->applications->find((int) $id);
+       }
+
+       /**
+        * BR-PAS-04 — siapa boleh LIHAT permohonan (dan dokumennya).
+        * Pemilik, atau pegawai (reviewer/approver/admin).
+        */
+       public function canView(User $user, PassApplication $application): bool
+       {
+           return $application->isOwnedBy((int) $user->id)
+               || $user->inGroup(...self::STAFF_GROUPS);
+       }
+
+       /**
+        * Path mutlak dokumen yang selamat untuk dimuat turun.
+        * Pertahanan path traversal: path sebenar MESTI berada di dalam writable/uploads/pas/.
+        *
+        * @param array<string, mixed> $document baris pass_documents
+        */
+       public function documentPath(array $document): string
+       {
+           $base = realpath(WRITEPATH . self::UPLOAD_DIR);
+           $path = realpath(WRITEPATH . (string) $document['stored_path']);
+
+           if ($base === false || $path === false || ! is_file($path)
+               || ! str_starts_with($path, $base . DIRECTORY_SEPARATOR)) {
+               throw PageNotFoundException::forPageNotFound('Dokumen tidak dijumpai.');
+           }
+
+           return $path;
+       }
+
+       // =================================================================
+       // Dalaman
+       // =================================================================
+
+       /** BR-PAS-06: valid_until >= valid_from (tiada had tempoh maksimum untuk Pas) */
+       private function assertDates(string $from, string $until): void
+       {
+           if ($until < $from) {   // format Y-m-d → perbandingan string = perbandingan tarikh
+               throw new InvalidArgumentException('Tarikh "Sah hingga" mesti sama atau selepas "Sah dari".');
+           }
+       }
+
+       /** BR-PAS-06: pas kenderaan → kenderaan wajib DAN mesti milik pemohon (cegah IDOR melalui medan borang) */
+       private function assertVehicle(PassType $type, ?int $vehicleId, int $userId): void
+       {
+           if (! $type->requiresVehicle()) {
+               return;
+           }
+
+           $owned = $vehicleId !== null && model(VehicleModel::class)
+               ->where('id', $vehicleId)
+               ->where('user_id', $userId)
+               ->countAllResults() === 1;
+
+           if (! $owned) {
+               throw new InvalidArgumentException('Sila pilih kenderaan anda yang berdaftar untuk pas kenderaan.');
+           }
+       }
+
+       /** @param list<UploadedFile> $files */
+       private function assertFiles(array $files): void
+       {
+           if ($files === [] || count($files) > self::MAX_FILES) {
+               throw new InvalidArgumentException('Sila lampirkan 1 hingga 3 dokumen sokongan.');
+           }
+
+           foreach ($files as $file) {
+               // guessExtension() diterbitkan dari MIME sebenar (finfo) — lapisan kedua selepas ext_in/mime_in.
+               // Sambungan nama fail MESTI sama dengan kandungan (cth PNG bernama .pdf ditolak).
+               $guessed = $file->guessExtension();
+
+               if (! $file->isValid()
+                   || ! in_array($guessed, self::ALLOWED_EXT, true)
+                   || strtolower($file->getClientExtension()) !== $guessed) {
+                   throw new InvalidArgumentException('Dokumen tidak sah. Hanya PDF, JPG atau PNG dibenarkan.');
+               }
+
+               if ((int) $file->getSize() > self::MAX_BYTES) {
+                   throw new InvalidArgumentException('Setiap fail mestilah tidak melebihi 2 MB.');
+               }
+           }
+       }
+
+       /**
+        * @return array{doc_type:string, original_name:string, mime:string, size_bytes:int, stored_path:string}
+        */
+       private function storeFile(UploadedFile $file): array
+       {
+           // Baca metadata SEBELUM move() — selepas dipindah, fail sementara sudah tiada
+           $meta = [
+               'doc_type'      => 'sokongan',
+               'original_name' => mb_substr($file->getClientName(), 0, 255),   // untuk paparan SAHAJA
+               'mime'          => $file->getMimeType(),                         // dari kandungan (finfo)
+               'size_bytes'    => (int) $file->getSize(),
+           ];
+
+           $newName = $file->getRandomName();                 // cth 1727251200_3f2a9c1e7b0d4a5c6e81.pdf
+           $file->move(WRITEPATH . self::UPLOAD_DIR, $newName); // HTTPException jika gagal
+
+           return $meta + ['stored_path' => self::UPLOAD_DIR . $newName];
+       }
+
+       /** @param list<array{stored_path:string}> $stored */
+       private function deleteStoredFiles(array $stored): void
+       {
+           foreach ($stored as $doc) {
+               $path = WRITEPATH . $doc['stored_path'];
+
+               if (is_file($path)) {
+                   unlink($path);
+               }
+           }
+       }
+   }
+   ```
+
+   Semua `use` yang diperlukan sudah disertakan (`PassStatus`, `PassType`, `VehicleModel`, `UploadedFile`, `PageNotFoundException`, `InvalidArgumentException`, `RuntimeException`, `Throwable`). Kaedah Hari 8 (`startReview`, `approve`, `reject`, `transition`) **belum** ada — ia ditambah esok.
 
    Sebelum meneruskan, terangkan dengan lisan kepada jurulatih atau rakan sebelah: *"Kenapa fail dipindah SEBELUM `transBegin()`, dan apa yang berlaku kepada fail jika `record()` gagal?"*
 
-2. **Tambah `new()`, `create()`, `download()`, `rules()`, `uploadedFiles()`** dalam `ApplicationController` (rujuk template). Pastikan `protected $helpers = ['form', 'url'];`.
+2. **Tambah `new()`, `create()`, `download()`, `rules()`, `uploadedFiles()`** dalam `ApplicationController` — gantikan seluruh kandungan fail dengan versi lengkap Hari 7 di bawah. `index()`, `show()`, `findVisibleOr404()` dan `protected $helpers = ['form', 'url'];` kekal seperti Lab 7.2.
+
+   `app/Controllers/Pas/ApplicationController.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Controllers\Pas;
+
+   use App\Controllers\BaseController;
+   use App\Entities\PassApplication;
+   use App\Enums\PassStatus;
+   use App\Enums\PassType;
+   use App\Models\PassApplicationModel;
+   use App\Models\PassDocumentModel;
+   use App\Models\VehicleModel;
+   use CodeIgniter\Exceptions\PageNotFoundException;
+   use CodeIgniter\HTTP\DownloadResponse;
+   use CodeIgniter\HTTP\Files\UploadedFile;
+   use CodeIgniter\HTTP\RedirectResponse;
+   use InvalidArgumentException;
+
+   class ApplicationController extends BaseController
+   {
+       protected $helpers = ['form', 'url'];
+
+       /** GET /pas/permohonan — "Permohonan Saya" (BR-PAS-04: SENTIASA skop pemilik) */
+       public function index(): string
+       {
+           $requested = $this->request->getGet('status');
+           $status    = PassStatus::tryFrom(is_string($requested) ? $requested : '');   // input asing → null
+
+           $model        = model(PassApplicationModel::class);
+           $applications = $model->ownedBy((int) auth()->id())
+               ->withStatus($status)
+               ->orderBy('pass_applications.created_at', 'DESC')
+               ->paginate(10);
+
+           return view('pas/index', [
+               'applications' => $applications,
+               'pager'        => $model->pager,
+               'status'       => $status,
+           ]);
+       }
+
+       /** GET /pas/permohonan/new — borang */
+       public function new(): string
+       {
+           return view('pas/new', [
+               'types'    => PassType::cases(),
+               'vehicles' => model(VehicleModel::class)
+                   ->where('user_id', (int) auth()->id())
+                   ->asArray()
+                   ->findAll(),
+           ]);
+       }
+
+       /** POST /pas/permohonan — simpan permohonan + dokumen */
+       public function create(): RedirectResponse
+       {
+           // 1. Validasi pelayan (medan + SETIAP fail dalam documents[])
+           if (! $this->validate($this->rules())) {
+               return redirect()->back()->withInput();
+           }
+
+           // 2. Serah kepada Service (bilangan fail, pemilikan kenderaan, transaksi, move())
+           try {
+               $application = service('passWorkflowService')->submit(
+                   (int) auth()->id(),
+                   $this->request->getPost(['pass_type', 'vehicle_id', 'purpose', 'valid_from', 'valid_until']),
+                   $this->uploadedFiles('documents'),
+               );
+           } catch (InvalidArgumentException $e) {
+               // 3. Ralat perniagaan → mesej mesra pengguna, input dikekalkan (fail perlu dipilih semula)
+               return redirect()->back()->withInput()->with('error', $e->getMessage());
+           }
+
+           // 4. PRG — Post/Redirect/Get
+           return redirect()->to(url_to('pas.show', $application->id))
+               ->with('message', "Permohonan {$application->ref_no} berjaya dihantar.");
+       }
+
+       /** GET /pas/permohonan/{id} — butiran + dokumen (tindakan & sejarah ditambah Hari 8) */
+       public function show(string $id): string
+       {
+           $application = $this->findVisibleOr404((int) $id);
+
+           return view('pas/show', [
+               'application' => $application,
+               'documents'   => model(PassDocumentModel::class)->forApplication($application->id),
+           ]);
+       }
+
+       /** GET /pas/permohonan/dokumen/{id} — muat turun melalui controller (fail TIADA dalam public/) */
+       public function download(string $documentId): DownloadResponse
+       {
+           $document = model(PassDocumentModel::class)->find((int) $documentId);
+
+           if ($document === null) {
+               throw PageNotFoundException::forPageNotFound();
+           }
+
+           // BR-PAS-04 terpakai kepada FAIL juga — bukan sekadar halaman butiran
+           $this->findVisibleOr404((int) $document['application_id']);
+
+           $path = service('passWorkflowService')->documentPath($document);   // semakan path traversal
+
+           // attachment (bukan inline) + nosniff: pelayar tidak "meneka" & merender kandungan
+           return $this->response->download($path, null, true)
+               ->setFileName($document['original_name'])
+               ->setHeader('X-Content-Type-Options', 'nosniff');
+       }
+
+       // -----------------------------------------------------------------
+
+       /** BR-PAS-04 — 404 (bukan 403) supaya kewujudan ID orang lain tidak didedahkan */
+       private function findVisibleOr404(int $id): PassApplication
+       {
+           $application = model(PassApplicationModel::class)->find($id);
+
+           if ($application === null || ! service('passWorkflowService')->canView(auth()->user(), $application)) {
+               throw PageNotFoundException::forPageNotFound();
+           }
+
+           return $application;
+       }
+
+       /**
+        * Rules validasi borang. BR-PAS-02 untuk fail:
+        *  - uploaded : sekurang-kurangnya satu fail yang berjaya dimuat naik oleh PHP
+        *  - max_size : dalam KB → 2048 = 2 MB SETIAP fail
+        *  - ext_in   : (StrictRules CI 4.6) sambungan klien MESTI sama dengan guessExtension() dari kandungan
+        *  - mime_in  : MIME dari kandungan (finfo), BUKAN header Content-Type dari pelayar
+        *
+        * @return array<string, array<string, mixed>>
+        */
+       private function rules(): array
+       {
+           $rules = [
+               'pass_type' => [
+                   'label' => 'Jenis pas',
+                   'rules' => 'required|in_list[' . implode(',', PassType::values()) . ']',
+               ],
+               'vehicle_id' => [
+                   'label' => 'Kenderaan',
+                   'rules' => 'permit_empty|is_natural_no_zero',
+               ],
+               'purpose' => [
+                   'label' => 'Tujuan',
+                   'rules' => 'required|min_length[10]|max_length[2000]',
+               ],
+               'valid_from' => [
+                   'label' => 'Sah dari',
+                   'rules' => 'required|valid_date[Y-m-d]',
+               ],
+               'valid_until' => [
+                   'label' => 'Sah hingga',
+                   'rules' => 'required|valid_date[Y-m-d]',
+               ],
+               'documents' => [
+                   'label'  => 'Dokumen sokongan',
+                   'rules'  => 'uploaded[documents]'
+                       . '|max_size[documents,2048]'
+                       . '|ext_in[documents,pdf,jpg,png]'
+                       . '|mime_in[documents,application/pdf,image/jpeg,image/png]',
+                   'errors' => [
+                       'uploaded' => 'Sila lampirkan sekurang-kurangnya satu dokumen sokongan yang sah.',
+                       'max_size' => 'Setiap fail mestilah tidak melebihi 2 MB.',
+                       'ext_in'   => 'Hanya fail PDF, JPG atau PNG dibenarkan.',
+                       'mime_in'  => 'Kandungan fail bukan PDF/JPG/PNG yang sah.',
+                   ],
+               ],
+           ];
+
+           // BR-PAS-06: kenderaan WAJIB hanya untuk pas kenderaan (pemilikan & tarikh disemak dalam Service)
+           $type = PassType::tryFrom((string) $this->request->getPost('pass_type'));
+           if ($type?->requiresVehicle()) {
+               $rules['vehicle_id']['rules'] = 'required|is_natural_no_zero';
+           }
+
+           return $rules;
+       }
+
+       /**
+        * Fail yang BENAR-BENAR dipilih pengguna (buang slot kosong UPLOAD_ERR_NO_FILE).
+        *
+        * @return list<UploadedFile>
+        */
+       private function uploadedFiles(string $field): array
+       {
+           $files = $this->request->getFileMultiple($field) ?? [];
+
+           return array_values(array_filter(
+               $files,
+               static fn (UploadedFile $file): bool => $file->getError() !== UPLOAD_ERR_NO_FILE,
+           ));
+       }
+   }
+   ```
 
 3. **Cipta `app/Views/pas/new.php`**:
 

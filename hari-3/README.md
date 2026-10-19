@@ -17,6 +17,10 @@ Di akhir hari ini, peserta boleh:
 | O3 | **Menulis** seeder idempoten yang boleh dijalankan berulang kali tanpa baris berganda | S2 | `departments` = 4 baris selepas dua larian |
 | O4 | **Membina** model dengan `$allowedFields`, `$useTimestamps` dan validation, serta halaman senarai + borang baharu | S3 | [Lab 3.3](./lab.md#lab-33--model--halaman-jabatan-s3); `/jabatan` |
 | O5 | **Membina** carian Query Builder (`like()` dalam kumpulan) dengan pagination secara berdikari | S4 | [Lab 3.4](./lab.md#lab-34--carian--pagination-zon-s4); `/zon?q=`; Kuiz S4 lulus |
+| O6 | **Mengkonfigurasi** kumpulan database `tests` melalui `.env` dan **meng-commit** templat `.env.example` tanpa rahsia | S5 | [Lab 3.1b](./lab.md#lab-31b--database-ujian--envexample-s5); `php spark db:table --show --dbgroup tests` |
+| O7 | **Menjalankan** query Query Builder dalam `php spark shell` dan **menerangkan** SQL yang dijana melalui `getLastQuery()` | S6 | [Lab 3.2b](./lab.md#lab-32b--query-builder-dalam-konsol-s6); Kuiz S6 lulus |
+| O8 | **Membina** borang edit dengan `update()` dan **menguji** `is_unique` dengan `{id}` | S7 | [Lab 3.3b](./lab.md#lab-33b--edit-jabatan-s7); `/jabatan/<id>/edit` |
+| O9 | **Membina** halaman butiran dengan 404 dan susunan `?sort=` ber-whitelist | S8 | [Lab 3.4b](./lab.md#lab-34b--butiran-zon--susunan-s8); `/zon/<id>`, `/zon?sort=name` |
 
 ---
 
@@ -25,12 +29,16 @@ Di akhir hari ini, peserta boleh:
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 2 | — |
-| 09:00–10:30 | S1 | Database MySQL & `.env` | Mencipta database & pengguna `kkm_dev`; menyambung projek |
+| 09:00–10:00 | S1 | Database MySQL & `.env` | Mencipta database & pengguna `kkm_dev`; menyambung projek |
+| 10:00–10:30 | S5 | Lanjutan S1: database ujian & `.env.example` | Menyambung kumpulan `tests`; meng-commit templat tanpa rahsia |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | S2 | Migration & seeder pertama | Menulis migration `departments` & `parking_zones`; seeder idempoten |
+| 10:45–11:50 | S2 | Migration & seeder pertama | Menulis migration `departments` & `parking_zones`; seeder idempoten |
+| 11:50–12:30 | S6 | Lanjutan S2: Query Builder dalam konsol | Menjalankan query dalam `php spark shell`; membaca SQL sebenar |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–16:00 | S3 | Model & halaman `/jabatan` | Membina model dengan validation; senarai & borang baharu |
-| 16:00–17:00 | S4 | Carian & pagination `/zon`; wrap-up | Membina carian Query Builder & pagination secara berdikari |
+| 14:30–15:20 | S3 | Model & halaman `/jabatan` | Membina model dengan validation; senarai & borang baharu |
+| 15:20–16:00 | S7 | Lanjutan S3: edit jabatan | Membina borang edit dengan `update()` dan `is_unique` `{id}` |
+| 16:00–16:35 | S4 | Carian & pagination `/zon` | Membina carian Query Builder & pagination secara berdikari |
+| 16:35–17:00 | S8 | Lanjutan S4: butiran zon & susunan; wrap-up | Membina halaman butiran dengan 404 dan susunan ber-whitelist |
 
 ---
 
@@ -210,6 +218,162 @@ Lab: [Lab 3.4](./lab.md#lab-34--carian--pagination-zon-s4).
 
 ---
 
+## S5 — Lanjutan S1: Database ujian & `.env.example` (selepas Lab 3.1)
+
+### 5.1 Dua kumpulan connection
+
+| Kumpulan | Digunakan oleh | Database |
+|----------|----------------|----------|
+| `default` | `php spark serve`, `migrate`, `db:seed`, model | `kkm_latihan` |
+| `tests` | PHPUnit (`composer test`, Hari 6) — `app/Config/Database.php` menukar `defaultGroup` kepada `tests` apabila `ENVIRONMENT` ialah `testing` | `kkm_latihan_test` |
+
+Nilai lalai `tests` dalam appstarter bukan MySQL. Baris `database.tests.*` dalam `.env` menimpanya, sama seperti `database.default.*` menimpa kumpulan `default`. `--dbgroup tests` pada `php spark db:table` memilih kumpulan itu secara jelas, jadi anda boleh menguji connection hari ini walaupun ujian PHPUnit bermula Hari 6.
+
+### 5.2 `.env` vs `.env.example`
+
+| Fail | Di-commit? | Isi |
+|------|------------|-----|
+| `.env` | Tidak — `.gitignore` | Nilai sebenar laptop anda, termasuk kata laluan |
+| `.env.example` | Ya | Kunci yang sama; kata laluan diganti `ganti_kata_laluan` |
+
+Sesiapa yang mengklon repo menjalankan `cp .env.example .env` dan hanya mengisi kata laluan. Setiap kali anda menambah kunci baharu dalam `.env`, tambah juga kunci itu (tanpa nilai rahsia) dalam `.env.example` dalam commit yang sama.
+
+Lab: [Lab 3.1b](./lab.md#lab-31b--database-ujian--envexample-s5).
+
+### 🎯 Kuiz S5
+
+> Jawab selepas Lab 3.1b di laptop anda — jawapan datang daripada output sebenar. Lulus kuiz ini menanda checkpoint Lab 3.1b.
+
+1. Lab 3.1b langkah 1 (sebelum `.env` diubah): dalam blok `tests` output `php spark config:check Database`, apakah nilai `DBDriver` dan `DBPrefix`?
+   - [ ] `MySQLi` dan kosong — sama seperti `default`
+   - [x] `SQLite3` dan `db_`
+   - [ ] `MySQLi` dan `db_`
+   - [ ] `SQLite3` dan kosong
+   > Appstarter menetapkan `tests` kepada SQLite `:memory:` dengan awalan `db_`. Laragon tidak menghidupkan extension `sqlite3`, dan awalan `db_` menjadikan nama jadual `db_departments`. Sebab itu `.env` menimpa kedua-duanya: `DBDriver = MySQLi` dan `DBPrefix =` kosong.
+
+2. Lab 3.1b langkah 5: apakah output `git status --short`?
+   - [ ] `?? .env` dan `?? .env.example`
+   - [x] `?? .env.example`
+   - [ ] Tiada output — `.env.example` diabaikan seperti `.env`
+   - [ ] `M .env`
+   > `??` bermaksud fail baharu yang belum dijejak Git. `.gitignore` mengabaikan nama `.env` sahaja, jadi `.env.example` boleh di-commit manakala `.env` (dengan kata laluan) kekal di luar Git.
+
+---
+
+## S6 — Lanjutan S2: Query Builder dalam konsol (selepas Lab 3.2)
+
+### 6.1 Konsol sebagai makmal query
+
+`php spark shell` memuatkan aplikasi CI4 dan memberi `$db` (connection `default`). Setiap baris dijalankan serta-merta, jadi anda boleh mencuba Query Builder sebelum menulisnya dalam model.
+
+| Kaedah | Kesan pada SQL |
+|--------|----------------|
+| `where('code', 'BSM')` | `WHERE code = 'BSM'` — nilai di-escape |
+| `like('location', 'aras')` | `WHERE location LIKE '%aras%'` |
+| `orderBy('name', 'DESC')` | `ORDER BY name DESC` |
+| `countAllResults()` | `SELECT COUNT(*)` dengan syarat yang dibina |
+| `countAll()` | Bilangan semua baris jadual, tanpa syarat |
+| `$db->getLastQuery()` | SQL sebenar query terakhir |
+
+### 6.2 Query Builder terus vs model
+
+`$db->table('departments')` tidak melalui `DepartmentModel`, jadi tiada `$validationRules` dan tiada `$allowedFields`: hanya kekangan MySQL (`UNIQUE`, `NOT NULL`) yang menjaga data. `$db->affectedRows()` memberitahu berapa baris yang benar-benar ditulis oleh query terakhir — cara pantas membuktikan seeder idempoten tanpa membuka HeidiSQL.
+
+Lab: [Lab 3.2b](./lab.md#lab-32b--query-builder-dalam-konsol-s6) · Rujukan: [`arahan-spark.md`](../docs/arahan-spark.md#php-spark-shell).
+
+### 🎯 Kuiz S6
+
+> Jawab selepas Lab 3.2b di laptop anda — jawapan datang daripada output sebenar. Lulus kuiz ini menanda checkpoint Lab 3.2b.
+
+1. Lab 3.2b langkah 4: apakah nilai yang dipulangkan `$db->table('parking_zones')->like('location', 'aras')->countAllResults()`?
+   - [ ] 0 — `aras` huruf kecil tidak sepadan dengan `Aras`
+   - [ ] 1
+   - [x] 2
+   - [ ] 3
+   > Zon A (*Aras G, pintu masuk utama*) dan zon C (*Aras 1–3, bangunan parkir*) sepadan; collation `utf8mb4_unicode_ci` tidak membezakan huruf besar/kecil. Zon B (*Sebelah klinik pakar*) tidak mengandungi `aras`.
+
+2. Lab 3.2b langkah 5: apakah yang dipaparkan oleh `insert()` **tanpa** `ignore(true)`, dan apakah nilai `$db->affectedRows()` selepas `insert()` **dengan** `ignore(true)`?
+   - [ ] *The Kod field must contain a unique value.* dan `0`
+   - [x] Ralat *Duplicate entry 'BTM' for key …* dan `0`
+   - [ ] Ralat *Duplicate entry 'BTM' for key …* dan `1`
+   - [ ] `true` dan `1` — baris `BTM` kedua disimpan
+   > `$db->table()` tidak melalui model, jadi tiada mesej validation `Kod`: MySQL sendiri menolak kod berganda melalui kunci `UNIQUE`. `ignore(true)` menjadikan query `INSERT IGNORE` — tiada ralat, tetapi 0 baris ditulis. Itulah sebab seeder Lab 3.2 selamat dijalankan dua kali.
+
+---
+
+## S7 — Lanjutan S3: Edit jabatan (selepas Lab 3.3)
+
+### 7.1 Corak edit = corak baharu + id
+
+| Request | Method controller | Langkah |
+|---------|-------------------|---------|
+| `GET /jabatan/5/edit` | `edit(5)` | `find(5)` → `null`? 404 : borang terisi (`old('code', $jabatan['code'])`) |
+| `POST /jabatan/5` | `kemaskini(5)` | `update(5, $data)` → gagal? kembali ke borang dengan `errors()` : redirect ke `/jabatan` (PRG) |
+
+`(:num)` dalam route hanya menerima digit dan menghantarnya sebagai argumen method (`/$1`).
+
+### 7.2 `{id}` dalam `is_unique`
+
+`is_unique[departments.code,id,{id}]` bermaksud "kod mesti unik, **kecuali** baris yang `id`-nya sama dengan `{id}`". CI 4.7 mengisi `{id}` hanya jika `$data` ada medan `id` **dan** model ada rule untuk `id`; jika tiada rule, CI membaling *No validation rules for the placeholder: "id"*. Validation berjalan sebelum `$allowedFields` membuang medan lain, jadi `id` digunakan untuk semakan tetapi tidak ditulis ke jadual.
+
+### 7.3 Kenapa tiada padam
+
+Mulai Hari 4, `users.department_id` merujuk `departments` (foreign key `ON DELETE SET NULL`). Memadam jabatan akan mengosongkan jabatan setiap pengguna di dalamnya, dan `UserSeeder` Hari 4 mencari jabatan ikut kod. Jadi kursus ini membina edit sahaja, dan anda tidak menukar kod empat jabatan asal.
+
+Lab: [Lab 3.3b](./lab.md#lab-33b--edit-jabatan-s7).
+
+### 🎯 Kuiz S7
+
+> Jawab selepas Lab 3.3b di laptop anda — jawapan datang daripada output sebenar. Lulus kuiz ini menanda checkpoint Lab 3.3b.
+
+1. Lab 3.3b langkah 6: anda mengekalkan Kod `BPP`, menukar Nama, dan klik **Kemas kini**. Apakah yang dipaparkan?
+   - [ ] *The Kod field must contain a unique value.* di bawah Kod
+   - [x] Senarai `/jabatan` dengan *Jabatan BPP dikemas kini.*
+   - [ ] Senarai `/jabatan` dengan *Jabatan BPP disimpan.* dan dua baris `BPP`
+   - [ ] Halaman 404 *Jabatan tidak dijumpai.*
+   > `$data['id'] = $id` mengisi `{id}`, jadi `is_unique` mengecualikan baris `BPP` sendiri dan `update()` berjaya. Tanpa baris itu, kod sendiri dikira berganda dan mesej *unique value* muncul.
+
+2. Lab 3.3b langkah 6: dalam `php spark db:table departments --limit-field-value 40`, apakah yang berlaku pada baris `BPP` selepas kemas kini?
+   - [ ] `created_at` dan `updated_at` kedua-duanya bertukar kepada masa edit
+   - [x] `created_at` kekal (masa Lab 3.3); `updated_at` bertukar kepada masa edit
+   - [ ] Kedua-duanya kekal — `update()` tidak menyentuh cap masa
+   - [ ] `updated_at` menjadi `NULL`
+   > `$useTimestamps = true` mengisi `created_at` dan `updated_at` semasa `insert()`, tetapi hanya `updated_at` semasa `update()`.
+
+---
+
+## S8 — Lanjutan S4: Butiran zon & susunan (selepas Lab 3.4)
+
+### 8.1 404 yang betul
+
+`find($id)` memulangkan `null` jika tiada baris. Tanpa semakan, view cuba membaca `$zon['code']` daripada `null` dan memaparkan ralat. `throw PageNotFoundException::forPageNotFound('Zon tidak dijumpai.')` memberi status HTTP **404** — browser, enjin carian dan ujian Hari 6 semuanya faham maksudnya.
+
+### 8.2 Whitelist untuk `orderBy()`
+
+Query Builder meng-escape **nilai** dalam `where()` dan `like()`, tetapi `orderBy()` menerima **nama lajur**. Jangan hantar input pengguna terus ke `orderBy()`: semak dahulu dengan `in_array($sort, ['code', 'name'], true)` dan guna nilai lalai jika tiada dalam senarai. Pautan pagination menyalin query string semasa, jadi `q` dan `sort` kekal pada halaman 2.
+
+Lab: [Lab 3.4b](./lab.md#lab-34b--butiran-zon--susunan-s8).
+
+### 🎯 Kuiz S8
+
+> Jawab selepas Lab 3.4b di laptop anda — jawapan datang daripada output sebenar. Lulus kuiz ini menanda checkpoint Lab 3.4b.
+
+1. Anda membuka `/zon?sort=name` dalam Lab 3.4b. Zon manakah di baris pertama halaman 1?
+   - [ ] **A — Blok Utama**
+   - [x] **B — Blok Klinik**
+   - [ ] **C — Parkir Bertingkat**
+   - [ ] Ralat 500 kerana `sort` tidak di-escape
+   > Susunan ikut nama: *Blok Klinik* < *Blok Utama* < *Parkir Bertingkat*. `orderBy('name')` dipanggil sebelum `cari()`, jadi SQL menjadi `ORDER BY name, code`.
+
+2. Anda membuka `/zon?sort=location` (`location` tiada dalam whitelist). Zon manakah di baris pertama?
+   - [x] **A — Blok Utama** — susunan kembali kepada kod
+   - [ ] **C — Parkir Bertingkat** — disusun ikut lokasi
+   - [ ] Ralat 500 *Unknown column*
+   - [ ] *Tiada zon sepadan*
+   > `in_array()` menolak `location`, jadi `$sort` menjadi `code`. Tanpa whitelist, lokasi *Aras 1–3, …* (zon C) akan berada di atas — pengguna boleh memilih apa-apa lajur, termasuk yang tidak sepatutnya dilihat.
+
+---
+
 ## 📦 Hasil Hari Ini
 
 - [ ] Database `kkm_latihan` + `kkm_latihan_test` dengan pengguna `kkm_dev`; `.env` bersambung (tidak di-commit)
@@ -217,6 +381,11 @@ Lab: [Lab 3.4](./lab.md#lab-34--carian--pagination-zon-s4).
 - [ ] `DepartmentModel` + `/jabatan` (senarai & borang baharu dengan validation model)
 - [ ] `ParkingZoneModel` + `/zon` (carian `?q=` & pagination)
 - [ ] GitLab menunjukkan commit `DB:`, `JABATAN:` dan `ZON:`
+- [ ] Kumpulan database `tests` → `kkm_latihan_test` dalam `.env`; `.env.example` tanpa rahsia di-commit
+- [ ] `php spark shell` (PsySH) untuk menguji query Query Builder
+- [ ] `/jabatan/<id>/edit` dengan `update()` dan `is_unique` `{id}`
+- [ ] `/zon/<id>` (butiran + 404) dan susunan `/zon?sort=code` / `?sort=name`
+- [ ] GitLab menunjukkan commit `SETUP: .env.example tanpa rahsia`, `SETUP: php spark shell (PsySH)`, `JABATAN: edit & kemas kini` dan `ZON: butiran + susunan`
 
 ---
 
@@ -242,5 +411,6 @@ Lab: [Lab 3.4](./lab.md#lab-34--carian--pagination-zon-s4).
 ## ➡️ Persediaan untuk esok
 
 - Pastikan GitLab menunjukkan commit `DB:`, `JABATAN:` dan `ZON:`; siapkan Lab 3.3–3.4 jika belum.
+- Hari 4 Lab 4.2 memberi `app/Config/Routes.php` penuh: pastikan route `jabatan/(:num)/edit`, `jabatan/(:num)` dan `zon/(:num)` dari Lab 3.3b–3.4b kekal di dalamnya.
 - Hari 4 memasang **Shield** (log masuk & peranan), layout Bootstrap dan baki 8 jadual spesifikasi §3 dalam projek yang sama.
 - Baca spesifikasi §4 (peranan `applicant`, `reviewer`, `approver`, `admin`) dan [`erd-rujukan.md`](../docs/erd-rujukan.md).
