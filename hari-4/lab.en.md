@@ -6,10 +6,14 @@
 
 | Lab | Session | Time | Outcome |
 |-----|------|------|-------|
-| 4.1 | S1 | 09:00–10:30 | `kelas-ci-<nama>` project demo + request lifecycle trace |
-| 4.2 | S2 | 10:45–12:30 | Tests + Shield + Bootstrap layout (same project) |
-| 4.3 | S3 | 14:30–16:00 | 8 more migrations (10 in total) + seeders + login |
-| 4.4 | S4 | 16:00–17:00 | Work plan, branch + merge request, fresh clone |
+| 4.1 | S1 | 09:00–10:00 | `kelas-ci-<nama>` project demo + request lifecycle trace |
+| 4.1b | S5 | 10:00–10:30 | Trace of the POST `/jabatan` request (`csrf` filter, `INSERT`, 303 redirect) |
+| 4.2 | S2 | 10:45–12:00 | Tests + Shield + Bootstrap layout (same project) |
+| 4.2b | S6 | 12:00–12:30 | `session` & `permission:` filters on `/jabatan` and `/zon` |
+| 4.3 | S3 | 14:30–15:30 | 8 more migrations (10 in total) + seeders + login |
+| 4.3b | S7 | 15:30–16:00 | FK & `ON DELETE` drills + `ReferenceSequenceSeeder` |
+| 4.4 | S4 | 16:00–16:35 | Work plan, branch + merge request, fresh clone |
+| 4.4b | S8 | 16:35–17:00 | Second merge request: project README + review |
 
 ---
 
@@ -383,7 +387,7 @@ Set up tests (`composer test`) in the `kelas-ci-<nama>` project, check `.env`, i
     }
     ```
 
-16. `app/Config/Routes.php` — protect the home page. Only the `/` line changes (`session` `filter` + route name `home`); the `jabatan` and `zon` routes from Day 3 stay. `php spark shield:setup` already added `service('auth')->routes($routes);` at the end — do not add it a second time (duplicate routes). The whole file after the change:
+16. `app/Config/Routes.php` — protect the home page. Only the `/` line changes (`session` `filter` + route name `home`); the `jabatan` and `zon` routes from Day 3 (including the department edit and zone detail routes from Lab 3.3b/3.4b) stay. `php spark shield:setup` already added `service('auth')->routes($routes);` at the end — do not add it a second time (duplicate routes). The whole file after the change:
 
     `app/Config/Routes.php`
 
@@ -398,6 +402,9 @@ Set up tests (`composer test`) in the `kelas-ci-<nama>` project, check `.env`, i
     $routes->get('jabatan/baharu', 'Jabatan::baharu');
     $routes->post('jabatan', 'Jabatan::simpan');
     $routes->get('zon', 'Zon::index');
+    $routes->get('jabatan/(:num)/edit', 'Jabatan::edit/$1');
+    $routes->post('jabatan/(:num)', 'Jabatan::kemaskini/$1');
+    $routes->get('zon/(:num)', 'Zon::butiran/$1');
 
     service('auth')->routes($routes);
     ```
@@ -1172,6 +1179,522 @@ Protect `main` on GitLab (*Settings → Repository → Protected branches*: *All
 
 ---
 
+## Lab 4.1b — Tracing the POST `/jabatan` Request (S5)
+
+### 🎯 Objective
+Trace one **POST** request (the `/jabatan/baharu` form from Lab 3.3) with the Debug Toolbar and `php spark filter:check`, then compare it with the GET `/zon` trace from Lab 4.1: the `csrf` filter, the `is_unique` validation, the `INSERT` and the `303` redirect.
+
+### Prerequisites
+- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 4.1](#lab-41--project-demo--request-lifecycle-trace-s1) done: `docs/kitaran-request.md` is pushed.
+- [Lab 3.3](../hari-3/lab.en.md#lab-33--model--the-jabatan-pages-s3) done: `/jabatan/baharu` saves a new department.
+
+### Steps
+
+1. `php spark serve`, open `http://localhost:8080/jabatan/baharu`. Enter Kod `BPK`, Nama `Bahagian Perkhidmatan (Latihan)` → **Simpan**. The browser returns to `/jabatan` with the message *"Jabatan BPK disimpan."*
+2. The toolbar at the bottom of `/jabatan` belongs to the **GET** request after the redirect, not the POST. Click the 🔥 icon → **History** tab. The table lists recent requests (columns *Status*, *Method*, *URL*). On the **POST** `http://localhost:8080/jabatan` row, click **Load**. The toolbar now shows the data of that POST request.
+3. Record from the loaded POST request:
+   - The *Status* column in History: the POST status code (not `200`).
+   - **Vars** tab → *Response* section: the `Location` header. *POST* section: the fields the controller received — `csrf_test_name` is missing because the `csrf` filter removes it after verifying the token.
+   - **Database** tab: the number of queries and their SQL. Click the `SELECT 1 FROM departments …` query to see its *trace*: it comes from `Validation\Rules->is_unique()`, not from the controller.
+   - **Views** tab: the number of views loaded during the POST.
+   - **Routes** tab: the matched controller and method.
+4. Second terminal (keep `serve` running). Git Bash converts `/jabatan` into a Windows path (`C:/Program Files/Git/jabatan`), so put `MSYS_NO_PATHCONV=1` in front:
+
+   ```bash
+   MSYS_NO_PATHCONV=1 php spark filter:check POST /jabatan
+   MSYS_NO_PATHCONV=1 php spark filter:check GET /zon
+   ```
+
+   Read the *Before Filters* column: `forcehttps pagecache csrf` for both. The `csrf` filter runs on every request, but it only **verifies the token** on POST.
+5. **Duplicate code.** Open `/jabatan/baharu` again, enter Kod `BTM` (already exists), Nama `Ujian berganda` → **Simpan**. An error shows under Kod. History → **Load** the newest POST row: record the number of queries in the Database tab and the `Location` header.
+6. **Without the CSRF token.** On `/jabatan/baharu`, press F12 → **Elements** tab → find `<input type="hidden" name="csrf_test_name" …>` → right-click → **Delete element**. Enter Kod `BPX`, Nama `Tanpa token` → **Simpan**. The error page shows *The action you requested is not allowed.* (code `403`). Open `/jabatan`: `BPX` is **not** there — the `csrf` filter stopped the request before the controller.
+7. Add this section at the **end** of `docs/kitaran-request.md`, then fill the empty columns from your notes in steps 3–6:
+
+   ```markdown
+
+   ## POST /jabatan (Lab 4.1b)
+
+   | # | Langkah | Fail | Bukti POST /jabatan | Beza dengan GET /zon |
+   |---|---------|------|---------------------|----------------------|
+   | 1 | Front controller | `public/index.php` | | |
+   | 2 | Routing | `app/Config/Routes.php` | `$routes->post('jabatan', 'Jabatan::simpan')` | |
+   | 3 | Filter before | `app/Config/Filters.php` | `csrf` mengesahkan token | |
+   | 4 | Controller | `app/Controllers/Jabatan.php` | `simpan()` | |
+   | 5 | Model | `app/Models/DepartmentModel.php` | | |
+   | 6 | View | — | | |
+   | 7 | Response | — | | |
+
+   - Kod berganda `BTM`: query = , `Location` =
+   - Tanpa token CSRF: status = , controller dipanggil? 
+   ```
+
+8. Commit and push:
+
+   ```bash
+   git add docs/kitaran-request.md && git commit -m "DOCS: kitaran request POST /jabatan" && git push
+   ```
+
+### ✅ Checkpoint
+- [ ] The Debug Toolbar History shows POST `/jabatan` with status `303`, two queries (`SELECT 1 … LIMIT 1` from `is_unique` and the `INSERT`) and no view (Quiz S5).
+- [ ] The duplicate code `BTM` gives a single `SELECT` query (no `INSERT`); the form without a CSRF token is rejected with `403` before the controller (Quiz S5).
+- [ ] GitLab shows the `DOCS: kitaran request POST /jabatan` commit (Quiz S5).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| The History tab has no POST row | The toolbar was opened on an old page, or the `writable/debugbar/` folder is not writable | Reload `/jabatan` after Simpan, then open History; check that `writable/debugbar/` exists |
+| The Views tab shows `jabatan/index` | You loaded the **GET** `/jabatan` row, not the POST | Click **Load** on the row whose *Method* column = `POST` |
+| `Can't find a route: "POST C:/Program Files/Git/jabatan"` | Git Bash converted `/jabatan` into a Windows path | Put `MSYS_NO_PATHCONV=1` in front of the command |
+| *The action you requested is not allowed.* on a normal Simpan | The tab was open too long, or the form was loaded before `serve` restarted | Reload `/jabatan/baharu` (new token), then submit again |
+
+### ⭐ Bonus challenge
+After Lab 4.2, repeat this trace for **POST `/login`**: which queries does Shield run (`auth_identities`, `auth_logins`), and where does the `Location` header take you?
+
+---
+
+## Lab 4.2b — Protecting the Day 3 Pages with Shield Filters (S6)
+
+### 🎯 Objective
+Put the Shield filters `session` and `permission:admin.access` on the Day 3 routes (`/jabatan`, `/zon`, `/jabatan/baharu`), prove them with `php spark routes` and `filter:check`, and test them with two test accounts (`admin` and `applicant`) created with `php spark shield:user`.
+
+### Prerequisites
+- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 4.2](#lab-42--ci4-project-env-shield--layout-s2) checkpoint passed: `/` redirects to `/login`, `AuthGroups` follows SPEC §4, the `layouts/main.php` layout + `partials/flash.php` exist.
+- Lab 4.3 **not** done yet: the `users` table has no profile fields and no synthetic users. This lab creates two temporary test accounts and deletes them at the end.
+
+### Steps
+
+1. **Before.** Look at the access gap now:
+
+   ```bash
+   php spark routes | grep -E "jabatan|zon"
+   ```
+
+   The *Before Filters* column shows only `csrf`. Open `http://localhost:8080/zon` in an **incognito** window (not logged in): the zone list is shown to anyone.
+2. `app/Config/Routes.php` — replace the whole file. The `/` route and `service('auth')->routes($routes);` from Lab 4.2 stay; the Day 3 routes get filters:
+
+   `app/Config/Routes.php`
+
+   ```php
+   <?php
+
+   use CodeIgniter\Router\RouteCollection;
+
+   /** @var RouteCollection $routes */
+   $routes->get('/', 'Home::index', ['filter' => 'session', 'as' => 'home']);
+
+   // Hari 3: senarai — mesti log masuk
+   $routes->get('jabatan', 'Jabatan::index', ['filter' => 'session']);
+   $routes->get('zon', 'Zon::index', ['filter' => 'session']);
+   $routes->get('zon/(:num)', 'Zon::butiran/$1', ['filter' => 'session']);
+
+   // Hari 3: tambah & edit jabatan — admin sahaja (permission admin.access, SPEC §9)
+   $routes->get('jabatan/baharu', 'Jabatan::baharu', ['filter' => 'permission:admin.access']);
+   $routes->post('jabatan', 'Jabatan::simpan', ['filter' => 'permission:admin.access']);
+   $routes->get('jabatan/(:num)/edit', 'Jabatan::edit/$1', ['filter' => 'permission:admin.access']);
+   $routes->post('jabatan/(:num)', 'Jabatan::kemaskini/$1', ['filter' => 'permission:admin.access']);
+
+   service('auth')->routes($routes);
+   ```
+
+   > `permission:admin.access` asks "*what* are you allowed to do?". Only the `admin` group has it (`admin.*` in `$matrix`). The same filter goes on the GET (form) **and** the POST (save) — if the POST is not protected, anyone logged in can submit the form directly.
+3. Verify:
+
+   ```bash
+   php -l app/Config/Routes.php
+   php spark routes | grep -E "jabatan|zon"
+   MSYS_NO_PATHCONV=1 php spark filter:check GET /jabatan/baharu
+   ```
+
+   `jabatan`, `zon` and `zon/([0-9]+)` → `csrf session`; `jabatan/baharu`, `jabatan/([0-9]+)/edit` (GET) and `jabatan`, `jabatan/([0-9]+)` (POST) → `csrf permission:admin.access`. `filter:check` shows the `CodeIgniter\Shield\Filters\PermissionFilter:admin.access` class after `CSRF`.
+4. Create two test accounts. Each command asks for the password twice — type `Latihan@2026`:
+
+   ```bash
+   php spark shield:user create -n ujiadmin -e ujiadmin@latihan.test -g admin
+   php spark shield:user create -n ujipemohon -e ujipemohon@latihan.test -g applicant
+   php spark shield:user list
+   ```
+
+   Output: `User "ujiadmin" created` and `The user is added to group "admin".` (likewise `ujipemohon` → `applicant`).
+5. Create `docs/akses-route.md`, then test each row in an **incognito** window and fill the *Sebenar* (actual) column:
+
+   ```markdown
+   # Matriks akses route — Hari 3 (Lab 4.2b)
+
+   | # | Pengguna | Tindakan | Dijangka | Sebenar |
+   |---|----------|----------|----------|---------|
+   | 1 | (belum log masuk) | Buka `/zon` | Dialih ke `/login` | |
+   | 2 | `ujipemohon@latihan.test` | Log masuk di halaman #1 | Halaman selepas log masuk = ? | |
+   | 3 | `ujipemohon@latihan.test` | Buka `/jabatan` | Senarai jabatan | |
+   | 4 | `ujipemohon@latihan.test` | Buka `/jabatan/baharu` | Dialih ke = ?, mesej = ? | |
+   | 5 | `ujiadmin@latihan.test` | `/logout`, log masuk, buka `/jabatan/baharu` | Borang *Jabatan baharu* | |
+   | 6 | `ujiadmin@latihan.test` | Buka `/zon?q=aras` | Senarai zon ditapis | |
+
+   Filter (`php spark routes`):
+   - `jabatan`, `zon`, `zon/(:num)` → `session`
+   - `jabatan/baharu`, `jabatan/(:num)/edit` (GET) dan `jabatan`, `jabatan/(:num)` (POST) → `permission:admin.access`
+   ```
+
+   The home page shows *"Selamat datang, ujipemohon."* — the username, because the `full_name` field is only added in Lab 4.3.
+6. Log out (`http://localhost:8080/logout`), then delete both test accounts so Lab 4.3 starts with an empty `users` table. Answer `y` to each confirmation question:
+
+   ```bash
+   php spark shield:user delete -n ujiadmin
+   php spark shield:user delete -n ujipemohon
+   php spark shield:user list
+   ```
+
+   `shield:user delete` removes the `users` row permanently; `auth_identities` and `auth_groups_users` go with it (Shield's `ON DELETE CASCADE` FKs — you prove this in Lab 4.3b).
+7. Commit and push **the docs file only** (`Routes.php` goes into the `SETUP:` commit in Lab 4.4 step 2):
+
+   ```bash
+   git add docs/akses-route.md && git commit -m "DOCS: matriks akses route Hari 3" && git push
+   ```
+
+### ✅ Checkpoint
+- [ ] `php spark routes` shows `session` on `jabatan` and `zon`, and `permission:admin.access` on `jabatan/baharu` (GET) and `jabatan` (POST) (Quiz S6).
+- [ ] The `docs/akses-route.md` matrix is complete: not logged in → `/login`; `ujipemohon` is turned away from `/jabatan/baharu`; `ujiadmin` sees the form (Quiz S6).
+- [ ] GitLab shows the `DOCS: matriks akses route Hari 3` commit, and `php spark shield:user list` no longer lists `ujiadmin`/`ujipemohon` (Quiz S6).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| `/zon` still shows without logging in | The normal window is still logged in, or `Routes.php` is not saved | Use an incognito window; check `php spark routes` |
+| `shield:user create` shows no password prompt | Separate Git Bash window (mintty) | Use the VS Code terminal, or `winpty php spark shield:user create …` |
+| `The "Password" field must be at least 8 characters in length.` and the prompt repeats | Password shorter than 8 characters | Type `Latihan@2026` when asked again |
+| `Can't find a route: "GET C:/Program Files/Git/jabatan/baharu"` | Git Bash converted the path | `MSYS_NO_PATHCONV=1` in front of `php spark filter:check` |
+| An error or blank page after `shield:user delete` | The browser is still logged in as the deleted account | Open `/logout` or close the incognito window |
+
+### ⭐ Bonus challenge
+Hide the *+ Jabatan baharu* link in `app/Views/jabatan/index.php` from non-admins with `<?php if (auth()->user()?->can('admin.access')): ?> … <?php endif ?>`. Then open `/jabatan/baharu` directly as `ujipemohon` (create it again, delete it afterwards): why is the route filter still needed even though the link is hidden?
+
+---
+
+## Lab 4.3b — FK & `ON DELETE` Drills & Sequence Seeder (S7)
+
+### 🎯 Objective
+Prove every Lab 4.3 constraint with real queries in the MySQL client — FK without a parent (`1452`), composite UNIQUE (`1062`), `RESTRICT` (`1451`), `SET NULL` and `CASCADE` — without damaging the data (transaction + `ROLLBACK`), then add an idempotent `ReferenceSequenceSeeder`.
+
+### Prerequisites
+- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 4.3](#lab-43--migrations--seeders-from-the-erd-s3) checkpoint passed: 18 tables, 5 users, 12 slots, 5 vehicles in `kkm_latihan`.
+- Lab 4.2b done (test accounts already deleted).
+
+### Steps
+
+**A. Constraints in the MySQL client**
+
+1. Open the MySQL client on the development database (password `Latihan@2026`):
+
+   ```bash
+   mysql -u kkm_dev -p kkm_latihan
+   ```
+
+   The prompt changes to `mysql>`. Paste each block below **one at a time** and read the output before the next block.
+2. List every FK and its `ON DELETE`:
+
+   ```sql
+   SELECT TABLE_NAME, CONSTRAINT_NAME, DELETE_RULE
+   FROM information_schema.REFERENTIAL_CONSTRAINTS
+   WHERE CONSTRAINT_SCHEMA = 'kkm_latihan'
+   ORDER BY TABLE_NAME, CONSTRAINT_NAME;
+   ```
+
+   Match each row with an `addForeignKey()` in the Lab 4.3 migrations (and the Shield migrations for `auth_*`).
+3. FK without a parent and composite UNIQUE — both are rejected, no row changes:
+
+   ```sql
+   UPDATE users SET department_id = 99 WHERE username = 'pemohon1';
+   UPDATE parking_slots SET slot_no = 'A-02' WHERE slot_no = 'A-01';
+   ```
+
+   Expected: `ERROR 1452 … CONSTRAINT users_department_id_fk …` and `ERROR 1062 … Duplicate entry '…-A-02' for key 'parking_slots.zone_id_slot_no'` (the number before `-A-02` is the `id` of zone A).
+4. `RESTRICT` — a parent that still has children cannot be deleted:
+
+   ```sql
+   DELETE FROM parking_zones WHERE code = 'A';
+   DELETE FROM users WHERE username = 'pemohon2';
+   ```
+
+   Record the `CONSTRAINT` name in each `ERROR 1451` message.
+5. `SET NULL` — inside a transaction, then `ROLLBACK` so the data stays:
+
+   ```sql
+   START TRANSACTION;
+   DELETE FROM departments WHERE code = 'BPA';
+   SELECT username, department_id FROM users ORDER BY id;
+   ROLLBACK;
+   SELECT username, department_id FROM users ORDER BY id;
+   ```
+
+   Record how many users get a `NULL` `department_id` before the `ROLLBACK`, and the values after it.
+6. `CASCADE` (Shield FKs) — delete `penyemak` (no vehicles) inside a transaction:
+
+   ```sql
+   START TRANSACTION;
+   DELETE FROM users WHERE username = 'penyemak';
+   SELECT COUNT(*) AS identiti FROM auth_identities;
+   SELECT COUNT(*) AS ahli_group FROM auth_groups_users;
+   ROLLBACK;
+   SELECT COUNT(*) AS identiti FROM auth_identities;
+   SELECT COUNT(*) AS ahli_group FROM auth_groups_users;
+   ```
+
+   Expected: `4` and `4` before the `ROLLBACK`, `5` and `5` after it. Type `exit` to leave.
+
+   > ⚠️ Steps 5–6 **must** start with `START TRANSACTION;`. Without it the `DELETE` happens immediately — see *Troubleshooting*.
+7. Create `docs/ujian-fk.md` and fill the *Sebenar* (actual) column from the output of steps 3–6:
+
+   ```markdown
+   # Ujian FK & ON DELETE — kkm_latihan (Lab 4.3b)
+
+   | # | Query | Kekangan | Dijangka | Sebenar |
+   |---|-------|----------|----------|---------|
+   | 1 | `UPDATE users SET department_id = 99 …` | `users_department_id_fk` | ERROR 1452 | |
+   | 2 | `UPDATE parking_slots SET slot_no = 'A-02' …` | UNIQUE (`zone_id`, `slot_no`) | ERROR 1062 | |
+   | 3 | `DELETE FROM parking_zones WHERE code = 'A'` | `parking_slots.zone_id` RESTRICT | ERROR 1451 | |
+   | 4 | `DELETE FROM users WHERE username = 'pemohon2'` | ? RESTRICT | ERROR 1451 | |
+   | 5 | `DELETE FROM departments WHERE code = 'BPA'` (transaksi) | `users.department_id` SET NULL | ? pengguna → NULL | |
+   | 6 | `DELETE FROM users WHERE username = 'penyemak'` (transaksi) | `auth_*` CASCADE | `auth_identities` 5 → 4 | |
+
+   Selepas ROLLBACK: data sama seperti sebelum ujian (ya/tidak):
+   ```
+
+**B. Reference-number sequence seeder**
+
+8. Generate the seeder:
+
+   ```bash
+   php spark make:seeder ReferenceSequenceSeeder
+   ```
+
+   Replace the whole content of the generated file:
+
+   `app/Database/Seeds/ReferenceSequenceSeeder.php`
+
+   ```php
+   <?php
+
+   namespace App\Database\Seeds;
+
+   use CodeIgniter\Database\Seeder;
+
+   /**
+    * Baris jujukan nombor rujukan tahun semasa (TLK & PAS), last_number = 0.
+    * ReferenceNumberService (Hari 5) menyambung dari sini: TLK-YYYY-0001 dahulu.
+    */
+   class ReferenceSequenceSeeder extends Seeder
+   {
+       public function run(): void
+       {
+           $now  = date('Y-m-d H:i:s');
+           $year = (int) date('Y');   // ikut app.appTimezone
+
+           $rows = [];
+
+           foreach (['TLK', 'PAS'] as $prefix) {
+               $rows[] = [
+                   'prefix'      => $prefix,
+                   'year'        => $year,
+                   'last_number' => 0,
+                   'created_at'  => $now,
+                   'updated_at'  => $now,
+               ];
+           }
+
+           // UNIQUE(prefix, year) → INSERT IGNORE: last_number yang sudah bertambah tidak ditimpa
+           $this->db->table('reference_sequences')->ignore(true)->insertBatch($rows);
+       }
+   }
+   ```
+
+9. `DatabaseSeeder` — replace the Lab 4.3 file with this version (one new line at the end):
+
+   `app/Database/Seeds/DatabaseSeeder.php`
+
+   ```php
+   <?php
+
+   namespace App\Database\Seeds;
+
+   use CodeIgniter\Database\Seeder;
+
+   class DatabaseSeeder extends Seeder
+   {
+       public function run(): void
+       {
+           $this->call(DepartmentSeeder::class);          // induk dahulu
+           $this->call(UserSeeder::class);                // perlukan departments
+           $this->call(ParkingSeeder::class);
+           $this->call(VehicleSeeder::class);             // perlukan users
+           $this->call(ReferenceSequenceSeeder::class);   // tiada FK
+       }
+   }
+   ```
+
+10. Run it **twice** and check:
+
+    ```bash
+    php -l app/Database/Seeds/ReferenceSequenceSeeder.php
+    php spark db:seed DatabaseSeeder
+    php spark db:seed DatabaseSeeder
+    php spark db:table reference_sequences
+    ```
+
+    Expected: 2 rows — `TLK` and `PAS`, the current year, `last_number` `0` — with no `Duplicate entry` error. Tomorrow `ReferenceNumberService::next('TLK')` locks this `TLK` row and generates `TLK-2026-0001`.
+11. Commit and push **the docs file only** (the seeder goes into the `SETUP:` commit in Lab 4.4 step 2):
+
+    ```bash
+    git add docs/ujian-fk.md && git commit -m "DOCS: ujian FK & ON DELETE" && git push
+    ```
+
+### ✅ Checkpoint
+- [ ] `docs/ujian-fk.md` has all 6 rows: `1452`, `1062`, two `1451` (with the `CONSTRAINT` name), `SET NULL` and `CASCADE` inside a transaction; after `ROLLBACK` the data is back as before (Quiz S7).
+- [ ] `php spark db:seed DatabaseSeeder` twice → `reference_sequences` has exactly 2 rows (`TLK`, `PAS`, `last_number` `0`) (Quiz S7).
+- [ ] GitLab shows the `DOCS: ujian FK & ON DELETE` commit (Quiz S7).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| `mysql` hangs with no prompt | Separate Git Bash window (mintty) | Use the VS Code terminal, or `winpty mysql -u kkm_dev -p kkm_latihan` |
+| The `DELETE` in step 5/6 succeeds but `ROLLBACK` does not restore the data | `START TRANSACTION;` was left out (autocommit) | Rebuild the synthetic data: `php spark migrate:refresh --all` → `php spark db:seed DatabaseSeeder` (⚠️ deletes all data in `kkm_latihan`) |
+| `ERROR 1046 (3D000): No database selected` | `mysql -u kkm_dev -p` without a database name | Type `USE kkm_latihan;` or repeat with `kkm_latihan` at the end of the command |
+| `Duplicate entry 'TLK-2026' for key …` on the second seed | `insertBatch()` without `ignore(true)` | Use `->ignore(true)->insertBatch($rows)` |
+| `Class "App\Database\Seeds\ReferenceSequenceSeeder" not found` | File and class names differ | File `app/Database/Seeds/ReferenceSequenceSeeder.php`, class `ReferenceSequenceSeeder` |
+
+### ⭐ Bonus challenge
+Run `SHOW CREATE TABLE slot_bookings;` and list all four FKs with their `ON DELETE`. Explain to your neighbour why `decided_by` is `SET NULL` but `user_id` is `RESTRICT`.
+
+---
+
+## Lab 4.4b — Second Merge Request: Project README & Review (S8)
+
+### 🎯 Objective
+Run a full merge request cycle a second time with a real change (the project `README.md`): branch → commit → MR → review comment → fix commit on the **same** branch → merge → delete the branch → `git log --graph`.
+
+### Prerequisites
+- [Lab 4.4](#lab-44--task-split-git-branches--dod-s4) checkpoint passed: MR `feat/pelan-kerja` *Merged*, `git status --short` empty.
+
+### Steps
+
+1. Start a new branch from the latest `main`:
+
+   ```bash
+   git switch main && git pull
+   git switch -c feat/readme-projek
+   ```
+
+2. The `README.md` in the project root is still the generic appstarter README. Replace its whole content:
+
+   `README.md`
+
+   ```markdown
+   # kelas-ci-<nama> — Sistem TLK & Pas (latihan)
+
+   Projek latihan *Coaching Pembangunan Aplikasi Menggunakan CodeIgniter* (KKM): CodeIgniter 4.7 + Shield + Bootstrap 5.3. **Data sintetik sahaja.**
+
+   ## Persediaan pembangun
+
+   1. `composer install`
+   2. `cp env .env`, kemudian isi `CI_ENVIRONMENT = development`, `app.baseURL`, `app.indexPage = ''`, `app.appTimezone = 'Asia/Kuala_Lumpur'` dan `database.default.*`
+   3. `php spark migrate --all`
+   4. `php spark db:seed DatabaseSeeder` (boleh diulang — seeder idempoten)
+   5. `php spark serve` → `http://localhost:8080/login`
+
+   `.env` **tidak** di-commit (`.gitignore`).
+
+   ## Akaun sintetik
+
+   Kata laluan semua akaun: `Latihan@2026` (demo latihan sahaja).
+
+   | E-mel | Group |
+   |-------|-------|
+   | `pemohon1@latihan.test` | `applicant` |
+   | `pemohon2@latihan.test` | `applicant` |
+   | `penyemak@latihan.test` | `reviewer` |
+   | `pelulus@latihan.test` | `approver` |
+   | `admin@latihan.test` | `admin` |
+
+   ## Akses route
+
+   | Route | Filter |
+   |-------|--------|
+   | `/`, `/jabatan`, `/zon`, `/zon/{id}` | `session` |
+   | `/jabatan/baharu`, `/jabatan/{id}/edit`, `POST /jabatan`, `POST /jabatan/{id}` | `permission:admin.access` |
+
+   Matriks ujian: `docs/akses-route.md`. Ujian FK: `docs/ujian-fk.md`.
+   ```
+
+3. Commit and push the branch:
+
+   ```bash
+   git add README.md
+   git commit -m "DOCS: README persediaan pembangun"
+   git push -u origin feat/readme-projek
+   ```
+
+4. On GitLab: **Create merge request** (target: `main` of your own repo). Tick ✅ *Delete source branch when merge request is accepted*; do **not** tick *Squash commits*. Ask the trainer or your neighbour (Reporter) to leave this comment in the *Changes* tab, on the `## Akses route` line:
+
+   > *Add how to check the route filters with `php spark filter:check` so a new developer can verify access on their own.*
+
+5. Fix it on the **same** branch — add this section at the **end** of `README.md`:
+
+   ```markdown
+
+   ## Semak filter route
+
+   Git Bash menukar `/jabatan` kepada path Windows, jadi letak `MSYS_NO_PATHCONV=1` di hadapan:
+
+       MSYS_NO_PATHCONV=1 php spark filter:check GET /jabatan/baharu
+
+   Lajur *Before Filters* mesti mengandungi `permission:admin.access`.
+   ```
+
+   Then:
+
+   ```bash
+   git add README.md
+   git commit -m "DOCS: README — semakan filter (komen MR)"
+   git push
+   ```
+
+   Reload the MR: how many commits does the *Commits* tab show now? Reply to the reviewer's comment (*"Fixed in commit …"*) and click **Resolve thread**.
+6. **Merge**. Then on your laptop:
+
+   ```bash
+   git switch main
+   git pull
+   git fetch --prune
+   git branch -d feat/readme-projek
+   git log --oneline --graph -6
+   ```
+
+   `git fetch --prune` prints `- [deleted] (none) -> origin/feat/readme-projek` (GitLab already deleted the source branch); `git branch -d` prints `Deleted branch feat/readme-projek (was …)`.
+7. Open the project page on GitLab: the new README shows below the file list.
+
+### ✅ Checkpoint
+- [ ] MR `feat/readme-projek` is *Merged* with 2 commits and one *Resolved* comment thread (Quiz S8).
+- [ ] `git log --oneline --graph -6` shows the `feat/readme-projek` merge commit with two `DOCS:` commits on the side line (Quiz S8).
+- [ ] `git branch -a` no longer lists `feat/readme-projek` (local or `origin/`), and `git status --short` is empty (Quiz S8).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| `git push` is rejected (`rejected … fetch first`) | The README was edited on GitLab directly (e.g. *Apply suggestion*) | `git pull` on that branch first, then `git push` |
+| A straight graph with no merge commit | *Squash commits* was ticked, or the project merge method is *Fast-forward* | *Settings → Merge requests → Merge method* = **Merge commit**; do not tick *Squash* |
+| `error: the branch 'feat/readme-projek' is not fully merged` | `git pull` not done after the merge | `git switch main && git pull`, then repeat `git branch -d` |
+| The README does not show on GitLab | The file is not `README.md` in the project root | `git mv` it to `README.md` in the root |
+
+### ⭐ Bonus challenge
+Ask the reviewer to use the **Insert suggestion** button in a comment (a one-line suggestion). Click **Apply suggestion** on GitLab, then `git pull` on the branch before your next commit — what happens if you `git push` without `git pull` first?
+
+---
+
 ## Self-check — end of day
 
 ```bash
@@ -1186,3 +1709,5 @@ git log --oneline           # ≥ 2 SETUP: commits
 - [ ] `git status --short` is empty and `git ls-files | grep -c "^\.env$"` → `0`.
 - [ ] `git log --oneline` shows ≥ 2 `SETUP:` commits.
 - [ ] A fresh clone (Lab 4.4 step 6) works through to login.
+- [ ] Before logging in, `/zon` and `/jabatan` redirect to `/login`; `/jabatan/baharu` opens only for `admin@latihan.test` (Lab 4.2b).
+- [ ] `php spark db:table reference_sequences` → 2 rows (`TLK`, `PAS`), and MR `feat/readme-projek` is *Merged* (Lab 4.3b, 4.4b).

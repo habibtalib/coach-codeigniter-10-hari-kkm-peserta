@@ -18,6 +18,10 @@ By the end of today, participants can:
 | O4 | **Write** the 8 remaining migrations from [`erd-rujukan.md`](../docs/erd-rujukan.md) and specification §3 (FK, UNIQUE, INDEX) in dependency order and **run** `php spark migrate` without errors | S3 | [Lab 4.3](./lab.en.md#lab-43--migrations--seeders-from-the-erd-s3); `php spark migrate:status` — 10 `App` migrations with status *Migrated* |
 | O5 | **Write** `UserSeeder` and `VehicleSeeder`, **extend** `ParkingSeeder` with slots, and **run** 5 idempotent seeders | S3 | Login as `pelulus@latihan.test` succeeds; `auth_groups_users` has 5 rows |
 | O6 | **Practise** the solo Git flow — `SETUP:` commit, feature branch, merge request into your own `main` — and **state** the Definition of Done | S4 | [Lab 4.4](./lab.en.md#lab-44--task-split-git-branches--dod-s4); `docs/pelan-kerja.md` + MR merged on GitLab + fresh clone succeeds |
+| O7 | **Trace** the POST `/jabatan` request with the Debug Toolbar History tab and `filter:check`, and **compare** it with GET `/zon` | S5 | [Lab 4.1b](./lab.en.md#lab-41b--tracing-the-post-jabatan-request-s5); the *POST /jabatan* section in `docs/kitaran-request.md` |
+| O8 | **Put** the Shield filters `session` and `permission:admin.access` on the Day 3 routes and **test** them with two `shield:user` test accounts | S6 | [Lab 4.2b](./lab.en.md#lab-42b--protecting-the-day-3-pages-with-shield-filters-s6); `docs/akses-route.md` + `php spark routes` |
+| O9 | **Prove** the FK, UNIQUE and `ON DELETE` constraints (`RESTRICT`, `SET NULL`, `CASCADE`) with queries inside a transaction, and **write** an idempotent `ReferenceSequenceSeeder` | S7 | [Lab 4.3b](./lab.en.md#lab-43b--fk--on-delete-drills--sequence-seeder-s7); `docs/ujian-fk.md` + 2 rows in `reference_sequences` |
+| O10 | **Run** a second merge request cycle — review comment, fix commit on the same branch, merge, delete the branch | S8 | [Lab 4.4b](./lab.en.md#lab-44b--second-merge-request-project-readme--review-s8); MR `feat/readme-projek` *Merged* with 2 commits |
 
 ---
 
@@ -26,12 +30,16 @@ By the end of today, participants can:
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 3 recap | — |
-| 09:00–10:30 | S1 | Own-repo demo & the request cycle | Demo your GitLab repo & `/zon`; trace the CI4 MVC request flow with the Debug Toolbar |
+| 09:00–10:00 | S1 | Own-repo demo & the request cycle | Demo your GitLab repo & `/zon`; trace the CI4 MVC request flow with the Debug Toolbar |
+| 10:00–10:30 | S5 | S1 follow-up: tracing the POST `/jabatan` request | Trace a POST with the Debug Toolbar History & `filter:check`; compare it with a GET |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–12:30 | S2 | Project structure, `.env` + Shield | Complete `.env`, install Shield, roles & the Bootstrap layout |
+| 10:45–12:00 | S2 | Project structure, `.env` + Shield | Complete `.env`, install Shield, roles & the Bootstrap layout |
+| 12:00–12:30 | S6 | S2 follow-up: Shield filters on the Day 3 pages | Put `session` & `permission:admin.access` on `/jabatan`, `/zon`; test with two accounts |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–16:00 | S3 | Migrations & seeders from the reference ERD | Write the 8 remaining migrations + seeders; `php spark migrate` succeeds |
-| 16:00–17:00 | S4 | Solo Git flow & merge request; wrap-up | Push `SETUP:`, open the first MR, branch plan & the Definition of Done |
+| 14:30–15:30 | S3 | Migrations & seeders from the reference ERD | Write the 8 remaining migrations + seeders; `php spark migrate` succeeds |
+| 15:30–16:00 | S7 | S3 follow-up: FK & `ON DELETE` drills | Prove `RESTRICT`/`SET NULL`/`CASCADE` inside a transaction; `ReferenceSequenceSeeder` |
+| 16:00–16:35 | S4 | Solo Git flow & merge request | Push `SETUP:`, open the first MR, branch plan & the Definition of Done |
+| 16:35–17:00 | S8 | S4 follow-up: second merge request; wrap-up | MR with a review comment + fix commit; delete the branch after merging |
 
 ---
 
@@ -581,6 +589,148 @@ A feature is "done" only when **all seven** boxes are ticked: the specification 
 
 ---
 
+## S5 — S1 follow-up: Tracing a POST Request (after Lab 4.1)
+
+Lab 4.1 traced a **GET** request. Forms send **POST**, and the same flow has three important differences:
+
+| Step | GET `/zon?q=aras` | POST `/jabatan` |
+|---------|-------------------|-----------------|
+| `csrf` filter | Runs, no token is checked | Verifies the `csrf_test_name` token; no token → `403` before the controller |
+| Model | `SELECT … LIKE '%aras%'` + `COUNT` (pagination) | `SELECT 1 … LIMIT 1` (`is_unique` rule) + `INSERT` |
+| View | `zon/index` + layout + pager | None — the controller renders no view |
+| Response | `200` + HTML | `303 See Other` + `Location` header (PRG pattern) |
+
+The toolbar at the bottom of the page after a redirect belongs to the last **GET** request. You see the POST request's data through the **History** tab → **Load**.
+
+Lab: [Lab 4.1b](./lab.en.md#lab-41b--tracing-the-post-jabatan-request-s5)
+
+### 🎯 Quiz S5
+
+> Answer after Lab 4.1b on your laptop — the answers come from the real Debug Toolbar. Passing this quiz marks the Lab 4.1b checkpoint.
+
+1. Lab 4.1b step 3: in the Debug Toolbar History tab, what is the *Status* of the POST `/jabatan` row that saved successfully?
+   - [ ] `200`
+   - [ ] `201`
+   - [ ] `302`
+   - [x] `303`
+   > `redirect()->to()` after a POST on HTTP/1.1 sends `303 See Other`: the browser must make a GET to the URL in `Location`. This is the PRG pattern — reloading the page does not submit the form again.
+
+2. Lab 4.1b step 5: you submit Kod `BTM` (already exists). What does the Database tab show for that POST request?
+   - [ ] Two queries: `SELECT 1 FROM departments …` and an `INSERT INTO departments …` that fails with `Duplicate entry`
+   - [x] Only one query: `SELECT 1 FROM departments WHERE code = 'BTM' LIMIT 1`
+   - [ ] No query — the `is_unique` rule is checked in PHP without the database
+   - [ ] One `INSERT IGNORE INTO departments …` query
+   > The `is_unique` rule runs `SELECT 1 … LIMIT 1`. A record is found → validation fails → `insert()` returns `false` without an `INSERT`, and the controller redirects to `jabatan/baharu`.
+
+---
+
+## S6 — S2 follow-up: Shield Filters on the Day 3 Pages (after Lab 4.2)
+
+Lab 4.2 protects only `/`. The Day 3 pages `/jabatan` and `/zon` are still open to anyone. Shield provides three route filters:
+
+| Filter | Not logged in | Logged in, no right |
+|--------|-----------------|----------------------|
+| `session` | Redirected to `/login`; the original URL is remembered | Allowed |
+| `group:admin` | Redirected to `/login` | Redirected to `/` with an `error` flash |
+| `permission:admin.access` | Redirected to `/login` | Redirected to `/` with an `error` flash |
+
+Put the same filter on the GET (form) **and** the POST (save). If only the form is protected, anyone logged in can still send the POST directly.
+
+Test accounts without a seeder: `php spark shield:user create -n <nama> -e <e-mel> -g <group>`; `shield:user list`; `shield:user delete -n <nama>`. Check the filters of a URL: `MSYS_NO_PATHCONV=1 php spark filter:check GET /jabatan/baharu` (Git Bash).
+
+Lab: [Lab 4.2b](./lab.en.md#lab-42b--protecting-the-day-3-pages-with-shield-filters-s6)
+
+### 🎯 Quiz S6
+
+> Answer after Lab 4.2b on your laptop — the answers come from the `docs/akses-route.md` matrix you tested. Passing this quiz marks the Lab 4.2b checkpoint.
+
+1. Lab 4.2b matrix rows 1–2: not logged in, you open `/zon`, get redirected to `/login`, then log in as `ujipemohon@latihan.test`. Which page shows after logging in?
+   - [ ] `/` (home) — Shield always goes to the home page after login
+   - [x] `/zon` — the original URL remembered before the redirect to `/login`
+   - [ ] `/login` again, because `applicant` has no `admin.access`
+   - [ ] `/jabatan`
+   > The Shield filter stores the original URL (`beforeLoginUrl`) before redirecting to `/login`. After a successful login, the user is taken back to that URL.
+
+2. Lab 4.2b matrix row 4: as `ujipemohon`, you open `/jabatan/baharu`. What happens?
+   - [ ] A `403 Forbidden` error page
+   - [ ] Redirected to `/login` and asked to log in again
+   - [ ] The form shows, but **Simpan** fails with a CSRF message
+   - [x] Redirected to `/` with the red message *You do not have the necessary permission to perform the desired operation.*
+   > Shield's `PermissionFilter` redirects a logged-in user without the permission to `Auth::permissionDeniedRedirect()` (default `/`) with an `error` flash, which `partials/flash.php` shows.
+
+---
+
+## S7 — S3 follow-up: FK Constraints in Action (after Lab 4.3)
+
+The Lab 4.3 migrations declare the constraints; Lab 4.3b proves that MySQL really enforces them:
+
+| Error / effect | When | Lab 4.3b example |
+|---------------|------|-----------------|
+| `ERROR 1452` | A child points to a parent that does not exist | `users.department_id = 99` |
+| `ERROR 1062` | A UNIQUE is broken | `A-01` → `A-02` in the same zone |
+| `ERROR 1451` | Deleting a parent that still has children (`RESTRICT`) | Zone `A`; user `pemohon2` |
+| Silent: child → `NULL` | Deleting a parent (`SET NULL`) | Department `BPA` |
+| Silent: child deleted too | Deleting a parent (`CASCADE`) | `auth_identities` of user `penyemak` |
+
+`SET NULL` and `CASCADE` give **no** warning — that is why the `DELETE` tests run inside `START TRANSACTION; … ROLLBACK;`. The drills deliberately use only `UPDATE`/`DELETE`: an `INSERT` undone with `ROLLBACK` still "uses up" an `AUTO_INCREMENT` value, and tomorrow the first booking is expected at `/tlk/tempahan/1`.
+
+`ReferenceSequenceSeeder` prepares the current year's `TLK` and `PAS` rows (`last_number = 0`). `ReferenceNumberService` (Day 5) locks that row straight away with `SELECT … FOR UPDATE`; `ignore(true)` makes sure a second seed does not overwrite a number that has already grown.
+
+Lab: [Lab 4.3b](./lab.en.md#lab-43b--fk--on-delete-drills--sequence-seeder-s7)
+
+### 🎯 Quiz S7
+
+> Answer after Lab 4.3b on your laptop — the answers come from the real MySQL client output. Passing this quiz marks the Lab 4.3b checkpoint.
+
+1. Lab 4.3b step 5: after `DELETE FROM departments WHERE code = 'BPA';` inside the transaction (before `ROLLBACK`), how many users have a `NULL` `department_id`?
+   - [ ] 0 — the `DELETE` is rejected with `ERROR 1451`
+   - [ ] 1
+   - [x] 2
+   - [ ] 5
+   > `penyemak` and `pelulus` are in department `BPA` (`UserSeeder`). The `users_department_id_fk` FK is `ON DELETE SET NULL`, so the department is deleted and both users stay without a department. `ROLLBACK` restores everything.
+
+2. Lab 4.3b step 4: what is the result of `DELETE FROM users WHERE username = 'pemohon2';`?
+   - [ ] It succeeds; the vehicle `VXX 2468` is deleted too (`CASCADE`)
+   - [x] `ERROR 1451` with `CONSTRAINT vehicles_user_id_foreign`
+   - [ ] `ERROR 1451` with `CONSTRAINT auth_identities_user_id_foreign`
+   - [ ] `ERROR 1452 … a foreign key constraint fails`
+   > `vehicles.user_id` is `RESTRICT`: a user who still has a vehicle cannot be deleted. Shield's `auth_*` FKs are `CASCADE`, so they do not block the `DELETE` (step 6 proves it).
+
+---
+
+## S8 — S4 follow-up: Second Merge Request with Review (after Lab 4.4)
+
+The first MR (Lab 4.4) had only one commit and one comment. In real work, a review comment asks for a change — and that change is made on the **same** branch:
+
+| Event | Effect on the MR |
+|-----------|---------------|
+| `git push` of a new commit to the source branch | The same MR is updated (*Commits*, *Changes* tabs); no new MR |
+| Reply to the comment + **Resolve thread** | The reviewer knows the comment has been handled |
+| **Merge** (*Merge commit* method, no *Squash*) | A `Merge branch '<branch>' into 'main'` commit on `main`; the branch commits stay on the side line of the graph |
+| *Delete source branch* | The branch is deleted on GitLab; `git fetch --prune` + `git branch -d` clean up the laptop |
+
+Lab: [Lab 4.4b](./lab.en.md#lab-44b--second-merge-request-project-readme--review-s8)
+
+### 🎯 Quiz S8
+
+> Answer after Lab 4.4b on your laptop — the answers come from the real GitLab and `git log`. Passing this quiz marks the Lab 4.4b checkpoint.
+
+1. Lab 4.4b step 5: you push a second commit to `feat/readme-projek` while the MR is still open. What happens to the MR?
+   - [ ] Nothing — you must open a new MR for the second commit
+   - [ ] The MR closes automatically because the branch changed
+   - [x] The same MR is updated: the *Commits* tab shows 2 commits and the *Changes* tab shows the latest changes
+   - [ ] The second commit goes straight into `main` without a merge
+   > An MR follows a **branch**, not a single commit. Every push to the source branch adds commits to the same MR — this is how you answer review comments.
+
+2. Lab 4.4b step 6: after `git pull`, what is the top line of `git log --oneline --graph -6`?
+   - [ ] `* … DOCS: README — semakan filter (komen MR)` — a straight graph with no merge
+   - [x] `*   … Merge branch 'feat/readme-projek' into 'main'`, with two `DOCS:` commits on the `| *` line below it
+   - [ ] `* … Merge remote-tracking branch 'origin/main'`
+   - [ ] `*   … Merge branch 'feat/readme-projek' into 'main'`, with one combined (squash) commit below it
+   > GitLab's default merge method (*Merge commit*, no *Squash*) creates a merge commit on `main`; both branch commits stay on the side line. `git pull` only *fast-forwards* the local `main` to that merge commit.
+
+---
+
 ## 📦 Deliverables — Today's Output
 
 - [ ] `docs/kitaran-request.md` — the 7 request-cycle steps traced on `/zon`, pushed to GitLab
@@ -592,6 +742,10 @@ A feature is "done" only when **all seven** boxes are ticked: the specification 
 - [ ] Login as all five synthetic users succeeds
 - [ ] `docs/pelan-kerja.md` — branch plan + DoD, reaching `main` through the merged `feat/pelan-kerja` MR
 - [ ] `SETUP:` commits pushed to GitLab; a fresh clone in a second folder works up to login
+- [ ] `docs/kitaran-request.md` — the *POST /jabatan* section (Lab 4.1b) pushed to GitLab
+- [ ] `jabatan`/`zon` routes with the `session` filter, `jabatan/baharu` (GET & POST) with `permission:admin.access`; `docs/akses-route.md` pushed; test accounts deleted
+- [ ] `docs/ujian-fk.md` (6 FK/`ON DELETE` tests) + `ReferenceSequenceSeeder` in `DatabaseSeeder`; 2 rows in `reference_sequences`
+- [ ] MR `feat/readme-projek` (2 commits, *Resolved* comment) merged; the project `README.md` shows on GitLab
 
 ---
 

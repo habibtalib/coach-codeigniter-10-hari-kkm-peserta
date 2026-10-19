@@ -18,6 +18,10 @@ Di akhir hari ini, peserta boleh:
 | O4 | **Menulis** 8 migration baki daripada [`erd-rujukan.md`](../docs/erd-rujukan.md) dan spesifikasi §3 (FK, UNIQUE, INDEX) mengikut tertib dependency dan **menjalankan** `php spark migrate` tanpa ralat | S3 | [Lab 4.3](./lab.md#lab-43--migration--seeder-daripada-erd-s3); `php spark migrate:status` — 10 migration `App` berstatus *Migrated* |
 | O5 | **Menulis** `UserSeeder` dan `VehicleSeeder`, **meluaskan** `ParkingSeeder` dengan slot, dan **menjalankan** 5 seeder idempoten | S3 | Log masuk sebagai `pelulus@latihan.test` berjaya; `auth_groups_users` ada 5 baris |
 | O6 | **Mengamalkan** aliran Git solo — commit `SETUP:`, feature branch, merge request ke `main` sendiri — dan **menyatakan** Definition of Done | S4 | [Lab 4.4](./lab.md#lab-44--pembahagian-tugas-cabang-git--dod-s4); `docs/pelan-kerja.md` + MR di-merge di GitLab + klon baharu berjaya |
+| O7 | **Menjejak** request POST `/jabatan` dengan tab History Debug Toolbar dan `filter:check`, dan **membandingkannya** dengan GET `/zon` | S5 | [Lab 4.1b](./lab.md#lab-41b--jejak-request-post-jabatan-s5); bahagian *POST /jabatan* dalam `docs/kitaran-request.md` |
+| O8 | **Memasang** filter Shield `session` dan `permission:admin.access` pada route Hari 3 dan **mengujinya** dengan dua akaun ujian `shield:user` | S6 | [Lab 4.2b](./lab.md#lab-42b--lindungi-halaman-hari-3-dengan-filter-shield-s6); `docs/akses-route.md` + `php spark routes` |
+| O9 | **Membuktikan** kekangan FK, UNIQUE dan `ON DELETE` (`RESTRICT`, `SET NULL`, `CASCADE`) dengan query dalam transaksi, dan **menulis** `ReferenceSequenceSeeder` idempoten | S7 | [Lab 4.3b](./lab.md#lab-43b--latihan-fk-on-delete--seeder-jujukan-s7); `docs/ujian-fk.md` + `reference_sequences` 2 baris |
+| O10 | **Menjalankan** kitaran merge request kedua — komen semakan, commit pembetulan pada branch yang sama, merge, padam branch | S8 | [Lab 4.4b](./lab.md#lab-44b--merge-request-kedua-readme-projek--semakan-s8); MR `feat/readme-projek` *Merged* dengan 2 commit |
 
 ---
 
@@ -26,12 +30,16 @@ Di akhir hari ini, peserta boleh:
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 3 | — |
-| 09:00–10:30 | S1 | Demo repo sendiri & kitaran request | Mendemokan repo GitLab & `/zon`; menjejak aliran request MVC CI4 dengan Debug Toolbar |
+| 09:00–10:00 | S1 | Demo repo sendiri & kitaran request | Mendemokan repo GitLab & `/zon`; menjejak aliran request MVC CI4 dengan Debug Toolbar |
+| 10:00–10:30 | S5 | Lanjutan S1: jejak request POST `/jabatan` | Menjejak POST dengan History Debug Toolbar & `filter:check`; membandingkan dengan GET |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | S2 | Struktur projek, `.env` + Shield | Melengkapkan `.env`, memasang Shield, peranan & layout Bootstrap |
+| 10:45–12:00 | S2 | Struktur projek, `.env` + Shield | Melengkapkan `.env`, memasang Shield, peranan & layout Bootstrap |
+| 12:00–12:30 | S6 | Lanjutan S2: filter Shield pada halaman Hari 3 | Memasang `session` & `permission:admin.access` pada `/jabatan`, `/zon`; menguji dengan dua akaun |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–16:00 | S3 | Migration & seeder daripada ERD rujukan | Menulis 8 migration baki + seeder; `php spark migrate` berjaya |
-| 16:00–17:00 | S4 | Aliran Git solo & merge request; wrap-up | Push `SETUP:`, membuka MR pertama, pelan branch & Definition of Done |
+| 14:30–15:30 | S3 | Migration & seeder daripada ERD rujukan | Menulis 8 migration baki + seeder; `php spark migrate` berjaya |
+| 15:30–16:00 | S7 | Lanjutan S3: latihan FK & `ON DELETE` | Membuktikan `RESTRICT`/`SET NULL`/`CASCADE` dalam transaksi; `ReferenceSequenceSeeder` |
+| 16:00–16:35 | S4 | Aliran Git solo & merge request | Push `SETUP:`, membuka MR pertama, pelan branch & Definition of Done |
+| 16:35–17:00 | S8 | Lanjutan S4: merge request kedua; wrap-up | MR dengan komen semakan + commit pembetulan; padam branch selepas merge |
 
 ---
 
@@ -581,6 +589,148 @@ Satu ciri "siap" hanya apabila **ketujuh-tujuh** kotak ditanda: peraturan pernia
 
 ---
 
+## S5 — Lanjutan S1: Jejak Request POST (selepas Lab 4.1)
+
+Lab 4.1 menjejak request **GET**. Borang menghantar **POST**, dan aliran yang sama mempunyai tiga perbezaan penting:
+
+| Langkah | GET `/zon?q=aras` | POST `/jabatan` |
+|---------|-------------------|-----------------|
+| Filter `csrf` | Berjalan, tiada token disemak | Mengesahkan token `csrf_test_name`; tiada token → `403` sebelum controller |
+| Model | `SELECT … LIKE '%aras%'` + `COUNT` (pagination) | `SELECT 1 … LIMIT 1` (rule `is_unique`) + `INSERT` |
+| View | `zon/index` + layout + pager | Tiada — controller tidak memaparkan view |
+| Response | `200` + HTML | `303 See Other` + header `Location` (corak PRG) |
+
+Toolbar di bawah halaman selepas redirect milik request **GET** terakhir. Data request POST dilihat melalui tab **History** → **Load**.
+
+Lab: [Lab 4.1b](./lab.md#lab-41b--jejak-request-post-jabatan-s5)
+
+### 🎯 Kuiz S5
+
+> Jawab selepas Lab 4.1b di laptop anda — jawapan datang daripada Debug Toolbar sebenar. Lulus kuiz ini menanda checkpoint Lab 4.1b.
+
+1. Lab 4.1b langkah 3: dalam tab History Debug Toolbar, apakah *Status* bagi baris POST `/jabatan` yang berjaya disimpan?
+   - [ ] `200`
+   - [ ] `201`
+   - [ ] `302`
+   - [x] `303`
+   > `redirect()->to()` selepas POST pada HTTP/1.1 menghantar `303 See Other`: pelayar mesti membuat GET ke URL dalam `Location`. Inilah corak PRG — muat semula halaman tidak menghantar borang sekali lagi.
+
+2. Lab 4.1b langkah 5: anda menghantar Kod `BTM` (sudah wujud). Apakah yang dipaparkan tab Database bagi request POST itu?
+   - [ ] Dua query: `SELECT 1 FROM departments …` dan `INSERT INTO departments …` yang gagal dengan `Duplicate entry`
+   - [x] Satu query sahaja: `SELECT 1 FROM departments WHERE code = 'BTM' LIMIT 1`
+   - [ ] Tiada query — rule `is_unique` disemak dalam PHP tanpa database
+   - [ ] Satu query `INSERT IGNORE INTO departments …`
+   > Rule `is_unique` menjalankan `SELECT 1 … LIMIT 1`. Rekod ditemui → validation gagal → `insert()` memulangkan `false` tanpa `INSERT`, dan controller redirect ke `jabatan/baharu`.
+
+---
+
+## S6 — Lanjutan S2: Filter Shield pada Halaman Hari 3 (selepas Lab 4.2)
+
+Lab 4.2 melindungi `/` sahaja. Halaman `/jabatan` dan `/zon` dari Hari 3 masih terbuka kepada sesiapa. Shield menyediakan tiga filter route:
+
+| Filter | Belum log masuk | Log masuk, tiada hak |
+|--------|-----------------|----------------------|
+| `session` | Dialih ke `/login`; URL asal diingat | Dibenarkan |
+| `group:admin` | Dialih ke `/login` | Dialih ke `/` dengan flash `error` |
+| `permission:admin.access` | Dialih ke `/login` | Dialih ke `/` dengan flash `error` |
+
+Letak filter yang sama pada GET (borang) **dan** POST (simpan). Jika hanya borang dilindungi, sesiapa yang log masuk masih boleh menghantar POST terus.
+
+Akaun ujian tanpa seeder: `php spark shield:user create -n <nama> -e <e-mel> -g <group>`; `shield:user list`; `shield:user delete -n <nama>`. Semak filter sesuatu URL: `MSYS_NO_PATHCONV=1 php spark filter:check GET /jabatan/baharu` (Git Bash).
+
+Lab: [Lab 4.2b](./lab.md#lab-42b--lindungi-halaman-hari-3-dengan-filter-shield-s6)
+
+### 🎯 Kuiz S6
+
+> Jawab selepas Lab 4.2b di laptop anda — jawapan datang daripada matriks `docs/akses-route.md` yang anda uji. Lulus kuiz ini menanda checkpoint Lab 4.2b.
+
+1. Lab 4.2b matriks baris 1–2: belum log masuk, anda buka `/zon`, dialih ke `/login`, kemudian log masuk sebagai `ujipemohon@latihan.test`. Halaman manakah dipaparkan selepas log masuk?
+   - [ ] `/` (Utama) — Shield sentiasa membawa ke halaman utama selepas log masuk
+   - [x] `/zon` — URL asal yang diingat sebelum dialih ke `/login`
+   - [ ] `/login` semula, kerana `applicant` tiada `admin.access`
+   - [ ] `/jabatan`
+   > Filter Shield menyimpan URL asal (`beforeLoginUrl`) sebelum mengalih ke `/login`. Selepas log masuk berjaya, pengguna dibawa kembali ke URL itu.
+
+2. Lab 4.2b matriks baris 4: sebagai `ujipemohon`, anda buka `/jabatan/baharu`. Apakah yang berlaku?
+   - [ ] Halaman ralat `403 Forbidden`
+   - [ ] Dialih ke `/login` dan diminta log masuk semula
+   - [ ] Borang dipaparkan, tetapi **Simpan** gagal dengan mesej CSRF
+   - [x] Dialih ke `/` dengan mesej merah *You do not have the necessary permission to perform the desired operation.*
+   > `PermissionFilter` Shield mengalih pengguna yang sudah log masuk tetapi tiada permission ke `Auth::permissionDeniedRedirect()` (lalai `/`) dengan flash `error`, yang dipaparkan oleh `partials/flash.php`.
+
+---
+
+## S7 — Lanjutan S3: Kekangan FK dalam Tindakan (selepas Lab 4.3)
+
+Migration Lab 4.3 mengisytiharkan kekangan; Lab 4.3b membuktikan MySQL benar-benar menguatkuasakannya:
+
+| Ralat / kesan | Bila | Contoh Lab 4.3b |
+|---------------|------|-----------------|
+| `ERROR 1452` | Anak menunjuk induk yang tiada | `users.department_id = 99` |
+| `ERROR 1062` | UNIQUE dilanggar | `A-01` → `A-02` dalam zon yang sama |
+| `ERROR 1451` | Padam induk yang masih ada anak (`RESTRICT`) | Zon `A`; pengguna `pemohon2` |
+| Senyap: anak → `NULL` | Padam induk (`SET NULL`) | Jabatan `BPA` |
+| Senyap: anak ikut dipadam | Padam induk (`CASCADE`) | `auth_identities` pengguna `penyemak` |
+
+`SET NULL` dan `CASCADE` **tidak** memberi amaran — sebab itu ujian `DELETE` dibuat dalam `START TRANSACTION; … ROLLBACK;`. Ujian ini sengaja menggunakan `UPDATE`/`DELETE` sahaja: `INSERT` yang di-`ROLLBACK` tetap "menggunakan" nilai `AUTO_INCREMENT`, dan esok tempahan pertama dijangka `/tlk/tempahan/1`.
+
+`ReferenceSequenceSeeder` menyediakan baris `TLK` dan `PAS` tahun semasa (`last_number = 0`). `ReferenceNumberService` (Hari 5) terus mengunci baris itu dengan `SELECT … FOR UPDATE`; `ignore(true)` memastikan seed kedua tidak menimpa nombor yang sudah bertambah.
+
+Lab: [Lab 4.3b](./lab.md#lab-43b--latihan-fk-on-delete--seeder-jujukan-s7)
+
+### 🎯 Kuiz S7
+
+> Jawab selepas Lab 4.3b di laptop anda — jawapan datang daripada output klien MySQL sebenar. Lulus kuiz ini menanda checkpoint Lab 4.3b.
+
+1. Lab 4.3b langkah 5: selepas `DELETE FROM departments WHERE code = 'BPA';` dalam transaksi (sebelum `ROLLBACK`), berapa pengguna mempunyai `department_id` `NULL`?
+   - [ ] 0 — `DELETE` ditolak dengan `ERROR 1451`
+   - [ ] 1
+   - [x] 2
+   - [ ] 5
+   > `penyemak` dan `pelulus` berada dalam jabatan `BPA` (`UserSeeder`). FK `users_department_id_fk` ialah `ON DELETE SET NULL`, jadi jabatan dipadam dan kedua-dua pengguna kekal tanpa jabatan. `ROLLBACK` memulihkan semuanya.
+
+2. Lab 4.3b langkah 4: apakah hasil `DELETE FROM users WHERE username = 'pemohon2';`?
+   - [ ] Berjaya; kenderaan `VXX 2468` ikut terpadam (`CASCADE`)
+   - [x] `ERROR 1451` dengan `CONSTRAINT vehicles_user_id_foreign`
+   - [ ] `ERROR 1451` dengan `CONSTRAINT auth_identities_user_id_foreign`
+   - [ ] `ERROR 1452 … a foreign key constraint fails`
+   > `vehicles.user_id` ialah `RESTRICT`: pengguna yang masih ada kenderaan tidak boleh dipadam. FK `auth_*` Shield ialah `CASCADE`, jadi ia tidak menghalang `DELETE` (langkah 6 membuktikannya).
+
+---
+
+## S8 — Lanjutan S4: Merge Request Kedua dengan Semakan (selepas Lab 4.4)
+
+MR pertama (Lab 4.4) hanya satu commit dan satu komen. Dalam kerja sebenar, komen semakan meminta perubahan — dan perubahan itu dibuat pada branch yang **sama**:
+
+| Peristiwa | Kesan pada MR |
+|-----------|---------------|
+| `git push` commit baharu ke branch sumber | MR yang sama dikemas kini (tab *Commits*, *Changes*); tiada MR baharu |
+| Balas komen + **Resolve thread** | Penyemak tahu komennya sudah diurus |
+| **Merge** (kaedah *Merge commit*, tanpa *Squash*) | Commit `Merge branch '<branch>' into 'main'` di `main`; commit branch kekal pada garis sisi graf |
+| *Delete source branch* | Branch dipadam di GitLab; `git fetch --prune` + `git branch -d` membersihkan laptop |
+
+Lab: [Lab 4.4b](./lab.md#lab-44b--merge-request-kedua-readme-projek--semakan-s8)
+
+### 🎯 Kuiz S8
+
+> Jawab selepas Lab 4.4b di laptop anda — jawapan datang daripada GitLab dan `git log` sebenar. Lulus kuiz ini menanda checkpoint Lab 4.4b.
+
+1. Lab 4.4b langkah 5: anda push commit kedua ke `feat/readme-projek` semasa MR masih terbuka. Apakah yang berlaku kepada MR?
+   - [ ] Tiada perubahan — anda perlu membuka MR baharu untuk commit kedua
+   - [ ] MR ditutup secara automatik kerana branch berubah
+   - [x] MR yang sama dikemas kini: tab *Commits* menunjukkan 2 commit dan tab *Changes* memaparkan perubahan terkini
+   - [ ] Commit kedua masuk terus ke `main` tanpa merge
+   > MR mengikut **branch**, bukan satu commit. Setiap push ke branch sumber menambah commit ke MR yang sama — inilah cara membalas komen semakan.
+
+2. Lab 4.4b langkah 6: selepas `git pull`, apakah baris teratas `git log --oneline --graph -6`?
+   - [ ] `* … DOCS: README — semakan filter (komen MR)` — graf lurus tanpa merge
+   - [x] `*   … Merge branch 'feat/readme-projek' into 'main'`, dengan dua commit `DOCS:` pada garis `| *` di bawahnya
+   - [ ] `* … Merge remote-tracking branch 'origin/main'`
+   - [ ] `*   … Merge branch 'feat/readme-projek' into 'main'`, dengan satu commit gabungan (squash) di bawahnya
+   > Kaedah merge lalai GitLab (*Merge commit*, tanpa *Squash*) mencipta commit merge di `main`; kedua-dua commit branch kekal pada garis sisi. `git pull` hanya *fast-forward* `main` lokal ke commit merge itu.
+
+---
+
 ## 📦 Hasil Hari Ini
 
 - [ ] `docs/kitaran-request.md` — 7 langkah kitaran request dijejak pada `/zon`, di-push ke GitLab
@@ -592,6 +742,10 @@ Satu ciri "siap" hanya apabila **ketujuh-tujuh** kotak ditanda: peraturan pernia
 - [ ] Log masuk sebagai kelima-lima pengguna sintetik berjaya
 - [ ] `docs/pelan-kerja.md` — pelan branch + DoD, masuk `main` melalui MR `feat/pelan-kerja` yang di-merge
 - [ ] Commit `SETUP:` di-push ke GitLab; klon baharu dalam folder kedua berjaya sehingga log masuk
+- [ ] `docs/kitaran-request.md` — bahagian *POST /jabatan* (Lab 4.1b) di-push ke GitLab
+- [ ] Route `jabatan`/`zon` dengan filter `session`, `jabatan/baharu` (GET & POST) dengan `permission:admin.access`; `docs/akses-route.md` di-push; akaun ujian dipadam
+- [ ] `docs/ujian-fk.md` (6 ujian FK/`ON DELETE`) + `ReferenceSequenceSeeder` dalam `DatabaseSeeder`; `reference_sequences` 2 baris
+- [ ] MR `feat/readme-projek` (2 commit, komen *Resolved*) di-merge; `README.md` projek dipaparkan di GitLab
 
 ---
 
