@@ -32,10 +32,10 @@ Membentangkan FR kepada pemilik sistem, merekod keputusan setiap satu, dan menge
    |---|--------|------|-----------|-----------------|-----------------|
    ```
 2. Tambah lajur **Status** pada setiap jadual FR dalam `docs/keperluan-awal.md` (nilai: `Draf`, `Disahkan`, `Diubah`, `Ditolak`, `Ditangguh`).
-3. **Pembentangan (setiap pasangan 8 minit)** kepada pemilik sistem:
+3. **Pembentangan (beberapa peserta, 3 minit setiap seorang)** kepada pemilik sistem:
    - Baca 4–5 FR "Must" paling berisiko (yang menyentuh BR) dengan kuat.
    - Tanya 2 soalan terbuka paling penting dari `docs/soalan-terbuka.md`.
-   - Pasangan lain mendengar dan mencatat keputusan yang terpakai kepada mereka juga.
+   - Peserta lain mendengar dan mencatat keputusan dalam fail sendiri — keputusan terpakai kepada semua kerana semua membina sistem yang sama.
 4. Rekod setiap keputusan sebagai baris `D-nn` dalam log. Untuk "Ditangguh": wajib isi pemilik tindakan + tarikh akhir.
 5. Kemas kini `docs/keperluan-awal.md`:
    - Tulis semula FR yang "Diubah" (simpan teks lama dengan ~~coret~~ di bawahnya).

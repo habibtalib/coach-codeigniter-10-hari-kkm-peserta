@@ -17,7 +17,7 @@ By the end of today, participants can:
 | O3 | **Build** the Bootstrap 5.3 layout `app/Views/layouts/main.php` with `extend()`/`section()` and output escaped with `esc()` | S2 | The home page after login shows the user's name in the navbar |
 | O4 | **Write** the 8 remaining migrations from [`erd-rujukan.md`](../docs/erd-rujukan.md) and specification §3 (FK, UNIQUE, INDEX) in dependency order and **run** `php spark migrate` without errors | S3 | [Lab 4.3](./lab.en.md#lab-43--migrations--seeders-from-the-erd-s3); `php spark migrate:status` — 10 `App` migrations with status *Migrated* |
 | O5 | **Write** `UserSeeder` and `VehicleSeeder`, **extend** `ParkingSeeder` with slots, and **run** 5 idempotent seeders | S3 | Login as `pelulus@latihan.test` succeeds; `auth_groups_users` has 5 rows |
-| O6 | **Practise** the solo Git flow — `SETUP:` commit, feature branch, merge request into your own `main` — and **state** the Definition of Done | S4 | [Lab 4.4](./lab.en.md#lab-44--task-split-git-branches--dod-s4); `docs/pelan-kerja.md` + MR merged on GitLab + fresh clone succeeds |
+| O6 | **Practise** the solo Git flow — `SETUP:` commit, feature branch, merge request into your own `main` — and **state** the Definition of Done | S4 | [Lab 4.4](./lab.en.md#lab-44--work-plan-git-branches--dod-s4); `docs/pelan-kerja.md` + MR merged on GitLab + fresh clone succeeds |
 | O7 | **Trace** the POST `/jabatan` request with the Debug Toolbar History tab and `filter:check`, and **compare** it with GET `/zon` | S5 | [Lab 4.1b](./lab.en.md#lab-41b--tracing-the-post-jabatan-request-s5); the *POST /jabatan* section in `docs/kitaran-request.md` |
 | O8 | **Put** the Shield filters `session` and `permission:admin.access` on the Day 3 routes and **test** them with two `shield:user` test accounts | S6 | [Lab 4.2b](./lab.en.md#lab-42b--protecting-the-day-3-pages-with-shield-filters-s6); `docs/akses-route.md` + `php spark routes` |
 | O9 | **Prove** the FK, UNIQUE and `ON DELETE` constraints (`RESTRICT`, `SET NULL`, `CASCADE`) with queries inside a transaction, and **write** an idempotent `ReferenceSequenceSeeder` | S7 | [Lab 4.3b](./lab.en.md#lab-43b--fk--on-delete-drills--sequence-seeder-s7); `docs/ujian-fk.md` + 2 rows in `reference_sequences` |
@@ -523,7 +523,7 @@ Password for all: **`Latihan@2026`**. Full file: `templates/kod/UserSeeder.php.t
 
 ### 4.1 How you work
 
-You build **all four** modules on your own in `kelas-ci-<nama>`; the trainer is a Reporter and can read every commit and merge request. From today every feature goes through the same flow ([Lab 4.4](./lab.en.md#lab-44--task-split-git-branches--dod-s4)):
+You build **all four** modules on your own in `kelas-ci-<nama>`; the trainer is a Reporter and can read every commit and merge request. From today every feature goes through the same flow ([Lab 4.4](./lab.en.md#lab-44--work-plan-git-branches--dod-s4)):
 
 | Step | Where | Who |
 |---------|---------|-------|

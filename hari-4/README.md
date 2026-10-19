@@ -17,7 +17,7 @@ Di akhir hari ini, peserta boleh:
 | O3 | **Membina** layout Bootstrap 5.3 `app/Views/layouts/main.php` dengan `extend()`/`section()` dan output dilepaskan `esc()` | S2 | Halaman utama selepas log masuk memaparkan nama pengguna dalam navbar |
 | O4 | **Menulis** 8 migration baki daripada [`erd-rujukan.md`](../docs/erd-rujukan.md) dan spesifikasi §3 (FK, UNIQUE, INDEX) mengikut tertib dependency dan **menjalankan** `php spark migrate` tanpa ralat | S3 | [Lab 4.3](./lab.md#lab-43--migration--seeder-daripada-erd-s3); `php spark migrate:status` — 10 migration `App` berstatus *Migrated* |
 | O5 | **Menulis** `UserSeeder` dan `VehicleSeeder`, **meluaskan** `ParkingSeeder` dengan slot, dan **menjalankan** 5 seeder idempoten | S3 | Log masuk sebagai `pelulus@latihan.test` berjaya; `auth_groups_users` ada 5 baris |
-| O6 | **Mengamalkan** aliran Git solo — commit `SETUP:`, feature branch, merge request ke `main` sendiri — dan **menyatakan** Definition of Done | S4 | [Lab 4.4](./lab.md#lab-44--pembahagian-tugas-cabang-git--dod-s4); `docs/pelan-kerja.md` + MR di-merge di GitLab + klon baharu berjaya |
+| O6 | **Mengamalkan** aliran Git solo — commit `SETUP:`, feature branch, merge request ke `main` sendiri — dan **menyatakan** Definition of Done | S4 | [Lab 4.4](./lab.md#lab-44--pelan-kerja-branch-git--dod-s4); `docs/pelan-kerja.md` + MR di-merge di GitLab + klon baharu berjaya |
 | O7 | **Menjejak** request POST `/jabatan` dengan tab History Debug Toolbar dan `filter:check`, dan **membandingkannya** dengan GET `/zon` | S5 | [Lab 4.1b](./lab.md#lab-41b--jejak-request-post-jabatan-s5); bahagian *POST /jabatan* dalam `docs/kitaran-request.md` |
 | O8 | **Memasang** filter Shield `session` dan `permission:admin.access` pada route Hari 3 dan **mengujinya** dengan dua akaun ujian `shield:user` | S6 | [Lab 4.2b](./lab.md#lab-42b--lindungi-halaman-hari-3-dengan-filter-shield-s6); `docs/akses-route.md` + `php spark routes` |
 | O9 | **Membuktikan** kekangan FK, UNIQUE dan `ON DELETE` (`RESTRICT`, `SET NULL`, `CASCADE`) dengan query dalam transaksi, dan **menulis** `ReferenceSequenceSeeder` idempoten | S7 | [Lab 4.3b](./lab.md#lab-43b--latihan-fk-on-delete--seeder-jujukan-s7); `docs/ujian-fk.md` + `reference_sequences` 2 baris |
@@ -523,7 +523,7 @@ Kata laluan semua: **`Latihan@2026`**. Fail penuh: `templates/kod/UserSeeder.php
 
 ### 4.1 Cara anda bekerja
 
-Anda membina **keempat-empat** modul seorang diri dalam `kelas-ci-<nama>`; jurulatih ialah Reporter dan boleh membaca setiap commit dan merge request. Mulai hari ini setiap ciri melalui aliran yang sama ([Lab 4.4](./lab.md#lab-44--pembahagian-tugas-cabang-git--dod-s4)):
+Anda membina **keempat-empat** modul seorang diri dalam `kelas-ci-<nama>`; jurulatih ialah Reporter dan boleh membaca setiap commit dan merge request. Mulai hari ini setiap ciri melalui aliran yang sama ([Lab 4.4](./lab.md#lab-44--pelan-kerja-branch-git--dod-s4)):
 
 | Langkah | Di mana | Siapa |
 |---------|---------|-------|

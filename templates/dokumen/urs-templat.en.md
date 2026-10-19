@@ -11,7 +11,7 @@
 | System name | Special Vehicle Parking (TLK) & Pass System |
 | Organisation | `<Fasiliti KKM rekaan, cth Hospital Latihan Seri Harapan>` |
 | System owner | `<nama persona>` |
-| Prepared by | `<Pasangan / nama peserta>` |
+| Prepared by | `<trainee name>` |
 | Version | `1.0` |
 | Date | `2026-__-__` |
 | Status | `Draf` (Draft) / `Untuk semakan` (For review) / **`Disahkan`** (Confirmed) |
@@ -208,8 +208,8 @@ By signing, the system owner agrees that the requirements above are complete for
 | Role | Name | Date | Decision |
 |---------|------|--------|-----------|
 | System owner | `<…>` | `<…>` | Confirmed / Rejected (reason: `<…>`) |
-| Developer representative (driver) | `<…>` | `<…>` | Prepared |
-| Developer representative (navigator) | `<…>` | `<…>` | Reviewed |
+| Developer (trainee) | `<…>` | `<…>` | Prepared |
+| Trainer | `<…>` | `<…>` | Reviewed |
 
 ### 12.1 Change request log (after v1.0)
 

@@ -148,7 +148,7 @@ quadrantChart
 | Role | Who |
 |---------|-------|
 | **System owner** (*system owner*) | The trainer or a department representative — answers domain questions, signs off the URS (Day 2), accepts the demo (Day 10) |
-| **Developer pair** | You — driver/navigator, swap every session ([`docs/kolaborasi.md`](../docs/kolaborasi.md) §4) |
+| **Developer** | You — every trainee builds the same system in their own repo ([`docs/kolaborasi.md`](../docs/kolaborasi.md) §4) |
 | **Trainer** | Checks at every ✅ checkpoint |
 
 ⚠️ **Common mistake:** Assuming the trainer "knows the answer" and so not asking. When the trainer wears the "system owner hat", they only answer **what is asked**. Hidden requirements only come out if you ask the right questions — just like a real project.
@@ -470,7 +470,7 @@ ID convention:
 
 ## 📦 Deliverables — Today's Output
 
-Save in the `docs/` folder of your team repo (committed with the `SETUP:` prefix — see KOLABORASI §1):
+Save in the `docs/` folder of your repo (committed with the `SETUP:` prefix — see KOLABORASI §1):
 
 - [ ] `docs/carta-skop.md` — goal, 4 modules, in/out of scope, constraints, stakeholder ↔ Shield role table
 - [ ] `docs/temubual-tlk.md` — interview questions, summarised answers, ≥ 5 pain points `PP-TLK-nn`
@@ -506,7 +506,7 @@ Save in the `docs/` folder of your team repo (committed with the `SETUP:` prefix
 Days 1–3 write no system code, but the environment is set up today in S4 ([Lab 1.5](./lab.en.md#lab-15--ci4-basics-on-your-laptop-in-class-s4)) so Day 4 does not start with environment problems. Not finished in class? Finish it before Day 4. Every step is for **Windows** (Laragon + Git Bash). Full steps: [Skeleton tutorial — Part A](../docs/tutorial-rangka.en.md#part-a--ci4-basics-on-your-laptop-day-1).
 
 1. Check your environment ([`docs/persediaan.en.md`](../docs/persediaan.en.md) §1–§6): `php -v` (8.2+), `composer -V`, `where php` points to `C:\laragon\bin\php\...`.
-2. Create a **practice** project (not the pair repo) and run it:
+2. Create a **practice** project `ci4-asas` (not your course repo) and run it:
 
    ```bash
    mkdir -p ~/latihan && cd ~/latihan
@@ -524,7 +524,7 @@ Days 1–3 write no system code, but the environment is set up today in S4 ([Lab
 
 ## ➡️ Preparation for tomorrow
 
-- Re-read your pair's `docs/keperluan-awal.md` — mark any FR you are **not** confident can be tested.
+- Re-read your `docs/keperluan-awal.md` — mark any FR you are **not** confident can be tested.
 - Complete `docs/soalan-terbuka.md`: at least 3 questions for the system owner (Day 2 S1 starts with the sign-off session).
 - Skim the Mermaid `flowchart` syntax at <https://mermaid.js.org/syntax/flowchart.html> — tomorrow we draw the as-is and to-be flowcharts.
 - Make sure you can preview Mermaid (VS Code + the *Markdown Preview Mermaid Support* extension, or <https://mermaid.live>).

@@ -1060,7 +1060,7 @@ Complete the 10 migrations of specification §3 (2 from Lab 3.2 + 8 new, with FK
 
 ---
 
-## Lab 4.4 — Task Split, Git Branches & DoD (S4)
+## Lab 4.4 — Work Plan, Git Branches & DoD (S4)
 
 ### 🎯 Objective
 Push clean `SETUP:` commits to GitLab, write your work plan, try the branch → merge request into your own `main` flow once, and prove the repo is complete with a fresh clone.
@@ -1577,7 +1577,7 @@ Run `SHOW CREATE TABLE slot_bookings;` and list all four FKs with their `ON DELE
 Run a full merge request cycle a second time with a real change (the project `README.md`): branch → commit → MR → review comment → fix commit on the **same** branch → merge → delete the branch → `git log --graph`.
 
 ### Prerequisites
-- [Lab 4.4](#lab-44--task-split-git-branches--dod-s4) checkpoint passed: MR `feat/pelan-kerja` *Merged*, `git status --short` empty.
+- [Lab 4.4](#lab-44--work-plan-git-branches--dod-s4) checkpoint passed: MR `feat/pelan-kerja` *Merged*, `git status --short` empty.
 
 ### Steps
 

@@ -2,7 +2,7 @@
 
 [📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 README Hari 1](./README.md)
 
-> Semua lab hari ini menghasilkan **dokumen Markdown**, bukan kod (kecuali Lab 1.5 dalam S4: CI4 asas di Laragon). Kerja berpasangan (driver menaip, navigator menyemak terhadap SPEC) — tukar peranan setiap lab.
+> Semua lab hari ini menghasilkan **dokumen Markdown**, bukan kod (kecuali Lab 1.5 dalam S4: CI4 asas di Laragon). Setiap peserta membuat tugasan yang **sama** secara individu dan menyemak kerja sendiri terhadap SPEC.
 
 | Lab | Sesi | Hasil |
 |-----|------|-------|
@@ -16,7 +16,7 @@
 
 ## Lab 1.0 — Sediakan repo dokumen (10 minit, S1 minit 50–85 bersama Lab 1.1)
 
-1. Buka VS Code → *Terminal → New Terminal*. 🪟 **Windows:** terminal mesti **Git Bash** — `echo $SHELL` mencetak `/usr/bin/bash` ([`persediaan.md`](../docs/persediaan.md) §5). Cipta folder kerja pasukan dan mulakan Git:
+1. Buka VS Code → *Terminal → New Terminal*. 🪟 **Windows:** terminal mesti **Git Bash** — `echo $SHELL` mencetak `/usr/bin/bash` ([`persediaan.md`](../docs/persediaan.md) §5). Cipta folder kerja anda dan mulakan Git:
    ```bash
    mkdir -p ~/latihan/sistem-tlk-pas/docs
    cd ~/latihan/sistem-tlk-pas
@@ -126,7 +126,7 @@ Mengendalikan temu bual 35 minit dengan pemilik sistem (jurulatih dalam persona)
    - ≥ 1 soalan tentang **siapa** meluluskan
    - ≥ 1 soalan tentang **tempoh** tempahan
    - ≥ 1 soalan tentang **jenis/kategori** slot
-3. **Temu bual (35 minit, berkumpulan).** Jurulatih memakai persona pemilik sistem. Setiap pasangan bergilir bertanya sekurang-kurangnya 2 soalan. Navigator mencatat.
+3. **Temu bual (35 minit, seluruh kelas).** Jurulatih memakai persona pemilik sistem. Setiap peserta bergilir bertanya sekurang-kurangnya 1 soalan; semua peserta mencatat dalam fail sendiri.
    > Peraturan main: pemilik sistem **hanya** menjawab apa yang ditanya. Maklumat penting mungkin tersembunyi di sebalik soalan susulan.
 4. **Rumuskan (20 minit).** Isi lajur "Jawapan". Kemudian isi jadual **Pain point** dengan ≥ 5 baris `PP-TLK-01`… Setiap pain point mesti ada keempat-empat elemen (siapa, masalah, kesan, keperluan).
 5. Dalam bahagian **C. Peraturan yang ditemui**, padankan penemuan anda dengan BR dalam SPEC:
@@ -238,9 +238,9 @@ Menukar hasil temu bual kepada senarai keperluan berformat ID, dikelaskan MoSCoW
    ```markdown
    | # | Soalan | Modul | Ditanya oleh | Status |
    |---|--------|-------|--------------|--------|
-   | Q-01 | Bolehkah pemohon batal tempahan yang masih pending? | TLK | Pasangan A | Terbuka |
+   | Q-01 | Bolehkah pemohon batal tempahan yang masih pending? | TLK | Peserta A | Terbuka |
    ```
-8. **Semakan rakan (10 minit):** tukar fail dengan pasangan sebelah. Tanda ❌ pada mana-mana FR yang tidak boleh diuji. Betulkan.
+8. **Semakan rakan (10 minit):** tukar fail dengan rakan sebelah. Tanda ❌ pada mana-mana FR yang tidak boleh diuji. Betulkan.
 9. Commit: `git add docs/ && git commit -m "SETUP: senarai awal FR/NFR v0.1"`.
 
 ### ✅ Checkpoint
@@ -329,7 +329,7 @@ Menjalankan projek CodeIgniter 4 kosong di laptop Windows dan membina satu route
    <h1>Hello, <?= esc($nama) ?>!</h1>
    ```
    Buka <http://localhost:8080/hello>.
-6. Terangkan kepada rakan pasangan aliran request: **Routes → Controller → View**. Langkah penuh dan penerangan: [Tutorial rangka — Bahagian A](../docs/tutorial-rangka.md#bahagian-a--ci4-asas-di-laptop-hari-1).
+6. Terangkan kepada rakan sebelah aliran request: **Routes → Controller → View**. Langkah penuh dan penerangan: [Tutorial rangka — Bahagian A](../docs/tutorial-rangka.md#bahagian-a--ci4-asas-di-laptop-hari-1).
 
 > `ci4-asas` ialah projek latihan sahaja dan boleh dipadam. Projek sebenar dicipta dalam repo `sistem-tlk-pas` pada Hari 4 Lab 4.2.
 

@@ -264,7 +264,7 @@ If you get confused and want to start again: `git merge --abort`.
    git commit -m "SETUP: keluarkan .env dari repo"
    ```
 2. **Assume the secrets have leaked** — they still exist in the old commit history. **Rotate** them: the DB user password, regenerate with `php spark key:generate`, other tokens.
-3. If the repo is shared outside the team, tell the trainer; cleaning the history (e.g. `git filter-repo`) is an advanced step and requires every member to clone again.
+3. If the repo was ever shared or forked, tell the trainer; cleaning the history (e.g. `git filter-repo`) is an advanced step and requires every copy to be cloned again.
 
 Check: `git log --all --oneline -- .env` should be empty for a clean repo.
 
@@ -293,7 +293,7 @@ Check: `git log --all --oneline -- .env` should be empty for a clean repo.
 | Merging without `git pull` first | Push rejected / bigger conflicts | `git switch main && git pull` before merging |
 | `<<<<<<<` markers left in a file | PHP syntax error | `php -l`, `git diff --check` before committing |
 | Editing an old migration that has already run | The schema on other laptops/the server doesn't match | Create a new migration |
-| `push --force` on a shared branch | Partner's work is lost | Don't; use `git revert`/merge |
+| `push --force` on an already-pushed branch | Commits on GitLab (and in the MR) are lost | Don't; use `git revert`/merge |
 | `.env` committed | Secrets leaked | `git rm --cached .env` + rotate the secrets |
 
 ---
@@ -308,4 +308,4 @@ Check: `git log --all --oneline -- .env` should be empty for a clean repo.
 - Mermaid — gitGraph: <https://mermaid.js.org/syntax/gitgraph.html>
 
 ---
-**Used on Day 4** (S4 — task split, Git branches & Definition of Done) **and throughout Days 5–10** (every feature of the TLK (Special Vehicle Parking), Pass, Report and Statistics modules). Related notes: [11 · Web Application Security](./nota-11-keselamatan-aplikasi-web.md) · [10 · PHPUnit Testing](./nota-10-ujian-phpunit-ci4.md) · [02 · Migration, Seeder & Query Builder](./nota-02-migration-seeder-dan-query-builder.md)
+**Used on Day 4** (S4 — work plan, Git branches & Definition of Done) **and throughout Days 5–10** (every feature of the TLK (Special Vehicle Parking), Pass, Report and Statistics modules). Related notes: [11 · Web Application Security](./nota-11-keselamatan-aplikasi-web.md) · [10 · PHPUnit Testing](./nota-10-ujian-phpunit-ci4.md) · [02 · Migration, Seeder & Query Builder](./nota-02-migration-seeder-dan-query-builder.md)

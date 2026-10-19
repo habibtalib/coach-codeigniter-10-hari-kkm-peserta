@@ -296,7 +296,7 @@ Full template: `templates/dokumen/urs-templat.md` (**Templat & Rujukan** module)
 | 9 | Acceptance criteria | `docs/acceptance-criteria.md` |
 | 10 | BR → FR → AC traceability matrix | Built this afternoon |
 | 11 | Open questions & assumptions | `docs/soalan-terbuka.md` |
-| 12 | Sign-off signatures | System owner + pair representative |
+| 12 | Sign-off signatures | System owner + trainee |
 
 #### 4.3 Traceability matrix
 
@@ -418,7 +418,7 @@ Write testable ACs for at least 8 key FRs, including negative and boundary scena
 
 4. Give every scenario an ID `AC-{MODUL}-{nn}-{nn}` (e.g. `AC-TLK-03-02`).
 5. **Test your own ACs:** for every scenario, ask — *"Could a tester who never attended this course run this scenario and decide PASS/FAIL without asking me?"* If not, fix it.
-6. **Swap with another pair (10 min):** they try to "break" your ACs — they look for missing scenarios.
+6. **Swap with your neighbour (10 min):** they try to "break" your ACs — they look for missing scenarios.
 7. Commit:
    ```bash
    git add docs/ && git commit -m "SETUP: acceptance criteria TLK & Pas"
@@ -801,7 +801,7 @@ Handed out today, reviewed on **Day 4 S1 (09:00)**. Full details & rubric: [`doc
 |---|---------|---------------|
 | T1 | Complete the environment following the checklist: PHP 8.2+ & Composer were set up in Day 1 [Lab 1.5](../hari-1/lab.en.md#lab-15--ci4-basics-on-your-laptop-in-class-s4) — add MySQL/MariaDB & Git (haven't done Lab 1.5? do it first) | 30 minutes–1 hour |
 | T2 | Complete the official CI4 tutorial *Build Your First Application* (news app) | 2–3 hours |
-| T3 | Refine your pair's ERD based on today's review | 30 minutes |
+| T3 | Refine your ERD based on today's review | 30 minutes |
 | T4 | Write 3 new acceptance criteria (Given/When/Then) | 30 minutes |
 
 > ⭐ **Side track (optional):** [Design Thinking — Test](../docs/trek-design-thinking.md): run a *hallway test* of your wireframes with one colleague. [GitLab](../docs/trek-gitlab.md): log in, SSH key, *private* project and first MR. Not counted in progress; finish before Day 4.
@@ -894,7 +894,7 @@ Write a complete data dictionary for 5 core tables in the session (the other 5 t
 
 #### Steps
 1. Create the file `docs/kamus-data.md` and copy the contents of the template `templates/dokumen/kamus-data-templat.md` (**Templat & Rujukan** module) into it (the `## Jadual: <nama_jadual>` section is repeated for each table).
-2. **In the session — 5 core tables, split the work in your pair:** the driver writes `parking_slots` and `slot_bookings`; the navigator checks against the SPEC. Swap for `pass_applications`, `pass_documents`, `status_logs`.
+2. **In the session — 5 core tables, every trainee writes all five:** `parking_slots`, `slot_bookings`, `pass_applications`, `pass_documents`, `status_logs`; check each one against the SPEC.
    **The other 5 tables** (`departments`, `users`, `parking_zones`, `vehicles`, `reference_sequences`) — optional practice; compare with the finished ERD in [`docs/erd-rujukan.md`](../docs/erd-rujukan.md). These tables are small; README §2.5 gives their unique keys and special notes.
 3. For every table fill in **all** the columns: Field, Type, NULL, Default, Key/Index, FK →, Rule/enum, Description. Use `slot_bookings` in README §2.2 as the example.
 4. Fill in the **Rule** column with BR references, e.g.:
@@ -969,7 +969,7 @@ Sketch low-fidelity wireframes of the 6 main screens following the to-be user fl
    ![W2](wireframe/W2-borang-tempahan.png)
    System-generated fields (not input): `ref_no`, `user_id`, `status`
    ```
-6. **Paper walkthrough test (10 min):** Someone from another pair plays `pemohon1` and "clicks" through W1 → W2 → W1 using your sketches. Note where they get confused.
+6. **Paper walkthrough test (10 min):** Your neighbour plays `pemohon1` and "clicks" through W1 → W2 → W1 using your sketches. Note where they get confused.
 7. Commit: `SETUP: wireframe 6 skrin utama`.
 
 #### ✅ Checkpoint
@@ -996,7 +996,7 @@ Sketch a 7th screen: **W7 Report RPT-01** (`/laporan/tempahan`) with a GET filte
 ### Lab 3.4 — Design Cross-Review
 
 #### 🎯 Objective
-Review another pair's ERD and wireframes with a checklist, fix your own design, and understand the preparation assignment.
+Review your neighbour's ERD and wireframes with a checklist, fix your own design, and understand the preparation assignment.
 
 #### Prerequisites
 - Labs 3.1–3.3 are done.
@@ -1006,7 +1006,7 @@ Review another pair's ERD and wireframes with a checklist, fix your own design, 
 1. Create `docs/semakan-reka-bentuk.md`:
    ```markdown
    # Design Review — Day 3
-   Reviewed by: Pair __ · Date: 2026-__-__
+   Reviewed by: ________ · Date: 2026-__-__
 
    | # | Check | Pass/Fail | Notes |
    |---|-------|-----------|-------|
@@ -1017,10 +1017,10 @@ Review another pair's ERD and wireframes with a checklist, fix your own design, 
    ## Fixes made
    | # | What changed | File | Commit |
    ```
-2. **Cross-review (20 min):** Swap laptops with another pair. Review their ERD & wireframes with the E1–E8 and U1–U6 lists. Fill it in in **their** file.
+2. **Cross-review (20 min):** Swap laptops with your neighbour. Review their ERD & wireframes with the E1–E8 and U1–U6 lists. Fill it in in **their** file.
 3. **Trainer review (in turns):** The trainer picks 2 items at random and asks you to **explain** them (e.g. "Why is `vehicle_id` NULL here?").
 4. **Fix (20 min):** Go back to your own laptop. Fix every "Fail" item. Record it in the "Fixes" table.
-5. Read [`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md) with your partner. Write any questions at the end of `docs/soalan-terbuka.md`.
+5. Read [`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md). Write any questions at the end of `docs/soalan-terbuka.md`.
 6. Commit and tag:
    ```bash
    git add docs/ && git commit -m "SETUP: semakan reka bentuk Hari 3"

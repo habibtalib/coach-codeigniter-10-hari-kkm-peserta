@@ -11,7 +11,7 @@
 | Nama sistem | Sistem Tempat Letak Kenderaan Khas (TLK) & Pas |
 | Organisasi | `<Fasiliti KKM rekaan, cth Hospital Latihan Seri Harapan>` |
 | Pemilik sistem | `<nama persona>` |
-| Disediakan oleh | `<Pasangan / nama peserta>` |
+| Disediakan oleh | `<nama peserta>` |
 | Versi | `1.0` |
 | Tarikh | `2026-__-__` |
 | Status | `Draf` / `Untuk semakan` / **`Disahkan`** |
@@ -208,8 +208,8 @@ Dengan menandatangani, pemilik sistem bersetuju bahawa keperluan di atas lengkap
 | Peranan | Nama | Tarikh | Keputusan |
 |---------|------|--------|-----------|
 | Pemilik sistem | `<…>` | `<…>` | Disahkan / Ditolak (sebab: `<…>`) |
-| Wakil pembangun (driver) | `<…>` | `<…>` | Disediakan |
-| Wakil pembangun (navigator) | `<…>` | `<…>` | Disemak |
+| Pembangun (peserta) | `<…>` | `<…>` | Disediakan |
+| Jurulatih | `<…>` | `<…>` | Disemak |
 
 ### 12.1 Log permohonan perubahan (selepas v1.0)
 

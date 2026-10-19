@@ -148,7 +148,7 @@ quadrantChart
 | Peranan | Siapa |
 |---------|-------|
 | **Pemilik sistem** (*system owner*) | Jurulatih atau wakil jabatan — menjawab soalan domain, mengesahkan URS (Hari 2), menerima demo (Hari 10) |
-| **Pasangan pembangun** | Anda — driver/navigator, tukar setiap sesi ([`docs/kolaborasi.md`](../docs/kolaborasi.md) §4) |
+| **Pembangun** | Anda — setiap peserta membina sistem yang sama dalam repo sendiri ([`docs/kolaborasi.md`](../docs/kolaborasi.md) §4) |
 | **Jurulatih** | Menyemak di setiap ✅ checkpoint |
 
 ⚠️ **Kesilapan lazim:** Menganggap jurulatih "tahu jawapannya" lalu tidak bertanya. Apabila jurulatih memakai "topi pemilik sistem", dia hanya menjawab **apa yang ditanya**. Keperluan tersembunyi hanya muncul jika anda bertanya soalan yang betul — sama seperti projek sebenar.
@@ -470,7 +470,7 @@ Konvensyen ID:
 
 ## 📦 Hasil Hari Ini
 
-Simpan dalam folder `docs/` repo pasukan anda (dicommit dengan prefix `SETUP:` — lihat KOLABORASI §1):
+Simpan dalam folder `docs/` repo anda (dicommit dengan prefix `SETUP:` — lihat KOLABORASI §1):
 
 - [ ] `docs/carta-skop.md` — matlamat, 4 modul, dalam/luar skop, had, jadual pihak berkepentingan ↔ peranan Shield
 - [ ] `docs/temubual-tlk.md` — soalan temu bual, jawapan dirumus, ≥ 5 pain point `PP-TLK-nn`
@@ -506,7 +506,7 @@ Simpan dalam folder `docs/` repo pasukan anda (dicommit dengan prefix `SETUP:` �
 Hari 1–3 tidak menulis kod sistem, tetapi persekitaran disediakan hari ini dalam S4 ([Lab 1.5](./lab.md#lab-15--ci4-asas-di-laptop-dalam-kelas-s4)) supaya Hari 4 tidak bermula dengan masalah persekitaran. Belum siap dalam kelas? Siapkan sebelum Hari 4. Semua langkah untuk **Windows** (Laragon + Git Bash). Langkah penuh: [Tutorial rangka — Bahagian A](../docs/tutorial-rangka.md#bahagian-a--ci4-asas-di-laptop-hari-1).
 
 1. Semak persekitaran ([`docs/persediaan.md`](../docs/persediaan.md) §1–§6): `php -v` (8.2+), `composer -V`, `where php` menunjuk ke `C:\laragon\bin\php\...`.
-2. Cipta projek **latihan** (bukan repo pasangan) dan jalankan:
+2. Cipta projek **latihan** `ci4-asas` (bukan repo kursus anda) dan jalankan:
 
    ```bash
    mkdir -p ~/latihan && cd ~/latihan
@@ -524,7 +524,7 @@ Hari 1–3 tidak menulis kod sistem, tetapi persekitaran disediakan hari ini dal
 
 ## ➡️ Persediaan untuk esok
 
-- Baca semula `docs/keperluan-awal.md` pasangan anda — tandakan mana-mana FR yang **tidak** anda yakin boleh diuji.
+- Baca semula `docs/keperluan-awal.md` anda — tandakan mana-mana FR yang **tidak** anda yakin boleh diuji.
 - Lengkapkan `docs/soalan-terbuka.md`: sekurang-kurangnya 3 soalan untuk pemilik sistem (Hari 2 S1 bermula dengan sesi pengesahan).
 - Imbas sintaks Mermaid `flowchart` di <https://mermaid.js.org/syntax/flowchart.html> — esok kita lukis carta alir as-is dan to-be.
 - Pastikan anda boleh mempratonton Mermaid (VS Code + extension Markdown Preview Mermaid Support, atau <https://mermaid.live>).

@@ -187,7 +187,7 @@ Principles: **Thin controller** (receive request → call service → return vie
 | 1 | Project Kickoff & Requirement Deep Dive | Scope chart · initial list of functional (FR) & non-functional (NFR) requirements for TLK & Pass |
 | 2 | Requirement Finalization & Process Flow | **Approved URS** · as-is/to-be flowcharts · acceptance criteria (Given/When/Then) |
 | 3 | Database Design & UI/UX Foundation | **Mermaid ERD** · data dictionary · main screen wireframes · pre-course assignment handed out |
-| 4 | Assignment Review & Development Kickoff | CI4 project running · `.env` · Shield · **all migrations + seeders** · division of tasks |
+| 4 | Assignment Review & Development Kickoff | CI4 project running · `.env` · Shield · **all migrations + seeders** · work plan & solo Git flow |
 | 5 | TLK (1) | Booking Model + Entity + CRUD · form + validation · `TLK-2026-0001` generated |
 | 6 | TLK (2) | Availability check · overlap prevention in a transaction · approve/reject · tests · **M1 done** |
 | 7 | Pass (1) | Application CRUD · form + secure document upload |

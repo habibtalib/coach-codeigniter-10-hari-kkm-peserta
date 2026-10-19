@@ -8,7 +8,7 @@
 |---------|-------|
 | System | TLK & Pass System (M1 TLK, M2 Pass, M3 Report, M4 Statistics) |
 | Requirements reference | `docs/URS-v1.md` version `<1.x>` |
-| Developer pair | `<…>` |
+| Developer (trainee) | `<…>` |
 | Version under UAT | Git tag `<cth v1.0-capstone>` · commit `<…>` |
 | UAT date | `2026-__-__` |
 | Environment | `<laptop peserta · php spark serve · DB dengan DatabaseSeeder>` |
@@ -77,8 +77,7 @@ Choose one:
 |---------|------|-------------|--------|
 | System owner | `<…>` | | |
 | User representative (reviewer/approver) | `<…>` | | |
-| Developer (driver) | `<…>` | | |
-| Developer (navigator) | `<…>` | | |
+| Developer (trainee) | `<…>` | | |
 | Trainer (witness) | `<…>` | | |
 
 > This exercise uses synthetic data only. The signatures simulate a real acceptance process.

@@ -8,7 +8,7 @@
 |---------|-------|
 | Sistem | Sistem TLK & Pas (M1 TLK, M2 Pas, M3 Laporan, M4 Statistik) |
 | Rujukan keperluan | `docs/URS-v1.md` versi `<1.x>` |
-| Pasangan pembangun | `<…>` |
+| Pembangun (peserta) | `<…>` |
 | Versi dibuat UAT | tag Git `<cth v1.0-capstone>` · commit `<…>` |
 | Tarikh UAT | `2026-__-__` |
 | Persekitaran | `<laptop peserta · php spark serve · DB dengan DatabaseSeeder>` |
@@ -77,8 +77,7 @@ Pilih satu:
 |---------|------|-------------|--------|
 | Pemilik sistem | `<…>` | | |
 | Wakil pengguna (penyemak/pelulus) | `<…>` | | |
-| Pembangun (driver) | `<…>` | | |
-| Pembangun (navigator) | `<…>` | | |
+| Pembangun (peserta) | `<…>` | | |
 | Jurulatih (saksi) | `<…>` | | |
 
 > Latihan ini menggunakan data sintetik sahaja. Tandatangan ialah simulasi proses penerimaan sebenar.

@@ -1060,7 +1060,7 @@ Melengkapkan 10 migration spesifikasi §3 (2 dari Lab 3.2 + 8 baharu, dengan FK,
 
 ---
 
-## Lab 4.4 — Pembahagian Tugas, Cabang Git & DoD (S4)
+## Lab 4.4 — Pelan Kerja, Branch Git & DoD (S4)
 
 ### 🎯 Objektif
 Menolak commit `SETUP:` yang bersih ke GitLab, menulis pelan kerja anda, mencuba aliran branch → merge request ke `main` anda sendiri, dan membuktikan repo lengkap dengan klon baharu.
@@ -1577,7 +1577,7 @@ Jalankan `SHOW CREATE TABLE slot_bookings;` dan senaraikan keempat-empat FK deng
 Menjalankan kitaran merge request lengkap kali kedua dengan perubahan sebenar (`README.md` projek): branch → commit → MR → komen semakan → commit pembetulan pada branch yang **sama** → merge → padam branch → `git log --graph`.
 
 ### Prasyarat
-- [Lab 4.4](#lab-44--pembahagian-tugas-cabang-git--dod-s4) checkpoint lulus: MR `feat/pelan-kerja` *Merged*, `git status --short` kosong.
+- [Lab 4.4](#lab-44--pelan-kerja-branch-git--dod-s4) checkpoint lulus: MR `feat/pelan-kerja` *Merged*, `git status --short` kosong.
 
 ### Langkah
 

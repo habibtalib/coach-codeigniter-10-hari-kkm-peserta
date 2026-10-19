@@ -2,7 +2,7 @@
 
 [📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 1 README](./README.md)
 
-> Every lab today produces **Markdown documents**, not code (except Lab 1.5 in S4: CI4 basics on Laragon). Work in pairs (the driver types, the navigator checks against the SPEC) — swap roles every lab.
+> Every lab today produces **Markdown documents**, not code (except Lab 1.5 in S4: CI4 basics on Laragon). Every trainee does the **same** task individually and checks their own work against the SPEC.
 
 | Lab | Session | Output |
 |-----|---------|--------|
@@ -16,7 +16,7 @@
 
 ## Lab 1.0 — Set up the document repo (10 min, S1 minutes 50–85 together with Lab 1.1)
 
-1. Open VS Code → *Terminal → New Terminal*. 🪟 **Windows:** the terminal must be **Git Bash** — `echo $SHELL` prints `/usr/bin/bash` ([`persediaan.md`](../docs/persediaan.md) §5). Create the team's working folder and initialise Git:
+1. Open VS Code → *Terminal → New Terminal*. 🪟 **Windows:** the terminal must be **Git Bash** — `echo $SHELL` prints `/usr/bin/bash` ([`persediaan.md`](../docs/persediaan.md) §5). Create your working folder and initialise Git:
    ```bash
    mkdir -p ~/latihan/sistem-tlk-pas/docs
    cd ~/latihan/sistem-tlk-pas
@@ -126,7 +126,7 @@ Run a 35-minute interview with the system owner (the trainer playing a persona),
    - ≥ 1 question about **who** approves
    - ≥ 1 question about the booking **duration**
    - ≥ 1 question about slot **types/categories**
-3. **Interview (35 min, as a group).** The trainer plays the system owner persona. Each pair takes turns to ask at least 2 questions. The navigator takes notes.
+3. **Interview (35 min, whole class).** The trainer plays the system owner persona. Each trainee takes a turn to ask at least 1 question; everyone takes notes in their own file.
    > Ground rule: the system owner answers **only** what is asked. Important information may be hidden behind follow-up questions.
 4. **Summarise (20 min).** Fill in the "Answer" column. Then fill in the **Pain points** table with ≥ 5 rows `PP-TLK-01`… Every pain point must have all four elements (who, problem, impact, requirement).
 5. In section **C. Rules discovered**, match your findings to the BRs in the SPEC:
@@ -238,9 +238,9 @@ Turn the interview results into a list of requirements with IDs, classified with
    ```markdown
    | # | Question | Module | Asked by | Status |
    |---|----------|--------|----------|--------|
-   | Q-01 | Can an applicant cancel a booking that is still pending? | TLK | Pair A | Open |
+   | Q-01 | Can an applicant cancel a booking that is still pending? | TLK | Trainee A | Open |
    ```
-8. **Peer review (10 min):** swap files with the pair next to you. Mark ❌ on any FR that cannot be tested. Fix them.
+8. **Peer review (10 min):** swap files with your neighbour. Mark ❌ on any FR that cannot be tested. Fix them.
 9. Commit: `git add docs/ && git commit -m "SETUP: senarai awal FR/NFR v0.1"`.
 
 ### ✅ Checkpoint
@@ -329,7 +329,7 @@ Run an empty CodeIgniter 4 project on a Windows laptop and build one MVC route (
    <h1>Hello, <?= esc($nama) ?>!</h1>
    ```
    Open <http://localhost:8080/hello>.
-6. Explain the request flow to your pair partner: **Routes → Controller → View**. Full steps and explanation: [Skeleton tutorial — Part A](../docs/tutorial-rangka.en.md#part-a--ci4-basics-on-your-laptop-day-1).
+6. Explain the request flow to your neighbour: **Routes → Controller → View**. Full steps and explanation: [Skeleton tutorial — Part A](../docs/tutorial-rangka.en.md#part-a--ci4-basics-on-your-laptop-day-1).
 
 > `ci4-asas` is a practice project only and can be deleted. The real project is created inside the `sistem-tlk-pas` repo on Day 4, Lab 4.2.
 

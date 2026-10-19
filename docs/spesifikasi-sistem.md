@@ -187,7 +187,7 @@ Prinsip: **Controller nipis** (terima request → panggil service → pulang vie
 | 1 | Project Kickoff & Requirement Deep Dive | Carta skop · senarai awal keperluan fungsian (FR) & bukan fungsian (NFR) TLK & Pas |
 | 2 | Requirement Finalization & Process Flow | **URS disahkan** · carta alir as-is/to-be · acceptance criteria (Given/When/Then) |
 | 3 | Database Design & UI/UX Foundation | **ERD Mermaid** · kamus data · wireframe skrin utama · tugasan persediaan diedar |
-| 4 | Assignment Review & Development Kickoff | Projek CI4 berjalan · `.env` · Shield · **semua migration + seeder** · pembahagian tugas |
+| 4 | Assignment Review & Development Kickoff | Projek CI4 berjalan · `.env` · Shield · **semua migration + seeder** · pelan kerja & aliran Git solo |
 | 5 | TLK (1) | Model + Entity + CRUD tempahan · borang + validasi · `TLK-2026-0001` dijana |
 | 6 | TLK (2) | Semakan ketersediaan · anti-pertindihan dalam transaksi · lulus/tolak · ujian · **M1 siap** |
 | 7 | Pas (1) | CRUD permohonan · borang + muat naik dokumen selamat |

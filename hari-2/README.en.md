@@ -56,7 +56,7 @@ flowchart LR
 
 ### 1.1 The sign-off session — what happens
 
-Each pair presents its FRs to the system owner, **one by one**. The system owner gives one of four decisions:
+Trainees present their FRs to the system owner, **one by one**. The system owner gives one of four decisions:
 
 | Decision | Meaning | Action on the FR |
 |-----------|--------|------------------|

@@ -264,7 +264,7 @@ Jika keliru dan mahu mula semula: `git merge --abort`.
    git commit -m "SETUP: keluarkan .env dari repo"
    ```
 2. **Anggap rahsia telah bocor** — ia masih wujud dalam sejarah commit lama. **Tukar (rotate)**: kata laluan pengguna DB, jana semula `php spark key:generate`, token lain.
-3. Jika repo dikongsi di luar pasukan, maklumkan jurulatih; pembersihan sejarah (cth `git filter-repo`) ialah langkah lanjutan dan memerlukan semua ahli clone semula.
+3. Jika repo pernah dikongsi atau di-fork, maklumkan jurulatih; pembersihan sejarah (cth `git filter-repo`) ialah langkah lanjutan dan memerlukan setiap salinan di-clone semula.
 
 Semak: `git log --all --oneline -- .env` sepatutnya kosong untuk repo yang bersih.
 
@@ -293,7 +293,7 @@ Semak: `git log --all --oneline -- .env` sepatutnya kosong untuk repo yang bersi
 | Merge tanpa `git pull` dahulu | Push ditolak / konflik lebih besar | `git switch main && git pull` sebelum merge |
 | Penanda `<<<<<<<` tertinggal dalam fail | Ralat sintaks PHP | `php -l`, `git diff --check` sebelum commit |
 | Sunting migration lama yang sudah dijalankan | Skema laptop lain/server tidak sepadan | Cipta migration baharu |
-| `push --force` pada branch dikongsi | Kerja rakan hilang | Jangan; guna `git revert`/merge |
+| `push --force` pada branch yang sudah di-push | Commit di GitLab (dan dalam MR) hilang | Jangan; guna `git revert`/merge |
 | `.env` di-commit | Rahsia bocor | `git rm --cached .env` + rotate rahsia |
 
 ---
@@ -308,4 +308,4 @@ Semak: `git log --all --oneline -- .env` sepatutnya kosong untuk repo yang bersi
 - Mermaid — gitGraph: <https://mermaid.js.org/syntax/gitgraph.html>
 
 ---
-**Digunakan pada Hari 4** (S4 — pembahagian tugas, branch Git & Definition of Done) **dan sepanjang Hari 5–10** (setiap ciri modul TLK, Pas, Laporan, Statistik). Nota berkaitan: [11 · Keselamatan Aplikasi Web](./nota-11-keselamatan-aplikasi-web.md) · [10 · Ujian PHPUnit](./nota-10-ujian-phpunit-ci4.md) · [02 · Migration, Seeder & Query Builder](./nota-02-migration-seeder-dan-query-builder.md)
+**Digunakan pada Hari 4** (S4 — pelan kerja, branch Git & Definition of Done) **dan sepanjang Hari 5–10** (setiap ciri modul TLK, Pas, Laporan, Statistik). Nota berkaitan: [11 · Keselamatan Aplikasi Web](./nota-11-keselamatan-aplikasi-web.md) · [10 · Ujian PHPUnit](./nota-10-ujian-phpunit-ci4.md) · [02 · Migration, Seeder & Query Builder](./nota-02-migration-seeder-dan-query-builder.md)

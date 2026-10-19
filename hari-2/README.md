@@ -56,7 +56,7 @@ flowchart LR
 
 ### 1.1 Sesi pengesahan — apa berlaku
 
-Setiap pasangan membentangkan FR kepada pemilik sistem, **satu demi satu**. Pemilik sistem memberi satu daripada empat keputusan:
+Peserta membentangkan FR kepada pemilik sistem, **satu demi satu**. Pemilik sistem memberi satu daripada empat keputusan:
 
 | Keputusan | Maksud | Tindakan pada FR |
 |-----------|--------|------------------|

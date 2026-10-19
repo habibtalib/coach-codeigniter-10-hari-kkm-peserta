@@ -32,10 +32,10 @@ Present the FRs to the system owner, record a decision for each one, and update 
    |---|------|------|----------|------------------|------------|
    ```
 2. Add a **Status** column to every FR table in `docs/keperluan-awal.md` (values: `Draf`, `Disahkan`, `Diubah`, `Ditolak`, `Ditangguh`).
-3. **Presentation (8 minutes per pair)** to the system owner (TLK = Special Vehicle Parking, *Tempat Letak Kenderaan Khas*):
+3. **Presentation (a few trainees, 3 minutes each)** to the system owner (TLK = Special Vehicle Parking, *Tempat Letak Kenderaan Khas*):
    - Read aloud the 4–5 riskiest "Must" FRs (the ones that touch a BR).
    - Ask the 2 most important open questions from `docs/soalan-terbuka.md`.
-   - The other pairs listen and note the decisions that apply to them too.
+   - The other trainees listen and note the decisions in their own file — they apply to everyone, because everyone builds the same system.
 4. Record every decision as a `D-nn` row in the log. For "Ditangguh" (deferred): you must fill in the action owner + deadline.
 5. Update `docs/keperluan-awal.md`:
    - Rewrite the FRs marked "Diubah" (changed), and keep the old text with ~~strikethrough~~ below it.

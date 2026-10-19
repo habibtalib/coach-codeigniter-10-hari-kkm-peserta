@@ -296,7 +296,7 @@ Templat penuh: `templates/dokumen/urs-templat.md` (modul **Templat & Rujukan**).
 | 9 | Acceptance criteria | `docs/acceptance-criteria.md` |
 | 10 | Matriks jejak BR → FR → AC | Dibina petang ini |
 | 11 | Soalan terbuka & andaian | `docs/soalan-terbuka.md` |
-| 12 | Tandatangan pengesahan | Pemilik sistem + wakil pasangan |
+| 12 | Tandatangan pengesahan | Pemilik sistem + peserta |
 
 #### 4.3 Matriks jejak (traceability matrix)
 
@@ -418,7 +418,7 @@ Menulis AC yang boleh diuji untuk sekurang-kurangnya 8 FR utama, termasuk senari
 
 4. Beri setiap senario ID `AC-{MODUL}-{nn}-{nn}` (cth `AC-TLK-03-02`).
 5. **Uji AC anda sendiri:** untuk setiap senario, tanya — *"Bolehkah seorang penguji yang tidak pernah hadir kursus ini melaksanakan senario ini dan memutuskan LULUS/GAGAL tanpa bertanya saya?"* Jika tidak, betulkan.
-6. **Tukar dengan pasangan lain (10 minit):** mereka cuba "memecahkan" AC anda — cari senario yang tertinggal.
+6. **Tukar dengan rakan sebelah (10 minit):** dia cuba "memecahkan" AC anda — cari senario yang tertinggal.
 7. Commit:
    ```bash
    git add docs/ && git commit -m "SETUP: acceptance criteria TLK & Pas"
@@ -801,7 +801,7 @@ Diedarkan hari ini, disemak **Hari 4 S1 (09:00)**. Butiran penuh & rubrik: [`doc
 |---|---------|---------------|
 | T1 | Lengkapkan persekitaran mengikut senarai semak: PHP 8.2+ & Composer sudah disediakan dalam [Lab 1.5](../hari-1/lab.md#lab-15--ci4-asas-di-laptop-dalam-kelas-s4) Hari 1 — tambah MySQL/MariaDB & Git (belum buat Lab 1.5? buat dahulu) | 30 minit–1 jam |
 | T2 | Siapkan tutorial rasmi CI4 *Build Your First Application* (aplikasi berita) | 2–3 jam |
-| T3 | Perhalusi ERD pasangan anda berdasarkan semakan hari ini | 30 minit |
+| T3 | Perhalusi ERD anda berdasarkan semakan hari ini | 30 minit |
 | T4 | Tulis 3 acceptance criteria baharu (Given/When/Then) | 30 minit |
 
 > ⭐ **Trek sampingan (pilihan):** [Design Thinking — Test](../docs/trek-design-thinking.md): buat hallway test wireframe dengan seorang rakan. [GitLab](../docs/trek-gitlab.md): log masuk, kunci SSH, projek *private* dan MR pertama. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
@@ -894,7 +894,7 @@ Menulis kamus data lengkap untuk 5 jadual teras dalam sesi (baki 5 jadual disiap
 
 #### Langkah
 1. Cipta fail `docs/kamus-data.md` dan salin kandungan templat `templates/dokumen/kamus-data-templat.md` (modul **Templat & Rujukan**) ke dalamnya (bahagian `## Jadual: <nama_jadual>` diulang untuk setiap jadual).
-2. **Dalam sesi — 5 jadual teras, bahagi kerja dalam pasangan:** driver menulis `parking_slots` dan `slot_bookings`; navigator menyemak terhadap SPEC. Tukar untuk `pass_applications`, `pass_documents`, `status_logs`.
+2. **Dalam sesi — 5 jadual teras, setiap peserta menulis kelima-limanya:** `parking_slots`, `slot_bookings`, `pass_applications`, `pass_documents`, `status_logs`; semak setiap satu terhadap SPEC.
    **Baki 5 jadual** (`departments`, `users`, `parking_zones`, `vehicles`, `reference_sequences`) — latihan pilihan; bandingkan dengan ERD siap dalam [`docs/erd-rujukan.md`](../docs/erd-rujukan.md). Jadual ini kecil; README §2.5 memberi kunci unik dan nota khasnya.
 3. Untuk setiap jadual isi **semua** lajur: Medan, Jenis, NULL, Lalai, Kunci/Index, FK →, Peraturan/enum, Keterangan. Gunakan `slot_bookings` dalam README §2.2 sebagai contoh.
 4. Isi lajur **Peraturan** dengan rujukan BR, cth:
@@ -969,7 +969,7 @@ Melakar wireframe kesetiaan rendah bagi 6 skrin utama mengikut aliran pengguna t
    ![W2](wireframe/W2-borang-tempahan.png)
    Medan dijana sistem (bukan input): `ref_no`, `user_id`, `status`
    ```
-6. **Ujian jalan kertas (10 minit):** Seorang dari pasangan lain berlakon sebagai `pemohon1` dan "klik" melalui W1 → W2 → W1 menggunakan lakaran anda. Catat di mana dia keliru.
+6. **Ujian jalan kertas (10 minit):** Rakan sebelah berlakon sebagai `pemohon1` dan "klik" melalui W1 → W2 → W1 menggunakan lakaran anda. Catat di mana dia keliru.
 7. Commit: `SETUP: wireframe 6 skrin utama`.
 
 #### ✅ Checkpoint
@@ -996,7 +996,7 @@ Lakar skrin ke-7: **W7 Laporan RPT-01** (`/laporan/tempahan`) dengan borang filt
 ### Lab 3.4 — Semakan Silang Reka Bentuk
 
 #### 🎯 Objektif
-Menyemak ERD dan wireframe pasangan lain menggunakan senarai semak, membetulkan reka bentuk sendiri, dan memahami tugasan persediaan.
+Menyemak ERD dan wireframe rakan sebelah menggunakan senarai semak, membetulkan reka bentuk sendiri, dan memahami tugasan persediaan.
 
 #### Prasyarat
 - Lab 3.1–3.3 siap.
@@ -1006,7 +1006,7 @@ Menyemak ERD dan wireframe pasangan lain menggunakan senarai semak, membetulkan 
 1. Cipta `docs/semakan-reka-bentuk.md`:
    ```markdown
    # Semakan Reka Bentuk — Hari 3
-   Disemak oleh: Pasangan __ · Tarikh: 2026-__-__
+   Disemak oleh: ________ · Tarikh: 2026-__-__
 
    | # | Semakan | Lulus/Gagal | Catatan |
    |---|---------|-------------|---------|
@@ -1017,10 +1017,10 @@ Menyemak ERD dan wireframe pasangan lain menggunakan senarai semak, membetulkan 
    ## Pembetulan yang dibuat
    | # | Apa diubah | Fail | Commit |
    ```
-2. **Semakan silang (20 minit):** Tukar laptop dengan pasangan lain. Semak ERD & wireframe mereka dengan senarai E1–E8 dan U1–U6. Isi dalam fail **mereka**.
+2. **Semakan silang (20 minit):** Tukar laptop dengan rakan sebelah. Semak ERD & wireframe mereka dengan senarai E1–E8 dan U1–U6. Isi dalam fail **mereka**.
 3. **Semakan jurulatih (bergilir):** Jurulatih memilih 2 item secara rawak dan meminta anda **menerangkan** (cth "Kenapa `vehicle_id` NULL di sini?").
 4. **Betulkan (20 minit):** Pulang ke laptop sendiri. Betulkan setiap item "Gagal". Rekod dalam jadual "Pembetulan".
-5. Baca [`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md) bersama pasangan. Tulis sebarang soalan di hujung `docs/soalan-terbuka.md`.
+5. Baca [`docs/tugasan-persediaan.md`](../docs/tugasan-persediaan.md). Tulis sebarang soalan di hujung `docs/soalan-terbuka.md`.
 6. Commit dan tag:
    ```bash
    git add docs/ && git commit -m "SETUP: semakan reka bentuk Hari 3"
