@@ -18,6 +18,10 @@ By the end of today, participants can:
 | O4 | **Implement** server-side validation of the booking form, including the custom rule BR-TLK-03 with Malay messages | S3 | A form with a past date / period > 90 days is rejected with a message under the field |
 | O5 | **Generate** the reference number `TLK-YYYY-NNNN` through `ReferenceNumberService::next()` with a row lock | S3 | Row `slot_bookings.ref_no = 'TLK-2026-0001'` + `reference_sequences.last_number = 1` |
 | O6 | **Carry out** a manual test list and **record** bugs in a reproducible format | S4 | `docs/ujian-manual-tlk.md` with ≥ 12 cases & status |
+| O7 | **Write** `$validationRules` and Malay messages (`is_unique` with `{id}`, `{value}`) for `ParkingZoneModel` & `VehicleModel`, and **test** them with `Model::validate()` and a unit test without the DB | S5 | [Lab 5.1b](./lab.en.md#lab-51b--model-rules-for-zones--vehicles-s5); `tests/tlk/VehicleModelTest.php` passes |
+| O8 | **Build** admin zone CRUD at `/admin/slot/zon` with the PRG pattern and **block** deleting a zone that still has slots | S6 | [Lab 5.2b](./lab.en.md#lab-52b--zone-crud-admin-s6); deleting zone C is refused with a Malay message |
+| O9 | **Build** a vehicle registration form with input normalisation, the custom rule `valid_plate_no` and `user_id` from the session | S7 | [Lab 5.3b](./lab.en.md#lab-53b--vehicle-registration-form-s7); `WXX 4321` belongs to pemohon1 even with an injected `user_id` |
+| O10 | **Carry out** 12 manual test cases for zones & vehicles and **record** the soft delete + FK bug with reproducible steps | S8 | [Lab 5.4b](./lab.en.md#lab-54b--manual-testing-round-2-zones--vehicles-s8); `docs/ujian-manual-zon-kenderaan.md` + BUG-ZON-001 |
 
 ---
 
@@ -26,12 +30,16 @@ By the end of today, participants can:
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 4 recap | — |
-| 09:00–10:30 | S1 | Migrations & Models for vehicle/slot/booking | Write Models with `$allowedFields`, `$validationRules`, Entity & enum |
+| 09:00–10:00 | S1 | Migrations & Models for vehicle/slot/booking | Write Models with `$allowedFields`, `$validationRules`, Entity & enum |
+| 10:00–10:30 | S5 | S1 follow-up: Model rules for zones & vehicles | Write rules + Malay messages (`{id}`, `{value}`); test with `Model::validate()` & a unit test |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–12:30 | S2 | Basic CRUD Controller & View | Build slot CRUD (admin) & a booking list with pagination |
+| 10:45–12:00 | S2 | Basic CRUD Controller & View | Build slot CRUD (admin) & a booking list with pagination |
+| 12:00–12:30 | S6 | S2 follow-up: zone CRUD (admin) | Build zone CRUD at `/admin/slot/zon`; block deleting a zone that still has slots |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–16:00 | S3 | Application form & input validation | Build the booking form with server-side validation + `TLK-` reference number |
-| 16:00–17:00 | S4 | Manual testing & review; wrap-up | Carry out the manual test list & record bugs |
+| 14:30–15:30 | S3 | Application form & input validation | Build the booking form with server-side validation + `TLK-` reference number |
+| 15:30–16:00 | S7 | S3 follow-up: vehicle registration form | Build `/kenderaan` with normalisation, the custom rule `valid_plate_no` & `user_id` from the session |
+| 16:00–16:35 | S4 | Manual testing & review | Carry out the manual test list & record bugs |
+| 16:35–17:00 | S8 | S4 follow-up: manual testing round 2; wrap-up | Run 12 zone & vehicle cases; record BUG-ZON-001; clean up the test data |
 
 ---
 
@@ -667,6 +675,155 @@ The full list of ±14 cases is in [Lab 5.4](./lab.md#lab-54--ujian-manual--rekod
 
 ---
 
+## S5 — S1 follow-up: Model Rules for Zones & Vehicles (after Lab 5.1)
+
+Lab 5.1 gave rules to the slot and booking Models. Two more Models are not disciplined yet: `ParkingZoneModel` has no `$validationRules`, and `VehicleModel` only has the default English messages. Lab 5.1b completes both **before** the zone form (Lab 5.2b) and the vehicle form (Lab 5.3b) use them.
+
+| Concept | In Lab 5.1b | Why |
+|--------|----------------|--------|
+| `is_unique[parking_zones.code,id,{id}]` | `ParkingZoneModel` | `{id}` is replaced with the `id` in the data: on edit, the row itself is excluded. The `id` rule is compulsory (the Lab 3.3b pattern) |
+| `{value}` in a message | `'Kod zon {value} sudah wujud.'` | The message names the rejected value, not only the field name |
+| `Model::validate($data)` | `php spark shell` | Tests the Model rules without a form and without an `INSERT` |
+| Static method without the DB | `VehicleModel::normalisePlate()` | Can be unit-tested with `CIUnitTestCase` alone |
+| Count including deleted rows | `slotCount()` uses `$this->db->table()` | Plain Query Builder does not filter `deleted_at` — just like the MySQL FK |
+
+Lab: [Lab 5.1b](./lab.en.md#lab-51b--model-rules-for-zones--vehicles-s5)
+
+### 🎯 Quiz S5
+
+> Answer after Lab 5.1b on your laptop — the answers come from the real `php spark shell` output. Passing this quiz marks the Lab 5.1b checkpoint.
+
+1. Lab 5.1b step 4: what is the output of `$zones->errors()` after `$zones->validate(['code' => 'A', 'name' => 'Zon Berganda', 'location' => 'Aras 9'])`?
+   - [ ] `[]` — `validate()` returns `true` because no `INSERT` is made
+   - [x] `["code" => "Kod zon A sudah wujud."]`
+   - [ ] `["code" => "The code field must contain a unique value."]`
+   - [ ] `["code" => "Kod zon A sudah wujud.", "id" => "The id field is required."]`
+   > `is_unique` runs `SELECT 1 … WHERE code = 'A'` and finds zone A. The Malay message comes from `$validationMessages` (`{value}` → `A`). The `id` rule is `permit_empty`, so a missing `id` is not reported.
+
+2. Lab 5.1b step 4: what is the result of `$zones->validate(['id' => $a['id'], 'code' => 'A', 'name' => 'Blok Utama', 'location' => 'Aras G, pintu masuk utama'])`?
+   - [ ] `false` — code `A` already exists
+   - [ ] `LogicException` *No validation rules for the placeholder: "id"*
+   - [ ] `false` — `id` is not in `$allowedFields`
+   - [x] `true`
+   > `{id}` is replaced with zone A's id, so `is_unique` excludes row A itself — this is what lets an edit form save an unchanged code. The `LogicException` only happens when the `id` rule is missing. `$allowedFields` only filters fields when saving, not during validation.
+
+---
+
+## S6 — S2 follow-up: Zone CRUD for the Admin (after Lab 5.2)
+
+SPEC §5 puts **CRUD slot & zon** in `Admin/SlotController`, so zones share the same controller and route group (`/admin/slot/zon`, one `group:admin` filter for both). The pattern matches Lab 5.2 line by line; the new part is deleting a **parent**:
+
+| Situation | Without the check | With `slotCount()` |
+|---------|---------------|----------------------|
+| Zone has no slots | `DELETE` succeeds | Same — *"Zon D telah dipadam."* |
+| Zone has slots (active or soft-deleted) | `DatabaseException` 1451 (FK `RESTRICT`) → error page | Redirect + Malay `error` flash; no `DELETE` query |
+
+`parking_zones` has no `deleted_at`, so `delete()` on a zone deletes **permanently** — unlike slots (soft delete).
+
+Lab: [Lab 5.2b](./lab.en.md#lab-52b--zone-crud-admin-s6)
+
+### 🎯 Quiz S6
+
+> Answer after Lab 5.2b on your laptop — the answers come from the `/admin/slot` pages you tested. Passing this quiz marks the Lab 5.2b checkpoint.
+
+1. Lab 5.2b step 7.6: which message is shown after you click **Padam** on zone C?
+   - [ ] *"Zon C telah dipadam."*
+   - [ ] `DatabaseException` error page … *Cannot delete or update a parent row: a foreign key constraint fails*
+   - [x] *"Zon C masih mempunyai 4 slot (termasuk slot yang dipadam). Zon tidak boleh dipadam."*
+   - [ ] *"Zon C masih mempunyai 0 slot (termasuk slot yang dipadam). Zon tidak boleh dipadam."*
+   > Zone C has 4 seeded slots (`C-01` … `C-04`). `deleteZone()` checks `slotCount()` **before** `delete()`, so the `DELETE` query is never sent and the FK `RESTRICT` never gets to throw error 1451.
+
+2. Lab 5.2b step 7.4: after zone D is created, how many zone options (not counting *— Pilih zon —*) are in the `/admin/slot/new` dropdown, and what is the last option?
+   - [x] 4 — `D — Zon Ujian Lanjutan`
+   - [ ] 3 — the dropdown still keeps the list from Lab 5.2
+   - [ ] 4 — ` d  — Zon Ujian Lanjutan` (the code is saved as typed)
+   - [ ] 4 — `A — Blok Utama` (new zones go on top)
+   > `ParkingZoneModel::dropdown()` reads every zone each time (`orderBy('code')`). `saveZone()` trims spaces and uppercases the code before validation, so ` d ` is saved as `D`.
+
+---
+
+## S7 — S3 follow-up: Vehicle Registration Form (after Lab 5.3)
+
+The Lab 5.3 booking form assumes the vehicle already exists. Lab 5.3b builds `/kenderaan` with the same S3 recipe, plus one step in front: **normalise first, validate after**.
+
+```mermaid
+flowchart LR
+    P["POST plate_no = ' wxx   1234 '"] --> N["normalisePlate() → 'WXX 1234'"]
+    N --> V["validateData(): required · max_length · valid_plate_no · is_unique"]
+    V -->|gagal| B["redirect()->back()->withInput()"]
+    V -->|lulus| I["insert(getValidated() + user_id = auth()->id())"]
+    I --> R["303 → /kenderaan + flash"]
+```
+
+| Layer | Code | Rejected example |
+|---------|-----|----------------|
+| Format (custom rule) | `VehicleRules::valid_plate_no` | `WXX-1234`, `WXX 12345` |
+| Uniqueness | `is_unique[vehicles.plate_no]` + DB UNIQUE | `WXX 1234` (already registered) |
+| Ownership | `user_id` from `auth()->id()` | An injected `<input name="user_id">` → ignored |
+
+> ⚠️ **Common mistake:** validating **before** normalising. A user who types `wxx 4321` is rejected with *"Format no. plat tidak sah"* even though the plate is correct, and `is_unique` compares a different string from the one that will be saved.
+
+Lab: [Lab 5.3b](./lab.en.md#lab-53b--vehicle-registration-form-s7)
+
+### 🎯 Quiz S7
+
+> Answer after Lab 5.3b on your laptop — the answers come from the real `/kenderaan` form. Passing this quiz marks the Lab 5.3b checkpoint.
+
+1. Lab 5.3b step 8.2: you register No. plat `  wxx   1234 ` as pemohon1. What is the result?
+   - [ ] *"Kenderaan WXX 1234 telah didaftarkan."* — a second row is created
+   - [ ] *"Format no. plat tidak sah (cth WXX 1234)."*
+   - [ ] Error page `Duplicate entry 'WXX 1234' for key 'vehicles.plate_no'`
+   - [x] *"No. plat WXX 1234 sudah didaftarkan."* under the No. plat field
+   > `normalisePlate()` turns the input into `WXX 1234` first, so `valid_plate_no` passes and `is_unique` finds pemohon1's seeded vehicle. `{value}` in the message shows the normalised value.
+
+2. Lab 5.3b step 8.6: after `WXX 4321` is registered with an injected `user_id=2`, how many vehicles does `/kenderaan` show for pemohon2?
+   - [ ] 0
+   - [x] 1 — `VXX 2468` only
+   - [ ] 2 — `VXX 2468` and `WXX 4321`
+   - [ ] A 404 error page
+   > `getPost(['plate_no', 'model', 'color'])` does not read `user_id`, and `$row['user_id'] = auth()->id()` sets the owner from the session. `WXX 4321` belongs to pemohon1; pemohon2's list is scoped in the query (`where('user_id', auth()->id())`).
+
+---
+
+## S8 — S4 follow-up: Manual Testing Round 2 (after Lab 5.4)
+
+The Lab 5.1b–5.3b features are tested with the Lab 5.4 discipline. This round has one **failing** case: slot soft delete meets the zone FK `RESTRICT`. Who still "sees" slot `E-01` after it is soft-deleted?
+
+| Source | Sees `E-01`? |
+|--------|----------------|
+| `/admin/slot` (`ParkingSlotModel`) | No — the Model adds `deleted_at IS NULL` |
+| `$slots->withDeleted()` | Yes |
+| `ParkingZoneModel::slotCount()` (plain Query Builder) | Yes |
+| FK `parking_slots.zone_id` (MySQL) | Yes — the row still exists |
+
+`delete($id, true)` deletes **permanently** (*purge*). In this lab it only cleans up a test slot; a slot that was ever booked cannot be purged (FK `slot_bookings.slot_id` `RESTRICT`), and the booking history must stay.
+
+Lab: [Lab 5.4b](./lab.en.md#lab-54b--manual-testing-round-2-zones--vehicles-s8)
+
+### 🎯 Quiz S8
+
+> Answer after Lab 5.4b on your laptop — the answers come from the real browser and `php spark shell`. Passing this quiz marks the Lab 5.4b checkpoint.
+
+1. Lab 5.4b TM-ZON-07: after slot `E-01` is deleted, you click **Padam** on zone E. What is the message?
+   - [x] *"Zon E masih mempunyai 1 slot (termasuk slot yang dipadam). Zon tidak boleh dipadam."*
+   - [ ] *"Zon E telah dipadam."*
+   - [ ] *"Zon E masih mempunyai 0 slot (termasuk slot yang dipadam). Zon tidak boleh dipadam."*
+   - [ ] `DatabaseException` 1451 error page
+   > Deleting the slot only fills `deleted_at`. `slotCount()` counts that row because the FK still sees it too; without the check, the zone `DELETE` would fail with error 1451. This is BUG-ZON-001.
+
+2. Lab 5.4b step 3: before the clean-up, what do these two lines output in `php spark shell`?
+   ```text
+   $slots->where('slot_no', 'E-01')->countAllResults()
+   $slots->withDeleted()->where('slot_no', 'E-01')->countAllResults()
+   ```
+   - [ ] `1` and `1`
+   - [ ] `0` and `0`
+   - [x] `0` and `1`
+   - [ ] `1` and `0`
+   > `ParkingSlotModel` (`$useSoftDeletes = true`) adds `deleted_at IS NULL` to every query, so soft-deleted rows are not counted. `withDeleted()` removes that condition. After `delete($id, true)`, both are `0`.
+
+---
+
 ## 📦 Deliverables — Today's Output
 
 - [ ] `app/Enums/BookingStatus.php`, `SlotCategory.php` + `tests/tlk/BookingStatusTest.php` passing
@@ -679,6 +836,10 @@ The full list of ±14 cases is in [Lab 5.4](./lab.md#lab-54--ujian-manual--rekod
 - [ ] `TLK-2026-0001` exists in the DB
 - [ ] `docs/ujian-manual-tlk.md` — ≥ 12 cases run, bugs recorded
 - [ ] Branches `feat/tlk-model`, `feat/tlk-crud`, `feat/tlk-borang-tempahan` merged into `main`
+- [ ] `ParkingZoneModel` & `VehicleModel` with rules + Malay messages, `slotCount()`, `normalisePlate()`; `tests/tlk/VehicleModelTest.php` passing (Lab 5.1b)
+- [ ] Zone CRUD `/admin/slot/zon` (6 `group:admin` routes); deleting a zone that still has slots is refused with a Malay message (Lab 5.2b)
+- [ ] `/kenderaan` + `app/Validation/VehicleRules.php` registered; *Daftar kenderaan* link in the booking form (Lab 5.3b)
+- [ ] `docs/ujian-manual-zon-kenderaan.md` — 12 cases + BUG-ZON-001; test zone & slot cleaned up (Lab 5.4b)
 
 ---
 

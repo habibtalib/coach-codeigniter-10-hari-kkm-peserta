@@ -7,10 +7,14 @@
 | Lab | Session | Time | Output |
 |-----|---------|------|--------|
 | 8.0 | Early S1 | 10 min | Branch + demo data + 3 role accounts confirmed |
-| 8.1 | S1 | 09:10–10:30 | Transition service + `ReviewController` + queue + action panel |
-| 8.2 | S2 | 10:45–12:30 | `AuthGroups`, `permission:` filter, `authorize()`, 403 |
-| 8.3 | S3 | 14:30–16:00 | `status_logs` timeline + green `PassAccessTest` |
-| 8.4 | S4 | 16:00–17:00 | 3-role demo, DoD, merge into `main` · ⭐ `pas:expire` |
+| 8.1 | S1 | 09:10–10:00 | Transition service + `ReviewController` + queue + action panel |
+| 8.1b | S5 | 10:00–10:30 | Bulk start review from the queue through `startReview()` |
+| 8.2 | S2 | 10:45–12:00 | `AuthGroups`, `permission:` filter, `authorize()`, 403 |
+| 8.2b | S6 | 12:00–12:30 | `permission:pas.review` on the bulk route + 4-role matrix |
+| 8.3 | S3 | 14:30–15:30 | `status_logs` timeline + green `PassAccessTest` |
+| 8.3b | S7 | 15:30–16:00 | `PassBatchReviewTest` (5 tests) + 2 mutations |
+| 8.4 | S4 | 16:00–16:35 | 3-role demo, DoD, merge into `main` · ⭐ `pas:expire` |
+| 8.4b | S8 | 16:35–17:00 | `admin` role demo + separation-of-duties finding (`docs/demo-m2.md`) |
 
 ---
 
@@ -468,9 +472,10 @@ Implement `startReview()`, `approve()` and `reject()` through one locked `transi
 
 8. **Test the flow** with three browser windows (normal · incognito · another browser):
    - `penyemak`: `/pas/semakan` → open application A → **Mula Semakan** (Start Review).
-   - `pelulus`: `/pas/semakan` → open A → **Lulus** (Approve) with the remarks "Dokumen lengkap."
+   - `pelulus` (another browser — a second session): also log in as `pelulus`, open A. Do **not** click.
+   - `pelulus` (incognito): `/pas/semakan` → open A → **Lulus** (Approve) with the remarks "Dokumen lengkap."
    - `penyemak`: application B → **Mula Semakan** → **Tolak** (Reject) with the remarks "tak ok" (an error is expected), then "Salinan kad kuasa tidak jelas." (success is expected).
-   - `pelulus`: go back to the **old** tab for A (before it was reloaded) and click **Lulus** again.
+   - `pelulus` (another browser): without reloading page A, click **Lulus**. A second session is needed because the CSRF token is replaced after every POST — an old tab in the **same** session is refused with *The action you requested is not allowed.* before it reaches `transition()`.
 
 9. Check the DB:
 
@@ -480,18 +485,19 @@ Implement `startReview()`, `approve()` and `reject()` through one locked `transi
    ```
 
 ### ✅ Checkpoint 8.1
-- [ ] Application A: `approved`, `reviewed_by` = the reviewer's id, `approved_by` = the approver's id, both timestamps filled in.
-- [ ] `status_logs` for A: 3 rows (`NULL→submitted`, `submitted→under_review`, `under_review→approved`).
-- [ ] Rejecting with "tak ok" → the message "Catatan penolakan mestilah sekurang-kurangnya 10 aksara." and B's status stays `under_review`.
-- [ ] Clicking **Lulus** a second time → "Peralihan status "Diluluskan" → "Diluluskan" tidak dibenarkan." and **no** extra log row.
-- [ ] `pemohon1` opens `/pas/semakan` → refused (redirect with a message).
-- [ ] Commit: `git add app/ && git commit -m "PAS: aliran semak/lulus/tolak melalui PassWorkflowService"`
+- [ ] Application A: `approved`, `reviewed_by` = the reviewer's id, `approved_by` = the approver's id, both timestamps filled in (Quiz S1).
+- [ ] `status_logs` for A: 3 rows (`NULL→submitted`, `submitted→under_review`, `under_review→approved`) (Quiz S1).
+- [ ] Rejecting with "tak ok" → the message "Catatan penolakan mestilah sekurang-kurangnya 10 aksara." and B's status stays `under_review` (Quiz S1).
+- [ ] Clicking **Lulus** in the second `pelulus` session → "Peralihan status "Diluluskan" → "Diluluskan" tidak dibenarkan." and **no** extra log row (Quiz S1).
+- [ ] `pemohon1` opens `/pas/semakan` → refused (redirect with a message) (Quiz S1).
+- [ ] Commit: `git add app/ && git commit -m "PAS: aliran semak/lulus/tolak melalui PassWorkflowService"` (Quiz S1)
 
 ### 🧯 Troubleshooting
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | `The action you requested is not allowed.` | A form with no CSRF token (a plain HTML `<form>`) | Use `form_open()` — it adds `csrf_field()` automatically |
+| `The action you requested is not allowed.` when clicking **Lulus** in an old tab | The CSRF token is replaced after every POST (`Config\Security::$regenerate = true`); an old tab in the same session carries the old token | Test the second click from **another session** (another browser), as in step 8 |
 | `Call to a member function can() on null` | A route with no login filter → `auth()->user()` is null | Check that the `pas/semakan` group has the `group:` filter (it also forces login) |
 | `ValueError: "" is not a valid backing value for enum` | `PassStatus::from()` on an empty `$row['status']` — broken/test data | Check the data; `from()` fails loudly on purpose for invalid DB data |
 | `Undefined variable $actions` / `$history` in the view | `show()` has not been updated (step 6) | Pass both from the controller |
@@ -595,7 +601,7 @@ Configure `AuthGroups` exactly as in SPEC §4, add a `permission:` filter per ac
    }
    ```
 
-3. **Add a `permission:` filter per route** — in `app/Config/Routes.php`, replace both the `pas/permohonan` group (Lab 7.2) and the `pas/semakan` group (Lab 8.1 step 4) with the code below. Only the `new`, `create`, `review`, `approve` and `reject` routes get a new filter:
+3. **Add a `permission:` filter per route** — in `app/Config/Routes.php`, replace both the `pas/permohonan` group (Lab 7.2) and the `pas/semakan` group (Lab 8.1 step 4) with the code below. Only the `new`, `create`, `review`, `approve` and `reject` routes get a new filter. The **second** `pas/semakan` group for the bulk route (Lab 8.1b) stays — Lab 8.2b updates it:
 
    ```php
    $routes->group('pas/permohonan', ['namespace' => 'App\Controllers\Pas', 'filter' => 'session'], static function ($routes): void {
@@ -672,12 +678,12 @@ Configure `AuthGroups` exactly as in SPEC §4, add a `permission:` filter per ac
    | UT-PAS-26 | `pemohon2` | GET `/pas/permohonan/{id pemohon1}` (pemohon1's id) | 404 |
 
 ### ✅ Checkpoint 8.2
-- [ ] `php spark routes` shows the combined filters on all three review POST routes.
-- [ ] UT-PAS-20 (after) — the reviewer cannot approve through DevTools/curl; the status is unchanged.
-- [ ] Step 8 — without the route filter, the Service returns **403**; the filter has been restored.
-- [ ] UT-PAS-21 to 26 pass.
-- [ ] You can explain: *route filter vs `authorize()` vs `canView()` — what each one protects*.
-- [ ] Commit: `git add app/ docs/ && git commit -m "PAS: RBAC Shield — permission per tindakan + authorize() dalam Service"`
+- [ ] `php spark routes` shows the combined filters on all three review POST routes (Quiz S2).
+- [ ] UT-PAS-20 (after) — the reviewer cannot approve through DevTools/curl; the status is unchanged (Quiz S2).
+- [ ] Step 8 — without the route filter, the Service returns **403**; the filter has been restored (Quiz S2).
+- [ ] UT-PAS-21 to 26 pass (Quiz S2).
+- [ ] You can explain: *route filter vs `authorize()` vs `canView()` — what each one protects* (Quiz S2).
+- [ ] Commit: `git add app/ docs/ && git commit -m "PAS: RBAC Shield — permission per tindakan + authorize() dalam Service"` (Quiz S2)
 
 ### 🧯 Troubleshooting
 
@@ -1167,10 +1173,10 @@ Show the `status_logs` history on the details page, and write a `PassAccessTest`
    ```
 
 ### ✅ Checkpoint 8.3
-- [ ] The timeline shows 3 entries for A, including the approval remarks.
-- [ ] `composer test -- tests/feature/Pas` → all green (13 + your test).
-- [ ] The mutation table (step 6) is filled in — every mutation makes at least one test fail.
-- [ ] Commit: `git add app/ tests/ && git commit -m "PAS: garis masa status_logs + ujian akses peranan"`
+- [ ] The timeline shows 3 entries for A, including the approval remarks (Quiz S3).
+- [ ] `composer test -- tests/feature/Pas` → all green (13 + your test) (Quiz S3).
+- [ ] The mutation table (step 6) is filled in — every mutation makes at least one test fail (Quiz S3).
+- [ ] Commit: `git add app/ tests/ && git commit -m "PAS: garis masa status_logs + ujian akses peranan"` (Quiz S3)
 
 ### 🧯 Troubleshooting
 
@@ -1354,9 +1360,9 @@ Demo the Pass flow end to end with 3 roles in 5 minutes, confirm the DoD, and me
    7. Run it again → "Tiada pas untuk ditamatkan" (no passes to expire).
 
 ### ✅ Checkpoint 8.4
-- [ ] The 5-minute demo passes every DoD item (signed off by the person next to you).
-- [ ] `main` contains M1 + M2; `composer test` is green on `main`.
-- [ ] ⭐ `pas:expire` changes expired passes, with a log.
+- [ ] The 5-minute demo passes every DoD item (signed off by the person next to you) (Quiz S4).
+- [ ] `main` contains M1 + M2; `composer test` is green on `main` (Quiz S4).
+- [ ] ⭐ `pas:expire` changes expired passes, with a log (Quiz S4).
 
 ### 🧯 Troubleshooting
 
@@ -1373,12 +1379,715 @@ Demo the Pass flow end to end with 3 roles in 5 minutes, confirm the DoD, and me
 
 ---
 
+## Lab 8.1b — Bulk Start Review from the Queue (S5)
+
+### 🎯 Objective
+Reuse `startReview()` and `transition()` (Lab 8.1) for a new feature: the reviewer ticks several **Dihantar** (Submitted) applications in `/pas/semakan` and starts the review of all of them at once. Each application goes through its own transaction and its own `status_logs` row; one BR-PAS-01 failure does not stop the others.
+
+### Prerequisites
+- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 8.1](#lab-81--approval-flow-s1) done. The `$this->authorize(...)` lines are still commented out — same as Lab 8.1; Lab 8.2 turns them on.
+- The Lab 8.1 browser windows (`penyemak`, `pelulus`). Step 6 needs one **other session** that has `pas.review`: `admin@latihan.test` in another browser.
+
+### Steps
+
+1. **Prepare data.** Log in as `pemohon2` and submit **3** new applications through the Day 7 form (`/pas/permohonan/new`, staff pass, one small PDF each). We call them C, D and E. Check:
+
+   ```sql
+   SELECT id, ref_no, status FROM pass_applications WHERE status = 'submitted' ORDER BY id;
+   ```
+
+   Expected: at least 3 rows. Note the ids of C, D and E.
+
+2. **Add the route** in `app/Config/Routes.php`, directly **after** the `pas/semakan` group (Lab 8.1 step 4). It is a **separate** group with the same prefix: Lab 8.2 step 3 replaces only the first group, so this route stays.
+
+   ```php
+   // Lab 8.1b — mula semakan pukal. Kumpulan BERASINGAN: Lab 8.2 langkah 3 menggantikan kumpulan di atas, bukan yang ini.
+   $routes->group('pas/semakan', ['namespace' => 'App\Controllers\Pas', 'filter' => 'group:reviewer,approver,admin'], static function ($routes): void {
+       $routes->post('pukal/review', 'ReviewController::reviewBatch', ['as' => 'pas.review.pukal']);
+   });
+   ```
+
+3. **Update `app/Controllers/Pas/ReviewController.php`** — three pastes (a)–(c):
+
+   **(a)** Add this `use` line next to the other `use` lines at the top of the file:
+
+   ```php
+   use CodeIgniter\Exceptions\PageNotFoundException;
+   ```
+
+   **(b)** Replace the whole `index()` method with this version. Only one line is new: `canReview` is passed to the view.
+
+   ```php
+       /** GET /pas/semakan — baris gilir pegawai */
+       public function index(): string
+       {
+           $user      = auth()->user();
+           $requested = $this->request->getGet('status');
+           $status    = PassStatus::tryFrom(is_string($requested) ? $requested : '');
+
+           $model = model(PassApplicationModel::class)->withApplicant();
+
+           if ($status !== null) {
+               $model->withStatus($status);
+           } else {
+               // Lalai: apa yang perlu SAYA ambil tindakan
+               $model->whereIn('pass_applications.status', $this->defaultQueue($user));
+           }
+
+           return view('pas/semakan/index', [
+               'applications' => $model->orderBy('pass_applications.created_at', 'ASC')->paginate(15),
+               'pager'        => $model->pager,
+               'status'       => $status,
+               'canReview'    => $user->can('pas.review'),   // Lab 8.1b: checkbox pukal (UX sahaja)
+           ]);
+       }
+   ```
+
+   **(c)** Paste the `reviewBatch()` method **after** the `reject()` method and **before** the comment line `// -----------------------------------------------------------------`:
+
+   ```php
+       /**
+        * POST /pas/semakan/pukal/review — Lab 8.1b: mula semakan beberapa permohonan sekali gus.
+        * Setiap ID melalui startReview() → transition(): satu transaksi + satu baris status_logs bagi setiap permohonan.
+        */
+       public function reviewBatch(): ResponseInterface
+       {
+           // ids[] dari checkbox — tukar kepada int, buang 0/negatif dan pendua
+           $ids = array_values(array_unique(array_filter(
+               array_map('intval', (array) $this->request->getPost('ids')),
+               static fn (int $id): bool => $id > 0,
+           )));
+
+           if ($ids === []) {
+               return redirect()->to(url_to('pas.semakan'))->with('error', 'Pilih sekurang-kurangnya satu permohonan.');
+           }
+
+           $workflow = service('passWorkflowService');
+           $user     = auth()->user();
+           $started  = [];
+           $failed   = [];
+
+           try {
+               foreach ($ids as $id) {
+                   try {
+                       $started[] = $workflow->startReview($id, $user)->ref_no;
+                   } catch (DomainException|PageNotFoundException $e) {
+                       $failed[] = "ID {$id}: " . $e->getMessage();   // satu gagal tidak menghentikan yang lain
+                   }
+               }
+           } catch (PermissionException $e) {
+               // authorize() menolak SEBELUM transition() — tiada permohonan berubah
+               return $this->response
+                   ->setStatusCode(403)
+                   ->setBody(view('errors/forbidden', ['message' => $e->getMessage()]));
+           }
+
+           $redirect = redirect()->to(url_to('pas.semakan'));
+
+           if ($started !== []) {
+               $redirect = $redirect->with('message', sprintf('%d permohonan kini Dalam Semakan: %s.', count($started), implode(', ', $started)));
+           }
+
+           if ($failed !== []) {
+               $redirect = $redirect->with('error', sprintf('%d gagal — %s', count($failed), implode(' · ', $failed)));
+           }
+
+           return $redirect;
+       }
+   ```
+
+   Notice three things: (1) the controller does not touch the status — each ID goes through `startReview()`, so the `FOR UPDATE` lock, BR-PAS-01 and BR-PAS-05 all apply; (2) the `try/catch` inside the loop catches the `DomainException` of **one** application and carries on with the rest; (3) `PermissionException` is caught outside the loop — it will happen once `authorize()` is turned on in Lab 8.2.
+
+4. **Replace the whole `app/Views/pas/semakan/index.php`** with this version. Compared with Lab 8.1: the table is wrapped in `form_open()` (automatic CSRF token), the checkbox column and the button appear only for officers with `pas.review`, and the checkbox appears only on **Dihantar** applications.
+
+   ```php
+   <?= $this->extend('layouts/main') ?>
+
+   <?= $this->section('title') ?>Semakan Permohonan Pas<?= $this->endSection() ?>
+
+   <?= $this->section('content') ?>
+   <h1 class="h3 mb-3">Semakan Permohonan Pas</h1>
+
+   <form method="get" class="row g-2 mb-3" role="search">
+       <div class="col-auto">
+           <label for="status" class="visually-hidden">Status</label>
+           <select name="status" id="status" class="form-select">
+               <option value="">Baris gilir saya</option>
+               <?php foreach (\App\Enums\PassStatus::cases() as $case): ?>
+                   <option value="<?= esc($case->value, 'attr') ?>" <?= $status === $case ? 'selected' : '' ?>>
+                       <?= esc($case->label()) ?>
+                   </option>
+               <?php endforeach ?>
+           </select>
+       </div>
+       <div class="col-auto"><button type="submit" class="btn btn-outline-secondary">Tapis</button></div>
+   </form>
+
+   <?php if ($applications === []): ?>
+       <div class="alert alert-success">Tiada permohonan menunggu tindakan anda.</div>
+   <?php else: ?>
+       <?php /* Lab 8.1b: borang POST pukal membalut jadual — checkbox hanya untuk "Dihantar" + pegawai yang ada pas.review */ ?>
+       <?= form_open(url_to('pas.review.pukal')) ?>
+           <?php if ($canReview): ?>
+               <button type="submit" class="btn btn-info mb-3" onclick="return confirm('Mula semakan semua permohonan yang ditanda?')">
+                   <i class="bi bi-search" aria-hidden="true"></i> Mula Semakan (yang ditanda)
+               </button>
+           <?php endif ?>
+           <div class="table-responsive">
+               <table class="table table-hover align-middle">
+                   <thead>
+                       <tr>
+                           <?php if ($canReview): ?><th scope="col"><span class="visually-hidden">Pilih</span></th><?php endif ?>
+                           <th>No. Rujukan</th><th>Pemohon</th><th>Jenis</th><th>Tempoh Sah</th><th>Status</th><th>Dihantar</th><th></th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                   <?php foreach ($applications as $app): ?>
+                       <?php $shown = $app->displayStatus(); ?>
+                       <tr>
+                           <?php if ($canReview): ?>
+                               <td>
+                                   <?php if ($app->statusEnum() === \App\Enums\PassStatus::Submitted): ?>
+                                       <input type="checkbox" name="ids[]" value="<?= esc((string) $app->id, 'attr') ?>" class="form-check-input" aria-label="Pilih <?= esc($app->ref_no, 'attr') ?>">
+                                   <?php endif ?>
+                               </td>
+                           <?php endif ?>
+                           <td class="fw-semibold"><?= esc($app->ref_no) ?></td>
+                           <td><?= esc($app->applicant_name ?? '—') ?></td>
+                           <td><?= esc($app->typeEnum()->label()) ?></td>
+                           <td><?= esc($app->valid_from->format('d/m/Y')) ?> – <?= esc($app->valid_until->format('d/m/Y')) ?></td>
+                           <td><span class="badge <?= esc($shown->badge(), 'attr') ?>"><?= esc($shown->label()) ?></span></td>
+                           <td><?= esc($app->created_at->format('d/m/Y H:i')) ?></td>
+                           <td><a href="<?= url_to('pas.show', $app->id) ?>" class="btn btn-sm btn-primary">Buka</a></td>
+                       </tr>
+                   <?php endforeach ?>
+                   </tbody>
+               </table>
+           </div>
+       <?= form_close() ?>
+       <?= $pager->links() ?>
+   <?php endif ?>
+   <?= $this->endSection() ?>
+   ```
+
+5. **Verify:**
+
+   ```bash
+   php -l app/Controllers/Pas/ReviewController.php
+   php spark routes | grep pukal      # PowerShell: php spark routes | Select-String "pukal"
+   ```
+
+   The `pas/semakan/pukal/review` row has Before Filters `csrf group:reviewer,approver,admin` only — no `permission:`. Lab 8.2b fixes that.
+
+6. **Concurrency test (two sessions):**
+   - `penyemak` (normal window): open `/pas/semakan` → tick C, D and E. Do **not** click the button yet.
+   - `admin` (another browser): open E (`/pas/permohonan/<id E>`) → **Mula Semakan** (Start Review).
+   - `penyemak`: without reloading the page, click **Mula Semakan (yang ditanda)** (Start review of ticked) → **OK**.
+
+   Note the green and red messages shown. Why `admin` in another browser, not a second `penyemak` tab? The CSRF token is replaced after every POST (`Config\Security::$regenerate = true`), so an old page in the **same** session is refused with *The action you requested is not allowed.* before the controller runs.
+
+7. **Nothing ticked:** click **Mula Semakan (yang ditanda)** without ticking anything. Expected: *Pilih sekurang-kurangnya satu permohonan.* (Select at least one application.)
+
+8. **Check the DB:**
+
+   ```sql
+   SELECT id, ref_no, status, reviewed_by FROM pass_applications WHERE id IN (<id C>, <id D>, <id E>);
+   SELECT record_id, from_status, to_status, actor_id FROM status_logs WHERE module = 'PAS' AND to_status = 'under_review' ORDER BY id;
+   ```
+
+9. In the `pelulus` window, open `/pas/semakan`: no checkboxes and no button. Hiding the button is UX only — Lab 8.2b proves it.
+
+10. **Commit:**
+
+    ```bash
+    git add app/ && git commit -m "PAS: mula semakan pukal melalui startReview()"
+    ```
+
+### ✅ Checkpoint 8.1b
+- [ ] Step 6: C and D are `under_review` with `reviewed_by` = the reviewer's id; E is refused with the BR-PAS-01 message in a red flash (Quiz S5).
+- [ ] `status_logs` has exactly **one** `submitted → under_review` row for each of C, D and E — no duplicate log for E (Quiz S5).
+- [ ] Nothing ticked → *Pilih sekurang-kurangnya satu permohonan.*; the `pelulus` window shows no checkboxes (Quiz S5).
+- [ ] Commit `PAS: mula semakan pukal melalui startReview()` (Quiz S5).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| *The action you requested is not allowed.* after clicking **Mula Semakan (yang ditanda)** | The page was opened before another POST in the same session — the CSRF token has already been replaced | Reload `/pas/semakan` and tick again; for step 6 use another browser (a separate session) |
+| `Undefined variable $canReview` | `index()` has not been replaced | Step 3(b) |
+| `The route for "pas.review.pukal" cannot be found.` | The step 2 route is missing or its `as` name is wrong | Check `Routes.php`; `php spark routes \| grep pukal` |
+| `Class "App\Controllers\Pas\PageNotFoundException" not found` | The step 3(a) `use` line is missing | Add `use CodeIgniter\Exceptions\PageNotFoundException;` |
+| A `DomainException` error page (not a red flash) | The `try/catch` inside the loop is missing — the first exception stops everything | Copy `reviewBatch()` from step 3(c) again |
+| The bulk route disappears after Lab 8.2 | The separate group was also replaced in Lab 8.2 step 3 | Paste the step 2 block again after the `pas/semakan` group |
+
+### ⭐ Bonus challenge
+- Add a **Tick all** checkbox in the table header (a small JavaScript in `section('scripts')`).
+- Why is **bulk reject** with one shared remark a bad idea? Relate it to BR-PAS-03 and what the auditor reads in `status_logs`.
+
+---
+
+## Lab 8.2b — Protect the Bulk Route: `permission:` Filter & Role Matrix (S6)
+
+### 🎯 Objective
+Close the Lab 8.1b hole: the bulk route only has a `group:` filter, so `pelulus` reaches the controller. Prove that Layer 2 (`authorize()` from Lab 8.2) already refuses with 403, add Layer 1 `permission:pas.review`, and record the 4 roles × bulk route matrix in `docs/ujian-manual-pas.md`.
+
+### Prerequisites
+- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 8.2](#lab-82--role-based-access-control-s2) done: `authorize()` is active in `startReview()`, `approve()` and `reject()`.
+- [Lab 8.1b](#lab-81b--bulk-start-review-from-the-queue-s5) done. At least one `submitted` and one `under_review` application (submit another one as `pemohon2` if needed).
+
+### Steps
+
+1. **Measure.** Git Bash converts paths that start with `/`, so put `MSYS_NO_PATHCONV=1` in front:
+
+   ```bash
+   MSYS_NO_PATHCONV=1 php spark filter:check POST /pas/semakan/pukal/review
+   MSYS_NO_PATHCONV=1 php spark filter:check POST /pas/semakan/1/review
+   ```
+
+   Compare the *Before Filters* column: the single route has `permission:pas.review`; the bulk route does not.
+
+2. **Attack as `pelulus`.** Log in as `pelulus`. Open an `under_review` application (`/pas/permohonan/<id>`) — this page has the **Lulus** (Approve) form, so it has a CSRF token. Note the id of a `submitted` application (`/pas/semakan?status=submitted`). Press F12 → **Console** tab, paste the code below, change `<ID>` to that `submitted` id, press Enter:
+
+   ```js
+   fetch('/pas/semakan/pukal/review', {
+       method: 'POST',
+       body: new URLSearchParams({
+           csrf_test_name: document.querySelector('input[name="csrf_test_name"]').value,
+           'ids[]': '<ID>',
+       }),
+   }).then((r) => console.log(r.status, r.url));
+   ```
+
+   Note what is printed, then check the status of that application:
+
+   ```sql
+   SELECT id, status, reviewed_by FROM pass_applications WHERE id = <ID>;
+   ```
+
+   `authorize()` in the Service refuses, so nothing changes. But a 403 from the Service means a misconfigured route (README §2.4): Layer 1 should have refused first.
+
+3. **Add the filter.** In `app/Config/Routes.php`, replace the separate Lab 8.1b group with this version (only the `post` line changes):
+
+   ```php
+   // Lab 8.1b — mula semakan pukal. Kumpulan BERASINGAN: Lab 8.2 langkah 3 menggantikan kumpulan di atas, bukan yang ini.
+   $routes->group('pas/semakan', ['namespace' => 'App\Controllers\Pas', 'filter' => 'group:reviewer,approver,admin'], static function ($routes): void {
+       // Lab 8.2b: Lapisan 1 — sama seperti (:num)/review. Tanpanya, approver (ada group, tiada pas.review) sampai ke controller.
+       $routes->post('pukal/review', 'ReviewController::reviewBatch', ['as' => 'pas.review.pukal', 'filter' => 'permission:pas.review']);
+   });
+   ```
+
+4. Repeat the step 1 `filter:check` for the bulk route. *Before Filters* is now `forcehttps pagecache csrf group:reviewer,approver,admin permission:pas.review`.
+
+5. **Repeat the attack.** Reload the `under_review` application page (a new CSRF token — the old one was replaced by the step 2 POST), then run the same Console code. Note what is printed, and check the status again with the step 2 SQL.
+
+6. **Role matrix.** Test each row, then add this table at the end of `docs/ujian-manual-pas.md` and fill in the *Hasil* (Result) column. For `pemohon1`, run the Console code from `/pas/permohonan/new` (that page has a CSRF token). Reload the page before each attempt.
+
+   ```markdown
+
+   ## Route pukal POST /pas/semakan/pukal/review (Lab 8.2b)
+
+   | ID | Pengguna | Tindakan | Dijangka | Hasil |
+   |----|----------|----------|----------|-------|
+   | UT-PAS-27 | `pemohon1` | Console `fetch` (`ids[]` = permohonan `submitted`) | `200 …/` (filter `group:`), status kekal | |
+   | UT-PAS-28 | `pelulus` | Console `fetch` | `200 …/` (filter `permission:pas.review`), status kekal | |
+   | UT-PAS-29 | `penyemak` | Tanda 2 permohonan → **Mula Semakan (yang ditanda)** | 2 `under_review`, 2 baris `status_logs` | |
+   | UT-PAS-30 | `admin` | Tanda 1 permohonan → **Mula Semakan (yang ditanda)** | `under_review` (`pas.*`) | |
+   ```
+
+7. **Commit:**
+
+   ```bash
+   git add app/ docs/ && git commit -m "PAS: permission:pas.review pada route pukal + UT-PAS-27..30"
+   ```
+
+### ✅ Checkpoint 8.2b
+- [ ] Step 2 (before the filter): the `pelulus` Console prints `403 …/pas/semakan/pukal/review` and the application stays `submitted` (Quiz S6).
+- [ ] `filter:check POST /pas/semakan/pukal/review` shows `group:reviewer,approver,admin permission:pas.review`; step 5 prints `200 http://localhost:8080/` and the status is unchanged (Quiz S6).
+- [ ] UT-PAS-27 to 30 pass and are recorded in `docs/ujian-manual-pas.md` (Quiz S6).
+- [ ] Commit `PAS: permission:pas.review pada route pukal + UT-PAS-27..30` (Quiz S6).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Chrome refuses to paste: *Warning: Don't paste code…* | Chrome paste protection | Type `allow pasting`, Enter, then paste again |
+| `TypeError: Cannot read properties of null (reading 'value')` | The page has no form, so no `csrf_test_name` (e.g. a `submitted` application opened as `pelulus`) | Open an `under_review` application (`pelulus`) or `/pas/permohonan/new` (`pemohon1`) |
+| `403` after step 3 as well | Stale token — the page was not reloaded after the previous POST; the `csrf` filter refuses with 403 before the Shield filter | Reload the page before every `fetch` |
+| `404 …/pas/semakan/pukal/review` | A different app URL (e.g. `index.php` or a Laragon subfolder) | Use the same URL as the browser; check `app.indexPage` and `app.baseURL` |
+| `filter:check`: `Can't find a route: "POST C:/Program Files/Git/pas/…"` | Git Bash converts the path | `MSYS_NO_PATHCONV=1` in front of the command |
+
+### ⭐ Bonus challenge
+In `ReviewController::reviewBatch()`, add `log_message('warning', …)` inside `catch (PermissionException $e)` (user ID, the `ids` list, time). Why should this log stay **empty** after step 3?
+
+---
+
+## Lab 8.3b — Feature Tests for the Bulk Action (S7)
+
+### 🎯 Objective
+Write `PassBatchReviewTest` (5 tests) for the bulk route — positive, partial failure, nothing ticked, and two negative tests that check the response **and** the DB — then prove with two mutations that the tests catch Lab 8.1b and 8.2b mistakes.
+
+### Prerequisites
+- [Lab 8.3](#lab-83--status-timeline--feature-tests-s3) done: `PassAccessTest` is green; the `kkm_latihan_test` test DB works.
+- [Lab 8.2b](#lab-82b--protect-the-bulk-route-permission-filter--role-matrix-s6) done: the bulk route has `permission:pas.review`.
+
+### Steps
+
+1. **Create `tests/feature/Pas/PassBatchReviewTest.php`** with the content below. The `setUp()`/`tearDown()` pattern and the helpers are the same as in `PassAccessTest`; what is new is `assertSessionHas()` (flash `message`/`error`) and `logCount()`.
+
+   `tests/feature/Pas/PassBatchReviewTest.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace Tests\Feature\Pas;
+
+   use App\Enums\PassStatus;
+   use CodeIgniter\Shield\Entities\User;
+   use CodeIgniter\Shield\Test\AuthenticationTesting;
+   use CodeIgniter\Test\CIUnitTestCase;
+   use CodeIgniter\Test\DatabaseTestTrait;
+   use CodeIgniter\Test\FeatureTestTrait;
+
+   /**
+    * Lab 8.3b — ujian fungsian tindakan pukal POST /pas/semakan/pukal/review (Lab 8.1b, 8.2b).
+    *
+    * @internal
+    */
+   final class PassBatchReviewTest extends CIUnitTestCase
+   {
+       use DatabaseTestTrait;
+       use FeatureTestTrait;
+       use AuthenticationTesting;
+
+       protected $migrate   = true;
+       protected $refresh   = true;
+       protected $namespace = null;   // App + Shield + Settings
+
+       private User $pemohon1;
+       private User $penyemak;
+       private User $pelulus;
+
+       /** @var array<array-key, mixed> */
+       private array $originalBeforeFilters = [];
+
+       protected function setUp(): void
+       {
+           $this->resetServices();   // sebelum parent::setUp() — sama seperti PassAccessTest
+
+           parent::setUp();
+
+           $this->pemohon1 = $this->createUser('applicant', 'pemohon1@latihan.test');
+           $this->penyemak = $this->createUser('reviewer', 'penyemak@latihan.test');
+           $this->pelulus  = $this->createUser('approver', 'pelulus@latihan.test');
+
+           // Ujian akses, bukan CSRF (nota 10 §7.2)
+           $filters                     = config('Filters');
+           $this->originalBeforeFilters = $filters->globals['before'];
+           $before                      = $filters->globals['before'];
+           unset($before['csrf']);
+           $filters->globals['before'] = array_filter($before, static fn ($v) => $v !== 'csrf');
+       }
+
+       protected function tearDown(): void
+       {
+           config('Filters')->globals['before'] = $this->originalBeforeFilters;
+
+           parent::tearDown();
+       }
+
+       // =================================================================
+       // Positif
+       // =================================================================
+
+       public function testPenyemakMulakanSemakanPukal(): void
+       {
+           $a = $this->makeApplication(PassStatus::Submitted, 'PAS-2026-9101');
+           $b = $this->makeApplication(PassStatus::Submitted, 'PAS-2026-9102');
+
+           $result = $this->actingAs($this->penyemak)->post('pas/semakan/pukal/review', ['ids' => [$a, $b]]);
+
+           $result->assertRedirectTo('pas/semakan');
+           $result->assertSessionHas('message', '2 permohonan kini Dalam Semakan: PAS-2026-9101, PAS-2026-9102.');
+
+           foreach ([$a, $b] as $id) {
+               $this->seeInDatabase('pass_applications', [
+                   'id'          => $id,
+                   'status'      => PassStatus::UnderReview->value,
+                   'reviewed_by' => $this->penyemak->id,
+               ]);
+           }
+           $this->assertSame(2, $this->logCount('under_review'));   // satu log bagi setiap permohonan
+       }
+
+       public function testSatuGagalTidakMenghentikanYangLain(): void
+       {
+           $sedia = $this->makeApplication(PassStatus::UnderReview, 'PAS-2026-9103');   // sudah dimulakan orang lain
+           $baru  = $this->makeApplication(PassStatus::Submitted, 'PAS-2026-9104');
+
+           $result = $this->actingAs($this->penyemak)->post('pas/semakan/pukal/review', ['ids' => [$sedia, $baru]]);
+
+           $result->assertSessionHas('message', '1 permohonan kini Dalam Semakan: PAS-2026-9104.');
+           $result->assertSessionHas('error', "1 gagal — ID {$sedia}: Peralihan status \"Dalam Semakan\" → \"Dalam Semakan\" tidak dibenarkan.");
+           $this->assertStatusIs($baru, PassStatus::UnderReview);
+           $this->assertSame(1, $this->logCount('under_review'));   // yang gagal: tiada log
+       }
+
+       // =================================================================
+       // Negatif — respons DAN DB
+       // =================================================================
+
+       public function testTanpaPilihanMemaparkanRalat(): void
+       {
+           $result = $this->actingAs($this->penyemak)->post('pas/semakan/pukal/review', []);
+
+           $result->assertRedirectTo('pas/semakan');
+           $result->assertSessionHas('error', 'Pilih sekurang-kurangnya satu permohonan.');
+       }
+
+       public function testPelulusDitolakFilterDanStatusKekal(): void
+       {
+           $id = $this->makeApplication(PassStatus::Submitted);
+
+           // Lulus group:reviewer,… TETAPI gagal permission:pas.review (Lab 8.2b) → redirect + flash 'error' Shield
+           $result = $this->actingAs($this->pelulus)->post('pas/semakan/pukal/review', ['ids' => [$id]]);
+
+           $result->assertRedirect();
+           $result->assertSessionHas('error');
+
+           $this->assertStatusIs($id, PassStatus::Submitted);
+           $this->assertSame(0, $this->logCount('under_review'));
+       }
+
+       public function testPemohonDitolakDanStatusKekal(): void
+       {
+           $id = $this->makeApplication(PassStatus::Submitted);
+
+           $result = $this->actingAs($this->pemohon1)->post('pas/semakan/pukal/review', ['ids' => [$id]]);
+
+           $result->assertRedirect();
+           $result->assertSessionHas('error');
+
+           $this->assertStatusIs($id, PassStatus::Submitted);
+       }
+
+       // =================================================================
+       // Pembantu
+       // =================================================================
+
+       private function createUser(string $group, string $email): User
+       {
+           $users = auth()->getProvider();
+
+           $user = new User([
+               'username' => strstr($email, '@', true),
+               'email'    => $email,              // sintetik sahaja
+               'password' => 'Latihan@2026',
+           ]);
+           $users->save($user);
+
+           $user = $users->findById($users->getInsertID());
+           $user->addGroup($group);
+
+           return $user;
+       }
+
+       private function makeApplication(PassStatus $status, string $refNo = 'PAS-2026-9100'): int
+       {
+           $now = date('Y-m-d H:i:s');
+
+           $this->db->table('pass_applications')->insert([
+               'ref_no'      => $refNo,
+               'user_id'     => $this->pemohon1->id,
+               'pass_type'   => 'kakitangan',
+               'vehicle_id'  => null,
+               'purpose'     => 'Akses bangunan pentadbiran (data sintetik).',
+               'valid_from'  => date('Y-m-d'),
+               'valid_until' => date('Y-m-d', strtotime('+90 days')),
+               'status'      => $status->value,
+               'created_at'  => $now,
+               'updated_at'  => $now,
+           ]);
+
+           return (int) $this->db->insertID();
+       }
+
+       private function assertStatusIs(int $id, PassStatus $expected): void
+       {
+           $this->seeInDatabase('pass_applications', ['id' => $id, 'status' => $expected->value]);
+       }
+
+       private function logCount(string $toStatus): int
+       {
+           return $this->db->table('status_logs')
+               ->where(['module' => 'PAS', 'to_status' => $toStatus])
+               ->countAllResults();
+       }
+   }
+   ```
+
+2. **Run:**
+
+   ```bash
+   composer test -- tests/feature/Pas/PassBatchReviewTest.php --testdox
+   ```
+
+   Expected: 5 ✔. Note the last line of the output.
+
+3. **Mutation 1 — remove Layer 1.** In `app/Config/Routes.php`, remove `, 'filter' => 'permission:pas.review'` from the bulk route. Run step 2 again, note the failing test and its message. **Restore.**
+
+4. **Mutation 2 — remove the `try/catch` in the loop.** In `reviewBatch()`, replace the `try { … } catch (DomainException|PageNotFoundException $e) { … }` block inside the `foreach` with the single line `$started[] = $workflow->startReview($id, $user)->ref_no;`. Run step 2 again, note the failing test and its message. **Restore** (copy Lab 8.1b step 3(c) again if unsure).
+
+5. Record both mutations at the end of `docs/ujian-manual-pas.md`:
+
+   ```markdown
+
+   ## Mutasi PassBatchReviewTest (Lab 8.3b)
+
+   | Mutasi | Ujian yang gagal | Mesej |
+   |--------|------------------|-------|
+   | Buang `permission:pas.review` dari route pukal | | |
+   | Buang `try/catch` dalam gelung `reviewBatch()` | | |
+   ```
+
+6. **All Pass tests:**
+
+   ```bash
+   composer test -- tests/feature/Pas
+   ```
+
+   All green, including `PassAccessTest` (13 + your test) and `PassBatchReviewTest` (5).
+
+7. **Commit:**
+
+   ```bash
+   git add tests/ docs/ && git commit -m "PAS: ujian fungsian route pukal + jadual mutasi"
+   ```
+
+### ✅ Checkpoint 8.3b
+- [ ] `PassBatchReviewTest` → `OK (5 tests, 24 assertions)` (Quiz S7).
+- [ ] The mutation table is filled in: mutations 1 and 2 each make one test fail; the code is restored and everything is green again (Quiz S7).
+- [ ] `composer test -- tests/feature/Pas` is green; commit `PAS: ujian fungsian route pukal + jadual mutasi` (Quiz S7).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `Redirect URL '/' does not match 'http://localhost:8080'` | `assertRedirectTo('/')` is compared with the full URL without the trailing `/` | The tests use `assertRedirect()` + `assertSessionHas('error')` for Shield refusals — copy them again |
+| `assertSessionHas('message', …)` fails because the text differs | The message in `reviewBatch()` was changed (full stop, `—` dash, `·` separator) | Copy `reviewBatch()` from Lab 8.1b again; the text must match character for character |
+| Passes on its own, fails in the full suite | `$this->resetServices()` is missing before `parent::setUp()` | See the template `setUp()` |
+| `SecurityException` | CSRF is still active in the test | The `setUp()` block that removes `csrf` + `tearDown()` |
+
+### ⭐ Bonus challenge
+Add `testAdminBolehMulakanSemakanPukal` (admin through `pas.*`), and `testIdTidakWujudDilaporkan` — `ids` = `[99999]` → flash `error` `1 gagal — ID 99999: …` (why does that message come from `PageNotFoundException`?).
+
+---
+
+## Lab 8.4b — Fourth-Role Demo: `admin` & Separation-of-Duties Finding (S8)
+
+### 🎯 Objective
+Add an `admin` scene to the M2 demo: the admin applies, starts the review in bulk and approves their own application (SPEC §4 allows it through `pas.*`); prove BR-PAS-01 with two approvers at the same time (`admin` and `pelulus`); and record the separation-of-duties finding for the system owner in `docs/demo-m2.md`.
+
+### Prerequisites
+- [Lab 8.4](#lab-84--3-role-demo--m2-done-s4) done: `feat/pas-kelulusan` (including Labs 8.1b–8.3b) is merged into `main`.
+- The `pelulus` (incognito) and `admin` (another browser) windows are logged in.
+
+### Steps
+
+1. **Branch:**
+
+   ```bash
+   git switch main && git pull
+   git switch -c docs/demo-m2
+   ```
+
+2. **`admin` applies.** `/pas/permohonan/new` → staff pass + one PDF → **Hantar** (Submit). Note the reference number (we call it F) and the id in the URL.
+
+3. **`admin` checks their own list.** `/pas/permohonan` — count how many rows are shown.
+
+4. **`admin` starts the bulk review.** `/pas/semakan` → tick F → **Mula Semakan (yang ditanda)**.
+
+5. **`pelulus` opens F** (`/pas/permohonan/<id F>`). The **Lulus** form is shown. Do **not** click.
+
+6. **`admin` approves F** with the remarks `Diluluskan oleh pentadbir.`
+
+7. **`pelulus`**: without reloading the step 5 page, click **Lulus** → **OK**. Note the message.
+
+8. **`admin` reloads F.** Read the timeline: the number of entries and the name on each entry.
+
+9. **Check the DB:**
+
+   ```sql
+   SELECT user_id, reviewed_by, approved_by FROM pass_applications WHERE id = <id F>;
+   SELECT from_status, to_status, actor_id FROM status_logs WHERE module = 'PAS' AND record_id = <id F> ORDER BY id;
+   ```
+
+10. **Create `docs/demo-m2.md`** and fill in the *Hasil* (Result) column from steps 2–9:
+
+    ```markdown
+    # Demo M2 — Modul Pas (4 peranan)
+
+    Skrip 3 peranan: README Hari 8 §4.1. Babak peranan keempat (Lab 8.4b):
+
+    | # | Peranan | Tindakan | Hasil |
+    |---|---------|----------|-------|
+    | 9 | `admin` | Mohon pas kakitangan + 1 dokumen | |
+    | 10 | `admin` | `/pas/permohonan` — senarai | |
+    | 11 | `admin` | `/pas/semakan` → tanda F → Mula Semakan (yang ditanda) | |
+    | 12 | `pelulus` + `admin` | `pelulus` buka F; `admin` lulus; `pelulus` klik Lulus | |
+    | 13 | `admin` | Garis masa F | |
+
+    ## Dapatan untuk pemilik sistem: pemisahan tugas
+
+    - **Fakta:** `admin` memohon, menyemak dan meluluskan permohonan yang sama (`user_id` = `reviewed_by` = `approved_by`). SPEC §4 membenarkannya (`pas.*`).
+    - **Risiko:** satu orang boleh meluluskan pas untuk dirinya tanpa semakan kedua.
+    - **Pilihan:** (a) terima — admin dipercayai; (b) tolak dalam `approve()` jika `user_id` atau `reviewed_by` = pelulus (⭐ Lab 8.1) — perlu kemas kini SPEC dahulu.
+    - **Keputusan pemilik sistem:** _(isi selepas perbincangan)_
+    ```
+
+11. **Demo to the person next to you** (3 minutes): steps 4–8 only. They fill in the *Hasil* column of rows 11–13 on their copy.
+
+12. **Commit & merge:**
+
+    ```bash
+    git add docs/demo-m2.md && git commit -m "DOCS: demo M2 peranan admin + dapatan pemisahan tugas"
+    git switch main && git merge --no-ff docs/demo-m2 -m "DOCS: demo M2 peranan admin" && git push
+    git branch -d docs/demo-m2
+    ```
+
+### ✅ Checkpoint 8.4b
+- [ ] Step 7: `pelulus` sees *Peralihan status "Diluluskan" → "Diluluskan" tidak dibenarkan.* and F's `status_logs` has only one `under_review → approved` row (Quiz S8).
+- [ ] Steps 8–9: F's timeline has 3 entries, all with the admin's name; F's `user_id`, `reviewed_by` and `approved_by` are the same (Quiz S8).
+- [ ] `docs/demo-m2.md` is on `main` with the separation-of-duties finding; `git log --oneline -3` shows the `docs/demo-m2` merge (Quiz S8).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Step 7: *The action you requested is not allowed.* | `pelulus` sent another POST in the same session after step 5 — the page's CSRF token was replaced | Repeat steps 2–7 with a new application; do not send another POST in the `pelulus` window between steps 5 and 7 |
+| Step 5: no **Lulus** form | F is not `under_review` yet (step 4 not done) or the page was opened before step 4 | Reload F after step 4 |
+| `admin` is refused at `/pas/permohonan/new` | `$matrix['admin']` has no `pas.*` | Copy the admin row exactly from SPEC §4 |
+| No checkbox for F in `/pas/semakan` | The admin has no `pas.review`, or F is not `submitted` | Check `$matrix`; filter with `?status=submitted` |
+
+### ⭐ Bonus challenge
+Record scene 12 (two approvers at the same time) as a short GIF for the Day 10 capstone demo — it is the BR-PAS-01 proof the system owner understands most easily.
+
+---
+
 ## Self-check — end of day
 
 ```bash
-git log --oneline -6
-php spark routes | grep pas/              # 9 Pass routes; review routes with permission:
+git log --oneline -8
+php spark routes | grep pas/              # 11 Pass routes; review routes with permission:
 composer test -- --testdox | tail -20   # all green
 ```
+
+- [ ] One application moves `submitted → under_review → approved` with 3 `status_logs` rows (Quiz S1).
+- [ ] The reviewer cannot approve through DevTools/curl; `pelulus` cannot start a bulk review — both redirect, status unchanged (Quiz S6).
+- [ ] `composer test -- tests/feature/Pas` is green, including `PassAccessTest` and `PassBatchReviewTest` (Quiz S7).
+- [ ] `main` contains M2 and `docs/demo-m2.md`; `git status --short` is empty (Quiz S8).
 
 Participants who fall behind: use `templates/kod/` (**Templat & Rujukan** module) following the catch-up plan in the trainer notes — but **Lab 8.2 step 1 (the DevTools attack)** must be done yourself: it is the main lesson of the day.

@@ -5,12 +5,16 @@
 > **Working branch:** `git switch main && git pull && git switch -c feat/laporan`
 > **Commit prefix:** `RPT:` · Every step gives **complete code to copy**. Read every line before you run it — you must be able to explain it (KOLABORASI §3). Stuck: read the full error message, ask the trainer or your neighbour, or use AI to *explain* the error.
 
-| Lab | Session | Duration | Outcome |
-|-----|---------|----------|---------|
-| 9.1 | S1 | 70 min | Spec cards RPT-01..03 · routes · skeleton controller · GET filter form |
-| 9.2 | S2 | 90 min | Full `ReportService` · paginated table for 3 reports |
-| 9.3 | S3 | 75 min | `ExportService` · working PDF & Excel export buttons |
-| 9.4 | S4 | 60 min | `ReportServiceTest` green · EXPLAIN · **M3 done** |
+| Lab | Session | Time | Outcome |
+|-----|---------|------|---------|
+| 9.1 | S1 | 09:00–10:00 | Spec cards RPT-01..03 · routes · skeleton controller · GET filter form |
+| 9.1b | S5 | 10:00–10:30 | Quick periods (This month/Last month/This year) · active filter chips |
+| 9.2 | S2 | 10:45–12:00 | Full `ReportService` · paginated table for 3 reports |
+| 9.2b | S6 | 12:00–12:30 | `statusSummary()` (subquery + `groupBy`) · status summary buttons · RPT-03 JUMLAH row |
+| 9.3 | S3 | 14:30–15:30 | `ExportService` · working PDF & Excel export buttons |
+| 9.3b | S7 | 15:30–16:00 | Excel *Ringkasan* sheet (`=SUM()`) · PDF summary table |
+| 9.4 | S4 | 16:00–16:35 | `ReportServiceTest` green · EXPLAIN · **M3 done** |
+| 9.4b | S8 | 16:35–17:00 | 5 summary/JUMLAH/Excel tests · 2 mutations · push to the MR |
 
 ---
 
@@ -327,10 +331,10 @@ $selected = static fn ($current, $value): string => (string) $current === (strin
 **6. Commit.** `git add -A && git commit -m "RPT: laluan, controller rangka & borang penapis GET"`
 
 ### ✅ Checkpoint 9.1
-- [ ] `php spark routes | grep laporan` shows 3 routes with the `permission:laporan.view` filter.
-- [ ] Log in as `pemohon1@latihan.test` → `/laporan/tempahan` is **denied** (the Shield filter *redirects*, no data shown). As `penyemak@latihan.test` → allowed.
-- [ ] Choose a status + dates → click **Tapis** (Filter) → the URL contains `?from=...&status=...` and the dropdown **still** shows the choice you made.
-- [ ] Spec cards complete for the 3 reports and checked by the trainer.
+- [ ] `php spark routes | grep laporan` shows 3 routes with the `permission:laporan.view` filter (Quiz S1).
+- [ ] Log in as `pemohon1@latihan.test` → `/laporan/tempahan` is **denied** (the Shield filter *redirects*, no data shown). As `penyemak@latihan.test` → allowed (Quiz S1).
+- [ ] Choose a status + dates → click **Tapis** (Filter) → the URL contains `?from=...&status=...` and the dropdown **still** shows the choice you made (Quiz S1).
+- [ ] Spec cards complete for the 3 reports and checked by the trainer (Quiz S1).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -341,7 +345,7 @@ $selected = static fn ($current, $value): string => (string) $current === (strin
 | `The action you requested is not allowed` | The form has `method="post"` by mistake | Change it to `get` |
 
 ### ⭐ Bonus challenge
-- Add quick buttons "Bulan ini" (This month) and "Bulan lepas" (Last month) that fill `from`/`to` (plain GET links — no JavaScript).
+- Add the HTML5 `max` attribute to the `from` input (the current `to` value) and `min` to the `to` input (the current `from` value) so the browser blocks a reversed range. Discuss: why does Lab 9.2 `normaliseFilters()` still need to swap the range on the server?
 
 ---
 
@@ -1114,15 +1118,15 @@ In `app/Views/laporan/index.php`, replace the line `<?php // JADUAL & PAGINATION
 **10. Commit.** `git add app/ && git commit -m "RPT: ReportService (join, when, groupBy, selectCount) + pagination"`
 
 ### ✅ Checkpoint 9.2
-- [ ] `/laporan/tempahan?status=approved` → "Jumlah rekod" (total records) is **the same** as the SQL result:
+- [ ] `/laporan/tempahan?status=approved` → "Jumlah rekod" (total records) is **the same** as the SQL result (Quiz S2):
   ```sql
   SELECT COUNT(*) FROM slot_bookings WHERE status = 'approved';
   ```
-- [ ] Filter by status + zone → click page 2 → the URL still contains `status=...&zone_id=...&page=2`.
-- [ ] `/laporan/pas?to=<hari ini>` (`<hari ini>` = today's date) shows the applications you submitted **today** (proof of the half-open range).
-- [ ] `/laporan/tempahan?sort=nonsense` does not error — it falls back to the default sort order.
-- [ ] `/laporan/penggunaan?year=2026&month=6` shows every zone (including zones without bookings = 0.0 %).
-- [ ] Thin controller: each method only reads filters → calls `ReportService` → view/export (no queries, joins or calculations); no `$this->db` in the controller.
+- [ ] Filter by status + zone → click page 2 → the URL still contains `status=...&zone_id=...&page=2` (Quiz S2).
+- [ ] `/laporan/pas?to=<hari ini>` (`<hari ini>` = today's date) shows the applications you submitted **today** (proof of the half-open range) (Quiz S2).
+- [ ] `/laporan/tempahan?sort=nonsense` does not error — it falls back to the default sort order (Quiz S2).
+- [ ] `/laporan/penggunaan?year=2026&month=6` shows every zone (including zones without bookings = 0.0 %) (Quiz S2).
+- [ ] Thin controller: each method only reads filters → calls `ReportService` → view/export (no queries, joins or calculations); no `$this->db` in the controller (Quiz S2).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -1138,7 +1142,7 @@ In `app/Views/laporan/index.php`, replace the line `<?php // JADUAL & PAGINATION
 
 ### ⭐ Bonus challenge
 - Create a Bootstrap pager template `app/Views/pager/bootstrap.php` (copy `system/Pager/Views/default_full.php`, add `page-item`/`page-link`), register it in `app/Config/Pager.php` → `$templates['bootstrap']`, and use `makeLinks(..., 'bootstrap')`.
-- Add a **totals** row under RPT-03 (total slots, total slot-days, weighted average usage).
+- Add an **Average days per booking** column (booked slot-days ÷ number of bookings) to RPT-03: update only `usageByZone()` and `columns('penggunaan')`. The screen table, PDF and Excel follow automatically — why?
 
 ---
 
@@ -1637,12 +1641,12 @@ mysql -u kkm_dev -p -e "UPDATE users SET staff_no = '001234' WHERE username = 'p
 **7. Commit.** `git add app/ && git commit -m "RPT: eksport PDF (Dompdf) & Excel (PhpSpreadsheet)"`
 
 ### ✅ Checkpoint 9.3
-- [ ] Filter RPT-01 by `status=approved` → screen: *N* records → PDF: "Jumlah rekod: *N*" → Excel: *N* data rows (rows 6 to 5+*N*). **All three numbers match.**
-- [ ] PDF: A4 **landscape**; the header repeats on every page; footer "Dijana pada … oleh *your name*"; "Muka 1 / 3" (Page 1 / 3) in the bottom-right corner.
-- [ ] PDF: names with special characters (e.g. add a synthetic user "Nur'aini Ābdul") display correctly — not `?`.
-- [ ] Excel: the header row is **bold**; columns are wide enough; scroll down → the header stays (frozen); No. Pekerja (staff number) `001234` keeps its leading zeros.
-- [ ] File name: `laporan-tempahan-20260925-143012.pdf`.
-- [ ] Log in as `pemohon1@latihan.test` and open `/laporan/pas?export=xlsx` directly → **denied**.
+- [ ] Filter RPT-01 by `status=approved` → screen: *N* records → PDF: "Jumlah rekod: *N*" → Excel: *N* data rows (rows 6 to 5+*N*). **All three numbers match.** (Quiz S3)
+- [ ] PDF: A4 **landscape**; the header repeats on every page; footer "Dijana pada … oleh *your name*"; "Muka 1 / 3" (Page 1 / 3) in the bottom-right corner (Quiz S3).
+- [ ] PDF: names with special characters (e.g. add a synthetic user "Nur'aini Ābdul") display correctly — not `?` (Quiz S3).
+- [ ] Excel: the header row is **bold**; columns are wide enough; scroll down → the header stays (frozen); No. Pekerja (staff number) `001234` keeps its leading zeros (Quiz S3).
+- [ ] File name: `laporan-tempahan-20260925-143012.pdf` (Quiz S3).
+- [ ] Log in as `pemohon1@latihan.test` and open `/laporan/pas?export=xlsx` directly → **denied** (Quiz S3).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -2013,11 +2017,11 @@ git push -u origin feat/laporan    # open an MR to main → trainer/neighbour co
 ```
 
 ### ✅ Checkpoint 9.4 — **M3 done**
-- [ ] `composer test -- tests/Services/ReportServiceTest.php` → all green (≥ 7 tests).
-- [ ] The mutation in step 5 makes exactly **one** test fail; it has been restored.
-- [ ] The output of `laporan:explain tempahan approved` shows `key = status` (or another index) for table `b` — not `type = ALL`.
-- [ ] You can explain to the trainer why RPT-02 with only a date filter shows `type = ALL` on `p`.
-- [ ] DoD KOLABORASI §2 ticked for M3.
+- [ ] `composer test -- tests/Services/ReportServiceTest.php` → all green (≥ 7 tests) (Quiz S4).
+- [ ] The mutation in step 5 makes exactly **one** test fail; it has been restored (Quiz S4).
+- [ ] The output of `laporan:explain tempahan approved` shows `key = status` (or another index) for table `b` — not `type = ALL` (Quiz S4).
+- [ ] You can explain to the trainer why RPT-02 with only a date filter shows `type = ALL` on `p` (Quiz S4).
+- [ ] DoD KOLABORASI §2 ticked for M3 (Quiz S4).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -2035,17 +2039,725 @@ git push -u origin feat/laporan    # open an MR to main → trainer/neighbour co
 
 ---
 
+## Lab 9.1b — Quick periods & active filter chips (S5)
+
+### 🎯 Objective
+- Add "Quick periods" and "Active filters" rows to the RPT-01..03 spec cards.
+- Build **Bulan ini / Bulan lepas / Tahun ini** (This month / Last month / This year) GET links that fill the date range and keep the other filters.
+- Build **active filter chips**: one click removes one filter, the other filters stay.
+
+### Prerequisites
+- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 9.1](#lab-91--report-design--get-filter-form-s1) done: the filter form keeps its values after **Tapis** (Filter).
+
+### Steps
+
+**1. Update the spec cards (5 min).** Add these two rows at the end of the table in `docs/laporan-spec.md`, then fill in every cell:
+
+```markdown
+| Tempoh pantas (butang) | | | |
+| Filter aktif dipapar sebagai | | | |
+```
+
+Hint: RPT-01 and RPT-02 fill `from`/`to`; RPT-03 fills `year`/`month`. The card and the code must match: if the card says "Minggu ini" (This week), the code needs that button too.
+
+**2. Helper variables in the view.** In `app/Views/laporan/index.php`, add this block directly after the `$selected = static fn ...` line and **before** the first `?>`:
+
+`app/Views/laporan/index.php`
+
+```php
+// Lab 9.1b — tempoh pantas & cip penapis aktif.
+// $keep = penapis yang berisi (termasuk sort/dir) → asas setiap pautan supaya pilihan lain kekal.
+$keep  = array_filter($filters, static fn ($v): bool => $v !== null && $v !== '');
+$today = new DateTimeImmutable('today');
+
+if ($report !== 'penggunaan') {
+    unset($keep['year']); // rangka Lab 9.1 mengisi year untuk semua laporan; hanya RPT-03 memerlukannya
+}
+
+// Bina URL laporan semasa daripada array penapis; nilai null/kosong dibuang.
+$urlWith = static function (array $params): string {
+    $qs = http_build_query(array_filter($params, static fn ($v): bool => $v !== null && $v !== ''));
+
+    return current_url() . ($qs === '' ? '' : '?' . $qs);
+};
+
+// Tempoh pantas. 'first day of last month' selamat pada 31 haribulan; '-1 month' tidak (31/03 → 03/03).
+$lastMonth = $today->modify('first day of last month');
+$presets   = $report === 'penggunaan'
+    ? [
+        'Bulan ini'   => ['year' => $today->format('Y'), 'month' => $today->format('n')],
+        'Bulan lepas' => ['year' => $lastMonth->format('Y'), 'month' => $lastMonth->format('n')],
+        'Tahun ini'   => ['year' => $today->format('Y'), 'month' => null], // null → kunci dibuang = "Setahun"
+    ]
+    : [
+        'Bulan ini'   => ['from' => $today->modify('first day of this month')->format('Y-m-d'), 'to' => $today->modify('last day of this month')->format('Y-m-d')],
+        'Bulan lepas' => ['from' => $lastMonth->format('Y-m-d'), 'to' => $lastMonth->modify('last day of this month')->format('Y-m-d')],
+        'Tahun ini'   => ['from' => $today->format('Y') . '-01-01', 'to' => $today->format('Y') . '-12-31'],
+    ];
+
+// Cip penapis aktif: kunci → [label, kumpulan $options untuk menukar nilai kepada label dropdown].
+$chipDefs = [
+    'from'          => ['Dari', ''],
+    'to'            => ['Hingga', ''],
+    'zone_id'       => ['Zon', 'zones'],
+    'category'      => ['Kategori', 'categories'],
+    'department_id' => ['Jabatan', 'departments'],
+    'pass_type'     => ['Jenis pas', 'pass_types'],
+    'status'        => ['Status', 'statuses'],
+    'month'         => ['Bulan', ''],
+];
+$chips = [];
+
+foreach ($chipDefs as $key => [$label, $group]) {
+    if (! isset($keep[$key])) {
+        continue;
+    }
+
+    $text = (string) $keep[$key];
+
+    if ($key === 'month') {
+        $text = ['Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun', 'Jul', 'Ogo', 'Sep', 'Okt', 'Nov', 'Dis'][(int) $text - 1] ?? $text;
+    }
+
+    foreach ($options[$group] ?? [] as $o) {
+        if ((string) $o['value'] === $text) {
+            $text = $o['label'];
+        }
+    }
+
+    $chips[$key] = $label . ': ' . $text;
+}
+```
+
+- `$keep` holds the filters that have a value. Every link starts from it, so the other choices stay.
+- `$preset + $keep`: the `+` operator keeps the keys of the **left** array. The period values overwrite the current `from`/`to`, and `status` stays.
+- `'month' => null` on **Tahun ini** (This year) overwrites the current month, then `$urlWith()` drops that key. As a result, the Bulan (Month) dropdown shows *Setahun* (Whole year).
+- `$chips` turns values into dropdown labels (`approved` → *Diluluskan*, `1` → *A — Blok Utama*) with the same `$options` as the form.
+
+**3. Quick periods & chips block.** In the same file, add this block directly after `</form>` and **before** the line `<?php // JADUAL & PAGINATION — Lab 9.2 langkah 9 menggantikan baris ini. ?>` (Lab 9.2 replaces only that line, so this block stays). If Lab 9.2 is already done, put this block before `<!-- ============ RINGKASAN + EKSPORT`:
+
+`app/Views/laporan/index.php`
+
+```php
+<!-- ============ Lab 9.1b: TEMPOH PANTAS + CIP PENAPIS AKTIF ============
+     Pautan GET biasa (tiada JavaScript). Setiap pautan bermula daripada $keep → pilihan lain kekal.
+     Tiada 'page' dalam pautan → kembali ke halaman 1 apabila penapis berubah. -->
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <span class="text-muted small">Tempoh pantas:</span>
+    <?php foreach ($presets as $label => $preset): ?>
+        <?php
+        // Aktif jika setiap nilai preset sama dengan penapis semasa (null = penapis itu mesti kosong)
+        $isOn = true;
+        foreach ($preset as $k => $v) {
+            $isOn = $isOn && (string) ($filters[$k] ?? '') === (string) ($v ?? '');
+        }
+        ?>
+        <a href="<?= esc($urlWith($preset + $keep), 'attr') ?>"
+           class="btn btn-sm <?= $isOn ? 'btn-secondary' : 'btn-outline-secondary' ?>"><?= esc($label) ?></a>
+    <?php endforeach ?>
+
+    <?php foreach ($chips as $key => $text): ?>
+        <!-- Klik cip = buang SATU penapis; yang lain kekal -->
+        <a href="<?= esc($urlWith(array_diff_key($keep, [$key => true])), 'attr') ?>"
+           class="badge rounded-pill text-bg-light border text-decoration-none" title="Buang penapis ini">
+            <?= esc($text) ?> <i class="bi bi-x-lg"></i>
+        </a>
+    <?php endforeach ?>
+</div>
+```
+
+**4. Test in the browser** as `penyemak@latihan.test`:
+
+1. `/laporan/tempahan` → click **Bulan ini**. URL: `?from=<1hb bulan ini>&to=<hari terakhir bulan ini>` (the 1st and the last day of this month). The **Bulan ini** button turns dark; the *Dari* (From) and *Hingga* (To) chips appear.
+2. Choose Status *Diluluskan* (Approved) → **Tapis**. The URL now contains `zone_id=&category=&…&sort=&dir=` (the form sends every field). The *Status: Diluluskan* chip appears and **Bulan ini** is still dark.
+3. Click the *Dari: …* chip. Write down the query string of the new URL (Quiz S5).
+4. Click **Bulan lepas** (Last month). `from`/`to` change to last month, and the *Status: Diluluskan* chip is still there.
+5. `/laporan/penggunaan` → choose Bulan *Jun* (June) → **Tapis** → click **Tahun ini**. Write down the Bulan dropdown choice and which button is dark (Quiz S5).
+6. Test `esc()`: open `/laporan/tempahan?from=<b>x</b>`. The chip shows the text `<b>x</b>` literally, not bold text.
+
+**5. Commit.** `git add -A && git commit -m "RPT: tempoh pantas & cip penapis aktif"`
+
+### ✅ Checkpoint
+- [ ] `docs/laporan-spec.md` has complete "Tempoh pantas" and "Filter aktif" rows for the 3 reports (Quiz S5).
+- [ ] RPT-01: **Bulan ini** fills `from`/`to` with the current month; the chosen Status stays after you click **Bulan lepas** (Quiz S5).
+- [ ] Clicking one chip removes **one** filter only, and the new URL has no empty keys (`zone_id=&…`) (Quiz S5).
+- [ ] RPT-03: **Tahun ini** removes `month` → the Bulan dropdown shows *Setahun*, the **Tahun ini** button is dark (Quiz S5).
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| PHP code printed as text at the top of the page | The step 2 block was pasted **after** `?>` | Move the block above the first `?>` |
+| **Bulan lepas** on 31/03 gives 03/03–… (March), not February | `modify('-1 month')` → 31/02 → adjusted to 03/03 | Use `modify('first day of last month')` as in the code |
+| The URL after clicking a chip is still long `?zone_id=&category=&…` | `array_filter()` is missing in `$urlWith` | Copy `$urlWith` again |
+| A button is not dark even though the URL is right | Comparing `2026` (int) with `'2026'` (string) using `===` | Cast both sides to `(string)` as in the `$isOn` block |
+| A chip shows `approved`, not *Diluluskan* | Wrong group name in `$chipDefs` (e.g. `'status'`, not `'statuses'`) | The group must match an `$options` key |
+| `Undefined variable $chips` | The step 2 block was pasted into another file or after `endSection()` | Both blocks go in `app/Views/laporan/index.php`; step 2 at the top, step 3 after `</form>` |
+
+### ⭐ Bonus challenge
+- Add a **Minggu ini** (This week, Monday–Sunday) button for RPT-01/02. Hint: `$today->modify('monday this week')` and `$today->modify('sunday this week')`. Update the spec card first.
+
+---
+
+## Lab 9.2b — Status summary & RPT-03 totals row (S6)
+
+### 🎯 Objective
+- Write `statusSummary()`, which wraps `builder()` as a subquery (`fromSubquery()`) with `selectCount()` + `groupBy()`, so the summary filters are the same as the list filters.
+- Write `usageTotals()`: overall RPT-03 usage as a **weighted** average.
+- Show summary buttons that filter by status when clicked, and a JUMLAH (TOTAL) `<tfoot>` row.
+
+### Prerequisites
+- [Lab 9.2](#lab-92--reportservice-join-dynamic-filters-aggregate-pagination-s2) done: the three reports show a paginated table.
+- [Lab 9.1b](#lab-91b--quick-periods--active-filter-chips-s5) done.
+
+### Steps
+
+**1. Plan the query.** The summary must count the **same** rows as the list. So the summary query does not rewrite the joins and `when()` calls; it wraps the list builder:
+
+```sql
+SELECT r.status, COUNT(r.id) AS total
+FROM ( <SQL senarai RPT-01: 4 join + when() yang sama> ) r
+GROUP BY r.status
+```
+
+**2. Add two methods** in `app/Services/ReportService.php`, before the last `}` of the class:
+
+`app/Services/ReportService.php`
+
+```php
+    // ------------------------------------------------------------------
+    // Lab 9.2b — Ringkasan status (RPT-01/02) & baris jumlah (RPT-03)
+    // ------------------------------------------------------------------
+
+    /**
+     * Bilangan rekod setiap status bagi penapis yang SAMA dengan senarai.
+     * builder() dibalut sebagai subquery → join & when() tidak ditulis semula.
+     *
+     * @param array<string, int|string|null> $filters hasil normaliseFilters()
+     *
+     * @return list<array{value: string, label: string, total: int}> ikut susunan enum; status 0 tidak dipapar
+     */
+    public function statusSummary(string $report, array $filters): array
+    {
+        $this->assertReport($report);
+
+        if ($report === 'penggunaan') {
+            return []; // RPT-03 sudah aggregate; tiada lajur status
+        }
+
+        // SELECT r.status, COUNT(r.id) AS total FROM (<SQL senarai>) r GROUP BY r.status
+        $counts = $this->db->newQuery()
+            ->fromSubquery($this->builder($report, $filters), 'r')
+            ->select('r.status')
+            ->selectCount('r.id', 'total')
+            ->groupBy('r.status')
+            ->get()
+            ->getResultArray();
+
+        $counts = array_column($counts, 'total', 'status');
+        $cases  = $report === 'tempahan' ? BookingStatus::cases() : PassStatus::cases();
+        $rows   = [];
+
+        foreach ($cases as $case) {
+            if (isset($counts[$case->value])) {
+                $rows[] = ['value' => $case->value, 'label' => $case->label(), 'total' => (int) $counts[$case->value]];
+            }
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Baris JUMLAH RPT-03. Penggunaan keseluruhan = jumlah hari-slot ÷ jumlah kapasiti (purata BERWAJARAN),
+     * bukan purata peratus zon — zon kecil tidak boleh "menarik" angka keseluruhan.
+     *
+     * @param list<array<string, int|float|string>> $rows hasil usageByZone()
+     *
+     * @return array<string, int|float|string>
+     */
+    public function usageTotals(array $rows): array
+    {
+        $booked   = array_sum(array_column($rows, 'booked_days'));
+        $capacity = array_sum(array_column($rows, 'capacity_days'));
+
+        return [
+            'zone_code'      => 'JUMLAH',
+            'zone_name'      => count($rows) . ' zon',
+            'total_slots'    => array_sum(array_column($rows, 'total_slots')),
+            'total_bookings' => array_sum(array_column($rows, 'total_bookings')),
+            'booked_days'    => $booked,
+            'capacity_days'  => $capacity,
+            'utilisation'    => $capacity > 0 ? round($booked / $capacity * 100, 1) : 0.0,
+        ];
+    }
+```
+
+- `$this->db->newQuery()` gives an empty builder with no table; `fromSubquery()` turns the list builder into the derived table `r`.
+- The `cases()` loop orders the result by the enum (not by MySQL's order) and turns values into labels.
+- `usageTotals()` takes the `usageByZone()` rows and runs no query.
+
+**3. Replace the whole `paginate()`** (docblock + method, under the comment `// 3. Paparan HTML berpagination`) with this version. Compared with Lab 9.2, both `return` statements have two new keys: `summary` and `totals`.
+
+`app/Services/ReportService.php`
+
+```php
+    /**
+     * @param array<string, int|string|null> $filters hasil normaliseFilters()
+     *
+     * @return array{rows: list<array<string, mixed>>, total: int, page: int, perPage: int, summary: list<array>, totals: array<string, mixed>|null}
+     */
+    public function paginate(string $report, array $filters, int $page, int $perPage = self::PER_PAGE): array
+    {
+        $this->assertReport($report);
+        $page = max(1, $page);
+
+        if ($report === 'penggunaan') {
+            // Aggregate kecil (satu baris per zon) — potong dalam PHP.
+            $all = $this->usageByZone($filters);
+
+            return [
+                'rows'    => array_slice($all, ($page - 1) * $perPage, $perPage),
+                'total'   => count($all),
+                'page'    => $page,
+                'perPage' => $perPage,
+                'summary' => [],
+                'totals'  => $this->usageTotals($all), // Lab 9.2b: SEMUA zon, bukan halaman semasa sahaja
+            ];
+        }
+
+        $builder = $this->builder($report, $filters);
+
+        // countAllResults(false) = kira TANPA reset builder; join/where kekal untuk get().
+        $total = $builder->countAllResults(false);
+
+        $rows = $this->applySort($builder, $report, $filters)
+            ->limit($perPage, ($page - 1) * $perPage)
+            ->get()
+            ->getResultArray();
+
+        return [
+            'rows'    => array_map(fn (array $r): array => $this->formatRow($report, $r), $rows),
+            'total'   => $total,
+            'page'    => $page,
+            'perPage' => $perPage,
+            'summary' => $this->statusSummary($report, $filters), // Lab 9.2b
+            'totals'  => null,
+        ];
+    }
+```
+
+The controller **does not change**: `$result` is already passed to the view, so the view can read `$result['summary']` and `$result['totals']` directly.
+
+**4. Update the view** `app/Views/laporan/index.php`.
+
+(a) Add the summary block directly **before** the line `<!-- ============ JADUAL ============ -->`:
+
+`app/Views/laporan/index.php`
+
+```php
+<!-- ============ Lab 9.2b: RINGKASAN STATUS ============
+     Satu query GROUP BY atas builder yang SAMA → jumlah semua butang = "Jumlah rekod".
+     Klik butang = tapis status itu (penapis lain kekal; kembali ke halaman 1). -->
+<?php if ($result['summary'] !== []): ?>
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+        <span class="text-muted small">Ringkasan status:</span>
+        <?php foreach ($result['summary'] as $s): ?>
+            <a href="<?= esc(current_url() . '?' . http_build_query(['status' => $s['value']] + $query), 'attr') ?>"
+               class="btn btn-sm <?= $filters['status'] === $s['value'] ? 'btn-primary' : 'btn-outline-primary' ?>">
+                <?= esc($s['label']) ?> <span class="badge text-bg-light"><?= number_format($s['total']) ?></span>
+            </a>
+        <?php endforeach ?>
+    </div>
+<?php endif ?>
+```
+
+(b) Add the JUMLAH row directly **after** `</tbody>` (before `</table>`):
+
+`app/Views/laporan/index.php`
+
+```php
+        <?php if ($result['totals'] !== null && $result['total'] > 0): ?>
+            <!-- Lab 9.2b: baris JUMLAH RPT-03 (semua zon, purata berwajaran) -->
+            <tfoot class="table-group-divider fw-bold">
+            <tr>
+                <td></td>
+                <?php foreach (array_keys($columns) as $key): ?>
+                    <td><?= esc((string) ($result['totals'][$key] ?? '')) ?></td>
+                <?php endforeach ?>
+            </tr>
+            </tfoot>
+        <?php endif ?>
+```
+
+**5. Test RPT-01 and RPT-02** as `penyemak@latihan.test`:
+
+1. `/laporan/tempahan` with no filters. Add up the number on each summary button; the result must equal "Jumlah rekod" (total records).
+2. Debug Toolbar → *Database* tab. Find the query `SELECT r.status, COUNT(r.id) AS total FROM (SELECT b.id, … ) r GROUP BY r.status`. The joins and `WHERE` inside the brackets are the same as the list query.
+3. Open `/laporan/tempahan?status=approved`. Write down the number of summary buttons and their numbers (Quiz S6).
+4. Choose Zon (Zone) *A* → **Tapis** → click page 2 if there is one → click a summary button. Write down which parameters stay in the URL (Quiz S6).
+5. `/laporan/pas` → click the *Ditolak* (Rejected) button. The table shows only rejected applications.
+
+**6. Test the RPT-03 JUMLAH row.** Open `/laporan/penggunaan?year=<tahun ini>&month=<bulan ini>` (this year, this month). The JUMLAH row (bold, under the table) shows `3 zon` (or your number of zones). Calculate by hand: Σ *Hari-Slot Ditempah* (booked slot-days) ÷ Σ *Kapasiti* (capacity) × 100. The result must equal the JUMLAH row's *Penggunaan (%)*. If your zones differ in size, a plain average of the zone percentages gives a **different** number.
+
+**7. Commit.** `git add app/ && git commit -m "RPT: ringkasan status (subquery + groupBy) & baris jumlah RPT-03"`
+
+### ✅ Checkpoint
+- [ ] `/laporan/tempahan` with no filters: the sum of the summary button numbers = "Jumlah rekod" = `SELECT COUNT(*) FROM slot_bookings` (Quiz S6).
+- [ ] The Debug Toolbar *Database* tab shows the summary query `… FROM (SELECT …) r GROUP BY r.status` with the same `WHERE` as the list query (Quiz S6).
+- [ ] Clicking a summary button filters by that status; the other filters stay and the page goes back to 1 (Quiz S6).
+- [ ] RPT-03: the JUMLAH row = Σ slot-days ÷ Σ capacity × 100, the same as your hand calculation (Quiz S6).
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| `Every derived table must have its own alias` | `fromSubquery()` without an alias, or an empty alias | `fromSubquery($this->builder($report, $filters), 'r')` |
+| `Duplicate column name 'id'` | You added `u.id` (or another column with the same name) to the builder's `select()` | Every subquery column must be unique; use an alias, e.g. `u.id AS user_id` |
+| The sum of the summary buttons ≠ "Jumlah rekod" after you choose a filter | The summary is counted straight from `table('slot_bookings')` | Use `$this->builder($report, $filters)` in `fromSubquery()` |
+| `Undefined array key "summary"` in the view | The Lab 9.2 version of `paginate()` is still in use | Replace the whole `paginate()` (step 3) |
+| The RPT-03 JUMLAH row changes when you click page 2 | `usageTotals()` receives the current page's rows | Pass `$all`, not `array_slice(...)` |
+| Status *Menunggu* (Pending) appears after *Diluluskan* | The result is ordered by MySQL's order | Build `$rows` with the `cases()` loop, not `foreach ($counts …)` |
+
+### ⭐ Bonus challenge
+- Add a **pass type** summary for RPT-02 with the same pattern: a `passTypeSummary()` method (subquery + `groupBy('r.pass_type')`) and buttons that filter by `pass_type`. Can you make `statusSummary()` generic with a column parameter, without letting user input reach `groupBy()`?
+
+---
+
+## Lab 9.3b — Excel Summary sheet & PDF summary (S7)
+
+### 🎯 Objective
+- Add a second **Ringkasan** (Summary) sheet to the `.xlsx` file with `createSheet()`, a JUMLAH row as an `=SUM()` formula, and `setActiveSheetIndex(0)`.
+- Add a status summary table to the PDF.
+- Prove that the summary numbers in the files = the summary buttons on screen, because both call `statusSummary()` with the same `$filters`.
+
+### Prerequisites
+- [Lab 9.3](#lab-93--pdf-dompdf--excel-phpspreadsheet-export-s3) done: the six export files open.
+- [Lab 9.2b](#lab-92b--status-summary--rpt-03-totals-row-s6) done: `statusSummary()` exists.
+
+### Steps
+
+**1. Add a `$summary` parameter** to both public methods in `app/Services/ExportService.php`. The default value `[]` keeps old calls working. Replace the `pdf()` signature line:
+
+`app/Services/ExportService.php`
+
+```php
+    public function pdf(string $title, array $columns, iterable $rows, array $meta, array $summary = []): string
+```
+
+and the `xlsx()` signature line:
+
+`app/Services/ExportService.php`
+
+```php
+    public function xlsx(string $title, array $columns, iterable $rows, array $meta, array $summary = []): string
+```
+
+**2. Pass `$summary` to the PDF view.** In `pdf()`, inside the `view('laporan/pdf', [...])` array, add this line directly after `'meta'    => $meta,`:
+
+`app/Services/ExportService.php`
+
+```php
+            'summary' => $summary,   // Lab 9.3b
+```
+
+**3. Call the Summary sheet in `xlsx()`.** Add this block directly **before** the comment `// Tulis ke memori (bukan fail sementara) dan pulangkan string binari`:
+
+`app/Services/ExportService.php`
+
+```php
+        // Lab 9.3b: lembaran kedua "Ringkasan" (RPT-01/02 sahaja; RPT-03 menghantar [])
+        if ($summary !== []) {
+            $this->addSummarySheet($spreadsheet, $summary);
+        }
+```
+
+**4. Add `addSummarySheet()`** to `ExportService`, before the last `}` of the class:
+
+`app/Services/ExportService.php`
+
+```php
+    /**
+     * Lab 9.3b — lembaran "Ringkasan": satu baris setiap status + JUMLAH sebagai FORMULA Excel.
+     *
+     * @param list<array{value: string, label: string, total: int}> $summary hasil ReportService::statusSummary()
+     */
+    private function addSummarySheet(Spreadsheet $spreadsheet, array $summary): void
+    {
+        $sheet = $spreadsheet->createSheet();   // lembaran baharu di hujung (indeks 1)
+        $sheet->setTitle('Ringkasan');
+
+        $sheet->fromArray(['Status', 'Bilangan'], null, 'A1');
+        $sheet->getStyle('A1:B1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:B1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('DDEBF7');
+
+        $r = 2;
+        foreach ($summary as $s) {
+            $sheet->setCellValueExplicit("A{$r}", $s['label'], DataType::TYPE_STRING);
+            $sheet->setCellValue("B{$r}", $s['total']);   // nombor → boleh dijumlah
+            $r++;
+        }
+
+        // Formula, bukan nombor PHP: jika pengguna mengubah angka di atas, Excel mengira semula JUMLAH.
+        $sheet->setCellValue("A{$r}", 'JUMLAH');
+        $sheet->setCellValue("B{$r}", '=SUM(B2:B' . ($r - 1) . ')');
+        $sheet->getStyle("A{$r}:B{$r}")->getFont()->setBold(true);
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+
+        $spreadsheet->setActiveSheetIndex(0);   // fail dibuka pada lembaran data, bukan Ringkasan
+    }
+```
+
+- Counts are written as **numbers** (they can be summed); labels are written explicitly as strings (as in Lab 9.3).
+- JUMLAH is a **formula**. If a user corrects a number in Excel, JUMLAH is recalculated.
+
+**5. Summary table in the PDF.** In `app/Views/laporan/pdf.php`, add this block directly after the line `<p style="margin-top: 8px; font-size: 8pt;">Jumlah rekod: …</p>`:
+
+`app/Views/laporan/pdf.php`
+
+```php
+<?php if (($summary ?? []) !== []): ?>
+    <!-- Lab 9.3b: ringkasan status — angka sama dengan butang "Ringkasan status" pada skrin -->
+    <table style="width: 40%; margin-top: 6px;">
+        <thead>
+        <tr><th>Status</th><th style="width: 30%">Bilangan</th></tr>
+        </thead>
+        <tbody>
+        <?php foreach ($summary as $s): ?>
+            <tr><td><?= esc($s['label']) ?></td><td class="num"><?= number_format($s['total']) ?></td></tr>
+        <?php endforeach ?>
+        <tr><td><strong>JUMLAH</strong></td><td class="num"><strong><?= number_format(array_sum(array_column($summary, 'total'))) ?></strong></td></tr>
+        </tbody>
+    </table>
+<?php endif ?>
+```
+
+**6. Wire it up in the controller.** In `export()` in `app/Controllers/Laporan/ReportController.php`, replace the `$binary = $format === 'pdf' ...` block (3 lines) with:
+
+`app/Controllers/Laporan/ReportController.php`
+
+```php
+        // Lab 9.3b: ringkasan status bagi penapis yang SAMA — angka fail = butang ringkasan skrin. RPT-03 → [].
+        $summary = $this->reports->statusSummary($report, $filters);
+
+        $binary = $format === 'pdf'
+            ? $this->exporter->pdf($title, $this->reports->columns($report), $rows, $meta, $summary)
+            : $this->exporter->xlsx($title, $this->reports->columns($report), $rows, $meta, $summary);
+```
+
+**7. Test.**
+
+1. `/laporan/tempahan?status=approved` → **Eksport Excel**. The file opens on the data tab. Click the **Ringkasan** tab: one *Diluluskan* row + JUMLAH, with the same number as the summary button on screen.
+2. `/laporan/pas` (no filters) → **Eksport Excel** → **Ringkasan** tab → click the JUMLAH cell in column B. Write down what the formula bar shows (Quiz S7). Change one number above it → JUMLAH changes.
+3. `/laporan/pas` → **Eksport PDF**. After "Jumlah rekod: *N*" there is a Status/Bilangan (Count) table; JUMLAH = *N*.
+4. `/laporan/penggunaan` → **Eksport Excel**. Count the tabs at the bottom of the Excel window (Quiz S7).
+
+**8. Commit.** `git add app/ && git commit -m "RPT: lembaran Ringkasan Excel & ringkasan PDF"`
+
+### ✅ Checkpoint
+- [ ] Excel RPT-01/RPT-02: a second *Ringkasan* tab whose number for each status = the summary button on screen, and the file opens on the data tab (Quiz S7).
+- [ ] The JUMLAH cell is an `=SUM(...)` formula; changing one number changes JUMLAH (Quiz S7).
+- [ ] PDF RPT-01/RPT-02: a Status/Bilangan table after "Jumlah rekod", and JUMLAH = "Jumlah rekod" (Quiz S7).
+- [ ] The RPT-03 Excel file has only one tab (Quiz S7).
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| `Call to undefined method App\Services\ReportService::statusSummary()` | Lab 9.2b is not done | Finish Lab 9.2b step 2 first |
+| The Excel file opens on the *Ringkasan* tab | `setActiveSheetIndex(0)` is missing | Add the last line of `addSummarySheet()` |
+| The PDF has no summary table and no error | `'summary' => $summary` is not passed in `pdf()` (the view gets `[]` through `?? []`) | Step 2 |
+| The JUMLAH cell shows the text `=SUM(B2:B6)` | It was written with `setCellValueExplicit(..., TYPE_STRING)` | Write formulas with `setCellValue()` |
+| No *Ringkasan* tab for RPT-01 with a filter that has no records | `statusSummary()` returns `[]` when there are no records | Expected — there is no status to summarise |
+| Numbers in the file ≠ the summary buttons on screen | The summary is counted from the raw `$this->request->getGet()` | Pass `$filters` (the `normaliseFilters()` result), as `exportRows()` does |
+
+### ⭐ Bonus challenge
+- Add the RPT-03 JUMLAH row (`usageTotals()`) at the end of the RPT-03 export **without** changing the PDF "Jumlah rekod" (which counts the zones). Hint: pass the JUMLAH row as a separate parameter, not as a row in `$rows`.
+
+---
+
+## Lab 9.4b — Testing the summary, JUMLAH & Excel sheet (S8)
+
+### 🎯 Objective
+- Write 5 PHPUnit tests that compare the status summary with a direct SQL `GROUP BY` and with hand-calculated numbers, test the RPT-03 weighted average, and read back a real `.xlsx` file.
+- Prove with two manual mutations that a test **without filters** can pass falsely.
+- Update the `feat/laporan` MR with a new commit on the same branch.
+
+### Prerequisites
+- [Lab 9.4](#lab-94--test-report-total--sql-total--explain-s4) done: `ReportServiceTest` is green (7 tests) and the `feat/laporan` MR is open.
+- [Lab 9.2b](#lab-92b--status-summary--rpt-03-totals-row-s6) and [Lab 9.3b](#lab-93b--excel-summary-sheet--pdf-summary-s7) done.
+
+### Steps
+
+**1. Add two `use` lines** in `tests/Services/ReportServiceTest.php`, after `use CodeIgniter\Test\DatabaseTestTrait;`:
+
+`tests/Services/ReportServiceTest.php`
+
+```php
+use App\Services\ExportService;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+```
+
+**2. Calculate by hand first** from the Lab 9.4 fixture (5 bookings, 3 pass applications, Zone A 2 active slots, Zone B 1 active slot):
+
+| Test | Hand answer |
+|-------|----------------|
+| RPT-01 summary, no filters | pending 1, approved 3, rejected 1 |
+| RPT-01 summary, June 2026 | pending 1, approved 2, rejected 1 (total 4 = the list) |
+| RPT-02 summary, September 2026 | submitted 1, under_review 1 |
+| RPT-03 JUMLAH, June 2026 | 3 slots, 15 slot-days, capacity 90 → 16.7 % (not 12.5 %) |
+| Excel *Ringkasan* sheet | 2 sheets; `B5` = `=SUM(B2:B4)` = 5 |
+
+**3. Add 5 tests** to the class, directly after `testRpt03KadarPenggunaanJun2026()` and before the fixture comment `/** @var array<string, int> id rekod fixture …`:
+
+`tests/Services/ReportServiceTest.php`
+
+```php
+    // =====================================================================
+    // Lab 9.4b — Ringkasan status, baris JUMLAH RPT-03 & lembaran Ringkasan
+    // =====================================================================
+
+    public function testRingkasanStatusSamaDenganGroupBySql(): void
+    {
+        $f       = $this->service->normaliseFilters('tempahan', []);
+        $summary = array_column($this->service->statusSummary('tempahan', $f), 'total', 'value');
+
+        $sql = $this->db->table('slot_bookings')
+            ->select('status')
+            ->selectCount('id', 'total')
+            ->groupBy('status')
+            ->get()
+            ->getResultArray();
+
+        // assertEquals: susunan kunci tidak penting; intval kerana MySQLi memulangkan COUNT sebagai string
+        $this->assertEquals(array_map('intval', array_column($sql, 'total', 'status')), $summary);
+        // assertSame: nilai DAN susunan enum (Pending, Approved, Rejected)
+        $this->assertSame(['pending' => 1, 'approved' => 3, 'rejected' => 1], $summary);
+    }
+
+    public function testRingkasanIkutJulatTarikhSamaDenganSenarai(): void
+    {
+        // Jun 2026: #1, #2 (approved), #3 (pending), #4 (rejected). #5 (Julai) di luar julat.
+        $f       = $this->service->normaliseFilters('tempahan', ['from' => '2026-06-01', 'to' => '2026-06-30']);
+        $summary = array_column($this->service->statusSummary('tempahan', $f), 'total', 'value');
+
+        $this->assertSame(['pending' => 1, 'approved' => 2, 'rejected' => 1], $summary);
+        $this->assertSame($this->service->paginate('tempahan', $f, 1)['total'], array_sum($summary));
+    }
+
+    public function testRingkasanPasIkutJulatSeptember(): void
+    {
+        // 30/09 14:00 termasuk; 01/10 00:00 (approved) di luar julat — penapis sama seperti senarai.
+        $f       = $this->service->normaliseFilters('pas', ['from' => '2026-09-01', 'to' => '2026-09-30']);
+        $summary = array_column($this->service->statusSummary('pas', $f), 'total', 'value');
+
+        $this->assertSame(['submitted' => 1, 'under_review' => 1], $summary);
+    }
+
+    public function testJumlahRpt03IalahPurataBerwajaran(): void
+    {
+        $f      = $this->service->normaliseFilters('penggunaan', ['year' => '2026', 'month' => '6']);
+        $totals = $this->service->paginate('penggunaan', $f, 1)['totals'];
+
+        // Zon A 15/60 hari-slot (25.0 %) + Zon B 0/30 (0.0 %) → 15/90 = 16.7 %.
+        // Purata peratus zon (25.0 + 0.0) / 2 = 12.5 % ialah SALAH: Zon B (1 slot) diberi berat sama dengan Zon A (2 slot).
+        $this->assertSame(3, $totals['total_slots']);
+        $this->assertSame(15, $totals['booked_days']);
+        $this->assertSame(90, $totals['capacity_days']);
+        $this->assertSame(16.7, $totals['utilisation']);
+    }
+
+    public function testEksportExcelAdaLembaranRingkasan(): void
+    {
+        $f      = $this->service->normaliseFilters('tempahan', []);
+        $binary = (new ExportService())->xlsx(
+            $this->service->title('tempahan'),
+            $this->service->columns('tempahan'),
+            $this->service->exportRows('tempahan', $f, 'xlsx'),
+            ['filters' => 'Ujian', 'user' => 'Ujian', 'generated_at' => '01/01/2026 08:00'],
+            $this->service->statusSummary('tempahan', $f),
+        );
+
+        // Baca semula fail .xlsx sebenar (bukan objek dalam memori) — inilah yang pengguna buka.
+        $file = tempnam(WRITEPATH . 'cache', 'xlsx');
+        file_put_contents($file, $binary);
+        $book = IOFactory::createReader('Xlsx')->load($file);
+        unlink($file);
+
+        $this->assertSame(['RPT-01 Senarai Tempahan TLK', 'Ringkasan'], $book->getSheetNames());
+        $this->assertSame(0, $book->getActiveSheetIndex());   // dibuka pada lembaran data
+
+        $sheet = $book->getSheetByName('Ringkasan');
+        $this->assertSame('=SUM(B2:B4)', $sheet->getCell('B5')->getValue());   // formula, bukan nombor tetap
+        $this->assertSame(5, $sheet->getCell('B5')->getCalculatedValue());     // = 5 tempahan fixture
+    }
+```
+
+```bash
+composer test -- tests/Services/ReportServiceTest.php --testdox
+```
+
+**4. Mutation A — the summary query rewritten without filters.** In `statusSummary()`, temporarily replace the line `->fromSubquery($this->builder($report, $filters), 'r')` with:
+
+```php
+            // SENGAJA SALAH — jadual terus: penapis diabaikan
+            ->from(($report === 'tempahan' ? 'slot_bookings' : 'pass_applications') . ' r')
+```
+
+Run again. Write down the tests that fail **and** the summary test that still passes (Quiz S8). Restore the original line → green.
+
+**5. Mutation B — an unweighted average.** In `usageTotals()`, temporarily replace the line `'utilisation' => $capacity > 0 ? …` with:
+
+```php
+            // SENGAJA SALAH — purata peratus zon (tanpa wajaran)
+            'utilisation'    => $rows === [] ? 0.0 : round(array_sum(array_column($rows, 'utilisation')) / count($rows), 1),
+```
+
+Run again and write down the failure message (Quiz S8). Restore → green.
+
+**6. All tests.** `composer test` → all green, including the Day 5–8 tests.
+
+**7. Commit & push to the same MR.**
+
+```bash
+git add tests/ && git commit -m "RPT: ujian ringkasan status, jumlah RPT-03 & lembaran Excel"
+git push    # MR feat/laporan dikemas kini — tiada MR baharu (Hari 4)
+```
+
+### ✅ Checkpoint
+- [ ] `composer test -- tests/Services/ReportServiceTest.php` → all green (≥ 12 tests: 7 from Lab 9.4 + 5 from Lab 9.4b) (Quiz S8).
+- [ ] Mutation A: exactly two tests fail, and the summary test without filters still passes; restored (Quiz S8).
+- [ ] Mutation B: `testJumlahRpt03IalahPurataBerwajaran` fails with the value `12.5`; restored (Quiz S8).
+- [ ] The *Commits* tab of the `feat/laporan` MR shows the commit `RPT: ujian ringkasan status, …` (Quiz S8).
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| `Class "Tests\Services\ExportService" not found` | The step 1 `use` lines are missing | Add the two `use` lines |
+| `Failed asserting that two arrays are identical` with `'approved' => '3'` | `(int)` is missing in `statusSummary()`; MySQLi returns `COUNT` as a string | `'total' => (int) $counts[$case->value]` |
+| `tempnam(): file created in the system's temporary directory` | `writable/cache/` is missing or not writable | Recreate the `writable/cache/` folder and make sure it is writable |
+| Mutation A: no test fails | `ReportService.php` is not saved yet, or the filtered tests (June, September) were not added | Save the file; check that step 3 added **5** tests |
+| `Failed asserting that 16.666666666666668 is identical to 16.7.` | `round(..., 1)` is missing in `usageTotals()` | Round as `usageByZone()` does |
+
+### ⭐ Bonus challenge
+- Add a test that `statusSummary('penggunaan', …)` returns `[]` and that the RPT-03 Excel export has only **one** sheet.
+
+---
+
 ## Self-check — end of day
 
 ```bash
 composer test                                                     # all green (including ReportServiceTest)
 php spark laporan:explain tempahan approved 2026-06-01 2026-06-30 # EXPLAIN plan printed without errors
 git status --short                                                # no output
-git log --oneline -5                                              # today's RPT: commits
+git log --oneline -10                                             # today's RPT: commits
 ```
 
-- [ ] `/laporan/tempahan`, `/laporan/pas` and `/laporan/penggunaan` load with GET filters; the RPT-01 "Jumlah rekod" (total records) for `status=approved` = the SQL `COUNT(*)`.
-- [ ] `?export=pdf` and `?export=xlsx` download files that open, for all three reports; `pemohon1@latihan.test` is refused.
-- [ ] `composer test` is green, including `tests/Services/ReportServiceTest.php` (≥ 7 tests).
-- [ ] `php spark laporan:explain tempahan approved 2026-06-01 2026-06-30` shows a `key` that is not `NULL` for table `b`.
-- [ ] `git status --short` is empty and the `feat/laporan` branch has been pushed (MR to `main` opened).
+- [ ] `/laporan/tempahan`, `/laporan/pas` and `/laporan/penggunaan` load with GET filters; the RPT-01 "Jumlah rekod" (total records) for `status=approved` = the SQL `COUNT(*)` (Quiz S2).
+- [ ] `?export=pdf` and `?export=xlsx` download files that open, for all three reports; `pemohon1@latihan.test` is refused (Quiz S3).
+- [ ] `composer test` is green, including `tests/Services/ReportServiceTest.php` (≥ 7 tests) (Quiz S4).
+- [ ] `php spark laporan:explain tempahan approved 2026-06-01 2026-06-30` shows a `key` that is not `NULL` for table `b` (Quiz S4).
+- [ ] `git status --short` is empty and the `feat/laporan` branch has been pushed (MR to `main` opened) (Quiz S4).
+- [ ] The **Bulan ini / Bulan lepas / Tahun ini** buttons and the active filter chips work on all three reports (Lab 9.1b) (Quiz S5).
+- [ ] The RPT-01/RPT-02 status summary buttons add up to "Jumlah rekod", and the RPT-03 JUMLAH row is a weighted average (Lab 9.2b) (Quiz S6).
+- [ ] The RPT-01/RPT-02 Excel files have a *Ringkasan* tab with an `=SUM()` formula, and the PDF has a summary table (Lab 9.3b) (Quiz S7).
+- [ ] `ReportServiceTest` is green with ≥ 12 tests, and the Lab 9.4b commit is pushed to the `feat/laporan` MR (Lab 9.4b) (Quiz S8).

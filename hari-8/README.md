@@ -18,6 +18,10 @@ Di akhir hari ini, peserta boleh:
 | O4 | **Menerangkan** perbezaan pengesahan (authentication) vs kebenaran (authorization) dan **membina** tiga lapisan pertahanan: filter route → `authorize()` dalam Service → semakan pemilikan | S2 | Penyemak POST ke `/approve` → ditolak; memanggil Service terus → `PermissionException` |
 | O5 | **Memaparkan** garis masa sejarah status dari `status_logs` (siapa, bila, dari→ke, catatan) | S3 | Halaman butiran menunjukkan 3 entri berbadge |
 | O6 | **Menulis** ujian feature positif & negatif bagi setiap peranan (pemohon tidak boleh lulus, penyemak tidak boleh lulus, pelulus boleh) dan **mendemokan** aliran penuh 3 peranan | S3–S4 | `PassAccessTest` ≥ 13 ujian hijau; demo 5 minit lulus DoD |
+| O7 | **Membina** tindakan pukal *Mula Semakan* yang memanggil `startReview()` bagi setiap permohonan, dengan kegagalan BR-PAS-01 dilaporkan tanpa menghentikan yang lain | S5 | [Lab 8.1b](./lab.md#lab-81b--mula-semakan-pukal-dari-baris-gilir-s5); flash hijau + merah, satu baris `status_logs` bagi setiap permohonan |
+| O8 | **Menguatkuasa** `permission:pas.review` pada route pukal dan **membuktikan** dua lapisan dengan serangan `fetch()` dari Console untuk 4 peranan | S6 | [Lab 8.2b](./lab.md#lab-82b--lindungi-route-pukal-filter-permission--matriks-peranan-s6); UT-PAS-27..30 dalam `docs/ujian-manual-pas.md` |
+| O9 | **Menulis** `PassBatchReviewTest` (5 ujian: flash, kegagalan separa, negatif respons + DB) dan **membuktikannya** dengan 2 mutasi | S7 | [Lab 8.3b](./lab.md#lab-83b--ujian-fungsian-tindakan-pukal-s7); `OK (5 tests, …)` + jadual mutasi |
+| O10 | **Mendemokan** peranan `admin` (mohon → semak pukal → lulus sendiri) dan **merekod** dapatan pemisahan tugas untuk pemilik sistem | S8 | [Lab 8.4b](./lab.md#lab-84b--demo-peranan-keempat-admin--dapatan-pemisahan-tugas-s8); `docs/demo-m2.md` di `main` |
 
 ---
 
@@ -26,12 +30,16 @@ Di akhir hari ini, peserta boleh:
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 7 | — |
-| 09:00–10:30 | S1 | Aliran kelulusan mohon → semak → lulus/tolak | Melaksanakan `PassWorkflowService` dengan `PassStatus::canTransitionTo()` |
+| 09:00–10:00 | S1 | Aliran kelulusan mohon → semak → lulus/tolak | Melaksanakan `PassWorkflowService` dengan `PassStatus::canTransitionTo()` |
+| 10:00–10:30 | S5 | Lanjutan S1: mula semakan pukal | Membina tindakan pukal melalui `startReview()`; kegagalan separa dilaporkan |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | S2 | Kawalan akses ikut peranan | Mengkonfigur Shield groups/permissions + filter route + semakan pemilikan |
+| 10:45–12:00 | S2 | Kawalan akses ikut peranan | Mengkonfigur Shield groups/permissions + filter route + semakan pemilikan |
+| 12:00–12:30 | S6 | Lanjutan S2: lindungi route pukal | Menambah `permission:pas.review`; serangan `fetch()` + matriks 4 peranan |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–16:00 | S3 | Log status/sejarah & ujian fungsian | Memaparkan garis masa `status_logs`; ujian akses positif & negatif |
-| 16:00–17:00 | S4 | Wrap-up Modul Pas | Demo aliran penuh 3 peranan; **M2 siap** |
+| 14:30–15:30 | S3 | Log status/sejarah & ujian fungsian | Memaparkan garis masa `status_logs`; ujian akses positif & negatif |
+| 15:30–16:00 | S7 | Lanjutan S3: ujian fungsian tindakan pukal | Menulis `PassBatchReviewTest` + 2 mutasi |
+| 16:00–16:35 | S4 | Wrap-up Modul Pas | Demo aliran penuh 3 peranan; **M2 siap** |
+| 16:35–17:00 | S8 | Lanjutan S4: demo peranan `admin` | Mendemokan admin; merekod dapatan pemisahan tugas dalam `docs/demo-m2.md` |
 
 ---
 
@@ -439,7 +447,7 @@ Tiga tetingkap pelayar (biasa, inkognito, pelayar kedua) — satu untuk setiap p
 | 3 | `penyemak` | `/pas/semakan` → buka permohonan → muat turun dokumen → **Mula Semakan** | Badge **Dalam Semakan**; tiada butang *Lulus* |
 | 4 | `penyemak` | (curl/DevTools) POST ke `/approve` | Ditolak — "butang tiada ≠ keselamatan; server menolak" |
 | 5 | `pelulus` | Buka permohonan → **Lulus** dengan catatan | Badge **Diluluskan**; garis masa 3 entri dengan nama & masa |
-| 6 | `pelulus` | Klik **Lulus** sekali lagi (tab lama) | "Peralihan status … tidak dibenarkan" (BR-PAS-01) |
+| 6 | `pelulus` | Klik **Lulus** sekali lagi (pelayar kedua — halaman dibuka sebelum lulus) | "Peralihan status … tidak dibenarkan" (BR-PAS-01) |
 | 7 | `penyemak` | Permohonan kedua → Mula Semakan → **Tolak** "tak ok" → kemudian catatan penuh | Ralat catatan, kemudian **Ditolak** (BR-PAS-03) |
 | 8 | Terminal | `composer test -- tests/feature/Pas --testdox` | Semua hijau |
 
@@ -479,7 +487,7 @@ foreach ($ids as $id) {
 
 ### 🎯 Kuiz S4
 
-1. Dalam demo, pelulus menekan **Lulus** sekali lagi pada tab lama selepas permohonan sudah `approved`. Apakah yang patut dilihat oleh pemilik sistem?
+1. Dalam demo, pelulus menekan **Lulus** sekali lagi dalam pelayar kedua (halaman dibuka sebelum kelulusan) selepas permohonan sudah `approved`. Apakah yang patut dilihat oleh pemilik sistem?
    - [ ] Satu lagi entri "Diluluskan" dalam garis masa
    - [ ] Halaman 403 kerana pelulus tiada kebenaran `pas.approve` ke atas permohonan yang sudah diluluskan
    - [x] Mesej "Peralihan status … tidak dibenarkan" — `approved → approved` ditolak oleh `canTransitionTo()` (BR-PAS-01)
@@ -495,6 +503,147 @@ foreach ($ids as $id) {
 
 ---
 
+## S5 — Lanjutan S1: Mula Semakan Pukal (selepas Lab 8.1)
+
+Penyemak membuka baris gilir setiap pagi dan memulakan semakan satu per satu. Ciri pukal **tidak** menulis peraturan baharu — ia memanggil `startReview()` dalam gelung, jadi setiap permohonan tetap melalui `transition()`:
+
+| Soalan reka bentuk | Pilihan kita | Kenapa |
+|--------------------|--------------|--------|
+| Satu transaksi untuk semua, atau satu bagi setiap permohonan? | Satu bagi setiap permohonan (dalam `transition()`) | Satu permohonan yang sudah dimulakan orang lain tidak membatalkan yang lain |
+| Apa jadi bila satu gagal BR-PAS-01? | `DomainException` ditangkap dalam gelung; mesej dikumpul | Flash hijau (berjaya) + flash merah (gagal) dalam satu redirect |
+| Di mana status ditukar? | Hanya dalam `transition()` | Kunci `FOR UPDATE`, BR-PAS-01 dan BR-PAS-05 terpakai tanpa kod baharu |
+| Siapa nampak checkbox? | `canReview` = `can('pas.review')`, hanya pada **Dihantar** | UX sahaja — S6 menutup lubang di server |
+
+Route pukal berada dalam kumpulan `pas/semakan` **kedua** supaya Lab 8.2 langkah 3 (gantikan kumpulan pertama) tidak memadamnya. Untuk menguji dua pegawai serentak, guna **dua sesi** (pelayar berbeza): token CSRF ditukar selepas setiap POST, jadi tab lama dalam sesi yang sama ditolak sebelum controller.
+
+Lab: [Lab 8.1b](./lab.md#lab-81b--mula-semakan-pukal-dari-baris-gilir-s5)
+
+### 🎯 Kuiz S5
+
+> Jawab selepas Lab 8.1b di laptop anda — jawapan datang daripada flash dan DB sebenar. Lulus kuiz ini menanda checkpoint Lab 8.1b.
+
+1. Lab 8.1b langkah 6: `admin` memulakan semakan E dahulu, kemudian penyemak menghantar C, D dan E. Apakah mesej **merah** yang dipaparkan?
+   - [ ] *The action you requested is not allowed.* — token CSRF penyemak tamat kerana admin menghantar POST
+   - [x] *1 gagal — ID (id E): Peralihan status "Dalam Semakan" → "Dalam Semakan" tidak dibenarkan.*
+   - [ ] *Pilih sekurang-kurangnya satu permohonan.*
+   - [ ] Tiada mesej merah — ketiga-tiga berjaya kerana E masih ditanda dalam borang
+   > Sesi admin berasingan, jadi token penyemak masih sah. `startReview()` bagi E membaca `under_review` selepas kunci; `canTransitionTo()` menolak dan `DomainException` ditangkap dalam gelung — C dan D tetap berjaya.
+
+2. Lab 8.1b langkah 8: berapa baris `status_logs` `submitted → under_review` untuk E, dan apakah `reviewed_by` E?
+   - [ ] Dua baris (admin dan penyemak); `reviewed_by` = id penyemak kerana tulisan terakhir menang
+   - [ ] Tiada baris; `reviewed_by` `NULL` kerana kegagalan E membatalkan seluruh tindakan pukal
+   - [ ] Satu baris oleh penyemak; `reviewed_by` = id penyemak
+   - [x] Satu baris oleh admin; `reviewed_by` = id admin
+   > Cubaan penyemak gagal **sebelum** `update()` dan `record()`, lalu `transRollback()`. Hanya peralihan admin yang direkod — inilah yang dijamin oleh satu pintu `transition()`.
+
+---
+
+## S6 — Lanjutan S2: Lindungi Route Pukal (selepas Lab 8.2)
+
+Lab 8.1b menambah route POST baharu dengan filter `group:` sahaja. Itulah kesilapan yang sama seperti Lab 8.1 sebelum Lab 8.2 — setiap route tindakan baharu memerlukan semakan tiga lapisan:
+
+| Lapisan | Route `(:num)/review` (Lab 8.2) | Route `pukal/review` (Lab 8.1b) | Selepas Lab 8.2b |
+|---------|-------------------------------|------------------------------|------------------|
+| 1 — filter route | `group:` + `permission:pas.review` | `group:` sahaja | `group:` + `permission:pas.review` |
+| 2 — `authorize()` dalam Service | ✅ | ✅ (melalui `startReview()`) | ✅ |
+| Apa `pelulus` dapat | Redirect ke `/` | **403** dari Service | Redirect ke `/` |
+
+403 dari Service bermaksud Lapisan 1 terlepas (§2.4). Kita membuktikannya dengan `fetch()` dalam Console: ia menghantar POST dengan token CSRF halaman, dan `r.url` menunjukkan ke mana redirect berakhir.
+
+Lab: [Lab 8.2b](./lab.md#lab-82b--lindungi-route-pukal-filter-permission--matriks-peranan-s6)
+
+### 🎯 Kuiz S6
+
+> Jawab selepas Lab 8.2b di laptop anda — jawapan datang daripada Console pelayar dan DB sebenar. Lulus kuiz ini menanda checkpoint Lab 8.2b.
+
+1. Lab 8.2b langkah 2 (sebelum filter): apakah yang dicetak Console `pelulus`, dan apakah status permohonan itu?
+   - [x] `403 http://localhost:8080/pas/semakan/pukal/review`; status kekal `submitted`
+   - [ ] `200 http://localhost:8080/pas/semakan`; status `under_review` dengan `reviewed_by` = id pelulus
+   - [ ] `200 http://localhost:8080/`; status kekal `submitted`
+   - [ ] `404 http://localhost:8080/pas/semakan/pukal/review`
+   > Filter `group:` membenarkan `approver`, jadi controller dipanggil; `authorize()` dalam `startReview()` membaling `PermissionException` sebelum `transition()`, dan `reviewBatch()` memulangkan 403. Pilihan kedua ialah apa yang berlaku pada S5, sebelum Lab 8.2 mengaktifkan `authorize()`.
+
+2. Lab 8.2b langkah 5 (selepas filter): apakah yang dicetak Console `pelulus`?
+   - [ ] `403 http://localhost:8080/pas/semakan/pukal/review` — filter Shield memulangkan 403
+   - [ ] `401 http://localhost:8080/login`
+   - [x] `200 http://localhost:8080/`
+   - [ ] `200 http://localhost:8080/pas/semakan` dengan mesej *Pilih sekurang-kurangnya satu permohonan.*
+   > `PermissionFilter` Shield mengalih ke `permission_denied` (lalai `/`) dengan flash `error`. `fetch()` mengikut redirect itu dan mencetak status halaman akhir (`200`) dan URL-nya. Controller tidak dipanggil langsung.
+
+---
+
+## S7 — Lanjutan S3: Ujian Fungsian Tindakan Pukal (selepas Lab 8.3)
+
+`PassAccessTest` menguji route satu permohonan. Route pukal ada tiga kelakuan baharu yang mesti diuji: **flash** (`message` dan `error`), **kegagalan separa**, dan **kiraan log**:
+
+| Ujian | Peranan | Dijangka | Semakan |
+|-------|---------|----------|---------|
+| `testPenyemakMulakanSemakanPukal` | reviewer | 2 `under_review` | flash `message`, `reviewed_by`, 2 log |
+| `testSatuGagalTidakMenghentikanYangLain` | reviewer | 1 berjaya, 1 gagal | flash `message` **dan** `error`, 1 log |
+| `testTanpaPilihanMemaparkanRalat` | reviewer | redirect ke `pas/semakan` | flash `error` |
+| `testPelulusDitolakFilterDanStatusKekal` | approver | redirect Shield | flash `error`, status kekal, 0 log |
+| `testPemohonDitolakDanStatusKekal` | applicant | redirect Shield | flash `error`, status kekal |
+
+`assertSessionHas('message', '…')` membandingkan teks flash aksara demi aksara — ia juga menguji mesej yang pengguna baca. Ujian negatif menggunakan `assertRedirect()` + `assertSessionHas('error')`: redirect Shield berakhir di URL penuh tanpa `/` akhir, jadi `assertRedirectTo('/')` tidak sepadan.
+
+Lab: [Lab 8.3b](./lab.md#lab-83b--ujian-fungsian-tindakan-pukal-s7)
+
+### 🎯 Kuiz S7
+
+> Jawab selepas Lab 8.3b di laptop anda — jawapan datang daripada output `composer test` sebenar. Lulus kuiz ini menanda checkpoint Lab 8.3b.
+
+1. Lab 8.3b langkah 2: apakah baris akhir output `composer test -- tests/feature/Pas/PassBatchReviewTest.php --testdox`?
+   - [ ] `OK (5 tests, 5 assertions)`
+   - [ ] `OK (13 tests, 30 assertions)`
+   - [x] `OK (5 tests, 24 assertions)`
+   - [ ] `OK (6 tests, 24 assertions)`
+   > Setiap `seeInDatabase()`, `assertSessionHas()`, `assertRedirect*()` dan `assertSame()` dikira — 5 ujian, 24 assertion. `13 tests, 30 assertions` ialah `PassAccessTest` (Lab 8.3).
+
+2. Lab 8.3b langkah 3 (mutasi 1 — buang `permission:pas.review` dari route pukal): ujian manakah gagal, dan apakah mesejnya?
+   - [ ] `Pemohon ditolak dan status kekal` — *Failed asserting that a row in the table [pass_applications] matches the attributes*
+   - [x] `Pelulus ditolak filter dan status kekal` — *Response is not a redirect or instance of RedirectResponse.*
+   - [ ] `Pelulus ditolak filter dan status kekal` — *Failed asserting that a row in the table [pass_applications] matches the attributes* (status menjadi `under_review`)
+   - [ ] Tiada — kelima-lima masih lulus kerana `authorize()` menolak
+   > Tanpa Lapisan 1, `pelulus` sampai ke controller dan `authorize()` memulangkan **403**, bukan redirect. Status tetap kekal (Lapisan 2 berfungsi), tetapi ujian menangkap konfigurasi route yang salah. `pemohon1` masih ditolak oleh filter `group:`.
+
+---
+
+## S8 — Lanjutan S4: Demo Peranan Keempat (selepas Lab 8.4)
+
+Demo S4 menunjukkan tiga peranan. `admin` ialah peranan keempat — dan SPEC §4 memberinya `pas.*`, iaitu **semua** keupayaan Pas sekali gus:
+
+| Keupayaan | `applicant` | `reviewer` | `approver` | `admin` |
+|-----------|:-:|:-:|:-:|:-:|
+| `pas.apply` | ✅ | ❌ | ❌ | ✅ |
+| `pas.review` | ❌ | ✅ | ❌ | ✅ |
+| `pas.approve` | ❌ | ❌ | ✅ | ✅ |
+
+Akibatnya: admin boleh memohon, menyemak dan meluluskan permohonan **sendiri**. Kod kita mematuhi SPEC — ini bukan pepijat, tetapi **dapatan** untuk pemilik sistem (pemisahan tugas). Tugas pembangun ialah membuktikannya dengan data (`user_id` = `reviewed_by` = `approved_by`) dan menyerahkan keputusan kepada pemilik, bukan menukar peraturan sendiri.
+
+Babak yang sama juga membuktikan BR-PAS-01 dengan dua pelulus sebenar dalam dua sesi: `admin` meluluskan, `pelulus` menekan **Lulus** pada halaman yang dibuka sebelum itu.
+
+Lab: [Lab 8.4b](./lab.md#lab-84b--demo-peranan-keempat-admin--dapatan-pemisahan-tugas-s8)
+
+### 🎯 Kuiz S8
+
+> Jawab selepas Lab 8.4b di laptop anda — jawapan datang daripada demo sebenar. Lulus kuiz ini menanda checkpoint Lab 8.4b.
+
+1. Lab 8.4b langkah 7: `pelulus` menekan **Lulus** pada halaman F yang dibuka sebelum admin meluluskannya. Apakah yang dipaparkan?
+   - [ ] *The action you requested is not allowed.*
+   - [ ] Halaman *403 — Akses Ditolak*
+   - [ ] Status kekal tanpa sebarang mesej
+   - [x] *Peralihan status "Diluluskan" → "Diluluskan" tidak dibenarkan.*
+   > Dua sesi berbeza, jadi token CSRF `pelulus` masih sah dan `pelulus` ada `pas.approve`. `transition()` membaca `approved` selepas kunci dan `canTransitionTo()` menolak — tiada baris log kedua.
+
+2. Lab 8.4b langkah 8: apakah garis masa F selepas admin memuat semula halaman?
+   - [x] 3 entri, ketiga-tiganya oleh nama admin (Encik Admin Sistem)
+   - [ ] 3 entri: oleh admin, penyemak dan pelulus
+   - [ ] 4 entri — termasuk cubaan Lulus `pelulus` yang ditolak
+   - [ ] 2 entri — permohonan oleh admin tidak merekod penciptaan
+   > Admin melakukan ketiga-tiga peralihan (`NULL → submitted`, `submitted → under_review`, `under_review → approved`). Cubaan `pelulus` di-rollback, jadi tiada entri. Inilah bukti dapatan pemisahan tugas.
+
+---
+
 ## 📦 Hasil Hari Ini
 
 - [ ] `PassWorkflowService`: `startReview`, `approve`, `reject`, `expire`, `history`, `transition`, `authorize`
@@ -505,6 +654,10 @@ foreach ($ids as $id) {
 - [ ] `tests/feature/Pas/PassAccessTest.php` — 13 ujian hijau
 - [ ] Demo 3 peranan lulus; branch `feat/pas-kelulusan` digabung ke `main` — **M2 siap**
 - [ ] ⭐ `app/Commands/ExpirePassesCommand.php`
+- [ ] `ReviewController::reviewBatch()` + route `pas/semakan/pukal/review` dengan `permission:pas.review`; view baris gilir dengan checkbox (Lab 8.1b–8.2b)
+- [ ] `docs/ujian-manual-pas.md` — UT-PAS-27..30 + jadual mutasi (Lab 8.2b–8.3b)
+- [ ] `tests/feature/Pas/PassBatchReviewTest.php` — 5 ujian hijau (Lab 8.3b)
+- [ ] `docs/demo-m2.md` — babak `admin` + dapatan pemisahan tugas, digabung ke `main` (Lab 8.4b)
 
 Rujukan penuh jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — `PassWorkflowService`, `ReviewController`, `AuthGroups`, `Routes-pas`, `status-timeline-view`, `PassAccessTest`, `ExpirePassesCommand`. Nota topikal: [06 Shield auth & RBAC](../docs/nota-06-shield-auth-dan-rbac.md) · [05 Service & transaksi](../docs/nota-05-service-layer-dan-transaksi.md) · [10 Ujian PHPUnit](../docs/nota-10-ujian-phpunit-ci4.md).
 

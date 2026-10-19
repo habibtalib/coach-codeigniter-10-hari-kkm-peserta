@@ -37,70 +37,98 @@
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 2 | — |
-| 09:00–10:30 | S1 | Database MySQL & `.env` | Mencipta database & pengguna `kkm_dev`; menyambung projek |
-| 10:45–12:30 | S2 | Migration & seeder pertama | Menulis migration `departments` & `parking_zones`; seeder idempoten |
-| 14:30–16:00 | S3 | Model & halaman `/jabatan` | Membina model dengan validation; senarai & borang baharu |
-| 16:00–17:00 | S4 | Carian & pagination `/zon`; wrap-up | Membina carian Query Builder & pagination secara berdikari |
+| 09:00–10:00 | S1 | Database MySQL & `.env` | Mencipta database & pengguna `kkm_dev`; menyambung projek |
+| 10:00–10:30 | S5 | Lanjutan S1: database ujian & `.env.example` | Menyambung kumpulan `tests`; meng-commit templat tanpa rahsia |
+| 10:45–11:50 | S2 | Migration & seeder pertama | Menulis migration `departments` & `parking_zones`; seeder idempoten |
+| 11:50–12:30 | S6 | Lanjutan S2: Query Builder dalam konsol | Menjalankan query dalam `php spark shell`; membaca SQL sebenar |
+| 14:30–15:20 | S3 | Model & halaman `/jabatan` | Membina model dengan validation; senarai & borang baharu |
+| 15:20–16:00 | S7 | Lanjutan S3: edit jabatan | Membina borang edit dengan `update()` dan `is_unique` `{id}` |
+| 16:00–16:35 | S4 | Carian & pagination `/zon` | Membina carian Query Builder & pagination secara berdikari |
+| 16:35–17:00 | S8 | Lanjutan S4: butiran zon & susunan; wrap-up | Membina halaman butiran dengan 404 dan susunan ber-whitelist |
 
 ## Hari 4 — Development Kickoff: Shield, Skema Penuh & Aliran Git · [nota](./hari-4/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 3 | — |
-| 09:00–10:30 | S1 | Demo repo sendiri & kitaran request | Mendemokan repo GitLab & `/zon`; menjejak aliran request MVC CI4 dengan Debug Toolbar |
-| 10:45–12:30 | S2 | Struktur projek, `.env` + Shield | Melengkapkan `.env`, memasang Shield, peranan & layout Bootstrap |
-| 14:30–16:00 | S3 | Migration & seeder daripada ERD rujukan | Menulis 8 migration baki + seeder; `php spark migrate` berjaya |
-| 16:00–17:00 | S4 | Aliran Git solo & merge request; wrap-up | Push `SETUP:`, membuka MR pertama, pelan branch & Definition of Done |
+| 09:00–10:00 | S1 | Demo repo sendiri & kitaran request | Mendemokan repo GitLab & `/zon`; menjejak aliran request MVC CI4 dengan Debug Toolbar |
+| 10:00–10:30 | S5 | Lanjutan S1: jejak request POST `/jabatan` | Menjejak POST dengan History Debug Toolbar & `filter:check`; membandingkan dengan GET |
+| 10:45–12:00 | S2 | Struktur projek, `.env` + Shield | Melengkapkan `.env`, memasang Shield, peranan & layout Bootstrap |
+| 12:00–12:30 | S6 | Lanjutan S2: filter Shield pada halaman Hari 3 | Memasang `session` & `permission:admin.access` pada `/jabatan`, `/zon`; menguji dengan dua akaun |
+| 14:30–15:30 | S3 | Migration & seeder daripada ERD rujukan | Menulis 8 migration baki + seeder; `php spark migrate` berjaya |
+| 15:30–16:00 | S7 | Lanjutan S3: latihan FK & `ON DELETE` | Membuktikan `RESTRICT`/`SET NULL`/`CASCADE` dalam transaksi; `ReferenceSequenceSeeder` |
+| 16:00–16:35 | S4 | Aliran Git solo & merge request | Push `SETUP:`, membuka MR pertama, pelan branch & Definition of Done |
+| 16:35–17:00 | S8 | Lanjutan S4: merge request kedua; wrap-up | MR dengan komen semakan + commit pembetulan; padam branch selepas merge |
 
 ## Hari 5 — Modul TLK (Bahagian 1) · [nota](./hari-5/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 4 | — |
-| 09:00–10:30 | S1 | Migration & Model kenderaan/slot/tempahan | Menulis Model dengan `$allowedFields`, `$validationRules`, Entity & enum |
-| 10:45–12:30 | S2 | Controller & View CRUD asas | Membina CRUD slot (admin) & senarai tempahan dengan pagination |
-| 14:30–16:00 | S3 | Borang permohonan & validasi input | Membina borang tempahan dengan validasi server + nombor rujukan `TLK-` |
-| 16:00–17:00 | S4 | Ujian manual & semakan; wrap-up | Melaksanakan senarai ujian manual & merekod pepijat |
+| 09:00–10:00 | S1 | Migration & Model kenderaan/slot/tempahan | Menulis Model dengan `$allowedFields`, `$validationRules`, Entity & enum |
+| 10:00–10:30 | S5 | Lanjutan S1: peraturan Model zon & kenderaan | Menulis peraturan + mesej BM (`{id}`, `{value}`); menguji dengan `Model::validate()` & ujian unit |
+| 10:45–12:00 | S2 | Controller & View CRUD asas | Membina CRUD slot (admin) & senarai tempahan dengan pagination |
+| 12:00–12:30 | S6 | Lanjutan S2: CRUD zon (admin) | Membina CRUD zon `/admin/slot/zon`; menghalang padam zon yang masih ada slot |
+| 14:30–15:30 | S3 | Borang permohonan & validasi input | Membina borang tempahan dengan validasi server + nombor rujukan `TLK-` |
+| 15:30–16:00 | S7 | Lanjutan S3: borang daftar kenderaan | Membina `/kenderaan` dengan normalisasi, peraturan tersuai `valid_plate_no` & `user_id` dari sesi |
+| 16:00–16:35 | S4 | Ujian manual & semakan | Melaksanakan senarai ujian manual & merekod pepijat |
+| 16:35–17:00 | S8 | Lanjutan S4: ujian manual pusingan 2; wrap-up | Melaksanakan 12 kes zon & kenderaan; merekod BUG-ZON-001; membersihkan data ujian |
 
 ## Hari 6 — Modul TLK (Bahagian 2) · [nota](./hari-6/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 5 | — |
-| 09:00–10:30 | S1 | Logik semakan ketersediaan slot | Menulis query pertindihan julat tarikh & paparan slot kosong |
-| 10:45–12:30 | S2 | Kawalan pertindihan & status (menunggu/diluluskan/ditolak) | Menguatkuasa BR-TLK-01/04/05 dalam transaksi; peralihan status + log |
-| 14:30–16:00 | S3 | Ujian fungsian modul | Menulis ujian PHPUnit untuk pertindihan & peralihan status |
-| 16:00–17:00 | S4 | Penambahbaikan UI; wrap-up modul | Menambah badge status, flash message, pengesahan; **M1 siap** |
+| 09:00–10:00 | S1 | Logik semakan ketersediaan slot | Menulis query pertindihan julat tarikh & paparan slot kosong |
+| 10:00–10:30 | S5 | Lanjutan S1: papan slot sibuk | Membina papan tempahan aktif ikut julat tarikh dengan `JOIN`; dihadkan kepada pelulus |
+| 10:45–12:00 | S2 | Kawalan pertindihan & status (menunggu/diluluskan/ditolak) | Menguatkuasa BR-TLK-01/04/05 dalam transaksi; peralihan status + log |
+| 12:00–12:30 | S6 | Lanjutan S2: command `tlk:expire` | Menamatkan tempahan melalui `transition()`; melihat command menunggu kunci baris |
+| 14:30–15:30 | S3 | Ujian fungsian modul | Menulis ujian PHPUnit untuk pertindihan & peralihan status |
+| 15:30–16:00 | S7 | Lanjutan S3: ujian peraturan baharu | Menguji papan sibuk & tamat tempoh; dua mutasi ditangkap |
+| 16:00–16:35 | S4 | Penambahbaikan UI; wrap-up modul | Menambah badge status, flash message, pengesahan; **M1 siap** |
+| 16:35–17:00 | S8 | Lanjutan S4: gilap *Tempahan Saya*; wrap-up | Tab status dengan kiraan, Batal terus dari senarai |
 
 ## Hari 7 — Modul Pas (Bahagian 1) · [nota](./hari-7/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 6 | — |
-| 09:00–10:30 | S1 | Migration & Model permohonan pas | Menulis Model/Entity `PassApplication` & `PassDocument` |
-| 10:45–12:30 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran |
-| 14:30–16:00 | S3 | Borang, validasi & muat naik dokumen | Muat naik fail selamat (jenis/saiz/nama rawak/luar `public`) |
-| 16:00–17:00 | S4 | Ujian manual & semakan; wrap-up | Menguji kes sempadan muat naik & validasi |
+| 09:00–10:00 | S1 | Migration & Model permohonan pas | Menulis Model/Entity `PassApplication` & `PassDocument` |
+| 10:00–10:30 | S5 | Lanjutan S1: kaedah enum & Entity tambahan | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` diuji dalam `php spark shell` |
+| 10:45–12:00 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran |
+| 12:00–12:30 | S6 | Lanjutan S2: penapis jenis & carian | Penapis `?pass_type=` + carian `?q=` dalam skop pemilik; bukti kebocoran `orLike()` tanpa kurungan |
+| 14:30–15:30 | S3 | Borang, validasi & muat naik dokumen | Muat naik fail selamat (jenis/saiz/nama rawak/luar `public`) |
+| 15:30–16:00 | S7 | Lanjutan S3: tambah dokumen susulan | Had 3 dokumen setiap permohonan, semakan sebelum `move()` dan di bawah kunci `FOR UPDATE` |
+| 16:00–16:35 | S4 | Ujian manual & semakan | Menguji kes sempadan muat naik & validasi |
+| 16:35–17:00 | S8 | Lanjutan S4: kes sempadan automatik; wrap-up | `PassSubmitTest` PHPUnit + mutasi `>=` |
 
 ## Hari 8 — Modul Pas (Bahagian 2) · [nota](./hari-8/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 7 | — |
-| 09:00–10:30 | S1 | Aliran kelulusan mohon → semak → lulus/tolak | Melaksanakan `PassWorkflowService` dengan `PassStatus::canTransitionTo()` |
-| 10:45–12:30 | S2 | Kawalan akses ikut peranan | Mengkonfigur Shield groups/permissions + filter route + semakan pemilikan |
-| 14:30–16:00 | S3 | Log status/sejarah & ujian fungsian | Memaparkan garis masa `status_logs`; ujian akses positif & negatif |
-| 16:00–17:00 | S4 | Wrap-up Modul Pas | Demo aliran penuh 3 peranan; **M2 siap** |
+| 09:00–10:00 | S1 | Aliran kelulusan mohon → semak → lulus/tolak | Melaksanakan `PassWorkflowService` dengan `PassStatus::canTransitionTo()` |
+| 10:00–10:30 | S5 | Lanjutan S1: mula semakan pukal | Membina tindakan pukal melalui `startReview()`; kegagalan separa dilaporkan |
+| 10:45–12:00 | S2 | Kawalan akses ikut peranan | Mengkonfigur Shield groups/permissions + filter route + semakan pemilikan |
+| 12:00–12:30 | S6 | Lanjutan S2: lindungi route pukal | Menambah `permission:pas.review`; serangan `fetch()` + matriks 4 peranan |
+| 14:30–15:30 | S3 | Log status/sejarah & ujian fungsian | Memaparkan garis masa `status_logs`; ujian akses positif & negatif |
+| 15:30–16:00 | S7 | Lanjutan S3: ujian fungsian tindakan pukal | Menulis `PassBatchReviewTest` + 2 mutasi |
+| 16:00–16:35 | S4 | Wrap-up Modul Pas | Demo aliran penuh 3 peranan; **M2 siap** |
+| 16:35–17:00 | S8 | Lanjutan S4: demo peranan `admin` | Mendemokan admin; merekod dapatan pemisahan tugas dalam `docs/demo-m2.md` |
 
 ## Hari 9 — Modul Laporan · [nota](./hari-9/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Recap Hari 8 | — |
-| 09:00–10:30 | S1 | Reka bentuk laporan (jenis, kriteria carian/filter) | Menentukan spesifikasi RPT-01..03 & borang filter GET |
-| 10:45–12:30 | S2 | Query aggregate & carian data | Menulis `ReportService` (join, `groupBy`, `selectCount`, filter dinamik) |
-| 14:30–16:00 | S3 | Eksport PDF/Excel | Menjana PDF (Dompdf) & `.xlsx` (PhpSpreadsheet) dari filter sama |
-| 16:00–17:00 | S4 | Ujian modul laporan; wrap-up | Mengesahkan jumlah laporan = jumlah DB; **M3 siap** |
+| 08:30–09:00 | — | Recap Hari 8 (aliran Pas + RBAC) | — |
+| 09:00–10:00 | **S1** | Reka bentuk laporan (jenis, kriteria carian/filter) | O1, O2 |
+| 10:00–10:30 | **S5** | Lanjutan S1: tempoh pantas & cip filter aktif | O7 |
+| 10:45–12:00 | **S2** | Query aggregate & carian data | O3 |
+| 12:00–12:30 | **S6** | Lanjutan S2: ringkasan status & baris JUMLAH RPT-03 | O8 |
+| 14:30–15:30 | **S3** | Eksport PDF/Excel | O4, O6 |
+| 15:30–16:00 | **S7** | Lanjutan S3: lembaran Ringkasan Excel & ringkasan PDF | O9 |
+| 16:00–16:35 | **S4** | Ujian modul laporan — **M3 siap** | O5, O6 |
+| 16:35–17:00 | **S8** | Lanjutan S4: ujian ringkasan & mutasi; wrap-up | O10 |
 
 ## Hari 10 — Modul Statistik & Capstone · [nota](./hari-10/README.md)
 

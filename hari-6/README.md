@@ -18,6 +18,10 @@ Di akhir hari ini, peserta boleh:
 | O4 | **Melaksanakan** peralihan status (lulus/tolak/batal) melalui `BookingStatus::canTransitionTo()` dan merekodnya dalam `status_logs` | S2 | Halaman tempahan memaparkan sejarah 3 peralihan dengan nama pelaku |
 | O5 | **Menulis** ujian PHPUnit (`DatabaseTestTrait`, `FeatureTestTrait`) untuk pertindihan, had 90 hari, peralihan status dan kawalan akses | S3 | `composer test -- tests/tlk` hijau (≥ 25 ujian) |
 | O6 | **Menambah baik** UI (badge status, flash, dialog pengesahan, pagination Bootstrap) dan **mendemokan** M1 hujung-ke-hujung | S4 | Demo 5 minit 3 peranan; DoD M1 ditanda |
+| O7 | **Membina** papan slot sibuk dengan syarat pertindihan BR-TLK-01 dalam `JOIN` dan **mengehadkannya** kepada `permission:tlk.decide` | S5 | [Lab 6.1b](./lab.md#lab-61b--papan-slot-sibuk-untuk-pelulus-s5); `/tlk/tempahan/ketersediaan/sibuk` |
+| O8 | **Menulis** Spark command `tlk:expire` yang menamatkan tempahan melalui `transition()` dan **mendemonstrasi** command itu menunggu kunci baris | S6 | [Lab 6.2b](./lab.md#lab-62b--command-tamat-tempoh-tlkexpire-s6); `status_logs` `approved → expired` |
+| O9 | **Menulis** ujian PHPUnit untuk papan sibuk dan tamat tempoh, dan **membuktikan** setiap ujian menangkap mutasi | S7 | [Lab 6.3b](./lab.md#lab-63b--ujian-untuk-papan-sibuk--tamat-tempoh-s7); 12 ujian baharu hijau |
+| O10 | **Menggilap** senarai *Tempahan Saya* (tab status dengan kiraan, Batal terus, keadaan kosong) dan **membaca** kos query dalam Debug Toolbar | S8 | [Lab 6.4b](./lab.md#lab-64b--gilap-senarai-tempahan-saya-s8); `/tlk/tempahan` |
 
 ---
 
@@ -26,12 +30,16 @@ Di akhir hari ini, peserta boleh:
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 5 | — |
-| 09:00–10:30 | S1 | Logik semakan ketersediaan slot | Menulis query pertindihan julat tarikh & paparan slot kosong |
+| 09:00–10:00 | S1 | Logik semakan ketersediaan slot | Menulis query pertindihan julat tarikh & paparan slot kosong |
+| 10:00–10:30 | S5 | Lanjutan S1: papan slot sibuk | Membina papan tempahan aktif ikut julat tarikh dengan `JOIN`; dihadkan kepada pelulus |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | S2 | Kawalan pertindihan & status (menunggu/diluluskan/ditolak) | Menguatkuasa BR-TLK-01/04/05 dalam transaksi; peralihan status + log |
+| 10:45–12:00 | S2 | Kawalan pertindihan & status (menunggu/diluluskan/ditolak) | Menguatkuasa BR-TLK-01/04/05 dalam transaksi; peralihan status + log |
+| 12:00–12:30 | S6 | Lanjutan S2: command `tlk:expire` | Menamatkan tempahan melalui `transition()`; melihat command menunggu kunci baris |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–16:00 | S3 | Ujian fungsian modul | Menulis ujian PHPUnit untuk pertindihan & peralihan status |
-| 16:00–17:00 | S4 | Penambahbaikan UI; wrap-up modul | Menambah badge status, flash message, pengesahan; **M1 siap** |
+| 14:30–15:30 | S3 | Ujian fungsian modul | Menulis ujian PHPUnit untuk pertindihan & peralihan status |
+| 15:30–16:00 | S7 | Lanjutan S3: ujian peraturan baharu | Menguji papan sibuk & tamat tempoh; dua mutasi ditangkap |
+| 16:00–16:35 | S4 | Penambahbaikan UI; wrap-up modul | Menambah badge status, flash message, pengesahan; **M1 siap** |
+| 16:35–17:00 | S8 | Lanjutan S4: gilap *Tempahan Saya*; wrap-up | Tab status dengan kiraan, Batal terus dari senarai |
 
 ---
 
@@ -300,7 +308,7 @@ stateDiagram-v2
     pending --> approved : approve() — pelulus
     pending --> rejected : reject() — pelulus, sebab ≥ 10 aksara
     approved --> cancelled : cancel() — pemilik atau admin (BR-TLK-06)
-    approved --> expired : sistem (cabaran)
+    approved --> expired : sistem — tlk:expire (Lab 6.2b)
 ```
 
 Semua peralihan melalui satu kaedah peribadi `transition()`:
@@ -634,6 +642,143 @@ Layout akhir: `templates/kod/layout-main.php.txt` (modul **Templat & Rujukan**).
 
 ---
 
+## S5 — Lanjutan S1: Papan Slot Sibuk (selepas Lab 6.1)
+
+Lab 6.1 menjawab soalan pemohon: *"slot mana kosong?"*. Pelulus bertanya soalan sebaliknya: *"siapa menduduki slot ini pada tarikh itu?"*. Syarat pertindihan sama, tetapi ditulis dalam `JOIN`:
+
+| Soalan | Query | Satu baris = |
+|--------|-------|--------------|
+| Slot kosong (Lab 6.1) | `parking_slots … WHERE id NOT IN (SELECT slot_id …)` (tempahan aktif yang bertindih) | satu slot |
+| Slot sibuk (Lab 6.1b) | `slot_bookings JOIN parking_slots JOIN parking_zones JOIN users WHERE status IN ('pending','approved') AND start_date <= :end AND end_date >= :start` | satu tempahan |
+
+Bagi julat yang sama, setiap slot aktif berada dalam **salah satu** senarai sahaja. Slot yang dinyahaktif hilang dari senarai kosong, tetapi tempahannya masih wujud dan masih menduduki slot itu; papan menandakannya *Slot tidak aktif* supaya pelulus boleh bertindak. Jadual `users` Shield juga ada lajur `status`, jadi selepas `JOIN` setiap lajur ditulis dengan nama jadual (`slot_bookings.status`).
+
+Lab: [Lab 6.1b](./lab.md#lab-61b--papan-slot-sibuk-untuk-pelulus-s5)
+
+### 🎯 Kuiz S5
+
+> Jawab selepas Lab 6.1b di laptop anda — jawapan datang daripada papan slot sibuk sebenar. Lulus kuiz ini menanda checkpoint Lab 6.1b.
+
+1. Lab 6.1b langkah 7.2: anda isi tarikh mula **dan** tarikh tamat = tarikh tamat `TLK-2026-0001`. Apakah yang dipaparkan papan bagi A-01?
+   - [ ] Tiada baris A-01 — pada hari terakhir tempahan, slot sudah dikira kosong
+   - [x] Baris A-01 dengan `TLK-2026-0001`, pemohon *Aminah binti Latihan* dan badge *Menunggu*
+   - [ ] Mesej ralat *Tarikh tamat mesti sama atau selepas tarikh mula.*, tiada jadual
+   - [ ] Dua baris A-01: satu bagi tarikh mula dan satu bagi tarikh tamat
+   > Tarikh inklusif: `start_date <= :end` dan `end_date >= :start` kedua-duanya benar apabila `:start` = `:end` = `end_date`. Halaman slot kosong bagi julat yang sama tidak memaparkan A-01 — dua senarai itu saling melengkapi.
+
+2. Lab 6.1b langkah 7.3: A-01 dinyahaktif, kemudian anda muat semula kedua-dua halaman bagi julat satu hari yang sama. Apakah hasilnya?
+   - [ ] Kedua-dua halaman memaparkan A-01 seperti biasa — `is_active` hanya memberi kesan kepada borang tempahan
+   - [ ] A-01 muncul semula dalam slot kosong, dan `TLK-2026-0001` hilang dari papan
+   - [ ] Papan memaparkan ralat `Unknown column 'is_active'`
+   - [x] Slot kosong tidak memaparkan A-01; papan masih memaparkan `TLK-2026-0001` dengan badge *Slot tidak aktif*
+   > `availableSlots()` menapis `is_active = 1`, jadi slot tidak aktif tidak pernah ditawarkan. `busySlots()` tidak menapis `is_active`: tempahan yang sudah wujud masih menduduki slot, dan pelulus perlu nampak ia memerlukan tindakan.
+
+---
+
+## S6 — Lanjutan S2: Tamat Tempoh melalui Pintu yang Sama (selepas Lab 6.2)
+
+Rajah status ada `approved → expired`, tetapi tiada butang untuknya: sistem yang menukarnya. Spark command `php spark tlk:expire` memanggil `BookingService::expire()`, yang memanggil `transition()` yang sama dengan Lulus, Tolak dan Batal:
+
+| Langkah | Di mana | Kenapa |
+|---------|---------|--------|
+| Cari calon | `expirableIds()`: `status = 'approved' AND end_date < :today` (`:today` = hari ini) | `SELECT` biasa — tiada kunci, tidak menunggu sesiapa |
+| Satu tempahan, satu transaksi | Gelung dalam command → `expire()` → `transition()` | Satu tempahan gagal (cth `Lock wait timeout`) tidak membatalkan yang lain |
+| Kunci + semak semula | `lockRow('slot_bookings')` + `canTransitionTo()` | Jika pemilik membatalkan pada saat yang sama, command mendapat ralat status, bukan menimpa `cancelled` |
+| Jejak audit | `status_logs`: `actor_id` = pengguna pertama dalam group `admin`, catatan `Tamat tempoh automatik (tlk:expire).` | `actor_id` wajib (FK) walaupun pelakunya sistem |
+
+`end_date < :today`, bukan `<=`: hari terakhir tempahan masih digunakan, sama seperti tarikh inklusif BR-TLK-01.
+
+Lab: [Lab 6.2b](./lab.md#lab-62b--command-tamat-tempoh-tlkexpire-s6)
+
+### 🎯 Kuiz S6
+
+> Jawab selepas Lab 6.2b di laptop anda — jawapan datang daripada output `php spark tlk:expire` dan klien MySQL sebenar. Lulus kuiz ini menanda checkpoint Lab 6.2b.
+
+1. Lab 6.2b langkah 5: Terminal A memegang `SELECT … FOR UPDATE` pada tempahan itu, dan anda menjalankan `php spark tlk:expire`. Apakah yang dipaparkan **sebelum** `COMMIT;` di Terminal A?
+   - [ ] Ralat `Lock wait timeout exceeded` serta-merta
+   - [ ] Tiada apa-apa langsung — command tergantung sebelum mencetak baris pertama
+   - [x] Baris `1 tempahan melepasi end_date sebelum …: ID …`, kemudian command menunggu; `✔ TLK-… → Tamat Tempoh` hanya muncul selepas `COMMIT;`
+   - [ ] `✔ TLK-… → Tamat Tempoh` serta-merta, dan `COMMIT;` di Terminal A gagal
+   > `expirableIds()` ialah `SELECT` biasa (bacaan konsisten InnoDB tanpa kunci), jadi ia tidak menunggu. Yang menunggu ialah `lockRow()` dalam `transition()` — `SELECT … FOR UPDATE` pada baris yang sama.
+
+2. Lab 6.2b langkah 7: apakah baris terakhir `status_logs`?
+   - [x] `TLK`, `approved` → `expired`, `actor_id` = `id` pengguna `admin`, `remarks` = `Tamat tempoh automatik (tlk:expire).`
+   - [ ] `TLK`, `approved` → `expired`, `actor_id` = `NULL` kerana tiada pengguna log masuk dalam CLI
+   - [ ] `TLK`, `pending` → `expired`, `actor_id` = `id` pemohon
+   - [ ] Tiada baris baharu — command menukar status terus dengan `update()` tanpa log
+   > Command tiada sesi log masuk, jadi ia memilih pengguna pertama dalam group `admin` (`auth_groups_users`) sebagai pelaku. `transition()` menulis log dalam transaksi yang sama dengan perubahan status.
+
+---
+
+## S7 — Lanjutan S3: Ujian untuk Peraturan Baharu (selepas Lab 6.3)
+
+Setiap peraturan baharu S5–S6 mendapat ujian, dan setiap ujian mesti dilihat merah sekali:
+
+| Peraturan | Ujian | Mutasi yang ditangkap |
+|-----------|-------|-----------------------|
+| Papan hanya memaparkan status aktif | `testRejectedBookingIsNotBusy` | Buang `whereIn('slot_bookings.status', …)` |
+| Hari terakhir tempahan masih sibuk | `testLastDayOfBookingIsStillBusy` | `end_date >=` → `>` |
+| Hari terakhir belum tamat tempoh | `testOnlyApprovedBookingsThatEndedBeforeTodayAreExpirable` | `end_date <` → `<=` |
+| Larian kedua tidak menyentuh tempahan yang sudah tamat | `testCommandExpiresOnceThenFindsNothing` | Buang `->where('status', BookingStatus::Approved->value)` dalam `expirableIds()` |
+
+Dua alat baharu: `command('tlk:expire')` menjalankan Spark command di dalam ujian (pada DB kumpulan `tests`), dan `StreamFilterTrait` menangkap output `CLI::write()` untuk `getStreamFilterBuffer()`. Tempahan "lampau" dibina dengan cipta → lulus → anjak tarikh dengan `update()` terus, kerana BR-TLK-03 menolak tarikh lampau melalui service.
+
+Lab: [Lab 6.3b](./lab.md#lab-63b--ujian-untuk-papan-sibuk--tamat-tempoh-s7)
+
+### 🎯 Kuiz S7
+
+> Jawab selepas Lab 6.3b di laptop anda — jawapan datang daripada output `composer test` sebenar. Lulus kuiz ini menanda checkpoint Lab 6.3b.
+
+1. Lab 6.3b langkah 4 (mutasi 1: `end_date <` → `<=` dalam `expirableIds()`): baris `✘` manakah dalam output `--testdox`?
+   - [x] `Only approved bookings that ended before today are expirable`
+   - [ ] `Cannot expire booking that has not ended`
+   - [ ] `Command expires once then finds nothing`
+   - [ ] `Expire changes status and writes log`
+   > Dengan `<=`, tempahan yang tamat **hari ini** turut menjadi calon, jadi `assertSame([$ended], …)` gagal. `testCannotExpireBookingThatHasNotEnded` masih hijau kerana ia memanggil `expire()` terus — semakan tarikh dalam `expire()` tidak diubah.
+
+2. Lab 6.3b langkah 3: apakah baris terakhir output apabila kedua-dua fail dijalankan bersama?
+   - [ ] `OK (7 tests, 15 assertions)`
+   - [ ] `OK (12 tests, 12 assertions)`
+   - [x] `OK (12 tests, 27 assertions)`
+   - [ ] `OK (5 tests, 12 assertions)`
+   > `BusySlotsTest` 7 ujian (15 assertion) + `ExpireBookingTest` 5 ujian (12 assertion). Setiap `seeInDatabase()`, `assertRedirect()` dan `assertSee()` dikira sebagai assertion.
+
+---
+
+## S8 — Lanjutan S4: Gilap Senarai Tempahan Saya (selepas Lab 6.4)
+
+Lab 6.4 menggilap halaman pelulus. Corak yang sama (badge, flash, `data-confirm`, keadaan kosong) kini untuk senarai pemohon:
+
+| Sebelum (Hari 5) | Selepas (Lab 6.4b) |
+|------------------|--------------------|
+| Dropdown status + butang **Tapis** | Tab status (`nav-pills`) dengan kiraan; satu klik |
+| **Lihat** → butiran → **Batalkan Tempahan** | **Batal** terus dari baris (`data-confirm`), kembali ke tab yang sama |
+| *Tiada tempahan.* | *Tiada tempahan berstatus Diluluskan.* + pautan *Semak slot kosong* |
+
+Kiraan bagi enam tab datang daripada **satu** query `GROUP BY status`, bukan lima `COUNT`. Status tanpa tempahan tiada dalam hasil `GROUP BY`, jadi `array_fill_keys()` mengisi `0` dahulu. Butang **Batal** muncul hanya apabila `canTransitionTo(Cancelled)` benar — sumber yang sama dengan halaman butiran. `redirect()->back()` membawa pengguna ke URL sebelumnya, termasuk `?status=`.
+
+Lab: [Lab 6.4b](./lab.md#lab-64b--gilap-senarai-tempahan-saya-s8)
+
+### 🎯 Kuiz S8
+
+> Jawab selepas Lab 6.4b di laptop anda — jawapan datang daripada Debug Toolbar dan pelayar sebenar. Lulus kuiz ini menanda checkpoint Lab 6.4b.
+
+1. Lab 6.4b langkah 6: pada `/tlk/tempahan?status=cancelled`, berapa query dalam tab Database mengandungi `FROM slot_bookings`, dan yang mana tiada syarat `status`?
+   - [ ] 2 — `COUNT(*)` dan `SELECT` senarai; kedua-duanya ada syarat `status`
+   - [ ] 6 — satu `COUNT(*)` bagi setiap tab, kemudian senarai
+   - [ ] 3 — semuanya ada syarat `status = 'cancelled'`
+   - [x] 3 — `COUNT(*) AS numrows`, `SELECT … LIMIT 10` dan `GROUP BY status`; query `GROUP BY` tiada syarat `status`
+   > `paginate()` menjalankan dua query (kiraan untuk pager + halaman data). `countByStatusForUser()` menambah satu `GROUP BY` yang hanya menapis `user_id`, sebab itu kiraan pada tab kekal sama walaupun tab bertukar.
+
+2. Lab 6.4b langkah 7: anda klik **Batal** di tab *Diluluskan* dan **OK** dalam dialog. Ke mana anda dibawa?
+   - [ ] `/tlk/tempahan/<id>` (butiran tempahan) dengan flash hijau
+   - [x] `/tlk/tempahan?status=approved` dengan flash hijau *Tempahan TLK-… telah dibatalkan.*, dan kiraan *Dibatalkan* bertambah satu
+   - [ ] `/tlk/tempahan` (tab *Semua*) dengan flash hijau
+   - [ ] `/tlk/tempahan?status=approved` dengan flash merah *Status "Diluluskan" tidak boleh ditukar kepada "Dibatalkan".*
+   > `BookingController::cancel()` memulangkan `redirect()->back()`. URL sebelumnya ialah tab yang sedang dibuka, termasuk `?status=approved`. Tempahan itu kini *Dibatalkan*, jadi tab *Diluluskan* memaparkan keadaan kosong.
+
+---
+
 ## 📦 Hasil Hari Ini
 
 - [ ] `app/Services/SlotAvailabilityService.php` + route & view `tlk/tempahan/ketersediaan`
@@ -645,6 +790,10 @@ Layout akhir: `templates/kod/layout-main.php.txt` (modul **Templat & Rujukan**).
 - [ ] UI: badge, flash, `data-confirm`, pagination Bootstrap
 - [ ] `docs/ujian-manual-tlk.md` dikemas kini — TM-TLK-16 ✅
 - [ ] Branch `feat/tlk-ketersediaan`, `feat/tlk-keputusan`, `feat/tlk-ujian` di-merge; tag `m1-siap`
+- [ ] Papan slot sibuk `/tlk/tempahan/ketersediaan/sibuk` (`permission:tlk.decide`) + `SlotAvailabilityService::busySlots()`
+- [ ] `app/Commands/ExpireBookingsCommand.php` (`php spark tlk:expire`) + `BookingService::expirableIds()`/`expire()`
+- [ ] `tests/tlk/BusySlotsTest.php` + `ExpireBookingTest.php` — hijau; dua ujian mutasi dicatat dalam `docs/ujian-manual-tlk.md`
+- [ ] *Tempahan Saya*: tab status dengan kiraan (`SlotBookingModel::countByStatusForUser()`), Batal terus dari senarai
 
 ---
 

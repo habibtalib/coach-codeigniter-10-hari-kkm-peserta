@@ -6,10 +6,14 @@
 
 | Lab | Sesi | Branch | Hasil |
 |-----|------|--------|-------|
-| 5.1 | S1 09:00–10:30 | `feat/tlk-model` | Enum, Entity, 5 Model, ujian unit |
-| 5.2 | S2 10:45–12:30 | `feat/tlk-crud` | CRUD slot admin + senarai tempahan berpagination |
-| 5.3 | S3 14:30–16:00 | `feat/tlk-borang-tempahan` | Borang + validasi + `TLK-2026-0001` |
-| 5.4 | S4 16:00–17:00 | — | `docs/ujian-manual-tlk.md` |
+| 5.1 | S1 09:00–10:00 | `feat/tlk-model` | Enum, Entity, 5 Model, ujian unit |
+| 5.1b | S5 10:00–10:30 | `feat/tlk-model` | Peraturan Model zon & kenderaan, `normalisePlate()` + ujian unit |
+| 5.2 | S2 10:45–12:00 | `feat/tlk-crud` | CRUD slot admin + senarai tempahan berpagination |
+| 5.2b | S6 12:00–12:30 | `feat/tlk-crud` | CRUD zon admin `/admin/slot/zon` |
+| 5.3 | S3 14:30–15:30 | `feat/tlk-borang-tempahan` | Borang + validasi + `TLK-2026-0001` |
+| 5.3b | S7 15:30–16:00 | `feat/tlk-borang-tempahan` | Borang daftar kenderaan `/kenderaan` + `VehicleRules` |
+| 5.4 | S4 16:00–16:35 | — | `docs/ujian-manual-tlk.md` |
+| 5.4b | S8 16:35–17:00 | — | `docs/ujian-manual-zon-kenderaan.md` + BUG-ZON-001 |
 
 ---
 
@@ -602,9 +606,9 @@ Menulis enum `BookingStatus` & `SlotCategory`, Entity `SlotBooking` dan Model TL
    ```
 
 ### ✅ Checkpoint
-- `composer test -- --no-coverage tests/tlk/BookingStatusTest.php` → `OK (5 tests, …)` (`OK (6 tests, …)` jika ujian cabaran ⭐ ditambah).
-- Anda boleh menjawab: *"Kenapa `status` ada dalam `$allowedFields` tetapi pemohon tidak boleh menetapkannya?"* (README §1.3).
-- Bandingkan dengan `BookingStatus.php.txt` (modul **Templat & Rujukan**), `SlotCategory.php.txt` (modul **Templat & Rujukan**), `SlotBooking-Entity.php.txt` (modul **Templat & Rujukan**), `SlotBookingModel.php.txt` (modul **Templat & Rujukan**).
+- `composer test -- --no-coverage tests/tlk/BookingStatusTest.php` → `OK (5 tests, …)` (`OK (6 tests, …)` jika ujian cabaran ⭐ ditambah) (Kuiz S1).
+- Anda boleh menjawab: *"Kenapa `status` ada dalam `$allowedFields` tetapi pemohon tidak boleh menetapkannya?"* (README §1.3) (Kuiz S1).
+- Bandingkan dengan `BookingStatus.php.txt` (modul **Templat & Rujukan**), `SlotCategory.php.txt` (modul **Templat & Rujukan**), `SlotBooking-Entity.php.txt` (modul **Templat & Rujukan**), `SlotBookingModel.php.txt` (modul **Templat & Rujukan**) (Kuiz S1).
 
 ### 🧯 Masalah lazim
 
@@ -628,7 +632,7 @@ Menulis enum `BookingStatus` & `SlotCategory`, Entity `SlotBooking` dan Model TL
 Membina `Admin/SlotController` (senarai, tambah, ubah, padam lembut) dan `Tlk/BookingController::index` berpagination yang diskop kepada pemilik.
 
 ### Prasyarat
-- Lab 5.1 checkpoint lulus dan di-merge: `git switch main && git merge --no-ff feat/tlk-model`
+- Lab 5.1 dan 5.1b checkpoint lulus dan di-merge: `git switch main && git merge --no-ff feat/tlk-model`
 - `git switch -c feat/tlk-crud`
 
 ### Langkah
@@ -965,11 +969,11 @@ Membina `Admin/SlotController` (senarai, tambah, ubah, padam lembut) dan `Tlk/Bo
 8. Commit: `git add app/ && git commit -m "TLK: CRUD slot admin + senarai tempahan berpagination"`.
 
 ### ✅ Checkpoint
-- Log masuk `admin@latihan.test` → `http://localhost:8080/admin/slot` → 10 slot + pautan halaman `2` (12 slot seeder).
-- Tambah `A-05` / Zon A / OKU → flash *"Slot A-05 telah disimpan."*. Tambah `A-05` / Zon A sekali lagi → *"No. slot ini sudah wujud dalam zon tersebut."*. Tambah `A-05` / Zon **B** → berjaya.
-- Padam `A-05` Zon B → hilang dari senarai; `php spark db:table parking_slots --desc --limit-rows 2` menunjukkan `deleted_at` berisi.
-- Log masuk `pemohon1@latihan.test` → buka `/admin/slot` → dialih ke `/` (Shield: tiada kebenaran group).
-- `/tlk/tempahan` sebagai pemohon1 → jadual kosong *"Tiada tempahan."* (belum ada tempahan).
+- Log masuk `admin@latihan.test` → `http://localhost:8080/admin/slot` → 10 slot + pautan halaman `2` (12 slot seeder) (Kuiz S2).
+- Tambah `A-05` / Zon A / OKU → flash *"Slot A-05 telah disimpan."*. Tambah `A-05` / Zon A sekali lagi → *"No. slot ini sudah wujud dalam zon tersebut."*. Tambah `A-05` / Zon **B** → berjaya (Kuiz S2).
+- Padam `A-05` Zon B → hilang dari senarai; `php spark db:table parking_slots --desc --limit-rows 2` menunjukkan `deleted_at` berisi (Kuiz S2).
+- Log masuk `pemohon1@latihan.test` → buka `/admin/slot` → dialih ke `/` (Shield: tiada kebenaran group) (Kuiz S2).
+- `/tlk/tempahan` sebagai pemohon1 → jadual kosong *"Tiada tempahan."* (belum ada tempahan) (Kuiz S2).
 
 ### 🧯 Masalah lazim
 
@@ -983,7 +987,7 @@ Membina `Admin/SlotController` (senarai, tambah, ubah, padam lembut) dan `Tlk/Bo
 | `Unknown column 'deleted_at'` pada model lain | `$useSoftDeletes = true` disalin ke Model yang jadualnya tiada `deleted_at` | Hanya `ParkingSlotModel` |
 
 ### ⭐ Cabaran tambahan
-- CRUD zon (`Admin/ZoneController`) — halang padam zon yang masih ada slot (FK `RESTRICT` akan membaling ralat DB; tangkap dan papar mesej BM).
+- Susun `/admin/slot` ikut `?sort=slot_no` atau `?sort=category` dengan senarai putih (corak Lab 3.4b). CRUD zon dibina dalam [Lab 5.2b](#lab-52b--crud-zon-admin-s6).
 - Filter kategori pada `/admin/slot?category=oku`.
 
 ---
@@ -994,7 +998,7 @@ Membina `Admin/SlotController` (senarai, tambah, ubah, padam lembut) dan `Tlk/Bo
 Membina borang tempahan dengan validasi server (termasuk BR-TLK-03), `ReferenceNumberService`, `BookingService` v1, dan menjana `TLK-2026-0001`.
 
 ### Prasyarat
-- Lab 5.2 di-merge; `git switch -c feat/tlk-borang-tempahan`
+- Lab 5.2 dan 5.2b di-merge (`git switch main && git merge --no-ff feat/tlk-crud`); `git switch -c feat/tlk-borang-tempahan`
 
 ### Langkah
 
@@ -1541,8 +1545,8 @@ Membina borang tempahan dengan validasi server (termasuk BR-TLK-03), `ReferenceN
 10. Commit: `TLK: borang tempahan + validasi BR-TLK-03 + ReferenceNumberService`.
 
 ### ✅ Checkpoint
-- Selepas hantar: dialih ke `/tlk/tempahan/1` dengan flash *"Permohonan TLK-2026-0001 telah dihantar."* (tahun ikut tarikh semasa).
-- DB:
+- Selepas hantar: dialih ke `/tlk/tempahan/1` dengan flash *"Permohonan TLK-2026-0001 telah dihantar."* (tahun ikut tarikh semasa) (Kuiz S3).
+- DB (Kuiz S3):
 
   ```bash
   php spark db:table slot_bookings
@@ -1550,10 +1554,10 @@ Membina borang tempahan dengan validasi server (termasuk BR-TLK-03), `ReferenceN
   ```
 
   → `ref_no = TLK-2026-0001`, `status = pending`; `reference_sequences`: `TLK | 2026 | 1`.
-- Hantar tempahan kedua (slot lain) → `TLK-2026-0002`.
-- Tarikh mula semalam → mesej *"Tarikh mula tidak boleh pada masa lalu."* di bawah medan, nilai lain dikekalkan.
-- Tarikh tamat = mula + 91 hari → *"Tarikh tamat tidak boleh melebihi 90 hari selepas tarikh mula."*; + 90 hari → diterima.
-- Log masuk `pelulus@latihan.test` → `/tlk/tempahan/new` → dialih (tiada `tlk.apply`).
+- Hantar tempahan kedua (slot lain) → `TLK-2026-0002` (Kuiz S3).
+- Tarikh mula semalam → mesej *"Tarikh mula tidak boleh pada masa lalu."* di bawah medan, nilai lain dikekalkan (Kuiz S3).
+- Tarikh tamat = mula + 91 hari → *"Tarikh tamat tidak boleh melebihi 90 hari selepas tarikh mula."*; + 90 hari → diterima (Kuiz S3).
+- Log masuk `pelulus@latihan.test` → `/tlk/tempahan/new` → dialih (tiada `tlk.apply`) (Kuiz S3).
 
 ### 🧯 Masalah lazim
 
@@ -1579,7 +1583,7 @@ Membina borang tempahan dengan validasi server (termasuk BR-TLK-03), `ReferenceN
 Melaksanakan senarai ujian manual TLK secara sistematik dan merekod pepijat dengan langkah boleh diulang.
 
 ### Prasyarat
-- Lab 5.1–5.3 di-merge ke `main`; `php spark db:seed DatabaseSeeder` (data asas lengkap)
+- Lab 5.1–5.3 dan 5.1b–5.3b di-merge ke `main` (`git switch main && git merge --no-ff feat/tlk-borang-tempahan`); `php spark db:seed DatabaseSeeder` (data asas lengkap)
 - Dua pelayar (atau satu biasa + satu incognito)
 
 ### Langkah
@@ -1612,9 +1616,9 @@ Melaksanakan senarai ujian manual TLK secara sistematik dan merekod pepijat deng
 4. Wrap-up: commit `docs/ujian-manual-tlk.md` dengan `TLK: rekod ujian manual Hari 5`.
 
 ### ✅ Checkpoint
-- `docs/ujian-manual-tlk.md` — 16 kes, setiap satu ada status; ≥ 14 ✅ (TM-TLK-16 ❌ dijangka).
-- Sekurang-kurangnya **satu** laporan pepijat lengkap dengan langkah menghasilkan semula (TM-TLK-16 dikira).
-- `git log --oneline main` menunjukkan merge `feat/tlk-model`, `feat/tlk-crud`, `feat/tlk-borang-tempahan`.
+- `docs/ujian-manual-tlk.md` — 16 kes, setiap satu ada status; ≥ 14 ✅ (TM-TLK-16 ❌ dijangka) (Kuiz S4).
+- Sekurang-kurangnya **satu** laporan pepijat lengkap dengan langkah menghasilkan semula (TM-TLK-16 dikira) (Kuiz S4).
+- `git log --oneline main` menunjukkan merge `feat/tlk-model`, `feat/tlk-crud`, `feat/tlk-borang-tempahan` (Kuiz S4).
 
 ### 🧯 Masalah lazim
 
@@ -1629,17 +1633,929 @@ Tukar TM-TLK-08 hingga TM-TLK-11 menjadi ujian PHPUnit untuk `BookingRules` (tan
 
 ---
 
+## Lab 5.1b — Peraturan Model Zon & Kenderaan (S5)
+
+### 🎯 Objektif
+Menulis `$validationRules` dan `$validationMessages` BM untuk `ParkingZoneModel` (termasuk `is_unique` dengan `{id}`) dan `VehicleModel`, menambah kaedah pembantu `slotCount()` dan `VehicleModel::normalisePlate()`, kemudian membuktikannya dengan `Model::validate()` dalam `php spark shell` dan ujian unit tanpa DB. Lab 5.2b (CRUD zon) dan Lab 5.3b (borang kenderaan) bergantung pada kod ini.
+
+### Prasyarat
+- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 5.1](#lab-51--enum-entity--model-s1) checkpoint lulus; anda masih di branch `feat/tlk-model` (belum di-merge).
+- `php spark shell` dari [Lab 3.2b](../hari-3/lab.md#lab-32b--query-builder-dalam-konsol-s6) berfungsi.
+
+### Langkah
+
+1. **`ParkingZoneModel`** — gantikan seluruh fail Lab 5.1. `cari()` dan `dropdown()` kekal; yang baharu ialah peraturan, mesej BM dan `slotCount()`:
+
+   `app/Models/ParkingZoneModel.php`
+
+   ```php
+   <?php
+
+   namespace App\Models;
+
+   use CodeIgniter\Model;
+
+   class ParkingZoneModel extends Model
+   {
+       protected $table         = 'parking_zones';
+       protected $returnType    = 'array';
+       protected $allowedFields = ['code', 'name', 'location'];
+       protected $useTimestamps = true;
+
+       // Lab 5.1b: peraturan format zon. 'id' perlu ada peraturan kerana {id} digunakan dalam is_unique.
+       protected $validationRules = [
+           'id'       => 'permit_empty|is_natural_no_zero',
+           'code'     => 'required|alpha_dash|max_length[10]|is_unique[parking_zones.code,id,{id}]',
+           'name'     => 'required|max_length[100]',
+           'location' => 'required|max_length[150]',
+       ];
+
+       protected $validationMessages = [
+           'code'     => [
+               'required'   => 'Kod zon wajib diisi.',
+               'alpha_dash' => 'Kod zon hanya huruf, nombor, - dan _.',
+               'max_length' => 'Kod zon maksimum 10 aksara.',
+               'is_unique'  => 'Kod zon {value} sudah wujud.',
+           ],
+           'name'     => ['required' => 'Nama zon wajib diisi.', 'max_length' => 'Nama zon maksimum 100 aksara.'],
+           'location' => ['required' => 'Lokasi wajib diisi.', 'max_length' => 'Lokasi maksimum 150 aksara.'],
+       ];
+
+       public function cari(?string $q): static
+       {
+           $q = trim((string) $q);
+
+           if ($q !== '') {
+               $this->groupStart()
+                   ->like('name', $q)
+                   ->orLike('location', $q)
+                   ->orLike('code', $q)
+                   ->groupEnd();
+           }
+
+           return $this->orderBy('code');
+       }
+
+       /** @return array<int, string> [id => 'A — Blok Utama'] */
+       public function dropdown(): array
+       {
+           $options = [];
+
+           foreach ($this->orderBy('code')->findAll() as $row) {
+               $options[$row['id']] = $row['code'] . ' — ' . $row['name'];
+           }
+
+           return $options;
+       }
+
+       /**
+        * Bilangan slot dalam zon, TERMASUK slot yang dipadam lembut (deleted_at berisi).
+        * FK parking_slots.zone_id (RESTRICT) masih nampak baris itu, jadi kiraan ini
+        * yang menentukan sama ada zon boleh dipadam.
+        */
+       public function slotCount(int $zoneId): int
+       {
+           return $this->db->table('parking_slots')->where('zone_id', $zoneId)->countAllResults();
+       }
+   }
+   ```
+
+   > `{id}` dalam `is_unique[parking_zones.code,id,{id}]` diganti dengan nilai `id` dalam data yang divalidasi: semasa **edit**, baris zon itu sendiri dikecualikan. CI4 mewajibkan peraturan untuk medan `id` jika `{id}` digunakan (corak `DepartmentModel` Lab 3.3b). `{value}` dalam mesej diganti dengan nilai yang ditolak.
+
+2. **`VehicleModel`** — gantikan seluruh fail Lab 5.1. `dropdownForUser()` kekal; ditambah mesej BM dan kaedah **statik** `normalisePlate()`:
+
+   `app/Models/VehicleModel.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Models;
+
+   use CodeIgniter\Model;
+
+   class VehicleModel extends Model
+   {
+       protected $table         = 'vehicles';
+       protected $returnType    = 'array';
+       protected $allowedFields = ['user_id', 'plate_no', 'model', 'color'];
+       protected $useTimestamps = true;
+
+       protected $validationRules = [
+           'id'       => 'permit_empty|is_natural_no_zero',   // {id} dalam is_unique perlukan peraturan ini
+           'user_id'  => 'required|is_natural_no_zero',
+           'plate_no' => 'required|max_length[15]|is_unique[vehicles.plate_no,id,{id}]',
+           'model'    => 'required|max_length[80]',
+           'color'    => 'required|max_length[30]',
+       ];
+
+       // Lab 5.1b: mesej BM — {value} = nilai yang dihantar
+       protected $validationMessages = [
+           'plate_no' => [
+               'required'   => 'No. plat wajib diisi.',
+               'max_length' => 'No. plat maksimum 15 aksara.',
+               'is_unique'  => 'No. plat {value} sudah didaftarkan.',
+           ],
+           'model' => ['required' => 'Model kenderaan wajib diisi.', 'max_length' => 'Model maksimum 80 aksara.'],
+           'color' => ['required' => 'Warna wajib diisi.', 'max_length' => 'Warna maksimum 30 aksara.'],
+       ];
+
+       /** @return array<int, string> [id => 'WXX 1234 — Proton Saga'] — kenderaan milik pengguna sahaja */
+       public function dropdownForUser(int $userId): array
+       {
+           $options = [];
+
+           foreach ($this->where('user_id', $userId)->orderBy('plate_no')->findAll() as $v) {
+               $options[$v['id']] = $v['plate_no'] . ' — ' . $v['model'];
+           }
+
+           return $options;
+       }
+
+       /**
+        * Bentuk piawai no. plat sebelum validasi & simpan: huruf besar, ruang di hujung
+        * dibuang, ruang berganda jadi satu. ' wxx   1234 ' → 'WXX 1234'
+        */
+       public static function normalisePlate(string $plate): string
+       {
+           return strtoupper((string) preg_replace('/\s+/', ' ', trim($plate)));
+       }
+   }
+   ```
+
+   > `normalisePlate()` tidak menyentuh DB, jadi ia boleh diuji tanpa database dan dipanggil tanpa objek Model: `VehicleModel::normalisePlate($input)`.
+
+3. **Ujian unit tanpa DB** — `tests/tlk/VehicleModelTest.php`:
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace Tests\Tlk;
+
+   use App\Models\VehicleModel;
+   use CodeIgniter\Test\CIUnitTestCase;
+
+   /**
+    * @internal
+    */
+   final class VehicleModelTest extends CIUnitTestCase
+   {
+       public function testNormalisePlateUppercasesAndTrims(): void
+       {
+           $this->assertSame('WXX 1234', VehicleModel::normalisePlate('  wxx 1234 '));
+       }
+
+       public function testNormalisePlateCollapsesSpaces(): void
+       {
+           $this->assertSame('VXX 2468', VehicleModel::normalisePlate("vxx    2468"));
+           $this->assertSame('WXY 1357', VehicleModel::normalisePlate("wxy\t1357"));   // tab juga ruang
+       }
+
+       public function testNormalisePlateKeepsOtherCharacters(): void
+       {
+           // Sengkang TIDAK dibuang — peraturan format (Lab 5.3b) yang menolaknya
+           $this->assertSame('WXX-1234', VehicleModel::normalisePlate('wxx-1234'));
+           $this->assertSame('', VehicleModel::normalisePlate('   '));
+       }
+   }
+   ```
+
+   ```bash
+   php -l app/Models/ParkingZoneModel.php
+   php -l app/Models/VehicleModel.php
+   composer test -- --no-coverage tests/tlk/VehicleModelTest.php
+   ```
+
+   Dijangka: `OK (3 tests, 5 assertions)`.
+
+4. **Uji peraturan dalam konsol.** `Model::validate()` menjalankan peraturan Model tanpa `INSERT`. Buka konsol, kemudian taip **satu baris** setiap kali dan baca hasilnya:
+
+   ```bash
+   php spark shell
+   ```
+
+   ```text
+   $zones = model('ParkingZoneModel')
+   $zones->validate(['code' => 'A', 'name' => 'Zon Berganda', 'location' => 'Aras 9'])
+   $zones->errors()
+   $a = $zones->where('code', 'A')->first()
+   $zones->validate(['id' => $a['id'], 'code' => 'A', 'name' => 'Blok Utama', 'location' => 'Aras G, pintu masuk utama'])
+   $zones->validate(['code' => 'z 1', 'name' => '', 'location' => 'Aras 9'])
+   $zones->errors()
+   $zones->slotCount($a['id'])
+   \App\Models\VehicleModel::normalisePlate('  wxx   1234 ')
+   $vehicles = model('VehicleModel')
+   $vehicles->validate(['user_id' => 1, 'plate_no' => 'WXX 1234', 'model' => 'Proton Saga', 'color' => 'Putih'])
+   $vehicles->errors()
+   exit
+   ```
+
+   Catat hasil `validate()` dan `errors()` baris 2–5 (soalan Kuiz S5). `slotCount()` zon A memulangkan `4` (4 slot seeder Hari 4). Tiada baris DB berubah — `validate()` hanya menyemak.
+5. Commit pada branch yang sama:
+
+   ```bash
+   git add app/Models tests/tlk
+   git commit -m "TLK: peraturan Model zon & kenderaan + normalisePlate()"
+   ```
+
+### ✅ Checkpoint
+- [ ] `composer test -- --no-coverage tests/tlk/VehicleModelTest.php` → `OK (3 tests, 5 assertions)` (Kuiz S5).
+- [ ] Dalam `php spark shell`, `validate()` zon berkod `A` tanpa `id` → `false` dengan mesej BM; dengan `id` zon A → `true` (Kuiz S5).
+- [ ] `git log --oneline -1` pada `feat/tlk-model` menunjukkan commit `TLK: peraturan Model zon & kenderaan + normalisePlate()` (Kuiz S5).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `LogicException: No validation rules for the placeholder: "id"` | Peraturan `'id' => 'permit_empty\|is_natural_no_zero'` tertinggal, tetapi data mengandungi `id` | Tambah peraturan `id` (langkah 1) |
+| `errors()` → *The code field must contain a unique value.* | `$validationMessages` tiada, atau kunci bukan nama peraturan tepat | Kunci = `is_unique`, di bawah medan `code` |
+| `Call to undefined method App\Models\ParkingZoneModel::slotCount()` | Fail belum disimpan, atau konsol dibuka sebelum fail diubah | Simpan fail, `exit`, buka semula `php spark shell` |
+| Prompt `>` tidak muncul | Tetingkap Git Bash berasingan (mintty) | Guna terminal VS Code, atau `winpty php spark shell` |
+| `No tests executed!` | Nama fail ≠ nama kelas, atau `namespace` salah | Fail `tests/tlk/VehicleModelTest.php`, `namespace Tests\Tlk;`, kelas `VehicleModelTest` |
+
+### ⭐ Cabaran tambahan
+Tambah ujian `testNormalisePlateIsIdempotent()`: `normalisePlate(normalisePlate($x))` mesti sama dengan `normalisePlate($x)` bagi tiga contoh. Kenapa sifat ini penting jika kaedah itu dipanggil di dua tempat (controller dan seeder)?
+
+---
+
+## Lab 5.2b — CRUD Zon (Admin) (S6)
+
+### 🎯 Objektif
+Membina CRUD zon di `/admin/slot/zon` dalam `Admin/SlotController` (SPEC §5: *CRUD slot & zon*) dengan corak Lab 5.2 — senarai putih medan, `validateData()` dengan peraturan Model, PRG, filter `group:admin` — dan menghalang padam zon yang masih ada slot dengan mesej BM, bukan ralat FK `1451`.
+
+### Prasyarat
+- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 5.2](#lab-52--crud-slot-admin--senarai-tempahan-s2) checkpoint lulus; anda masih di branch `feat/tlk-crud` (belum di-merge).
+- [Lab 5.1b](#lab-51b--peraturan-model-zon--kenderaan-s5) siap: `ParkingZoneModel` ada peraturan dan `slotCount()`.
+
+### Langkah
+
+1. **Route.** Dalam `app/Config/Routes.php`, gantikan seluruh kumpulan `admin/slot` (Lab 5.2 langkah 1) dengan versi ini. Enam route slot tidak berubah; enam route zon ditambah dalam kumpulan yang **sama**, jadi filter `group:admin` melindungi kedua-duanya:
+
+   ```php
+   // Admin — CRUD slot & zon (SPEC §5: SlotController = CRUD slot & zon)
+   $routes->group('admin/slot', ['namespace' => 'App\Controllers\Admin', 'filter' => 'group:admin'], static function (RouteCollection $routes): void {
+       $routes->get('/', 'SlotController::index', ['as' => 'admin.slot.index']);
+       $routes->get('new', 'SlotController::new', ['as' => 'admin.slot.new']);
+       $routes->post('/', 'SlotController::create', ['as' => 'admin.slot.create']);
+       $routes->get('(:num)/edit', 'SlotController::edit/$1', ['as' => 'admin.slot.edit']);
+       $routes->post('(:num)', 'SlotController::update/$1', ['as' => 'admin.slot.update']);
+       $routes->post('(:num)/delete', 'SlotController::delete/$1', ['as' => 'admin.slot.delete']);
+
+       // Lab 5.2b: zon — /admin/slot/zon
+       $routes->get('zon', 'SlotController::zones', ['as' => 'admin.zone.index']);
+       $routes->get('zon/new', 'SlotController::newZone', ['as' => 'admin.zone.new']);
+       $routes->post('zon', 'SlotController::createZone', ['as' => 'admin.zone.create']);
+       $routes->get('zon/(:num)/edit', 'SlotController::editZone/$1', ['as' => 'admin.zone.edit']);
+       $routes->post('zon/(:num)', 'SlotController::updateZone/$1', ['as' => 'admin.zone.update']);
+       $routes->post('zon/(:num)/delete', 'SlotController::deleteZone/$1', ['as' => 'admin.zone.delete']);
+   });
+   ```
+
+2. **Controller.** Dalam `app/Controllers/Admin/SlotController.php`, tambah kaedah berikut **terus sebelum** baris `private function findOr404(int $id): array`. Tiada `use` baharu — `ParkingZoneModel`, `PageNotFoundException` dan `RedirectResponse` sudah diimport dalam Lab 5.2:
+
+   ```php
+       // -----------------------------------------------------------------
+       // Lab 5.2b: CRUD zon (/admin/slot/zon) — corak sama dengan slot
+
+       public function zones(): string
+       {
+           return view('admin/zone/index', [
+               'title' => 'Pengurusan Zon',
+               'zones' => $this->zones->orderBy('code')->paginate(10),
+               'pager' => $this->zones->pager,
+           ]);
+       }
+
+       public function newZone(): string
+       {
+           return view('admin/zone/form', ['title' => 'Tambah Zon', 'zone' => null]);
+       }
+
+       public function createZone(): RedirectResponse
+       {
+           return $this->saveZone(null);
+       }
+
+       public function editZone(int $id): string
+       {
+           $zone = $this->findZoneOr404($id);
+
+           return view('admin/zone/form', ['title' => 'Kemaskini Zon ' . $zone['code'], 'zone' => $zone]);
+       }
+
+       public function updateZone(int $id): RedirectResponse
+       {
+           $this->findZoneOr404($id);
+
+           return $this->saveZone($id);
+       }
+
+       public function deleteZone(int $id): RedirectResponse
+       {
+           $zone  = $this->findZoneOr404($id);
+           $count = $this->zones->slotCount($id);
+
+           // FK parking_slots.zone_id = RESTRICT. Semak dahulu supaya admin mendapat mesej BM,
+           // bukan halaman ralat DatabaseException 1451.
+           if ($count > 0) {
+               return redirect()->to('admin/slot/zon')->with('error', sprintf(
+                   'Zon %s masih mempunyai %d slot (termasuk slot yang dipadam). Zon tidak boleh dipadam.',
+                   $zone['code'],
+                   $count,
+               ));
+           }
+
+           $this->zones->delete($id);   // parking_zones tiada deleted_at → padam kekal
+
+           return redirect()->to('admin/slot/zon')->with('success', 'Zon ' . $zone['code'] . ' telah dipadam.');
+       }
+
+       /** Corak save() slot: senarai putih → validateData() dengan peraturan Model → insert/update → PRG. */
+       private function saveZone(?int $id): RedirectResponse
+       {
+           $data = array_map(
+               static fn ($value): string => trim((string) $value),
+               $this->request->getPost(['code', 'name', 'location']),   // senarai putih medan
+           );
+           $data['code'] = strtoupper($data['code']);
+
+           if ($id !== null) {
+               $data['id'] = $id;   // untuk {id} dalam is_unique; id bukan $allowedFields, jadi tidak ditulis
+           }
+
+           if (! $this->validateData($data, $this->zones->getValidationRules(), $this->zones->getValidationMessages())) {
+               return redirect()->back()->withInput();
+           }
+
+           $id === null ? $this->zones->insert($data) : $this->zones->update($id, $data);
+
+           return redirect()->to('admin/slot/zon')->with('success', 'Zon ' . $data['code'] . ' telah disimpan.');
+       }
+
+       private function findZoneOr404(int $id): array
+       {
+           return $this->zones->find($id) ?? throw PageNotFoundException::forPageNotFound('Zon tidak dijumpai.');
+       }
+   ```
+
+3. Senarai zon — `app/Views/admin/zone/index.php`:
+
+   ```php
+   <?= $this->extend('layouts/main') ?>
+
+   <?= $this->section('content') ?>
+   <div class="d-flex justify-content-end gap-2 mb-3">
+       <a href="<?= url_to('admin.slot.index') ?>" class="btn btn-outline-secondary"><i class="bi bi-p-square"></i> Urus Slot</a>
+       <a href="<?= url_to('admin.zone.new') ?>" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah Zon</a>
+   </div>
+
+   <div class="card">
+       <div class="table-responsive">
+           <table class="table table-hover align-middle mb-0">
+               <thead class="table-light">
+               <tr><th>Kod</th><th>Nama</th><th>Lokasi</th><th class="text-end">Tindakan</th></tr>
+               </thead>
+               <tbody>
+               <?php foreach ($zones as $zone): ?>
+                   <tr>
+                       <td class="fw-semibold"><?= esc($zone['code']) ?></td>
+                       <td><?= esc($zone['name']) ?></td>
+                       <td><?= esc($zone['location']) ?></td>
+                       <td class="text-end">
+                           <a href="<?= url_to('admin.zone.edit', $zone['id']) ?>" class="btn btn-sm btn-outline-primary">Ubah</a>
+                           <form action="<?= url_to('admin.zone.delete', $zone['id']) ?>" method="post" class="d-inline"
+                                 data-confirm="Padam zon <?= esc($zone['code'], 'attr') ?>?">
+                               <?= csrf_field() ?>
+                               <button type="submit" class="btn btn-sm btn-outline-danger">Padam</button>
+                           </form>
+                       </td>
+                   </tr>
+               <?php endforeach ?>
+               <?php if ($zones === []): ?>
+                   <tr><td colspan="4" class="text-center text-muted py-4">Tiada zon.</td></tr>
+               <?php endif ?>
+               </tbody>
+           </table>
+       </div>
+   </div>
+
+   <div class="mt-3"><?= $pager->links() ?></div>
+   <?= $this->endSection() ?>
+   ```
+
+4. Borang zon (tambah & ubah) — `app/Views/admin/zone/form.php`:
+
+   ```php
+   <?= $this->extend('layouts/main') ?>
+
+   <?= $this->section('content') ?>
+   <?php
+   $action  = $zone === null ? url_to('admin.zone.create') : url_to('admin.zone.update', $zone['id']);
+   $invalid = static fn (string $field): string => validation_show_error($field) !== '' ? ' is-invalid' : '';
+   ?>
+   <div class="card" style="max-width: 640px">
+       <div class="card-body">
+           <form action="<?= $action ?>" method="post" novalidate>
+               <?= csrf_field() ?>
+
+               <div class="mb-3">
+                   <label for="code" class="form-label">Kod zon</label>
+                   <input type="text" name="code" id="code" maxlength="10" class="form-control<?= $invalid('code') ?>"
+                          value="<?= esc(old('code', $zone['code'] ?? ''), 'attr') ?>" placeholder="cth D">
+                   <div class="invalid-feedback"><?= validation_show_error('code') ?></div>
+               </div>
+
+               <div class="mb-3">
+                   <label for="name" class="form-label">Nama</label>
+                   <input type="text" name="name" id="name" maxlength="100" class="form-control<?= $invalid('name') ?>"
+                          value="<?= esc(old('name', $zone['name'] ?? ''), 'attr') ?>">
+                   <div class="invalid-feedback"><?= validation_show_error('name') ?></div>
+               </div>
+
+               <div class="mb-4">
+                   <label for="location" class="form-label">Lokasi</label>
+                   <input type="text" name="location" id="location" maxlength="150" class="form-control<?= $invalid('location') ?>"
+                          value="<?= esc(old('location', $zone['location'] ?? ''), 'attr') ?>">
+                   <div class="invalid-feedback"><?= validation_show_error('location') ?></div>
+               </div>
+
+               <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Simpan</button>
+               <a href="<?= url_to('admin.zone.index') ?>" class="btn btn-link">Batal</a>
+           </form>
+       </div>
+   </div>
+   <?= $this->endSection() ?>
+   ```
+
+5. **Pautan dari senarai slot.** Dalam `app/Views/admin/slot/index.php`, gantikan blok tiga baris `<div class="d-flex justify-content-end mb-3">` … `</div>` di atas kad dengan:
+
+   ```php
+   <div class="d-flex justify-content-end gap-2 mb-3">
+       <a href="<?= url_to('admin.zone.index') ?>" class="btn btn-outline-secondary"><i class="bi bi-geo-alt"></i> Urus Zon</a>
+       <a href="<?= url_to('admin.slot.new') ?>" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah Slot</a>
+   </div>
+   ```
+
+6. Sahkan:
+
+   ```bash
+   php -l app/Controllers/Admin/SlotController.php
+   php -l app/Config/Routes.php
+   php spark routes | grep "admin/slot/zon"
+   ```
+
+   Dijangka: 6 baris `admin/slot/zon…`, setiap satu dengan filter `group:admin`.
+7. `php spark serve`, log masuk `admin@latihan.test`, kemudian uji **mengikut tertib**:
+   1. `http://localhost:8080/admin/slot` → klik **Urus Zon** → `/admin/slot/zon` memaparkan 3 zon: `A`, `B`, `C`.
+   2. **Tambah Zon:** Kod ` d ` (huruf kecil, dengan ruang), Nama `Zon Ujian Lanjutan`, Lokasi `Aras 2, Blok Latihan` → flash *"Zon D telah disimpan."*; senarai memaparkan `D`.
+   3. **Tambah Zon:** Kod `a`, Nama `Zon Berganda`, Lokasi `Aras 3` → mesej *"Kod zon A sudah wujud."* di bawah Kod; nilai lain kekal.
+   4. Buka `/admin/slot/new` dan kembangkan dropdown **Zon**. Catat bilangan pilihan (tidak termasuk *— Pilih zon —*) dan pilihan terakhir (soalan Kuiz S6). Klik **Batal**.
+   5. **Ubah** zon D: Kod kekal `D`, Nama `Zon Ujian Lanjutan (Kemas kini)` → *"Zon D telah disimpan."* Kod sendiri tidak ditolak kerana `$data['id']` + `{id}` mengecualikan baris D.
+   6. **Padam** zon C. Catat mesej (soalan Kuiz S6). `php spark db:table parking_zones` → zon C masih ada.
+   7. **Padam** zon D → *"Zon D telah dipadam."* (tiada slot). `parking_zones` kembali 3 baris.
+   8. Log keluar, log masuk `pemohon1@latihan.test`, buka `/admin/slot/zon` → dialih ke `/` (tiada group `admin`).
+8. Commit pada branch yang sama:
+
+   ```bash
+   git add app/
+   git commit -m "TLK: CRUD zon admin (/admin/slot/zon)"
+   ```
+
+### ✅ Checkpoint
+- [ ] `php spark routes` menunjukkan 6 route `admin/slot/zon…` dengan filter `group:admin`; `pemohon1` dialih ke `/` (Kuiz S6).
+- [ ] Zon `D` dicipta (kod disimpan huruf besar), diubah tanpa ralat kod berganda, kemudian dipadam; Kod `a` ditolak dengan *"Kod zon A sudah wujud."* (Kuiz S6).
+- [ ] Padam zon C ditolak dengan mesej bilangan slot, dan `parking_zones` kekal 3 baris `A`, `B`, `C` (Kuiz S6).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Call to undefined method App\Models\ParkingZoneModel::slotCount()` | Lab 5.1b langkah 1 belum dibuat | Gantikan `ParkingZoneModel` dengan versi Lab 5.1b |
+| `DatabaseException` … `Cannot delete or update a parent row: a foreign key constraint fails` | `delete()` dipanggil sebelum (atau tanpa) semakan `slotCount()` | Semak `$count > 0` dahulu, seperti `deleteZone()` |
+| Ubah zon D tanpa menukar kod → *"Kod zon D sudah wujud."* | `$data['id'] = $id` tertinggal dalam `saveZone()` | Tambah baris itu — `{id}` perlu nilai |
+| `Undefined variable $zone` dalam `admin/zone/form.php` | `newZone()` tidak menghantar `'zone' => null` | Salin semula `newZone()` dari langkah 2 |
+| `404 Can't find a route for 'GET: admin/slot/zon'` | Route zon diletak di luar kumpulan, atau fail belum disimpan | Langkah 1 — dalam kumpulan `admin/slot`; `php spark routes` |
+| *The action you requested is not allowed.* semasa Padam | `csrf_field()` tertinggal dalam borang padam | Setiap `<form method="post">` perlu `csrf_field()` |
+
+### ⭐ Cabaran tambahan
+Tambah lajur **Slot** dalam senarai zon menggunakan `slotCount()`, dan sembunyikan butang **Padam** jika nilainya > 0. Kemudian terangkan kepada rakan sebelah kenapa semakan dalam `deleteZone()` mesti kekal walaupun butang sudah disembunyikan.
+
+---
+
+## Lab 5.3b — Borang Daftar Kenderaan (S7)
+
+### 🎯 Objektif
+Membina borang `/kenderaan` supaya pengguna mendaftar kenderaan **sendiri** dengan resipi Lab 5.3: normalkan input sebelum validasi, peraturan tersuai `valid_plate_no` (kelas `VehicleRules` didaftar dalam `$ruleSets`), mesej BM dengan `{value}`, `getValidated()`, `user_id` dari sesi dan PRG.
+
+### Prasyarat
+- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 5.3](#lab-53--borang-tempahan-validasi--tlk-2026-0001-s3) checkpoint lulus (`TLK-2026-0001` wujud); anda masih di branch `feat/tlk-borang-tempahan` (belum di-merge).
+- [Lab 5.1b](#lab-51b--peraturan-model-zon--kenderaan-s5) siap: `VehicleModel::normalisePlate()` dan mesej BM wujud.
+
+### Langkah
+
+1. **Peraturan tersuai** — `app/Validation/VehicleRules.php`:
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Validation;
+
+   /**
+    * Peraturan validasi tersuai borang kenderaan (Lab 5.3b).
+    * Didaftar dalam Config\Validation::$ruleSets.
+    *
+    *   'plate_no' => 'required|max_length[15]|valid_plate_no|is_unique[vehicles.plate_no]',
+    */
+   class VehicleRules
+   {
+       /**
+        * Format ringkas no. plat: 1–3 huruf, satu ruang, 1–4 digit, satu huruf akhiran (pilihan).
+        * Sah: WXX 1234, V 88, WXY 1357A. Tidak sah: WXX1234, WXX-1234, WXX 12345.
+        * Nilai mesti sudah dinormalkan dengan VehicleModel::normalisePlate() (huruf besar, satu ruang).
+        */
+       public function valid_plate_no(?string $str): bool
+       {
+           return preg_match('/^[A-Z]{1,3} [0-9]{1,4}[A-Z]?$/', (string) $str) === 1;
+       }
+   }
+   ```
+
+2. Daftar dalam `app/Config/Validation.php` — tambah **satu baris** selepas `BookingRules` (Lab 5.3 langkah 2):
+
+   ```php
+       public array $ruleSets = [
+           Rules::class,
+           FormatRules::class,
+           FileRules::class,
+           CreditCardRules::class,
+           \App\Validation\BookingRules::class,
+           \App\Validation\VehicleRules::class,   // ← Lab 5.3b
+       ];
+   ```
+
+3. **Controller** — `app/Controllers/VehicleController.php`:
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Controllers;
+
+   use App\Models\VehicleModel;
+   use CodeIgniter\HTTP\RedirectResponse;
+
+   /**
+    * Kenderaan Saya (Lab 5.3b). Laluan: /kenderaan (filter session).
+    * Setiap pengguna mendaftar kenderaan SENDIRI — user_id sentiasa dari sesi.
+    */
+   class VehicleController extends BaseController
+   {
+       /** GET /kenderaan — kenderaan milik pengguna log masuk sahaja (SKOP PEMILIK dalam query) */
+       public function index(): string
+       {
+           return view('vehicle/index', [
+               'title'    => 'Kenderaan Saya',
+               'vehicles' => model(VehicleModel::class)
+                   ->where('user_id', auth()->id())
+                   ->orderBy('plate_no')
+                   ->findAll(),
+           ]);
+       }
+
+       /** GET /kenderaan/new */
+       public function new(): string
+       {
+           return view('vehicle/form', ['title' => 'Daftar Kenderaan']);
+       }
+
+       /** POST /kenderaan */
+       public function create(): RedirectResponse
+       {
+           $data             = $this->request->getPost(['plate_no', 'model', 'color']);   // senarai putih: TIADA user_id
+           $data['plate_no'] = VehicleModel::normalisePlate((string) $data['plate_no']);   // ' wxx  1234' → 'WXX 1234'
+           $data['model']    = trim((string) $data['model']);
+           $data['color']    = trim((string) $data['color']);
+
+           // Validasi nilai yang SUDAH dinormalkan — is_unique membandingkan 'WXX 1234', bukan ' wxx  1234'
+           if (! $this->validateData($data, $this->rules(), $this->messages())) {
+               return redirect()->back()->withInput();
+           }
+
+           $vehicles       = model(VehicleModel::class);
+           $row            = $this->validator->getValidated();   // hanya medan berperaturan
+           $row['user_id'] = auth()->id();                        // dari sesi, BUKAN dari borang
+
+           if ($vehicles->insert($row) === false) {
+               return redirect()->back()->withInput()->with('error', implode(' ', $vehicles->errors()));
+           }
+
+           return redirect()->to(url_to('vehicle.index'))
+               ->with('success', 'Kenderaan ' . $row['plate_no'] . ' telah didaftarkan.');
+       }
+
+       // -----------------------------------------------------------------
+
+       /** @return array<string, string> */
+       private function rules(): array
+       {
+           return [
+               'plate_no' => 'required|max_length[15]|valid_plate_no|is_unique[vehicles.plate_no]',
+               'model'    => 'required|min_length[3]|max_length[80]',
+               'color'    => 'required|alpha_space|max_length[30]',
+           ];
+       }
+
+       /** @return array<string, array<string, string>> mesej BM — kunci = nama peraturan tepat */
+       private function messages(): array
+       {
+           return [
+               'plate_no' => [
+                   'required'       => 'No. plat wajib diisi.',
+                   'max_length'     => 'No. plat maksimum 15 aksara.',
+                   'valid_plate_no' => 'Format no. plat tidak sah (cth WXX 1234).',
+                   'is_unique'      => 'No. plat {value} sudah didaftarkan.',
+               ],
+               'model' => [
+                   'required'   => 'Model kenderaan wajib diisi.',
+                   'min_length' => 'Model kenderaan sekurang-kurangnya 3 aksara.',
+                   'max_length' => 'Model kenderaan maksimum 80 aksara.',
+               ],
+               'color' => [
+                   'required'    => 'Warna wajib diisi.',
+                   'alpha_space' => 'Warna hanya huruf dan ruang.',
+                   'max_length'  => 'Warna maksimum 30 aksara.',
+               ],
+           ];
+       }
+   }
+   ```
+
+4. **Route.** Tambah di **hujung** `app/Config/Routes.php`. Semua pengguna log masuk boleh mendaftar kenderaan sendiri, jadi filter kumpulan `session` sahaja:
+
+   ```php
+   // Lab 5.3b: Kenderaan Saya — setiap pengguna log masuk mendaftar kenderaan sendiri
+   $routes->group('kenderaan', ['filter' => 'session'], static function (RouteCollection $routes): void {
+       $routes->get('/', 'VehicleController::index', ['as' => 'vehicle.index']);
+       $routes->get('new', 'VehicleController::new', ['as' => 'vehicle.new']);
+       $routes->post('/', 'VehicleController::create', ['as' => 'vehicle.create']);
+   });
+   ```
+
+5. Senarai — `app/Views/vehicle/index.php`:
+
+   ```php
+   <?= $this->extend('layouts/main') ?>
+
+   <?= $this->section('content') ?>
+   <div class="d-flex justify-content-end mb-3">
+       <a href="<?= url_to('vehicle.new') ?>" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Daftar Kenderaan</a>
+   </div>
+
+   <div class="card" style="max-width: 720px">
+       <div class="table-responsive">
+           <table class="table table-hover align-middle mb-0">
+               <thead class="table-light">
+               <tr><th>No. Plat</th><th>Model</th><th>Warna</th></tr>
+               </thead>
+               <tbody>
+               <?php foreach ($vehicles as $v): ?>
+                   <tr>
+                       <td class="fw-semibold"><?= esc($v['plate_no']) ?></td>
+                       <td><?= esc($v['model']) ?></td>
+                       <td><?= esc($v['color']) ?></td>
+                   </tr>
+               <?php endforeach ?>
+               <?php if ($vehicles === []): ?>
+                   <tr><td colspan="3" class="text-center text-muted py-4">Tiada kenderaan.</td></tr>
+               <?php endif ?>
+               </tbody>
+           </table>
+       </div>
+   </div>
+   <?= $this->endSection() ?>
+   ```
+
+   Borang — `app/Views/vehicle/form.php`:
+
+   ```php
+   <?= $this->extend('layouts/main') ?>
+
+   <?= $this->section('content') ?>
+   <?php $invalid = static fn (string $field): string => validation_show_error($field) !== '' ? ' is-invalid' : ''; ?>
+   <div class="card" style="max-width: 640px">
+       <div class="card-body">
+           <form action="<?= url_to('vehicle.create') ?>" method="post" novalidate>
+               <?= csrf_field() ?>
+
+               <div class="mb-3">
+                   <label for="plate_no" class="form-label">No. plat</label>
+                   <input type="text" name="plate_no" id="plate_no" maxlength="15" class="form-control<?= $invalid('plate_no') ?>"
+                          value="<?= esc(old('plate_no'), 'attr') ?>" placeholder="cth WXX 1234">
+                   <div class="invalid-feedback"><?= validation_show_error('plate_no') ?></div>
+               </div>
+
+               <div class="mb-3">
+                   <label for="model" class="form-label">Model</label>
+                   <input type="text" name="model" id="model" maxlength="80" class="form-control<?= $invalid('model') ?>"
+                          value="<?= esc(old('model'), 'attr') ?>" placeholder="cth Proton Saga">
+                   <div class="invalid-feedback"><?= validation_show_error('model') ?></div>
+               </div>
+
+               <div class="mb-4">
+                   <label for="color" class="form-label">Warna</label>
+                   <input type="text" name="color" id="color" maxlength="30" class="form-control<?= $invalid('color') ?>"
+                          value="<?= esc(old('color'), 'attr') ?>" placeholder="cth Putih">
+                   <div class="invalid-feedback"><?= validation_show_error('color') ?></div>
+               </div>
+
+               <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Daftar</button>
+               <a href="<?= url_to('vehicle.index') ?>" class="btn btn-link">Batal</a>
+           </form>
+       </div>
+   </div>
+   <?= $this->endSection() ?>
+   ```
+
+6. **Pautan dari borang tempahan.** Dalam `app/Views/tlk/booking/form.php` (Lab 5.3 langkah 7), gantikan baris amaran `<div class="alert alert-warning">Anda belum mendaftar kenderaan. Hubungi pentadbir.</div>` dengan:
+
+   ```php
+       <div class="alert alert-warning">Anda belum mendaftar kenderaan. <a href="<?= url_to('vehicle.new') ?>" class="alert-link">Daftar kenderaan</a> dahulu.</div>
+   ```
+
+7. Sahkan:
+
+   ```bash
+   php -l app/Validation/VehicleRules.php
+   php -l app/Controllers/VehicleController.php
+   php spark routes | grep kenderaan
+   ```
+
+   Dijangka: `kenderaan` dan `kenderaan/new` (GET), `kenderaan` (POST) — ketiga-tiganya `session`.
+8. `php spark serve`, log masuk `pemohon1@latihan.test`, kemudian uji **mengikut tertib**:
+   1. `http://localhost:8080/kenderaan` → 2 kenderaan: `WXX 1234`, `WXX 5678`.
+   2. **Daftar Kenderaan:** No. plat `  wxx   1234 ` (huruf kecil, ruang berganda), Model `Proton Saga`, Warna `Putih` → **Daftar**. Catat mesej (soalan Kuiz S7).
+   3. No. plat `WXX-4321`, Model `Proton Saga`, Warna `Putih` → *"Format no. plat tidak sah (cth WXX 1234)."*. Kemudian No. plat `WXX 12345`, Model `Sa`, Warna `Putih 2` → tiga mesej, satu di bawah setiap medan.
+   4. **Cuba menyamar.** Tekan F12 → tab **Elements** → klik kanan `<form action="…/kenderaan" …>` → **Edit as HTML** → tambah `<input type="hidden" name="user_id" value="2">` sebelum `</form>` → klik di luar kotak. Isi No. plat ` wxx 4321`, Model `Perodua Bezza`, Warna `Kelabu` → **Daftar** → *"Kenderaan WXX 4321 telah didaftarkan."*; senarai kini 3 kenderaan.
+   5. Buka `/tlk/tempahan/new` → dropdown **Kenderaan** menyenaraikan `WXX 4321 — Perodua Bezza` di antara `WXX 1234` dan `WXX 5678` (`orderBy('plate_no')`).
+   6. Tetingkap **incognito**: log masuk `pemohon2@latihan.test` → `/kenderaan`. Catat bilangan kenderaan (soalan Kuiz S7).
+9. Commit pada branch yang sama:
+
+   ```bash
+   git add app/
+   git commit -m "TLK: borang daftar kenderaan + VehicleRules"
+   ```
+
+### ✅ Checkpoint
+- [ ] `php spark routes` menunjukkan `kenderaan`, `kenderaan/new` (GET) dan `kenderaan` (POST) dengan filter `session` (Kuiz S7).
+- [ ] `  wxx   1234 ` ditolak dengan mesej yang menyebut `WXX 1234`; `WXX-4321` dan `WXX 12345` ditolak dengan *"Format no. plat tidak sah (cth WXX 1234)."* (Kuiz S7).
+- [ ] `WXX 4321` didaftar untuk pemohon1 walaupun `user_id=2` diselitkan, dan pemohon2 tidak melihatnya di `/kenderaan` (Kuiz S7).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `"valid_plate_no" is not a valid rule.` | `VehicleRules` belum didaftar | Langkah 2 — `app/Config/Validation.php` → `$ruleSets` |
+| ` wxx 4321` ditolak *"Format no. plat tidak sah"* | `normalisePlate()` dipanggil selepas `validateData()`, atau tidak dipanggil | Normalkan **dahulu** (langkah 3, baris `$data['plate_no'] = …`) |
+| Halaman ralat `Duplicate entry 'WXX 1234' for key 'vehicles.plate_no'` | `is_unique[vehicles.plate_no]` tertinggal; hanya UNIQUE DB yang menangkap | Tambah `is_unique` dalam `rules()` |
+| `Unable to find a route named "vehicle.new"` dalam borang tempahan | Langkah 4 belum dibuat atau fail belum disimpan | Tambah kumpulan `kenderaan`; `php spark routes \| grep vehicle` |
+| `WXX 4321` muncul dalam senarai pemohon2 | `user_id` diambil daripada `getPost()` | `$row['user_id'] = auth()->id();` sahaja |
+| Mesej Inggeris *The plate_no field …* | Kunci `messages()` tidak sama dengan nama peraturan | Kunci = `required`, `max_length`, `valid_plate_no`, `is_unique` |
+
+### ⭐ Cabaran tambahan
+Tulis `tests/tlk/VehicleRulesTest.php` (tanpa DB, seperti cabaran Lab 5.4): `(new VehicleRules())->valid_plate_no('WXY 1357A')` → `true`; `'WXX1234'`, `'WXX-1234'` dan `'WXX 12345'` → `false`.
+
+---
+
+## Lab 5.4b — Ujian Manual Pusingan 2: Zon & Kenderaan (S8)
+
+### 🎯 Objektif
+Melaksanakan 12 kes ujian manual bagi ciri Lab 5.1b–5.3b, menyiasat satu kes yang gagal (slot dipadam lembut menyekat padam zon) dengan `php spark shell`, merekod pepijat itu dengan langkah boleh diulang, dan membersihkan data ujian dengan padam kekal `delete($id, true)`.
+
+### Prasyarat
+- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 5.4](#lab-54--ujian-manual--rekod-pepijat-s4) selesai; `feat/tlk-model`, `feat/tlk-crud`, `feat/tlk-borang-tempahan` (termasuk commit Lab 5.1b–5.3b) di-merge ke `main`.
+- Dua pelayar (atau satu biasa + satu incognito).
+
+### Langkah
+
+1. Cipta `docs/ujian-manual-zon-kenderaan.md` dengan jadual ini dan laksanakan **setiap** kes mengikut tertib. Isi lajur *Sebenar* & *Status* (✅ lulus / ❌ gagal / ⏭️ belum dilaksana):
+
+   ```markdown
+   # Ujian manual — Zon & Kenderaan (Lab 5.4b)
+
+   | ID | Peranan | Langkah | Jangkaan | Sebenar | Status |
+   |----|---------|---------|----------|---------|--------|
+   | TM-ZON-01 | admin | Buka `/admin/slot/zon` | 3 zon: A, B, C | | |
+   | TM-ZON-02 | admin | Tambah zon `e` / `Zon Ujian E` / `Aras 4, Blok Latihan` | "Zon E telah disimpan."; kod dipapar `E` | | |
+   | TM-ZON-03 | admin | Tambah zon `B` / `Zon Berganda` / `Aras 5` | "Kod zon B sudah wujud."; tiada baris baharu | | |
+   | TM-ZON-04 | admin | Ubah zon E: kod kekal `E`, nama `Zon Ujian E (Kemas kini)` | "Zon E telah disimpan." | | |
+   | TM-ZON-05 | admin | Tambah zon `F` dengan Nama & Lokasi kosong | Dua mesej di bawah medan; Kod `F` kekal diisi | | |
+   | TM-ZON-06 | admin | Padam zon A | Mesej "masih mempunyai … slot"; zon A kekal | | |
+   | TM-ZON-07 | admin | Tambah slot `E-01` di zon E, padam slot itu, kemudian padam zon E | Zon E (tiada slot dalam senarai) dipadam | | |
+   | TM-ZON-08 | pemohon1 | Buka `/admin/slot/zon/new` terus | Dialih ke `/` (tiada akses) | | |
+   | TM-KEN-01 | pemohon1 | Daftar `wxx  9876` / `Honda City` / `Hitam` | "Kenderaan WXX 9876 telah didaftarkan." | | |
+   | TM-KEN-02 | pemohon1 | Daftar `WXX 9876` / `Honda City` / `Hitam` sekali lagi | "No. plat WXX 9876 sudah didaftarkan." | | |
+   | TM-KEN-03 | pemohon1 | Daftar `WXX9876` (tanpa ruang) | "Format no. plat tidak sah (cth WXX 1234)." | | |
+   | TM-KEN-04 | pemohon2 | Buka `/kenderaan` | Hanya `VXX 2468`; tiada kenderaan pemohon1 | | |
+   ```
+
+2. **TM-ZON-07 secara terperinci** (sebagai `admin`):
+   1. `/admin/slot/new` → Zon `E — Zon Ujian E (Kemas kini)`, No. Slot `E-01`, Kategori `OKU` → **Simpan**.
+   2. `/admin/slot` → cari `E-01` (halaman terakhir) → **Padam** → *"Slot E-01 telah dipadam."*; `E-01` hilang dari senarai.
+   3. `/admin/slot/zon` → **Padam** zon E. Catat mesej (soalan Kuiz S8). Tandakan TM-ZON-07 ❌ — senarai slot tidak menunjukkan apa-apa slot zon E, tetapi zon tidak boleh dipadam.
+3. **Siasat dengan konsol.** `php spark shell`, kemudian satu baris setiap kali:
+
+   ```text
+   $slots = model('ParkingSlotModel')
+   $slots->where('slot_no', 'E-01')->countAllResults()
+   $slots->withDeleted()->where('slot_no', 'E-01')->countAllResults()
+   ```
+
+   Catat kedua-dua nombor (soalan Kuiz S8). Model menambah `deleted_at IS NULL` secara automatik; `withDeleted()` membuangnya. `slotCount()` (Query Builder terus) dan FK MySQL melihat baris itu kerana ia masih wujud.
+4. **Laporan pepijat.** Tambah di hujung `docs/ujian-manual-zon-kenderaan.md` (format README §4.3), kemudian lengkapkan *Sebenar*:
+
+   ```markdown
+
+   ## Laporan pepijat
+
+   ### BUG-ZON-001 — Zon tidak boleh dipadam selepas semua slotnya dipadam
+   - **Langkah:** log masuk admin → /admin/slot/new → slot E-01 di zon E → Simpan → Padam E-01 → /admin/slot/zon → Padam zon E
+   - **Jangkaan:** zon E dipadam (senarai slot tidak menunjukkan slot zon E)
+   - **Sebenar:**
+   - **Punca:** slot dipadam lembut (`deleted_at` berisi) masih wujud; FK `parking_slots.zone_id` RESTRICT
+   - **Keterukan:** Rendah (admin tidak boleh membersihkan zon sendiri) · **Status:** Dibuka
+   - **Cadangan:** paparan slot dipadam bagi setiap zon + padam kekal oleh admin bagi slot yang tiada tempahan
+   ```
+
+5. **Bersihkan data ujian.** Dalam konsol yang sama (padam **kekal** hanya slot ujian `E-01`):
+
+   ```text
+   $e01 = $slots->onlyDeleted()->where('slot_no', 'E-01')->first()
+   $slots->delete($e01['id'], true)
+   $slots->withDeleted()->where('slot_no', 'E-01')->countAllResults()
+   exit
+   ```
+
+   `delete($id, true)` = *purge*: `DELETE` sebenar, bukan `deleted_at`. Baris ketiga kini `0`. Kembali ke `/admin/slot/zon` → **Padam** zon E → *"Zon E telah dipadam."* Semak:
+
+   ```bash
+   php spark db:table parking_zones
+   ```
+
+   Dijangka: 3 baris `A`, `B`, `C`.
+6. Commit dan push:
+
+   ```bash
+   git add docs/ujian-manual-zon-kenderaan.md
+   git commit -m "TLK: rekod ujian manual zon & kenderaan"
+   git push
+   ```
+
+### ✅ Checkpoint
+- [ ] `docs/ujian-manual-zon-kenderaan.md` — 12 kes, setiap satu berstatus; ≥ 11 ✅ (TM-ZON-07 ❌ dijangka) (Kuiz S8).
+- [ ] BUG-ZON-001 lengkap: langkah, jangkaan, sebenar (mesej tepat), punca, keterukan, cadangan (Kuiz S8).
+- [ ] Selepas pembersihan: `parking_zones` 3 baris (`A`, `B`, `C`) dan tiada `E-01` dalam `parking_slots` walaupun dengan `withDeleted()` (Kuiz S8).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| TM-ZON-07: zon E terus dipadam | Slot `E-01` dicipta dalam zon lain | Semak lajur Zon di `/admin/slot`; ulang langkah 2 |
+| TM-ZON-07: halaman ralat `Cannot delete or update a parent row` | `slotCount()` diubah kepada `$this->where(...)` (Model menapis `deleted_at`) | Kekalkan `$this->db->table('parking_slots')` (Lab 5.1b) |
+| `Trying to access array offset on null` pada `delete($e01['id'], true)` | `onlyDeleted()` tidak menjumpai `E-01` — slot belum dipadam, atau sudah dipurge | Semak langkah 2.2; `withDeleted()->where('slot_no', 'E-01')->first()` |
+| Padam zon E selepas purge masih ditolak | Ada slot lain dalam zon E | `withDeleted()->where('zone_id', <id zon E>)->findAll()` dalam konsol |
+| Tidak dapat log masuk dua pengguna serentak | Sesi dikongsi dalam satu pelayar | Guna tetingkap incognito atau pelayar kedua |
+
+### ⭐ Cabaran tambahan
+Dalam branch `fix/zon-slot-dipadam`, tambah jadual *Slot dipadam* di `/admin/slot/zon/{id}/edit` (`onlyDeleted()->where('zone_id', $id)`). Bincang dengan jurulatih: patutkah admin boleh padam kekal slot yang pernah ditempah? (Petunjuk: FK `slot_bookings.slot_id` `RESTRICT` dan sejarah tempahan.)
+
+---
+
 ## Semakan kendiri — akhir hari
 
 ```bash
 composer test -- --no-coverage tests/tlk/BookingStatusTest.php   # OK (5 tests, …)
+composer test -- --no-coverage tests/tlk   # OK (8 tests, …)
 git log --oneline --merges main -3                               # 3 merge feat/tlk-*
 git status --short                                               # tiada output
 ```
 
-- [ ] Sebagai `admin@latihan.test`, `/admin/slot` memaparkan senarai slot berpagination; tambah & padam slot berfungsi (TM-TLK-01 hingga 05).
-- [ ] Sebagai `pemohon1@latihan.test`, borang tempahan sah menghasilkan `TLK-YYYY-NNNN` baharu berstatus *Menunggu* di `/tlk/tempahan`.
-- [ ] BR-TLK-03: tamat = mula + 91 hari ditolak; tamat = mula + 90 hari diterima; tarikh mula semalam ditolak.
-- [ ] `composer test -- --no-coverage tests/tlk/BookingStatusTest.php` → `OK (5 tests, …)` (6 dengan ⭐).
-- [ ] `docs/ujian-manual-tlk.md` ada 16 kes berstatus (≥ 14 ✅) dan ≥ 1 laporan pepijat (TM-TLK-16).
-- [ ] `git log --oneline --merges main` menunjukkan merge `feat/tlk-model`, `feat/tlk-crud`, `feat/tlk-borang-tempahan`; `git status --short` kosong.
+- [ ] Sebagai `admin@latihan.test`, `/admin/slot` memaparkan senarai slot berpagination; tambah & padam slot berfungsi (TM-TLK-01 hingga 05) (Kuiz S2).
+- [ ] Sebagai `pemohon1@latihan.test`, borang tempahan sah menghasilkan `TLK-YYYY-NNNN` baharu berstatus *Menunggu* di `/tlk/tempahan` (Kuiz S3).
+- [ ] BR-TLK-03: tamat = mula + 91 hari ditolak; tamat = mula + 90 hari diterima; tarikh mula semalam ditolak (Kuiz S3).
+- [ ] `composer test -- --no-coverage tests/tlk/BookingStatusTest.php` → `OK (5 tests, …)` (6 dengan ⭐) (Kuiz S1).
+- [ ] `docs/ujian-manual-tlk.md` ada 16 kes berstatus (≥ 14 ✅) dan ≥ 1 laporan pepijat (TM-TLK-16) (Kuiz S4).
+- [ ] `git log --oneline --merges main` menunjukkan merge `feat/tlk-model`, `feat/tlk-crud`, `feat/tlk-borang-tempahan`; `git status --short` kosong (Kuiz S4).
+- [ ] `composer test -- --no-coverage tests/tlk` → `OK (8 tests, …)`; dalam `php spark shell`, `validate()` zon berkod `A` ditolak dengan mesej BM (Lab 5.1b) (Kuiz S5).
+- [ ] Sebagai `admin@latihan.test`, `/admin/slot/zon` boleh menambah, mengubah dan memadam zon; padam zon yang masih ada slot ditolak dengan mesej BM (Lab 5.2b) (Kuiz S6).
+- [ ] Sebagai `pemohon1@latihan.test`, `/kenderaan` mendaftar `WXX 4321` dan menolak no. plat berganda atau format salah (Lab 5.3b) (Kuiz S7).
+- [ ] `docs/ujian-manual-zon-kenderaan.md` ada 12 kes berstatus + BUG-ZON-001, dan `parking_zones` kembali 3 baris (Lab 5.4b) (Kuiz S8).

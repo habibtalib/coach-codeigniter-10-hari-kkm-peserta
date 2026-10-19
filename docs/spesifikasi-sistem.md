@@ -214,6 +214,7 @@ Rentak harian tetap (dari tentatif): 08:30–09:00 recap · S1 09:00–10:30 · 
 | Ralat peraturan perniagaan | `\DomainException` dengan mesej BM (TLK; peralihan status Pas yang tidak sah). Ralat input borang Pas (`submit()`, catatan penolakan) → `\InvalidArgumentException`; `ReviewController` menangkap kedua-duanya. Kegagalan teknikal (query/simpan) → `\RuntimeException`; akses ditolak dalam service → 403 `app/Views/errors/forbidden.php`; filter Shield → redirect |
 | Kebenaran konkrit | `admin.access` (di bawah `admin.*`) |
 | Route tambahan | `/tlk/tempahan/ketersediaan` (paparan slot kosong); `new`/`create` TLK & Pas turut `permission:tlk.apply` / `pas.apply` |
+| Lab lanjutan (S5–S8) | Route & kelas tambahan: `jabatan/(:num)/edit`, POST `jabatan/(:num)`, `zon/(:num)`, `app/Commands/Shell.php` (Hari 3) · `/admin/slot/zon` (CRUD zon dalam `Admin\SlotController`), `/kenderaan` (`VehicleController`, `app/Validation/VehicleRules.php`) (Hari 5) · `/tlk/tempahan/ketersediaan/sibuk`, `php spark tlk:expire` (`ExpireBookingsCommand`) (Hari 6) · POST `pas/permohonan/(:num)/dokumen` (Hari 7) · POST `pas/semakan/pukal/review` (Hari 8) |
 | Tolak tempahan TLK | `remarks` wajib min 10 aksara (selari BR-PAS-03) |
 | Fail sokongan | `app/Validation/BookingRules.php` · `app/Views/pager/bootstrap_full.php` · `app/Views/partials/status_timeline.php` · partial flash dalam layout |
 | Dokumen Pas | `doc_type = 'sokongan'`; medan borang `documents[]` |

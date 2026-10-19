@@ -214,6 +214,7 @@ Fixed daily rhythm (from the tentative schedule): 08:30–09:00 recap · S1 09:0
 | Business rule errors | `\DomainException` with a Malay message (TLK; illegal Pas status transitions). Pas form input errors (`submit()`, rejection remarks) → `\InvalidArgumentException`; `ReviewController` catches both. Technical failures (query/save) → `\RuntimeException`; access denied in a service → 403 `app/Views/errors/forbidden.php`; Shield filter → redirect |
 | Concrete permission | `admin.access` (under `admin.*`) |
 | Extra routes | `/tlk/tempahan/ketersediaan` (free slot view); TLK & Pass `new`/`create` also use `permission:tlk.apply` / `pas.apply` |
+| Partner labs (S5–S8) | Extra routes & classes: `jabatan/(:num)/edit`, POST `jabatan/(:num)`, `zon/(:num)`, `app/Commands/Shell.php` (Day 3) · `/admin/slot/zon` (zone CRUD in `Admin\SlotController`), `/kenderaan` (`VehicleController`, `app/Validation/VehicleRules.php`) (Day 5) · `/tlk/tempahan/ketersediaan/sibuk`, `php spark tlk:expire` (`ExpireBookingsCommand`) (Day 6) · POST `pas/permohonan/(:num)/dokumen` (Day 7) · POST `pas/semakan/pukal/review` (Day 8) |
 | Rejecting a TLK booking | `remarks` required, min 10 characters (in line with BR-PAS-03) |
 | Supporting files | `app/Validation/BookingRules.php` · `app/Views/pager/bootstrap_full.php` · `app/Views/partials/status_timeline.php` · flash partial in the layout |
 | Pass documents | `doc_type = 'sokongan'`; form field `documents[]` |

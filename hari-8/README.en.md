@@ -18,6 +18,10 @@ By the end of today, participants can:
 | O4 | **Explain** the difference between *authentication* and *authorization* and **build** three layers of defence: route filter → `authorize()` in the Service → ownership check | S2 | Reviewer POSTs to `/approve` → refused; calling the Service directly → `PermissionException` |
 | O5 | **Display** a status history timeline from `status_logs` (who, when, from→to, note) | S3 | The detail page shows 3 badged entries |
 | O6 | **Write** positive & negative feature tests for each role (applicant cannot approve, reviewer cannot approve, approver can) and **demo** the full 3-role flow | S3–S4 | `PassAccessTest` ≥ 13 green tests; 5-minute demo passes the DoD |
+| O7 | **Build** a bulk *Mula Semakan* (Start Review) action that calls `startReview()` for each application, reporting BR-PAS-01 failures without stopping the others | S5 | [Lab 8.1b](./lab.en.md#lab-81b--bulk-start-review-from-the-queue-s5); green + red flash, one `status_logs` row per application |
+| O8 | **Enforce** `permission:pas.review` on the bulk route and **prove** both layers with a Console `fetch()` attack for 4 roles | S6 | [Lab 8.2b](./lab.en.md#lab-82b--protect-the-bulk-route-permission-filter--role-matrix-s6); UT-PAS-27..30 in `docs/ujian-manual-pas.md` |
+| O9 | **Write** `PassBatchReviewTest` (5 tests: flash, partial failure, negative response + DB) and **prove** it with 2 mutations | S7 | [Lab 8.3b](./lab.en.md#lab-83b--feature-tests-for-the-bulk-action-s7); `OK (5 tests, …)` + mutation table |
+| O10 | **Demo** the `admin` role (apply → bulk review → approve own) and **record** the separation-of-duties finding for the system owner | S8 | [Lab 8.4b](./lab.en.md#lab-84b--fourth-role-demo-admin--separation-of-duties-finding-s8); `docs/demo-m2.md` on `main` |
 
 ---
 
@@ -26,12 +30,16 @@ By the end of today, participants can:
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 7 recap | — |
-| 09:00–10:30 | S1 | Approval flow apply → review → approve/reject | Implement `PassWorkflowService` with `PassStatus::canTransitionTo()` |
+| 09:00–10:00 | S1 | Approval flow apply → review → approve/reject | Implement `PassWorkflowService` with `PassStatus::canTransitionTo()` |
+| 10:00–10:30 | S5 | S1 follow-up: bulk start review | Build a bulk action through `startReview()`; report partial failures |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–12:30 | S2 | Role-based access control | Configure Shield groups/permissions + route filters + ownership check |
+| 10:45–12:00 | S2 | Role-based access control | Configure Shield groups/permissions + route filters + ownership check |
+| 12:00–12:30 | S6 | S2 follow-up: protecting the bulk route | Add `permission:pas.review`; `fetch()` attack + 4-role matrix |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–16:00 | S3 | Status log/history & functional tests | Display the `status_logs` timeline; positive & negative access tests |
-| 16:00–17:00 | S4 | Pass Module wrap-up | Full 3-role flow demo; **M2 done** |
+| 14:30–15:30 | S3 | Status log/history & functional tests | Display the `status_logs` timeline; positive & negative access tests |
+| 15:30–16:00 | S7 | S3 follow-up: bulk action feature tests | Write `PassBatchReviewTest` + 2 mutations |
+| 16:00–16:35 | S4 | Pass Module wrap-up | Full 3-role flow demo; **M2 done** |
+| 16:35–17:00 | S8 | S4 follow-up: `admin` role demo | Demo the admin; record the separation-of-duties finding in `docs/demo-m2.md` |
 
 ---
 
@@ -439,7 +447,7 @@ Three browser windows (normal, incognito, a second browser) — one for each rol
 | 3 | `penyemak` | `/pas/semakan` → open the application → download a document → **Mula Semakan** (Start Review) | Badge **Dalam Semakan** (Under Review); no *Lulus* (Approve) button |
 | 4 | `penyemak` | (curl/DevTools) POST to `/approve` | Refused — "no button ≠ security; the server refuses" |
 | 5 | `pelulus` | Open the application → **Lulus** (Approve) with a note | Badge **Diluluskan** (Approved); timeline with 3 entries with names & times |
-| 6 | `pelulus` | Click **Lulus** (Approve) again (old tab) | "Peralihan status … tidak dibenarkan" (BR-PAS-01) |
+| 6 | `pelulus` | Click **Lulus** (Approve) again (second browser — page opened before the approval) | "Peralihan status … tidak dibenarkan" (BR-PAS-01) |
 | 7 | `penyemak` | Second application → Start Review → **Tolak** (Reject) "tak ok" → then a full note | Note error, then **Ditolak** (Rejected) (BR-PAS-03) |
 | 8 | Terminal | `composer test -- tests/feature/Pas --testdox` | All green |
 
@@ -479,7 +487,7 @@ foreach ($ids as $id) {
 
 ### 🎯 Quiz S4
 
-1. In the demo, the approver presses **Approve** again in an old tab after the application is already `approved`. What should the system owner see?
+1. In the demo, the approver presses **Approve** again in a second browser (page opened before the approval) after the application is already `approved`. What should the system owner see?
    - [ ] Another "Diluluskan" entry in the timeline
    - [ ] A 403 page because the approver has no `pas.approve` permission on an application that is already approved
    - [x] The message "Peralihan status … tidak dibenarkan" — `approved → approved` is refused by `canTransitionTo()` (BR-PAS-01)
@@ -495,6 +503,147 @@ foreach ($ids as $id) {
 
 ---
 
+## S5 — S1 follow-up: Bulk Start Review (after Lab 8.1)
+
+The reviewer opens the queue every morning and starts reviews one by one. The bulk feature writes **no** new rule — it calls `startReview()` in a loop, so every application still goes through `transition()`:
+
+| Design question | Our choice | Why |
+|-----------------|------------|-----|
+| One transaction for all, or one per application? | One per application (inside `transition()`) | One application already started by someone else does not cancel the others |
+| What happens when one fails BR-PAS-01? | The `DomainException` is caught inside the loop; messages are collected | A green flash (successes) + a red flash (failures) in one redirect |
+| Where does the status change? | Only in `transition()` | The `FOR UPDATE` lock, BR-PAS-01 and BR-PAS-05 apply with no new code |
+| Who sees the checkboxes? | `canReview` = `can('pas.review')`, only on **Dihantar** | UX only — S6 closes the hole on the server |
+
+The bulk route sits in a **second** `pas/semakan` group so that Lab 8.2 step 3 (replace the first group) does not delete it. To test two officers at the same time, use **two sessions** (different browsers): the CSRF token is replaced after every POST, so an old tab in the same session is refused before the controller.
+
+Lab: [Lab 8.1b](./lab.en.md#lab-81b--bulk-start-review-from-the-queue-s5)
+
+### 🎯 Quiz S5
+
+> Answer after Lab 8.1b on your laptop — the answers come from the real flash messages and DB. Passing this quiz marks the Lab 8.1b checkpoint.
+
+1. Lab 8.1b step 6: `admin` starts the review of E first, then the reviewer submits C, D and E. Which **red** message is shown?
+   - [ ] *The action you requested is not allowed.* — the reviewer's CSRF token expired because the admin sent a POST
+   - [x] *1 gagal — ID (id E): Peralihan status "Dalam Semakan" → "Dalam Semakan" tidak dibenarkan.*
+   - [ ] *Pilih sekurang-kurangnya satu permohonan.*
+   - [ ] No red message — all three succeed because E was still ticked in the form
+   > The admin session is separate, so the reviewer's token is still valid. `startReview()` for E reads `under_review` after the lock; `canTransitionTo()` refuses and the `DomainException` is caught inside the loop — C and D still succeed.
+
+2. Lab 8.1b step 8: how many `submitted → under_review` `status_logs` rows does E have, and what is E's `reviewed_by`?
+   - [ ] Two rows (admin and reviewer); `reviewed_by` = the reviewer's id because the last write wins
+   - [ ] No rows; `reviewed_by` is `NULL` because E's failure cancels the whole bulk action
+   - [ ] One row by the reviewer; `reviewed_by` = the reviewer's id
+   - [x] One row by the admin; `reviewed_by` = the admin's id
+   > The reviewer's attempt fails **before** `update()` and `record()`, then `transRollback()`. Only the admin's transition is recorded — this is what the single `transition()` door guarantees.
+
+---
+
+## S6 — S2 follow-up: Protecting the Bulk Route (after Lab 8.2)
+
+Lab 8.1b added a new POST route with a `group:` filter only. That is the same mistake as Lab 8.1 before Lab 8.2 — every new action route needs the three-layer check:
+
+| Layer | Route `(:num)/review` (Lab 8.2) | Route `pukal/review` (Lab 8.1b) | After Lab 8.2b |
+|-------|-------------------------------|------------------------------|----------------|
+| 1 — route filter | `group:` + `permission:pas.review` | `group:` only | `group:` + `permission:pas.review` |
+| 2 — `authorize()` in the Service | ✅ | ✅ (through `startReview()`) | ✅ |
+| What `pelulus` gets | Redirect to `/` | **403** from the Service | Redirect to `/` |
+
+A 403 from the Service means Layer 1 was missed (§2.4). We prove it with `fetch()` in the Console: it sends a POST with the page's CSRF token, and `r.url` shows where the redirect ends.
+
+Lab: [Lab 8.2b](./lab.en.md#lab-82b--protect-the-bulk-route-permission-filter--role-matrix-s6)
+
+### 🎯 Quiz S6
+
+> Answer after Lab 8.2b on your laptop — the answers come from the real browser Console and DB. Passing this quiz marks the Lab 8.2b checkpoint.
+
+1. Lab 8.2b step 2 (before the filter): what does the `pelulus` Console print, and what is the status of that application?
+   - [x] `403 http://localhost:8080/pas/semakan/pukal/review`; the status stays `submitted`
+   - [ ] `200 http://localhost:8080/pas/semakan`; the status is `under_review` with `reviewed_by` = the approver's id
+   - [ ] `200 http://localhost:8080/`; the status stays `submitted`
+   - [ ] `404 http://localhost:8080/pas/semakan/pukal/review`
+   > The `group:` filter lets `approver` through, so the controller runs; `authorize()` in `startReview()` throws `PermissionException` before `transition()`, and `reviewBatch()` returns 403. The second option is what happens in S5, before Lab 8.2 turns `authorize()` on.
+
+2. Lab 8.2b step 5 (after the filter): what does the `pelulus` Console print?
+   - [ ] `403 http://localhost:8080/pas/semakan/pukal/review` — the Shield filter returns 403
+   - [ ] `401 http://localhost:8080/login`
+   - [x] `200 http://localhost:8080/`
+   - [ ] `200 http://localhost:8080/pas/semakan` with the message *Pilih sekurang-kurangnya satu permohonan.*
+   > Shield's `PermissionFilter` redirects to `permission_denied` (default `/`) with an `error` flash. `fetch()` follows that redirect and prints the final page's status (`200`) and URL. The controller never runs.
+
+---
+
+## S7 — S3 follow-up: Feature Tests for the Bulk Action (after Lab 8.3)
+
+`PassAccessTest` tests the single-application routes. The bulk route has three new behaviours that must be tested: the **flash** (`message` and `error`), **partial failure**, and the **log count**:
+
+| Test | Role | Expected | Checks |
+|------|------|----------|--------|
+| `testPenyemakMulakanSemakanPukal` | reviewer | 2 `under_review` | `message` flash, `reviewed_by`, 2 logs |
+| `testSatuGagalTidakMenghentikanYangLain` | reviewer | 1 succeeds, 1 fails | `message` **and** `error` flash, 1 log |
+| `testTanpaPilihanMemaparkanRalat` | reviewer | redirect to `pas/semakan` | `error` flash |
+| `testPelulusDitolakFilterDanStatusKekal` | approver | Shield redirect | `error` flash, status unchanged, 0 logs |
+| `testPemohonDitolakDanStatusKekal` | applicant | Shield redirect | `error` flash, status unchanged |
+
+`assertSessionHas('message', '…')` compares the flash text character by character — it also tests the message the user reads. The negative tests use `assertRedirect()` + `assertSessionHas('error')`: the Shield redirect ends at the full URL without a trailing `/`, so `assertRedirectTo('/')` does not match.
+
+Lab: [Lab 8.3b](./lab.en.md#lab-83b--feature-tests-for-the-bulk-action-s7)
+
+### 🎯 Quiz S7
+
+> Answer after Lab 8.3b on your laptop — the answers come from the real `composer test` output. Passing this quiz marks the Lab 8.3b checkpoint.
+
+1. Lab 8.3b step 2: what is the last line of the `composer test -- tests/feature/Pas/PassBatchReviewTest.php --testdox` output?
+   - [ ] `OK (5 tests, 5 assertions)`
+   - [ ] `OK (13 tests, 30 assertions)`
+   - [x] `OK (5 tests, 24 assertions)`
+   - [ ] `OK (6 tests, 24 assertions)`
+   > Every `seeInDatabase()`, `assertSessionHas()`, `assertRedirect*()` and `assertSame()` counts — 5 tests, 24 assertions. `13 tests, 30 assertions` is `PassAccessTest` (Lab 8.3).
+
+2. Lab 8.3b step 3 (mutation 1 — remove `permission:pas.review` from the bulk route): which test fails, and with what message?
+   - [ ] `Pemohon ditolak dan status kekal` — *Failed asserting that a row in the table [pass_applications] matches the attributes*
+   - [x] `Pelulus ditolak filter dan status kekal` — *Response is not a redirect or instance of RedirectResponse.*
+   - [ ] `Pelulus ditolak filter dan status kekal` — *Failed asserting that a row in the table [pass_applications] matches the attributes* (the status becomes `under_review`)
+   - [ ] None — all five still pass because `authorize()` refuses
+   > Without Layer 1, `pelulus` reaches the controller and `authorize()` returns **403**, not a redirect. The status still stays the same (Layer 2 works), but the test catches the wrong route configuration. `pemohon1` is still refused by the `group:` filter.
+
+---
+
+## S8 — S4 follow-up: Fourth-Role Demo (after Lab 8.4)
+
+The S4 demo shows three roles. `admin` is the fourth role — and SPEC §4 gives it `pas.*`, which is **all** the Pass abilities at once:
+
+| Ability | `applicant` | `reviewer` | `approver` | `admin` |
+|---------|:-:|:-:|:-:|:-:|
+| `pas.apply` | ✅ | ❌ | ❌ | ✅ |
+| `pas.review` | ❌ | ✅ | ❌ | ✅ |
+| `pas.approve` | ❌ | ❌ | ✅ | ✅ |
+
+The result: the admin can apply for, review and approve their **own** application. Our code follows the SPEC — this is not a bug but a **finding** for the system owner (separation of duties). The developer's job is to prove it with data (`user_id` = `reviewed_by` = `approved_by`) and hand the decision to the owner, not to change the rule on their own.
+
+The same scene also proves BR-PAS-01 with two real approvers in two sessions: `admin` approves, `pelulus` presses **Lulus** on a page opened before that.
+
+Lab: [Lab 8.4b](./lab.en.md#lab-84b--fourth-role-demo-admin--separation-of-duties-finding-s8)
+
+### 🎯 Quiz S8
+
+> Answer after Lab 8.4b on your laptop — the answers come from the real demo. Passing this quiz marks the Lab 8.4b checkpoint.
+
+1. Lab 8.4b step 7: `pelulus` presses **Lulus** on the page for F that was opened before the admin approved it. What is shown?
+   - [ ] *The action you requested is not allowed.*
+   - [ ] The *403 — Akses Ditolak* page
+   - [ ] The status stays the same with no message
+   - [x] *Peralihan status "Diluluskan" → "Diluluskan" tidak dibenarkan.*
+   > Two different sessions, so the `pelulus` CSRF token is still valid and `pelulus` has `pas.approve`. `transition()` reads `approved` after the lock and `canTransitionTo()` refuses — no second log row.
+
+2. Lab 8.4b step 8: what is F's timeline after the admin reloads the page?
+   - [x] 3 entries, all three with the admin's name (Encik Admin Sistem)
+   - [ ] 3 entries: by the admin, the reviewer and the approver
+   - [ ] 4 entries — including the refused Lulus attempt by `pelulus`
+   - [ ] 2 entries — an application by the admin does not record its creation
+   > The admin made all three transitions (`NULL → submitted`, `submitted → under_review`, `under_review → approved`). The `pelulus` attempt was rolled back, so there is no entry. This is the evidence for the separation-of-duties finding.
+
+---
+
 ## 📦 Deliverables — Today's Output
 
 - [ ] `PassWorkflowService`: `startReview`, `approve`, `reject`, `expire`, `history`, `transition`, `authorize`
@@ -505,6 +654,10 @@ foreach ($ids as $id) {
 - [ ] `tests/feature/Pas/PassAccessTest.php` — 13 green tests
 - [ ] 3-role demo passes; branch `feat/pas-kelulusan` merged into `main` — **M2 done**
 - [ ] ⭐ `app/Commands/ExpirePassesCommand.php`
+- [ ] `ReviewController::reviewBatch()` + route `pas/semakan/pukal/review` with `permission:pas.review`; queue view with checkboxes (Labs 8.1b–8.2b)
+- [ ] `docs/ujian-manual-pas.md` — UT-PAS-27..30 + mutation table (Labs 8.2b–8.3b)
+- [ ] `tests/feature/Pas/PassBatchReviewTest.php` — 5 green tests (Lab 8.3b)
+- [ ] `docs/demo-m2.md` — `admin` scene + separation-of-duties finding, merged into `main` (Lab 8.4b)
 
 Full trainer reference: `templates/kod/` (**Templat & Rujukan** module) — `PassWorkflowService`, `ReviewController`, `AuthGroups`, `Routes-pas`, `status-timeline-view`, `PassAccessTest`, `ExpirePassesCommand`. Topic notes: [06 Shield auth & RBAC](../docs/nota-06-shield-auth-dan-rbac.md) · [05 Service & transactions](../docs/nota-05-service-layer-dan-transaksi.md) · [10 PHPUnit tests](../docs/nota-10-ujian-phpunit-ci4.md).
 

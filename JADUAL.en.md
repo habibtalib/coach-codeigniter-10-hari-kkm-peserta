@@ -37,70 +37,98 @@
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 2 recap | — |
-| 09:00–10:30 | S1 | MySQL database & `.env` | Create the databases & the `kkm_dev` user; connect the project |
-| 10:45–12:30 | S2 | First migrations & seeders | Write the `departments` & `parking_zones` migrations; idempotent seeders |
-| 14:30–16:00 | S3 | Model & the `/jabatan` pages | Build a model with validation; list & new form |
-| 16:00–17:00 | S4 | `/zon` search & pagination; wrap-up | Build a Query Builder search & pagination on your own |
+| 09:00–10:00 | S1 | MySQL database & `.env` | Create the databases & the `kkm_dev` user; connect the project |
+| 10:00–10:30 | S5 | S1 follow-up: test database & `.env.example` | Connect the `tests` group; commit a secret-free template |
+| 10:45–11:50 | S2 | First migrations & seeders | Write the `departments` & `parking_zones` migrations; idempotent seeders |
+| 11:50–12:30 | S6 | S2 follow-up: Query Builder in the console | Run queries in `php spark shell`; read the real SQL |
+| 14:30–15:20 | S3 | Model & the `/jabatan` pages | Build a model with validation; list & new form |
+| 15:20–16:00 | S7 | S3 follow-up: edit a department | Build an edit form with `update()` and `is_unique` `{id}` |
+| 16:00–16:35 | S4 | `/zon` search & pagination | Build a Query Builder search & pagination on your own |
+| 16:35–17:00 | S8 | S4 follow-up: zone details & sorting; wrap-up | Build a details page with a 404 and whitelisted sorting |
 
 ## Day 4 — Development Kickoff: Shield, Full Schema & Git Flow · [notes](./hari-4/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 3 recap | — |
-| 09:00–10:30 | S1 | Own-repo demo & the request cycle | Demo your GitLab repo & `/zon`; trace the CI4 MVC request flow with the Debug Toolbar |
-| 10:45–12:30 | S2 | Project structure, `.env` + Shield | Complete `.env`, install Shield, roles & the Bootstrap layout |
-| 14:30–16:00 | S3 | Migrations & seeders from the reference ERD | Write the 8 remaining migrations + seeders; `php spark migrate` succeeds |
-| 16:00–17:00 | S4 | Solo Git flow & merge request; wrap-up | Push `SETUP:`, open the first MR, branch plan & the Definition of Done |
+| 09:00–10:00 | S1 | Own-repo demo & the request cycle | Demo your GitLab repo & `/zon`; trace the CI4 MVC request flow with the Debug Toolbar |
+| 10:00–10:30 | S5 | S1 follow-up: tracing the POST `/jabatan` request | Trace a POST with the Debug Toolbar History & `filter:check`; compare it with a GET |
+| 10:45–12:00 | S2 | Project structure, `.env` + Shield | Complete `.env`, install Shield, roles & the Bootstrap layout |
+| 12:00–12:30 | S6 | S2 follow-up: Shield filters on the Day 3 pages | Put `session` & `permission:admin.access` on `/jabatan`, `/zon`; test with two accounts |
+| 14:30–15:30 | S3 | Migrations & seeders from the reference ERD | Write the 8 remaining migrations + seeders; `php spark migrate` succeeds |
+| 15:30–16:00 | S7 | S3 follow-up: FK & `ON DELETE` drills | Prove `RESTRICT`/`SET NULL`/`CASCADE` inside a transaction; `ReferenceSequenceSeeder` |
+| 16:00–16:35 | S4 | Solo Git flow & merge request | Push `SETUP:`, open the first MR, branch plan & the Definition of Done |
+| 16:35–17:00 | S8 | S4 follow-up: second merge request; wrap-up | MR with a review comment + fix commit; delete the branch after merging |
 
 ## Day 5 — TLK Module (Part 1) · [notes](./hari-5/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 4 recap | — |
-| 09:00–10:30 | S1 | Migrations & Models for vehicles/slots/bookings | Write Models with `$allowedFields`, `$validationRules`, Entity & enum |
-| 10:45–12:30 | S2 | Basic CRUD Controller & View | Build slot CRUD (admin) & a booking list with pagination |
-| 14:30–16:00 | S3 | Application form & input validation | Build the booking form with server-side validation + `TLK-` reference number |
-| 16:00–17:00 | S4 | Manual testing & review; wrap-up | Run the manual test list & record bugs |
+| 09:00–10:00 | S1 | Migrations & Models for vehicle/slot/booking | Write Models with `$allowedFields`, `$validationRules`, Entity & enum |
+| 10:00–10:30 | S5 | S1 follow-up: Model rules for zones & vehicles | Write rules + Malay messages (`{id}`, `{value}`); test with `Model::validate()` & a unit test |
+| 10:45–12:00 | S2 | Basic CRUD Controller & View | Build slot CRUD (admin) & a booking list with pagination |
+| 12:00–12:30 | S6 | S2 follow-up: zone CRUD (admin) | Build zone CRUD at `/admin/slot/zon`; block deleting a zone that still has slots |
+| 14:30–15:30 | S3 | Application form & input validation | Build the booking form with server-side validation + `TLK-` reference number |
+| 15:30–16:00 | S7 | S3 follow-up: vehicle registration form | Build `/kenderaan` with normalisation, the custom rule `valid_plate_no` & `user_id` from the session |
+| 16:00–16:35 | S4 | Manual testing & review | Carry out the manual test list & record bugs |
+| 16:35–17:00 | S8 | S4 follow-up: manual testing round 2; wrap-up | Run 12 zone & vehicle cases; record BUG-ZON-001; clean up the test data |
 
 ## Day 6 — TLK Module (Part 2) · [notes](./hari-6/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 5 recap | — |
-| 09:00–10:30 | S1 | Slot availability check logic | Write a date-range overlap query & show free slots |
-| 10:45–12:30 | S2 | Overlap control & status (pending/approved/rejected) | Enforce BR-TLK-01/04/05 in a transaction; status transitions + log |
-| 14:30–16:00 | S3 | Module functional testing | Write PHPUnit tests for overlap & status transitions |
-| 16:00–17:00 | S4 | UI improvements; module wrap-up | Add status badges, flash messages, confirmations; **M1 done** |
+| 09:00–10:00 | S1 | Slot availability check logic | Write the date-range overlap query & the free-slot view |
+| 10:00–10:30 | S5 | S1 follow-up: the busy-slot board | Build a board of active bookings per date range with a `JOIN`; restricted to approvers |
+| 10:45–12:00 | S2 | Overlap control & status (pending/approved/rejected) | Enforce BR-TLK-01/04/05 in a transaction; status transitions + log |
+| 12:00–12:30 | S6 | S2 follow-up: the `tlk:expire` command | Expire bookings through `transition()`; watch the command wait for a row lock |
+| 14:30–15:30 | S3 | Module functional testing | Write PHPUnit tests for overlap & status transitions |
+| 15:30–16:00 | S7 | S3 follow-up: tests for the new rules | Test the busy board & expiry; two mutations caught |
+| 16:00–16:35 | S4 | UI improvements; module wrap-up | Add status badges, flash messages, confirmation; **M1 complete** |
+| 16:35–17:00 | S8 | S4 follow-up: polish *Tempahan Saya* (My Bookings); wrap-up | Status tabs with counts, Cancel right from the list |
 
 ## Day 7 — Pass Module (Part 1) · [notes](./hari-7/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 6 recap | — |
-| 09:00–10:30 | S1 | Migrations & Model for pass applications | Write the `PassApplication` & `PassDocument` Model/Entity |
-| 10:45–12:30 | S2 | Basic CRUD Controller & View | Build the list (owner-scoped) & the detail view |
-| 14:30–16:00 | S3 | Form, validation & document upload | Secure file upload (type/size/random name/outside `public`) |
-| 16:00–17:00 | S4 | Manual testing & review; wrap-up | Test upload & validation edge cases |
+| 09:00–10:00 | S1 | Pass application migration & Model | Write the `PassApplication` & `PassDocument` Model/Entity |
+| 10:00–10:30 | S5 | S1 follow-up: extra enum & Entity methods | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` tested in `php spark shell` |
+| 10:45–12:00 | S2 | Basic CRUD Controller & View | Build the list (owner scope) & detail view |
+| 12:00–12:30 | S6 | S2 follow-up: type filter & search | `?pass_type=` filter + `?q=` search inside the owner scope; proof of the `orLike()` leak without brackets |
+| 14:30–15:30 | S3 | Form, validation & document upload | Secure file upload (type/size/random name/outside `public`) |
+| 15:30–16:00 | S7 | S3 follow-up: follow-up documents | 3 documents per application, checked before `move()` and under a `FOR UPDATE` lock |
+| 16:00–16:35 | S4 | Manual testing & review | Test upload & validation boundary cases |
+| 16:35–17:00 | S8 | S4 follow-up: automated boundary cases; wrap-up | PHPUnit `PassSubmitTest` + `>=` mutation |
 
 ## Day 8 — Pass Module (Part 2) · [notes](./hari-8/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 7 recap | — |
-| 09:00–10:30 | S1 | Approval flow apply → review → approve/reject | Implement `PassWorkflowService` with `PassStatus::canTransitionTo()` |
-| 10:45–12:30 | S2 | Role-based access control | Configure Shield groups/permissions + route filters + ownership checks |
-| 14:30–16:00 | S3 | Status/history log & functional testing | Show the `status_logs` timeline; positive & negative access tests |
-| 16:00–17:00 | S4 | Pass module wrap-up | Demo the full flow with 3 roles; **M2 done** |
+| 09:00–10:00 | S1 | Approval flow apply → review → approve/reject | Implement `PassWorkflowService` with `PassStatus::canTransitionTo()` |
+| 10:00–10:30 | S5 | S1 follow-up: bulk start review | Build a bulk action through `startReview()`; report partial failures |
+| 10:45–12:00 | S2 | Role-based access control | Configure Shield groups/permissions + route filters + ownership check |
+| 12:00–12:30 | S6 | S2 follow-up: protecting the bulk route | Add `permission:pas.review`; `fetch()` attack + 4-role matrix |
+| 14:30–15:30 | S3 | Status log/history & functional tests | Display the `status_logs` timeline; positive & negative access tests |
+| 15:30–16:00 | S7 | S3 follow-up: bulk action feature tests | Write `PassBatchReviewTest` + 2 mutations |
+| 16:00–16:35 | S4 | Pass Module wrap-up | Full 3-role flow demo; **M2 done** |
+| 16:35–17:00 | S8 | S4 follow-up: `admin` role demo | Demo the admin; record the separation-of-duties finding in `docs/demo-m2.md` |
 
 ## Day 9 — Report Module · [notes](./hari-9/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Day 8 recap | — |
-| 09:00–10:30 | S1 | Report design (types, search/filter criteria) | Define the RPT-01..03 specification & the GET filter form |
-| 10:45–12:30 | S2 | Aggregate queries & data search | Write `ReportService` (join, `groupBy`, `selectCount`, dynamic filters) |
-| 14:30–16:00 | S3 | PDF/Excel export | Generate PDF (Dompdf) & `.xlsx` (PhpSpreadsheet) from the same filters |
-| 16:00–17:00 | S4 | Report module testing; wrap-up | Confirm report totals = DB totals; **M3 done** |
+| 08:30–09:00 | — | Day 8 recap (Pass flow + RBAC) | — |
+| 09:00–10:00 | **S1** | Report design (types, search/filter criteria) | O1, O2 |
+| 10:00–10:30 | **S5** | S1 follow-up: quick periods & active filter chips | O7 |
+| 10:45–12:00 | **S2** | Aggregate queries & data search | O3 |
+| 12:00–12:30 | **S6** | S2 follow-up: status summary & RPT-03 JUMLAH row | O8 |
+| 14:30–15:30 | **S3** | PDF/Excel export | O4, O6 |
+| 15:30–16:00 | **S7** | S3 follow-up: Excel Summary sheet & PDF summary | O9 |
+| 16:00–16:35 | **S4** | Testing the reports module — **M3 done** | O5, O6 |
+| 16:35–17:00 | **S8** | S4 follow-up: summary tests & mutations; wrap-up | O10 |
 
 ## Day 10 — Statistics Module & Capstone · [notes](./hari-10/README.md)
 

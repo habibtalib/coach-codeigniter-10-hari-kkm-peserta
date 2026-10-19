@@ -18,6 +18,10 @@ By the end of today, participants can:
 | O4 | **Build** a `multipart/form-data` form with server validation `uploaded`, `max_size`, `ext_in`, `mime_in` for multiple files | S3 | The form rejects a 3 MB file with a Malay message |
 | O5 | **Implement** BR-PAS-02 secure upload: `getRandomName()` names, stored in `writable/uploads/pas/`, only `stored_path` in the DB, transaction + file cleanup, download through a controller with an ownership check | S3 | Files on disk have random names; `public/` has no files; download works for the owner only |
 | O6 | **Test** at least 10 upload & validation boundary cases, and **explain** the OWASP risk each one prevents | S4 | `docs/ujian-manual-pas.md` complete with Pass/Fail results |
+| O7 | **Write** `PassType::icon()`, `PassStatus::pending()` and the Entity methods `validityDays()`/`daysRemaining()` that can be tested with a fixed date | S5 | [Lab 7.1b](./lab.en.md#lab-71b--enum--entity-icons-pending-statuses--validity-period-s5); `php spark shell` output |
+| O8 | **Build** a type filter and a search inside the owner scope with `groupStart()`/`groupEnd()`, and **prove** the BR-PAS-04 leak when the brackets are missing | S6 | [Lab 7.2b](./lab.en.md#lab-72b--type-filter--search-on-my-applications-s6); `pemohon2` at `?q=sintetik` → 1 application |
+| O9 | **Build** follow-up document upload for the owner with a 3-documents-per-application limit, checked before `move()` and under a `FOR UPDATE` lock | S7 | [Lab 7.3b](./lab.en.md#lab-73b--adding-follow-up-documents-to-an-application-s7); a 4th document is rejected with no orphan file |
+| O10 | **Automate** the Lab 7.4 boundary cases with PHPUnit (`FakeUploadedFile`, `#[DataProvider]`) and **show** the tests catch a `>` → `>=` mutation | S8 | [Lab 7.4b](./lab.en.md#lab-74b--automating-the-boundary-cases-with-phpunit-s8); `OK (14 tests, …)` |
 
 ---
 
@@ -26,12 +30,16 @@ By the end of today, participants can:
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 6 recap | — |
-| 09:00–10:30 | S1 | Pass application migration & Model | Write the `PassApplication` & `PassDocument` Model/Entity |
+| 09:00–10:00 | S1 | Pass application migration & Model | Write the `PassApplication` & `PassDocument` Model/Entity |
+| 10:00–10:30 | S5 | S1 follow-up: extra enum & Entity methods | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` tested in `php spark shell` |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–12:30 | S2 | Basic CRUD Controller & View | Build the list (owner scope) & detail view |
+| 10:45–12:00 | S2 | Basic CRUD Controller & View | Build the list (owner scope) & detail view |
+| 12:00–12:30 | S6 | S2 follow-up: type filter & search | `?pass_type=` filter + `?q=` search inside the owner scope; proof of the `orLike()` leak without brackets |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–16:00 | S3 | Form, validation & document upload | Secure file upload (type/size/random name/outside `public`) |
-| 16:00–17:00 | S4 | Manual testing & review; wrap-up | Test upload & validation boundary cases |
+| 14:30–15:30 | S3 | Form, validation & document upload | Secure file upload (type/size/random name/outside `public`) |
+| 15:30–16:00 | S7 | S3 follow-up: follow-up documents | 3 documents per application, checked before `move()` and under a `FOR UPDATE` lock |
+| 16:00–16:35 | S4 | Manual testing & review | Test upload & validation boundary cases |
+| 16:35–17:00 | S8 | S4 follow-up: automated boundary cases; wrap-up | PHPUnit `PassSubmitTest` + `>=` mutation |
 
 ---
 
@@ -566,6 +574,152 @@ Each failed case → one row in the format *Steps to reproduce · Expected · Ac
 
 ---
 
+## S5 — S1 follow-up: Extra Enum & Entity Methods (after Lab 7.1)
+
+Lab 7.1 keeps the rules **with the data**: `requiresVehicle()` in the enum, `displayStatus()` in the Entity. Lab 7.1b adds three more with the same pattern, so views and controllers do not rewrite the logic:
+
+| Method | Kind | Result | Used in |
+|--------|-------|-------|------------|
+| `PassType::icon()` | `match` on the enum case | `bi-car-front`, `bi-person-badge`, `bi-tools` | The Jenis column, Lab 7.2b list |
+| `PassStatus::pending()` | static, list of values | `['submitted', 'under_review']` | `whereIn('status', PassStatus::pending())` — the `BookingStatus::active()` pattern |
+| `PassStatus::isPending()` | case method | `true`/`false` | Conditions in views/Services |
+| `validityDays()` | Entity | calendar days **including** both ends | `(N hari)` in the list & detail |
+| `daysRemaining(?Time $today)` | Entity | days left on an `approved` pass; `0` = the last day; `null` = none | The *Baki N hari* badge |
+
+`daysRemaining()` takes `$today` as a parameter (default `Time::today()`). A method that calls `Time::today()` inside gives a different result every day — a test that passes today fails next week. A date parameter makes the result repeatable: `daysRemaining(Time::parse('2026-10-20'))` always returns the same value.
+
+`php spark shell` (Lab 3.2b) loads the full application, so an Entity can be built in memory (`new PassApplication([...])`) and tested without saving a record.
+
+Lab: [Lab 7.1b](./lab.en.md#lab-71b--enum--entity-icons-pending-statuses--validity-period-s5)
+
+### 🎯 Quiz S5
+
+> Answer after Lab 7.1b on your laptop — the answers come from the real `php spark shell` output. Passing this quiz marks the Lab 7.1b checkpoint.
+
+1. Lab 7.1b step 5: `$p` is a pass with `valid_from = '2026-10-01'` and `valid_until = '2026-10-31'`. What does `$p->validityDays()` return?
+   - [ ] `30`
+   - [x] `31`
+   - [ ] `32`
+   - [ ] `null` — an Entity without an `id` is not saved in the database yet
+   > `diff()->days` between 1 and 31 October is `30`; the `+ 1` counts the first **and** the last day. A pass valid 1–1 Oct is valid for 1 day, not 0. The Entity needs no database — `$dates` turns the strings into `Time` when they are read.
+
+2. Lab 7.1b step 5: an `approved` pass valid until 31 Oct 2026. What do `daysRemaining(Time::parse('2026-10-31'))` and `daysRemaining(Time::parse('2026-11-01'))` return?
+   - [ ] `1` and `0`
+   - [ ] `0` and `-1`
+   - [ ] `null` and `null` — the pass has already expired on its last day
+   - [x] `0` and `null`
+   > On 31 Oct the pass is still valid (its last day) — `0` days left. On 1 Nov `valid_until` has passed, so `daysRemaining()` returns `null`, the same as `displayStatus()` showing *Tamat Tempoh*.
+
+---
+
+## S6 — S2 follow-up: Filters & Search inside the Owner Scope (after Lab 7.2)
+
+The `ownedBy()` scope is only safe if **every** other condition stays **inside** it. `like()` + `orLike()` without brackets breaks it:
+
+| Model code | SQL | Result for `pemohon2`, `?q=sintetik` |
+|-----------|-----|---------------------------------------|
+| `->like('ref_no', $q)->orLike('purpose', $q)` | `user_id = 3 AND ref_no LIKE … OR purpose LIKE …` | `(user_id = 3 AND …) OR purpose LIKE …` → the applications of **every** user whose purpose contains *sintetik* |
+| `->groupStart()->like(…)->orLike(…)->groupEnd()` | `user_id = 3 AND ( ref_no LIKE … OR purpose LIKE … )` | `pemohon2`'s applications only |
+
+`AND` binds tighter than `OR` in SQL. That is why `groupStart()`/`groupEnd()` exist — use them every time `orWhere()`/`orLike()` is combined with a security scope. `findVisibleOr404()` still blocks the detail page (404), but the list has already leaked the reference numbers, purposes and dates: **two** layers are needed, not one.
+
+The filter input is turned into an enum with `PassType::tryFrom()` (unknown value → `null` → no filter) and the search is cut to 50 characters. `$pager->links()` keeps `?pass_type=` and `?q=` in the links to the next pages.
+
+Lab: [Lab 7.2b](./lab.en.md#lab-72b--type-filter--search-on-my-applications-s6)
+
+### 🎯 Quiz S6
+
+> Answer after Lab 7.2b on your laptop — the answers come from the real `/pas/permohonan` page. Passing this quiz marks the Lab 7.2b checkpoint.
+
+1. Lab 7.2b step 5 (first `search()` version, without `groupStart()`): `pemohon2` opens `/pas/permohonan?q=sintetik`. What is the count line above the table?
+   - [ ] *1 permohonan ditemui.* — `ownedBy()` always filters first
+   - [ ] *Tiada permohonan untuk dipaparkan.*
+   - [x] *5 permohonan ditemui.* — including 4 of `pemohon1`'s applications
+   - [ ] An SQL error because of `orLike()` without `groupStart()`
+   > The SQL `user_id = 3 AND ref_no LIKE '%sintetik%' OR purpose LIKE '%sintetik%'` is read as `(… AND …) OR purpose LIKE …`. All five synthetic applications have *sintetik* in `purpose`, so they all pass the condition after `OR`.
+
+2. Lab 7.2b step 7 (bracketed version): `pemohon1` opens `/pas/permohonan?pass_type=kontraktor&q=blok`. What is shown?
+   - [x] `PAS-2026-9004` only
+   - [ ] `PAS-2026-9001` and `PAS-2026-9004`
+   - [ ] Nothing — lower-case `blok` does not match `Blok`
+   - [ ] `PAS-2026-9001`, `PAS-2026-9003` and `PAS-2026-9004`
+   > Three of `pemohon1`'s applications contain *Blok* (`9001`, `9003`, `9004`) — the `utf8mb4_unicode_ci` collation ignores upper/lower case. The `pass_type = kontraktor` filter (`AND`) leaves only `PAS-2026-9004`.
+
+---
+
+## S7 — S3 follow-up: Follow-up Documents & Checks under a Lock (after Lab 7.3)
+
+BR-PAS-02 limits **3 files per application**, not per request. Once the applicant can add documents later, the limit must count the documents that **already exist**:
+
+| Check | When | Why |
+|---------|------|--------|
+| Owner only | Before anything | Officers can *view* (`canView()`), but do not add documents on the applicant's behalf → `404` |
+| Status `submitted` | Before `move()` **and** under the lock | After *Mula Semakan* (Day 8), the documents being reviewed must not change |
+| Type, size, 1–3 files | Before `move()` | The same `assertFiles()` as `submit()` |
+| Existing + new ≤ 3 | Before `move()` **and** under the lock | Two tabs at once each see "2 documents" — without a lock both pass and the application gets 4 |
+
+The first check is cheap and saves the disk from files that will be rejected anyway. The second check runs after `SELECT status … FOR UPDATE` (the Lab 6.2 pattern): the application row stays locked until `transCommit()`, so no other request can add documents or change the status between the check and the `INSERT`. This prevents *time-of-check to time-of-use* (TOCTOU). A form still open in an old tab is rejected too, because the server checks again and does not rely on the card the view hides.
+
+The `POST pas/permohonan/(:num)/dokumen` route sits **outside** the `pas/permohonan` group because Lab 8.2 replaces that whole group tomorrow.
+
+Lab: [Lab 7.3b](./lab.en.md#lab-73b--adding-follow-up-documents-to-an-application-s7)
+
+### 🎯 Quiz S7
+
+> Answer after Lab 7.3b on your laptop — the answers come from the real messages on the detail page. Passing this quiz marks the Lab 7.3b checkpoint.
+
+1. Lab 7.3b step 7 case a: `PAS-2026-0001` has 2 documents, and you choose `surat-2.pdf` **and** `surat-3.pdf`. What happens?
+   - [ ] Both files are saved; the application now has 4 documents
+   - [ ] `surat-2.pdf` is saved, `surat-3.pdf` is rejected
+   - [ ] *Sila lampirkan 1 hingga 3 dokumen sokongan.*
+   - [x] *Permohonan ini sudah ada 2 dokumen. Maksimum 3 dokumen bagi setiap permohonan.* — no new file on disk
+   > `assertDocumentQuota()` computes `2 + 2 > 3` **before** `storeFile()`, so no file is moved and no row is written. `assertFiles()` passes because 2 files are within the 1–3 limit for one request.
+
+2. Lab 7.3b step 8: `pemohon2` changes the form `action` in DevTools to the ID of `PAS-2026-0001` and uploads `surat-3.pdf`. What is the response?
+   - [ ] *1 dokumen ditambah pada PAS-2026-0001.* — the CSRF token is valid
+   - [x] `404` — `findVisibleOr404()` refuses because `pemohon2` is neither the owner nor an officer
+   - [ ] `403` *The action you requested is not allowed.* — the `csrf` filter refuses
+   - [ ] Redirect to `/login`
+   > The CSRF token is tied to `pemohon2`'s session, not to the URL — so it is valid. The controller calls `findVisibleOr404()` first (BR-PAS-04), and `addDocuments()` in the Service checks ownership again. The existence of someone else's application is not revealed.
+
+---
+
+## S8 — S4 follow-up: Automated Boundary Cases with PHPUnit (after Lab 7.4)
+
+Lab 7.4 ran the boundary cases by hand. Lab 7.4b turns them into tests that run in a few seconds every time the code changes:
+
+| Technique | In `PassSubmitTest` | Why |
+|--------|------------------------|--------|
+| Fake `UploadedFile` | `FakeUploadedFile` replaces `isValid()` & `move()` only | The CLI has no `is_uploaded_file()`; the content check (`finfo`) stays real CI4 code |
+| `#[DataProvider]` | `rejectedProvider()` — 7 cases, one test method | A new case = one array row; PHPUnit counts each data set as one test |
+| No side effects check | 0 `pass_applications` rows, 0 `pass_documents` rows, 0 new files | Correct message + orphan file = **fail** (README §4.3) |
+| Cleanup | `tearDown()` deletes the files created by the test **only** | Your training files in `writable/uploads/pas/` stay |
+| Mutation | Change `>` → `>=` and see which test fails | Proves the tests really check the boundary, not just pass |
+
+These tests run at the **Service** layer (`submit()`, `addDocuments()`). The controller rules (`uploaded`, `max_size`, `mime_in`) and the HTTP cases (UT-PAS-14 to 16) stay in the manual tests — tomorrow (Day 8 S3) HTTP feature tests cover access control.
+
+Lab: [Lab 7.4b](./lab.en.md#lab-74b--automating-the-boundary-cases-with-phpunit-s8)
+
+### 🎯 Quiz S8
+
+> Answer after Lab 7.4b on your laptop — the answers come from the real `composer test` output. Passing this quiz marks the Lab 7.4b checkpoint.
+
+1. Lab 7.4b step 3: what is the last line of the output of `composer test -- --no-coverage --testdox tests/feature/Pas/PassSubmitTest.php`?
+   - [ ] `OK (8 tests, 44 assertions)` — one test per `test…` method
+   - [ ] `OK (17 tests, 51 assertions)` — one test per UT-PAS case
+   - [x] `OK (14 tests, 44 assertions)`
+   - [ ] `OK (1 test, 14 assertions)` — one test class
+   > 7 plain test methods + 7 `rejectedProvider()` data sets = 14 tests. PHPUnit runs `testKesDitolakTanpaKesanSampingan` once per data set, and `--testdox` shows each one with its key name.
+
+2. Lab 7.4b step 4: after changing `>` to `>=` in `assertFiles()`, what does PHPUnit report?
+   - [x] `ERRORS!` — `testTepat2MbDiterima`: `InvalidArgumentException: Setiap fail mestilah tidak melebihi 2 MB.`
+   - [ ] `FAILURES!` — the `UT-PAS-06 2 MB + 1 bait` data set, because a 2 MB + 1 byte file is now accepted
+   - [ ] `OK` — the tests are not sensitive to `>` versus `>=`
+   - [ ] `ERRORS!` — all seven `rejectedProvider()` data sets fail
+   > `2097152 >= 2097152` is now true, so a file of **exactly** 2 MB is rejected. That test does not expect an exception, so PHPUnit reports it as an *error* (uncaught exception), not a *failure* (failed assertion). The 2 MB + 1 byte file is still rejected — that is why a boundary must be tested on **both** sides.
+
+---
+
 ## 📦 Deliverables — Today's Output
 
 - [ ] `app/Enums/PassType.php`, `app/Enums/PassStatus.php`
@@ -578,6 +732,10 @@ Each failed case → one row in the format *Steps to reproduce · Expected · Ac
 - [ ] Application `PAS-2026-0001` with 1–3 documents successfully submitted and downloaded
 - [ ] `docs/ujian-manual-pas.md` — ≥ 10 cases, all Pass (or bugs recorded)
 - [ ] Commit on the `feat/pas-permohonan` branch with the `PAS:` prefix
+- [ ] `PassType::icon()`, `PassStatus::pending()`/`isPending()`, `PassApplication::validityDays()`/`daysRemaining()` (Lab 7.1b)
+- [ ] The `?pass_type=` filter + bracketed `?q=` search (`withType()`, `search()`) on `/pas/permohonan` (Lab 7.2b)
+- [ ] The `pas.dokumen.tambah` route + `PassWorkflowService::addDocuments()` — at most 3 documents per application (Lab 7.3b)
+- [ ] `tests/_support/FakeUploadedFile.php` + `tests/feature/Pas/PassSubmitTest.php` green; the *Diautomasikan* section in `docs/ujian-manual-pas.md` (Lab 7.4b)
 
 Full trainer reference: `templates/kod/` (**Templat & Rujukan** module) — `PassStatus`, `PassType`, `PassApplication-Entity`, `PassApplicationModel`, `PassWorkflowService`, `ApplicationController-upload`, `Routes-pas`. Topic notes: [07 Secure file upload](../docs/nota-07-muat-naik-fail-selamat.md) · [03 Model, Entity & Enum](../docs/nota-03-model-entity-dan-enum.md) · [11 Security](../docs/nota-11-keselamatan-aplikasi-web.md).
 

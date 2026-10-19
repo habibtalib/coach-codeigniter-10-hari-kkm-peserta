@@ -7,10 +7,14 @@
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
 | 7.0 | Awal S1 | 10 min | Branch Git + `php.ini` sedia untuk muat naik |
-| 7.1 | S1 | 09:10–10:30 | Enum, Entity, 2 Model |
-| 7.2 | S2 | 10:45–12:30 | Route, Service (`canView`), senarai & butiran |
-| 7.3 | S3 | 14:30–16:00 | Borang + validasi + muat naik + muat turun |
-| 7.4 | S4 | 16:00–17:00 | 17 kes ujian sempadan direkod |
+| 7.1 | S1 | 09:10–10:00 | Enum, Entity, 2 Model |
+| 7.1b | S5 | 10:00–10:30 | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` diuji dalam `php spark shell` |
+| 7.2 | S2 | 10:45–12:00 | Route, Service (`canView`), senarai & butiran |
+| 7.2b | S6 | 12:00–12:30 | Penapis `?pass_type=` + carian `?q=` (bukti kebocoran `orLike()` tanpa kurungan) |
+| 7.3 | S3 | 14:30–15:30 | Borang + validasi + muat naik + muat turun |
+| 7.3b | S7 | 15:30–16:00 | Tambah dokumen susulan (maks. 3 setiap permohonan, kunci `FOR UPDATE`) |
+| 7.4 | S4 | 16:00–16:35 | 17 kes ujian sempadan direkod |
+| 7.4b | S8 | 16:35–17:00 | `PassSubmitTest` PHPUnit: 14 kes sempadan automatik + mutasi `>=` |
 
 ---
 
@@ -514,10 +518,10 @@ Menulis `PassType`, `PassStatus`, Entity `PassApplication`, `PassApplicationMode
    Buka `http://localhost:8080/cuba-model-pas`.
 
 ### ✅ Checkpoint 7.1
-- [ ] Skrip enum mencetak `bool(true)`, `bool(false)`, `bool(true)`, `bool(true)`, `Dalam Semakan`, `NULL`.
-- [ ] `/cuba-model-pas` memulangkan `"ok": false` dengan ralat untuk **`pass_type`**, **`purpose`** dan **`valid_from`** (3 ralat).
-- [ ] Route sementara **dibuang** dan `writable/scratch/` tidak di-commit.
-- [ ] Commit: `git add app/ && git commit -m "PAS: enum PassType/PassStatus, entity & model permohonan"`
+- [ ] Skrip enum mencetak `bool(true)`, `bool(false)`, `bool(true)`, `bool(true)`, `Dalam Semakan`, `NULL` (Kuiz S1).
+- [ ] `/cuba-model-pas` memulangkan `"ok": false` dengan ralat untuk **`pass_type`**, **`purpose`** dan **`valid_from`** (3 ralat) (Kuiz S1).
+- [ ] Route sementara **dibuang** dan `writable/scratch/` tidak di-commit (Kuiz S1).
+- [ ] Commit: `git add app/ && git commit -m "PAS: enum PassType/PassStatus, entity & model permohonan"` (Kuiz S1)
 
 ### 🧯 Masalah lazim
 
@@ -911,12 +915,12 @@ Membina `/pas/permohonan` (senarai skop pemilik, filter status, pagination) dan 
 8. Uji sebagai `pemohon1`, kemudian log keluar dan uji sebagai `pemohon2`.
 
 ### ✅ Checkpoint 7.2
-- [ ] `pemohon1` di `/pas/permohonan` nampak **PAS-2026-9001 sahaja**; `pemohon2` nampak **PAS-2026-9002 sahaja**.
-- [ ] `/pas/permohonan?status=xyz` tidak ralat (senarai penuh dipapar); `?status=submitted` menapis.
-- [ ] `pemohon2` membuka `/pas/permohonan/{id PAS-2026-9001}` → **404**.
-- [ ] Log masuk `penyemak@latihan.test` membuka ID yang sama → **200** (pegawai lihat semua).
-- [ ] Keluar (log out) dan buka `/pas/permohonan` → redirect ke `/login`.
-- [ ] Commit: `git add app/ && git commit -m "PAS: senarai skop pemilik & paparan butiran (BR-PAS-04)"`
+- [ ] `pemohon1` di `/pas/permohonan` nampak **PAS-2026-9001 sahaja**; `pemohon2` nampak **PAS-2026-9002 sahaja** (Kuiz S2).
+- [ ] `/pas/permohonan?status=xyz` tidak ralat (senarai penuh dipapar); `?status=submitted` menapis (Kuiz S2).
+- [ ] `pemohon2` membuka `/pas/permohonan/{id PAS-2026-9001}` → **404** (Kuiz S2).
+- [ ] Log masuk `penyemak@latihan.test` membuka ID yang sama → **200** (pegawai lihat semua) (Kuiz S2).
+- [ ] Keluar (log out) dan buka `/pas/permohonan` → redirect ke `/login` (Kuiz S2).
+- [ ] Commit: `git add app/ && git commit -m "PAS: senarai skop pemilik & paparan butiran (BR-PAS-04)"` (Kuiz S2)
 
 ### 🧯 Masalah lazim
 
@@ -1193,7 +1197,7 @@ Membina borang permohonan dengan 1–3 dokumen yang disimpan secara selamat (BR-
 
    Sebelum meneruskan, terangkan dengan lisan kepada jurulatih atau rakan sebelah: *"Kenapa fail dipindah SEBELUM `transBegin()`, dan apa yang berlaku kepada fail jika `record()` gagal?"*
 
-2. **Tambah `new()`, `create()`, `download()`, `rules()`, `uploadedFiles()`** dalam `ApplicationController` — gantikan seluruh kandungan fail dengan versi lengkap Hari 7 di bawah. `index()`, `show()`, `findVisibleOr404()` dan `protected $helpers = ['form', 'url'];` kekal seperti Lab 7.2.
+2. **Tambah `new()`, `create()`, `download()`, `rules()`, `uploadedFiles()`** dalam `ApplicationController` — gantikan seluruh kandungan fail dengan versi lengkap Hari 7 di bawah. `index()` kekal seperti Lab 7.2b (penapis jenis + carian); `show()`, `findVisibleOr404()` dan `protected $helpers = ['form', 'url'];` kekal seperti Lab 7.2.
 
    `app/Controllers/Pas/ApplicationController.php`
 
@@ -1227,9 +1231,17 @@ Membina borang permohonan dengan 1–3 dokumen yang disimpan secara selamat (BR-
            $requested = $this->request->getGet('status');
            $status    = PassStatus::tryFrom(is_string($requested) ? $requested : '');   // input asing → null
 
+           // Lab 7.2b: penapis jenis + carian — input asing diabaikan, carian dihadkan 50 aksara
+           $typeInput = $this->request->getGet('pass_type');
+           $type      = PassType::tryFrom(is_string($typeInput) ? $typeInput : '');
+           $qInput    = $this->request->getGet('q');
+           $q         = is_string($qInput) ? mb_substr(trim($qInput), 0, 50) : '';
+
            $model        = model(PassApplicationModel::class);
            $applications = $model->ownedBy((int) auth()->id())
                ->withStatus($status)
+               ->withType($type)
+               ->search($q)
                ->orderBy('pass_applications.created_at', 'DESC')
                ->paginate(10);
 
@@ -1237,6 +1249,8 @@ Membina borang permohonan dengan 1–3 dokumen yang disimpan secara selamat (BR-
                'applications' => $applications,
                'pager'        => $model->pager,
                'status'       => $status,
+               'type'         => $type,
+               'q'            => $q,
            ]);
        }
 
@@ -1513,17 +1527,18 @@ Membina borang permohonan dengan 1–3 dokumen yang disimpan secara selamat (BR-
 8. **Muat turun** kedua-dua dokumen dari halaman butiran. Buka DevTools → Network → klik respons → semak header `Content-Disposition: attachment; filename="surat-sokongan.pdf"` dan `X-Content-Type-Options: nosniff`.
 
 ### ✅ Checkpoint 7.3
-- [ ] Redirect ke `/pas/permohonan/{id}` dengan mesej "Permohonan PAS-2026-000N berjaya dihantar."
-- [ ] `pass_documents.stored_path` bermula `uploads/pas/` (relatif), `mime` = `application/pdf` / `image/png`, `original_name` = nama asal.
-- [ ] Nama fail di cakera **berbeza** daripada nama asal; `public/` tiada folder `uploads`.
-- [ ] `status_logs` ada baris `PAS · {id} · NULL → submitted`.
-- [ ] Muat turun berjaya dengan nama asal; header `attachment` + `nosniff` wujud.
-- [ ] Commit: `git add app/ && git commit -m "PAS: borang permohonan + muat naik dokumen selamat (BR-PAS-02)"`
+- [ ] Redirect ke `/pas/permohonan/{id}` dengan mesej "Permohonan PAS-2026-000N berjaya dihantar." (Kuiz S3)
+- [ ] `pass_documents.stored_path` bermula `uploads/pas/` (relatif), `mime` = `application/pdf` / `image/png`, `original_name` = nama asal (Kuiz S3).
+- [ ] Nama fail di cakera **berbeza** daripada nama asal; `public/` tiada folder `uploads` (Kuiz S3).
+- [ ] `status_logs` ada baris `PAS · {id} · NULL → submitted` (Kuiz S3).
+- [ ] Muat turun berjaya dengan nama asal; header `attachment` + `nosniff` wujud (Kuiz S3).
+- [ ] Commit: `git add app/ && git commit -m "PAS: borang permohonan + muat naik dokumen selamat (BR-PAS-02)"` (Kuiz S3)
 
 ### 🧯 Masalah lazim
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
+| `Call to undefined method App\Models\PassApplicationModel::withType()` di `/pas/permohonan` | Lab 7.2b belum dibuat — controller langkah 2 memanggil skop `withType()`/`search()` | Buat Lab 7.2b langkah 2 dan 6 (skop Model) |
 | Ralat validasi `uploaded` (tiada fail diterima) walaupun fail dipilih | Borang tanpa `enctype` (guna `form_open()` bukan `form_open_multipart()`) | `form_open_multipart()` |
 | Hanya **satu** fail disimpan walaupun 2 dipilih | `name="documents"` tanpa `[]` | `name="documents[]"` + `multiple` |
 | `The action you requested is not allowed.` (SecurityException) semasa hantar fail besar | `post_max_size` dilepasi → `$_POST` kosong → token CSRF hilang | Naikkan `post_max_size` (16M) — Lab 7.0 |
@@ -1609,13 +1624,13 @@ Menjalankan sekurang-kurangnya 10 (sasaran 17) kes ujian sempadan untuk muat nai
 
 4. **Rekod pepijat** (jika ada) di bawah jadual dengan format: *ID · Langkah hasilkan semula · Dijangka · Sebenar · Keterukan (Tinggi/Sederhana/Rendah)*. Baiki mengikut kitaran **reproduce → ujian gagal → baiki → ujian lulus**.
 
-5. **Bersihkan** data ujian: padam rekod `PAS-2026-900x` (Lab 7.2) — atau kekalkan sebagai data demo esok. **Jangan** padam fail di `writable/uploads/pas/` secara manual tanpa memadam baris `pass_documents` yang sepadan.
+5. **Bersihkan** data ujian: padam rekod `PAS-2026-900x` (Lab 7.2), termasuk `PAS-2026-9003`–`9005` (Lab 7.2b): baris ini tiada sejarah `status_logs` dan akan mengelirukan baris gilir semakan Hari 8. **Jangan** padam fail di `writable/uploads/pas/` secara manual tanpa memadam baris `pass_documents` yang sepadan.
 
 ### ✅ Checkpoint 7.4
-- [ ] `docs/ujian-manual-pas.md` mengandungi ≥ 10 kes dengan lajur *Sebenar* & *Keputusan* diisi.
-- [ ] UT-PAS-04, 08, 09: **tiada** fail baharu di `writable/uploads/pas/` dan tiada rekod `pass_applications` baharu.
-- [ ] Anda boleh menerangkan kepada jurulatih **risiko OWASP** yang dicegah oleh UT-PAS-07, 09, 15 dan 16.
-- [ ] Commit: `git add docs/ && git commit -m "PAS: kes ujian manual muat naik & pemilikan"` dan `git push -u origin feat/pas-permohonan`.
+- [ ] `docs/ujian-manual-pas.md` mengandungi ≥ 10 kes dengan lajur *Sebenar* & *Keputusan* diisi (Kuiz S4).
+- [ ] UT-PAS-04, 08, 09: **tiada** fail baharu di `writable/uploads/pas/` dan tiada rekod `pass_applications` baharu (Kuiz S4).
+- [ ] Anda boleh menerangkan kepada jurulatih **risiko OWASP** yang dicegah oleh UT-PAS-07, 09, 15 dan 16 (Kuiz S4).
+- [ ] Commit: `git add docs/ && git commit -m "PAS: kes ujian manual muat naik & pemilikan"` dan `git push -u origin feat/pas-permohonan` (Kuiz S4).
 
 ### 🧯 Masalah lazim
 
@@ -1630,16 +1645,1024 @@ Menjalankan sekurang-kurangnya 10 (sasaran 17) kes ujian sempadan untuk muat nai
 
 ### ⭐ Cabaran tambahan
 - Muat naik fail bernama `"><img src=x onerror=alert(1)>.pdf` (macOS/Linux sahaja) dan sahkan nama dipapar sebagai teks dalam butiran (XSS dicegah oleh `esc()`).
-- Automasikan UT-PAS-06 dengan PHPUnit menggunakan `$_FILES` palsu — apakah cabarannya? (Petunjuk: `is_uploaded_file()` dan `move_uploaded_file()`.)
+- Sebelum Lab 7.4b: fikirkan kenapa UT-PAS-06 sukar diautomasikan dengan PHPUnit menggunakan `$_FILES` palsu. (Petunjuk: `is_uploaded_file()` dan `move_uploaded_file()`; Lab 7.4b langkah 1 menjawabnya.)
 - Tukar mesej validasi lalai CI4 ke Bahasa Melayu: `app/Language/ms/Validation.php` + `Config\App::$defaultLocale = 'ms'`.
+
+---
+
+## Lab 7.1b — Enum & Entity: Ikon, Status Menunggu & Tempoh Sah (S5)
+
+### 🎯 Objektif
+Menambah tiga kaedah baharu pada kod Lab 7.1 dengan corak yang sama (`match`, kaedah statik enum, kaedah Entity): `PassType::icon()`, `PassStatus::pending()`/`isPending()`, dan `PassApplication::validityDays()`/`daysRemaining()`, kemudian mengujinya dalam `php spark shell` tanpa database.
+
+### Prasyarat
+- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 7.1](#lab-71--enum-entity--model-s1) selesai dan di-commit.
+- `php spark shell` (PsySH) dari [Lab 3.2b](../hari-3/lab.md#lab-32b--query-builder-dalam-konsol-s6) berfungsi.
+
+### Langkah
+
+1. **`PassType::icon()`** — kelas Bootstrap Icons bagi setiap jenis pas (dipakai dalam senarai Lab 7.2b). Dalam `app/Enums/PassType.php`, tambah kaedah ini **terus selepas** kaedah `requiresVehicle()`:
+
+   ```php
+       /** Kelas Bootstrap Icons untuk senarai & butiran (Lab 7.1b) */
+       public function icon(): string
+       {
+           return match ($this) {
+               self::Kenderaan  => 'bi-car-front',
+               self::Kakitangan => 'bi-person-badge',
+               self::Kontraktor => 'bi-tools',
+           };
+       }
+   ```
+
+2. **`PassStatus::pending()` dan `isPending()`** — status yang masih menunggu tindakan pegawai. Coraknya sama seperti `BookingStatus::active()` (Hari 5): satu senarai dalam enum, bukan `['submitted', 'under_review']` bertaburan di controller. Dalam `app/Enums/PassStatus.php`, tambah **terus selepas** kaedah `isFinal()`:
+
+   ```php
+       /**
+        * Status yang menunggu tindakan pegawai (Lab 7.1b) — corak sama seperti BookingStatus::active().
+        *
+        * @return list<string> ['submitted', 'under_review']
+        */
+       public static function pending(): array
+       {
+           return [self::Submitted->value, self::UnderReview->value];
+       }
+
+       /** true jika status ini masih menunggu tindakan pegawai */
+       public function isPending(): bool
+       {
+           return in_array($this->value, self::pending(), true);
+       }
+   ```
+
+3. **`validityDays()` dan `daysRemaining()`** — dalam `app/Entities/PassApplication.php`, tambah dua kaedah ini **sebelum `}` penutup kelas** (selepas `displayStatus()`). `PassStatus` dan `Time` sudah di-`use` di bahagian atas fail:
+
+   ```php
+       /**
+        * Bilangan hari kalendar dalam tempoh sah, termasuk hari pertama & terakhir
+        * (1 Okt hingga 1 Okt = 1 hari) — corak sama seperti SlotBooking::durationDays().
+        */
+       public function validityDays(): int
+       {
+           return $this->valid_from->diff($this->valid_until)->days + 1;   // Time (lihat $dates)
+       }
+
+       /**
+        * Baki hari pas yang DILULUSKAN, dikira dari $today (lalai: hari ini).
+        * 0 = tamat hari ini. null = belum/tidak diluluskan, atau sudah tamat tempoh.
+        */
+       public function daysRemaining(?Time $today = null): ?int
+       {
+           $today ??= Time::today();
+           $until = $this->valid_until;
+
+           if ($this->statusEnum() !== PassStatus::Approved || $until->isBefore($today)) {
+               return null;
+           }
+
+           return $today->diff($until)->days;
+       }
+   ```
+
+   `daysRemaining()` menerima `$today` sebagai parameter supaya boleh diuji dengan tarikh tetap — ujian tidak berubah hasil mengikut hari ia dijalankan.
+
+4. **Semak sintaks:**
+
+   ```bash
+   php -l app/Enums/PassType.php
+   php -l app/Enums/PassStatus.php
+   php -l app/Entities/PassApplication.php
+   ```
+
+5. **Uji dalam konsol.** `php spark shell`, kemudian taip setiap baris di bawah, tekan Enter, dan catat hasilnya. Entity dibina dalam memori — tiada rekod disimpan dalam database:
+
+   ```text
+   use App\Entities\PassApplication;
+   use App\Enums\PassStatus;
+   use App\Enums\PassType;
+   use CodeIgniter\I18n\Time;
+   PassStatus::pending()
+   PassStatus::Approved->isPending()
+   PassType::Kontraktor->icon()
+   $p = new PassApplication(['user_id' => 2, 'pass_type' => 'kontraktor', 'status' => 'approved', 'valid_from' => '2026-10-01', 'valid_until' => '2026-10-31'])
+   $p->validityDays()
+   $p->daysRemaining(Time::parse('2026-10-20'))
+   $p->daysRemaining(Time::parse('2026-10-31'))
+   $p->daysRemaining(Time::parse('2026-11-01'))
+   $p->status = 'submitted'
+   $p->daysRemaining(Time::parse('2026-10-20'))
+   $p->valid_until = '2026-10-01'
+   $p->validityDays()
+   exit
+   ```
+
+   Catat nilai `validityDays()` dan ketiga-tiga `daysRemaining()` (soalan Kuiz S5).
+
+6. **Commit:**
+
+   ```bash
+   git add app/ && git commit -m "PAS: PassType::icon, PassStatus::pending, validityDays & daysRemaining"
+   ```
+
+### ✅ Checkpoint
+- [ ] `php -l` tiada ralat sintaks bagi `PassType.php`, `PassStatus.php` dan `PassApplication.php` (Kuiz S5).
+- [ ] Dalam `php spark shell`: `PassStatus::pending()` memulangkan `submitted` dan `under_review`, `PassType::Kontraktor->icon()` memulangkan `bi-tools`, dan nilai `validityDays()` serta `daysRemaining()` langkah 5 dicatat (Kuiz S5).
+- [ ] Commit `PAS: PassType::icon, PassStatus::pending, validityDays & daysRemaining` ada dalam `git log` (Kuiz S5).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Command "shell" not found` | Lab 3.2b belum dibuat dalam projek ini | Buat Lab 3.2b langkah 1–2 (`composer require --dev psy/psysh` + `app/Commands/Shell.php`) |
+| Prompt `>` tidak muncul dalam Git Bash | Tetingkap mintty berasingan | Guna terminal VS Code, atau `winpty php spark shell` |
+| `Call to undefined method App\Entities\PassApplication::validityDays()` | Kaedah ditampal di luar kelas, atau fail belum disimpan | Simpan fail; kaedah mesti sebelum `}` terakhir; keluar (`exit`) dan buka semula `php spark shell` |
+| `validityDays()` memulangkan `30` untuk 1–31 Okt | `+ 1` tertinggal | Tempoh sah **termasuk** hari pertama dan terakhir |
+| `UnhandledMatchError` dalam `icon()` | Satu `case` tiada cabang `match` | Tiga cabang tepat: `Kenderaan`, `Kakitangan`, `Kontraktor` |
+
+### ⭐ Cabaran tambahan
+- Tulis `tests/unit/Enums/PassTypeTest.php` yang memastikan **setiap** `PassType::cases()` mempunyai `icon()` bermula dengan `bi-` dan `label()` tidak kosong — ujian ini gagal secara automatik jika jenis keempat ditambah tanpa ikon.
+
+---
+
+## Lab 7.2b — Penapis Jenis & Carian pada "Permohonan Saya" (S6)
+
+### 🎯 Objektif
+Menambah penapis `?pass_type=` dan carian `?q=` (no. rujukan atau tujuan) pada `/pas/permohonan` melalui skop Model, membuktikan bahawa `orLike()` tanpa `groupStart()` membocorkan permohonan orang lain (BR-PAS-04), dan memaparkan ikon jenis serta tempoh sah (Lab 7.1b).
+
+### Prasyarat
+- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 7.2](#lab-72--laluan-service--paparan-senaraibutiran-s2) dan [Lab 7.1b](#lab-71b--enum--entity-ikon-status-menunggu--tempoh-sah-s5) selesai. Data `PAS-2026-9001` (`pemohon1`) dan `PAS-2026-9002` (`pemohon2`) dari Lab 7.2 langkah 7 wujud.
+
+### Langkah
+
+1. **Tiga lagi permohonan sintetik untuk `pemohon1`** — jalankan dalam klien MySQL (HeidiSQL Laragon atau `mysql`) pada database `kkm_latihan`. ID pengguna dan kenderaan dicari melalui e-mel dan plat, jadi tiada nombor untuk diganti:
+
+   ```sql
+   SET @p1 = (SELECT user_id FROM auth_identities WHERE secret = 'pemohon1@latihan.test');
+   SET @v1 = (SELECT id FROM vehicles WHERE plate_no = 'WXX 1234');
+
+   INSERT INTO pass_applications (ref_no, user_id, pass_type, vehicle_id, purpose, valid_from, valid_until, status, created_at, updated_at) VALUES
+   ('PAS-2026-9003', @p1, 'kenderaan',  @v1,  'Pelekat kenderaan untuk parkir Blok A (sintetik)', '2026-11-01', '2027-10-31', 'submitted',    NOW(), NOW()),
+   ('PAS-2026-9004', @p1, 'kontraktor', NULL, 'Kerja pendawaian semula Blok C (sintetik)',        '2026-10-15', '2026-12-15', 'approved',     NOW(), NOW()),
+   ('PAS-2026-9005', @p1, 'kakitangan', NULL, 'Akses makmal komputer aras 3 (sintetik)',          '2026-10-01', '2026-10-01', 'under_review', NOW(), NOW());
+
+   SELECT ref_no, pass_type, status FROM pass_applications WHERE user_id = @p1 ORDER BY ref_no;
+   ```
+
+   Hasil `SELECT`: 4 baris (`PAS-2026-9001`, `9003`, `9004`, `9005`). Rekod `PAS-2026-900x` dipadam bersama data Lab 7.2 dalam Lab 7.4 langkah 5.
+
+2. **Skop Model — versi pertama.** Dalam `app/Models/PassApplicationModel.php`, tambah dua kaedah ini **terus sebelum** kaedah `withApplicant()`. Kaedah `search()` ini **sengaja salah**; langkah 6 membetulkannya:
+
+   ```php
+       /** Penapis jenis pas pilihan (null = semua) — Lab 7.2b */
+       public function withType(?PassType $type): static
+       {
+           if ($type !== null) {
+               $this->where('pass_applications.pass_type', $type->value);
+           }
+
+           return $this;
+       }
+
+       /** VERSI PERTAMA — sengaja tanpa kurungan (langkah 6 membetulkannya) */
+       public function search(string $q): static
+       {
+           if ($q !== '') {
+               $this->like('pass_applications.ref_no', $q)
+                   ->orLike('pass_applications.purpose', $q);
+           }
+
+           return $this;
+       }
+   ```
+
+3. **Controller.** Dalam `app/Controllers/Pas/ApplicationController.php`:
+   - tambah `use App\Enums\PassType;` di bawah baris `use App\Enums\PassStatus;`;
+   - gantikan seluruh kaedah `index()` dengan versi di bawah. `show()` dan `findVisibleOr404()` tidak berubah.
+
+   ```php
+       /** GET /pas/permohonan — "Permohonan Saya" (BR-PAS-04: SENTIASA skop pemilik) */
+       public function index(): string
+       {
+           $requested = $this->request->getGet('status');
+           $status    = PassStatus::tryFrom(is_string($requested) ? $requested : '');   // input asing → null
+
+           // Lab 7.2b: penapis jenis + carian — input asing diabaikan, carian dihadkan 50 aksara
+           $typeInput = $this->request->getGet('pass_type');
+           $type      = PassType::tryFrom(is_string($typeInput) ? $typeInput : '');
+           $qInput    = $this->request->getGet('q');
+           $q         = is_string($qInput) ? mb_substr(trim($qInput), 0, 50) : '';
+
+           $model        = model(PassApplicationModel::class);
+           $applications = $model->ownedBy((int) auth()->id())
+               ->withStatus($status)
+               ->withType($type)
+               ->search($q)
+               ->orderBy('pass_applications.created_at', 'DESC')
+               ->paginate(10);
+
+           return view('pas/index', [
+               'applications' => $applications,
+               'pager'        => $model->pager,
+               'status'       => $status,
+               'type'         => $type,
+               'q'            => $q,
+           ]);
+       }
+   ```
+
+4. **View.** Gantikan seluruh kandungan `app/Views/pas/index.php`. Berbanding Lab 7.2: dua medan penapis baharu, pautan *Set semula*, kiraan `$pager->getTotal()`, ikon jenis dan bilangan hari tempoh sah:
+
+   ```php
+   <?= $this->extend('layouts/main') ?>
+
+   <?= $this->section('title') ?>Permohonan Pas Saya<?= $this->endSection() ?>
+
+   <?= $this->section('content') ?>
+   <div class="d-flex justify-content-between align-items-center mb-3">
+       <h1 class="h3 mb-0">Permohonan Pas Saya</h1>
+       <a href="<?= url_to('pas.new') ?>" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Mohon Pas</a>
+   </div>
+
+   <form method="get" class="row g-2 mb-3" role="search">
+       <div class="col-auto">
+           <label for="status" class="visually-hidden">Status</label>
+           <select name="status" id="status" class="form-select">
+               <option value="">Semua status</option>
+               <?php foreach (\App\Enums\PassStatus::cases() as $case): ?>
+                   <option value="<?= esc($case->value, 'attr') ?>" <?= $status === $case ? 'selected' : '' ?>>
+                       <?= esc($case->label()) ?>
+                   </option>
+               <?php endforeach ?>
+           </select>
+       </div>
+       <div class="col-auto">
+           <label for="pass_type" class="visually-hidden">Jenis pas</label>
+           <select name="pass_type" id="pass_type" class="form-select">
+               <option value="">Semua jenis</option>
+               <?php foreach (\App\Enums\PassType::cases() as $case): ?>
+                   <option value="<?= esc($case->value, 'attr') ?>" <?= $type === $case ? 'selected' : '' ?>>
+                       <?= esc($case->label()) ?>
+                   </option>
+               <?php endforeach ?>
+           </select>
+       </div>
+       <div class="col-auto">
+           <label for="q" class="visually-hidden">Carian</label>
+           <input type="search" name="q" id="q" value="<?= esc($q, 'attr') ?>" maxlength="50"
+                  class="form-control" placeholder="No. rujukan / tujuan">
+       </div>
+       <div class="col-auto"><button type="submit" class="btn btn-outline-secondary">Tapis</button></div>
+       <div class="col-auto"><a href="<?= url_to('pas.index') ?>" class="btn btn-link">Set semula</a></div>
+   </form>
+
+   <?php if ($applications === []): ?>
+       <div class="alert alert-info">Tiada permohonan untuk dipaparkan.</div>
+   <?php else: ?>
+       <p class="text-body-secondary small mb-2"><?= esc((string) $pager->getTotal()) ?> permohonan ditemui.</p>
+       <div class="table-responsive">
+           <table class="table table-hover align-middle">
+               <thead>
+                   <tr><th>No. Rujukan</th><th>Jenis</th><th>Tempoh Sah</th><th>Status</th><th>Tarikh Mohon</th><th></th></tr>
+               </thead>
+               <tbody>
+               <?php foreach ($applications as $app): ?>
+                   <?php $shown = $app->displayStatus(); ?>
+                   <tr>
+                       <td class="fw-semibold"><?= esc($app->ref_no) ?></td>
+                       <td><i class="bi <?= esc($app->typeEnum()->icon(), 'attr') ?>" aria-hidden="true"></i> <?= esc($app->typeEnum()->label()) ?></td>
+                       <td>
+                           <?= esc($app->valid_from->format('d/m/Y')) ?> – <?= esc($app->valid_until->format('d/m/Y')) ?>
+                           <small class="text-body-secondary">(<?= esc((string) $app->validityDays()) ?> hari)</small>
+                       </td>
+                       <td><span class="badge <?= esc($shown->badge(), 'attr') ?>"><?= esc($shown->label()) ?></span></td>
+                       <td><?= esc($app->created_at->format('d/m/Y')) ?></td>
+                       <td><a href="<?= url_to('pas.show', $app->id) ?>" class="btn btn-sm btn-outline-primary">Lihat</a></td>
+                   </tr>
+               <?php endforeach ?>
+               </tbody>
+           </table>
+       </div>
+       <?= $pager->links() ?>
+   <?php endif ?>
+   <?= $this->endSection() ?>
+   ```
+
+5. **Buktikan kebocoran.** Log masuk sebagai `pemohon2@latihan.test` dan buka `http://localhost:8080/pas/permohonan?q=sintetik`. Catat baris *"N permohonan ditemui"* dan nombor rujukan yang dipaparkan (soalan Kuiz S6). Kemudian buka Debug Toolbar → tab **Database** → query `SELECT … FROM pass_applications`. SQL sebenar:
+
+   ```sql
+   -- 3 = id pemohon2 dalam contoh ini
+   WHERE `pass_applications`.`user_id` = 3
+   AND  `pass_applications`.`ref_no` LIKE '%sintetik%' ESCAPE '!'
+   OR  `pass_applications`.`purpose` LIKE '%sintetik%' ESCAPE '!'
+   ```
+
+   `AND` diikat lebih kuat daripada `OR`, jadi MySQL membaca `(user_id = 3 AND ref_no LIKE …) OR purpose LIKE …` — syarat kedua tidak lagi dihadkan kepada pemilik. Klik **Lihat** pada `PAS-2026-9001`: `404`, kerana `findVisibleOr404()` masih menyemak pemilikan. Senarai sudah membocorkan nombor rujukan, tujuan dan tarikh.
+
+6. **Betulkan.** Gantikan kaedah `search()` (versi pertama) dengan versi berkurungan di bawah. `withType()` kekal:
+
+   ```php
+       /**
+        * Carian pada no. rujukan ATAU tujuan — Lab 7.2b.
+        * groupStart()/groupEnd() = kurungan: (ref_no LIKE … OR purpose LIKE …).
+        * Tanpa kurungan, OR "melompat" keluar dari skop ownedBy() (BR-PAS-04).
+        */
+       public function search(string $q): static
+       {
+           if ($q !== '') {
+               $this->groupStart()
+                   ->like('pass_applications.ref_no', $q)
+                   ->orLike('pass_applications.purpose', $q)
+                   ->groupEnd();
+           }
+
+           return $this;
+       }
+   ```
+
+   Muat semula `?q=sintetik` sebagai `pemohon2`: kini **1** permohonan (`PAS-2026-9002`). Tab Database menunjukkan `AND ( … LIKE … OR … LIKE … )`.
+
+7. **Uji penapis sebagai `pemohon1`.** Catat nombor rujukan dan kiraan bagi setiap URL:
+
+   | URL | Semak |
+   |-----|-------|
+   | `/pas/permohonan` | 4 permohonan; lajur Jenis berikon; `PAS-2026-9005` → `(1 hari)` |
+   | `/pas/permohonan?pass_type=kontraktor&q=blok` | Soalan Kuiz S6 |
+   | `/pas/permohonan?q=BLOK` | Huruf besar/kecil — collation `utf8mb4_unicode_ci` (Hari 3) |
+   | `/pas/permohonan?status=approved&pass_type=kontraktor` | Dua penapis serentak (status + jenis) |
+   | `/pas/permohonan?pass_type=vip&q[]=x` | Tiada ralat; senarai penuh (input asing diabaikan) |
+
+8. **Tempoh sah di halaman butiran.** Dalam `app/Views/pas/show.php`, gantikan pasangan `<dt>Tempoh sah</dt>` + `<dd>…</dd>` dengan blok di bawah. Buka `PAS-2026-9004` (`approved`): badge *Baki N hari* muncul; pada `PAS-2026-9001` (`submitted`) tiada badge.
+
+   ```php
+       <dt class="col-sm-3">Tempoh sah</dt>
+       <dd class="col-sm-9">
+           <?= esc($application->valid_from->format('d/m/Y')) ?> hingga <?= esc($application->valid_until->format('d/m/Y')) ?>
+           <small class="text-body-secondary">(<?= esc((string) $application->validityDays()) ?> hari)</small>
+           <?php $remaining = $application->daysRemaining(); ?>
+           <?php if ($remaining !== null): ?>
+               <span class="badge text-bg-light border">Baki <?= esc((string) $remaining) ?> hari</span>
+           <?php endif ?>
+       </dd>
+   ```
+
+9. **Commit** (versi `search()` berkurungan sahaja):
+
+   ```bash
+   git add app/ && git commit -m "PAS: penapis jenis & carian Permohonan Saya (BR-PAS-04)"
+   ```
+
+### ✅ Checkpoint
+- [ ] Dengan `search()` versi pertama, `pemohon2` di `?q=sintetik` nampak permohonan `pemohon1`; tab Database menunjukkan `OR` tanpa kurungan (Kuiz S6).
+- [ ] Selepas `groupStart()`/`groupEnd()`, `pemohon2` di `?q=sintetik` nampak **1** permohonan sahaja, dan jadual langkah 7 lengkap untuk `pemohon1` (Kuiz S6).
+- [ ] Halaman butiran memaparkan `(N hari)` dan badge *Baki N hari* untuk pas `approved` sahaja; commit `PAS: penapis jenis & carian Permohonan Saya (BR-PAS-04)` (Kuiz S6).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Undefined variable $type` dalam `pas/index.php` | `index()` lama masih menghantar 3 variable sahaja | Langkah 3: `index()` baharu menghantar `type` dan `q` |
+| `Class "App\Controllers\Pas\PassType" not found` | `use App\Enums\PassType;` tertinggal dalam controller | Tambah baris `use` (langkah 3) |
+| `Call to undefined method App\Models\PassApplicationModel::search()` | Kaedah ditampal dalam kelas lain, atau fail belum disimpan | Mesti dalam `PassApplicationModel`, sebelum `withApplicant()` |
+| Pautan halaman 2 kehilangan `?q=` | Pautan pager ditulis sendiri | Guna `$pager->links()` — pager CI4 mengekalkan query string semasa |
+| `?q=%` memaparkan semua permohonan sendiri | `like()` CI4 tidak meng-escape `%` dan `_` dalam nilai | Bukan kebocoran (masih skop pemilik) — lihat ⭐ |
+
+### ⭐ Cabaran tambahan
+- Escape aksara wildcard: `->like('pass_applications.ref_no', $this->db->escapeLikeString($q))` (sama untuk `orLike`). Uji `?q=%` sekali lagi — kini tiada hasil.
+- Tambah kiraan per jenis di atas jadual ("Kenderaan: 1 · Kakitangan: 2 · Kontraktor: 1") dengan satu query `groupBy('pass_type')` dalam skop `ownedBy()`.
+
+---
+
+## Lab 7.3b — Tambah Dokumen Susulan pada Permohonan (S7)
+
+### 🎯 Objektif
+Membina route `POST /pas/permohonan/{id}/dokumen` yang membenarkan **pemilik** menambah dokumen pada permohonan `submitted` sedia ada, dengan rules fail yang sama seperti Lab 7.3, had **3 dokumen bagi setiap permohonan** (BR-PAS-02) disemak sebelum `move()` dan sekali lagi di bawah kunci baris `FOR UPDATE`, serta pembersihan fail jika gagal.
+
+### Prasyarat
+- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 7.3](#lab-73--borang-validasi-muat-naik--muat-turun-s3) selesai: `PAS-2026-0001` milik `pemohon1` mempunyai **2** dokumen (`surat-sokongan.pdf`, `gambar.png`).
+- Folder `~/ujian-pas/` ada `surat-sokongan.pdf` dan `gambar.png` (Lab 7.3 langkah 5).
+
+### Langkah
+
+1. **Fail ujian tambahan:**
+
+   ```bash
+   cd ~/ujian-pas
+   cp surat-sokongan.pdf surat-2.pdf; cp surat-sokongan.pdf surat-3.pdf
+   printf '<?php phpinfo(); ?>\n' > borang.pdf
+   cd ~/latihan/kelas-ci-<nama>
+   ```
+
+2. **Route.** Dalam `app/Config/Routes.php`, tambah dua baris ini **selepas** `});` penutup kumpulan `pas/permohonan` (bukan di dalamnya):
+
+   ```php
+   // Lab 7.3b — di LUAR kumpulan supaya kekal apabila Lab 8.2 menggantikan kumpulan pas/permohonan
+   $routes->post('pas/permohonan/(:num)/dokumen', 'Pas\ApplicationController::addDocuments/$1', ['as' => 'pas.dokumen.tambah', 'filter' => 'session']);
+   ```
+
+   Lab 8.2 akan menggantikan seluruh kumpulan `pas/permohonan`; route di luar kumpulan tidak tersentuh. Sahkan: `php spark routes | grep pas/permohonan` → **6** baris, termasuk `POST | pas/permohonan/([0-9]+)/dokumen | pas.dokumen.tambah`.
+
+3. **Service — kaedah awam.** Dalam `app/Services/PassWorkflowService.php`, tambah blok ini **terus selepas** kaedah `submit()` (sebelum docblock `canView()`). Semua `use` yang diperlukan sudah ada sejak Lab 7.3:
+
+   ```php
+       // =================================================================
+       // LAB 7.3b — tambah dokumen susulan (status kekal submitted)
+       // =================================================================
+
+       /**
+        * @param list<UploadedFile> $files fail yang SUDAH lulus rules validasi controller
+        *
+        * @return int bilangan dokumen yang ditambah
+        *
+        * @throws InvalidArgumentException ralat perniagaan — mesej BM, selamat dipapar kepada pengguna
+        */
+       public function addDocuments(int $applicationId, int $userId, array $files): int
+       {
+           $application = $this->applications->find($applicationId);
+
+           // Pemilik SAHAJA: pegawai boleh melihat (canView), tetapi tidak menambah dokumen bagi pihak pemohon
+           if ($application === null || ! $application->isOwnedBy($userId)) {
+               throw PageNotFoundException::forPageNotFound();
+           }
+
+           // --- Semakan SEBELUM menyentuh cakera (sama seperti submit()) --------
+           $this->assertSubmitted($application->statusEnum());
+           $this->assertFiles($files);                                  // jenis, saiz, 1–3 fail
+           $this->assertDocumentQuota($applicationId, count($files));   // BR-PAS-02: jumlah ≤ 3
+
+           $stored        = [];
+           $inTransaction = false;
+
+           try {
+               foreach ($files as $file) {
+                   $stored[] = $this->storeFile($file);
+               }
+
+               $this->db->transException(true)->transBegin();
+               $inTransaction = true;
+
+               // Kunci baris permohonan (corak Lab 6.2): dua tab serentak tidak boleh melepasi had,
+               // dan pegawai tidak boleh "Mula Semakan" di tengah-tengah tambahan ini.
+               $row = $this->db->query('SELECT status FROM pass_applications WHERE id = ? FOR UPDATE', [$applicationId])->getRowArray();
+               $this->assertSubmitted(PassStatus::from((string) $row['status']));
+               $this->assertDocumentQuota($applicationId, count($stored));   // kira semula di bawah kunci
+
+               foreach ($stored as $doc) {
+                   if ($this->documents->insert($doc + ['application_id' => $applicationId]) === false) {
+                       throw new RuntimeException('Gagal menyimpan dokumen: ' . implode(' ', $this->documents->errors()));
+                   }
+               }
+
+               $this->db->transCommit();
+           } catch (Throwable $e) {
+               if ($inTransaction) {
+                   $this->db->transRollback();
+               }
+               $this->deleteStoredFiles($stored);   // tiada fail "yatim" di cakera
+
+               throw $e;
+           }
+
+           return count($stored);
+       }
+   ```
+
+4. **Service — dua pembantu.** Dalam fail yang sama, bahagian *Dalaman*, tambah **terus sebelum** docblock `/** @param list<UploadedFile> $files */` kaedah `assertFiles()`:
+
+   ```php
+       /** Lab 7.3b: dokumen hanya boleh ditambah sebelum pegawai mula menyemak */
+       private function assertSubmitted(PassStatus $status): void
+       {
+           if ($status !== PassStatus::Submitted) {
+               throw new InvalidArgumentException('Dokumen hanya boleh ditambah sebelum permohonan mula disemak.');
+           }
+       }
+
+       /** Lab 7.3b — BR-PAS-02: maksimum 3 dokumen bagi SETIAP permohonan (sedia ada + baharu) */
+       private function assertDocumentQuota(int $applicationId, int $adding): void
+       {
+           $existing = $this->documents->where('application_id', $applicationId)->countAllResults();
+
+           if ($existing + $adding > self::MAX_FILES) {
+               throw new InvalidArgumentException(sprintf(
+                   'Permohonan ini sudah ada %d dokumen. Maksimum %d dokumen bagi setiap permohonan.',
+                   $existing,
+                   self::MAX_FILES,
+               ));
+           }
+       }
+   ```
+
+5. **Controller.** Dalam `app/Controllers/Pas/ApplicationController.php`, tambah kaedah ini **terus selepas** `download()` (sebelum baris `// -----`). Ia memanggil `rules()` dan `uploadedFiles()` yang sedia ada:
+
+   ```php
+       /** POST /pas/permohonan/{id}/dokumen — tambah dokumen susulan (Lab 7.3b) */
+       public function addDocuments(string $id): RedirectResponse
+       {
+           $application = $this->findVisibleOr404((int) $id);
+           $back        = url_to('pas.show', $application->id);
+
+           // Rule fail yang SAMA seperti borang permohonan — satu sumber kebenaran (BR-PAS-02)
+           if (! $this->validate(['documents' => $this->rules()['documents']])) {
+               return redirect()->to($back)->withInput();
+           }
+
+           try {
+               $added = service('passWorkflowService')->addDocuments(
+                   $application->id,
+                   (int) auth()->id(),
+                   $this->uploadedFiles('documents'),
+               );
+           } catch (InvalidArgumentException $e) {
+               return redirect()->to($back)->with('error', $e->getMessage());
+           }
+
+           return redirect()->to($back)->with('message', "{$added} dokumen ditambah pada {$application->ref_no}.");
+       }
+   ```
+
+6. **View.** Dalam `app/Views/pas/show.php`, gantikan baris `<?php /* Hari 8: panel tindakan pegawai + sejarah status akan ditambah di sini */ ?>` dengan blok di bawah. Baris komen Hari 8 itu **kekal** di hujung blok — Lab 8.1 menggantikannya esok:
+
+   ```php
+   <?php
+   // Lab 7.3b: pemilik boleh menambah dokumen selagi permohonan belum disemak dan masih < 3 dokumen
+   $canAddDocuments = $application->isOwnedBy((int) auth()->id())
+       && $application->statusEnum() === \App\Enums\PassStatus::Submitted
+       && count($documents) < \App\Services\PassWorkflowService::MAX_FILES;
+   ?>
+   <?php if ($canAddDocuments): ?>
+       <div class="card mb-4">
+           <div class="card-header"><i class="bi bi-paperclip" aria-hidden="true"></i> Tambah dokumen susulan</div>
+           <div class="card-body">
+               <?= form_open_multipart(url_to('pas.dokumen.tambah', $application->id), ['novalidate' => true]) ?>
+                   <label for="documents" class="form-label">Dokumen sokongan</label>
+                   <input type="file" name="documents[]" id="documents" multiple accept=".pdf,.jpg,.png"
+                          class="form-control <?= validation_show_error('documents') ? 'is-invalid' : '' ?>">
+                   <div class="invalid-feedback"><?= validation_show_error('documents') ?></div>
+                   <div class="form-text">
+                       PDF, JPG atau PNG · maksimum 2 MB setiap fail · boleh tambah
+                       <?= esc((string) (\App\Services\PassWorkflowService::MAX_FILES - count($documents))) ?> dokumen lagi.
+                   </div>
+                   <button type="submit" class="btn btn-outline-primary mt-2"><i class="bi bi-upload" aria-hidden="true"></i> Muat naik</button>
+               <?= form_close() ?>
+           </div>
+       </div>
+   <?php endif ?>
+
+   <?php /* Hari 8: panel tindakan pegawai + sejarah status akan ditambah di sini */ ?>
+   ```
+
+7. **Uji sebagai `pemohon1`** pada `PAS-2026-0001` (2 dokumen). Selepas setiap percubaan, `ls writable/uploads/pas/ | wc -l` dari folder projek:
+
+   | # | Pilih fail | Dijangka |
+   |---|-----------|----------|
+   | a | `surat-2.pdf` **dan** `surat-3.pdf` | Mesej merah (soalan Kuiz S7); bilangan fail di cakera tidak berubah |
+   | b | `borang.pdf` | *Hanya fail PDF, JPG atau PNG dibenarkan.* di bawah medan |
+   | c | Tiada fail | *Sila lampirkan sekurang-kurangnya satu dokumen sokongan yang sah.* |
+   | d | `surat-2.pdf` sahaja | *1 dokumen ditambah pada PAS-2026-0001.*; senarai 3 dokumen; kad *Tambah dokumen susulan* hilang; +1 fail di cakera |
+
+8. **IDOR melalui borang.** Log masuk sebagai `pemohon2` (tetingkap inkognito) dan buka `PAS-2026-9002` (0 dokumen — kad muncul). DevTools (F12) → **Elements** → cari `<form … action="…/pas/permohonan/<id 9002>/dokumen">` → klik dua kali nilai `action` → tukar ID kepada ID `PAS-2026-0001` → Enter. Pilih `surat-3.pdf` → **Muat naik**. Catat respons (soalan Kuiz S7).
+
+9. **Borang lapuk (status berubah).** Masih sebagai `pemohon2`, buka semula `PAS-2026-9002` (kad muncul). **Jangan** muat semula halaman. Dalam klien MySQL:
+
+   ```sql
+   UPDATE pass_applications SET status = 'under_review' WHERE ref_no = 'PAS-2026-9002';
+   ```
+
+   Kembali ke tab, pilih `surat-3.pdf` → **Muat naik** → *Dokumen hanya boleh ditambah sebelum permohonan mula disemak.* Kad kini tiada. Pulihkan:
+
+   ```sql
+   UPDATE pass_applications SET status = 'submitted' WHERE ref_no = 'PAS-2026-9002';
+   ```
+
+10. **Commit:**
+
+    ```bash
+    git add app/ && git commit -m "PAS: tambah dokumen susulan, had 3 dokumen setiap permohonan (BR-PAS-02)"
+    ```
+
+### ✅ Checkpoint
+- [ ] `php spark routes | grep pas/permohonan` → 6 baris termasuk `pas.dokumen.tambah` dengan filter `session` (Kuiz S7).
+- [ ] Kes a–c langkah 7 ditolak tanpa fail baharu di cakera; kes d menjadikan `PAS-2026-0001` 3 dokumen dan kad tambah hilang (Kuiz S7).
+- [ ] `pemohon2` yang menukar `action` borang ke permohonan `pemohon1` ditolak, dan borang lapuk selepas `under_review` ditolak dengan mesej BM (Kuiz S7).
+- [ ] Commit `PAS: tambah dokumen susulan, had 3 dokumen setiap permohonan (BR-PAS-02)` (Kuiz S7).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Route "pas.dokumen.tambah" not found` / `InvalidArgumentException` dalam `url_to()` | Route belum ditambah, atau ditambah di fail lain | Langkah 2 — dalam `app/Config/Routes.php`, selepas kumpulan |
+| `Controller or its method is not found: \App\Controllers\ApplicationController::addDocuments` | `Pas\` tertinggal dalam rentetan controller (route di luar kumpulan tiada `namespace`) | `'Pas\ApplicationController::addDocuments/$1'` |
+| Kad tambah tidak muncul untuk pemilik | Status bukan `submitted`, atau sudah 3 dokumen | Semak `SELECT status FROM pass_applications …` dan bilangan `pass_documents` |
+| Mesej ralat validasi tidak dipaparkan di bawah medan | `redirect()->to(...)` tanpa `->withInput()` | `withInput()` membawa ralat validasi ke request seterusnya |
+| `Call to undefined method …::assertDocumentQuota()` | Langkah 4 tertinggal | Tambah dua pembantu dalam `PassWorkflowService` |
+| Fail dipindah ke cakera dahulu, kemudian baru mesej *sudah ada N dokumen* | Panggilan pertama `assertDocumentQuota()` tertinggal; hanya semakan di bawah kunci berjalan | Panggil **sebelum** gelung `storeFile()` (langkah 3) — semakan murah dahulu, cakera kemudian |
+
+### ⭐ Cabaran tambahan
+- Rekod tambahan dokumen dalam jadual audit tanpa melanggar maksud `status_logs` (`from_status` = `to_status` = `submitted`, `remarks` = *"2 dokumen ditambah"*). Adakah ini wajar, atau patut ada jadual lain? Bincang dengan jurulatih.
+- Benarkan pemilik **memadam** dokumen sendiri semasa `submitted` (padam baris `pass_documents` **dan** fail di cakera — dalam tertib yang mana?).
+
+---
+
+## Lab 7.4b — Automasikan Kes Sempadan dengan PHPUnit (S8)
+
+### 🎯 Objektif
+Mengautomasikan 10 kes sempadan Lab 7.4 dan 4 kes Lab 7.3b dalam `tests/feature/Pas/PassSubmitTest.php` menggunakan `UploadedFile` palsu, `#[DataProvider]` dan semakan "tiada kesan sampingan" (tiada baris, tiada fail yatim), kemudian membuktikan ujian itu menangkap pepijat `>` vs `>=` dengan mutasi sengaja.
+
+### Prasyarat
+- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 7.4](#lab-74--ujian-manual-kes-sempadan-s4) dan [Lab 7.3b](#lab-73b--tambah-dokumen-susulan-pada-permohonan-s7) selesai.
+- Database ujian `kkm_latihan_test` dan `database.tests.*` dalam `.env` (Lab 6.3): `php spark db:table --show --dbgroup tests` berjaya.
+
+### Langkah
+
+1. **`UploadedFile` palsu.** Dalam CLI, `is_uploaded_file()` dan `move_uploaded_file()` sentiasa `false`, jadi `UploadedFile` sebenar tidak boleh digunakan dalam ujian. Kelas ini menggantikan **dua** kaedah sahaja; `getMimeType()`, `guessExtension()` dan `getSize()` kekal kod CI4 sebenar. Folder `tests/_support/` sudah wujud (appstarter; namespace `Tests\Support` dalam `composer.json`):
+
+   `tests/_support/FakeUploadedFile.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace Tests\Support;
+
+   use CodeIgniter\HTTP\Files\UploadedFile;
+
+   /**
+    * UploadedFile untuk ujian: fail sementara biasa, bukan dari HTTP POST.
+    * Dalam CLI, is_uploaded_file() dan move_uploaded_file() sentiasa false — hanya
+    * isValid() dan move() diganti. getMimeType() (finfo), guessExtension() dan getSize()
+    * kekal kod CI4 sebenar, jadi semakan BR-PAS-02 diuji dengan kandungan fail sebenar.
+    */
+   final class FakeUploadedFile extends UploadedFile
+   {
+       /** Cipta fail sementara dengan kandungan & nama asal (nama dari "pelayar") yang diberi */
+       public static function make(string $content, string $clientName): self
+       {
+           $path = tempnam(sys_get_temp_dir(), 'pas');
+           file_put_contents($path, $content);
+
+           return new self($path, $clientName, null, strlen($content), UPLOAD_ERR_OK);
+       }
+
+       public function isValid(): bool
+       {
+           return $this->error === UPLOAD_ERR_OK && is_file($this->path);
+       }
+
+       public function move(string $targetPath, ?string $name = null, bool $overwrite = false): bool
+       {
+           $targetPath = rtrim($targetPath, '/\\') . DIRECTORY_SEPARATOR;
+
+           if (! is_dir($targetPath)) {
+               mkdir($targetPath, 0775, true);
+           }
+
+           $name ??= $this->getName();
+           rename($this->path, $targetPath . $name);
+
+           $this->path     = $targetPath . $name;
+           $this->name     = $name;
+           $this->hasMoved = true;
+
+           return true;
+       }
+   }
+   ```
+
+2. **Kelas ujian.**
+
+   ```bash
+   mkdir -p tests/feature/Pas
+   ```
+
+   `tests/feature/Pas/PassSubmitTest.php`
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace Tests\Feature\Pas;
+
+   use App\Enums\PassStatus;
+   use App\Services\PassWorkflowService;
+   use App\Services\ReferenceNumberService;
+   use CodeIgniter\Exceptions\PageNotFoundException;
+   use CodeIgniter\Test\CIUnitTestCase;
+   use CodeIgniter\Test\DatabaseTestTrait;
+   use InvalidArgumentException;
+   use PHPUnit\Framework\Attributes\DataProvider;
+   use Tests\Support\FakeUploadedFile;
+
+   /**
+    * Lab 7.4b — kes sempadan Lab 7.4 (UT-PAS-…) diautomasikan di lapisan Service.
+    * Setiap kes ditolak mesti: (1) mesej BM yang betul, (2) tiada baris baharu, (3) tiada fail baharu di cakera.
+    *
+    * @internal
+    */
+   final class PassSubmitTest extends CIUnitTestCase
+   {
+       use DatabaseTestTrait;
+
+       protected $migrate   = true;
+       protected $refresh   = true;
+       protected $namespace = null;   // App + Shield + Settings
+
+       private const PDF = "%PDF-1.4\n% Dokumen sintetik latihan KKM\n";
+       private const PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+
+       private PassWorkflowService $service;
+       private int $applicantId;
+       private int $otherApplicantId;
+       private int $otherVehicleId;
+
+       /** @var list<string> fail dalam writable/uploads/pas/ SEBELUM ujian */
+       private array $filesBefore = [];
+
+       protected function setUp(): void
+       {
+           parent::setUp();
+
+           $this->applicantId      = $this->makeUser('ujian_pas1', 'Pemohon Pas Satu');
+           $this->otherApplicantId = $this->makeUser('ujian_pas2', 'Pemohon Pas Dua');
+
+           $this->db->table('vehicles')->insert(['user_id' => $this->otherApplicantId, 'plate_no' => 'WXX 0002', 'model' => 'Perodua Myvi', 'color' => 'Biru']);
+           $this->otherVehicleId = (int) $this->db->insertID();
+
+           $this->service     = new PassWorkflowService($this->db, new ReferenceNumberService($this->db));
+           $this->filesBefore = $this->filesOnDisk();
+       }
+
+       protected function tearDown(): void
+       {
+           // Buang fail yang dicipta oleh ujian ini SAHAJA — fail latihan anda kekal
+           foreach (array_diff($this->filesOnDisk(), $this->filesBefore) as $path) {
+               unlink($path);
+           }
+
+           parent::tearDown();
+       }
+
+       // =================================================================
+       // Kes diterima (UT-PAS-01, 02, 05)
+       // =================================================================
+
+       public function testSatuPdfSahDiterima(): void
+       {
+           $application = $this->service->submit($this->applicantId, $this->payload(), [$this->pdf('surat-sokongan.pdf')]);
+
+           $this->assertSame('PAS-' . date('Y') . '-0001', $application->ref_no);
+           $this->assertSame(PassStatus::Submitted, $application->statusEnum());
+           $this->seeInDatabase('pass_documents', ['application_id' => $application->id, 'original_name' => 'surat-sokongan.pdf', 'mime' => 'application/pdf']);
+           $this->seeInDatabase('status_logs', ['module' => 'PAS', 'record_id' => $application->id, 'from_status' => null, 'to_status' => 'submitted']);
+           $this->assertCount(1, $this->newFiles());
+       }
+
+       public function testTigaFailSahDiterima(): void
+       {
+           $files = [$this->pdf('surat-sokongan.pdf'), $this->pdf('surat-2.pdf'), $this->png('gambar.png')];
+
+           $application = $this->service->submit($this->applicantId, $this->payload(), $files);
+
+           $this->seeNumRecords(3, 'pass_documents', ['application_id' => $application->id]);
+           $this->assertCount(3, $this->newFiles());
+       }
+
+       public function testTepat2MbDiterima(): void
+       {
+           $file = FakeUploadedFile::make(str_pad(self::PDF, PassWorkflowService::MAX_BYTES, "\0"), 'tepat-2mb.pdf');
+
+           $application = $this->service->submit($this->applicantId, $this->payload(), [$file]);
+
+           $this->seeInDatabase('pass_documents', ['application_id' => $application->id, 'size_bytes' => 2_097_152]);
+       }
+
+       // =================================================================
+       // Kes ditolak (UT-PAS-04, 06, 08, 09, 10, 11, 13)
+       // =================================================================
+
+       /**
+        * @return array<string, array{0: list<array{0: string, 1: string}>, 1: array<string, string>, 2: string}>
+        */
+       public static function rejectedProvider(): array
+       {
+           $pdf   = ["%PDF-1.4\n", 'surat.pdf'];
+           $dates = ['valid_from' => '2026-11-10', 'valid_until' => '2026-11-01'];
+
+           return [
+               'UT-PAS-04 empat fail'        => [[$pdf, $pdf, $pdf, $pdf], [], '1 hingga 3 dokumen'],
+               'UT-PAS-06 2 MB + 1 bait'     => [[[str_pad("%PDF-1.4\n", 2_097_153, "\0"), 'lebih-2mb.pdf']], [], 'tidak melebihi 2 MB'],
+               'UT-PAS-09 PHP bernama .pdf'  => [[["<?php phpinfo(); ?>\n", 'borang.pdf']], [], 'Hanya PDF, JPG atau PNG'],
+               'PNG bernama .pdf'            => [[[base64_decode(self::PNG), 'gambar.pdf']], [], 'Hanya PDF, JPG atau PNG'],
+               'UT-PAS-10 sambungan .jpeg'   => [[[base64_decode(self::PNG), 'gambar.jpeg']], [], 'Hanya PDF, JPG atau PNG'],
+               'UT-PAS-11 tarikh terbalik'   => [[$pdf], $dates, 'Sah hingga'],
+               'UT-PAS-13 kenderaan lain'    => [[$pdf], ['pass_type' => 'kenderaan', 'vehicle_id' => 'LAIN'], 'kenderaan anda yang berdaftar'],
+           ];
+       }
+
+       /**
+        * @param list<array{0: string, 1: string}> $files   [kandungan, nama asal]
+        * @param array<string, string>             $override medan borang yang diubah
+        */
+       #[DataProvider('rejectedProvider')]
+       public function testKesDitolakTanpaKesanSampingan(array $files, array $override, string $message): void
+       {
+           if (($override['vehicle_id'] ?? null) === 'LAIN') {
+               $override['vehicle_id'] = (string) $this->otherVehicleId;   // kenderaan milik pemohon LAIN (IDOR)
+           }
+
+           $uploads = array_map(static fn (array $f): FakeUploadedFile => FakeUploadedFile::make($f[0], $f[1]), $files);
+
+           try {
+               $this->service->submit($this->applicantId, $this->payload($override), $uploads);
+               $this->fail('Sepatutnya InvalidArgumentException');
+           } catch (InvalidArgumentException $e) {
+               $this->assertStringContainsString($message, $e->getMessage());
+           }
+
+           $this->seeNumRecords(0, 'pass_applications', []);
+           $this->seeNumRecords(0, 'pass_documents', []);
+           $this->assertSame([], $this->newFiles(), 'Ada fail yatim di writable/uploads/pas/');
+       }
+
+       // =================================================================
+       // Lab 7.3b — tambah dokumen susulan
+       // =================================================================
+
+       public function testTambahDokumenHinggaTigaDiterima(): void
+       {
+           $application = $this->service->submit($this->applicantId, $this->payload(), [$this->pdf('a.pdf'), $this->png('b.png')]);
+
+           $added = $this->service->addDocuments($application->id, $this->applicantId, [$this->pdf('c.pdf')]);
+
+           $this->assertSame(1, $added);
+           $this->seeNumRecords(3, 'pass_documents', ['application_id' => $application->id]);
+       }
+
+       public function testTambahDokumenMelebihiTigaDitolak(): void
+       {
+           $application = $this->service->submit($this->applicantId, $this->payload(), [$this->pdf('a.pdf'), $this->png('b.png')]);
+           $filesAfterSubmit = count($this->newFiles());
+
+           try {
+               $this->service->addDocuments($application->id, $this->applicantId, [$this->pdf('c.pdf'), $this->pdf('d.pdf')]);
+               $this->fail('Sepatutnya InvalidArgumentException');
+           } catch (InvalidArgumentException $e) {
+               $this->assertStringContainsString('sudah ada 2 dokumen', $e->getMessage());
+           }
+
+           $this->seeNumRecords(2, 'pass_documents', ['application_id' => $application->id]);
+           $this->assertCount($filesAfterSubmit, $this->newFiles());
+       }
+
+       public function testTambahDokumenSelepasSemakanDitolak(): void
+       {
+           $application = $this->service->submit($this->applicantId, $this->payload(), [$this->pdf('a.pdf')]);
+           $this->db->table('pass_applications')->where('id', $application->id)->update(['status' => PassStatus::UnderReview->value]);
+
+           $this->expectException(InvalidArgumentException::class);
+           $this->expectExceptionMessage('sebelum permohonan mula disemak');
+
+           $this->service->addDocuments($application->id, $this->applicantId, [$this->pdf('c.pdf')]);
+       }
+
+       public function testOrangLainTidakBolehTambahDokumen(): void
+       {
+           $application = $this->service->submit($this->applicantId, $this->payload(), [$this->pdf('a.pdf')]);
+
+           $this->expectException(PageNotFoundException::class);
+
+           $this->service->addDocuments($application->id, $this->otherApplicantId, [$this->pdf('c.pdf')]);
+       }
+
+       // =================================================================
+       // Pembantu
+       // =================================================================
+
+       private function makeUser(string $username, string $fullName): int
+       {
+           $this->db->table('users')->insert(['username' => $username, 'full_name' => $fullName, 'active' => 1]);
+
+           return (int) $this->db->insertID();
+       }
+
+       /**
+        * @param array<string, string> $override
+        *
+        * @return array<string, string>
+        */
+       private function payload(array $override = []): array
+       {
+           return $override + [
+               'pass_type'   => 'kakitangan',
+               'vehicle_id'  => '',
+               'purpose'     => 'Akses Blok Pentadbiran (ujian automatik)',
+               'valid_from'  => '2026-11-01',
+               'valid_until' => '2026-12-31',
+           ];
+       }
+
+       private function pdf(string $name): FakeUploadedFile
+       {
+           return FakeUploadedFile::make(self::PDF, $name);
+       }
+
+       private function png(string $name): FakeUploadedFile
+       {
+           return FakeUploadedFile::make(base64_decode(self::PNG), $name);
+       }
+
+       /** @return list<string> */
+       private function filesOnDisk(): array
+       {
+           return glob(WRITEPATH . PassWorkflowService::UPLOAD_DIR . '*') ?: [];
+       }
+
+       /** @return list<string> fail baharu sejak setUp() */
+       private function newFiles(): array
+       {
+           return array_values(array_diff($this->filesOnDisk(), $this->filesBefore));
+       }
+   }
+   ```
+
+   Baca `rejectedProvider()`: setiap kunci (cth `UT-PAS-04 empat fail`) sepadan dengan satu baris `docs/ujian-manual-pas.md`. Kes `2 MB + 1 bait` lebih ketat daripada UT-PAS-06 manual (+1 KB).
+
+3. **Jalankan** dan bandingkan bilangan fail di cakera sebelum dan selepas:
+
+   ```bash
+   ls writable/uploads/pas/ | wc -l
+   composer test -- --no-coverage --testdox tests/feature/Pas/PassSubmitTest.php
+   ls writable/uploads/pas/ | wc -l
+   ```
+
+   Catat baris terakhir `OK (… tests, … assertions)` (soalan Kuiz S8). Bilangan fail di cakera **sama** sebelum dan selepas — `tearDown()` hanya memadam fail yang dicipta oleh ujian.
+
+4. **Mutasi sengaja — adakah ujian menangkap pepijat?** Dalam `PassWorkflowService::assertFiles()`, tukar `>` kepada `>=`:
+
+   ```php
+   if ((int) $file->getSize() >= self::MAX_BYTES) {
+   ```
+
+   Jalankan semula arahan `composer test` langkah 3. Catat nama ujian yang gagal dan mesej exception (soalan Kuiz S8). Kemudian **pulihkan** `>` dan jalankan sekali lagi: `OK`.
+
+5. **Pautkan ujian manual dengan ujian automatik.** Tambah bahagian ini di **hujung** `docs/ujian-manual-pas.md`:
+
+   ```markdown
+
+   ## Diautomasikan (Lab 7.4b)
+
+   `composer test -- --no-coverage --testdox tests/feature/Pas/PassSubmitTest.php`
+
+   | Kes manual | Ujian PHPUnit |
+   |------------|---------------|
+   | UT-PAS-01 | `testSatuPdfSahDiterima` |
+   | UT-PAS-02 | `testTigaFailSahDiterima` |
+   | UT-PAS-05 | `testTepat2MbDiterima` |
+   | UT-PAS-04, 06, 09, 10, 11, 13 | `testKesDitolakTanpaKesanSampingan` (data set `UT-PAS-…`) |
+   | Lab 7.3b | `testTambahDokumen…`, `testOrangLainTidakBolehTambahDokumen` |
+
+   Kekal manual: UT-PAS-03, 07, 08, 12 (rules controller), 14–16 (HTTP & server), 17.
+   ```
+
+6. **Commit dan push:**
+
+   ```bash
+   git add tests/ docs/ && git commit -m "PAS: ujian PHPUnit kes sempadan muat naik (BR-PAS-02/06)"
+   git push
+   ```
+
+### ✅ Checkpoint
+- [ ] `composer test -- --no-coverage tests/feature/Pas/PassSubmitTest.php` → `OK`, dan bilangan fail dalam `writable/uploads/pas/` sama sebelum dan selepas (Kuiz S8).
+- [ ] Mutasi `>=` dalam `assertFiles()` menyebabkan tepat satu ujian gagal; selepas dipulihkan semua ujian `OK` semula (Kuiz S8).
+- [ ] `docs/ujian-manual-pas.md` ada bahagian *Diautomasikan (Lab 7.4b)*; commit `PAS: ujian PHPUnit kes sempadan muat naik (BR-PAS-02/06)` di-push (Kuiz S8).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Class "Tests\Support\FakeUploadedFile" not found` | Fail di folder lain, atau `autoload-dev` tiada dalam `composer.json` | Mesti `tests/_support/FakeUploadedFile.php`; semak `"Tests\\Support\\": "tests/_support"`, kemudian `composer dump-autoload` |
+| `Unable to connect to the database` / ujian memadam data latihan | `database.tests.*` tiada atau menunjuk `kkm_latihan` | Lab 6.3: kumpulan `tests` → `kkm_latihan_test` **sahaja** |
+| `Ada fail yatim di writable/uploads/pas/` | Semakan dipindah selepas `storeFile()` **dan** `deleteStoredFiles()` tiada dalam `catch` `submit()` | `assertFiles()` sebelum gelung `storeFile()`; `catch` memadam fail yang sudah dipindah |
+| Semua kes `rejectedProvider` gagal dengan `Sepatutnya InvalidArgumentException` | `submit()` menerima fail tidak sah — `mime`/`guessExtension()` tiada | Semak `assertFiles()` Lab 7.3 dan extension `fileinfo` (`php -m`) |
+| Fail `pas…` kekal dalam `%TEMP%` | `move()` palsu tidak dipanggil kerana fail ditolak | Normal — fail sementara OS; boleh dipadam bila-bila |
+
+### ⭐ Cabaran tambahan
+- Tambah kes `valid_until = valid_from` (sempadan BR-PAS-06 yang **sah**) dan kes pas kenderaan dengan kenderaan sendiri ke dalam ujian "diterima".
+- Mutasi kedua: buang `$this->deleteStoredFiles($stored);` dalam `catch` `submit()`. Adakah mana-mana ujian gagal? Kenapa? (Petunjuk: di mana setiap kes ditolak — sebelum atau selepas `storeFile()`?)
 
 ---
 
 ## Semakan kendiri — akhir hari
 
 ```bash
-git log --oneline -5                    # 4 commit PAS: hari ini
-php spark routes | grep pas/permohonan  # 5 laluan, filter session
+git log --oneline -9                    # 8 commit PAS: hari ini (4 lab teras + 4 lab lanjutan)
+php spark routes | grep pas/permohonan  # 6 laluan (5 + Lab 7.3b), filter session
+composer test -- --no-coverage tests/feature/Pas/PassSubmitTest.php   # OK (Lab 7.4b)
 ls writable/uploads/pas/ | head         # nama rawak sahaja
 git status                              # bersih; writable/uploads tidak dijejak
 ```

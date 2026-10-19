@@ -18,6 +18,10 @@ By the end of today, participants can:
 | O4 | **Implement** status transitions (approve/reject/cancel) through `BookingStatus::canTransitionTo()` and record them in `status_logs` | S2 | The booking page shows a history of 3 transitions with the actor's name |
 | O5 | **Write** PHPUnit tests (`DatabaseTestTrait`, `FeatureTestTrait`) for overlap, the 90-day limit, status transitions and access control | S3 | `composer test -- tests/tlk` green (≥ 25 tests) |
 | O6 | **Improve** the UI (status badges, flash, confirmation dialogs, Bootstrap pagination) and **demo** M1 end to end | S4 | 5-minute demo with 3 roles; M1 DoD ticked |
+| O7 | **Build** a busy-slot board with the BR-TLK-01 overlap condition in a `JOIN` and **restrict** it to `permission:tlk.decide` | S5 | [Lab 6.1b](./lab.en.md#lab-61b--busy-slot-board-for-approvers-s5); `/tlk/tempahan/ketersediaan/sibuk` |
+| O8 | **Write** a Spark command `tlk:expire` that expires bookings through `transition()` and **demonstrate** that the command waits for a row lock | S6 | [Lab 6.2b](./lab.en.md#lab-62b--the-tlkexpire-expiry-command-s6); `status_logs` `approved → expired` |
+| O9 | **Write** PHPUnit tests for the busy board and expiry, and **prove** that each test catches a mutation | S7 | [Lab 6.3b](./lab.en.md#lab-63b--tests-for-the-busy-board--expiry-s7); 12 new tests green |
+| O10 | **Polish** the *Tempahan Saya* (My Bookings) list (status tabs with counts, direct Cancel, empty states) and **read** the query cost in the Debug Toolbar | S8 | [Lab 6.4b](./lab.en.md#lab-64b--polishing-the-my-bookings-list-s8); `/tlk/tempahan` |
 
 ---
 
@@ -26,12 +30,16 @@ By the end of today, participants can:
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 5 recap | — |
-| 09:00–10:30 | S1 | Slot availability check logic | Write the date-range overlap query & the free-slot view |
+| 09:00–10:00 | S1 | Slot availability check logic | Write the date-range overlap query & the free-slot view |
+| 10:00–10:30 | S5 | S1 follow-up: the busy-slot board | Build a board of active bookings per date range with a `JOIN`; restricted to approvers |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–12:30 | S2 | Overlap control & status (pending/approved/rejected) | Enforce BR-TLK-01/04/05 in a transaction; status transitions + log |
+| 10:45–12:00 | S2 | Overlap control & status (pending/approved/rejected) | Enforce BR-TLK-01/04/05 in a transaction; status transitions + log |
+| 12:00–12:30 | S6 | S2 follow-up: the `tlk:expire` command | Expire bookings through `transition()`; watch the command wait for a row lock |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–16:00 | S3 | Module functional testing | Write PHPUnit tests for overlap & status transitions |
-| 16:00–17:00 | S4 | UI improvements; module wrap-up | Add status badges, flash messages, confirmation; **M1 complete** |
+| 14:30–15:30 | S3 | Module functional testing | Write PHPUnit tests for overlap & status transitions |
+| 15:30–16:00 | S7 | S3 follow-up: tests for the new rules | Test the busy board & expiry; two mutations caught |
+| 16:00–16:35 | S4 | UI improvements; module wrap-up | Add status badges, flash messages, confirmation; **M1 complete** |
+| 16:35–17:00 | S8 | S4 follow-up: polish *Tempahan Saya* (My Bookings); wrap-up | Status tabs with counts, Cancel right from the list |
 
 ---
 
@@ -300,7 +308,7 @@ stateDiagram-v2
     pending --> approved : approve() — approver
     pending --> rejected : reject() — approver, reason ≥ 10 characters
     approved --> cancelled : cancel() — owner or admin (BR-TLK-06)
-    approved --> expired : system (challenge)
+    approved --> expired : system — tlk:expire (Lab 6.2b)
 ```
 
 All transitions go through one private method, `transition()`:
@@ -634,6 +642,143 @@ Final layout: `templates/kod/layout-main.php.txt` (**Templat & Rujukan** module)
 
 ---
 
+## S5 — S1 follow-up: The Busy-Slot Board (after Lab 6.1)
+
+Lab 6.1 answers the applicant's question: *"which slots are free?"*. The approver asks the opposite question: *"who occupies this slot on that date?"*. The overlap condition is the same, but written in a `JOIN`:
+
+| Question | Query | One row = |
+|--------|-------|--------------|
+| Free slots (Lab 6.1) | `parking_slots … WHERE id NOT IN (SELECT slot_id …)` (active overlapping bookings) | one slot |
+| Busy slots (Lab 6.1b) | `slot_bookings JOIN parking_slots JOIN parking_zones JOIN users WHERE status IN ('pending','approved') AND start_date <= :end AND end_date >= :start` | one booking |
+
+For the same range, every active slot is in **only one** of the two lists. A deactivated slot drops out of the free list, but its booking still exists and still occupies that slot; the board marks it *Slot tidak aktif* (Slot inactive) so the approver can act. Shield's `users` table also has a `status` column, so after a `JOIN` every column is written with its table name (`slot_bookings.status`).
+
+Lab: [Lab 6.1b](./lab.en.md#lab-61b--busy-slot-board-for-approvers-s5)
+
+### 🎯 Quiz S5
+
+> Answer after Lab 6.1b on your laptop — the answers come from the real busy-slot board. Passing this quiz marks the Lab 6.1b checkpoint.
+
+1. Lab 6.1b step 7.2: you enter both the start date **and** the end date = the end date of `TLK-2026-0001`. What does the board show for A-01?
+   - [ ] No A-01 row — on the last day of a booking the slot already counts as free
+   - [x] An A-01 row with `TLK-2026-0001`, applicant *Aminah binti Latihan* and a *Menunggu* (Pending) badge
+   - [ ] The error message *Tarikh tamat mesti sama atau selepas tarikh mula.* (End date must be on or after the start date), no table
+   - [ ] Two A-01 rows: one for the start date and one for the end date
+   > Dates are inclusive: `start_date <= :end` and `end_date >= :start` are both true when `:start` = `:end` = `end_date`. The free-slot page for the same range does not show A-01 — the two lists complement each other.
+
+2. Lab 6.1b step 7.3: A-01 is deactivated, then you reload both pages for the same one-day range. What is the result?
+   - [ ] Both pages show A-01 as usual — `is_active` only affects the booking form
+   - [ ] A-01 reappears among the free slots, and `TLK-2026-0001` disappears from the board
+   - [ ] The board shows the error `Unknown column 'is_active'`
+   - [x] The free-slot page does not show A-01; the board still shows `TLK-2026-0001` with a *Slot tidak aktif* (Slot inactive) badge
+   > `availableSlots()` filters on `is_active = 1`, so an inactive slot is never offered. `busySlots()` does not filter on `is_active`: an existing booking still occupies the slot, and the approver needs to see that it requires action.
+
+---
+
+## S6 — S2 follow-up: Expiry Through the Same Door (after Lab 6.2)
+
+The status diagram has `approved → expired`, but there is no button for it: the system changes it. The Spark command `php spark tlk:expire` calls `BookingService::expire()`, which calls the same `transition()` as Approve, Reject and Cancel:
+
+| Step | Where | Why |
+|---------|---------|--------|
+| Find the candidates | `expirableIds()`: `status = 'approved' AND end_date < :today` (`:today` = today) | A plain `SELECT` — no lock, waits for nobody |
+| One booking, one transaction | The loop in the command → `expire()` → `transition()` | One booking failing (e.g. `Lock wait timeout`) does not undo the others |
+| Lock + check again | `lockRow('slot_bookings')` + `canTransitionTo()` | If the owner cancels at the same moment, the command gets a status error instead of overwriting `cancelled` |
+| Audit trail | `status_logs`: `actor_id` = the first user in the `admin` group, remark `Tamat tempoh automatik (tlk:expire).` | `actor_id` is required (FK) even when the actor is the system |
+
+`end_date < :today`, not `<=`: the last day of a booking is still in use, just like the inclusive dates of BR-TLK-01.
+
+Lab: [Lab 6.2b](./lab.en.md#lab-62b--the-tlkexpire-expiry-command-s6)
+
+### 🎯 Quiz S6
+
+> Answer after Lab 6.2b on your laptop — the answers come from the real `php spark tlk:expire` output and MySQL client. Passing this quiz marks the Lab 6.2b checkpoint.
+
+1. Lab 6.2b step 5: Terminal A holds a `SELECT … FOR UPDATE` on that booking, and you run `php spark tlk:expire`. What is shown **before** the `COMMIT;` in Terminal A?
+   - [ ] The error `Lock wait timeout exceeded` straight away
+   - [ ] Nothing at all — the command hangs before printing its first line
+   - [x] The line `1 tempahan melepasi end_date sebelum …: ID …`, then the command waits; `✔ TLK-… → Tamat Tempoh` only appears after `COMMIT;`
+   - [ ] `✔ TLK-… → Tamat Tempoh` straight away, and the `COMMIT;` in Terminal A fails
+   > `expirableIds()` is a plain `SELECT` (an InnoDB consistent read without a lock), so it does not wait. What waits is `lockRow()` inside `transition()` — a `SELECT … FOR UPDATE` on the same row.
+
+2. Lab 6.2b step 7: what is the last `status_logs` row?
+   - [x] `TLK`, `approved` → `expired`, `actor_id` = the `id` of the `admin` user, `remarks` = `Tamat tempoh automatik (tlk:expire).`
+   - [ ] `TLK`, `approved` → `expired`, `actor_id` = `NULL` because no user is logged in on the CLI
+   - [ ] `TLK`, `pending` → `expired`, `actor_id` = the applicant's `id`
+   - [ ] No new row — the command changes the status directly with `update()` without a log
+   > The command has no login session, so it picks the first user in the `admin` group (`auth_groups_users`) as the actor. `transition()` writes the log in the same transaction as the status change.
+
+---
+
+## S7 — S3 follow-up: Tests for the New Rules (after Lab 6.3)
+
+Every new rule from S5–S6 gets a test, and every test must be seen red once:
+
+| Rule | Test | Mutation it catches |
+|-----------|-------|-----------------------|
+| The board shows active statuses only | `testRejectedBookingIsNotBusy` | Remove `whereIn('slot_bookings.status', …)` |
+| The last day of a booking is still busy | `testLastDayOfBookingIsStillBusy` | `end_date >=` → `>` |
+| The last day has not expired yet | `testOnlyApprovedBookingsThatEndedBeforeTodayAreExpirable` | `end_date <` → `<=` |
+| The second run does not touch bookings that already expired | `testCommandExpiresOnceThenFindsNothing` | Remove `->where('status', BookingStatus::Approved->value)` in `expirableIds()` |
+
+Two new tools: `command('tlk:expire')` runs a Spark command inside a test (on the `tests` group DB), and `StreamFilterTrait` captures `CLI::write()` output for `getStreamFilterBuffer()`. "Past" bookings are built by create → approve → shift the dates with a direct `update()`, because BR-TLK-03 rejects past dates through the service.
+
+Lab: [Lab 6.3b](./lab.en.md#lab-63b--tests-for-the-busy-board--expiry-s7)
+
+### 🎯 Quiz S7
+
+> Answer after Lab 6.3b on your laptop — the answers come from the real `composer test` output. Passing this quiz marks the Lab 6.3b checkpoint.
+
+1. Lab 6.3b step 4 (mutation 1: `end_date <` → `<=` in `expirableIds()`): which `✘` line appears in the `--testdox` output?
+   - [x] `Only approved bookings that ended before today are expirable`
+   - [ ] `Cannot expire booking that has not ended`
+   - [ ] `Command expires once then finds nothing`
+   - [ ] `Expire changes status and writes log`
+   > With `<=`, a booking that ends **today** also becomes a candidate, so `assertSame([$ended], …)` fails. `testCannotExpireBookingThatHasNotEnded` stays green because it calls `expire()` directly — the date check inside `expire()` is unchanged.
+
+2. Lab 6.3b step 3: what is the last line of the output when both files run together?
+   - [ ] `OK (7 tests, 15 assertions)`
+   - [ ] `OK (12 tests, 12 assertions)`
+   - [x] `OK (12 tests, 27 assertions)`
+   - [ ] `OK (5 tests, 12 assertions)`
+   > `BusySlotsTest` has 7 tests (15 assertions) + `ExpireBookingTest` 5 tests (12 assertions). Every `seeInDatabase()`, `assertRedirect()` and `assertSee()` counts as an assertion.
+
+---
+
+## S8 — S4 follow-up: Polishing the My Bookings List (after Lab 6.4)
+
+Lab 6.4 polished the approver's page. The same patterns (badges, flash, `data-confirm`, empty states) now go to the applicant's list:
+
+| Before (Day 5) | After (Lab 6.4b) |
+|------------------|--------------------|
+| Status dropdown + **Tapis** (Filter) button | Status tabs (`nav-pills`) with counts; one click |
+| **Lihat** (View) → details → **Batalkan Tempahan** (Cancel booking) | **Batal** (Cancel) right from the row (`data-confirm`), back to the same tab |
+| *Tiada tempahan.* (No bookings.) | *Tiada tempahan berstatus Diluluskan.* (No Approved bookings.) + a *Semak slot kosong* (Check free slots) link |
+
+The counts for all six tabs come from **one** `GROUP BY status` query, not five `COUNT`s. A status with no bookings is missing from the `GROUP BY` result, so `array_fill_keys()` fills in `0` first. The **Batal** button only appears when `canTransitionTo(Cancelled)` is true — the same source as the details page. `redirect()->back()` takes the user to the previous URL, including `?status=`.
+
+Lab: [Lab 6.4b](./lab.en.md#lab-64b--polishing-the-my-bookings-list-s8)
+
+### 🎯 Quiz S8
+
+> Answer after Lab 6.4b on your laptop — the answers come from the real Debug Toolbar and browser. Passing this quiz marks the Lab 6.4b checkpoint.
+
+1. Lab 6.4b step 6: on `/tlk/tempahan?status=cancelled`, how many queries in the Database tab contain `FROM slot_bookings`, and which one has no `status` condition?
+   - [ ] 2 — `COUNT(*)` and the list `SELECT`; both have a `status` condition
+   - [ ] 6 — one `COUNT(*)` per tab, then the list
+   - [ ] 3 — all of them have the condition `status = 'cancelled'`
+   - [x] 3 — `COUNT(*) AS numrows`, `SELECT … LIMIT 10` and `GROUP BY status`; the `GROUP BY` query has no `status` condition
+   > `paginate()` runs two queries (the count for the pager + the data page). `countByStatusForUser()` adds one `GROUP BY` that only filters on `user_id`, which is why the tab counts stay the same when you switch tabs.
+
+2. Lab 6.4b step 7: you click **Batal** on the *Diluluskan* (Approved) tab and **OK** in the dialog. Where are you taken?
+   - [ ] `/tlk/tempahan/<id>` (the booking details) with a green flash
+   - [x] `/tlk/tempahan?status=approved` with the green flash *Tempahan TLK-… telah dibatalkan.* (Booking … has been cancelled), and the *Dibatalkan* (Cancelled) count goes up by one
+   - [ ] `/tlk/tempahan` (the *Semua* / All tab) with a green flash
+   - [ ] `/tlk/tempahan?status=approved` with the red flash *Status "Diluluskan" tidak boleh ditukar kepada "Dibatalkan".* (Status "Approved" cannot be changed to "Cancelled")
+   > `BookingController::cancel()` returns `redirect()->back()`. The previous URL is the tab you had open, including `?status=approved`. The booking is now *Dibatalkan*, so the *Diluluskan* tab shows the empty state.
+
+---
+
 ## 📦 Deliverables — Today's Output
 
 - [ ] `app/Services/SlotAvailabilityService.php` + route & view `tlk/tempahan/ketersediaan`
@@ -645,6 +790,10 @@ Final layout: `templates/kod/layout-main.php.txt` (**Templat & Rujukan** module)
 - [ ] UI: badges, flash, `data-confirm`, Bootstrap pagination
 - [ ] `docs/ujian-manual-tlk.md` updated — TM-TLK-16 ✅
 - [ ] Branches `feat/tlk-ketersediaan`, `feat/tlk-keputusan`, `feat/tlk-ujian` merged; tag `m1-siap`
+- [ ] Busy-slot board `/tlk/tempahan/ketersediaan/sibuk` (`permission:tlk.decide`) + `SlotAvailabilityService::busySlots()`
+- [ ] `app/Commands/ExpireBookingsCommand.php` (`php spark tlk:expire`) + `BookingService::expirableIds()`/`expire()`
+- [ ] `tests/tlk/BusySlotsTest.php` + `ExpireBookingTest.php` — green; two mutation tests noted in `docs/ujian-manual-tlk.md`
+- [ ] *Tempahan Saya* (My Bookings): status tabs with counts (`SlotBookingModel::countByStatusForUser()`), Cancel right from the list
 
 ---
 

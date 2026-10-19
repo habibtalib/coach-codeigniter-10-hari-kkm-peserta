@@ -18,6 +18,10 @@ Di akhir hari ini, peserta boleh:
 | O4 | **Membina** borang `multipart/form-data` dengan validasi server `uploaded`, `max_size`, `ext_in`, `mime_in` untuk berbilang fail | S3 | Borang menolak fail 3 MB dengan mesej BM |
 | O5 | **Melaksanakan** muat naik selamat BR-PAS-02: nama `getRandomName()`, simpan di `writable/uploads/pas/`, hanya `stored_path` dalam DB, transaksi + pembersihan fail, muat turun melalui controller dengan semakan pemilikan | S3 | Fail di cakera bernama rawak; `public/` tiada fail; muat turun berjaya untuk pemilik sahaja |
 | O6 | **Menguji** sekurang-kurangnya 10 kes sempadan muat naik & validasi, dan **menerangkan** risiko OWASP yang setiap satu cegah | S4 | `docs/ujian-manual-pas.md` lengkap dengan keputusan Lulus/Gagal |
+| O7 | **Menulis** `PassType::icon()`, `PassStatus::pending()` dan kaedah Entity `validityDays()`/`daysRemaining()` yang boleh diuji dengan tarikh tetap | S5 | [Lab 7.1b](./lab.md#lab-71b--enum--entity-ikon-status-menunggu--tempoh-sah-s5); output `php spark shell` |
+| O8 | **Membina** penapis jenis dan carian dalam skop pemilik dengan `groupStart()`/`groupEnd()`, dan **membuktikan** kebocoran BR-PAS-04 jika kurungan tiada | S6 | [Lab 7.2b](./lab.md#lab-72b--penapis-jenis--carian-pada-permohonan-saya-s6); `pemohon2` di `?q=sintetik` → 1 permohonan |
+| O9 | **Membina** tambah dokumen susulan untuk pemilik dengan had 3 dokumen setiap permohonan, disemak sebelum `move()` dan di bawah kunci `FOR UPDATE` | S7 | [Lab 7.3b](./lab.md#lab-73b--tambah-dokumen-susulan-pada-permohonan-s7); dokumen ke-4 ditolak tanpa fail yatim |
+| O10 | **Mengautomasikan** kes sempadan Lab 7.4 dengan PHPUnit (`FakeUploadedFile`, `#[DataProvider]`) dan **menunjukkan** ujian menangkap mutasi `>` → `>=` | S8 | [Lab 7.4b](./lab.md#lab-74b--automasikan-kes-sempadan-dengan-phpunit-s8); `OK (14 tests, …)` |
 
 ---
 
@@ -26,12 +30,16 @@ Di akhir hari ini, peserta boleh:
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 6 | — |
-| 09:00–10:30 | S1 | Migration & Model permohonan pas | Menulis Model/Entity `PassApplication` & `PassDocument` |
+| 09:00–10:00 | S1 | Migration & Model permohonan pas | Menulis Model/Entity `PassApplication` & `PassDocument` |
+| 10:00–10:30 | S5 | Lanjutan S1: kaedah enum & Entity tambahan | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` diuji dalam `php spark shell` |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran |
+| 10:45–12:00 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran |
+| 12:00–12:30 | S6 | Lanjutan S2: penapis jenis & carian | Penapis `?pass_type=` + carian `?q=` dalam skop pemilik; bukti kebocoran `orLike()` tanpa kurungan |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–16:00 | S3 | Borang, validasi & muat naik dokumen | Muat naik fail selamat (jenis/saiz/nama rawak/luar `public`) |
-| 16:00–17:00 | S4 | Ujian manual & semakan; wrap-up | Menguji kes sempadan muat naik & validasi |
+| 14:30–15:30 | S3 | Borang, validasi & muat naik dokumen | Muat naik fail selamat (jenis/saiz/nama rawak/luar `public`) |
+| 15:30–16:00 | S7 | Lanjutan S3: tambah dokumen susulan | Had 3 dokumen setiap permohonan, semakan sebelum `move()` dan di bawah kunci `FOR UPDATE` |
+| 16:00–16:35 | S4 | Ujian manual & semakan | Menguji kes sempadan muat naik & validasi |
+| 16:35–17:00 | S8 | Lanjutan S4: kes sempadan automatik; wrap-up | `PassSubmitTest` PHPUnit + mutasi `>=` |
 
 ---
 
@@ -566,6 +574,152 @@ Setiap kes yang gagal → satu baris dengan format *Langkah untuk hasilkan semul
 
 ---
 
+## S5 — Lanjutan S1: Kaedah Enum & Entity Tambahan (selepas Lab 7.1)
+
+Lab 7.1 meletakkan peraturan **bersama data**: `requiresVehicle()` dalam enum, `displayStatus()` dalam Entity. Lab 7.1b menambah tiga lagi dengan corak yang sama, supaya view dan controller tidak menulis semula logik:
+
+| Kaedah | Jenis | Hasil | Dipakai di |
+|--------|-------|-------|------------|
+| `PassType::icon()` | `match` pada kes enum | `bi-car-front`, `bi-person-badge`, `bi-tools` | Lajur Jenis, senarai Lab 7.2b |
+| `PassStatus::pending()` | statik, senarai nilai | `['submitted', 'under_review']` | `whereIn('status', PassStatus::pending())` — corak `BookingStatus::active()` |
+| `PassStatus::isPending()` | kaedah kes | `true`/`false` | Syarat dalam view/Service |
+| `validityDays()` | Entity | hari kalendar **termasuk** kedua-dua hujung | `(N hari)` dalam senarai & butiran |
+| `daysRemaining(?Time $today)` | Entity | baki hari pas `approved`; `0` = hari terakhir; `null` = tiada | Badge *Baki N hari* |
+
+`daysRemaining()` menerima `$today` sebagai parameter (lalai `Time::today()`). Kaedah yang memanggil `Time::today()` di dalamnya memberi hasil berbeza setiap hari — ujian yang lulus hari ini gagal minggu depan. Parameter tarikh menjadikan hasilnya boleh diulang: `daysRemaining(Time::parse('2026-10-20'))` sentiasa memulangkan nilai yang sama.
+
+`php spark shell` (Lab 3.2b) memuatkan aplikasi penuh, jadi Entity boleh dibina dalam memori (`new PassApplication([...])`) dan diuji tanpa menyimpan rekod.
+
+Lab: [Lab 7.1b](./lab.md#lab-71b--enum--entity-ikon-status-menunggu--tempoh-sah-s5)
+
+### 🎯 Kuiz S5
+
+> Jawab selepas Lab 7.1b di laptop anda — jawapan datang daripada output `php spark shell` sebenar. Lulus kuiz ini menanda checkpoint Lab 7.1b.
+
+1. Lab 7.1b langkah 5: `$p` ialah pas dengan `valid_from = '2026-10-01'` dan `valid_until = '2026-10-31'`. Apakah hasil `$p->validityDays()`?
+   - [ ] `30`
+   - [x] `31`
+   - [ ] `32`
+   - [ ] `null` — Entity tanpa `id` belum disimpan dalam database
+   > `diff()->days` antara 1 dan 31 Oktober ialah `30`; `+ 1` mengira hari pertama **dan** terakhir. Pas 1–1 Okt sah selama 1 hari, bukan 0. Entity tidak memerlukan database — `$dates` menukar rentetan kepada `Time` semasa dibaca.
+
+2. Lab 7.1b langkah 5: pas `approved` yang sah hingga 31 Okt 2026. Apakah hasil `daysRemaining(Time::parse('2026-10-31'))` dan `daysRemaining(Time::parse('2026-11-01'))`?
+   - [ ] `1` dan `0`
+   - [ ] `0` dan `-1`
+   - [ ] `null` dan `null` — pas sudah tamat pada hari terakhir
+   - [x] `0` dan `null`
+   > Pada 31 Okt pas masih sah (hari terakhir) — baki `0` hari. Pada 1 Nov `valid_until` sudah lepas, jadi `daysRemaining()` memulangkan `null`, sama seperti `displayStatus()` yang memaparkan *Tamat Tempoh*.
+
+---
+
+## S6 — Lanjutan S2: Penapis & Carian dalam Skop Pemilik (selepas Lab 7.2)
+
+Skop `ownedBy()` hanya selamat jika **setiap** syarat lain berada **di dalam** skop itu. `like()` + `orLike()` tanpa kurungan memecahkannya:
+
+| Kod Model | SQL | Hasil untuk `pemohon2`, `?q=sintetik` |
+|-----------|-----|---------------------------------------|
+| `->like('ref_no', $q)->orLike('purpose', $q)` | `user_id = 3 AND ref_no LIKE … OR purpose LIKE …` | `(user_id = 3 AND …) OR purpose LIKE …` → permohonan **semua** pengguna yang tujuannya mengandungi *sintetik* |
+| `->groupStart()->like(…)->orLike(…)->groupEnd()` | `user_id = 3 AND ( ref_no LIKE … OR purpose LIKE … )` | Permohonan `pemohon2` sahaja |
+
+`AND` diikat lebih kuat daripada `OR` dalam SQL. Inilah sebab `groupStart()`/`groupEnd()` wujud — gunakannya setiap kali `orWhere()`/`orLike()` digabung dengan skop keselamatan. `findVisibleOr404()` masih menyekat halaman butiran (404), tetapi senarai sudah membocorkan nombor rujukan, tujuan dan tarikh: **dua** lapisan diperlukan, bukan satu.
+
+Input penapis dijadikan enum dengan `PassType::tryFrom()` (nilai asing → `null` → tiada penapis) dan carian dipotong 50 aksara. `$pager->links()` mengekalkan `?pass_type=` dan `?q=` dalam pautan halaman seterusnya.
+
+Lab: [Lab 7.2b](./lab.md#lab-72b--penapis-jenis--carian-pada-permohonan-saya-s6)
+
+### 🎯 Kuiz S6
+
+> Jawab selepas Lab 7.2b di laptop anda — jawapan datang daripada halaman `/pas/permohonan` sebenar. Lulus kuiz ini menanda checkpoint Lab 7.2b.
+
+1. Lab 7.2b langkah 5 (`search()` versi pertama, tanpa `groupStart()`): `pemohon2` membuka `/pas/permohonan?q=sintetik`. Apakah baris kiraan di atas jadual?
+   - [ ] *1 permohonan ditemui.* — `ownedBy()` sentiasa menapis dahulu
+   - [ ] *Tiada permohonan untuk dipaparkan.*
+   - [x] *5 permohonan ditemui.* — termasuk 4 permohonan `pemohon1`
+   - [ ] Ralat SQL kerana `orLike()` tanpa `groupStart()`
+   > SQL `user_id = 3 AND ref_no LIKE '%sintetik%' OR purpose LIKE '%sintetik%'` dibaca `(… AND …) OR purpose LIKE …`. Kelima-lima permohonan sintetik mempunyai *sintetik* dalam `purpose`, jadi semuanya lulus syarat selepas `OR`.
+
+2. Lab 7.2b langkah 7 (versi berkurungan): `pemohon1` membuka `/pas/permohonan?pass_type=kontraktor&q=blok`. Apakah yang dipaparkan?
+   - [x] `PAS-2026-9004` sahaja
+   - [ ] `PAS-2026-9001` dan `PAS-2026-9004`
+   - [ ] Tiada — `blok` huruf kecil tidak sepadan dengan `Blok`
+   - [ ] `PAS-2026-9001`, `PAS-2026-9003` dan `PAS-2026-9004`
+   > Tiga permohonan `pemohon1` mengandungi *Blok* (`9001`, `9003`, `9004`) — collation `utf8mb4_unicode_ci` tidak membezakan huruf besar/kecil. Penapis `pass_type = kontraktor` (`AND`) hanya meninggalkan `PAS-2026-9004`.
+
+---
+
+## S7 — Lanjutan S3: Dokumen Susulan & Semakan di Bawah Kunci (selepas Lab 7.3)
+
+BR-PAS-02 menghadkan **3 fail bagi setiap permohonan**, bukan setiap request. Apabila pemohon boleh menambah dokumen kemudian, had itu mesti mengira dokumen yang **sudah ada**:
+
+| Semakan | Bila | Kenapa |
+|---------|------|--------|
+| Pemilik sahaja | Sebelum apa-apa | Pegawai boleh *melihat* (`canView()`), tetapi tidak menambah dokumen bagi pihak pemohon → `404` |
+| Status `submitted` | Sebelum `move()` **dan** di bawah kunci | Selepas *Mula Semakan* (Hari 8), dokumen yang disemak tidak boleh berubah |
+| Jenis, saiz, 1–3 fail | Sebelum `move()` | `assertFiles()` yang sama seperti `submit()` |
+| Sedia ada + baharu ≤ 3 | Sebelum `move()` **dan** di bawah kunci | Dua tab serentak masing-masing nampak "2 dokumen" — tanpa kunci, kedua-duanya lulus dan permohonan mendapat 4 |
+
+Semakan pertama murah dan menyelamatkan cakera daripada fail yang pasti ditolak. Semakan kedua berjalan selepas `SELECT status … FOR UPDATE` (corak Lab 6.2): baris permohonan dikunci sehingga `transCommit()`, jadi tiada request lain boleh menambah dokumen atau menukar status di antara semakan dan `INSERT`. Ini mencegah *time-of-check to time-of-use* (TOCTOU). Borang yang masih terbuka di tab lama juga ditolak, kerana server menyemak semula dan tidak bergantung pada kad yang disembunyikan oleh view.
+
+Route `POST pas/permohonan/(:num)/dokumen` diletak **di luar** kumpulan `pas/permohonan` kerana Lab 8.2 menggantikan seluruh kumpulan itu esok.
+
+Lab: [Lab 7.3b](./lab.md#lab-73b--tambah-dokumen-susulan-pada-permohonan-s7)
+
+### 🎯 Kuiz S7
+
+> Jawab selepas Lab 7.3b di laptop anda — jawapan datang daripada mesej sebenar di halaman butiran. Lulus kuiz ini menanda checkpoint Lab 7.3b.
+
+1. Lab 7.3b langkah 7 kes a: `PAS-2026-0001` ada 2 dokumen, dan anda memilih `surat-2.pdf` **dan** `surat-3.pdf`. Apakah yang berlaku?
+   - [ ] Kedua-dua fail disimpan; permohonan kini mempunyai 4 dokumen
+   - [ ] `surat-2.pdf` disimpan, `surat-3.pdf` ditolak
+   - [ ] *Sila lampirkan 1 hingga 3 dokumen sokongan.*
+   - [x] *Permohonan ini sudah ada 2 dokumen. Maksimum 3 dokumen bagi setiap permohonan.* — tiada fail baharu di cakera
+   > `assertDocumentQuota()` mengira `2 + 2 > 3` **sebelum** `storeFile()`, jadi tiada fail dipindah dan tiada baris ditulis. `assertFiles()` lulus kerana 2 fail berada dalam had 1–3 bagi satu request.
+
+2. Lab 7.3b langkah 8: `pemohon2` menukar `action` borang di DevTools kepada ID `PAS-2026-0001` dan memuat naik `surat-3.pdf`. Apakah responsnya?
+   - [ ] *1 dokumen ditambah pada PAS-2026-0001.* — token CSRF sah
+   - [x] `404` — `findVisibleOr404()` menolak kerana `pemohon2` bukan pemilik atau pegawai
+   - [ ] `403` *The action you requested is not allowed.* — filter `csrf` menolak
+   - [ ] Redirect ke `/login`
+   > Token CSRF terikat pada sesi `pemohon2`, bukan pada URL — jadi ia sah. Controller memanggil `findVisibleOr404()` dahulu (BR-PAS-04), dan `addDocuments()` dalam Service menyemak pemilikan sekali lagi. Kewujudan permohonan orang lain tidak didedahkan.
+
+---
+
+## S8 — Lanjutan S4: Kes Sempadan Automatik dengan PHPUnit (selepas Lab 7.4)
+
+Lab 7.4 menjalankan kes sempadan dengan tangan. Lab 7.4b menukarnya kepada ujian yang berjalan dalam beberapa saat setiap kali kod berubah:
+
+| Teknik | Dalam `PassSubmitTest` | Kenapa |
+|--------|------------------------|--------|
+| `UploadedFile` palsu | `FakeUploadedFile` menggantikan `isValid()` & `move()` sahaja | CLI tiada `is_uploaded_file()`; semakan kandungan (`finfo`) kekal kod CI4 sebenar |
+| `#[DataProvider]` | `rejectedProvider()` — 7 kes, satu kaedah ujian | Kes baharu = satu baris tatasusunan; PHPUnit mengira setiap data set sebagai satu ujian |
+| Semakan tiada kesan sampingan | 0 baris `pass_applications`, 0 baris `pass_documents`, 0 fail baharu | Mesej betul + fail yatim = **gagal** (README §4.3) |
+| Pembersihan | `tearDown()` memadam fail yang dicipta ujian **sahaja** | Fail latihan anda dalam `writable/uploads/pas/` kekal |
+| Mutasi | Tukar `>` → `>=` dan lihat ujian mana gagal | Membuktikan ujian benar-benar menyemak sempadan, bukan sekadar lulus |
+
+Ujian ini berjalan di lapisan **Service** (`submit()`, `addDocuments()`). Rules controller (`uploaded`, `max_size`, `mime_in`) dan kes HTTP (UT-PAS-14 hingga 16) kekal dalam ujian manual — esok (Hari 8 S3) ujian feature HTTP menguji kawalan akses.
+
+Lab: [Lab 7.4b](./lab.md#lab-74b--automasikan-kes-sempadan-dengan-phpunit-s8)
+
+### 🎯 Kuiz S8
+
+> Jawab selepas Lab 7.4b di laptop anda — jawapan datang daripada output `composer test` sebenar. Lulus kuiz ini menanda checkpoint Lab 7.4b.
+
+1. Lab 7.4b langkah 3: apakah baris terakhir output `composer test -- --no-coverage --testdox tests/feature/Pas/PassSubmitTest.php`?
+   - [ ] `OK (8 tests, 44 assertions)` — satu ujian bagi setiap kaedah `test…`
+   - [ ] `OK (17 tests, 51 assertions)` — satu ujian bagi setiap kes UT-PAS
+   - [x] `OK (14 tests, 44 assertions)`
+   - [ ] `OK (1 test, 14 assertions)` — satu kelas ujian
+   > 7 kaedah ujian biasa + 7 data set `rejectedProvider()` = 14 ujian. PHPUnit menjalankan `testKesDitolakTanpaKesanSampingan` sekali bagi setiap data set, dan `--testdox` memaparkan setiap satu dengan nama kuncinya.
+
+2. Lab 7.4b langkah 4: selepas menukar `>` kepada `>=` dalam `assertFiles()`, apakah yang dilaporkan PHPUnit?
+   - [x] `ERRORS!` — `testTepat2MbDiterima`: `InvalidArgumentException: Setiap fail mestilah tidak melebihi 2 MB.`
+   - [ ] `FAILURES!` — data set `UT-PAS-06 2 MB + 1 bait`, kerana fail 2 MB + 1 bait kini diterima
+   - [ ] `OK` — ujian tidak sensitif kepada `>` berbanding `>=`
+   - [ ] `ERRORS!` — ketujuh-tujuh data set `rejectedProvider()` gagal
+   > `2097152 >= 2097152` kini benar, jadi fail **tepat** 2 MB ditolak. Ujian itu tidak menjangka exception, maka PHPUnit melaporkannya sebagai *error* (exception tidak ditangkap), bukan *failure* (assertion gagal). Fail 2 MB + 1 bait masih ditolak — sebab itu sempadan mesti diuji pada **kedua-dua** belah.
+
+---
+
 ## 📦 Hasil Hari Ini
 
 - [ ] `app/Enums/PassType.php`, `app/Enums/PassStatus.php`
@@ -578,6 +732,10 @@ Setiap kes yang gagal → satu baris dengan format *Langkah untuk hasilkan semul
 - [ ] Permohonan `PAS-2026-0001` dengan 1–3 dokumen berjaya dihantar dan dimuat turun
 - [ ] `docs/ujian-manual-pas.md` — ≥ 10 kes, semua Lulus (atau pepijat direkod)
 - [ ] Commit pada branch `feat/pas-permohonan` dengan prefix `PAS:`
+- [ ] `PassType::icon()`, `PassStatus::pending()`/`isPending()`, `PassApplication::validityDays()`/`daysRemaining()` (Lab 7.1b)
+- [ ] Penapis `?pass_type=` + carian `?q=` berkurungan (`withType()`, `search()`) pada `/pas/permohonan` (Lab 7.2b)
+- [ ] Route `pas.dokumen.tambah` + `PassWorkflowService::addDocuments()` — maksimum 3 dokumen setiap permohonan (Lab 7.3b)
+- [ ] `tests/_support/FakeUploadedFile.php` + `tests/feature/Pas/PassSubmitTest.php` hijau; bahagian *Diautomasikan* dalam `docs/ujian-manual-pas.md` (Lab 7.4b)
 
 Rujukan penuh jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — `PassStatus`, `PassType`, `PassApplication-Entity`, `PassApplicationModel`, `PassWorkflowService`, `ApplicationController-upload`, `Routes-pas`. Nota topikal: [07 Muat naik fail selamat](../docs/nota-07-muat-naik-fail-selamat.md) · [03 Model, Entity & Enum](../docs/nota-03-model-entity-dan-enum.md) · [11 Keselamatan](../docs/nota-11-keselamatan-aplikasi-web.md).
 

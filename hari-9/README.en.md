@@ -18,6 +18,10 @@ By the end of today, participants can:
 | O4 | **Generate** PDF files (Dompdf, A4 landscape, header/footer + page numbers) and `.xlsx` files (PhpSpreadsheet, bold header, automatic width, frozen rows) from the **same** filters as the HTML view. | S3 |
 | O5 | **Test** that report totals = a direct SQL count with PHPUnit tests, and **analyse** the query plan with `EXPLAIN` to propose an index. | S4 |
 | O6 | **Explain** the memory/time risks of large exports and how to control them (record limits, row streaming). | S3, S4 |
+| O7 | **Build** quick-period GET links (This month / Last month / This year) and active filter chips that keep the other filters, and **add** both to the spec cards. | S5 |
+| O8 | **Write** a status summary with `fromSubquery()` + `groupBy()` on the same list builder, and a weighted RPT-03 JUMLAH (TOTAL) row. | S6 |
+| O9 | **Generate** an Excel *Ringkasan* (Summary) sheet with an `=SUM()` formula and a PDF summary table from the same `statusSummary()` as the screen. | S7 |
+| O10 | **Test** the summary and JUMLAH against a SQL `GROUP BY` and hand-calculated numbers, and **prove** with mutations that a test without filters can pass falsely. | S8 |
 
 ---
 
@@ -26,12 +30,16 @@ By the end of today, participants can:
 | Time | Session | Activity | Objectives |
 |------|------|----------|----------|
 | 08:30–09:00 | — | Day 8 recap (Pass flow + RBAC) | — |
-| 09:00–10:30 | **S1** | Report design (types, search/filter criteria) | O1, O2 |
+| 09:00–10:00 | **S1** | Report design (types, search/filter criteria) | O1, O2 |
+| 10:00–10:30 | **S5** | S1 follow-up: quick periods & active filter chips | O7 |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–12:30 | **S2** | Aggregate queries & data search | O3 |
+| 10:45–12:00 | **S2** | Aggregate queries & data search | O3 |
+| 12:00–12:30 | **S6** | S2 follow-up: status summary & RPT-03 JUMLAH row | O8 |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–16:00 | **S3** | PDF/Excel export | O4, O6 |
-| 16:00–17:00 | **S4** | Testing the reports module; wrap-up — **M3 done** | O5, O6 |
+| 14:30–15:30 | **S3** | PDF/Excel export | O4, O6 |
+| 15:30–16:00 | **S7** | S3 follow-up: Excel Summary sheet & PDF summary | O9 |
+| 16:00–16:35 | **S4** | Testing the reports module — **M3 done** | O5, O6 |
+| 16:35–17:00 | **S8** | S4 follow-up: summary tests & mutations; wrap-up | O10 |
 
 ---
 
@@ -466,6 +474,150 @@ SPEC §3 already provides `INDEX(status)` and `INDEX(slot_id, start_date, end_da
 
 ---
 
+## S5 — S1 follow-up: Quick Periods & Active Filter Chips (after Lab 9.1)
+
+Lab 9.1 built a form that keeps its values. Report users rarely type dates: they want "last month" in one click, and they want to see (and remove) the filters that are active. Both are just **GET links** built from the current filters:
+
+| Link | Built from | Effect |
+|--------|-----------------|-------|
+| **Bulan ini / Bulan lepas / Tahun ini** (This month / Last month / This year) | `$preset + $keep` | The period values **overwrite** `from`/`to` (or `year`/`month`); the other filters stay |
+| Chip *Status: Diluluskan* ✕ | `array_diff_key($keep, ['status' => true])` | Removes **one** filter; the other filters stay |
+| Both | No `page` in the link | Back to page 1 when a filter changes |
+
+The `+` operator on arrays keeps the keys of the **left** array: `['from' => 'baharu'] + ['from' => 'lama', 'status' => 'approved']` gives the new `from` and keeps `status`. "Last month" is calculated with `modify('first day of last month')`, because `modify('-1 month')` on 31/03 gives 03/03.
+
+Lab: [Lab 9.1b](./lab.en.md#lab-91b--quick-periods--active-filter-chips-s5)
+
+### 🎯 Quiz S5
+
+> Answer after Lab 9.1b on your laptop — the answers come from the real URL in the browser. Passing this quiz marks the Lab 9.1b checkpoint.
+
+1. Lab 9.1b step 4: you click **Bulan ini** on RPT-01, choose Status *Diluluskan* (Approved), click **Tapis** (Filter), then click the *Dari: …* (From) chip. What is the query string of the new URL?
+   - [ ] `?status=approved` — both dates are removed
+   - [x] `?to=<hari terakhir bulan ini>&status=approved`
+   - [ ] `?from=&to=<hari terakhir bulan ini>&zone_id=&category=&status=approved&sort=&dir=` — `from` is emptied, the empty keys stay
+   - [ ] No query string — every filter is removed
+   > The chip link is built from `$keep` without the `from` key. `$keep` has already dropped the empty values (`zone_id=`, `sort=`…), so only `to` and `status` remain. (`<hari terakhir bulan ini>` = the last day of this month.)
+
+2. Lab 9.1b step 4: on RPT-03 you choose Bulan *Jun* (June), click **Tapis**, then click **Tahun ini**. What is shown?
+   - [ ] Bulan *Jun* stays selected and the **Bulan ini** button is dark
+   - [ ] The Bulan dropdown shows *Setahun* (Whole year), but no button is dark
+   - [ ] The error `Undefined array key "month"`
+   - [x] The Bulan dropdown shows *Setahun*, the **Tahun ini** button is dark, and the *Bulan: Jun* chip is gone
+   > The **Tahun ini** preset is `['year' => …, 'month' => null]`. `null` overwrites the current `month` and `$urlWith()` drops that key. Without `month`, every preset value equals the current filter, so `$isOn` is true.
+
+---
+
+## S6 — S2 follow-up: Status Summary on the Same Builder (after Lab 9.2)
+
+"Jumlah rekod" (total records) answers *how many*. Management's next question is *how many per status*. The safe answer does not write a second query; it wraps the list builder as a **subquery**:
+
+```sql
+SELECT r.status, COUNT(r.id) AS total
+FROM ( <SQL senarai RPT-01: 4 join + when() yang sama> ) r
+GROUP BY r.status
+```
+
+| Approach | Same filters as the list? | Effect |
+|------|-----------------------------|-------|
+| `newQuery()->fromSubquery($this->builder(...), 'r')` | Yes — the same builder | The sum of all buttons = "Jumlah rekod" |
+| `table('slot_bookings')->groupBy('status')` | No | Right without filters, wrong as soon as a filter is chosen |
+| Count in PHP from `$result['rows']` | The current page only | Wrong when there are > 20 records |
+
+The RPT-03 **JUMLAH** (TOTAL) row uses a **weighted** average: Σ slot-days ÷ Σ capacity × 100, not the average of the zone percentages. Example: Zone A 15/60 slot-days (25.0 %), Zone B 0/30 (0.0 %). Overall usage = 15/90 = 16.7 %, not (25.0 + 0.0) ÷ 2 = 12.5 %.
+
+Lab: [Lab 9.2b](./lab.en.md#lab-92b--status-summary--rpt-03-totals-row-s6)
+
+### 🎯 Quiz S6
+
+> Answer after Lab 9.2b on your laptop — the answers come from the real report pages. Passing this quiz marks the Lab 9.2b checkpoint.
+
+1. Lab 9.2b step 5: you open `/laporan/tempahan?status=approved`. What is shown under *Ringkasan status* (Status summary)?
+   - [x] One button (*Diluluskan*), and its number equals "Jumlah rekod"
+   - [ ] Five buttons (every `BookingStatus`); the statuses other than *Diluluskan* show 0
+   - [ ] The same buttons as without filters, because the summary counts the whole table
+   - [ ] No summary; the summary only appears when there is no status filter
+   > The subquery carries the same `WHERE b.status = 'approved'`, so `GROUP BY` finds only one status. Statuses with a count of 0 are not shown because the `cases()` loop only adds statuses that are in `$counts`.
+
+2. Lab 9.2b step 5: you filter RPT-01 by Zon *A*, then click one button under *Ringkasan status*. What happens to the URL?
+   - [ ] `status=<butang>` is added, and `zone_id` is removed
+   - [ ] The URL does not change; the button only highlights rows in the table
+   - [x] `status=<butang>` is added; `zone_id`, `sort` and `dir` stay; there is no `page`
+   - [ ] `status=<butang>&page=1` is added, and the other filters are removed
+   > The button link is `['status' => …] + $query`. `$query` holds the clean filters (including `zone_id`, `sort`, `dir`) and no `page`, so the list goes back to page 1. (`<butang>` = the status of the clicked button.)
+
+---
+
+## S7 — S3 follow-up: Summary in the Export Files (after Lab 9.3)
+
+Management opens files, not the screen. The same summary must be in the export files, and it must come from `statusSummary($report, $filters)` with the same `$filters` as `exportRows()`:
+
+| Format | Summary | API |
+|--------|-----------|-----|
+| Excel | A second *Ringkasan* (Summary) sheet; JUMLAH is the formula `=SUM(B2:Bn)` | `createSheet()`, `setTitle()`, `setActiveSheetIndex(0)` |
+| PDF | A Status/Bilangan (Count) table after "Jumlah rekod" | The `laporan/pdf.php` view receives `$summary` |
+| RPT-03 | None (`statusSummary()` returns `[]`) | `if ($summary !== [])` |
+
+JUMLAH is written as a **formula**, not as a number calculated in PHP: if a user corrects a number in Excel, JUMLAH is recalculated. Counts are written as numbers (`setCellValue()`); labels are written explicitly as strings, as in Lab 9.3.
+
+Lab: [Lab 9.3b](./lab.en.md#lab-93b--excel-summary-sheet--pdf-summary-s7)
+
+### 🎯 Quiz S7
+
+> Answer after Lab 9.3b on your laptop — the answers come from the real Excel file. Passing this quiz marks the Lab 9.3b checkpoint.
+
+1. Lab 9.3b step 7: you export RPT-03 to Excel. How many tabs are shown at the bottom of the Excel window?
+   - [ ] Two: data and *Ringkasan* with one JUMLAH row
+   - [ ] Two: data and an empty *Ringkasan*
+   - [x] Only one — `statusSummary('penggunaan', …)` returns `[]`, so `addSummarySheet()` is not called
+   - [ ] Three: data, *Ringkasan* and *Worksheet*
+   > `xlsx()` only calls `addSummarySheet()` when `$summary !== []`. RPT-03 is already an aggregate and has no status column.
+
+2. Lab 9.3b step 7: in the RPT-02 Excel file (no filters), you click the JUMLAH cell in column B on the *Ringkasan* tab. What does the formula bar show?
+   - [ ] A fixed number, e.g. `18`
+   - [x] The formula `=SUM(B2:B…)` down to the last status row
+   - [ ] The formula `=COUNT(B2:B…)`
+   - [ ] `#REF!`, because the sheet is created after the data
+   > `addSummarySheet()` writes `'=SUM(B2:B' . ($r - 1) . ')'` with `setCellValue()`. Excel shows the result in the cell and the formula in the formula bar.
+
+---
+
+## S8 — S4 follow-up: Summary Tests & Mutations (after Lab 9.4)
+
+A test without filters can **pass falsely**. Without filters, a `GROUP BY status` straight on the table gives the same numbers as the summary. Only tests **with filters** (the June range, the September range) catch a query that was rewritten without the list builder:
+
+| Lab 9.4b test | Proves |
+|----------------|-------------|
+| Summary without filters = SQL `GROUP BY` | Counts & enum order are right |
+| June 2026 summary = 4 = the list | The summary uses the same date filter |
+| September 2026 pass summary | The half-open range is inherited |
+| RPT-03 JUMLAH June 2026 = 16.7 % | A weighted average, not 12.5 % |
+| *Ringkasan* sheet in a real `.xlsx` | 2 sheets, an `=SUM()` formula, the data tab active |
+
+The Lab 9.4b commit is pushed to the same `feat/laporan` branch: the MR that is already open is updated (Day 4), there is no new MR.
+
+Lab: [Lab 9.4b](./lab.en.md#lab-94b--testing-the-summary-jumlah--excel-sheet-s8)
+
+### 🎯 Quiz S8
+
+> Answer after Lab 9.4b on your laptop — the answers come from the real `composer test` output. Passing this quiz marks the Lab 9.4b checkpoint.
+
+1. Lab 9.4b step 4 (mutation A — `from()` on the table directly, without `fromSubquery()`): which tests fail?
+   - [ ] All five Lab 9.4b tests
+   - [ ] `testRingkasanStatusSamaDenganGroupBySql` only
+   - [ ] None — the summary is still right
+   - [x] `testRingkasanIkutJulatTarikhSamaDenganSenarai` and `testRingkasanPasIkutJulatSeptember`; the summary test without filters still passes
+   > Without filters, the table and the subquery give the same counts. With filters, the mutated query counts booking #5 (July) and the 01/10 application, so `approved` becomes 3 and `approved => 1` appears in the pass summary.
+
+2. Lab 9.4b step 5 (mutation B — the average of the zone percentages): what is the PHPUnit failure message?
+   - [x] `Failed asserting that 12.5 is identical to 16.7.`
+   - [ ] `Failed asserting that 16.7 is identical to 12.5.`
+   - [ ] `Failed asserting that 25.0 is identical to 16.7.`
+   - [ ] `Failed asserting that 8.3 is identical to 16.7.`
+   > PHPUnit names the **actual** value first: (25.0 + 0.0) ÷ 2 = 12.5. The expected value 16.7 = 15 ÷ 90 × 100, because Zone A has 2 active slots and Zone B has 1.
+
+---
+
 ## 📦 Deliverables — Today's Output
 
 - [ ] `app/Services/ReportService.php` — whitelisted filters, 2 builders (RPT-01/02), RPT-03 aggregate, pagination, limited `exportRows()`
@@ -477,6 +629,10 @@ SPEC §3 already provides `INDEX(status)` and `INDEX(slot_id, start_date, end_da
 - [ ] `tests/Services/ReportServiceTest.php` — green
 - [ ] EXPLAIN note (1 paragraph) in the project README
 - [ ] Commit `RPT: ...` on the `feat/laporan` branch → **M3 done** ✅
+- [ ] Lab 9.1b: quick-period buttons + active filter chips in `app/Views/laporan/index.php`; new rows in `docs/laporan-spec.md`
+- [ ] Lab 9.2b: `ReportService::statusSummary()` & `usageTotals()`; *Ringkasan status* buttons and the RPT-03 JUMLAH row
+- [ ] Lab 9.3b: Excel *Ringkasan* sheet (`addSummarySheet()`, `=SUM()` formula) and the PDF summary table
+- [ ] Lab 9.4b: 5 new tests in `ReportServiceTest` (≥ 12 green) pushed to the `feat/laporan` MR
 
 ---
 

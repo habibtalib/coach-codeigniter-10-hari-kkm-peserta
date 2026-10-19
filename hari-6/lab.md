@@ -6,10 +6,14 @@
 
 | Lab | Sesi | Branch | Hasil |
 |-----|------|--------|-------|
-| 6.1 | S1 09:00–10:30 | `feat/tlk-ketersediaan` | `SlotAvailabilityService` + paparan slot kosong |
-| 6.2 | S2 10:45–12:30 | `feat/tlk-keputusan` | `BookingService` v2 + `status_logs` + lulus/tolak/batal |
-| 6.3 | S3 14:30–16:00 | `feat/tlk-ujian` | `BookingServiceTest` + `DecisionAccessTest` hijau |
-| 6.4 | S4 16:00–17:00 | `main` | UI digilap, demo M1, tag `m1-siap` |
+| 6.1 | S1 09:00–10:00 | `feat/tlk-ketersediaan` | `SlotAvailabilityService` + paparan slot kosong |
+| 6.1b | S5 10:00–10:30 | `feat/tlk-ketersediaan` | Papan slot sibuk `/tlk/tempahan/ketersediaan/sibuk` (pelulus & admin) |
+| 6.2 | S2 10:45–12:00 | `feat/tlk-keputusan` | `BookingService` v2 + `status_logs` + lulus/tolak/batal |
+| 6.2b | S6 12:00–12:30 | `feat/tlk-keputusan` | `php spark tlk:expire` — `approved` → `expired` melalui `transition()` |
+| 6.3 | S3 14:30–15:30 | `feat/tlk-ujian` | `BookingServiceTest` + `DecisionAccessTest` hijau |
+| 6.3b | S7 15:30–16:00 | `feat/tlk-ujian` | `BusySlotsTest` + `ExpireBookingTest` hijau; dua mutasi ditangkap |
+| 6.4 | S4 16:00–16:35 | `main` | UI digilap, demo M1, tag `m1-siap` |
+| 6.4b | S8 16:35–17:00 | `main` | *Tempahan Saya*: tab status dengan kiraan, Batal terus dari senarai |
 
 ---
 
@@ -239,10 +243,10 @@ Menulis `SlotAvailabilityService` (`hasOverlap()` & `availableSlots()`) dan papa
 7. Uji dan commit `TLK: semakan ketersediaan slot (BR-TLK-01)`.
 
 ### ✅ Checkpoint
-- `docs/pertindihan-tarikh.md`: kes 1–5 bertindih, kes 6–7 tidak.
-- Tempahan `TLK-2026-0001` (slot A-01) ada dalam DB. Buka `http://localhost:8080/tlk/tempahan/ketersediaan?start_date=<mula>&end_date=<tamat>&category=oku` menggunakan tarikh yang **bertindih** dengan tempahan itu → A-01 **tiada** dalam senarai; tarikh **selepas** tempahan tamat → A-01 **ada**.
-- Debug Toolbar → *Database*: query mengandungi `NOT IN (SELECT slot_id FROM slot_bookings WHERE status IN ('pending','approved') …)`.
-- `?start_date=2026-10-20&end_date=2026-10-10` → mesej ralat, tiada senarai.
+- `docs/pertindihan-tarikh.md`: kes 1–5 bertindih, kes 6–7 tidak (Kuiz S1).
+- Tempahan `TLK-2026-0001` (slot A-01) ada dalam DB. Buka `http://localhost:8080/tlk/tempahan/ketersediaan?start_date=<mula>&end_date=<tamat>&category=oku` menggunakan tarikh yang **bertindih** dengan tempahan itu → A-01 **tiada** dalam senarai; tarikh **selepas** tempahan tamat → A-01 **ada** (Kuiz S1).
+- Debug Toolbar → *Database*: query mengandungi `NOT IN (SELECT slot_id FROM slot_bookings WHERE status IN ('pending','approved') …)` (Kuiz S1).
+- `?start_date=2026-10-20&end_date=2026-10-10` → mesej ralat, tiada senarai (Kuiz S1).
 
 ### 🧯 Masalah lazim
 
@@ -254,7 +258,7 @@ Menulis `SlotAvailabilityService` (`hasOverlap()` & `availableSlots()`) dan papa
 | `Call to undefined method … whereNotIn() closure` | Versi CI lama | CI ≥ 4.6 menyokong closure subquery |
 
 ### ⭐ Cabaran tambahan
-- Tunjukkan slot **sibuk** juga (kad kelabu) dengan nombor rujukan tempahan yang mendudukinya (hanya untuk `tlk.decide`).
+- Tunjukkan bilangan slot kosong bagi setiap zon di atas senarai kad (`array_count_values(array_column($slots, 'zone_code'))`).
 - Tambah butang "Mohon slot ini" pada setiap kad yang membuka `/tlk/tempahan/new?slot_id=…&start_date=…&end_date=…` dan isi borang secara automatik.
 
 ---
@@ -335,13 +339,13 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
 **C. `BookingService` versi 2**
 
 3. Gantikan seluruh `app/Services/BookingService.php` dengan versi 2 di bawah (README §2.2–2.3 menerangkan setiap bahagian). Senarai semak — tanda setiap satu selepas anda menemuinya dalam kod:
-   - [ ] Konstruktor menerima `StatusLogModel $logs`, `SlotAvailabilityService $availability`, `ReferenceNumberService $refNumbers`, `?BaseConnection $db` (lalai `db_connect()`)
-   - [ ] `create()`: `assertValidPeriod()` → `assertVehicleOwnedBy()` → `transBegin()` → kunci `users` → kunci `parking_slots` → slot aktif? → BR-TLK-04 → BR-TLK-01 → `next('TLK')` → `insert` → `record(null → pending)` → `transCommit()`
-   - [ ] `catch (Throwable $e) { transRollback(); throw $e; }`
-   - [ ] `assertValidPeriod()` awam: format, bukan masa lalu (hari ini dibenarkan), `end >= start`, `diff()->days > 90` ditolak
-   - [ ] `approve()`, `reject()` (sebab ≥ 10 aksara), `cancel()` (pemilik **atau** admin) → semua melalui `transition()`
-   - [ ] `transition()`: kunci baris tempahan → `canTransitionTo()` → jika lulus: kunci slot + `hasOverlap(…, $bookingId)` → `update` → `record()`
-   - [ ] `lockRow()` guna `prefixTable()` + binding `?`
+   - [ ] Konstruktor menerima `StatusLogModel $logs`, `SlotAvailabilityService $availability`, `ReferenceNumberService $refNumbers`, `?BaseConnection $db` (lalai `db_connect()`) (Kuiz S2)
+   - [ ] `create()`: `assertValidPeriod()` → `assertVehicleOwnedBy()` → `transBegin()` → kunci `users` → kunci `parking_slots` → slot aktif? → BR-TLK-04 → BR-TLK-01 → `next('TLK')` → `insert` → `record(null → pending)` → `transCommit()` (Kuiz S2)
+   - [ ] `catch (Throwable $e) { transRollback(); throw $e; }` (Kuiz S2)
+   - [ ] `assertValidPeriod()` awam: format, bukan masa lalu (hari ini dibenarkan), `end >= start`, `diff()->days > 90` ditolak (Kuiz S2)
+   - [ ] `approve()`, `reject()` (sebab ≥ 10 aksara), `cancel()` (pemilik **atau** admin) → semua melalui `transition()` (Kuiz S2)
+   - [ ] `transition()`: kunci baris tempahan → `canTransitionTo()` → jika lulus: kunci slot + `hasOverlap(…, $bookingId)` → `update` → `record()` (Kuiz S2)
+   - [ ] `lockRow()` guna `prefixTable()` + binding `?` (Kuiz S2)
 
    `app/Services/BookingService.php`:
 
@@ -911,12 +915,12 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
 15. Commit `TLK: transaksi + kunci baris BR-TLK-01/04/05, keputusan & status_logs`.
 
 ### ✅ Checkpoint
-- Langkah 11: permintaan **menunggu** sehingga `COMMIT` (bukti visual kunci baris).
-- `pelulus@latihan.test` → `/tlk/keputusan` → *Lulus* satu tempahan → flash hijau; *Tolak* dengan sebab 5 aksara (buang dahulu atribut `minlength`/`required` pada `<input name="remarks">` melalui DevTools — pelayar menyekatnya; kita menguji peraturan **server**) → flash merah *"Sebab penolakan wajib diisi (sekurang-kurangnya 10 aksara)."*
-- `pemohon1` → butiran tempahan yang diluluskan → *Batalkan* → status *Dibatalkan*; sejarah menunjukkan 3 baris (Menunggu → Diluluskan → Dibatalkan) dengan nama pelaku.
-- Tempahan `pending` **tiada** butang Batal; POST terus ke `/tlk/tempahan/{id}/cancel` → mesej *"Status "Menunggu" tidak boleh ditukar kepada "Dibatalkan"."*
-- `pemohon1` cuba tempahan kedua semasa satu masih `pending` → *"Anda sudah mempunyai satu tempahan aktif…"* (BR-TLK-04).
-- SQL:
+- Langkah 11: permintaan **menunggu** sehingga `COMMIT` (bukti visual kunci baris) (Kuiz S2).
+- `pelulus@latihan.test` → `/tlk/keputusan` → *Lulus* satu tempahan → flash hijau; *Tolak* dengan sebab 5 aksara (buang dahulu atribut `minlength`/`required` pada `<input name="remarks">` melalui DevTools — pelayar menyekatnya; kita menguji peraturan **server**) → flash merah *"Sebab penolakan wajib diisi (sekurang-kurangnya 10 aksara)."* (Kuiz S2)
+- `pemohon1` → butiran tempahan yang diluluskan → *Batalkan* → status *Dibatalkan*; sejarah menunjukkan 3 baris (Menunggu → Diluluskan → Dibatalkan) dengan nama pelaku (Kuiz S2).
+- Tempahan `pending` **tiada** butang Batal; POST terus ke `/tlk/tempahan/{id}/cancel` → mesej *"Status "Menunggu" tidak boleh ditukar kepada "Dibatalkan"."* (Kuiz S2)
+- `pemohon1` cuba tempahan kedua semasa satu masih `pending` → *"Anda sudah mempunyai satu tempahan aktif…"* (BR-TLK-04) (Kuiz S2).
+- SQL (Kuiz S2):
 
   ```sql
   SELECT module, record_id, from_status, to_status, actor_id, remarks FROM status_logs ORDER BY id;
@@ -935,7 +939,7 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
 | Pelulus mendapat 404 bila klik no. rujukan | `show()` masih semakan pemilik sahaja | Tambah `|| can('tlk.decide')` (langkah 8) |
 
 ### ⭐ Cabaran tambahan
-- Spark command `tlk:expire` yang menukar tempahan `approved` dengan `end_date < hari ini` kepada `expired` melalui `transition()` (pelaku = pengguna sistem/admin). Jalankan `php spark tlk:expire` dan semak `status_logs`.
+- Wajibkan catatan (≥ 10 aksara) apabila **admin** membatalkan tempahan milik orang lain, supaya pemilik tahu sebabnya; pemilik sendiri masih boleh membatalkan tanpa catatan.
 - Kunci baris tempahan dalam `approve()` menghalang dua pelulus serentak. Buktikan dengan dua sesi MySQL seperti langkah 10–12 tetapi pada `slot_bookings`.
 
 ---
@@ -1377,10 +1381,10 @@ Menulis ujian integrasi `BookingServiceTest` (pertindihan, BR-TLK-03/04, peralih
 7. Commit `TLK: ujian PHPUnit BookingService + akses keputusan`.
 
 ### ✅ Checkpoint
-- `composer test -- --no-coverage tests/tlk` → `OK` dengan **≥ 25 ujian** (BookingStatus 5 + BookingService ≥ 15 + DecisionAccess 5). Penyelesaian rujukan (tag `penyelesaian-hari-6`): **43** = BookingStatus 6 (dengan ⭐) + BookingService 28 (template 27 + 1) + DecisionAccess 7 (dengan ⭐) + ReferenceNumberService 2.
-- Langkah 6: membuang `hasOverlap()` menyebabkan sekurang-kurangnya `testCreateRejectsOverlappingBooking` merah; menukar `<=` → `<` menyebabkan kes *"bertindih di hujung awal"* merah.
-- `mysql -u kkm_dev -p -e "SELECT COUNT(*) FROM slot_bookings" kkm_latihan` sebelum dan selepas `composer test` → nombor **sama** dan bukan `0` (tempahan Lab 6.1–6.2 masih ada). Ujian menulis ke `kkm_latihan_test` (kumpulan `tests`), **bukan** `kkm_latihan`.
-- Bandingkan dengan `BookingServiceTest.php.txt` (modul **Templat & Rujukan**).
+- `composer test -- --no-coverage tests/tlk` → `OK` dengan **≥ 25 ujian** (BookingStatus 5 + BookingService ≥ 15 + DecisionAccess 5). Penyelesaian rujukan (tag `penyelesaian-hari-6`): **43** = BookingStatus 6 (dengan ⭐) + BookingService 28 (template 27 + 1) + DecisionAccess 7 (dengan ⭐) + ReferenceNumberService 2 (Kuiz S3).
+- Langkah 6: membuang `hasOverlap()` menyebabkan sekurang-kurangnya `testCreateRejectsOverlappingBooking` merah; menukar `<=` → `<` menyebabkan kes *"bertindih di hujung awal"* merah (Kuiz S3).
+- `mysql -u kkm_dev -p -e "SELECT COUNT(*) FROM slot_bookings" kkm_latihan` sebelum dan selepas `composer test` → nombor **sama** dan bukan `0` (tempahan Lab 6.1–6.2 masih ada). Ujian menulis ke `kkm_latihan_test` (kumpulan `tests`), **bukan** `kkm_latihan` (Kuiz S3).
+- Bandingkan dengan `BookingServiceTest.php.txt` (modul **Templat & Rujukan**) (Kuiz S3).
 
 ### 🧯 Masalah lazim
 
@@ -1611,10 +1615,10 @@ Menggilap UI Modul TLK (badge, flash, pengesahan, pagination Bootstrap, menu iku
    ```
 
 ### ✅ Checkpoint
-- `/admin/slot?page=2` memaparkan pagination Bootstrap (`<ul class="pagination">` dengan `page-item active`).
-- Klik *Lulus* → dialog `confirm()` muncul; *Batal* dalam dialog → tiada perubahan.
-- Log masuk sebagai 3 peranan → menu berbeza mengikut kebenaran.
-- Demo 6 langkah berjaya di hadapan jurulatih; `git tag` menunjukkan `m1-siap`.
+- `/admin/slot?page=2` memaparkan pagination Bootstrap (`<ul class="pagination">` dengan `page-item active`) (Kuiz S4).
+- Klik *Lulus* → dialog `confirm()` muncul; *Batal* dalam dialog → tiada perubahan (Kuiz S4).
+- Log masuk sebagai 3 peranan → menu berbeza mengikut kebenaran (Kuiz S4).
+- Demo 6 langkah berjaya di hadapan jurulatih; `git tag` menunjukkan `m1-siap` (Kuiz S4).
 
 ### 🧯 Masalah lazim
 
@@ -1631,6 +1635,1002 @@ Menggilap UI Modul TLK (badge, flash, pengesahan, pagination Bootstrap, menu iku
 
 ---
 
+## Lab 6.1b — Papan Slot Sibuk untuk Pelulus (S5)
+
+### 🎯 Objektif
+Menggunakan semula syarat pertindihan BR-TLK-01 dalam **JOIN** (bukan `NOT IN`) untuk membina papan slot sibuk `/tlk/tempahan/ketersediaan/sibuk` bagi pelulus dan admin: tempahan aktif mana yang menduduki slot dalam julat tarikh, siapa pemohonnya, dan sama ada slot itu masih aktif.
+
+### Prasyarat
+- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- [Lab 6.1](#lab-61--semakan-ketersediaan-slot-s1) checkpoint lulus; anda masih dalam branch `feat/tlk-ketersediaan` (belum merge).
+- Tempahan `TLK-2026-0001` (slot A-01, `pemohon1`, *Menunggu*) wujud.
+
+### Langkah
+
+1. `app/Services/SlotAvailabilityService.php` — tambah kaedah ini dalam kelas, terus selepas `availableSlots()`:
+
+   ```php
+       /**
+        * Tempahan aktif (pending/approved) yang bertindih dengan julat [start, end] —
+        * "papan slot sibuk" untuk pelulus. Syarat bertindih SAMA seperti hasOverlap().
+        *
+        * @return list<array<string, mixed>> satu baris = satu tempahan + slot, zon & pemohon
+        */
+       public function busySlots(string $start, string $end): array
+       {
+           return $this->bookings->builder()
+               ->select('slot_bookings.id, slot_bookings.ref_no, slot_bookings.start_date, slot_bookings.end_date, slot_bookings.status')
+               ->select('parking_slots.slot_no, parking_slots.category, parking_slots.is_active, parking_zones.code AS zone_code')
+               ->select('users.full_name AS applicant_name')
+               ->join('parking_slots', 'parking_slots.id = slot_bookings.slot_id')
+               ->join('parking_zones', 'parking_zones.id = parking_slots.zone_id')
+               ->join('users', 'users.id = slot_bookings.user_id')
+               ->whereIn('slot_bookings.status', BookingStatus::active())
+               ->where('slot_bookings.start_date <=', $end)     // sama seperti hasOverlap()
+               ->where('slot_bookings.end_date >=', $start)
+               ->where('parking_slots.deleted_at', null)        // Query Builder mentah: soft delete tidak automatik
+               ->orderBy('parking_zones.code')
+               ->orderBy('parking_slots.slot_no')
+               ->orderBy('slot_bookings.start_date')
+               ->get()
+               ->getResultArray();
+       }
+   ```
+
+   > Lab 6.1 bertanya *"slot mana **tiada** tempahan?"* (`NOT IN`). Papan ini bertanya *"tempahan mana **menduduki** slot?"* (`JOIN`). Syarat pertindihan sama. Jadual `users` Shield juga ada lajur `status`, jadi setiap lajur ditulis dengan nama jadual (`slot_bookings.status`). `builder()` ialah Query Builder mentah: soft delete tidak ditapis automatik, jadi syarat `deleted_at` ditulis sendiri.
+
+2. Route — dalam kumpulan `tlk/tempahan` (`app/Config/Routes.php`), terus selepas route `ketersediaan` dan **sebelum** `(:num)`:
+
+   ```php
+   $routes->get('ketersediaan/sibuk', 'BookingController::busy', ['as' => 'tlk.availability.busy', 'filter' => 'permission:tlk.decide']);
+   ```
+
+   Filter `permission:tlk.decide` ditambah kepada filter `session` kumpulan: hanya `approver` dan `admin` boleh membuka papan.
+
+3. `app/Controllers/Tlk/BookingController.php` — tambah kaedah ini terus selepas `availability()`:
+
+   ```php
+       /** GET tlk/tempahan/ketersediaan/sibuk?start_date=&end_date= — pelulus/admin sahaja (filter route) */
+       public function busy(): string
+       {
+           $filters = [
+               'start_date' => (string) ($this->request->getGet('start_date') ?? ''),
+               'end_date'   => (string) ($this->request->getGet('end_date') ?? ''),
+           ];
+
+           $bookings = null;   // null = borang belum dihantar
+           $errors   = [];
+
+           if ($filters['start_date'] !== '' || $filters['end_date'] !== '') {
+               $validation = service('validation')->setRules([
+                   'start_date' => 'required|valid_date[Y-m-d]',
+                   'end_date'   => 'required|valid_date[Y-m-d]|date_on_or_after[start_date]',
+               ]);
+
+               if ($validation->run($filters)) {
+                   $bookings = service('slotAvailability')->busySlots($filters['start_date'], $filters['end_date']);
+               } else {
+                   $errors = $validation->getErrors();
+               }
+           }
+
+           return view('tlk/booking/busy', [
+               'title'    => 'Papan Slot Sibuk',
+               'filters'  => $filters,
+               'bookings' => $bookings,
+               'errors'   => $errors,
+           ]);
+       }
+   ```
+
+4. Cipta `app/Views/tlk/booking/busy.php`:
+
+   ```php
+   <?= $this->extend('layouts/main') ?>
+
+   <?= $this->section('content') ?>
+   <?php
+   use App\Enums\BookingStatus;
+   use App\Enums\SlotCategory;
+   ?>
+
+   <form method="get" class="card card-body mb-4">
+       <div class="row g-3 align-items-end">
+           <div class="col-md-4">
+               <label class="form-label" for="start_date">Tarikh mula</label>
+               <input type="date" class="form-control" id="start_date" name="start_date" value="<?= esc($filters['start_date'], 'attr') ?>">
+           </div>
+           <div class="col-md-4">
+               <label class="form-label" for="end_date">Tarikh tamat</label>
+               <input type="date" class="form-control" id="end_date" name="end_date" value="<?= esc($filters['end_date'], 'attr') ?>">
+           </div>
+           <div class="col-md-4">
+               <button class="btn btn-primary w-100" type="submit"><i class="bi bi-grid-3x3-gap"></i> Papar slot sibuk</button>
+           </div>
+       </div>
+   </form>
+
+   <?php if ($errors !== []): ?>
+       <div class="alert alert-danger"><?php foreach ($errors as $e): ?><div><?= esc($e) ?></div><?php endforeach ?></div>
+   <?php elseif ($bookings !== null): ?>
+       <?php $slotKeys = array_unique(array_map(static fn (array $b): string => $b['zone_code'] . '/' . $b['slot_no'], $bookings)); ?>
+       <p class="text-muted">
+           <?= count($bookings) ?> tempahan aktif menduduki <?= count($slotKeys) ?> slot bagi <?= esc($filters['start_date']) ?> hingga <?= esc($filters['end_date']) ?>.
+           <a href="<?= url_to('tlk.availability') ?>?<?= esc(http_build_query($filters), 'attr') ?>">Lihat slot kosong</a>
+       </p>
+       <div class="card">
+           <div class="table-responsive">
+               <table class="table align-middle mb-0">
+                   <thead class="table-light">
+                   <tr><th>Slot</th><th>No. Rujukan</th><th>Pemohon</th><th>Tempoh</th><th>Status</th></tr>
+                   </thead>
+                   <tbody>
+                   <?php foreach ($bookings as $b): ?>
+                       <?php $status = BookingStatus::from($b['status']); ?>
+                       <tr>
+                           <td>
+                               <span class="fw-semibold"><?= esc($b['zone_code']) ?> / <?= esc($b['slot_no']) ?></span>
+                               <div class="small text-muted"><?= esc(SlotCategory::from($b['category'])->label()) ?></div>
+                               <?php if ((int) $b['is_active'] !== 1): ?>
+                                   <span class="badge text-bg-dark">Slot tidak aktif</span>
+                               <?php endif ?>
+                           </td>
+                           <td><a href="<?= url_to('tlk.show', $b['id']) ?>"><?= esc($b['ref_no']) ?></a></td>
+                           <td><?= esc($b['applicant_name'] ?? '—') ?></td>
+                           <td><?= esc($b['start_date']) ?> hingga <?= esc($b['end_date']) ?></td>
+                           <td><span class="badge text-bg-<?= esc($status->badge(), 'attr') ?>"><?= esc($status->label()) ?></span></td>
+                       </tr>
+                   <?php endforeach ?>
+                   <?php if ($bookings === []): ?>
+                       <tr><td colspan="5" class="text-center text-muted py-4">Tiada slot sibuk bagi julat ini.</td></tr>
+                   <?php endif ?>
+                   </tbody>
+               </table>
+           </div>
+       </div>
+   <?php endif ?>
+   <?= $this->endSection() ?>
+   ```
+
+5. `app/Views/tlk/booking/availability.php` — tambah pautan ke papan terus selepas baris `<p class="text-muted"><?= count($slots) ?> slot kosong bagi …</p>`:
+
+   ```php
+       <?php if (auth()->user()->can('tlk.decide')): ?>
+           <p><a href="<?= url_to('tlk.availability.busy') ?>?<?= esc(http_build_query(['start_date' => $filters['start_date'], 'end_date' => $filters['end_date']]), 'attr') ?>"><i class="bi bi-grid-3x3-gap"></i> Lihat slot sibuk bagi julat sama</a></p>
+       <?php endif ?>
+   ```
+
+6. Sahkan:
+
+   ```bash
+   php -l app/Services/SlotAvailabilityService.php
+   php -l app/Controllers/Tlk/BookingController.php
+   php spark routes | grep ketersediaan
+   ```
+
+   Baris `tlk/tempahan/ketersediaan/sibuk` menunjukkan filter `csrf session permission:tlk.decide`.
+
+7. **Uji dan catat** (soalan Kuiz S5). `php spark serve`, log masuk `admin@latihan.test` (`admin` ada `tlk.*`, termasuk `tlk.decide`):
+   1. Buka `http://localhost:8080/tlk/tempahan/ketersediaan/sibuk`, isi tarikh mula = hari ini, tarikh tamat = 90 hari lagi → **Papar slot sibuk**. Cari baris `TLK-2026-0001` dan catat tarikh tamatnya.
+   2. Isi tarikh mula **dan** tarikh tamat = tarikh tamat `TLK-2026-0001` (julat satu hari) → **Papar slot sibuk**. Catat apa yang dipaparkan bagi A-01. Klik **Lihat slot kosong**: A-01 tiada dalam senarai kad.
+   3. Buka `http://localhost:8080/admin/slot` → **Ubah** A-01 (zon A) → nyahtanda *Slot aktif* → **Simpan**. Muat semula papan (julat satu hari yang sama) dan halaman slot kosong. Catat kedua-duanya.
+   4. Kembali ke `/admin/slot` → **Ubah** A-01 → tanda semula *Slot aktif* → **Simpan**.
+   5. Tetingkap incognito: log masuk `pemohon1@latihan.test`, buka `http://localhost:8080/tlk/tempahan/ketersediaan/sibuk` → dialih ke `/` dengan mesej merah (tiada `tlk.decide`).
+
+8. Commit:
+
+   ```bash
+   git add app/ && git commit -m "TLK: papan slot sibuk untuk pelulus (BR-TLK-01 dalam JOIN)"
+   ```
+
+### ✅ Checkpoint
+- [ ] `php spark routes` menunjukkan `tlk/tempahan/ketersediaan/sibuk` dengan filter `permission:tlk.decide` (Kuiz S5).
+- [ ] Papan bagi julat satu hari = tarikh tamat `TLK-2026-0001` memaparkan A-01 dengan `TLK-2026-0001`; halaman slot kosong bagi julat yang sama tidak memaparkan A-01 (Kuiz S5).
+- [ ] Semasa A-01 tidak aktif, papan masih memaparkan tempahannya dengan badge *Slot tidak aktif*; A-01 sudah diaktifkan semula dan `pemohon1` dialih keluar dari papan (Kuiz S5).
+- [ ] Commit `TLK: papan slot sibuk untuk pelulus (BR-TLK-01 dalam JOIN)` dalam branch `feat/tlk-ketersediaan` (Kuiz S5).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Column 'status' in where clause is ambiguous` | `whereIn('status', …)` tanpa nama jadual — `users` Shield juga ada lajur `status` | `slot_bookings.status` (langkah 1) |
+| `pemohon1` boleh membuka papan | Filter `permission:tlk.decide` tertinggal atau salah eja | Semak langkah 2; `php spark routes \| grep sibuk` |
+| `/tlk/tempahan/ketersediaan/sibuk` → 404 | Route tiada, atau diletak di luar kumpulan `tlk/tempahan` | `php spark routes \| grep sibuk` |
+| Tempahan pada slot yang dipadam (soft delete) muncul | Syarat `parking_slots.deleted_at` tertinggal | `->where('parking_slots.deleted_at', null)` |
+| `Undefined array key "zone_code"` dalam view | Alias `AS zone_code` tertinggal dalam `select()` | Salin semula `select()` langkah 1 |
+
+### ⭐ Cabaran tambahan
+- Tambah penapis zon (`zone_id`) pada papan, sama seperti halaman slot kosong.
+- Paparkan juga slot aktif yang **kosong** sebagai baris kelabu di bawah jadual (panggil `availableSlots()` dengan julat yang sama), supaya pelulus nampak keseluruhan zon sekali pandang.
+
+---
+
+## Lab 6.2b — Command Tamat Tempoh `tlk:expire` (S6)
+
+### 🎯 Objektif
+Menulis Spark command `php spark tlk:expire` yang menukar tempahan `approved` yang `end_date`-nya sudah berlalu kepada `expired` melalui `transition()` (satu transaksi, kunci `FOR UPDATE` dan satu baris `status_logs` bagi setiap tempahan), dan membuktikan command itu menunggu kunci baris yang dipegang sesi MySQL lain.
+
+### Prasyarat
+- [Lab 6.2](#lab-62--transaksi-kunci-baris-kelulusan--status_logs-s2) checkpoint lulus; anda masih dalam branch `feat/tlk-keputusan` (belum merge).
+- Klien MySQL dengan dua tab query, sama seperti Lab 6.2 bahagian E.
+
+### Langkah
+
+1. `app/Services/BookingService.php` — tampal dua kaedah ini terus selepas kaedah `cancel()`:
+
+   ```php
+       /**
+        * ID tempahan 'approved' yang end_date-nya SEBELUM $today — calon `php spark tlk:expire`.
+        *
+        * @return list<int>
+        */
+       public function expirableIds(string $today): array
+       {
+           $rows = $this->bookings->builder()
+               ->select('id')
+               ->where('status', BookingStatus::Approved->value)
+               ->where('end_date <', $today)      // end_date = hari ini masih digunakan (tarikh inklusif)
+               ->orderBy('id')
+               ->get()
+               ->getResultArray();
+
+           return array_map('intval', array_column($rows, 'id'));
+       }
+
+       /**
+        * SISTEM: approved → expired. Dipanggil oleh Spark `tlk:expire` sahaja (tiada route HTTP).
+        * Melalui transition(): kunci baris, canTransitionTo(), update + status_logs dalam SATU transaksi.
+        */
+       public function expire(int $bookingId, int $systemActorId, string $today): SlotBooking
+       {
+           $booking = $this->bookings->find($bookingId);
+
+           if ($booking !== null && $booking->end_date >= $today) {
+               throw new DomainException('Tempahan ' . $booking->ref_no . ' belum tamat tempoh (tarikh tamat ' . $booking->end_date . ').');
+           }
+
+           return $this->transition($bookingId, BookingStatus::Expired, $systemActorId, 'Tamat tempoh automatik (tlk:expire).');
+       }
+   ```
+
+   > `expire()` tidak membuka transaksi sendiri: `transition()` sudah mengunci baris tempahan, menyemak `canTransitionTo()`, mengemas kini status dan menulis log dalam satu transaksi. Semakan tarikh dibuat sebelum kunci kerana `end_date` tidak pernah berubah selepas tempahan dicipta; status pula disemak semula di bawah kunci.
+
+2. Cipta `app/Commands/ExpireBookingsCommand.php`:
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace App\Commands;
+
+   use CodeIgniter\CLI\BaseCommand;
+   use CodeIgniter\CLI\CLI;
+   use Throwable;
+
+   /**
+    * Tempahan 'approved' yang end_date-nya sudah berlalu → 'expired' (rajah status SPEC §2.1).
+    * Setiap tempahan melalui BookingService::expire() → transition(): satu transaksi, satu log.
+    */
+   class ExpireBookingsCommand extends BaseCommand
+   {
+       protected $group       = 'TLK';
+       protected $name        = 'tlk:expire';
+       protected $description = 'Tandakan tempahan "approved" yang melepasi end_date sebagai "expired".';
+       protected $usage       = 'tlk:expire [--dry-run]';
+       protected $options     = [
+           '--dry-run' => 'Papar senarai sahaja; tiada perubahan pada DB.',
+       ];
+
+       public function run(array $params)
+       {
+           $today   = date('Y-m-d');   // app.appTimezone = Asia/Kuala_Lumpur
+           $service = service('bookingService');
+           $ids     = $service->expirableIds($today);
+
+           if ($ids === []) {
+               CLI::write("Tiada tempahan untuk ditamatkan (tarikh rujukan {$today}).", 'green');
+
+               return EXIT_SUCCESS;
+           }
+
+           CLI::write(sprintf('%d tempahan melepasi end_date sebelum %s: ID %s', count($ids), $today, implode(', ', $ids)));
+
+           if (array_key_exists('dry-run', $params) || CLI::getOption('dry-run') !== null) {
+               CLI::write('--dry-run: tiada perubahan dibuat.', 'yellow');
+
+               return EXIT_SUCCESS;
+           }
+
+           $actorId = $this->firstAdminId();
+
+           if ($actorId === 0) {
+               CLI::error('Tiada pengguna dalam group admin untuk direkod sebagai actor_id.');
+
+               return EXIT_ERROR;
+           }
+
+           $ok   = 0;
+           $fail = 0;
+
+           foreach ($ids as $id) {
+               try {
+                   $booking = $service->expire($id, $actorId, $today);
+                   CLI::write("  ✔ {$booking->ref_no} → {$booking->statusLabel()}", 'green');
+                   $ok++;
+               } catch (Throwable $e) {
+                   CLI::error("  ✘ ID {$id}: " . $e->getMessage());   // satu gagal tidak menghentikan yang lain
+                   $fail++;
+               }
+           }
+
+           CLI::write(sprintf('Selesai: %d ditamatkan, %d gagal.', $ok, $fail), $fail === 0 ? 'green' : 'yellow');
+
+           return $fail === 0 ? EXIT_SUCCESS : EXIT_ERROR;
+       }
+
+       /** status_logs.actor_id wajib: guna pengguna pertama dalam group Shield 'admin'. */
+       private function firstAdminId(): int
+       {
+           $row = db_connect()->table(config('Auth')->tables['groups_users'])
+               ->select('user_id')
+               ->where('group', 'admin')
+               ->orderBy('user_id', 'ASC')
+               ->get(1)
+               ->getRow();
+
+           return (int) ($row->user_id ?? 0);
+       }
+   }
+   ```
+
+   ```bash
+   php -l app/Commands/ExpireBookingsCommand.php
+   php spark list | grep -A2 "^TLK"
+   ```
+
+   `php spark list` menunjukkan kumpulan `TLK` dengan `tlk:expire`.
+
+3. **Sediakan data.** Log masuk `pelulus@latihan.test`, buka `http://localhost:8080/tlk/keputusan?status=approved` dan pilih satu tempahan yang dicipta dalam Lab 6.2 langkah 14 atau selepasnya — **bukan** `TLK-2026-0001` atau tempahan Lab 6.2 langkah 1: tempahan itu dicipta oleh `BookingService` v1 tanpa baris `status_logs`. Jika tiada, pilih status *Menunggu* → **Tapis** dan **Lulus** satu tempahan yang memenuhi syarat itu, atau minta `pemohon2` memohon satu slot baharu dahulu. Catat no. rujukannya. Dalam klien MySQL, anjakkan tempahan itu ke minggu lepas (gantikan `TLK-2026-0003` dengan no. rujukan anda):
+
+   ```sql
+   UPDATE slot_bookings
+   SET start_date = CURDATE() - INTERVAL 7 DAY, end_date = CURDATE() - INTERVAL 1 DAY
+   WHERE ref_no = 'TLK-2026-0003';
+
+   SELECT id, ref_no, start_date, end_date, status FROM slot_bookings WHERE ref_no = 'TLK-2026-0003';
+   ```
+
+   Catat `id`. Ini satu-satunya tempat kita menulis tarikh lampau terus ke DB: borang dan `BookingService` (BR-TLK-03) menolaknya. `UPDATE` ini mensimulasikan "seminggu kemudian".
+
+4. Larian kering:
+
+   ```bash
+   php spark tlk:expire --dry-run
+   ```
+
+   Output: `1 tempahan melepasi end_date sebelum <hari ini>: ID <id>` dan `--dry-run: tiada perubahan dibuat.` Status tempahan masih *Diluluskan*.
+
+5. **Demo kunci.** Terminal A (klien MySQL), gantikan `3` dengan `id` langkah 3:
+
+   ```sql
+   START TRANSACTION;
+   SELECT id, status FROM slot_bookings WHERE id = 3 FOR UPDATE;
+   ```
+
+   Git Bash: `php spark tlk:expire`. Perhatikan output **sebelum** anda menyentuh Terminal A (soalan Kuiz S6). Dalam masa 50 saat, Terminal A: `COMMIT;`. Perhatikan output command sekali lagi.
+
+6. Jalankan `php spark tlk:expire` sekali lagi dan catat outputnya.
+
+7. Semak jejak audit (soalan Kuiz S6):
+
+   ```sql
+   SELECT module, record_id, from_status, to_status, actor_id, remarks FROM status_logs ORDER BY id DESC LIMIT 1;
+   SELECT id, username FROM users WHERE username = 'admin';
+   ```
+
+   Sebagai `pelulus`, buka butiran tempahan itu (`/tlk/tempahan/<id>`): *Sejarah Status* menunjukkan 3 baris — Menunggu, Diluluskan, Tamat Tempoh.
+
+8. Commit:
+
+   ```bash
+   git add app/ && git commit -m "TLK: command tlk:expire (approved → expired melalui transition)"
+   ```
+
+### ✅ Checkpoint
+- [ ] `php spark list` menunjukkan `tlk:expire` dalam kumpulan `TLK`; `--dry-run` menyenaraikan ID tanpa mengubah status (Kuiz S6).
+- [ ] Semasa Terminal A memegang kunci, command menunggu dan hanya mencetak `✔ TLK-… → Tamat Tempoh` selepas `COMMIT`; larian kedua mencetak *Tiada tempahan untuk ditamatkan* (Kuiz S6).
+- [ ] Baris terakhir `status_logs` ialah `approved → expired` dengan `actor_id` pengguna `admin` dan catatan `Tamat tempoh automatik (tlk:expire).`; commit dalam branch `feat/tlk-keputusan` (Kuiz S6).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Command "tlk:expire" not found` | Fail di luar `app/Commands/`, namespace salah, atau kelas tidak `extends BaseCommand` | `app/Commands/ExpireBookingsCommand.php`, `namespace App\Commands;` |
+| `--dry-run` mencetak *Tiada tempahan untuk ditamatkan* | `UPDATE` tidak mengenai baris (no. rujukan salah), status bukan `approved`, atau `end_date` = hari ini | Jalankan semula `SELECT` langkah 3; `end_date` mesti **sebelum** hari ini |
+| `✘ ID 3: Lock wait timeout exceeded; try restarting transaction` | Terminal A memegang kunci lebih 50 saat | `COMMIT;` di Terminal A, kemudian jalankan semula command — `transition()` sudah rollback, status kekal *Diluluskan* |
+| *Tarikh rujukan* dalam output ialah semalam | `app.appTimezone` masih `UTC` | `.env`: `app.appTimezone = 'Asia/Kuala_Lumpur'` (Hari 4) |
+| `Tiada pengguna dalam group admin…` | Seeder pengguna belum dijalankan | `php spark db:seed DatabaseSeeder` |
+
+### ⭐ Cabaran tambahan
+- Tambah pilihan `--actor <user_id>` supaya pentadbir lain boleh direkod sebagai pelaku (`CLI::getOption('actor')`, semak `ctype_digit()`).
+- Rancang larian harian: tulis dalam `docs/ujian-manual-tlk.md` arahan Windows Task Scheduler yang menjalankan `php spark tlk:expire` setiap hari jam 00:10 dalam folder projek.
+
+---
+
+## Lab 6.3b — Ujian untuk Papan Sibuk & Tamat Tempoh (S7)
+
+### 🎯 Objektif
+Menulis ujian PHPUnit untuk peraturan baharu Lab 6.1b–6.2b — papan sibuk (status aktif sahaja, hari terakhir inklusif, pelengkap slot kosong, slot tidak aktif, akses route) dan tamat tempoh (calon, log, tolak sebelum tamat, `pending` tidak boleh, command dua larian) — dan membuktikan ujian itu menangkap dua mutasi.
+
+### Prasyarat
+- [Lab 6.3](#lab-63--ujian-phpunit-modul-tlk-s3) checkpoint lulus; anda masih dalam branch `feat/tlk-ujian` (belum merge).
+- Lab 6.1b dan 6.2b sudah di-merge ke `main` bersama Lab 6.1 dan 6.2.
+
+### Langkah
+
+1. Cipta `tests/tlk/BusySlotsTest.php`:
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace Tests\Tlk;
+
+   use App\Models\UserModel;
+   use App\Services\BookingService;
+   use App\Services\SlotAvailabilityService;
+   use CodeIgniter\Shield\Entities\User;
+   use CodeIgniter\Shield\Test\AuthenticationTesting;
+   use CodeIgniter\Test\CIUnitTestCase;
+   use CodeIgniter\Test\DatabaseTestTrait;
+   use CodeIgniter\Test\FeatureTestTrait;
+
+   /**
+    * Lab 6.3b — papan slot sibuk (Lab 6.1b): service + akses route.
+    *
+    * @internal
+    */
+   final class BusySlotsTest extends CIUnitTestCase
+   {
+       use DatabaseTestTrait;
+       use FeatureTestTrait;
+       use AuthenticationTesting;
+
+       protected $migrate   = true;
+       protected $refresh   = true;
+       protected $namespace = null;   // Shield + App
+
+       private BookingService $service;
+       private SlotAvailabilityService $availability;
+       private User $applicant;
+       private User $otherApplicant;
+       private User $approver;
+       private int $slotId;
+       private int $otherSlotId;
+       private int $vehicleId;
+       private int $otherVehicleId;
+
+       protected function setUp(): void
+       {
+           $this->resetServices();   // elak actingAs() kelas ujian lain bocor (Lab 6.3 langkah 4)
+
+           parent::setUp();
+
+           $this->applicant      = $this->makeUser('ujian1', 'applicant');
+           $this->otherApplicant = $this->makeUser('ujian2', 'applicant');
+           $this->approver       = $this->makeUser('pelulus_ujian', 'approver');
+
+           $this->db->table('parking_zones')->insert(['code' => 'T', 'name' => 'Zon Ujian', 'location' => 'Makmal']);
+           $zoneId = (int) $this->db->insertID();
+
+           $this->db->table('parking_slots')->insert(['zone_id' => $zoneId, 'slot_no' => 'T-01', 'category' => 'oku', 'is_active' => 1]);
+           $this->slotId = (int) $this->db->insertID();
+
+           $this->db->table('parking_slots')->insert(['zone_id' => $zoneId, 'slot_no' => 'T-02', 'category' => 'mengandung', 'is_active' => 1]);
+           $this->otherSlotId = (int) $this->db->insertID();
+
+           $this->db->table('vehicles')->insert(['user_id' => $this->applicant->id, 'plate_no' => 'WXX 0001', 'model' => 'Proton Saga', 'color' => 'Putih']);
+           $this->vehicleId = (int) $this->db->insertID();
+
+           $this->db->table('vehicles')->insert(['user_id' => $this->otherApplicant->id, 'plate_no' => 'WXX 0002', 'model' => 'Perodua Myvi', 'color' => 'Biru']);
+           $this->otherVehicleId = (int) $this->db->insertID();
+
+           $this->service      = new BookingService();
+           $this->availability = new SlotAvailabilityService();
+       }
+
+       public function testListsPendingAndApprovedBookingsSortedBySlot(): void
+       {
+           $second = $this->service->create($this->otherApplicant->id, $this->payload($this->otherSlotId, 12, 15, $this->otherVehicleId));
+           $this->service->approve($second->id, $this->approver->id);
+           $first = $this->service->create($this->applicant->id, $this->payload($this->slotId, 10, 20));
+
+           $rows = $this->availability->busySlots($this->day(14), $this->day(14));
+
+           $this->assertSame([$first->ref_no, $second->ref_no], array_column($rows, 'ref_no'));   // T-01 dahulu, kemudian T-02
+           $this->assertSame(['pending', 'approved'], array_column($rows, 'status'));
+       }
+
+       public function testRejectedBookingIsNotBusy(): void
+       {
+           $booking = $this->service->create($this->applicant->id, $this->payload($this->slotId, 10, 20));
+           $this->service->reject($booking->id, $this->approver->id, 'Dokumen sokongan tidak lengkap.');
+
+           $this->assertSame([], $this->availability->busySlots($this->day(10), $this->day(20)));
+       }
+
+       public function testLastDayOfBookingIsStillBusy(): void
+       {
+           $this->service->create($this->applicant->id, $this->payload($this->slotId, 10, 20));
+
+           $this->assertCount(1, $this->availability->busySlots($this->day(20), $this->day(25)));   // hari +20 dikongsi
+           $this->assertCount(0, $this->availability->busySlots($this->day(21), $this->day(25)));
+       }
+
+       public function testBusyAndAvailableTogetherCoverEveryActiveSlot(): void
+       {
+           $this->service->create($this->applicant->id, $this->payload($this->slotId, 10, 20));
+
+           $busy      = array_column($this->availability->busySlots($this->day(15), $this->day(15)), 'slot_no');
+           $available = array_column($this->availability->availableSlots($this->day(15), $this->day(15)), 'slot_no');
+
+           $this->assertSame(['T-01'], $busy);
+           $this->assertSame(['T-02'], $available);
+       }
+
+       public function testBookingOnDeactivatedSlotIsStillListed(): void
+       {
+           $this->service->create($this->applicant->id, $this->payload($this->slotId, 10, 20));
+           $this->db->table('parking_slots')->where('id', $this->slotId)->update(['is_active' => 0]);
+
+           $rows = $this->availability->busySlots($this->day(15), $this->day(15));
+
+           $this->assertCount(1, $rows);
+           $this->assertSame(0, (int) $rows[0]['is_active']);   // view memaparkan badge "Slot tidak aktif"
+           $this->assertNotContains('T-01', array_column($this->availability->availableSlots($this->day(15), $this->day(15)), 'slot_no'));
+       }
+
+       public function testApplicantIsRedirectedAwayFromBoard(): void
+       {
+           $result = $this->actingAs($this->applicant)->get('tlk/tempahan/ketersediaan/sibuk');
+
+           $result->assertRedirect();   // permission:tlk.decide → dialih dengan flash 'error'
+           $result->assertDontSee('Papan Slot Sibuk');
+       }
+
+       public function testApproverSeesBookingOnBoard(): void
+       {
+           $booking = $this->service->create($this->applicant->id, $this->payload($this->slotId, 10, 20));
+
+           $result = $this->actingAs($this->approver)
+               ->get('tlk/tempahan/ketersediaan/sibuk?start_date=' . $this->day(10) . '&end_date=' . $this->day(10));
+
+           $result->assertOK();
+           $result->assertSee($booking->ref_no);
+           $result->assertSee('1 tempahan aktif menduduki 1 slot');
+       }
+
+       private function makeUser(string $username, string $group): User
+       {
+           $users = model(UserModel::class);
+           $id    = $users->insert(['username' => $username, 'full_name' => ucfirst($username), 'active' => 1]);
+           $user  = $users->findById($id);
+           $user->addGroup($group);
+
+           return $user;
+       }
+
+       private function day(int $offset): string
+       {
+           return date('Y-m-d', strtotime("{$offset} days"));
+       }
+
+       private function payload(int $slotId, int $startOffset, int $endOffset, ?int $vehicleId = null): array
+       {
+           return [
+               'vehicle_id' => $vehicleId ?? $this->vehicleId,
+               'slot_id'    => $slotId,
+               'start_date' => $this->day($startOffset),
+               'end_date'   => $this->day($endOffset),
+               'reason'     => 'Ujian automatik papan slot sibuk.',
+           ];
+       }
+   }
+   ```
+
+   ```bash
+   composer test -- --no-coverage --testdox tests/tlk/BusySlotsTest.php
+   ```
+
+2. Cipta `tests/tlk/ExpireBookingTest.php`:
+
+   ```php
+   <?php
+
+   declare(strict_types=1);
+
+   namespace Tests\Tlk;
+
+   use App\Enums\BookingStatus;
+   use App\Services\BookingService;
+   use CodeIgniter\Test\CIUnitTestCase;
+   use CodeIgniter\Test\DatabaseTestTrait;
+   use CodeIgniter\Test\StreamFilterTrait;
+   use DomainException;
+
+   /**
+    * Lab 6.3b — BookingService::expirableIds()/expire() dan `php spark tlk:expire` (Lab 6.2b).
+    *
+    * @internal
+    */
+   final class ExpireBookingTest extends CIUnitTestCase
+   {
+       use DatabaseTestTrait;
+       use StreamFilterTrait;   // tangkap output CLI::write() untuk ujian command
+
+       protected $migrate   = true;
+       protected $refresh   = true;
+       protected $namespace = null;   // Shield + App
+
+       private BookingService $service;
+       private int $applicantId;
+       private int $otherApplicantId;
+       private int $approverId;
+       private int $adminId;
+       private int $slotId;
+       private int $vehicleId;
+       private int $otherVehicleId;
+       private string $today;
+
+       protected function setUp(): void
+       {
+           parent::setUp();
+
+           $this->applicantId      = $this->makeUser('ujian1', 'Pemohon Ujian Satu');
+           $this->otherApplicantId = $this->makeUser('ujian2', 'Pemohon Ujian Dua');
+           $this->approverId       = $this->makeUser('pelulus_ujian', 'Pelulus Ujian');
+           $this->adminId          = $this->makeUser('admin_ujian', 'Admin Ujian');
+           auth()->getProvider()->findById($this->adminId)->addGroup('admin');   // actor lalai tlk:expire
+
+           $this->db->table('parking_zones')->insert(['code' => 'T', 'name' => 'Zon Ujian', 'location' => 'Makmal']);
+           $this->db->table('parking_slots')->insert(['zone_id' => $this->db->insertID(), 'slot_no' => 'T-01', 'category' => 'oku', 'is_active' => 1]);
+           $this->slotId = (int) $this->db->insertID();
+
+           $this->db->table('vehicles')->insert(['user_id' => $this->applicantId, 'plate_no' => 'WXX 0001', 'model' => 'Proton Saga', 'color' => 'Putih']);
+           $this->vehicleId = (int) $this->db->insertID();
+
+           $this->db->table('vehicles')->insert(['user_id' => $this->otherApplicantId, 'plate_no' => 'WXX 0002', 'model' => 'Perodua Myvi', 'color' => 'Biru']);
+           $this->otherVehicleId = (int) $this->db->insertID();
+
+           $this->service = new BookingService();
+           $this->today   = date('Y-m-d');
+       }
+
+       public function testOnlyApprovedBookingsThatEndedBeforeTodayAreExpirable(): void
+       {
+           $ended     = $this->approvedBooking($this->applicantId, $this->vehicleId, -7, -1);
+           $endsToday = $this->approvedBooking($this->otherApplicantId, $this->otherVehicleId, -3, 0);
+
+           $this->assertSame([$ended], $this->service->expirableIds($this->today));
+           $this->assertNotContains($endsToday, $this->service->expirableIds($this->today));   // hari terakhir masih digunakan
+       }
+
+       public function testExpireChangesStatusAndWritesLog(): void
+       {
+           $id = $this->approvedBooking($this->applicantId, $this->vehicleId, -7, -1);
+
+           $booking = $this->service->expire($id, $this->adminId, $this->today);
+
+           $this->assertSame(BookingStatus::Expired, $booking->statusEnum());
+           $this->seeInDatabase('status_logs', [
+               'module'      => 'TLK',
+               'record_id'   => $id,
+               'from_status' => 'approved',
+               'to_status'   => 'expired',
+               'actor_id'    => $this->adminId,
+               'remarks'     => 'Tamat tempoh automatik (tlk:expire).',
+           ]);
+       }
+
+       public function testCannotExpireBookingThatHasNotEnded(): void
+       {
+           $id = $this->approvedBooking($this->applicantId, $this->vehicleId, -3, 0);
+
+           try {
+               $this->service->expire($id, $this->adminId, $this->today);
+               $this->fail('Sepatutnya DomainException');
+           } catch (DomainException $e) {
+               $this->assertStringContainsString('belum tamat tempoh', $e->getMessage());
+           }
+
+           $this->seeInDatabase('slot_bookings', ['id' => $id, 'status' => 'approved']);
+           $this->seeNumRecords(2, 'status_logs', ['record_id' => $id]);   // pending + approved sahaja
+       }
+
+       public function testPendingBookingCannotExpire(): void
+       {
+           $booking = $this->service->create($this->applicantId, $this->payload(1, 3, $this->vehicleId));
+           $this->moveDates($booking->id, -7, -1);
+
+           $this->expectException(DomainException::class);
+           $this->expectExceptionMessage('tidak boleh ditukar');   // canTransitionTo(): pending → expired ditolak
+
+           $this->service->expire($booking->id, $this->adminId, $this->today);
+       }
+
+       public function testCommandExpiresOnceThenFindsNothing(): void
+       {
+           $id = $this->approvedBooking($this->applicantId, $this->vehicleId, -7, -1);
+
+           command('tlk:expire');
+           $this->assertStringContainsString('Selesai: 1 ditamatkan, 0 gagal.', $this->getStreamFilterBuffer());
+           $this->seeInDatabase('slot_bookings', ['id' => $id, 'status' => 'expired']);
+
+           $this->resetStreamFilterBuffer();
+           command('tlk:expire');
+           $this->assertStringContainsString('Tiada tempahan untuk ditamatkan', $this->getStreamFilterBuffer());
+       }
+
+       /** Cipta + lulus (tarikh masa depan), kemudian "putar masa": anjak tarikh ke offset yang diberi. */
+       private function approvedBooking(int $userId, int $vehicleId, int $startOffset, int $endOffset): int
+       {
+           $booking = $this->service->create($userId, $this->payload(1, 3, $vehicleId));
+           $this->service->approve($booking->id, $this->approverId);
+           $this->moveDates($booking->id, $startOffset, $endOffset);
+
+           return $booking->id;
+       }
+
+       private function moveDates(int $bookingId, int $startOffset, int $endOffset): void
+       {
+           $this->db->table('slot_bookings')->where('id', $bookingId)
+               ->update(['start_date' => $this->day($startOffset), 'end_date' => $this->day($endOffset)]);
+       }
+
+       private function makeUser(string $username, string $fullName): int
+       {
+           $this->db->table('users')->insert(['username' => $username, 'full_name' => $fullName, 'active' => 1]);
+
+           return (int) $this->db->insertID();
+       }
+
+       private function day(int $offset): string
+       {
+           return date('Y-m-d', strtotime("{$offset} days"));
+       }
+
+       private function payload(int $startOffset, int $endOffset, int $vehicleId): array
+       {
+           return [
+               'vehicle_id' => $vehicleId,
+               'slot_id'    => $this->slotId,
+               'start_date' => $this->day($startOffset),
+               'end_date'   => $this->day($endOffset),
+               'reason'     => 'Ujian automatik tamat tempoh.',
+           ];
+       }
+   }
+   ```
+
+   ```bash
+   composer test -- --no-coverage --testdox tests/tlk/ExpireBookingTest.php
+   ```
+
+   > `command('tlk:expire')` menjalankan command di dalam ujian (pada DB kumpulan `tests`). `CLI::write()` menulis ke `STDOUT`, bukan ke output PHP biasa, jadi `StreamFilterTrait` menangkapnya untuk `getStreamFilterBuffer()`.
+
+3. Jalankan kedua-dua fail bersama dan catat baris terakhir output (soalan Kuiz S7):
+
+   ```bash
+   composer test -- --no-coverage tests/tlk/BusySlotsTest.php tests/tlk/ExpireBookingTest.php
+   ```
+
+4. **Mutasi 1** (soalan Kuiz S7). Dalam `BookingService::expirableIds()`, tukar `->where('end_date <', $today)` kepada `->where('end_date <=', $today)`. Jalankan `composer test -- --no-coverage --testdox tests/tlk/ExpireBookingTest.php` dan catat baris `✘`. Pulihkan `<`.
+
+5. **Mutasi 2.** Dalam `SlotAvailabilityService::busySlots()`, komen sementara baris `->whereIn('slot_bookings.status', BookingStatus::active())`. Jalankan `composer test -- --no-coverage --testdox tests/tlk/BusySlotsTest.php` dan catat baris `✘`. Pulihkan baris itu.
+
+6. Jalankan semua ujian TLK, kemudian tambah dua baris dapatan langkah 4–5 dalam bahagian "Ujian mutasi" `docs/ujian-manual-tlk.md`:
+
+   ```bash
+   composer test -- --no-coverage tests/tlk
+   git add tests/ docs/ && git commit -m "TLK: ujian papan slot sibuk & tlk:expire"
+   ```
+
+### ✅ Checkpoint
+- [ ] `BusySlotsTest` (7 ujian) dan `ExpireBookingTest` (5 ujian) hijau (Kuiz S7).
+- [ ] Mutasi 1 dan mutasi 2 masing-masing menghasilkan tepat satu ujian merah; selepas dipulihkan, semua hijau semula (Kuiz S7).
+- [ ] `composer test -- --no-coverage tests/tlk` → `OK` dengan 12 ujian lebih daripada checkpoint Lab 6.3, dan commit `TLK: ujian papan slot sibuk & tlk:expire` dibuat (Kuiz S7).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `testCommandExpiresOnceThenFindsNothing` gagal: output kosong | `use StreamFilterTrait;` tertinggal dalam kelas | Tambah trait (langkah 2) |
+| Output command mengandungi *Tiada pengguna dalam group admin* | Baris `addGroup('admin')` dalam `setUp()` tertinggal | Salin semula `setUp()` langkah 2 |
+| `testApplicantIsRedirectedAwayFromBoard` lulus seorang diri tetapi gagal bila semua dijalankan | Pengguna `actingAs()` kelas lain kekal dalam service `auth` | `$this->resetServices();` **sebelum** `parent::setUp()` |
+| `Column 'status' in where clause is ambiguous` | Mutasi 2 dibuat dengan menukar nama lajur, bukan mengomen baris | Komen **seluruh** baris `whereIn` |
+| Ujian tarikh gagal sekitar tengah malam | Hari bertukar antara `setUp()` dan command | Jalankan semula; `app.appTimezone` mesti `Asia/Kuala_Lumpur` |
+
+### ⭐ Cabaran tambahan
+- Tulis semula `testLastDayOfBookingIsStillBusy` dengan `#[DataProvider]` yang menggunakan 7 kes `rangeProvider()` Lab 6.3 — papan sibuk dan `hasOverlap()` mesti bersetuju bagi setiap kes.
+- Ujian `php spark tlk:expire --dry-run`: output mengandungi `--dry-run: tiada perubahan dibuat.` dan `seeInDatabase()` status masih `approved`.
+
+---
+
+## Lab 6.4b — Gilap Senarai Tempahan Saya (S8)
+
+### 🎯 Objektif
+Menggilap senarai *Tempahan Saya* (`/tlk/tempahan`) dengan corak UI Lab 6.4: tab status (`nav-pills`) dengan kiraan bagi setiap status, pautan no. rujukan, butang **Batal** terus dari senarai (`data-confirm`), dan mesej keadaan kosong yang menyebut status — kemudian membaca kos query dalam Debug Toolbar.
+
+### Prasyarat
+- [Lab 6.4](#lab-64--penambahbaikan-ui--m1-siap-s4) siap: layout dengan skrip `data-confirm`, `partials/flash.php` dan pagination Bootstrap; anda dalam `main`.
+- `pemohon1` tiada tempahan aktif (demo M1 Lab 6.4 sudah membatalkan tempahannya).
+
+### Langkah
+
+1. `app/Models/SlotBookingModel.php` — tambah `use App\Enums\BookingStatus;` di bawah `use App\Entities\SlotBooking;`, kemudian tambah kaedah ini di hujung kelas:
+
+   ```php
+       /**
+        * Bilangan tempahan seorang pemohon ikut status, cth ['pending' => 1, 'approved' => 0, …].
+        * Setiap status enum sentiasa ada (0 jika tiada) supaya view tidak perlu isset().
+        *
+        * @return array<string, int>
+        */
+       public function countByStatusForUser(int $userId): array
+       {
+           $counts = array_fill_keys(array_keys(BookingStatus::options()), 0);
+
+           // Builder BAHARU ($this->db->table), bukan $this->builder() yang dikongsi dengan listing()->paginate()
+           $rows = $this->db->table($this->table)
+               ->select('status, COUNT(*) AS total')
+               ->where('user_id', $userId)
+               ->groupBy('status')
+               ->get()
+               ->getResultArray();
+
+           foreach ($rows as $row) {
+               $counts[$row['status']] = (int) $row['total'];
+           }
+
+           return $counts;
+       }
+   ```
+
+2. `app/Controllers/Tlk/BookingController.php` — gantikan kaedah `index()` (satu baris baharu: `'counts'`):
+
+   ```php
+       /** GET /tlk/tempahan — "Tempahan Saya" (SKOP PEMILIK dalam query) */
+       public function index(): string
+       {
+           $model  = model(SlotBookingModel::class);
+           $status = (string) $this->request->getGet('status');
+
+           $query = $model->listing()->where('slot_bookings.user_id', auth()->id());
+
+           if (BookingStatus::tryFrom($status) !== null) {        // input tidak sah → diabaikan
+               $query->where('slot_bookings.status', $status);
+           }
+
+           return view('tlk/booking/index', [
+               'title'    => 'Tempahan Saya',
+               'bookings' => $query->paginate(10),
+               'pager'    => $model->pager,
+               'status'   => $status,
+               'counts'   => $model->countByStatusForUser(auth()->id()),
+           ]);
+       }
+   ```
+
+3. Gantikan seluruh `app/Views/tlk/booking/index.php`:
+
+   ```php
+   <?= $this->extend('layouts/main') ?>
+
+   <?= $this->section('content') ?>
+   <?php
+   use App\Enums\BookingStatus;
+
+   $current = BookingStatus::tryFrom($status);   // null = "Semua" (termasuk ?status= yang tidak sah)
+   $tabs    = ['' => 'Semua'] + BookingStatus::options();
+   ?>
+
+   <ul class="nav nav-pills flex-wrap gap-1 mb-3">
+       <?php foreach ($tabs as $value => $label): ?>
+           <?php
+           $isActive = $value === ($current?->value ?? '');
+           $count    = $value === '' ? array_sum($counts) : $counts[$value];
+           ?>
+           <li class="nav-item">
+               <a class="nav-link<?= $isActive ? ' active' : '' ?>"<?= $isActive ? ' aria-current="page"' : '' ?>
+                  href="<?= url_to('tlk.index') . ($value === '' ? '' : '?status=' . $value) ?>">
+                   <?= esc($label) ?> <span class="badge rounded-pill text-bg-light"><?= $count ?></span>
+               </a>
+           </li>
+       <?php endforeach ?>
+   </ul>
+
+   <div class="card">
+       <div class="table-responsive">
+           <table class="table table-hover align-middle mb-0">
+               <thead class="table-light">
+               <tr><th>No. Rujukan</th><th>Slot</th><th>Kenderaan</th><th>Tempoh</th><th>Status</th><th class="text-end">Tindakan</th></tr>
+               </thead>
+               <tbody>
+               <?php foreach ($bookings as $b): ?>
+                   <tr>
+                       <td class="fw-semibold"><a href="<?= url_to('tlk.show', $b->id) ?>"><?= esc($b->ref_no) ?></a></td>
+                       <td><?= esc($b->zone_code) ?> / <?= esc($b->slot_no) ?></td>
+                       <td><?= esc($b->plate_no) ?></td>
+                       <td><?= esc($b->start_date) ?> hingga <?= esc($b->end_date) ?> <span class="text-muted small">(<?= $b->durationDays() ?> hari)</span></td>
+                       <td><span class="badge text-bg-<?= esc($b->statusBadge(), 'attr') ?>"><?= esc($b->statusLabel()) ?></span></td>
+                       <td class="text-end text-nowrap">
+                           <a href="<?= url_to('tlk.show', $b->id) ?>" class="btn btn-sm btn-outline-primary">Lihat</a>
+                           <?php if ($b->statusEnum()->canTransitionTo(BookingStatus::Cancelled)): ?>
+                               <form action="<?= url_to('tlk.cancel', $b->id) ?>" method="post" class="d-inline"
+                                     data-confirm="Batalkan tempahan <?= esc($b->ref_no, 'attr') ?>? Tindakan ini tidak boleh diundur.">
+                                   <?= csrf_field() ?>
+                                   <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-x-circle"></i> Batal</button>
+                               </form>
+                           <?php endif ?>
+                       </td>
+                   </tr>
+               <?php endforeach ?>
+               <?php if ($bookings === []): ?>
+                   <tr>
+                       <td colspan="6" class="text-center text-muted py-4">
+                           <?= $current === null ? 'Tiada tempahan.' : 'Tiada tempahan berstatus ' . esc($current->label()) . '.' ?>
+                           <?php if (auth()->user()->can('tlk.apply')): ?>
+                               <div class="mt-2"><a href="<?= url_to('tlk.availability') ?>" class="btn btn-sm btn-outline-primary"><i class="bi bi-search"></i> Semak slot kosong</a></div>
+                           <?php endif ?>
+                       </td>
+                   </tr>
+               <?php endif ?>
+               </tbody>
+           </table>
+       </div>
+   </div>
+
+   <div class="mt-3"><?= $pager->links() ?></div>
+   <?= $this->endSection() ?>
+   ```
+
+4. **Sediakan data.** Log masuk `pemohon1@latihan.test` → **Mohon Slot** (mana-mana slot, tarikh mula 5 hari lagi, tamat 7 hari lagi). Tetingkap incognito: `pelulus@latihan.test` → `/tlk/keputusan` → **Lulus** tempahan itu.
+
+5. Sebagai `pemohon1`, buka `http://localhost:8080/tlk/tempahan`. Klik setiap tab: kiraan pada tab kekal sama, senarai berubah. Buka `http://localhost:8080/tlk/tempahan?status=bogus`: tab *Semua* aktif.
+
+6. **Kos query** (soalan Kuiz S8). Buka `http://localhost:8080/tlk/tempahan?status=cancelled` → Debug Toolbar → tab **Database**. Kira query yang mengandungi `FROM slot_bookings` dan catat query mana yang tiada syarat `status`.
+
+7. **Batal dari senarai** (soalan Kuiz S8). Klik tab *Diluluskan* → **Batal** pada tempahan langkah 4 → dialog `confirm()` → **Cancel** dahulu (tiada perubahan), kemudian **Batal** sekali lagi → **OK**. Catat URL dalam bar alamat, mesej flash dan kiraan tab *Diluluskan* serta *Dibatalkan*.
+
+8. Commit dan push:
+
+   ```bash
+   git add app/ && git commit -m "TLK: gilap senarai Tempahan Saya (tab status, batal terus)" && git push
+   ```
+
+### ✅ Checkpoint
+- [ ] `/tlk/tempahan` sebagai `pemohon1` memaparkan 6 tab (*Semua* + 5 status) dengan kiraan; `?status=bogus` menandakan tab *Semua* (Kuiz S8).
+- [ ] Debug Toolbar → *Database* pada `?status=cancelled` menunjukkan tiga query `FROM slot_bookings`; query `GROUP BY` tiada syarat `status` (Kuiz S8).
+- [ ] **Batal** dari tab *Diluluskan* kembali ke `/tlk/tempahan?status=approved` dengan flash hijau, dan kiraan *Dibatalkan* bertambah satu; commit sudah di-push (Kuiz S8).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Undefined variable $counts` | Baris `'counts'` tertinggal dalam `index()` | Langkah 2 |
+| `Undefined array key "pending"` | Kiraan dibina tanpa `array_fill_keys()` — status tanpa tempahan tiada dalam hasil `GROUP BY` | Salin semula langkah 1 |
+| Senarai pelik atau ralat SQL selepas menukar kaedah kepada `$this->builder()` | `builder()` dikongsi dengan `listing()`; syarat dan `JOIN` boleh bercampur | Kekalkan `$this->db->table($this->table)` (builder baharu) |
+| Klik **Batal** terus membatalkan tanpa dialog | Skrip `data-confirm` tiada dalam layout | Lab 6.4 langkah 3 |
+| *Status "Menunggu" tidak boleh ditukar…* | Tempahan langkah 4 belum diluluskan | Lulus dahulu sebagai `pelulus` |
+
+### ⭐ Cabaran tambahan
+- Tunjukkan kad *Tempahan aktif anda* di atas tab (BR-TLK-04: paling banyak satu), dan sembunyikan butang *Semak slot kosong* dalam keadaan kosong jika kad itu wujud.
+- Tambah lajur *Dikemas kini* (`updated_at`) dengan format `d/m/Y H:i` (`$b->updated_at->format(…)` — `updated_at` sudah objek `Time` melalui `$dates` Entity).
+
+---
+
 ## Semakan kendiri — akhir hari
 
 ```bash
@@ -1639,9 +2639,11 @@ git tag                                    # … m1-siap
 git status --short                         # tiada output
 ```
 
-- [ ] `/tlk/tempahan/ketersediaan` dengan julat tarikh memaparkan slot kosong sahaja (slot yang ditempah bertindih tiada dalam senarai).
-- [ ] BR-TLK-01: dua pemohon, slot sama, tarikh bertindih → hanya satu berjaya; TM-TLK-16 ✅ dalam `docs/ujian-manual-tlk.md`.
-- [ ] BR-TLK-04: `pemohon1` dengan satu tempahan `pending` tidak boleh membuat tempahan kedua.
-- [ ] Lulus → Batal satu tempahan menghasilkan 3 baris dalam `status_logs` (`from_status` → `to_status`, `actor_id` diisi).
-- [ ] `composer test -- --no-coverage tests/tlk` → `OK` dengan ≥ 25 ujian.
-- [ ] `git tag` menunjukkan `m1-siap`; `git status --short` kosong dan `git push --tags` selesai.
+- [ ] `/tlk/tempahan/ketersediaan` dengan julat tarikh memaparkan slot kosong sahaja (slot yang ditempah bertindih tiada dalam senarai) (Kuiz S1).
+- [ ] BR-TLK-01: dua pemohon, slot sama, tarikh bertindih → hanya satu berjaya; TM-TLK-16 ✅ dalam `docs/ujian-manual-tlk.md` (Kuiz S2).
+- [ ] BR-TLK-04: `pemohon1` dengan satu tempahan `pending` tidak boleh membuat tempahan kedua (Kuiz S2).
+- [ ] Lulus → Batal satu tempahan menghasilkan 3 baris dalam `status_logs` (`from_status` → `to_status`, `actor_id` diisi) (Kuiz S2).
+- [ ] `composer test -- --no-coverage tests/tlk` → `OK` dengan ≥ 25 ujian (Kuiz S3).
+- [ ] `git tag` menunjukkan `m1-siap`; `git status --short` kosong dan `git push --tags` selesai (Kuiz S4).
+- [ ] Papan `/tlk/tempahan/ketersediaan/sibuk` dibuka oleh `pelulus` tetapi tidak oleh `pemohon1`, dan `php spark tlk:expire` menukar tempahan `approved` yang sudah berlalu kepada `expired` dengan satu baris `status_logs` (Lab 6.1b, 6.2b) (Kuiz S6).
+- [ ] `composer test -- --no-coverage tests/tlk` hijau termasuk `BusySlotsTest` dan `ExpireBookingTest`, dan *Tempahan Saya* memaparkan tab status dengan kiraan (Lab 6.3b, 6.4b) (Kuiz S8).

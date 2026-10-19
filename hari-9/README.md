@@ -18,6 +18,10 @@ Di akhir hari ini, peserta boleh:
 | O4 | **Menjana** fail PDF (Dompdf, A4 landskap, pengepala/pengaki + nombor muka) dan `.xlsx` (PhpSpreadsheet, pengepala tebal, lebar automatik, baris beku) daripada filter yang **sama** dengan paparan HTML. | S3 |
 | O5 | **Menguji** bahawa jumlah laporan = kiraan SQL terus melalui ujian PHPUnit, dan **menganalisis** pelan query dengan `EXPLAIN` untuk mencadangkan index. | S4 |
 | O6 | **Menerangkan** risiko memori/masa bagi eksport besar dan cara mengawalnya (had rekod, penstriman baris). | S3, S4 |
+| O7 | **Membina** pautan GET tempoh pantas (Bulan ini / Bulan lepas / Tahun ini) dan cip filter aktif yang mengekalkan filter lain, dan **menambah** kedua-duanya pada kad spesifikasi. | S5 |
+| O8 | **Menulis** ringkasan status dengan `fromSubquery()` + `groupBy()` atas builder senarai yang sama, dan baris JUMLAH RPT-03 berwajaran. | S6 |
+| O9 | **Menjana** lembaran Excel *Ringkasan* dengan formula `=SUM()` dan jadual ringkasan PDF daripada `statusSummary()` yang sama dengan skrin. | S7 |
+| O10 | **Menguji** ringkasan dan JUMLAH terhadap `GROUP BY` SQL dan nombor yang dikira dengan tangan, dan **membuktikan** dengan mutasi bahawa ujian tanpa filter boleh lulus secara palsu. | S8 |
 
 ---
 
@@ -26,12 +30,16 @@ Di akhir hari ini, peserta boleh:
 | Masa | Sesi | Aktiviti | Objektif |
 |------|------|----------|----------|
 | 08:30–09:00 | — | Recap Hari 8 (aliran Pas + RBAC) | — |
-| 09:00–10:30 | **S1** | Reka bentuk laporan (jenis, kriteria carian/filter) | O1, O2 |
+| 09:00–10:00 | **S1** | Reka bentuk laporan (jenis, kriteria carian/filter) | O1, O2 |
+| 10:00–10:30 | **S5** | Lanjutan S1: tempoh pantas & cip filter aktif | O7 |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | **S2** | Query aggregate & carian data | O3 |
+| 10:45–12:00 | **S2** | Query aggregate & carian data | O3 |
+| 12:00–12:30 | **S6** | Lanjutan S2: ringkasan status & baris JUMLAH RPT-03 | O8 |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–16:00 | **S3** | Eksport PDF/Excel | O4, O6 |
-| 16:00–17:00 | **S4** | Ujian modul laporan; wrap-up — **M3 siap** | O5, O6 |
+| 14:30–15:30 | **S3** | Eksport PDF/Excel | O4, O6 |
+| 15:30–16:00 | **S7** | Lanjutan S3: lembaran Ringkasan Excel & ringkasan PDF | O9 |
+| 16:00–16:35 | **S4** | Ujian modul laporan — **M3 siap** | O5, O6 |
+| 16:35–17:00 | **S8** | Lanjutan S4: ujian ringkasan & mutasi; wrap-up | O10 |
 
 ---
 
@@ -466,6 +474,150 @@ SPEC §3 sudah menyediakan `INDEX(status)` dan `INDEX(slot_id, start_date, end_d
 
 ---
 
+## S5 — Lanjutan S1: Tempoh Pantas & Cip Filter Aktif (selepas Lab 9.1)
+
+Lab 9.1 membina borang yang mengekalkan nilai. Pengguna laporan jarang menaip tarikh: mereka mahu "bulan lepas" dengan satu klik, dan mahu melihat (serta membuang) filter yang sedang aktif. Kedua-duanya hanyalah **pautan GET** yang dibina daripada filter semasa:
+
+| Pautan | Dibina daripada | Kesan |
+|--------|-----------------|-------|
+| **Bulan ini / Bulan lepas / Tahun ini** | `$preset + $keep` | Nilai tempoh **menimpa** `from`/`to` (atau `year`/`month`); filter lain kekal |
+| Cip *Status: Diluluskan* ✕ | `array_diff_key($keep, ['status' => true])` | Buang **satu** filter; filter lain kekal |
+| Kedua-duanya | Tiada `page` dalam pautan | Kembali ke halaman 1 apabila filter berubah |
+
+Operator `+` pada array mengekalkan kunci array **kiri**: `['from' => 'baharu'] + ['from' => 'lama', 'status' => 'approved']` memberi `from` baharu dan `status` kekal. "Bulan lepas" dikira dengan `modify('first day of last month')`, kerana `modify('-1 month')` pada 31/03 memberi 03/03.
+
+Lab: [Lab 9.1b](./lab.md#lab-91b--tempoh-pantas--cip-penapis-aktif-s5)
+
+### 🎯 Kuiz S5
+
+> Jawab selepas Lab 9.1b di laptop anda — jawapan datang daripada URL sebenar dalam pelayar. Lulus kuiz ini menanda checkpoint Lab 9.1b.
+
+1. Lab 9.1b langkah 4: anda klik **Bulan ini** pada RPT-01, pilih Status *Diluluskan*, klik **Tapis**, kemudian klik cip *Dari: …*. Apakah query string URL baharu?
+   - [ ] `?status=approved` — kedua-dua tarikh dibuang
+   - [x] `?to=<hari terakhir bulan ini>&status=approved`
+   - [ ] `?from=&to=<hari terakhir bulan ini>&zone_id=&category=&status=approved&sort=&dir=` — `from` dikosongkan, kunci kosong kekal
+   - [ ] Tiada query string — semua filter dibuang
+   > Pautan cip dibina daripada `$keep` tanpa kunci `from`. `$keep` sudah membuang nilai kosong (`zone_id=`, `sort=`…), jadi hanya `to` dan `status` tinggal.
+
+2. Lab 9.1b langkah 4: di RPT-03 anda pilih Bulan *Jun*, klik **Tapis**, kemudian klik **Tahun ini**. Apakah yang dipaparkan?
+   - [ ] Bulan *Jun* kekal dipilih dan butang **Bulan ini** gelap
+   - [ ] Dropdown Bulan *Setahun*, tetapi tiada butang yang gelap
+   - [ ] Ralat `Undefined array key "month"`
+   - [x] Dropdown Bulan *Setahun*, butang **Tahun ini** gelap, dan cip *Bulan: Jun* hilang
+   > Preset **Tahun ini** ialah `['year' => …, 'month' => null]`. `null` menimpa `month` semasa dan `$urlWith()` membuang kunci itu. Tanpa `month`, setiap nilai preset sama dengan filter semasa, jadi `$isOn` benar.
+
+---
+
+## S6 — Lanjutan S2: Ringkasan Status atas Builder yang Sama (selepas Lab 9.2)
+
+"Jumlah rekod" menjawab *berapa*. Soalan pengurusan seterusnya ialah *berapa bagi setiap status*. Jawapan yang selamat tidak menulis query kedua; ia membalut builder senarai sebagai **subquery**:
+
+```sql
+SELECT r.status, COUNT(r.id) AS total
+FROM ( <SQL senarai RPT-01: 4 join + when() yang sama> ) r
+GROUP BY r.status
+```
+
+| Cara | Filter sama dengan senarai? | Kesan |
+|------|-----------------------------|-------|
+| `newQuery()->fromSubquery($this->builder(...), 'r')` | Ya — builder yang sama | Jumlah semua butang = "Jumlah rekod" |
+| `table('slot_bookings')->groupBy('status')` | Tidak | Betul tanpa filter, salah sebaik filter dipilih |
+| Kira dalam PHP daripada `$result['rows']` | Halaman semasa sahaja | Salah apabila rekod > 20 |
+
+Baris **JUMLAH** RPT-03 menggunakan purata **berwajaran**: Σ hari-slot ÷ Σ kapasiti × 100, bukan purata peratus zon. Contoh: Zon A 15/60 hari-slot (25.0 %), Zon B 0/30 (0.0 %). Penggunaan keseluruhan = 15/90 = 16.7 %, bukan (25.0 + 0.0) ÷ 2 = 12.5 %.
+
+Lab: [Lab 9.2b](./lab.md#lab-92b--ringkasan-status--baris-jumlah-rpt-03-s6)
+
+### 🎯 Kuiz S6
+
+> Jawab selepas Lab 9.2b di laptop anda — jawapan datang daripada halaman laporan sebenar. Lulus kuiz ini menanda checkpoint Lab 9.2b.
+
+1. Lab 9.2b langkah 5: anda buka `/laporan/tempahan?status=approved`. Apakah yang dipaparkan dalam *Ringkasan status*?
+   - [x] Satu butang (*Diluluskan*), dan nombornya sama dengan "Jumlah rekod"
+   - [ ] Lima butang (semua status `BookingStatus`); status selain *Diluluskan* bernilai 0
+   - [ ] Butang yang sama seperti tanpa filter, kerana ringkasan mengira seluruh jadual
+   - [ ] Tiada ringkasan; ringkasan hanya dipapar apabila tiada filter status
+   > Subquery membawa `WHERE b.status = 'approved'` yang sama, jadi `GROUP BY` hanya menjumpai satu status. Status dengan kiraan 0 tidak dipapar kerana gelung `cases()` hanya menambah status yang ada dalam `$counts`.
+
+2. Lab 9.2b langkah 5: anda tapis RPT-01 dengan Zon *A*, kemudian klik satu butang dalam *Ringkasan status*. Apakah yang berlaku kepada URL?
+   - [ ] `status=<butang>` ditambah, dan `zone_id` dibuang
+   - [ ] URL tidak berubah; butang hanya menyerlahkan baris dalam jadual
+   - [x] `status=<butang>` ditambah; `zone_id`, `sort` dan `dir` kekal; tiada `page`
+   - [ ] `status=<butang>&page=1` ditambah, dan filter lain dibuang
+   > Pautan butang ialah `['status' => …] + $query`. `$query` ialah filter bersih (termasuk `zone_id`, `sort`, `dir`) dan tidak mengandungi `page`, jadi senarai kembali ke halaman 1.
+
+---
+
+## S7 — Lanjutan S3: Ringkasan dalam Fail Eksport (selepas Lab 9.3)
+
+Pengurusan membuka fail, bukan skrin. Ringkasan yang sama mesti ada dalam fail eksport, dan ia mesti datang daripada `statusSummary($report, $filters)` dengan `$filters` yang sama seperti `exportRows()`:
+
+| Format | Ringkasan | API |
+|--------|-----------|-----|
+| Excel | Lembaran kedua *Ringkasan*; JUMLAH ialah formula `=SUM(B2:Bn)` | `createSheet()`, `setTitle()`, `setActiveSheetIndex(0)` |
+| PDF | Jadual Status/Bilangan selepas "Jumlah rekod" | View `laporan/pdf.php` menerima `$summary` |
+| RPT-03 | Tiada (`statusSummary()` memulangkan `[]`) | `if ($summary !== [])` |
+
+JUMLAH ditulis sebagai **formula**, bukan nombor yang dikira dalam PHP: jika pengguna membetulkan satu angka dalam Excel, JUMLAH dikira semula. Bilangan ditulis sebagai nombor (`setCellValue()`); label ditulis eksplisit sebagai string, seperti Lab 9.3.
+
+Lab: [Lab 9.3b](./lab.md#lab-93b--lembaran-ringkasan-excel--ringkasan-pdf-s7)
+
+### 🎯 Kuiz S7
+
+> Jawab selepas Lab 9.3b di laptop anda — jawapan datang daripada fail Excel sebenar. Lulus kuiz ini menanda checkpoint Lab 9.3b.
+
+1. Lab 9.3b langkah 7: anda eksport Excel RPT-03. Berapa tab dipaparkan di bawah tetingkap Excel?
+   - [ ] Dua: data dan *Ringkasan* dengan satu baris JUMLAH
+   - [ ] Dua: data dan *Ringkasan* yang kosong
+   - [x] Satu sahaja — `statusSummary('penggunaan', …)` memulangkan `[]`, jadi `addSummarySheet()` tidak dipanggil
+   - [ ] Tiga: data, *Ringkasan* dan *Worksheet*
+   > `xlsx()` hanya memanggil `addSummarySheet()` apabila `$summary !== []`. RPT-03 sudah aggregate dan tiada lajur status.
+
+2. Lab 9.3b langkah 7: dalam fail Excel RPT-02 (tanpa filter), anda klik sel JUMLAH lajur B dalam tab *Ringkasan*. Apakah yang dipaparkan bar formula?
+   - [ ] Nombor tetap, cth `18`
+   - [x] Formula `=SUM(B2:B…)` hingga baris status terakhir
+   - [ ] Formula `=COUNT(B2:B…)`
+   - [ ] `#REF!`, kerana lembaran dicipta selepas data
+   > `addSummarySheet()` menulis `'=SUM(B2:B' . ($r - 1) . ')'` dengan `setCellValue()`. Excel memaparkan hasilnya dalam sel dan formula dalam bar formula.
+
+---
+
+## S8 — Lanjutan S4: Ujian Ringkasan & Mutasi (selepas Lab 9.4)
+
+Ujian tanpa filter boleh **lulus secara palsu**. Tanpa filter, `GROUP BY status` terus pada jadual memberi nombor yang sama seperti ringkasan. Hanya ujian **dengan filter** (julat Jun, julat September) menangkap query yang ditulis semula tanpa builder senarai:
+
+| Ujian Lab 9.4b | Membuktikan |
+|----------------|-------------|
+| Ringkasan tanpa filter = `GROUP BY` SQL | Kiraan & susunan enum betul |
+| Ringkasan Jun 2026 = 4 = senarai | Ringkasan guna filter tarikh yang sama |
+| Ringkasan pas September 2026 | Julat separuh-terbuka diwarisi |
+| JUMLAH RPT-03 Jun 2026 = 16.7 % | Purata berwajaran, bukan 12.5 % |
+| Lembaran *Ringkasan* dalam `.xlsx` sebenar | 2 lembaran, formula `=SUM()`, tab data aktif |
+
+Commit Lab 9.4b di-push ke branch `feat/laporan` yang sama: MR yang sudah dibuka dikemas kini (Hari 4), tiada MR baharu.
+
+Lab: [Lab 9.4b](./lab.md#lab-94b--ujian-ringkasan-jumlah--lembaran-excel-s8)
+
+### 🎯 Kuiz S8
+
+> Jawab selepas Lab 9.4b di laptop anda — jawapan datang daripada output `composer test` sebenar. Lulus kuiz ini menanda checkpoint Lab 9.4b.
+
+1. Lab 9.4b langkah 4 (mutasi A — `from()` jadual terus, tanpa `fromSubquery()`): ujian manakah gagal?
+   - [ ] Kelima-lima ujian Lab 9.4b
+   - [ ] `testRingkasanStatusSamaDenganGroupBySql` sahaja
+   - [ ] Tiada — ringkasan tetap betul
+   - [x] `testRingkasanIkutJulatTarikhSamaDenganSenarai` dan `testRingkasanPasIkutJulatSeptember`; ujian ringkasan tanpa filter tetap lulus
+   > Tanpa filter, jadual terus dan subquery memberi kiraan yang sama. Dengan filter, query mutasi mengira tempahan #5 (Julai) dan permohonan 01/10, jadi `approved` menjadi 3 dan `approved => 1` muncul dalam ringkasan pas.
+
+2. Lab 9.4b langkah 5 (mutasi B — purata peratus zon): apakah mesej kegagalan PHPUnit?
+   - [x] `Failed asserting that 12.5 is identical to 16.7.`
+   - [ ] `Failed asserting that 16.7 is identical to 12.5.`
+   - [ ] `Failed asserting that 25.0 is identical to 16.7.`
+   - [ ] `Failed asserting that 8.3 is identical to 16.7.`
+   > PHPUnit menyebut nilai **sebenar** dahulu: (25.0 + 0.0) ÷ 2 = 12.5. Nilai dijangka 16.7 = 15 ÷ 90 × 100, kerana Zon A ada 2 slot aktif dan Zon B 1.
+
+---
+
 ## 📦 Hasil Hari Ini
 
 - [ ] `app/Services/ReportService.php` — filter whitelist, 2 builder (RPT-01/02), aggregate RPT-03, pagination, `exportRows()` berhad
@@ -477,6 +629,10 @@ SPEC §3 sudah menyediakan `INDEX(status)` dan `INDEX(slot_id, start_date, end_d
 - [ ] `tests/Services/ReportServiceTest.php` — hijau
 - [ ] Nota EXPLAIN (1 perenggan) dalam README projek
 - [ ] Commit `RPT: ...` dalam branch `feat/laporan` → **M3 siap** ✅
+- [ ] Lab 9.1b: butang tempoh pantas + cip filter aktif dalam `app/Views/laporan/index.php`; baris baharu dalam `docs/laporan-spec.md`
+- [ ] Lab 9.2b: `ReportService::statusSummary()` & `usageTotals()`; butang *Ringkasan status* dan baris JUMLAH RPT-03
+- [ ] Lab 9.3b: lembaran Excel *Ringkasan* (`addSummarySheet()`, formula `=SUM()`) dan jadual ringkasan PDF
+- [ ] Lab 9.4b: 5 ujian baharu dalam `ReportServiceTest` (≥ 12 hijau) di-push ke MR `feat/laporan`
 
 ---
 
