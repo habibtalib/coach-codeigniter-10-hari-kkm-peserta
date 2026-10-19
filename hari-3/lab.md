@@ -22,7 +22,7 @@ Mencipta database pembangunan dan ujian dengan pengguna khusus `kkm_dev`, menyam
 - [Lab 2.4](../hari-2/lab.md#lab-24--borang-validation--csrf-s4) siap: GitLab menunjukkan 4 commit.
 - Laragon → **Start All** (MySQL hijau). Terminal Git Bash dalam VS Code.
 
-> 🔍 **Bukti kerja:** platform menanda checkpoint lab hari ini apabila anda **lulus Kuiz hari** — soalannya hanya boleh dijawab dengan menjalankan kod.
+> 🔍 **Bukti kerja:** platform menanda checkpoint lab hari ini apabila anda **lulus kuiz sesi** lab itu (Kuiz S1 untuk Lab 3.1, … Kuiz S4 untuk Lab 3.4, di halaman sesi) — soalannya hanya boleh dijawab dengan menjalankan kod.
 
 ### Langkah
 1. **Semak MySQL:**
@@ -71,8 +71,8 @@ Mencipta database pembangunan dan ujian dengan pengguna khusus `kkm_dev`, menyam
    `git status` tidak menyenaraikan `.env`; `git check-ignore` menunjukkan baris `.gitignore` yang mengabaikannya. Tiada fail untuk di-commit dalam lab ini.
 
 ### ✅ Checkpoint
-- [ ] `SHOW DATABASES LIKE 'kkm_latihan%'` sebagai `kkm_dev` menyenaraikan dua database (Kuiz hari).
-- [ ] `php spark db:table --show` mencetak *Database has no tables!* tanpa ralat connection (Kuiz hari).
+- [ ] `SHOW DATABASES LIKE 'kkm_latihan%'` sebagai `kkm_dev` menyenaraikan dua database (Kuiz S1).
+- [ ] `php spark db:table --show` mencetak *Database has no tables!* tanpa ralat connection (Kuiz S1).
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
@@ -141,7 +141,7 @@ Menulis migration bagi `departments` dan `parking_zones` **tepat** seperti spesi
    php spark migrate:status
    php spark db:table departments --metadata
    ```
-   Catat **bilangan jadual** dalam `db:table --show` dan nilai lajur **Batch** selepas rollback + migrate — soalan Kuiz hari.
+   Catat **bilangan jadual** dalam `db:table --show` dan nilai lajur **Batch** selepas rollback + migrate — soalan Kuiz S2.
 5. **Seeder.** Jana tiga fail:
    ```bash
    php spark make:seeder DepartmentSeeder
@@ -150,7 +150,7 @@ Menulis migration bagi `departments` dan `parking_zones` **tepat** seperti spesi
    ```
    `DepartmentSeeder` — `ignore(true)` menjadikan `INSERT IGNORE`, jadi larian kedua tidak menambah baris berganda:
 
-   Data (salin tepat — Kuiz hari bergantung padanya): `BTM` Bahagian Teknologi Maklumat (Latihan) · `BKW` Bahagian Kewangan (Latihan) · `BSM` Bahagian Sumber Manusia (Latihan) · `BPA` Bahagian Pengurusan Aset (Latihan). Isi `created_at` dan `updated_at` dengan `date('Y-m-d H:i:s')`.
+   Data (salin tepat — Kuiz S2 dan S3 bergantung padanya): `BTM` Bahagian Teknologi Maklumat (Latihan) · `BKW` Bahagian Kewangan (Latihan) · `BSM` Bahagian Sumber Manusia (Latihan) · `BPA` Bahagian Pengurusan Aset (Latihan). Isi `created_at` dan `updated_at` dengan `date('Y-m-d H:i:s')`.
 
    ```php
    public function run(): void
@@ -199,9 +199,9 @@ Menulis migration bagi `departments` dan `parking_zones` **tepat** seperti spesi
    ```
 
 ### ✅ Checkpoint
-- [ ] `php spark migrate:status` menunjukkan 2 migration `App` dengan tarikh *Migrated On* (Kuiz hari).
-- [ ] Selepas `db:seed` dua kali, `departments` ada 4 baris dan `parking_zones` 3 baris (Kuiz hari).
-- [ ] GitLab menunjukkan commit `DB: migration departments + parking_zones, seeder` (Kuiz hari).
+- [ ] `php spark migrate:status` menunjukkan 2 migration `App` dengan tarikh *Migrated On* (Kuiz S2).
+- [ ] Selepas `db:seed` dua kali, `departments` ada 4 baris dan `parking_zones` 3 baris (Kuiz S2).
+- [ ] GitLab menunjukkan commit `DB: migration departments + parking_zones, seeder` (Kuiz S2).
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
@@ -290,7 +290,7 @@ Membina `DepartmentModel` dengan `$allowedFields`, `$useTimestamps` dan validati
    Buntu lebih 10 minit? Kod rujukan penuh: [3.3-5](../docs/kod-rujukan-hari-3.md#33-5--jabatanbaharuphp)
 6. **Uji.** `php spark serve`, buka <http://localhost:8080/jabatan> (4 jabatan, susunan ikut kod). Klik **+ Jabatan baharu**:
    - Hantar kosong → ralat Kod dan Nama.
-   - Hantar Kod `BTM` → catat mesej ralat **tepat** di bawah Kod (soalan Kuiz hari).
+   - Hantar Kod `BTM` → catat mesej ralat **tepat** di bawah Kod (soalan Kuiz S3).
    - Hantar Kod `BPP`, Nama `Bahagian Perolehan (Latihan)` → kembali ke senarai dengan *"Jabatan BPP disimpan."* dan lajur **Dicipta** berisi tarikh masa.
 7. Commit dan push:
    ```bash
@@ -298,9 +298,9 @@ Membina `DepartmentModel` dengan `$allowedFields`, `$useTimestamps` dan validati
    ```
 
 ### ✅ Checkpoint
-- [ ] `/jabatan` menyenaraikan jabatan daripada database melalui `DepartmentModel` (Kuiz hari).
-- [ ] Kod berganda ditolak dengan mesej validation model; jabatan baharu disimpan dengan `created_at` automatik (Kuiz hari).
-- [ ] GitLab menunjukkan commit `JABATAN: model, senarai & borang baharu` (Kuiz hari).
+- [ ] `/jabatan` menyenaraikan jabatan daripada database melalui `DepartmentModel` (Kuiz S3).
+- [ ] Kod berganda ditolak dengan mesej validation model; jabatan baharu disimpan dengan `created_at` automatik (Kuiz S3).
+- [ ] GitLab menunjukkan commit `JABATAN: model, senarai & borang baharu` (Kuiz S3).
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
@@ -370,7 +370,7 @@ Membina `/zon` secara **berdikari** dengan corak Lab 3.3: model `ParkingZoneMode
    ```
 
    Buntu lebih 10 minit? Kod rujukan penuh: [3.4-4](../docs/kod-rujukan-hari-3.md#34-4--zonindexphp)
-5. **Uji dan catat** (soalan Kuiz hari):
+5. **Uji dan catat** (soalan Kuiz S4):
    - <http://localhost:8080/zon> → halaman 1 (A, B) dan pautan ke halaman 2 (C).
    - <http://localhost:8080/zon?q=KLINIK> (huruf besar) — zon mana dipaparkan?
    - <http://localhost:8080/zon?q=aras> — pautan pagination masih membawa `q=aras`.
@@ -381,9 +381,9 @@ Membina `/zon` secara **berdikari** dengan corak Lab 3.3: model `ParkingZoneMode
    ```
 
 ### ✅ Checkpoint
-- [ ] `/zon` memaparkan 2 zon setiap halaman dengan pautan pagination (Kuiz hari).
-- [ ] Carian `?q=` menapis ikut nama, lokasi atau kod, dan input `' OR 1=1 --` tidak memecahkan query (Kuiz hari).
-- [ ] GitLab menunjukkan commit `ZON: carian + pagination` (Kuiz hari).
+- [ ] `/zon` memaparkan 2 zon setiap halaman dengan pautan pagination (Kuiz S4).
+- [ ] Carian `?q=` menapis ikut nama, lokasi atau kod, dan input `' OR 1=1 --` tidak memecahkan query (Kuiz S4).
+- [ ] GitLab menunjukkan commit `ZON: carian + pagination` (Kuiz S4).
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |

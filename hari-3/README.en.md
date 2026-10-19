@@ -16,7 +16,7 @@ By the end of today, participants can:
 | O2 | **Write** the `departments` and `parking_zones` migrations exactly as in specification §3, and **test** `migrate` / `rollback` | S2 | [Lab 3.2](./lab.en.md#lab-32--first-migrations--seeders-s2); `php spark migrate:status` |
 | O3 | **Write** idempotent seeders that can run again and again with no duplicate rows | S2 | `departments` = 4 rows after two runs |
 | O4 | **Build** a model with `$allowedFields`, `$useTimestamps` and validation, plus a list page and a new-record form | S3 | [Lab 3.3](./lab.en.md#lab-33--model--the-jabatan-pages-s3); `/jabatan` |
-| O5 | **Build** a Query Builder search (`like()` in a group) with pagination on your own | S4 | [Lab 3.4](./lab.en.md#lab-34--zone-search--pagination-s4); `/zon?q=`; Day quiz passed |
+| O5 | **Build** a Query Builder search (`like()` in a group) with pagination on your own | S4 | [Lab 3.4](./lab.en.md#lab-34--zone-search--pagination-s4); `/zon?q=`; Quiz S4 passed |
 
 ---
 
@@ -70,6 +70,24 @@ The `kkm_dev` user only has rights on these two databases. `root` never goes int
 
 Lab: [Lab 3.1](./lab.en.md#lab-31--mysql-database--env-s1).
 
+### 🎯 Quiz S1
+
+> Answer after Lab 3.1 on your laptop — the answers come from real output. Passing this quiz ticks the Lab 3.1 checkpoints.
+
+1. Lab 3.1 step 4: what does `php spark db:table --show` print for your new database?
+   - [ ] An empty list with no message
+   - [x] *Database has no tables!*
+   - [ ] *Unable to connect to the database.*
+   - [ ] One `migrations` table
+   > The new database has no tables yet. The `migrations` table is only created by the first `migrate` (Lab 3.2). *Unable to connect* means a `.env` value is wrong.
+
+2. Lab 3.1 step 5: what does `git check-ignore -v .env` print?
+   - [ ] Nothing — `.env` is not ignored
+   - [x] One line `.gitignore:<line number>:.env` followed by the file name `.env`
+   - [ ] `fatal: not a git repository`
+   - [ ] `.env` listed as *modified*
+   > `-v` shows the file, line number and pattern that ignores `.env` (new CI4 project: `.gitignore:44:.env`). No output means `.env` could be committed along with the database password.
+
 ---
 
 ## S2 — First Migrations & Seeders (10:45–12:30)
@@ -93,6 +111,24 @@ Tables & fields: [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §3 ·
 
 Lab: [Lab 3.2](./lab.en.md#lab-32--first-migrations--seeders-s2).
 
+### 🎯 Quiz S2
+
+> Answer after Lab 3.2 on your laptop — the answers come from real output. Passing this quiz ticks the Lab 3.2 checkpoints.
+
+1. After the first `php spark migrate` in Lab 3.2 (step 4), how many tables does `php spark db:table --show` list?
+   - [ ] 2 — `departments` and `parking_zones`
+   - [ ] 0 — tables only appear after the seeder runs
+   - [x] 3 — `departments`, `migrations` and `parking_zones`
+   - [ ] 4 — including Shield's `users` table
+   > CI creates the `migrations` table on the first `migrate` to record which migrations have run. Shield is not installed yet (Day 4), so there is no `users`.
+
+2. In Lab 3.2 step 4 you ran `migrate`, `migrate:rollback`, then `migrate` again. What is the **Batch** value in the last `migrate:status`?
+   - [x] 1
+   - [ ] 2
+   - [ ] 3
+   - [ ] Empty — rollback deletes the migration history
+   > Rollback deletes the batch 1 rows from the `migrations` table. The next `migrate` becomes the batch after the highest one still there — there is none, so it is batch 1 again.
+
 ---
 
 ## S3 — Model & the `/jabatan` Pages (14:30–16:00)
@@ -113,6 +149,24 @@ Lab 2.4 checked the form in the controller (`$this->validate()`). From today, da
 Notes: [`nota-03-model-entity-dan-enum.md`](../docs/nota-03-model-entity-dan-enum.md) · [`nota-04-validasi-dan-borang.md`](../docs/nota-04-validasi-dan-borang.md).
 
 Lab: [Lab 3.3](./lab.en.md#lab-33--model--the-jabatan-pages-s3).
+
+### 🎯 Quiz S3
+
+> Answer after Lab 3.3 on your laptop — the answers come from real output. Passing this quiz ticks the Lab 3.3 checkpoints.
+
+1. You submit the `/jabatan/baharu` form with Kod `BTM` (it already exists). What message appears under the Kod field?
+   - [ ] *Duplicate entry 'BTM' for key 'code'*
+   - [ ] *Kod BTM sudah wujud.*
+   - [ ] No message; a second record is saved
+   - [x] *The Kod field must contain a unique value.*
+   > `is_unique[departments.code,id,{id}]` in the model's `$validationRules` refuses the code before the `INSERT` query runs, so MySQL never sees a duplicate row. The `label` `Kod` replaces the field name `code` in the message.
+
+2. On `/jabatan` (sorted with `orderBy('code')`), which department is in the first row?
+   - [ ] `BTM` — Bahagian Teknologi Maklumat (Latihan), because it was inserted first
+   - [x] `BKW` — Bahagian Kewangan (Latihan)
+   - [ ] `BPA` — Bahagian Pengurusan Aset (Latihan)
+   - [ ] `BSM` — Bahagian Sumber Manusia (Latihan)
+   > `orderBy('code')` sorts by code alphabetically: `BKW` < `BPA` < `BSM` < `BTM`. Without `orderBy`, the order depends on the database and is usually by `id`.
 
 ---
 
@@ -136,41 +190,18 @@ $this->groupStart()
 
 Lab: [Lab 3.4](./lab.en.md#lab-34--zone-search--pagination-s4).
 
----
+### 🎯 Quiz S4
 
-## 🎯 Quiz day — Database & models (Lab 3.1–3.4 proof)
+> Answer after Lab 3.4 on your laptop — the answers come from real output. Passing this quiz ticks the Lab 3.4 checkpoints.
 
-> Answer after running Labs 3.1–3.4 on your laptop. The answers come from real output, not from the notes. Passing this quiz ticks the Lab 3.1–3.4 checkpoints.
-
-1. After the first `php spark migrate` in Lab 3.2 (step 4), how many tables does `php spark db:table --show` list?
-   - [ ] 2 — `departments` and `parking_zones`
-   - [ ] 0 — tables only appear after the seeder runs
-   - [x] 3 — `departments`, `migrations` and `parking_zones`
-   - [ ] 4 — including Shield's `users` table
-   > CI creates the `migrations` table on the first `migrate` to record which migrations have run. Shield is not installed yet (Day 4), so there is no `users`.
-
-2. In Lab 3.2 step 4 you ran `migrate`, `migrate:rollback`, then `migrate` again. What is the **Batch** value in the last `migrate:status`?
-   - [x] 1
-   - [ ] 2
-   - [ ] 3
-   - [ ] Empty — rollback deletes the migration history
-   > Rollback deletes the batch 1 rows from the `migrations` table. The next `migrate` becomes the batch after the highest one still there — there is none, so it is batch 1 again.
-
-3. You submit the `/jabatan/baharu` form with Kod `BTM` (it already exists). What message appears under the Kod field?
-   - [ ] *Duplicate entry 'BTM' for key 'code'*
-   - [ ] *Kod BTM sudah wujud.*
-   - [ ] No message; a second record is saved
-   - [x] *The Kod field must contain a unique value.*
-   > `is_unique[departments.code,id,{id}]` in the model's `$validationRules` refuses the code before the `INSERT` query runs, so MySQL never sees a duplicate row. The `label` `Kod` replaces the field name `code` in the message.
-
-4. You open `/zon?q=KLINIK` (capital letters) in Lab 3.4. What is shown?
+1. You open `/zon?q=KLINIK` (capital letters) in Lab 3.4. What is shown?
    - [ ] *Tiada zon sepadan dengan "KLINIK".* because the search is case-sensitive
    - [x] Only zone **B — Blok Klinik**
    - [ ] All three zones because `like()` always matches every row
    - [ ] An SQL error because `q` is not escaped
    > The database was created with the collation `utf8mb4_unicode_ci` — `ci` = *case-insensitive*, so `LIKE '%KLINIK%'` matches "Blok Klinik" and "Sebelah klinik pakar".
 
-5. You type `' OR 1=1 --` in the `/zon` search box. What is shown?
+2. You type `' OR 1=1 --` in the `/zon` search box. What is shown?
    - [x] *Tiada zon sepadan dengan "' OR 1=1 --".*
    - [ ] Every zone — the `OR 1=1` condition is always true
    - [ ] Error 500 *You have an error in your SQL syntax*

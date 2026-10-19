@@ -22,7 +22,7 @@ Create the development and test databases with a dedicated user `kkm_dev`, conne
 - [Lab 2.4](../hari-2/lab.en.md#lab-24--form-validation--csrf-s4) done: GitLab shows 4 commits.
 - Laragon → **Start All** (MySQL green). A Git Bash terminal in VS Code.
 
-> 🔍 **Proof of work:** the platform ticks today's lab checkpoints when you **pass the Day quiz** — its questions can only be answered by running the code.
+> 🔍 **Proof of work:** the platform ticks today's lab checkpoints when you **pass that lab's session quiz** (Quiz S1 for Lab 3.1, … Quiz S4 for Lab 3.4, on the session page) — its questions can only be answered by running the code.
 
 ### Steps
 1. **Check MySQL:**
@@ -71,8 +71,8 @@ Create the development and test databases with a dedicated user `kkm_dev`, conne
    `git status` does not list `.env`; `git check-ignore` shows the `.gitignore` line that ignores it. There is nothing to commit in this lab.
 
 ### ✅ Checkpoint
-- [ ] `SHOW DATABASES LIKE 'kkm_latihan%'` as `kkm_dev` lists two databases (Quiz day).
-- [ ] `php spark db:table --show` prints *Database has no tables!* with no connection error (Quiz day).
+- [ ] `SHOW DATABASES LIKE 'kkm_latihan%'` as `kkm_dev` lists two databases (Quiz S1).
+- [ ] `php spark db:table --show` prints *Database has no tables!* with no connection error (Quiz S1).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -141,7 +141,7 @@ Write migrations for `departments` and `parking_zones` **exactly** as in specifi
    php spark migrate:status
    php spark db:table departments --metadata
    ```
-   Note the **number of tables** in `db:table --show` and the value of the **Batch** column after rollback + migrate — Day quiz questions.
+   Note the **number of tables** in `db:table --show` and the value of the **Batch** column after rollback + migrate — Quiz S2 questions.
 5. **Seeders.** Generate three files:
    ```bash
    php spark make:seeder DepartmentSeeder
@@ -150,7 +150,7 @@ Write migrations for `departments` and `parking_zones` **exactly** as in specifi
    ```
    `DepartmentSeeder` — `ignore(true)` makes it `INSERT IGNORE`, so a second run adds no duplicate rows:
 
-   Data (copy exactly — the Day quiz depends on it): `BTM` Bahagian Teknologi Maklumat (Latihan) · `BKW` Bahagian Kewangan (Latihan) · `BSM` Bahagian Sumber Manusia (Latihan) · `BPA` Bahagian Pengurusan Aset (Latihan). Fill `created_at` and `updated_at` with `date('Y-m-d H:i:s')`.
+   Data (copy exactly — Quizzes S2 and S3 depend on it): `BTM` Bahagian Teknologi Maklumat (Latihan) · `BKW` Bahagian Kewangan (Latihan) · `BSM` Bahagian Sumber Manusia (Latihan) · `BPA` Bahagian Pengurusan Aset (Latihan). Fill `created_at` and `updated_at` with `date('Y-m-d H:i:s')`.
 
    ```php
    public function run(): void
@@ -199,9 +199,9 @@ Write migrations for `departments` and `parking_zones` **exactly** as in specifi
    ```
 
 ### ✅ Checkpoint
-- [ ] `php spark migrate:status` shows 2 `App` migrations with a *Migrated On* date (Quiz day).
-- [ ] After `db:seed` twice, `departments` has 4 rows and `parking_zones` 3 rows (Quiz day).
-- [ ] GitLab shows the commit `DB: migration departments + parking_zones, seeder` (Quiz day).
+- [ ] `php spark migrate:status` shows 2 `App` migrations with a *Migrated On* date (Quiz S2).
+- [ ] After `db:seed` twice, `departments` has 4 rows and `parking_zones` 3 rows (Quiz S2).
+- [ ] GitLab shows the commit `DB: migration departments + parking_zones, seeder` (Quiz S2).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -290,7 +290,7 @@ Build `DepartmentModel` with `$allowedFields`, `$useTimestamps` and validation, 
    Stuck for more than 10 minutes? Full reference code: [3.3-5](../docs/kod-rujukan-hari-3.en.md#33-5--jabatanbaharuphp)
 6. **Test.** `php spark serve`, open <http://localhost:8080/jabatan> (4 departments, ordered by code). Click **+ Jabatan baharu**:
    - Submit empty → Kod and Nama errors.
-   - Submit Kod `BTM` → note the **exact** error message under Kod (a Day quiz question).
+   - Submit Kod `BTM` → note the **exact** error message under Kod (a Quiz S3 question).
    - Submit Kod `BPP`, Nama `Bahagian Perolehan (Latihan)` → back to the list with *"Jabatan BPP disimpan."* and the **Dicipta** column holding a date and time.
 7. Commit and push:
    ```bash
@@ -298,9 +298,9 @@ Build `DepartmentModel` with `$allowedFields`, `$useTimestamps` and validation, 
    ```
 
 ### ✅ Checkpoint
-- [ ] `/jabatan` lists departments from the database through `DepartmentModel` (Quiz day).
-- [ ] A duplicate code is refused with the model's validation message; a new department is saved with an automatic `created_at` (Quiz day).
-- [ ] GitLab shows the commit `JABATAN: model, senarai & borang baharu` (Quiz day).
+- [ ] `/jabatan` lists departments from the database through `DepartmentModel` (Quiz S3).
+- [ ] A duplicate code is refused with the model's validation message; a new department is saved with an automatic `created_at` (Quiz S3).
+- [ ] GitLab shows the commit `JABATAN: model, senarai & borang baharu` (Quiz S3).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -370,7 +370,7 @@ Build `/zon` **on your own** with the Lab 3.3 pattern: a `ParkingZoneModel` with
    ```
 
    Stuck for more than 10 minutes? Full reference code: [3.4-4](../docs/kod-rujukan-hari-3.en.md#34-4--zonindexphp)
-5. **Test and note** (Day quiz questions):
+5. **Test and note** (Quiz S4 questions):
    - <http://localhost:8080/zon> → page 1 (A, B) and a link to page 2 (C).
    - <http://localhost:8080/zon?q=KLINIK> (capital letters) — which zone is shown?
    - <http://localhost:8080/zon?q=aras> — the pagination links still carry `q=aras`.
@@ -381,9 +381,9 @@ Build `/zon` **on your own** with the Lab 3.3 pattern: a `ParkingZoneModel` with
    ```
 
 ### ✅ Checkpoint
-- [ ] `/zon` shows 2 zones per page with pagination links (Quiz day).
-- [ ] The `?q=` search filters by name, location or code, and the input `' OR 1=1 --` does not break the query (Quiz day).
-- [ ] GitLab shows the commit `ZON: carian + pagination` (Quiz day).
+- [ ] `/zon` shows 2 zones per page with pagination links (Quiz S4).
+- [ ] The `?q=` search filters by name, location or code, and the input `' OR 1=1 --` does not break the query (Quiz S4).
+- [ ] GitLab shows the commit `ZON: carian + pagination` (Quiz S4).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |

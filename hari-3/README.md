@@ -16,7 +16,7 @@ Di akhir hari ini, peserta boleh:
 | O2 | **Menulis** migration `departments` dan `parking_zones` tepat seperti spesifikasi §3, dan **menguji** `migrate` / `rollback` | S2 | [Lab 3.2](./lab.md#lab-32--migration--seeder-pertama-s2); `php spark migrate:status` |
 | O3 | **Menulis** seeder idempoten yang boleh dijalankan berulang kali tanpa baris berganda | S2 | `departments` = 4 baris selepas dua larian |
 | O4 | **Membina** model dengan `$allowedFields`, `$useTimestamps` dan validation, serta halaman senarai + borang baharu | S3 | [Lab 3.3](./lab.md#lab-33--model--halaman-jabatan-s3); `/jabatan` |
-| O5 | **Membina** carian Query Builder (`like()` dalam kumpulan) dengan pagination secara berdikari | S4 | [Lab 3.4](./lab.md#lab-34--carian--pagination-zon-s4); `/zon?q=`; Kuiz hari lulus |
+| O5 | **Membina** carian Query Builder (`like()` dalam kumpulan) dengan pagination secara berdikari | S4 | [Lab 3.4](./lab.md#lab-34--carian--pagination-zon-s4); `/zon?q=`; Kuiz S4 lulus |
 
 ---
 
@@ -70,6 +70,24 @@ Pengguna `kkm_dev` hanya ada hak ke atas dua database ini. `root` tidak pernah m
 
 Lab: [Lab 3.1](./lab.md#lab-31--database-mysql--env-s1).
 
+### 🎯 Kuiz S1
+
+> Jawab selepas Lab 3.1 di laptop anda — jawapan datang daripada output sebenar. Lulus kuiz ini menanda checkpoint Lab 3.1.
+
+1. Lab 3.1 langkah 4: apakah output `php spark db:table --show` pada database baharu anda?
+   - [ ] Senarai kosong tanpa sebarang mesej
+   - [x] *Database has no tables!*
+   - [ ] *Unable to connect to the database.*
+   - [ ] Satu jadual `migrations`
+   > Database baharu belum ada jadual. Jadual `migrations` hanya dicipta oleh `migrate` pertama (Lab 3.2). *Unable to connect* bermaksud nilai `.env` salah.
+
+2. Lab 3.1 langkah 5: apakah output `git check-ignore -v .env`?
+   - [ ] Tiada output — `.env` tidak diabaikan
+   - [x] Satu baris `.gitignore:<nombor baris>:.env` diikuti nama fail `.env`
+   - [ ] `fatal: not a git repository`
+   - [ ] `.env` disenaraikan sebagai *modified*
+   > `-v` menunjukkan fail, nombor baris dan corak yang mengabaikan `.env` (projek CI4 baharu: `.gitignore:44:.env`). Tiada output bermakna `.env` boleh ter-commit bersama kata laluan database.
+
 ---
 
 ## S2 — Migration & Seeder Pertama (10:45–12:30)
@@ -93,6 +111,24 @@ Jadual & medan: [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §3 · 
 
 Lab: [Lab 3.2](./lab.md#lab-32--migration--seeder-pertama-s2).
 
+### 🎯 Kuiz S2
+
+> Jawab selepas Lab 3.2 di laptop anda — jawapan datang daripada output sebenar. Lulus kuiz ini menanda checkpoint Lab 3.2.
+
+1. Selepas `php spark migrate` pertama dalam Lab 3.2 (langkah 4), berapa jadual disenaraikan oleh `php spark db:table --show`?
+   - [ ] 2 — `departments` dan `parking_zones`
+   - [ ] 0 — jadual hanya muncul selepas seeder dijalankan
+   - [x] 3 — `departments`, `migrations` dan `parking_zones`
+   - [ ] 4 — termasuk jadual `users` Shield
+   > CI mencipta jadual `migrations` pada `migrate` pertama untuk merekod migration yang sudah dijalankan. Shield belum dipasang (Hari 4), jadi tiada `users`.
+
+2. Dalam Lab 3.2 langkah 4 anda menjalankan `migrate`, `migrate:rollback`, kemudian `migrate` semula. Apakah nilai lajur **Batch** dalam `migrate:status` yang terakhir?
+   - [x] 1
+   - [ ] 2
+   - [ ] 3
+   - [ ] Kosong — rollback memadam sejarah migration
+   > Rollback memadam rekod batch 1 daripada jadual `migrations`. Larian `migrate` seterusnya menjadi batch baharu selepas batch tertinggi yang masih ada — tiada lagi, jadi ia batch 1 semula.
+
 ---
 
 ## S3 — Model & Halaman `/jabatan` (14:30–16:00)
@@ -113,6 +149,24 @@ Lab 2.4 menyemak borang dalam controller (`$this->validate()`). Mulai hari ini p
 Nota: [`nota-03-model-entity-dan-enum.md`](../docs/nota-03-model-entity-dan-enum.md) · [`nota-04-validasi-dan-borang.md`](../docs/nota-04-validasi-dan-borang.md).
 
 Lab: [Lab 3.3](./lab.md#lab-33--model--halaman-jabatan-s3).
+
+### 🎯 Kuiz S3
+
+> Jawab selepas Lab 3.3 di laptop anda — jawapan datang daripada output sebenar. Lulus kuiz ini menanda checkpoint Lab 3.3.
+
+1. Anda menghantar borang `/jabatan/baharu` dengan Kod `BTM` (sudah wujud). Apakah mesej di bawah medan Kod?
+   - [ ] *Duplicate entry 'BTM' for key 'code'*
+   - [ ] *Kod BTM sudah wujud.*
+   - [ ] Tiada mesej; rekod kedua disimpan
+   - [x] *The Kod field must contain a unique value.*
+   > `is_unique[departments.code,id,{id}]` dalam `$validationRules` model menolak kod sebelum query `INSERT` dijalankan, jadi MySQL tidak pernah melihat baris berganda. `label` `Kod` menggantikan nama medan `code` dalam mesej.
+
+2. Di `/jabatan` (susunan `orderBy('code')`), jabatan manakah di baris pertama?
+   - [ ] `BTM` — Bahagian Teknologi Maklumat (Latihan), kerana ia dimasukkan dahulu
+   - [x] `BKW` — Bahagian Kewangan (Latihan)
+   - [ ] `BPA` — Bahagian Pengurusan Aset (Latihan)
+   - [ ] `BSM` — Bahagian Sumber Manusia (Latihan)
+   > `orderBy('code')` menyusun ikut abjad kod: `BKW` < `BPA` < `BSM` < `BTM`. Tanpa `orderBy`, susunan bergantung pada database dan biasanya ikut `id`.
 
 ---
 
@@ -136,41 +190,18 @@ $this->groupStart()
 
 Lab: [Lab 3.4](./lab.md#lab-34--carian--pagination-zon-s4).
 
----
+### 🎯 Kuiz S4
 
-## 🎯 Kuiz hari — Database & model (bukti Lab 3.1–3.4)
+> Jawab selepas Lab 3.4 di laptop anda — jawapan datang daripada output sebenar. Lulus kuiz ini menanda checkpoint Lab 3.4.
 
-> Jawab selepas menjalankan Lab 3.1–3.4 di laptop anda. Jawapan datang daripada output sebenar, bukan daripada nota. Lulus kuiz ini menanda checkpoint Lab 3.1–3.4.
-
-1. Selepas `php spark migrate` pertama dalam Lab 3.2 (langkah 4), berapa jadual disenaraikan oleh `php spark db:table --show`?
-   - [ ] 2 — `departments` dan `parking_zones`
-   - [ ] 0 — jadual hanya muncul selepas seeder dijalankan
-   - [x] 3 — `departments`, `migrations` dan `parking_zones`
-   - [ ] 4 — termasuk jadual `users` Shield
-   > CI mencipta jadual `migrations` pada `migrate` pertama untuk merekod migration yang sudah dijalankan. Shield belum dipasang (Hari 4), jadi tiada `users`.
-
-2. Dalam Lab 3.2 langkah 4 anda menjalankan `migrate`, `migrate:rollback`, kemudian `migrate` semula. Apakah nilai lajur **Batch** dalam `migrate:status` yang terakhir?
-   - [x] 1
-   - [ ] 2
-   - [ ] 3
-   - [ ] Kosong — rollback memadam sejarah migration
-   > Rollback memadam rekod batch 1 daripada jadual `migrations`. Larian `migrate` seterusnya menjadi batch baharu selepas batch tertinggi yang masih ada — tiada lagi, jadi ia batch 1 semula.
-
-3. Anda menghantar borang `/jabatan/baharu` dengan Kod `BTM` (sudah wujud). Apakah mesej di bawah medan Kod?
-   - [ ] *Duplicate entry 'BTM' for key 'code'*
-   - [ ] *Kod BTM sudah wujud.*
-   - [ ] Tiada mesej; rekod kedua disimpan
-   - [x] *The Kod field must contain a unique value.*
-   > `is_unique[departments.code,id,{id}]` dalam `$validationRules` model menolak kod sebelum query `INSERT` dijalankan, jadi MySQL tidak pernah melihat baris berganda. `label` `Kod` menggantikan nama medan `code` dalam mesej.
-
-4. Anda membuka `/zon?q=KLINIK` (huruf besar) dalam Lab 3.4. Apakah yang dipaparkan?
+1. Anda membuka `/zon?q=KLINIK` (huruf besar) dalam Lab 3.4. Apakah yang dipaparkan?
    - [ ] *Tiada zon sepadan dengan "KLINIK".* kerana carian sensitif huruf besar/kecil
    - [x] Zon **B — Blok Klinik** sahaja
    - [ ] Semua tiga zon kerana `like()` sentiasa memadankan semua baris
    - [ ] Ralat SQL kerana `q` tidak di-escape
    > Database dicipta dengan collation `utf8mb4_unicode_ci` — `ci` = *case-insensitive*, jadi `LIKE '%KLINIK%'` sepadan dengan "Blok Klinik" dan "Sebelah klinik pakar".
 
-5. Anda menaip `' OR 1=1 --` dalam kotak carian `/zon`. Apakah yang dipaparkan?
+2. Anda menaip `' OR 1=1 --` dalam kotak carian `/zon`. Apakah yang dipaparkan?
    - [x] *Tiada zon sepadan dengan "' OR 1=1 --".*
    - [ ] Semua zon — syarat `OR 1=1` sentiasa benar
    - [ ] Ralat 500 *You have an error in your SQL syntax*
