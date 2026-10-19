@@ -55,8 +55,8 @@ Mendemokan projek `kelas-ci-<nama>` anda (GitLab + `/zon`) dan menerangkan 7 lan
 8. Commit dan push (`git add docs/kitaran-request.md && git commit -m "DOCS: kitaran request /zon" && git push`), kemudian demo 3 minit kepada jurulatih: halaman projek GitLab anda, `/zon?q=aras`, dan jadual di atas.
 
 ### ✅ Checkpoint
-- `docs/kitaran-request.md` lengkap 7 baris dengan bukti, di-push ke GitLab.
-- Anda boleh menjawab: *"Jika saya tambah filter `session` pada route `/zon`, langkah mana yang berubah dan apa berlaku kepada pengguna tidak log masuk?"*
+- `docs/kitaran-request.md` lengkap 7 baris dengan bukti, di-push ke GitLab (Kuiz S1).
+- Anda boleh menjawab: *"Jika saya tambah filter `session` pada route `/zon`, langkah mana yang berubah dan apa berlaku kepada pengguna tidak log masuk?"* (Kuiz S1)
 
 ### 🧯 Masalah lazim
 
@@ -410,11 +410,11 @@ Menyediakan ujian (`composer test`) dalam projek `kelas-ci-<nama>`, menyemak `.e
     ```
 
 ### ✅ Checkpoint
-- `php spark routes | grep -E "login|logout"` → route `login` (GET & POST) dan `logout` wujud.
-- `http://localhost:8080/` (belum log masuk) → **dialih** ke `http://localhost:8080/login` (tiada `index.php` dalam URL).
-- `php spark db:table --show` → jadual `users`, `auth_identities`, `auth_groups_users`, `settings`, `migrations` wujud.
-- `git status` **tidak** menyenaraikan `.env`.
-- `php spark list` — baris pertama berakhir dengan `UTC+08:00` (bukti `app.appTimezone` dibaca).
+- `php spark routes | grep -E "login|logout"` → route `login` (GET & POST) dan `logout` wujud (Kuiz S2).
+- `http://localhost:8080/` (belum log masuk) → **dialih** ke `http://localhost:8080/login` (tiada `index.php` dalam URL) (Kuiz S2).
+- `php spark db:table --show` → jadual `users`, `auth_identities`, `auth_groups_users`, `settings`, `migrations` wujud (Kuiz S2).
+- `git status` **tidak** menyenaraikan `.env` (Kuiz S2).
+- `php spark list` — baris pertama berakhir dengan `UTC+08:00` (bukti `app.appTimezone` dibaca) (Kuiz S2).
 
 ### 🧯 Masalah lazim
 
@@ -1030,12 +1030,12 @@ Melengkapkan 10 migration spesifikasi §3 (2 dari Lab 3.2 + 8 baharu, dengan FK,
 14. `php spark serve` → log masuk `http://localhost:8080/login` sebagai `pelulus@latihan.test` / `Latihan@2026`.
 
 ### ✅ Checkpoint
-- `php spark migrate:status` → 10 baris namespace `App`, semua ada tarikh *Migrated On*.
-- `php spark db:table --show` → **18 jadual** (10 SPEC termasuk `users` + 6 `auth_*` + `settings` + `migrations`).
-- Larian `db:seed` kedua **tanpa** ralat `Duplicate entry`.
-- `php spark db:table auth_groups_users` → 5 baris (`applicant` ×2, `reviewer`, `approver`, `admin`).
-- Halaman utama selepas log masuk: *"Selamat datang, Dr. Devi a/p Sampel. Peranan: approver"*.
-- Ujian FK (dalam klien MySQL):
+- `php spark migrate:status` → 10 baris namespace `App`, semua ada tarikh *Migrated On* (Kuiz S3).
+- `php spark db:table --show` → **18 jadual** (10 SPEC termasuk `users` + 6 `auth_*` + `settings` + `migrations`) (Kuiz S3).
+- Larian `db:seed` kedua **tanpa** ralat `Duplicate entry` (Kuiz S3).
+- `php spark db:table auth_groups_users` → 5 baris (`applicant` ×2, `reviewer`, `approver`, `admin`) (Kuiz S3).
+- Halaman utama selepas log masuk: *"Selamat datang, Dr. Devi a/p Sampel. Peranan: approver"* (Kuiz S3).
+- Ujian FK (dalam klien MySQL) (Kuiz S3):
 
   ```sql
   INSERT INTO vehicles (user_id, plate_no, model, color) VALUES (999, 'WXX 0000', 'Ujian', 'Hitam');
@@ -1159,10 +1159,10 @@ Menolak commit `SETUP:` yang bersih ke GitLab, menulis pelan kerja anda, mencuba
    Log masuk sebagai `pelulus@latihan.test` / `Latihan@2026`. Berjaya? Padam folder klon: `cd ~/latihan && rm -rf kelas-ci-<nama>-klon`.
 
 ### ✅ Checkpoint
-- `git log --oneline` menunjukkan ≥ 2 commit `SETUP:` dan satu merge `feat/pelan-kerja` di GitLab.
-- `git ls-files | grep -c "^\.env$"` → `0`.
-- Resepi klon baharu (langkah 6) berjaya sehingga log masuk — **ini bukti migration & seeder anda lengkap**.
-- `docs/pelan-kerja.md` wujud dan anda boleh menyebut 3 item DoD tanpa melihat.
+- `git log --oneline` menunjukkan ≥ 2 commit `SETUP:` dan satu merge `feat/pelan-kerja` di GitLab (Kuiz S4).
+- `git ls-files | grep -c "^\.env$"` → `0` (Kuiz S4).
+- Resepi klon baharu (langkah 6) berjaya sehingga log masuk — **ini bukti migration & seeder anda lengkap** (Kuiz S4).
+- `docs/pelan-kerja.md` wujud dan anda boleh menyebut 3 item DoD tanpa melihat (Kuiz S4).
 
 ### 🧯 Masalah lazim
 
@@ -1703,11 +1703,11 @@ git status --short          # tiada output
 git log --oneline           # ≥ 2 commit SETUP:
 ```
 
-- [ ] `php spark serve` → `http://localhost:8080/` mengalih ke halaman log masuk tanpa ralat.
-- [ ] `php spark migrate:status` menunjukkan **semua** migration (10 App + Shield + Settings) telah dijalankan.
-- [ ] Log masuk sebagai `pelulus@latihan.test` / `Latihan@2026` berjaya; `pemohon1@latihan.test` juga.
-- [ ] `git status --short` kosong dan `git ls-files | grep -c "^\.env$"` → `0`.
-- [ ] `git log --oneline` menunjukkan ≥ 2 commit `SETUP:`.
-- [ ] Klon baharu (Lab 4.4 langkah 6) berjaya sehingga log masuk.
-- [ ] Sebelum log masuk, `/zon` dan `/jabatan` mengalih ke `/login`; `/jabatan/baharu` hanya dibuka oleh `admin@latihan.test` (Lab 4.2b).
-- [ ] `php spark db:table reference_sequences` → 2 baris (`TLK`, `PAS`), dan MR `feat/readme-projek` berstatus *Merged* (Lab 4.3b, 4.4b).
+- [ ] `php spark serve` → `http://localhost:8080/` mengalih ke halaman log masuk tanpa ralat (Kuiz S2).
+- [ ] `php spark migrate:status` menunjukkan **semua** migration (10 App + Shield + Settings) telah dijalankan (Kuiz S3).
+- [ ] Log masuk sebagai `pelulus@latihan.test` / `Latihan@2026` berjaya; `pemohon1@latihan.test` juga (Kuiz S3).
+- [ ] `git status --short` kosong dan `git ls-files | grep -c "^\.env$"` → `0` (Kuiz S2).
+- [ ] `git log --oneline` menunjukkan ≥ 2 commit `SETUP:` (Kuiz S4).
+- [ ] Klon baharu (Lab 4.4 langkah 6) berjaya sehingga log masuk (Kuiz S4).
+- [ ] Sebelum log masuk, `/zon` dan `/jabatan` mengalih ke `/login`; `/jabatan/baharu` hanya dibuka oleh `admin@latihan.test` (Lab 4.2b) (Kuiz S6).
+- [ ] `php spark db:table reference_sequences` → 2 baris (`TLK`, `PAS`), dan MR `feat/readme-projek` berstatus *Merged* (Lab 4.3b, 4.4b) (Kuiz S8).

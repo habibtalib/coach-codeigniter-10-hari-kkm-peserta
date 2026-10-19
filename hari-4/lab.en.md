@@ -55,8 +55,8 @@ Demo your `kelas-ci-<nama>` project (GitLab + `/zon`) and explain the 7 steps of
 8. Commit and push (`git add docs/kitaran-request.md && git commit -m "DOCS: kitaran request /zon" && git push`), then give the trainer a 3-minute demo: your GitLab project page, `/zon?q=aras`, and the table above.
 
 ### ✅ Checkpoint
-- `docs/kitaran-request.md` complete with 7 rows of evidence, pushed to GitLab.
-- You can answer: *"If I add the `session` filter to the `/zon` route, which step changes and what happens to a user who is not logged in?"*
+- `docs/kitaran-request.md` complete with 7 rows of evidence, pushed to GitLab (Quiz S1).
+- You can answer: *"If I add the `session` filter to the `/zon` route, which step changes and what happens to a user who is not logged in?"* (Quiz S1)
 
 ### 🧯 Troubleshooting
 
@@ -410,11 +410,11 @@ Set up tests (`composer test`) in the `kelas-ci-<nama>` project, check `.env`, i
     ```
 
 ### ✅ Checkpoint
-- `php spark routes | grep -E "login|logout"` → the `login` (GET & POST) and `logout` routes exist.
-- `http://localhost:8080/` (not logged in yet) → **redirected** to `http://localhost:8080/login` (no `index.php` in the URL).
-- `php spark db:table --show` → the tables `users`, `auth_identities`, `auth_groups_users`, `settings`, `migrations` exist.
-- `git status` does **not** list `.env`.
-- `php spark list` — the first line ends with `UTC+08:00` (proof that `app.appTimezone` is read).
+- `php spark routes | grep -E "login|logout"` → the `login` (GET & POST) and `logout` routes exist (Quiz S2).
+- `http://localhost:8080/` (not logged in yet) → **redirected** to `http://localhost:8080/login` (no `index.php` in the URL) (Quiz S2).
+- `php spark db:table --show` → the tables `users`, `auth_identities`, `auth_groups_users`, `settings`, `migrations` exist (Quiz S2).
+- `git status` does **not** list `.env` (Quiz S2).
+- `php spark list` — the first line ends with `UTC+08:00` (proof that `app.appTimezone` is read) (Quiz S2).
 
 ### 🧯 Troubleshooting
 
@@ -1030,12 +1030,12 @@ Complete the 10 migrations of specification §3 (2 from Lab 3.2 + 8 new, with FK
 14. `php spark serve` → log in at `http://localhost:8080/login` as `pelulus@latihan.test` / `Latihan@2026`.
 
 ### ✅ Checkpoint
-- `php spark migrate:status` → 10 rows with namespace `App`, all with a *Migrated On* date.
-- `php spark db:table --show` → **18 tables** (10 from the SPEC including `users` + 6 `auth_*` + `settings` + `migrations`).
-- The second `db:seed` run has **no** `Duplicate entry` error.
-- `php spark db:table auth_groups_users` → 5 rows (`applicant` ×2, `reviewer`, `approver`, `admin`).
-- Home page after login: *"Selamat datang, Dr. Devi a/p Sampel. Peranan: approver"* ("Welcome, … Role: approver").
-- FK test (in the MySQL client):
+- `php spark migrate:status` → 10 rows with namespace `App`, all with a *Migrated On* date (Quiz S3).
+- `php spark db:table --show` → **18 tables** (10 from the SPEC including `users` + 6 `auth_*` + `settings` + `migrations`) (Quiz S3).
+- The second `db:seed` run has **no** `Duplicate entry` error (Quiz S3).
+- `php spark db:table auth_groups_users` → 5 rows (`applicant` ×2, `reviewer`, `approver`, `admin`) (Quiz S3).
+- Home page after login: *"Selamat datang, Dr. Devi a/p Sampel. Peranan: approver"* ("Welcome, … Role: approver") (Quiz S3).
+- FK test (in the MySQL client) (Quiz S3):
 
   ```sql
   INSERT INTO vehicles (user_id, plate_no, model, color) VALUES (999, 'WXX 0000', 'Ujian', 'Hitam');
@@ -1159,10 +1159,10 @@ Push clean `SETUP:` commits to GitLab, write your work plan, try the branch → 
    Log in as `pelulus@latihan.test` / `Latihan@2026`. It works? Delete the clone folder: `cd ~/latihan && rm -rf kelas-ci-<nama>-klon`.
 
 ### ✅ Checkpoint
-- `git log --oneline` shows ≥ 2 `SETUP:` commits and one `feat/pelan-kerja` merge on GitLab.
-- `git ls-files | grep -c "^\.env$"` → `0`.
-- The fresh-clone recipe (step 6) works up to login — **this proves your migrations & seeders are complete**.
-- `docs/pelan-kerja.md` exists and you can name 3 DoD items without looking.
+- `git log --oneline` shows ≥ 2 `SETUP:` commits and one `feat/pelan-kerja` merge on GitLab (Quiz S4).
+- `git ls-files | grep -c "^\.env$"` → `0` (Quiz S4).
+- The fresh-clone recipe (step 6) works up to login — **this proves your migrations & seeders are complete** (Quiz S4).
+- `docs/pelan-kerja.md` exists and you can name 3 DoD items without looking (Quiz S4).
 
 ### 🧯 Troubleshooting
 
@@ -1703,11 +1703,11 @@ git status --short          # no output
 git log --oneline           # ≥ 2 SETUP: commits
 ```
 
-- [ ] `php spark serve` → `http://localhost:8080/` redirects to the login page without errors.
-- [ ] `php spark migrate:status` shows **all** migrations (10 App + Shield + Settings) as run.
-- [ ] Logging in as `pelulus@latihan.test` / `Latihan@2026` works; `pemohon1@latihan.test` too.
-- [ ] `git status --short` is empty and `git ls-files | grep -c "^\.env$"` → `0`.
-- [ ] `git log --oneline` shows ≥ 2 `SETUP:` commits.
-- [ ] A fresh clone (Lab 4.4 step 6) works through to login.
-- [ ] Before logging in, `/zon` and `/jabatan` redirect to `/login`; `/jabatan/baharu` opens only for `admin@latihan.test` (Lab 4.2b).
-- [ ] `php spark db:table reference_sequences` → 2 rows (`TLK`, `PAS`), and MR `feat/readme-projek` is *Merged* (Lab 4.3b, 4.4b).
+- [ ] `php spark serve` → `http://localhost:8080/` redirects to the login page without errors (Quiz S2).
+- [ ] `php spark migrate:status` shows **all** migrations (10 App + Shield + Settings) as run (Quiz S3).
+- [ ] Logging in as `pelulus@latihan.test` / `Latihan@2026` works; `pemohon1@latihan.test` too (Quiz S3).
+- [ ] `git status --short` is empty and `git ls-files | grep -c "^\.env$"` → `0` (Quiz S2).
+- [ ] `git log --oneline` shows ≥ 2 `SETUP:` commits (Quiz S4).
+- [ ] A fresh clone (Lab 4.4 step 6) works through to login (Quiz S4).
+- [ ] Before logging in, `/zon` and `/jabatan` redirect to `/login`; `/jabatan/baharu` opens only for `admin@latihan.test` (Lab 4.2b) (Quiz S6).
+- [ ] `php spark db:table reference_sequences` → 2 rows (`TLK`, `PAS`), and MR `feat/readme-projek` is *Merged* (Lab 4.3b, 4.4b) (Quiz S8).
