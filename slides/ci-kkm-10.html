@@ -380,7 +380,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <div class="meta">
     <span class="chip m-tlk">10 hari</span>
     <span class="chip m-pas">4 modul</span>
-    <span class="chip m-stat">Hands-on berpasangan</span>
+    <span class="chip m-stat">Hands-on individu</span>
   </div>
   <div class="tiles">
     <div class="tile m-tlk"><div class="sq">M1</div><div><b>Tempat Letak Kenderaan Khas</b><span>TLK-2026-0001</span></div></div>
@@ -421,8 +421,8 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <div class="eyebrow">Agenda</div>
   <h2>Tiga fasa, sepuluh hari, satu sistem lengkap</h2>
   <div class="grid c4 mt8">
-    <div class="card top m-a"><span class="k">HARI 1–3</span><h3>A · Fahami &amp; Reka</h3><p>Keperluan, proses as-is/to-be, acceptance criteria, ERD dan wireframe.</p></div>
-    <div class="card top m-tlk"><span class="k">HARI 4–6</span><h3>B · Sedia &amp; Bina (TLK)</h3><p>Persekitaran CI4, migration, Shield, kemudian modul Tempat Letak Kenderaan Khas.</p></div>
+    <div class="card top m-a"><span class="k">HARI 1–3</span><h3>A · Fahami &amp; Reka</h3><p>Keperluan &amp; acceptance criteria, kemudian projek CI4 <code>kelas-ci-&lt;nama&gt;</code>: database, model, <code>/jabatan</code>, <code>/zon</code>.</p></div>
+    <div class="card top m-tlk"><span class="k">HARI 4–6</span><h3>B · Sedia &amp; Bina (TLK)</h3><p>Shield, skema penuh &amp; aliran Git dalam projek yang sama, kemudian modul Tempat Letak Kenderaan Khas.</p></div>
     <div class="card top m-pas"><span class="k">HARI 7–8</span><h3>B · Bina (Pas)</h3><p>Permohonan pas, muat naik selamat, aliran kelulusan dua peringkat dan RBAC.</p></div>
     <div class="card top m-stat"><span class="k">HARI 9–10</span><h3>C · Lapor &amp; Serah</h3><p>Laporan + eksport, dashboard statistik ber-cache, UAT dan demo capstone.</p></div>
   </div>
@@ -483,7 +483,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div class="blk s" style="--h:210px"><i>14:30–16:00</i><div><b>S3</b><span>lab hands-on</span></div></div>
     <div class="blk s" style="--h:150px"><i>16:00–17:00</i><div><b>S4</b><span>ujian, semakan, wrap-up</span></div></div>
   </div>
-  <div class="callout tip mt24"><span class="i">💡</span><div>Pasangan <b>driver / navigator</b> bertukar peranan setiap sesi. Jurulatih menyemak di setiap <b>✅ checkpoint</b> lab.</div></div>
+  <div class="callout tip mt24"><span class="i">💡</span><div>Setiap peserta membina <b>satu projek sendiri</b>, <code>kelas-ci-&lt;nama&gt;</code>, dari Hari 2 hingga Hari 10. Jurulatih menyemak di setiap <b>✅ checkpoint</b> lab.</div></div>
   <aside class="notes"><p>Masa rehat adalah tetap mengikut tentatif: rehat pagi 15 minit dan makan tengah hari 2 jam (12:30–14:30). Tiada rehat petang; S3 terus ke S4 pada 16:00. S4 kini 60 minit dan hampir selalu digunakan untuk ujian, semakan dan wrap-up — jangan korbankan S4 untuk menulis ciri baharu.</p></aside>
 </section>
 
@@ -492,15 +492,15 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <h2 class="wide">10 hari dalam satu pandangan</h2>
   <div class="tl">
     <div class="phases">
-      <div class="ph a"><b>Fasa A — Fahami &amp; Reka</b><span>URS disahkan + ERD + wireframe</span></div>
+      <div class="ph a"><b>Fasa A — Fahami &amp; Reka</b><span>URS + projek CI4 sendiri + database</span></div>
       <div class="ph b"><b>Fasa B — Sedia &amp; Bina</b><span>Dua modul transaksi berfungsi &amp; diuji</span></div>
       <div class="ph c"><b>Fasa C — Lapor &amp; Serah</b><span>Sistem lengkap didemo</span></div>
     </div>
     <div class="days">
       <div class="d m-a"><div class="dot">1</div><b>Kickoff &amp; keperluan</b><span>FR/NFR</span></div>
       <div class="d m-a"><div class="dot">2</div><b>URS &amp; proses</b><span>Given/When/Then</span></div>
-      <div class="d m-a"><div class="dot">3</div><b>ERD &amp; UI/UX</b><span>wireframe</span></div>
-      <div class="d m-n"><div class="dot">4</div><b>Dev kickoff</b><span>migration + Shield</span></div>
+      <div class="d m-a"><div class="dot">3</div><b>Database &amp; model</b><span>/jabatan · /zon</span></div>
+      <div class="d m-n"><div class="dot">4</div><b>Shield &amp; skema</b><span>projek sama</span></div>
       <div class="d m-tlk"><div class="dot">5</div><b>TLK (1)</b><span>CRUD + validasi</span></div>
       <div class="d m-tlk"><div class="dot">6</div><b>TLK (2)</b><span>anti-pertindihan</span></div>
       <div class="d m-pas"><div class="dot">7</div><b>Pas (1)</b><span>muat naik selamat</span></div>
@@ -922,7 +922,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <div class="sessions">
     <div><i>01</i>Agile &amp; Scrum ikut jadual 10 hari</div>
     <div><i>02</i>Jira: Epic M1–M4 → Story → Task/Bug</div>
-    <div><i>03</i>Git &amp; GitLab KKM: projek, push pertama, MR</div>
+    <div><i>03</i>Git &amp; GitLab KKM: repo <code>kelas-ci-&lt;nama&gt;</code> anda, push, MR</div>
     <div><i>04</i>Benang: keperluan → isu → kod → release</div>
   </div>
   <p class="small mt24" style="max-width:880px">Langkah penuh di pelatih.my, Rujukan: <b>Trek sampingan — GitLab</b> · <b>Trek sampingan — Jira</b> · <b>Trek sampingan — Design Thinking</b><br><span style="color:#8FA2C6">Dalam repo: docs/trek-gitlab.md · docs/trek-jira.md · docs/trek-design-thinking.md</span></p>
@@ -947,7 +947,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <h2 class="wide">Peranan Scrum dan ritual yang dipetakan ke jadual</h2>
   <div class="grid c3">
     <div class="card top m-pas"><span class="k">PRODUCT OWNER</span><h3>Pemilik sistem</h3><p>Menetapkan keutamaan backlog dan menerima demo.</p></div>
-    <div class="card top m-tlk"><span class="k">DEVELOPMENT TEAM</span><h3>Pasangan anda</h3><p>Driver + navigator; memiliki repo dan board sendiri.</p></div>
+    <div class="card top m-tlk"><span class="k">DEVELOPMENT TEAM</span><h3>Anda</h3><p>Seorang pembangun; memiliki repo <code>kelas-ci-&lt;nama&gt;</code> dan board sendiri.</p></div>
     <div class="card top m-rpt"><span class="k">SCRUM MASTER</span><h3>Jurulatih</h3><p>Membuang halangan dan menyemak di setiap ✅ checkpoint.</p></div>
   </div>
   <table class="t mt24">
@@ -957,7 +957,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <tr><td><b>Sprint review</b></td><td>Milestone M1 (Hari 6) · M2 (Hari 8) · M3 (Hari 9) · M4 (Hari 10)</td><td>Demo increment yang berfungsi</td></tr>
     <tr><td><b>Retrospektif</b></td><td>Hari 10 S4</td><td>Start / Stop / Continue</td></tr>
   </table>
-  <aside class="notes"><p>Ritual di sini ringan: recap 08:30 ialah stand-up kita, bukan mesyuarat baharu. Tanya setiap pasangan: "Apa halangan anda sekarang?" untuk latih format stand-up. ±4 minit.</p></aside>
+  <aside class="notes"><p>Ritual di sini ringan: recap 08:30 ialah stand-up kita, bukan mesyuarat baharu. Tanya beberapa peserta: "Apa halangan anda sekarang?" untuk latih format stand-up. ±4 minit.</p></aside>
 </section>
 
 <section class="slide">
@@ -1011,7 +1011,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <section class="slide">
   <div class="eyebrow">Pra-syarat · Board &amp; anggaran</div>
-  <h2 class="wide">Board pasangan dan story points</h2>
+  <h2 class="wide">Board peribadi dan story points</h2>
   <div class="split l">
     <div class="stack">
       <table class="t center">
@@ -1028,10 +1028,10 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
       <div style="display:flex;gap:8px;margin:10px 0 12px"><span class="num-badge">1</span><span class="num-badge">2</span><span class="num-badge">3</span><span class="num-badge">5</span><span class="num-badge">8</span><span class="num-badge">13</span></div>
       <p>Skala Fibonacci: makin besar, makin tidak pasti. Story rujukan: CRUD zon = <b>2</b>.</p>
       <h3 class="mt16">Planning poker</h3>
-      <p>Kedua-dua ahli pilih kad serentak. Beza besar? Bincang, kemudian undi semula. Story &gt; 8 dipecahkan.</p>
+      <p>Anda dan rakan sebelah pilih kad serentak untuk story yang sama. Beza besar? Bincang, kemudian undi semula. Story &gt; 8 dipecahkan.</p>
     </div>
   </div>
-  <aside class="notes"><p>Board ini milik pasangan, satu swimlane setiap epic. Buat satu pusingan planning poker untuk TLKPAS-12 (semakan pertindihan) — biasanya 5 kerana ada transaksi dan ujian. Tanya: "Kenapa tiada kad 4?" ±5 minit.</p></aside>
+  <aside class="notes"><p>Board ini milik setiap peserta (pilihan — Trek sampingan Jira), satu swimlane setiap epic. Buat satu pusingan planning poker untuk TLKPAS-12 (semakan pertindihan) — biasanya 5 kerana ada transaksi dan ujian. Tanya: "Kenapa tiada kad 4?" ±5 minit.</p></aside>
 </section>
 
 <section class="slide">
@@ -1058,7 +1058,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     </div>
   </div>
   <div class="callout tip mt24"><span class="i">💡</span><div>Dalam Jira: cipta <b>Sprint 1</b> dan <b>Sprint 2</b>, seret story Must ke sprint yang betul. Sprint 1 dimulakan (Start sprint) pada Hari 4 S4.</div></div>
-  <aside class="notes"><p>Sprint 1 pendek dan fokus satu modul supaya pasangan belajar rentak dahulu. Sprint 2 lebih padat — sebab itu Could disimpan untuk cabaran ⭐. Tanya: "Apa yang anda buang dahulu jika Sprint 2 tidak muat?" ±4 minit.</p></aside>
+  <aside class="notes"><p>Sprint 1 pendek dan fokus satu modul supaya peserta belajar rentak dahulu. Sprint 2 lebih padat — sebab itu Could disimpan untuk cabaran ⭐. Tanya: "Apa yang anda buang dahulu jika Sprint 2 tidak muat?" ±4 minit.</p></aside>
 </section>
 
 <section class="slide">
@@ -1083,50 +1083,47 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
       <div class="callout warn"><span class="i">⚠️</span><div><code>.env</code> dan <code>vendor/</code> tidak pernah masuk staging. Semak <code>git status</code> sebelum <code>add</code>.</div></div>
     </div>
   </div>
-  <aside class="notes"><p>Lukis empat kotak ini di papan; kebanyakan kekeliruan Git datang dari tidak tahu fail berada di kotak mana. Tanya: "Selepas commit tetapi sebelum push, adakah rakan anda boleh nampak kod itu?" — tidak. ±4 minit.</p></aside>
+  <aside class="notes"><p>Lukis empat kotak ini di papan; kebanyakan kekeliruan Git datang dari tidak tahu fail berada di kotak mana. Tanya: "Selepas commit tetapi sebelum push, adakah jurulatih boleh nampak kod itu di GitLab?" — tidak. ±4 minit.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Pra-syarat · GitLab KKM</div>
-  <h2 class="wide">Sediakan GitLab KKM: kunci SSH, projek private, push pertama</h2>
+  <h2 class="wide">Repo anda sudah wujud: <code>kelas-ci-&lt;nama&gt;</code> sejak Hari 2</h2>
   <div class="split">
     <ol class="steps tight">
-      <li><div><b>Kunci SSH ed25519</b><span>Jana, tampal kunci awam di GitLab → <i>Edit profile → SSH Keys</i>.</span></div></li>
-      <li><div><b>Projek private</b><span><i>Create blank project</i> <code>sistem-tlk-pas</code>, Private, tanpa README.</span></div></li>
-      <li><div><b>Ahli projek</b><span><i>Manage → Members</i>: jemput rakan sebagai Maintainer.</span></div></li>
-      <li><div><b>Push pertama</b><span>Tolak dokumen Hari 1–3 ke <code>main</code>; rakan <code>git clone</code>.</span></div></li>
-      <li><div><b>Beri URL projek kepada jurulatih</b><span>Dipaparkan pada panel <i>Lab details</i>.</span></div></li>
+      <li><div><b>Satu repo setiap peserta</b><span>Projek private <code>kelas-ci-&lt;nama&gt;</code> dalam namespace anda (Lab 2.2). Tiada repo baharu selepas ini.</span></div></li>
+      <li><div><b>HTTPS + Git Credential Manager</b><span>Log masuk sekali semasa push pertama; kata laluan ditolak → Personal Access Token (<code>write_repository</code>).</span></div></li>
+      <li><div><b>Jurulatih = Reporter</b><span><i>Manage → Members</i>: jurulatih (dan rakan sebelah, jika mahu) sebagai Reporter — boleh baca &amp; komen, tidak boleh push.</span></div></li>
+      <li><div><b>Push setiap lab</b><span>Hari 2: <code>SETUP:</code> · Hari 3: <code>DB:</code> <code>JABATAN:</code> <code>ZON:</code> · Hari 4: <code>SETUP:</code> Shield + 8 migration.</span></div></li>
+      <li><div><b>URL kepada jurulatih</b><span>Dipaparkan pada panel <i>Lab details</i>.</span></div></li>
     </ol>
     <div class="codewrap"><div class="codebar">Git Bash · Windows<span class="lang">bash</span></div>
-<pre class="code sm" data-lang="bash"><span class="f">ssh-keygen</span> <span class="n">-t</span> ed25519 <span class="n">-C</span> <span class="s">"nama@latihan.test"</span>
-<span class="f">clip</span> &lt; ~/.ssh/id_ed25519.pub  <span class="c"># salin, tampal di GitLab</span>
-<span class="f">ssh</span> <span class="n">-T</span> git@&lt;gitlab-kkm&gt;      <span class="c"># "Welcome to GitLab, @&lt;akaun&gt;!"</span>
-
-<span class="c"># dalam folder projek sistem-tlk-pas</span>
-<span class="f">git</span> remote add origin git@&lt;gitlab-kkm&gt;:&lt;akaun&gt;/sistem-tlk-pas.git
-<span class="f">git</span> push <span class="n">-u</span> origin main
-<span class="f">git</span> remote <span class="n">-v</span>                 <span class="c"># sahkan</span></pre></div>
+<pre class="code sm" data-lang="bash"><span class="f">cd</span> ~/latihan/kelas-ci-&lt;nama&gt;
+<span class="f">git</span> remote <span class="n">-v</span>        <span class="c"># origin → …/kelas-ci-&lt;nama&gt;.git</span>
+<span class="f">git</span> status          <span class="c"># bersih? .env tidak tersenarai</span>
+<span class="f">git</span> log <span class="n">--oneline -5</span> <span class="c"># commit Hari 2–3 ada</span>
+<span class="f">git</span> push            <span class="c"># tiada "Everything up-to-date"? push dahulu</span></pre></div>
   </div>
-  <aside class="notes"><p>Akaun GitLab KKM diberi oleh IT KKM (tiada daftar sendiri); jurulatih beri URL sebenar untuk <code>&lt;gitlab-kkm&gt;</code>. Semua arahan dijalankan dalam Git Bash di Windows; <code>~/.ssh</code> ialah <code>C:\Users\&lt;nama&gt;\.ssh</code>. Kunci SSH dijana sekali setiap komputer; jangan kongsi fail tanpa <code>.pub</code>. Jika port 22 disekat, guna HTTPS + Personal Access Token (<code>read_repository</code>, <code>write_repository</code>). Push pertama ialah dokumen Hari 1–3; kod CI4 di-push pada Hari 4 Lab 4.4. Tanya: "Apa output <code>ssh -T</code> anda?" ±5 minit.</p></aside>
+  <aside class="notes"><p>Model kursus sejak 16/10: setiap peserta satu repo private kelas-ci-nama di GitLab KKM (Lab 2.2), jurulatih = Reporter. Tiada repo pasangan sistem-tlk-pas dan tiada projek CI4 baharu pada Hari 4 — Hari 4 hingga 10 menambah kod ke projek yang sama. Tanya: "Apa output git remote -v anda?" Peserta yang masih ada perubahan belum di-push: push sebelum Lab 4.1. ±3 minit.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Pra-syarat · Merge request</div>
-  <h2 class="wide">Branch → MR → semakan → merge, dengan <code>main</code> dilindungi</h2>
+  <h2 class="wide">Branch → MR → komen → merge, dalam repo sendiri</h2>
   <div class="flow">
-    <div class="node"><span class="k">01</span><b>Branch</b><span><code>feat/TLKPAS-12-…</code></span></div><div class="arr">→</div>
+    <div class="node"><span class="k">01</span><b>Branch</b><span><code>feat/tlk-model</code></span></div><div class="arr">→</div>
     <div class="node"><span class="k">02</span><b>Push</b><span><code>git push -u origin …</code></span></div><div class="arr">→</div>
-    <div class="node"><span class="k">03</span><b>MR</b><span>Merge request di GitLab</span></div><div class="arr">→</div>
-    <div class="node hot"><span class="k">04</span><b>Semakan</b><span>rakan semak ikut DoD</span></div><div class="arr">→</div>
-    <div class="node"><span class="k">05</span><b>Merge</b><span>rakan klik Merge</span></div>
+    <div class="node"><span class="k">03</span><b>MR</b><span>sasaran <code>main</code> anda sendiri</span></div><div class="arr">→</div>
+    <div class="node hot"><span class="k">04</span><b>Semakan</b><span>jurulatih / rakan sebelah (Reporter) komen ikut DoD</span></div><div class="arr">→</div>
+    <div class="node"><span class="k">05</span><b>Merge</b><span>anda (Owner) klik Merge</span></div>
   </div>
   <div class="grid c3 mt24">
-    <div class="card side m-pas"><h3>Lindungi <code>main</code></h3><p>Dilindungi secara lalai: tiada force push; Maintainer sahaja push &amp; merge.</p></div>
-    <div class="card side m-tlk"><h3>Penulis tidak merge</h3><p>Rakan semak dan klik Merge. Peraturan approval ialah ciri Premium.</p></div>
-    <div class="card side m-rpt"><h3>Sama dengan lab</h3><p>Lab guna <code>git merge --no-ff</code> tempatan. Kaedah lalai GitLab, <i>Merge commit</i>, menghasilkan commit merge yang sama.</p></div>
+    <div class="card side m-pas"><h3>Reporter, bukan Maintainer</h3><p>Penyemak boleh baca &amp; komen sahaja — tiada orang lain boleh push ke repo anda.</p></div>
+    <div class="card side m-tlk"><h3>Komen dibetulkan dahulu</h3><p>Commit pembetulan pada branch yang <b>sama</b>, balas komen, <i>Resolve thread</i>, baru Merge (Lab 4.4b).</p></div>
+    <div class="card side m-rpt"><h3>Sama dengan lab</h3><p>Lab Hari 5–10 guna <code>git merge --no-ff</code> tempatan. Kaedah lalai GitLab, <i>Merge commit</i>, menghasilkan commit merge yang sama.</p></div>
   </div>
-  <div class="callout warn mt16"><span class="i">⚠️</span><div>Jangan push <code>main</code> selepas merge tempatan, walaupun Maintainer dibenarkan. Push branch, merge melalui MR, kemudian <code>git switch main &amp;&amp; git pull</code>.</div></div>
-  <aside class="notes"><p>Dalam pasangan, rakan anda ialah penyemak — dia mesti boleh menerangkan kod sebelum klik Merge (disiplin "faham dahulu"). Pada GitLab Free, peraturan approval ialah ciri Premium, jadi peraturan kursus ialah disiplin: penulis tidak pernah merge MR sendiri. Tanya: "Kenapa penulis tidak merge MR sendiri?" ±5 minit.</p></aside>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Merge tempatan? Push <code>main</code> selepas itu supaya GitLab sama dengan laptop. Merge melalui MR? <code>git switch main &amp;&amp; git pull</code>.</div></div>
+  <aside class="notes"><p>Dalam repo individu, peserta ialah Owner dan boleh merge MR sendiri; disiplin kursus ialah menunggu satu komen penyemak (jurulatih atau rakan sebelah sebagai Reporter) dahulu. Tanya: "Kenapa kita masih buka MR walaupun bekerja seorang?" — rekod semakan dan sejarah yang boleh dijejak. ±4 minit.</p></aside>
 </section>
 
 <section class="slide">
@@ -1161,42 +1158,43 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <div class="eyebrow">Pra-syarat · Senarai semak</div>
   <h2>Siap sebelum Hari 4</h2>
   <ul class="checks sm">
-    <li><span><em>LOG MASUK</em>Log masuk GitLab KKM; <code>ssh -T git@&lt;gitlab-kkm&gt;</code> papar "Welcome to GitLab" (atau push HTTPS + token).</span></li>
-    <li><span><em>PROJEK</em>Projek <code>sistem-tlk-pas</code> private; rakan pasangan ialah ahli.</span></li>
-    <li><span><em>PUSH</em>Dokumen Hari 1–3 di GitLab; rakan sudah clone; URL diberi kepada jurulatih (panel <i>Lab details</i>).</span></li>
-    <li><span><em>MAIN</em><code>main</code> dilindungi: tiada force push; Maintainer sahaja merge.</span></li>
-    <li><span><em>MR</em>Merge request pertama disemak dan di-merge oleh rakan, bukan penulis.</span></li>
+    <li><span><em>PROJEK</em><code>~/latihan/kelas-ci-&lt;nama&gt;</code> dari Hari 2–3 berjalan: <code>php spark serve</code> → <code>/jabatan</code> dan <code>/zon</code> dipaparkan.</span></li>
+    <li><span><em>DATABASE</em><code>.env</code> bersambung ke <code>kkm_latihan</code>; <code>php spark migrate:status</code> → <code>departments</code> + <code>parking_zones</code> <i>Migrated</i>.</span></li>
+    <li><span><em>PUSH</em>Commit Hari 3 (<code>DB:</code>, <code>JABATAN:</code>, <code>ZON:</code>) ada di GitLab; <code>git status</code> bersih.</span></li>
+    <li><span><em>RAHSIA</em><code>git ls-files | grep -c "^\.env$"</code> → <code>0</code>.</span></li>
+    <li><span><em>AKSES</em>Jurulatih ialah Reporter projek anda; URL projek pada panel <i>Lab details</i>.</span></li>
   </ul>
-  <aside class="notes"><p>Semak senarai ini pada recap 08:30 Hari 4 dengan angkat tangan bagi setiap baris; baris MR pertama boleh ditutup pada Hari 4 S4. Persediaan Jira (projek <code>TLKPAS</code>, epic, Sprint 1 &amp; 2) disemak melalui Trek sampingan — Jira. Pasangan yang belum siap dibantu semasa S1 — jangan biarkan mereka menulis kod tanpa projek dan board. ±3 minit.</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Hari 4–10 <b>menyambung projek yang sama</b>. Tiada <code>create-project</code>, tiada folder baharu.</div></div>
+  <aside class="notes"><p>Semak senarai ini pada recap 08:30 Hari 4 dengan angkat tangan bagi setiap baris. Peserta yang tertinggal Lab 3.x: guna laluan kejar dalam nota penceramah Hari 4 sebelum Lab 4.2 — jangan mulakan projek baharu, sambung kelas-ci-nama. Jira (Trek sampingan) pilihan. ±3 minit.</p></aside>
 </section>
 
 <!-- ============================ HARI 4 ============================ -->
 
 <section class="slide dark divider" data-label="Hari 4 · Dev Kickoff">
   <div class="eyebrow">Hari 4 · Fasa B — Sedia &amp; Bina</div>
-  <h1>Assignment Review &amp; Development Kickoff</h1>
-  <div><span class="chip m-n">Persekitaran · Shield · migration</span></div>
+  <h1>Shield, Skema Penuh &amp; Aliran Git</h1>
+  <div><span class="chip m-n">Projek sama · kelas-ci-&lt;nama&gt;</span></div>
   <div class="sessions">
-    <div><i>S1</i>Semakan tugasan persediaan; aliran request MVC CI4</div>
-    <div><i>S2</i>Persekitaran CI4, <code>.env</code> + Shield</div>
-    <div><i>S3</i>Migration awal daripada ERD</div>
-    <div><i>S4</i>Pembahagian tugas/modul; wrap-up</div>
+    <div><i>S1</i>Demo repo sendiri &amp; kitaran request /zon · S5 POST /jabatan</div>
+    <div><i>S2</i>.env, Shield &amp; layout Bootstrap · S6 filter halaman Hari 3</div>
+    <div><i>S3</i>8 migration baki + seeder · S7 latihan FK &amp; ON DELETE</div>
+    <div><i>S4</i>Commit SETUP:, MR pertama &amp; klon baharu · S8 MR kedua</div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
   <div class="daynum">04</div>
-  <aside class="notes"><p>Hari pertama menulis kod. Menjelang petang, setiap pasangan mesti mempunyai projek CI4 yang berjalan, Shield dipasang, dan semua migration + seeder berjaya.</p></aside>
+  <aside class="notes"><p>Tiada projek baharu hari ini: setiap peserta menyambung kelas-ci-nama dari Hari 2–3 (database, /jabatan, /zon sudah ada). Menjelang 17:00 projek yang sama boleh log masuk sebagai 5 pengguna sintetik, ada 10 jadual SPEC §3, dan MR pertama di-merge. Setiap sesi teras diikuti sesi lanjutan S5–S8 (lab b).</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 4 · Objektif hari ini</div>
   <h2>Pada akhir hari ini, anda boleh…</h2>
   <ul class="checks">
-    <li><span><em>S1</em>Mendemokan tugasan persediaan dan menjelaskan aliran request MVC CI4.</span></li>
-    <li><span><em>S2</em>Mencipta projek, mengkonfigur <code>.env</code>, memasang Shield &amp; layout Bootstrap.</span></li>
-    <li><span><em>S3</em>Menukar ERD kepada migration + seeder dan menjalankan <code>php spark migrate</code> dengan berjaya.</span></li>
-    <li><span><em>S4</em>Menerima tugasan modul, branch Git &amp; Definition of Done.</span></li>
+    <li><span><em>S1</em>Menerangkan 7 langkah kitaran request CI4 dengan menjejak <code>/zon</code> dalam projek sendiri (Debug Toolbar).</span></li>
+    <li><span><em>S2</em>Melengkapkan <code>.env</code> sedia ada, memasang Shield dalam projek yang sama, dan membina layout Bootstrap <code>layouts/main.php</code>.</span></li>
+    <li><span><em>S3</em>Menulis 8 migration baki (selepas <code>departments</code> + <code>parking_zones</code> Hari 3) dan seeder — <b>10 jadual</b> SPEC §3.</span></li>
+    <li><span><em>S4</em>Menolak commit <code>SETUP:</code>, menjalankan MR ke <code>main</code> sendiri, dan membuktikan repo lengkap dengan klon baharu.</span></li>
   </ul>
-  <aside class="notes"><p>S1 bermula dengan demo 5 minit setiap pasangan. Kenal pasti pasangan yang bermasalah dengan persekitaran dan pasangkan mereka dengan pasangan yang sudah siap.</p></aside>
+  <aside class="notes"><p>S1 bermula dengan demo 3 minit setiap peserta: halaman GitLab kelas-ci-nama + /zon?q=aras. Peserta yang projeknya belum berjalan dibantu dahulu (laluan kejar dalam nota penceramah) — mereka menyambung projek sendiri, bukan mencipta semula.</p></aside>
 </section>
 
 <section class="slide">
@@ -1221,70 +1219,69 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <section class="slide codey">
   <div class="eyebrow">Hari 4 · S2 — Struktur &amp; .env</div>
-  <h2>Struktur projek dan konfigurasi persekitaran</h2>
+  <h2>Projek yang sama, bertambah setiap hari</h2>
   <div class="split">
-    <div class="codewrap"><div class="codebar">ci-kkm/<span class="lang">tree</span></div>
-<pre class="code sm" data-lang="text">ci-kkm/
+    <div class="codewrap"><div class="codebar">kelas-ci-&lt;nama&gt;/<span class="lang">tree</span></div>
+<pre class="code sm" data-lang="text">kelas-ci-&lt;nama&gt;/      <span class="c">← projek Hari 2</span>
 ├── app/
-│   ├── Config/       Routes · Filters · AuthGroups
-│   ├── Controllers/  Tlk/ Pas/ Admin/ Laporan/ Statistik/
-│   ├── Enums/        BookingStatus · PassStatus …
-│   ├── Entities/  Models/  Services/
-│   ├── Database/     Migrations/ · Seeds/
-│   └── Views/        layouts/main.php · tlk/ · pas/
-├── public/           index.php — satu-satunya web root
-├── writable/         logs/ cache/ uploads/pas/
-├── tests/
-└── .env              ← jangan commit!</pre></div>
+│   ├── Config/       Routes · Auth* · AuthGroups*
+│   ├── Controllers/  Jabatan · Zon · Home*
+│   ├── Models/       DepartmentModel · UserModel*
+│   ├── Database/     Migrations/ (2 + 8*)
+│   └── Views/        jabatan/ · zon/ · layouts/main.php*
+├── public/           index.php — web root
+├── writable/  tests/
+├── .env              <span class="c">← jangan commit!</span>
+└── .env.example      <span class="c">← Lab 3.1b</span>
+<span class="c">* = baharu Hari 4</span></pre></div>
     <div class="stack">
-      <div class="codewrap"><div class="codebar">.env<span class="lang">env</span></div>
+      <div class="codewrap"><div class="codebar">.env (sudah wujud — tambah yang tertinggal)<span class="lang">env</span></div>
 <pre class="code sm" data-lang="env"><span class="v">CI_ENVIRONMENT</span> =<span class="s"> development</span>
 <span class="v">app.baseURL</span> =<span class="s"> 'http://localhost:8080/'</span>
+<span class="v">app.indexPage</span> =<span class="s"> ''</span>   <span class="c"># baharu Hari 4</span>
+<span class="v">app.appTimezone</span> =<span class="s"> 'Asia/Kuala_Lumpur'</span>
 
-<span class="v">database.default.hostname</span> =<span class="s"> 127.0.0.1</span>
-<span class="v">database.default.database</span> =<span class="s"> ci_kkm</span>
+<span class="v">database.default.hostname</span> =<span class="s"> localhost</span>
+<span class="v">database.default.database</span> =<span class="s"> kkm_latihan</span>
 <span class="v">database.default.username</span> =<span class="s"> kkm_dev</span>
-<span class="c"># kata laluan: isi setempat sahaja</span>
-<span class="v">database.default.password</span> =
 <span class="v">database.default.DBDriver</span> =<span class="s"> MySQLi</span>
 <span class="v">database.default.charset</span>  =<span class="s"> utf8mb4</span></pre></div>
-      <div class="callout warn"><span class="i">⚠️</span><div><code>.env</code> mesti dalam <code>.gitignore</code>. Kongsi <code>env</code> contoh, bukan rahsia.</div></div>
+      <div class="callout warn"><span class="i">⚠️</span><div><b>Jangan</b> <code>cp env .env</code> lagi — ia menulis ganti tetapan Hari 3. Buka <code>.env</code> sedia ada dan tambah baris yang tertinggal.</div></div>
     </div>
   </div>
-  <aside class="notes"><p>Tunjukkan bahawa hanya folder public/ didedahkan kepada web server. Ini sebab fail muat naik nanti disimpan di writable/, bukan public/. Salin fail <code>env</code> kepada <code>.env</code> dan isi nilai setempat.</p></aside>
+  <aside class="notes"><p>Tunjukkan projek jurulatih sendiri (siap Lab 3.4): fail Hari 2–3 kekal, Hari 4 hanya menambah fail bertanda *. Hanya folder public/ didedahkan kepada web server — sebab itu fail muat naik Hari 7 disimpan di writable/. Ralat lazim: # masih di depan baris .env, localhost vs 127.0.0.1.</p></aside>
 </section>
 
 <section class="slide codey">
   <div class="eyebrow">Hari 4 · S2 — Shield &amp; Spark</div>
-  <h2>Pasang Shield dan kenali arahan Spark</h2>
+  <h2>Pasang Shield dalam projek sedia ada</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
-<pre class="code sm" data-lang="bash"><span class="f">composer</span> create-project codeigniter4/appstarter ci-kkm
-<span class="f">cd</span> ci-kkm &amp;&amp; <span class="f">cp</span> env .env
+<pre class="code sm" data-lang="bash"><span class="f">cd</span> ~/latihan/kelas-ci-&lt;nama&gt;      <span class="c"># sambung projek Hari 3</span>
+<span class="f">php</span> <span class="k">spark</span> db:table <span class="n">--show</span>       <span class="c"># departments, parking_zones</span>
+<span class="c"># hentikan serve dahulu (Ctrl+C)</span>
 <span class="f">composer</span> require codeigniter4/shield
-<span class="f">php</span> <span class="k">spark</span> shield:setup        <span class="c"># Auth, AuthGroups, laluan</span>
-<span class="f">php</span> <span class="k">spark</span> migrate <span class="n">--all</span>       <span class="c"># jadual Shield</span>
+<span class="f">php</span> <span class="k">spark</span> shield:setup        <span class="c"># Auth, AuthGroups, route + migrate --all</span>
+<span class="f">php</span> <span class="k">spark</span> shield:model UserModel <span class="c"># model pengguna sendiri</span>
 
-<span class="f">php</span> <span class="k">spark</span> make:migration CreateParkingZones
-<span class="f">php</span> <span class="k">spark</span> make:model ParkingZoneModel
-<span class="f">php</span> <span class="k">spark</span> migrate             <span class="c"># jadual aplikasi</span>
+<span class="f">php</span> <span class="k">spark</span> make:migration AddProfileFieldsToUsers
+<span class="f">php</span> <span class="k">spark</span> migrate             <span class="c"># 8 migration baki (Lab 4.3)</span>
 <span class="f">php</span> <span class="k">spark</span> db:seed DatabaseSeeder
-<span class="f">php</span> <span class="k">spark</span> routes              <span class="c"># semak laluan &amp; filter</span>
+<span class="f">php</span> <span class="k">spark</span> routes              <span class="c"># semak route &amp; filter</span>
 <span class="f">php</span> <span class="k">spark</span> serve               <span class="c"># http://localhost:8080</span></pre></div>
     <div class="stack">
-      <div class="codewrap"><div class="codebar">app/Config/Filters.php<span class="lang">php</span></div>
-<pre class="code sm" data-lang="php"><span class="k">public</span> <span class="k">array</span> <span class="v">$globals</span> = [
-    <span class="s">'before'</span> =&gt; [
-        <span class="s">'csrf'</span>,
-        <span class="s">'session'</span> =&gt; [<span class="s">'except'</span> =&gt; [
-            <span class="s">'login*'</span>, <span class="s">'register'</span>, <span class="s">'auth/a/*'</span>,
-        ]],
-    ],
-];</pre></div>
-      <div class="callout tip"><span class="i">💡</span><div>CSRF dan <code>session</code> global: setiap halaman perlu log masuk kecuali route Shield sendiri.</div></div>
+      <div class="codewrap"><div class="codebar">app/Config/Routes.php — hanya baris / berubah<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="v">$routes</span>-&gt;<span class="f">get</span>(<span class="s">'/'</span>, <span class="s">'Home::index'</span>,
+    [<span class="s">'filter'</span> =&gt; <span class="s">'session'</span>, <span class="s">'as'</span> =&gt; <span class="s">'home'</span>]);
+<span class="v">$routes</span>-&gt;<span class="f">get</span>(<span class="s">'jabatan'</span>, <span class="s">'Jabatan::index'</span>);
+<span class="v">$routes</span>-&gt;<span class="f">get</span>(<span class="s">'zon'</span>, <span class="s">'Zon::index'</span>);
+<span class="c">// … route Hari 3 yang lain kekal …</span>
+
+<span class="f">service</span>(<span class="s">'auth'</span>)-&gt;<span class="f">routes</span>(<span class="v">$routes</span>);</pre></div>
+      <div class="callout tip"><span class="i">💡</span><div>Route Hari 3 (<code>jabatan</code>, <code>zon</code>) <b>kekal</b>. <code>shield:setup</code> sudah menambah <code>service('auth')->routes()</code> — jangan tambah kali kedua.</div></div>
     </div>
   </div>
-  <aside class="notes"><p><code>shield:setup</code> menyalin konfigurasi Auth dan AuthGroups ke app/Config serta menambah route auth. Jalankan <code>php spark routes</code> selepas setiap perubahan route untuk mengesahkan filter.</p></aside>
+  <aside class="notes"><p>Tiada create-project dan tiada cp env .env: projek kelas-ci-nama sudah wujud sejak Lab 2.2. shield:setup menyalin Auth dan AuthGroups ke app/Config, menambah route auth dan menjalankan migrate --all. Jalankan php spark routes selepas setiap perubahan route untuk mengesahkan filter.</p></aside>
 </section>
 
 <section class="slide codey">
@@ -1315,7 +1312,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
     <span class="k">public</span> <span class="k">function</span> <span class="f">down</span>(): <span class="k">void</span> { <span class="v">$this</span>-&gt;forge-&gt;<span class="f">dropTable</span>(<span class="s">'slot_bookings'</span>); }
 }</pre></div>
-  <aside class="notes"><p>Tunjukkan pemetaan terus daripada kamus data Hari 3: setiap baris kamus menjadi satu entri addField. Susunan migration penting — parking_slots mesti wujud sebelum slot_bookings kerana FK. Ingatkan: jangan ubah migration yang sudah dijalankan oleh rakan; cipta migration baharu.</p></aside>
+  <aside class="notes"><p>Tunjukkan pemetaan terus daripada docs/erd-rujukan.md: setiap baris kamus menjadi satu entri addField. Susunan migration penting — parking_slots mesti wujud sebelum slot_bookings kerana FK. Ingatkan: CreateDepartmentsTable dan CreateParkingZonesTable dari Hari 3 kekal — jangan ubah migration yang sudah dijalankan; cipta migration baharu.</p></aside>
 </section>
 
 <section class="slide codey">
@@ -1356,38 +1353,41 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Hari 4 · S4 — Pembahagian tugas</div>
-  <h2>Pasangan, branch &amp; checkpoint</h2>
+  <div class="eyebrow">Hari 4 · S4 — Aliran Git solo</div>
+  <h2>Branch setiap ciri, MR ke <code>main</code> sendiri</h2>
   <div class="split">
     <ol class="steps tight">
-      <li><div><b>Bentuk pasangan</b><span>Driver menaip, navigator menyemak — tukar setiap sesi.</span></div></li>
-      <li><div><b>Satu repo setiap pasangan</b><span>Semua pasangan membina keempat-empat modul.</span></div></li>
-      <li><div><b>Satu ciri = satu branch</b><span><code>git switch -c feat/tlk-borang-tempahan</code></span></div></li>
-      <li><div><b>Semakan jurulatih</b><span>Di setiap ✅ checkpoint lab sebelum merge ke <code>main</code>.</span></div></li>
+      <li><div><b>Commit <code>SETUP:</code></b><span>Shield + layout, kemudian 8 migration + seeder — tiada <code>.env</code>, <code>vendor/</code>.</span></div></li>
+      <li><div><b>Satu ciri = satu branch</b><span><code>feat/pelan-kerja</code> hari ini; <code>feat/tlk-model</code> … mulai Hari 5.</span></div></li>
+      <li><div><b>MR → komen → merge</b><span>Jurulatih/rakan sebelah (Reporter) memberi komen; anda (Owner) klik Merge.</span></div></li>
+      <li><div><b>Klon baharu</b><span>Klon ke folder kedua + <code>kkm_latihan_test</code> → <code>migrate --all</code> + seed → log masuk.</span></div></li>
     </ol>
     <div class="stack">
       <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
-<pre class="code sm" data-lang="bash"><span class="f">git</span> switch main &amp;&amp; <span class="f">git</span> pull
-<span class="f">git</span> switch <span class="n">-c</span> feat/tlk-borang-tempahan
-<span class="f">git</span> commit <span class="n">-m</span> <span class="s">"TLK: tambah validasi tarikh tempahan"</span>
-<span class="f">git</span> push <span class="n">-u</span> origin feat/tlk-borang-tempahan</pre></div>
-      <div class="callout tip"><span class="i">⭐</span><div>Pasangan yang cepat mengambil <b>cabaran tambahan</b> dalam lab — bukan modul seterusnya.</div></div>
+<pre class="code sm" data-lang="bash"><span class="f">git</span> switch <span class="n">-c</span> feat/pelan-kerja
+<span class="f">git</span> add docs/pelan-kerja.md
+<span class="f">git</span> commit <span class="n">-m</span> <span class="s">"DOCS: pelan kerja + DoD"</span>
+<span class="f">git</span> push <span class="n">-u</span> origin feat/pelan-kerja
+<span class="c"># GitLab: Create merge request → Merge</span>
+<span class="f">git</span> switch main &amp;&amp; <span class="f">git</span> pull
+<span class="f">git</span> log <span class="n">--oneline --graph -5</span></pre></div>
+      <div class="callout tip"><span class="i">⭐</span><div>Siap awal? Ambil lab lanjutan (S5–S8) dan ⭐ cabaran — bukan modul esok.</div></div>
     </div>
   </div>
-  <aside class="notes"><p>Tunjukkan semula Definition of Done dari slaid cara kerja. Pastikan setiap pasangan sudah push branch pertama sebelum pulang — ini membuktikan akses Git berfungsi.</p></aside>
+  <aside class="notes"><p>Tunjukkan semula Definition of Done dari slaid cara kerja. Setiap peserta bekerja dalam repo sendiri; jurulatih menyemak MR di GitLab. Pastikan setiap peserta push commit SETUP: dan merge feat/pelan-kerja sebelum pulang — Hari 5 bermula dengan git switch -c feat/tlk-model dari main yang sama.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 4 · Hasil hari ini</div>
   <h2>Semak sebelum pulang</h2>
   <ul class="checks done">
-    <li><span>Projek CI4 berjalan dengan <code>php spark serve</code>; <code>.env</code> dikonfigur dan tidak dicommit.</span></li>
-    <li><span>Shield dipasang; log masuk berfungsi untuk 5 akaun sintetik dengan group betul.</span></li>
-    <li><span><b>Semua migration + seeder</b> berjaya: <code>php spark migrate</code> &amp; <code>db:seed DatabaseSeeder</code>.</span></li>
-    <li><span>Layout Bootstrap <code>app/Views/layouts/main.php</code> dengan navigasi mengikut peranan.</span></li>
-    <li><span>Branch Git pertama di-push; DoD difahami.</span></li>
+    <li><span><code>kelas-ci-&lt;nama&gt;</code> yang sama: <code>/login</code> berfungsi untuk 5 akaun sintetik dengan group betul; <code>.env</code> tidak di-commit.</span></li>
+    <li><span><b>10 migration</b> <i>Migrated</i> (2 dari Hari 3 + 8 hari ini) &amp; <code>db:seed DatabaseSeeder</code> idempoten.</span></li>
+    <li><span>Layout Bootstrap <code>layouts/main.php</code>; <code>/jabatan</code> &amp; <code>/zon</code> Hari 3 kini dilindungi filter Shield (Lab 4.2b).</span></li>
+    <li><span>GitLab: ≥ 2 commit <code>SETUP:</code>, MR <code>feat/pelan-kerja</code> di-merge; klon baharu berjaya log masuk.</span></li>
   </ul>
-  <aside class="notes"><p>Checkpoint penting: jalankan <code>php spark migrate:refresh --all</code> dan seed semula pada mesin setiap pasangan. Jika ia gagal, betulkan malam ini — Hari 5 bergantung sepenuhnya pada skema ini.</p></aside>
+  <div class="callout tip mt24"><span class="i">➡️</span><div><b>Esok:</b> Modul TLK dalam projek yang sama — <code>git switch main &amp;&amp; git pull &amp;&amp; git switch -c feat/tlk-model</code>.</div></div>
+  <aside class="notes"><p>Checkpoint penting: klon baharu (Lab 4.4 langkah 6) membuktikan migration + seeder lengkap. Jika gagal, betulkan malam ini — Hari 5 menyambung skema ini dalam repo yang sama.</p></aside>
 </section>
 
 <!-- ============================ HARI 5 ============================ -->
@@ -1591,7 +1591,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span>Tempahan pertama disimpan sebagai <code>TLK-2026-0001</code>; senarai pemohon berpagination.</span></li>
     <li><span>Ujian manual dijalankan: tarikh kosong, tarikh lampau, &gt; 90 hari, sebab terlalu pendek — pepijat direkod.</span></li>
   </ul>
-  <aside class="notes"><p>Semak rawak: minta satu pasangan cuba menghantar borang dengan end_date sebelum start_date. Ralat mesti dari server, bukan hanya JavaScript.</p></aside>
+  <aside class="notes"><p>Semak rawak: minta seorang peserta cuba menghantar borang dengan end_date sebelum start_date. Ralat mesti dari server, bukan hanya JavaScript.</p></aside>
 </section>
 
 <!-- ============================ HARI 6 ============================ -->
@@ -1808,7 +1808,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span>Ujian PHPUnit pertindihan &amp; peralihan status lulus.</span></li>
     <li><span>Badge status, flash message &amp; dialog pengesahan — <b>Modul TLK siap</b> 🎉</span></li>
   </ul>
-  <aside class="notes"><p>Jalankan DoD penuh untuk M1 dengan setiap pasangan. Yang belum lulus DoD perlu menyelesaikannya sebelum Hari 7 S2 — jangan bawa hutang teknikal ke modul Pas.</p></aside>
+  <aside class="notes"><p>Jalankan DoD penuh untuk M1 dengan setiap peserta. Yang belum lulus DoD perlu menyelesaikannya sebelum Hari 7 S2 — jangan bawa hutang teknikal ke modul Pas.</p></aside>
 </section>
 
 
@@ -1838,7 +1838,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span><em>S3</em>Memuat naik fail dengan selamat: jenis, saiz, nama rawak, di luar <code>public/</code>.</span></li>
     <li><span><em>S4</em>Menguji kes sempadan muat naik &amp; validasi.</span></li>
   </ul>
-  <aside class="notes"><p>Tanya pasangan: berapa banyak kod Hari 5 yang boleh diguna semula? ReferenceNumberService dan StatusLogModel terus diguna; yang lain mengikut corak yang sama.</p></aside>
+  <aside class="notes"><p>Tanya peserta: berapa banyak kod Hari 5 yang boleh diguna semula? ReferenceNumberService dan StatusLogModel terus diguna; yang lain mengikut corak yang sama.</p></aside>
 </section>
 
 <section class="slide codey">
@@ -1988,7 +1988,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <tr><td>Tiada fail</td><td>—</td><td><span class="st rejected">ditolak</span> ralat <code>uploaded</code></td></tr>
     <tr><td>Akses terus</td><td>URL ke <code>writable/uploads/…</code></td><td><span class="st rejected">404</span> di luar <code>public/</code></td></tr>
   </table>
-  <aside class="notes"><p>Sediakan fail ujian ini dalam folder bersama (termasuk fail 2.4 MB dan PHP yang dinamakan semula). Pasangan rekod keputusan dalam templat kes ujian — setiap kegagalan menjadi pepijat untuk dibaiki.</p></aside>
+  <aside class="notes"><p>Sediakan fail ujian ini dalam folder bersama (termasuk fail 2.4 MB dan PHP yang dinamakan semula). Setiap peserta rekod keputusan dalam templat kes ujian — setiap kegagalan menjadi pepijat untuk dibaiki.</p></aside>
 </section>
 
 <section class="slide">
@@ -2001,7 +2001,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span>Muat naik selamat: jenis, saiz, ≤ 3 fail, nama rawak, luar <code>public/</code>.</span></li>
     <li><span>Jadual kes sempadan diuji dan pepijat direkod.</span></li>
   </ul>
-  <aside class="notes"><p>Checkpoint: buka folder writable/uploads/pas/ — nama fail mesti rawak. Cuba muat turun dokumen milik pasangan lain — mesti 404.</p></aside>
+  <aside class="notes"><p>Checkpoint: buka folder writable/uploads/pas/ — nama fail mesti rawak. Cuba muat turun dokumen milik pemohon lain (pemohon2) — mesti 404.</p></aside>
 </section>
 
 <!-- ============================ HARI 8 ============================ -->
@@ -2447,7 +2447,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span>Laporan dilindungi <code>permission:laporan.view</code>.</span></li>
     <li><span>Jumlah laporan = jumlah DB disahkan — <b>Modul Laporan siap</b> 🎉</span></li>
   </ul>
-  <aside class="notes"><p>Esok hari terakhir: statistik pada waktu pagi, ujian akhir pada waktu petang, dan demo kepada pemilik sistem. Minta pasangan menyediakan data sintetik yang cukup (sekurang-kurangnya 12 bulan) untuk carta.</p></aside>
+  <aside class="notes"><p>Esok hari terakhir: statistik pada waktu pagi, ujian akhir pada waktu petang, dan demo kepada pemilik sistem. Minta peserta menyediakan data sintetik yang cukup (sekurang-kurangnya 12 bulan) untuk carta.</p></aside>
 </section>
 
 <!-- ============================ HARI 10 ============================ -->
@@ -2615,7 +2615,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div class="card flat"><h3>Kualiti</h3><p>Jalankan <code>composer test</code> secara langsung.</p></div>
     <div class="card flat"><h3>Penjelasan</h3><p>Terangkan satu Service baris demi baris.</p></div>
   </div>
-  <aside class="notes"><p>Setiap pasangan demo 15 minit: 10 minit aliran, 5 minit soal jawab pemilik sistem. Pemilik sistem menilai menggunakan rubrik di slaid penutup. Tamatkan dengan retrospektif: apa berjalan baik, apa perlu diubah, apa yang akan anda guna di tempat kerja.</p></aside>
+  <aside class="notes"><p>Setiap peserta demo 15 minit: 10 minit aliran, 5 minit soal jawab pemilik sistem. Pemilik sistem menilai menggunakan rubrik di slaid penutup. Tamatkan dengan retrospektif: apa berjalan baik, apa perlu diubah, apa yang akan anda guna di tempat kerja.</p></aside>
 </section>
 
 <section class="slide">
@@ -2628,7 +2628,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span><b>Demo capstone</b> hujung-ke-hujung kepada pemilik sistem.</span></li>
     <li><span>Retrospektif selesai — pelajaran direkod untuk projek sebenar.</span></li>
   </ul>
-  <aside class="notes"><p>Semak semula enam objektif kursus di slaid 3 bersama peserta. Tanya setiap pasangan objektif mana yang mereka paling yakin dan paling kurang yakin.</p></aside>
+  <aside class="notes"><p>Semak semula enam objektif kursus di slaid 3 bersama peserta. Tanya setiap peserta objektif mana yang mereka paling yakin dan paling kurang yakin.</p></aside>
 </section>
 
 <!-- ============================ PENUTUP ============================ -->
@@ -2664,7 +2664,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div class="card flat" style="display:grid;grid-template-columns:260px 1fr 60px;gap:18px;align-items:center;padding:14px 20px"><h3 class="mb0">Ujian PHPUnit</h3><div style="height:12px;border-radius:6px;background:var(--rose);width:50%"></div><b>15%</b></div>
     <div class="card flat" style="display:grid;grid-template-columns:260px 1fr 60px;gap:18px;align-items:center;padding:14px 20px"><h3 class="mb0">Demo &amp; penjelasan</h3><div style="height:12px;border-radius:6px;background:var(--navy-700);width:50%"></div><b>15%</b></div>
   </div>
-  <p class="small muted mt16">Syarat lulus: semua modul Must berfungsi dan pasangan boleh menerangkan setiap baris kod yang didemo (disiplin “faham dahulu, terima kemudian”).</p>
+  <p class="small muted mt16">Syarat lulus: semua modul Must berfungsi dan peserta boleh menerangkan setiap baris kod yang didemo (disiplin “faham dahulu, terima kemudian”).</p>
   <aside class="notes"><p>Rubrik ini cadangan jurulatih — boleh diselaraskan bersama pemilik sistem sebelum Hari 10. Pemberat tertinggi pada fungsi kerana matlamat kursus ialah sistem yang berfungsi.</p></aside>
 </section>
 
