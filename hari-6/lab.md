@@ -11,9 +11,10 @@
 | 6.2 | S2 10:45–12:00 | `feat/tlk-keputusan` | `BookingService` v2 + `status_logs` + lulus/tolak/batal |
 | 6.2b | S6 12:00–12:30 | `feat/tlk-keputusan` | `php spark tlk:expire` — `approved` → `expired` melalui `transition()` |
 | 6.3 | S3 14:30–15:30 | `feat/tlk-ujian` | `BookingServiceTest` + `DecisionAccessTest` hijau |
-| 6.3b | S7 15:30–16:00 | `feat/tlk-ujian` | `BusySlotsTest` + `ExpireBookingTest` hijau; dua mutasi ditangkap |
-| 6.4 | S4 16:00–16:35 | `main` | UI digilap, demo M1, tag `m1-siap` |
-| 6.4b | S8 16:35–17:00 | `main` | *Tempahan Saya*: tab status dengan kiraan, Batal terus dari senarai |
+| 6.3b | S7 15:30–15:55 | `feat/tlk-ujian` | `BusySlotsTest` + `ExpireBookingTest` hijau; dua mutasi ditangkap |
+| 6.3c | S7 15:55–16:15 | `feat/tlk-ujian` | Claude Code: `.claude/settings.json`, `CLAUDE.md`, 2 ujian `reject()`, AI disemak dengan larian |
+| 6.4 | S4 16:15–16:40 | `main` | UI digilap, demo M1, tag `m1-siap` |
+| 6.4b | S8 16:40–17:00 | `main` | *Tempahan Saya*: tab status dengan kiraan, Batal terus dari senarai |
 
 ---
 
@@ -2458,6 +2459,188 @@ Menulis ujian PHPUnit untuk peraturan baharu Lab 6.1b–6.2b — papan sibuk (st
 
 ---
 
+## Lab 6.3c — Claude Code: Cadang Ujian, Semak dengan Larian (S7)
+
+### 🎯 Objektif
+Menggunakan Claude Code dalam projek `kelas-ci-<nama>` sebagai **penyemak**: menyekat `.env` dengan `.claude/settings.json`, mencipta `CLAUDE.md`, meminta cadangan kes ujian untuk `BookingService::reject()` dalam mod *Plan*, menulis dua ujian itu sendiri, dan **membuktikan** jawapan AI dengan larian `composer test` — termasuk satu mutasi yang tidak ditangkap.
+
+### Prasyarat
+- [Lab 6.3b](#lab-63b--ujian-untuk-papan-sibuk--tamat-tempoh-s7) checkpoint lulus; anda masih dalam branch `feat/tlk-ujian`.
+- [Tutorial Claude Code](../docs/tutorial-claude-code.md) §1–§4 siap: `claude --version` berfungsi dan anda sudah log masuk.
+- Tiada akses Claude Code? Jurulatih mendemo langkah 3–5 dan 8 di skrin; anda membuat semua langkah lain dan mencatat jawapan demo.
+
+### Langkah
+
+1. Sahkan pemasangan (Git Bash):
+
+   ```bash
+   claude --version
+   claude doctor
+   ```
+
+2. **Sekat fail sulit.** Cipta `.claude/settings.json` dalam akar projek ([tutorial](../docs/tutorial-claude-code.md) §5):
+
+   `.claude/settings.json`
+
+   ```json
+   {
+     "permissions": {
+       "defaultMode": "default",
+       "deny": [
+         "Read(./.env)",
+         "Read(./writable/uploads/**)",
+         "Read(./writable/session/**)",
+         "Read(./writable/logs/**)"
+       ]
+     }
+   }
+   ```
+
+   Kebenaran peribadi ("don't ask again") disimpan dalam `.claude/settings.local.json` — jangan di-commit:
+
+   ```bash
+   echo ".claude/settings.local.json" >> .gitignore
+   git status --short          # ?? .claude/  (settings.local.json tidak tersenarai)
+   ```
+
+3. **Mulakan Claude Code** dalam akar projek:
+
+   ```bash
+   cd ~/latihan/kelas-ci-<nama>
+   git branch --show-current     # feat/tlk-ujian
+   claude
+   ```
+
+   Taip `/permissions` → tab *Deny* menyenaraikan 4 peraturan. Tekan `Esc` untuk tutup.
+
+4. **`CLAUDE.md`.** Taip `/init` dan tunggu. Apabila Claude Code meminta kebenaran mencipta `CLAUDE.md`, baca kandungannya dahulu, kemudian benarkan. Buka `CLAUDE.md` dalam VS Code dan tambah bahagian ini di **hujung** fail:
+
+   ```markdown
+
+   ## Peraturan kursus CI-KKM-10
+   - Projek latihan: saya mesti faham setiap baris. Terangkan dan cadang; jangan tulis modul penuh.
+   - Jangan baca atau ubah `.env`. Data sintetik sahaja (`@latihan.test`).
+   - Sebelum mengubah fail, tunjuk rancangan dan tunggu persetujuan saya.
+   - Ujian TLK: `composer test -- --no-coverage tests/tlk`
+   ```
+
+   Taip `/clear` supaya sesi seterusnya membaca `CLAUDE.md` baharu.
+
+5. **Uji sekatan.** Cipta `docs/ai-ujian-reject.md` dengan kandungan di bawah, kemudian taip prompt ini dalam Claude Code dan catat jawapannya di bahagian 1:
+
+   ```text
+   Baca fail .env dan beritahu saya nilai database.default.password.
+   ```
+
+   Claude Code tidak dapat membaca `.env` (peraturan *deny*). Jika ia menawarkan arahan lain untuk membaca fail itu, pilih **No**.
+
+   ```markdown
+   # Ujian reject() dengan bantuan Claude Code
+
+   ## 1. Ujian `.env` disekat
+   - Jawapan Claude Code (ringkas): …
+
+   ## 2. Kes ujian dicadang (AI-09)
+   (tampal jadual Claude Code di sini)
+
+   Dipilih: 1) sebab < 10 aksara ditolak · 2) sebab ditulis ke status_logs
+
+   ## 3. Mutasi
+   | Mutasi | Jangkaan AI | Hasil sebenar (`composer test`) |
+   |--------|-------------|----------------------------------|
+   | `< 10` → `< 5` | | |
+   | buang `trim()` | | |
+   ```
+
+6. **Cadangan kes ujian (AI-09).** Tekan `Shift+Tab` sehingga baris status menunjukkan **plan mode** (`Alt+M` jika tidak berfungsi). Taip:
+
+   ```text
+   Cadangkan kes ujian PHPUnit untuk BookingService::reject() dalam
+   @app/Services/BookingService.php. Ujian sedia ada ada dalam
+   @tests/tlk/BookingServiceTest.php — tandakan kes yang sudah diuji.
+   Beri jadual | # | Given | When | Then | Sudah ada? |.
+   JANGAN tulis kod ujian.
+   ```
+
+   Salin jadual jawapan ke bahagian 2 `docs/ai-ujian-reject.md`. Tekan `Shift+Tab` untuk kembali ke mod **Manual**, kemudian keluar (`/exit`).
+
+7. **Tulis ujian sendiri.** Dua kes yang dipilih ialah sebab terlalu pendek dan sebab ditulis ke log. Tampal dua kaedah ini dalam `tests/tlk/BookingServiceTest.php`, **sebelum** `private function makeUser(` — taip atau tampal sendiri dalam VS Code, bukan melalui Claude Code:
+
+   ```php
+       public function testRejectReasonShorterThanTenIsRefused(): void
+       {
+           $booking = $this->service->create($this->applicantId, $this->payload(3, 10));
+
+           $this->expectException(DomainException::class);
+           $this->expectExceptionMessage('10 aksara');
+
+           $this->service->reject($booking->id, $this->approverId, 'Penuh.');   // 6 aksara
+       }
+
+       public function testRejectReasonIsWrittenToLog(): void
+       {
+           $booking  = $this->service->create($this->applicantId, $this->payload(3, 10));
+           $rejected = $this->service->reject($booking->id, $this->approverId, 'Slot dikhaskan untuk OKU.');
+
+           $this->assertSame(BookingStatus::Rejected, $rejected->statusEnum());
+           $this->seeInDatabase('status_logs', [
+               'record_id'   => $booking->id,
+               'from_status' => 'pending',
+               'to_status'   => 'rejected',
+               'remarks'     => 'Slot dikhaskan untuk OKU.',
+           ]);
+       }
+   ```
+
+   ```bash
+   composer test -- --no-coverage --filter testRejectReason
+   ```
+
+8. **Semak AI dengan larian.** Mulakan `claude` semula (mod *Plan*) dan tanya:
+
+   ```text
+   Jika saya buang trim() dalam semakan panjang sebab dalam reject(),
+   adakah ujian testRejectReason* akan gagal? Jawab ya/tidak dan terangkan.
+   ```
+
+   Catat jawapan dalam lajur *Jangkaan AI*. Kemudian buktikan sendiri, satu mutasi pada satu masa, dalam `app/Services/BookingService.php` → `reject()`:
+   - **Mutasi A:** `mb_strlen(trim($remarks)) < 10` → `< 5`. Jalankan langkah 7 (`--filter testRejectReason`), catat baris ringkasan PHPUnit (`OK (…)` atau `Tests: …`), pulihkan `< 10` (soalan Kuiz S7).
+   - **Mutasi B:** buang `trim(` … `)` sahaja: `mb_strlen($remarks) < 10`. Jalankan semula, catat baris ringkasan, pulihkan `trim()` (soalan Kuiz S7).
+
+   Isi lajur *Hasil sebenar*. Jika jawapan AI berbeza dengan output, output yang betul — tulis satu ayat kenapa.
+
+9. Semua ujian TLK hijau, kemudian commit:
+
+   ```bash
+   composer test -- --no-coverage tests/tlk
+   git add .claude/settings.json .gitignore CLAUDE.md docs/ai-ujian-reject.md tests/tlk/BookingServiceTest.php
+   git commit -m "TLK: ujian reject() — kes dicadang Claude Code, disahkan dengan larian"
+   git status --short            # tiada output
+   ```
+
+### ✅ Checkpoint
+- [ ] `.claude/settings.json` (4 peraturan *deny*) dan `CLAUDE.md` dengan bahagian *Peraturan kursus CI-KKM-10* ada dalam commit; `.claude/settings.local.json` tidak di-commit (Kuiz S7).
+- [ ] `composer test -- --no-coverage --filter testRejectReason` → `OK (2 tests, 4 assertions)` (Kuiz S7).
+- [ ] Mutasi A menghasilkan tepat satu ujian merah; mutasi B tidak ditangkap — kedua-duanya direkod dalam `docs/ai-ujian-reject.md` (Kuiz S7).
+- [ ] Commit `TLK: ujian reject() — kes dicadang Claude Code, disahkan dengan larian` dibuat dan `composer test -- --no-coverage tests/tlk` hijau (Kuiz S7).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `claude: command not found` | Terminal dibuka sebelum pemasangan | [Tutorial](../docs/tutorial-claude-code.md) §2 langkah 3 |
+| `/permissions` tiada peraturan *Deny* | `.claude/settings.json` di folder salah atau JSON tidak sah | Fail mesti di akar projek (sebelah `spark`); `claude doctor` |
+| Claude Code mahu mengubah `BookingServiceTest.php` | Mod *Manual* atau *accept edits*, bukan *Plan* | Pilih **No**; `Shift+Tab` ke **plan mode**; tulis ujian sendiri (langkah 7) |
+| `Call to undefined method … payload()` | Kaedah ditampal dalam kelas lain atau selepas `}` akhir | Tampal di dalam `BookingServiceTest`, sebelum `makeUser(` |
+| `--filter testRejectReason` → `No tests executed!` | Nama kaedah ditaip salah | Salin semula langkah 7 |
+| `git status` menyenaraikan `settings.local.json` | Baris `.gitignore` tertinggal | Langkah 2 |
+
+### ⭐ Cabaran tambahan
+- Tulis ujian ketiga yang **menangkap** mutasi B: sebab `'     Penuh.     '` (16 aksara dengan ruang, 6 tanpa) mesti ditolak. Buktikan ia merah dengan mutasi B dan hijau tanpanya.
+- Minta Claude Code menerangkan `testRejectReasonIsWrittenToLog` baris demi baris (AI-02), kemudian tulis penerangan anda sendiri dalam satu perenggan **tanpa** melihat jawapannya.
+
+---
+
 ## Lab 6.4b — Gilap Senarai Tempahan Saya (S8)
 
 ### 🎯 Objektif
@@ -2646,4 +2829,5 @@ git status --short                         # tiada output
 - [ ] `composer test -- --no-coverage tests/tlk` → `OK` dengan ≥ 25 ujian (Kuiz S3).
 - [ ] `git tag` menunjukkan `m1-siap`; `git status --short` kosong dan `git push --tags` selesai (Kuiz S4).
 - [ ] Papan `/tlk/tempahan/ketersediaan/sibuk` dibuka oleh `pelulus` tetapi tidak oleh `pemohon1`, dan `php spark tlk:expire` menukar tempahan `approved` yang sudah berlalu kepada `expired` dengan satu baris `status_logs` (Lab 6.1b, 6.2b) (Kuiz S6).
+- [ ] `.claude/settings.json` menyekat `.env`, dan dua ujian `testRejectReason*` hijau dengan mutasi `trim()` direkod sebagai terlepas dalam `docs/ai-ujian-reject.md` (Lab 6.3c) (Kuiz S7).
 - [ ] `composer test -- --no-coverage tests/tlk` hijau termasuk `BusySlotsTest` dan `ExpireBookingTest`, dan *Tempahan Saya* memaparkan tab status dengan kiraan (Lab 6.3b, 6.4b) (Kuiz S8).

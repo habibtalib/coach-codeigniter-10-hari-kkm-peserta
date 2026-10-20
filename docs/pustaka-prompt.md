@@ -254,7 +254,7 @@ berformat "<PREFIX>: <ringkasan>" (TLK/PAS/RPT/STAT/SETUP/FIX).
 
 ### AI-09 — Cadangkan kes ujian
 
-- **Bila guna:** Hari 6 S3, Hari 8 S3, Hari 9 S4, Hari 10 S3 — sebelum menulis ujian.
+- **Bila guna:** Hari 6 S3 ([Lab 6.3c](../hari-6/lab.md#lab-63c--claude-code-cadang-ujian-semak-dengan-larian-s7) — dalam Claude Code mod *Plan*), Hari 8 S3, Hari 9 S4, Hari 10 S3 — sebelum menulis ujian.
 - **Jangan:** Minta AI menulis keseluruhan fail ujian lalu jalankan tanpa membaca. Ujian yang anda tidak faham tidak melindungi apa-apa.
 
 ```prompt title="AI-09"

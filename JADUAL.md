@@ -84,9 +84,9 @@
 | 10:45–12:00 | S2 | Kawalan pertindihan & status (menunggu/diluluskan/ditolak) | Menguatkuasa BR-TLK-01/04/05 dalam transaksi; peralihan status + log |
 | 12:00–12:30 | S6 | Lanjutan S2: command `tlk:expire` | Menamatkan tempahan melalui `transition()`; melihat command menunggu kunci baris |
 | 14:30–15:30 | S3 | Ujian fungsian modul | Menulis ujian PHPUnit untuk pertindihan & peralihan status |
-| 15:30–16:00 | S7 | Lanjutan S3: ujian peraturan baharu | Menguji papan sibuk & tamat tempoh; dua mutasi ditangkap |
-| 16:00–16:35 | S4 | Penambahbaikan UI; wrap-up modul | Menambah badge status, flash message, pengesahan; **M1 siap** |
-| 16:35–17:00 | S8 | Lanjutan S4: gilap *Tempahan Saya*; wrap-up | Tab status dengan kiraan, Batal terus dari senarai |
+| 15:30–16:15 | S7 | Lanjutan S3: ujian peraturan baharu + Claude Code | Menguji papan sibuk & tamat tempoh; kes ujian dicadang Claude Code disahkan dengan larian |
+| 16:15–16:40 | S4 | Penambahbaikan UI; wrap-up modul | Menambah badge status, flash message, pengesahan; **M1 siap** |
+| 16:40–17:00 | S8 | Lanjutan S4: gilap *Tempahan Saya*; wrap-up | Tab status dengan kiraan, Batal terus dari senarai |
 
 ## Hari 7 — Modul Pas (Bahagian 1) · [nota](./hari-7/README.md)
 

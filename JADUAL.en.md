@@ -84,9 +84,9 @@
 | 10:45–12:00 | S2 | Overlap control & status (pending/approved/rejected) | Enforce BR-TLK-01/04/05 in a transaction; status transitions + log |
 | 12:00–12:30 | S6 | S2 follow-up: the `tlk:expire` command | Expire bookings through `transition()`; watch the command wait for a row lock |
 | 14:30–15:30 | S3 | Module functional testing | Write PHPUnit tests for overlap & status transitions |
-| 15:30–16:00 | S7 | S3 follow-up: tests for the new rules | Test the busy board & expiry; two mutations caught |
-| 16:00–16:35 | S4 | UI improvements; module wrap-up | Add status badges, flash messages, confirmation; **M1 complete** |
-| 16:35–17:00 | S8 | S4 follow-up: polish *Tempahan Saya* (My Bookings); wrap-up | Status tabs with counts, Cancel right from the list |
+| 15:30–16:15 | S7 | S3 follow-up: tests for the new rules + Claude Code | Test the busy board & expiry; test cases suggested by Claude Code verified by running |
+| 16:15–16:40 | S4 | UI improvements; module wrap-up | Add status badges, flash messages, confirmation; **M1 complete** |
+| 16:40–17:00 | S8 | S4 follow-up: polish *Tempahan Saya* (My Bookings); wrap-up | Status tabs with counts, Cancel right from the list |
 
 ## Day 7 — Pass Module (Part 1) · [notes](./hari-7/README.md)
 

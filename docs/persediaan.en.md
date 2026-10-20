@@ -317,7 +317,7 @@ The VS Code default terminal on Windows is PowerShell. Most course commands (`&&
 | **Markdown Preview Mermaid Support** | `bierner.markdown-mermaid` | Shows Mermaid scope charts, flowcharts and ERDs in the Markdown preview (**from Day 1**). No internet/extension? Sketch on paper or write it as a table first, preview later |
 | EditorConfig | `EditorConfig.EditorConfig` | Consistent indentation across laptops |
 | GitLens (optional) | `eamodio.gitlens` | See line & branch history |
-| Claude Code (optional) | — | AI assistant, following [`pustaka-prompt.md`](./pustaka-prompt.md) |
+| Claude Code (before Day 6) | — | AI assistant for Lab 6.3c — install & log in with [`tutorial-claude-code.en.md`](./tutorial-claude-code.en.md); prompts in [`pustaka-prompt.md`](./pustaka-prompt.md) |
 
 Install from the terminal:
 

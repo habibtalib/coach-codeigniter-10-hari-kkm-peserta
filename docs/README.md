@@ -10,6 +10,7 @@
 | [`tutorial-rangka.md`](./tutorial-rangka.md) | Tutorial rangka aplikasi CI4 langkah demi langkah (Windows): A — CI4 asas (`ci4-asas`, Hari 1); B–G — projek `kelas-ci-<nama>`, `.env`, Shield, layout, migration + seeder, `composer test` (dipetakan ke Lab 2.2–4.2) | Hari 1 (Bahagian A) · Hari 2–4 (B–G, mula awal atau ulang kaji) |
 | [`tugasan-persediaan.md`](./tugasan-persediaan.md) | Latihan kendiri **pilihan**: semak persekitaran + tutorial rasmi CI4 (*news*); tidak dihantar atau dimarkah | Bila-bila masa, untuk latihan tambahan |
 | [`trek-gitlab.md`](./trek-gitlab.md) | Repo anda `kelas-ci-<nama>` di GitLab KKM (GitLab KKM): log masuk, HTTPS + Git Credential Manager/token, projek *private*, jurulatih sebagai Reporter, lindungi `main`, MR ke `main` sendiri | Hari 2 (Lab 2.2) · Hari 4 S4 (MR pertama) |
+| [`tutorial-claude-code.md`](./tutorial-claude-code.md) | Persediaan Claude Code (Windows): pasang, log masuk, `.claude/settings.json` menyekat `.env`, mod *Plan*, proxy KKM | Sebelum Hari 6 |
 | [`pustaka-prompt.md`](./pustaka-prompt.md) | Pustaka prompt Claude Code / AI untuk **belajar** (terang ralat, semak logik, cadang ujian, terang kod baris demi baris, semakan keselamatan muat naik) | Hari 4–10, bila tersekat |
 | [`pautan-rujukan.md`](./pautan-rujukan.md) | Pautan dokumentasi rasmi disusun ikut hari | Sepanjang kursus |
 | [`senarai-semak-modul.md`](./senarai-semak-modul.md) | Senarai semak kemajuan M1–M4 dipetakan kepada Definition of Done & peraturan `BR-*` | Hujung setiap sesi pembinaan; sebelum demo |

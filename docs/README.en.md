@@ -10,6 +10,7 @@
 | [`tutorial-rangka.md`](./tutorial-rangka.md) | Step-by-step CI4 app skeleton tutorial (Windows): A — CI4 basics (`ci4-asas`, Day 1); B–G — the `kelas-ci-<nama>` project, `.env`, Shield, layout, migration + seeder, `composer test` (mapped to Labs 2.2–4.2) | Day 1 (Part A) · Days 2–4 (B–G, head start or revision) |
 | [`tugasan-persediaan.md`](./tugasan-persediaan.md) | **Optional** self-study: environment check + the official CI4 tutorial (*news*); not submitted or marked | Any time, for extra practice |
 | [`trek-gitlab.md`](./trek-gitlab.md) | Your `kelas-ci-<nama>` repo on KKM's GitLab (GitLab KKM): log in, HTTPS + Git Credential Manager/token, *private* project, trainer as Reporter, protect `main`, MR into your own `main` | Day 2 (Lab 2.2) · Day 4 S4 (first MR) |
+| [`tutorial-claude-code.md`](./tutorial-claude-code.md) | Claude Code setup (Windows): install, log in, `.claude/settings.json` blocking `.env`, *Plan* mode, KKM proxy | Before Day 6 |
 | [`pustaka-prompt.md`](./pustaka-prompt.md) | Claude Code / AI prompt library for **learning** (explain errors, check logic, suggest tests, explain code line by line, upload security review) | Day 4–10, when stuck |
 | [`pautan-rujukan.md`](./pautan-rujukan.md) | Official documentation links organised by day | Throughout the course |
 | [`senarai-semak-modul.md`](./senarai-semak-modul.md) | M1–M4 progress checklist mapped to the Definition of Done & `BR-*` rules | End of every build session; before the demo |

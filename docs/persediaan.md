@@ -317,7 +317,7 @@ Terminal lalai VS Code di Windows ialah PowerShell. Kebanyakan arahan kursus (`&
 | **Markdown Preview Mermaid Support** | `bierner.markdown-mermaid` | Papar carta skop, carta alir dan ERD Mermaid dalam pratonton Markdown (**dari Hari 1**). Tiada internet/sambungan? Lakar di kertas atau tulis sebagai jadual dahulu, pratonton kemudian |
 | EditorConfig | `EditorConfig.EditorConfig` | Inden konsisten antara laptop |
 | GitLens (opsyenal) | `eamodio.gitlens` | Lihat sejarah baris & branch |
-| Claude Code (opsyenal) | — | Pembantu AI mengikut [`pustaka-prompt.md`](./pustaka-prompt.md) |
+| Claude Code (sebelum Hari 6) | — | Pembantu AI untuk Lab 6.3c — pasang & log masuk ikut [`tutorial-claude-code.md`](./tutorial-claude-code.md); prompt dalam [`pustaka-prompt.md`](./pustaka-prompt.md) |
 
 Pasang melalui terminal:
 

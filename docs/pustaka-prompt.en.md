@@ -254,7 +254,7 @@ in the format "<PREFIX>: <summary>" (TLK/PAS/RPT/STAT/SETUP/FIX).
 
 ### AI-09 — Suggest test cases
 
-- **When to use:** Day 6 S3, Day 8 S3, Day 9 S4, Day 10 S3 — before writing tests.
+- **When to use:** Day 6 S3 ([Lab 6.3c](../hari-6/lab.en.md#lab-63c--claude-code-suggest-tests-check-by-running-s7) — in Claude Code *Plan* mode), Day 8 S3, Day 9 S4, Day 10 S3 — before writing tests.
 - **Don't:** Ask the AI to write the whole test file and then run it without reading. A test you don't understand protects nothing.
 
 ```prompt title="AI-09"

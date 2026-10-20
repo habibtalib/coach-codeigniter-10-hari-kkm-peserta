@@ -22,6 +22,7 @@ By the end of today, participants can:
 | O8 | **Write** a Spark command `tlk:expire` that expires bookings through `transition()` and **demonstrate** that the command waits for a row lock | S6 | [Lab 6.2b](./lab.en.md#lab-62b--the-tlkexpire-expiry-command-s6); `status_logs` `approved → expired` |
 | O9 | **Write** PHPUnit tests for the busy board and expiry, and **prove** that each test catches a mutation | S7 | [Lab 6.3b](./lab.en.md#lab-63b--tests-for-the-busy-board--expiry-s7); 12 new tests green |
 | O10 | **Polish** the *Tempahan Saya* (My Bookings) list (status tabs with counts, direct Cancel, empty states) and **read** the query cost in the Debug Toolbar | S8 | [Lab 6.4b](./lab.en.md#lab-64b--polishing-the-my-bookings-list-s8); `/tlk/tempahan` |
+| O11 | **Configure** Claude Code (an `.env` `deny` rule, `CLAUDE.md`), **use** it in *Plan* mode to suggest test cases, and **verify** the AI's answers by running mutations | S7 | [Lab 6.3c](./lab.en.md#lab-63c--claude-code-suggest-tests-check-by-running-s7); `docs/ai-ujian-reject.md` + 2 green `testRejectReason*` tests |
 
 ---
 
@@ -37,9 +38,9 @@ By the end of today, participants can:
 | 12:00–12:30 | S6 | S2 follow-up: the `tlk:expire` command | Expire bookings through `transition()`; watch the command wait for a row lock |
 | 12:30–14:30 | — | Lunch | — |
 | 14:30–15:30 | S3 | Module functional testing | Write PHPUnit tests for overlap & status transitions |
-| 15:30–16:00 | S7 | S3 follow-up: tests for the new rules | Test the busy board & expiry; two mutations caught |
-| 16:00–16:35 | S4 | UI improvements; module wrap-up | Add status badges, flash messages, confirmation; **M1 complete** |
-| 16:35–17:00 | S8 | S4 follow-up: polish *Tempahan Saya* (My Bookings); wrap-up | Status tabs with counts, Cancel right from the list |
+| 15:30–16:15 | S7 | S3 follow-up: tests for the new rules + Claude Code | Test the busy board & expiry; test cases suggested by Claude Code verified by running |
+| 16:15–16:40 | S4 | UI improvements; module wrap-up | Add status badges, flash messages, confirmation; **M1 complete** |
+| 16:40–17:00 | S8 | S4 follow-up: polish *Tempahan Saya* (My Bookings); wrap-up | Status tabs with counts, Cancel right from the list |
 
 ---
 
@@ -425,7 +426,7 @@ The `tlk/keputusan` routes are protected by `permission:tlk.decide` (approver & 
 
 ---
 
-## S3 — Module Functional Testing (14:30–16:00)
+## S3 — Module Functional Testing (14:30–16:15)
 
 ### 3.1 The test pyramid for M1
 
@@ -569,7 +570,7 @@ CSRF is enabled globally — in the functional tests' `setUp()` we **disable it 
 
 ---
 
-## S4 — UI Improvements & M1 Wrap-up (16:00–17:00)
+## S4 — UI Improvements & M1 Wrap-up (16:15–17:00)
 
 ### 4.1 List of improvements
 
@@ -723,11 +724,13 @@ Every new rule from S5–S6 gets a test, and every test must be seen red once:
 
 Two new tools: `command('tlk:expire')` runs a Spark command inside a test (on the `tests` group DB), and `StreamFilterTrait` captures `CLI::write()` output for `getStreamFilterBuffer()`. "Past" bookings are built by create → approve → shift the dates with a direct `update()`, because BR-TLK-03 rejects past dates through the service.
 
-Lab: [Lab 6.3b](./lab.en.md#lab-63b--tests-for-the-busy-board--expiry-s7)
+**Claude Code as a reviewer (Lab 6.3c).** AI can suggest test cases quickly, but its answer is an *expectation*, not proof. The lab's pattern: block secret files (`.claude/settings.json` → `deny` `Read(./.env)`), ask for suggestions in *Plan* mode (no files change), write the tests yourself, then compare the AI's expectation with the `composer test` output. One of the two mutations in this lab is **not** caught — find which one by running, not by asking the AI. Setup before today: [Claude Code tutorial](../docs/tutorial-claude-code.en.md).
+
+Lab: [Lab 6.3b](./lab.en.md#lab-63b--tests-for-the-busy-board--expiry-s7) · [Lab 6.3c](./lab.en.md#lab-63c--claude-code-suggest-tests-check-by-running-s7)
 
 ### 🎯 Quiz S7
 
-> Answer after Lab 6.3b on your laptop — the answers come from the real `composer test` output. Passing this quiz marks the Lab 6.3b checkpoint.
+> Answer after Lab 6.3b and 6.3c on your laptop — the answers come from the real `composer test` output. Passing this quiz marks the Lab 6.3b and 6.3c checkpoints.
 
 1. Lab 6.3b step 4 (mutation 1: `end_date <` → `<=` in `expirableIds()`): which `✘` line appears in the `--testdox` output?
    - [x] `Only approved bookings that ended before today are expirable`
@@ -742,6 +745,20 @@ Lab: [Lab 6.3b](./lab.en.md#lab-63b--tests-for-the-busy-board--expiry-s7)
    - [x] `OK (12 tests, 27 assertions)`
    - [ ] `OK (5 tests, 12 assertions)`
    > `BusySlotsTest` has 7 tests (15 assertions) + `ExpireBookingTest` 5 tests (12 assertions). Every `seeInDatabase()`, `assertRedirect()` and `assertSee()` counts as an assertion.
+
+3. Lab 6.3c step 8, mutation A (`< 10` → `< 5` in `reject()`): what is the PHPUnit summary line of `composer test -- --no-coverage --filter testRejectReason`?
+   - [ ] `OK (2 tests, 4 assertions)`
+   - [ ] `Tests: 2, Assertions: 4, Failures: 2.`
+   - [ ] `Tests: 2, Assertions: 2, Errors: 1.`
+   - [x] `Tests: 2, Assertions: 3, Failures: 1.`
+   > The reason `'Penuh.'` (6 characters) now passes the `< 5` check, so `reject()` does not throw `DomainException` and `testRejectReasonShorterThanTenIsRefused` fails (*Failed asserting that exception of type "DomainException" is thrown*). `testRejectReasonIsWrittenToLog` stays green.
+
+4. Lab 6.3c step 8, mutation B (remove `trim()`: `mb_strlen($remarks) < 10`): what is the PHPUnit summary line?
+   - [ ] `Tests: 2, Assertions: 3, Failures: 1.`
+   - [x] `OK (2 tests, 4 assertions)`
+   - [ ] `Tests: 2, Assertions: 4, Failures: 1.`
+   - [ ] `Tests: 2, Assertions: 2, Errors: 2.`
+   > `'Penuh.'` has no surrounding spaces, so `trim()` does not change its length — the reason is still refused and both tests stay green. This mutation **survives**: tests that look complete (and that the AI agreed with) do not test whitespace. The Lab 6.3c ⭐ challenge writes a test that catches it.
 
 ---
 

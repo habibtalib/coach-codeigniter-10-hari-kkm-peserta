@@ -22,6 +22,7 @@ Di akhir hari ini, peserta boleh:
 | O8 | **Menulis** Spark command `tlk:expire` yang menamatkan tempahan melalui `transition()` dan **mendemonstrasi** command itu menunggu kunci baris | S6 | [Lab 6.2b](./lab.md#lab-62b--command-tamat-tempoh-tlkexpire-s6); `status_logs` `approved → expired` |
 | O9 | **Menulis** ujian PHPUnit untuk papan sibuk dan tamat tempoh, dan **membuktikan** setiap ujian menangkap mutasi | S7 | [Lab 6.3b](./lab.md#lab-63b--ujian-untuk-papan-sibuk--tamat-tempoh-s7); 12 ujian baharu hijau |
 | O10 | **Menggilap** senarai *Tempahan Saya* (tab status dengan kiraan, Batal terus, keadaan kosong) dan **membaca** kos query dalam Debug Toolbar | S8 | [Lab 6.4b](./lab.md#lab-64b--gilap-senarai-tempahan-saya-s8); `/tlk/tempahan` |
+| O11 | **Mengkonfigur** Claude Code (peraturan `deny` `.env`, `CLAUDE.md`), **menggunakannya** dalam mod *Plan* untuk mencadang kes ujian, dan **mengesahkan** jawapan AI dengan larian mutasi | S7 | [Lab 6.3c](./lab.md#lab-63c--claude-code-cadang-ujian-semak-dengan-larian-s7); `docs/ai-ujian-reject.md` + 2 ujian `testRejectReason*` hijau |
 
 ---
 
@@ -37,9 +38,9 @@ Di akhir hari ini, peserta boleh:
 | 12:00–12:30 | S6 | Lanjutan S2: command `tlk:expire` | Menamatkan tempahan melalui `transition()`; melihat command menunggu kunci baris |
 | 12:30–14:30 | — | Makan tengah hari | — |
 | 14:30–15:30 | S3 | Ujian fungsian modul | Menulis ujian PHPUnit untuk pertindihan & peralihan status |
-| 15:30–16:00 | S7 | Lanjutan S3: ujian peraturan baharu | Menguji papan sibuk & tamat tempoh; dua mutasi ditangkap |
-| 16:00–16:35 | S4 | Penambahbaikan UI; wrap-up modul | Menambah badge status, flash message, pengesahan; **M1 siap** |
-| 16:35–17:00 | S8 | Lanjutan S4: gilap *Tempahan Saya*; wrap-up | Tab status dengan kiraan, Batal terus dari senarai |
+| 15:30–16:15 | S7 | Lanjutan S3: ujian peraturan baharu + Claude Code | Menguji papan sibuk & tamat tempoh; kes ujian dicadang Claude Code disahkan dengan larian |
+| 16:15–16:40 | S4 | Penambahbaikan UI; wrap-up modul | Menambah badge status, flash message, pengesahan; **M1 siap** |
+| 16:40–17:00 | S8 | Lanjutan S4: gilap *Tempahan Saya*; wrap-up | Tab status dengan kiraan, Batal terus dari senarai |
 
 ---
 
@@ -425,7 +426,7 @@ Route `tlk/keputusan` dilindungi `permission:tlk.decide` (pelulus & admin). Tiad
 
 ---
 
-## S3 — Ujian Fungsian Modul (14:30–16:00)
+## S3 — Ujian Fungsian Modul (14:30–16:15)
 
 ### 3.1 Piramid ujian untuk M1
 
@@ -569,7 +570,7 @@ CSRF dihidupkan secara global — dalam `setUp()` ujian fungsian kita **menyahak
 
 ---
 
-## S4 — Penambahbaikan UI & Wrap-up M1 (16:00–17:00)
+## S4 — Penambahbaikan UI & Wrap-up M1 (16:15–17:00)
 
 ### 4.1 Senarai penambahbaikan
 
@@ -723,11 +724,13 @@ Setiap peraturan baharu S5–S6 mendapat ujian, dan setiap ujian mesti dilihat m
 
 Dua alat baharu: `command('tlk:expire')` menjalankan Spark command di dalam ujian (pada DB kumpulan `tests`), dan `StreamFilterTrait` menangkap output `CLI::write()` untuk `getStreamFilterBuffer()`. Tempahan "lampau" dibina dengan cipta → lulus → anjak tarikh dengan `update()` terus, kerana BR-TLK-03 menolak tarikh lampau melalui service.
 
-Lab: [Lab 6.3b](./lab.md#lab-63b--ujian-untuk-papan-sibuk--tamat-tempoh-s7)
+**Claude Code sebagai penyemak (Lab 6.3c).** AI boleh mencadang kes ujian dengan cepat, tetapi jawapannya ialah *jangkaan*, bukan bukti. Corak lab: sekat fail sulit (`.claude/settings.json` → `deny` `Read(./.env)`), minta cadangan dalam mod *Plan* (tiada fail diubah), tulis ujian sendiri, kemudian bandingkan jangkaan AI dengan output `composer test`. Satu daripada dua mutasi dalam lab ini **tidak** ditangkap — cari yang mana dengan larian, bukan dengan bertanya AI. Persediaan sebelum hari ini: [Tutorial Claude Code](../docs/tutorial-claude-code.md).
+
+Lab: [Lab 6.3b](./lab.md#lab-63b--ujian-untuk-papan-sibuk--tamat-tempoh-s7) · [Lab 6.3c](./lab.md#lab-63c--claude-code-cadang-ujian-semak-dengan-larian-s7)
 
 ### 🎯 Kuiz S7
 
-> Jawab selepas Lab 6.3b di laptop anda — jawapan datang daripada output `composer test` sebenar. Lulus kuiz ini menanda checkpoint Lab 6.3b.
+> Jawab selepas Lab 6.3b dan 6.3c di laptop anda — jawapan datang daripada output `composer test` sebenar. Lulus kuiz ini menanda checkpoint Lab 6.3b dan 6.3c.
 
 1. Lab 6.3b langkah 4 (mutasi 1: `end_date <` → `<=` dalam `expirableIds()`): baris `✘` manakah dalam output `--testdox`?
    - [x] `Only approved bookings that ended before today are expirable`
@@ -742,6 +745,20 @@ Lab: [Lab 6.3b](./lab.md#lab-63b--ujian-untuk-papan-sibuk--tamat-tempoh-s7)
    - [x] `OK (12 tests, 27 assertions)`
    - [ ] `OK (5 tests, 12 assertions)`
    > `BusySlotsTest` 7 ujian (15 assertion) + `ExpireBookingTest` 5 ujian (12 assertion). Setiap `seeInDatabase()`, `assertRedirect()` dan `assertSee()` dikira sebagai assertion.
+
+3. Lab 6.3c langkah 8, mutasi A (`< 10` → `< 5` dalam `reject()`): apakah baris ringkasan PHPUnit bagi `composer test -- --no-coverage --filter testRejectReason`?
+   - [ ] `OK (2 tests, 4 assertions)`
+   - [ ] `Tests: 2, Assertions: 4, Failures: 2.`
+   - [ ] `Tests: 2, Assertions: 2, Errors: 1.`
+   - [x] `Tests: 2, Assertions: 3, Failures: 1.`
+   > Sebab `'Penuh.'` (6 aksara) kini lulus semakan `< 5`, jadi `reject()` tidak membaling `DomainException` dan `testRejectReasonShorterThanTenIsRefused` gagal (*Failed asserting that exception of type "DomainException" is thrown*). `testRejectReasonIsWrittenToLog` masih hijau.
+
+4. Lab 6.3c langkah 8, mutasi B (buang `trim()`: `mb_strlen($remarks) < 10`): apakah baris ringkasan PHPUnit?
+   - [ ] `Tests: 2, Assertions: 3, Failures: 1.`
+   - [x] `OK (2 tests, 4 assertions)`
+   - [ ] `Tests: 2, Assertions: 4, Failures: 1.`
+   - [ ] `Tests: 2, Assertions: 2, Errors: 2.`
+   > `'Penuh.'` tiada ruang di hujung, jadi `trim()` tidak mengubah panjangnya — sebab masih ditolak dan kedua-dua ujian hijau. Mutasi ini **terlepas**: ujian yang kelihatan lengkap (dan dipersetujui AI) tidak menguji ruang kosong. Cabaran ⭐ Lab 6.3c menulis ujian yang menangkapnya.
 
 ---
 
