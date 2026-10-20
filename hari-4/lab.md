@@ -223,13 +223,7 @@ Menyediakan ujian (`composer test`) dalam projek `kelas-ci-<nama>`, menyemak `.e
    public string $userProvider = \App\Models\UserModel::class;
    ```
 
-   Sistem dalaman KKM tidak membenarkan daftar sendiri: `/register` kini dialih keluar dengan mesej ralat. Akaun dicipta oleh `UserSeeder` (langkah 9 Lab 4.3) atau oleh admin:
-
-   ```bash
-   php spark shield:user create -n pemohon3 -e pemohon3@latihan.test -g applicant
-   ```
-
-   🪟 Kata laluan ditanya secara interaktif. Dalam tetingkap Git Bash berasingan (bukan terminal VS Code), jika prompt tidak muncul: `winpty php spark shield:user create …`.
+   Sistem dalaman KKM tidak membenarkan daftar sendiri: `/register` kini dialih keluar dengan mesej ralat.
 
 9. `app/Config/AuthGroups.php` — gantikan seluruh kandungan fail dengan kod di bawah: nilai SPEC §4 (4 group: `applicant`, `reviewer`, `approver`, `admin`; 8 permission: `admin.access`, `tlk.apply`, `tlk.decide`, `pas.apply`, `pas.review`, `pas.approve`, `laporan.view`, `statistik.view`). Komen panjang dalam fail asal Shield tidak diperlukan.
 
@@ -288,6 +282,14 @@ Menyediakan ujian (`composer test`) dalam projek `kelas-ci-<nama>`, menyemak `.e
        ];
    }
    ```
+
+   Akaun dicipta oleh `UserSeeder` (langkah 9 Lab 4.3) atau oleh admin:
+
+   ```bash
+   php spark shield:user create -n pemohon3 -e pemohon3@latihan.test -g applicant
+   ```
+
+   🪟 Kata laluan ditanya secara interaktif. Dalam tetingkap Git Bash berasingan (bukan terminal VS Code), jika prompt tidak muncul: `winpty php spark shield:user create …`.
 
 10. `app/Config/Filters.php` — semak `$globals['before']` masih mengandungi `'csrf'` (dihidupkan dalam Lab 2.4). (`shield:setup` hanya menukar `Security::$csrfProtection = 'session'`; ia **tidak** menghidupkan filter CSRF.)
 
@@ -409,6 +411,8 @@ Menyediakan ujian (`composer test`) dalam projek `kelas-ci-<nama>`, menyemak `.e
     service('auth')->routes($routes);
     ```
 
+    Mulakan semula `php spark serve` (dihentikan dalam langkah 6), kemudian semak checkpoint di bawah.
+
 ### ✅ Checkpoint
 - `php spark routes | grep -E "login|logout"` → route `login` (GET & POST) dan `logout` wujud (Kuiz S2).
 - `http://localhost:8080/` (belum log masuk) → **dialih** ke `http://localhost:8080/login` (tiada `index.php` dalam URL) (Kuiz S2).
@@ -447,17 +451,10 @@ Melengkapkan 10 migration spesifikasi §3 (2 dari Lab 3.2 + 8 baharu, dengan FK,
 
 **A. Migration — mengikut tertib FK**
 
-1. Jana 8 fail baharu **satu demi satu, mengikut tertib ini** (cap masa menentukan tertib larian; `CreateDepartmentsTable` dan `CreateParkingZonesTable` dari Lab 3.2 lebih awal, jadi tertib FK kekal betul):
+1. Jana fail pertama sahaja, `AddProfileFieldsToUsers`. Tujuh fail lain dijana dalam langkah 5, **satu demi satu, mengikut tertib FK**: `php spark migrate` menjalankan semua fail dalam folder, termasuk fail yang masih kosong, dan merekodkannya sebagai sudah dijalankan (kemudian `Nothing to migrate`). Cap masa menentukan tertib larian; `CreateDepartmentsTable` dan `CreateParkingZonesTable` dari Lab 3.2 lebih awal, jadi tertib FK kekal betul:
 
    ```bash
    php spark make:migration AddProfileFieldsToUsers
-   php spark make:migration CreateParkingSlotsTable
-   php spark make:migration CreateVehiclesTable
-   php spark make:migration CreateSlotBookingsTable
-   php spark make:migration CreatePassApplicationsTable
-   php spark make:migration CreatePassDocumentsTable
-   php spark make:migration CreateStatusLogsTable
-   php spark make:migration CreateReferenceSequencesTable
    ```
 
 2. Buka semula `CreateDepartmentsTable` dari Lab 3.2: corak `addField` + `addPrimaryKey` + `addUniqueKey` + `createTable(…, false, ['ENGINE' => 'InnoDB'])` dan `down()` yang memadam jadual sama digunakan untuk 8 fail baharu.
@@ -512,7 +509,19 @@ Melengkapkan 10 migration spesifikasi §3 (2 dari Lab 3.2 + 8 baharu, dengan FK,
    php spark migrate
    ```
 
-5. Isi 7 migration selebihnya dengan kod di bawah (berdasarkan [`erd-rujukan.md`](../docs/erd-rujukan.md) dan spesifikasi §3). Gantikan seluruh kandungan setiap fail yang dijana `make:migration`; nama kelas sudah sepadan. Senarai semak setiap fail:
+5. Isi 7 migration selebihnya dengan kod di bawah (berdasarkan [`erd-rujukan.md`](../docs/erd-rujukan.md) dan spesifikasi §3). Gantikan seluruh kandungan setiap fail yang dijana `make:migration`; nama kelas sudah sepadan. Jana dan isi **satu fail pada satu masa**, mengikut tertib ini (jangan jana semua dahulu — `php spark migrate` dalam petua ⏱️ di bawah akan menjalankan fail yang masih kosong):
+
+   ```bash
+   php spark make:migration CreateParkingSlotsTable
+   php spark make:migration CreateVehiclesTable
+   php spark make:migration CreateSlotBookingsTable
+   php spark make:migration CreatePassApplicationsTable
+   php spark make:migration CreatePassDocumentsTable
+   php spark make:migration CreateStatusLogsTable
+   php spark make:migration CreateReferenceSequencesTable
+   ```
+
+   Senarai semak setiap fail:
    - [ ] Nama jadual & medan **tepat** SPEC §3
    - [ ] `id` INT UNSIGNED AI + `created_at`/`updated_at` DATETIME NULL
    - [ ] `parking_slots` sahaja ada `deleted_at`; `status_logs` hanya `created_at` (rekod audit tidak dikemas kini)
@@ -1345,6 +1354,8 @@ Memasang filter Shield `session` dan `permission:admin.access` pada route Hari 3
    php spark shield:user delete -n ujipemohon
    php spark shield:user list
    ```
+
+   Jika anda mencipta `pemohon3` dalam Lab 4.2 langkah 9, padam juga: `php spark shield:user delete -n pemohon3`.
 
    `shield:user delete` memadam baris `users` secara kekal; `auth_identities` dan `auth_groups_users` ikut terpadam (FK `ON DELETE CASCADE` Shield — anda membuktikannya dalam Lab 4.3b).
 7. Commit dan push **fail docs sahaja** (`Routes.php` masuk commit `SETUP:` dalam Lab 4.4 langkah 2):

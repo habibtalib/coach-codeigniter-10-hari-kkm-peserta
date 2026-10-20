@@ -724,7 +724,7 @@ composer test                                                # SEMUA hijau — t
 
 **9. Ulang langkah 4 secara manual.** Lulus satu lagi permohonan pas → `/statistik` → "Pas menunggu" turun **serta-merta**; "Data dijana" = masa sekarang.
 
-**10. Commit.** `git add app/ tests/ && git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit status (TLK & PAS)"`
+**10. Commit & merge.** `git add app/ tests/ && git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit status (TLK & PAS)"`, kemudian `git push -u origin feat/statistik` → buka MR ke `main` → merge (Lab 10.3 bermula dari `main`).
 
 ### ✅ Checkpoint 10.2
 - [ ] Muat semula kedua `/statistik` → 0 query aggregate dalam Debug Toolbar.
@@ -814,8 +814,8 @@ Tanda setiap K dalam `docs/UAT-signoff.md` §5/§6 (atau lampiran).
 **6. Sediakan untuk demo.**
 
 ```bash
-composer test                              # hijau
 git switch main && git pull
+composer test                              # hijau — uji `main` yang akan ditag
 git add docs/ && git commit -m "SETUP: UAT-signoff, log pepijat & senarai semak K1–K10"
 git tag -a v1.0-capstone -m "Capstone CI-KKM-10"
 git push origin main --tags

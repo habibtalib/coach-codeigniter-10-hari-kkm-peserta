@@ -1635,7 +1635,7 @@ Menutup lubang Lab 8.1b: route pukal hanya ada filter `group:`, jadi `pelulus` s
 ### Prasyarat
 - 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
 - [Lab 8.2](#lab-82--kawalan-akses-ikut-peranan-s2) siap: `authorize()` aktif dalam `startReview()`, `approve()` dan `reject()`.
-- [Lab 8.1b](#lab-81b--mula-semakan-pukal-dari-baris-gilir-s5) siap. Sekurang-kurangnya satu permohonan `submitted` dan satu `under_review` (hantar satu lagi sebagai `pemohon2` jika perlu).
+- [Lab 8.1b](#lab-81b--mula-semakan-pukal-dari-baris-gilir-s5) siap. Sekurang-kurangnya **tiga** permohonan `submitted` (langkah 6: UT-PAS-29 menanda 2, UT-PAS-30 menanda 1) dan satu `under_review` (hantar lagi sebagai `pemohon2` jika perlu).
 
 ### Langkah
 

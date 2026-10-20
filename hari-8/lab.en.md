@@ -1635,7 +1635,7 @@ Close the Lab 8.1b hole: the bulk route only has a `group:` filter, so `pelulus`
 ### Prerequisites
 - 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
 - [Lab 8.2](#lab-82--role-based-access-control-s2) done: `authorize()` is active in `startReview()`, `approve()` and `reject()`.
-- [Lab 8.1b](#lab-81b--bulk-start-review-from-the-queue-s5) done. At least one `submitted` and one `under_review` application (submit another one as `pemohon2` if needed).
+- [Lab 8.1b](#lab-81b--bulk-start-review-from-the-queue-s5) done. At least **three** `submitted` applications (step 6: UT-PAS-29 ticks 2, UT-PAS-30 ticks 1) and one `under_review` (submit more as `pemohon2` if needed).
 
 ### Steps
 

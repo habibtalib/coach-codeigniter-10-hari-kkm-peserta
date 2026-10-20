@@ -898,6 +898,12 @@ Upgrade `BookingService` to version 2 (transaction + `FOR UPDATE` + BR-TLK-01/04
 
 **E. Prove the lock with two MySQL sessions (compulsory demo)**
 
+**Before step 10:** `BookingService` v2 now enforces BR-TLK-04, and `pemohon1` and `pemohon2` still have active bookings from Day 5 and step 1. Without this step, steps 11 and 14 hit BR-TLK-04 (*"Anda sudah mempunyai satu tempahan aktif…"*), not the expected result. Clear them through the application so `status_logs` stays complete: `pelulus` → `/tlk/keputusan` → *Tolak* (Reject) each `pending` booking owned by `pemohon1` and `pemohon2` (reason ≥ 10 characters); applicant → details → *Batalkan* (Cancel) each `approved` booking. Confirm (0 rows for the `user_id` of `pemohon1` & `pemohon2`):
+
+```sql
+SELECT user_id, ref_no, status FROM slot_bookings WHERE status IN ('pending', 'approved');
+```
+
 10. Terminal A (MySQL client):
 
     ```sql
@@ -911,7 +917,7 @@ Upgrade `BookingService` to version 2 (transaction + `FOR UPDATE` + BR-TLK-01/04
 11. Browser: log in as `pemohon2`, apply for slot **A-03** → press *Hantar* (Submit). The browser **spins** (waiting for the lock).
 12. Within 50 seconds, in Terminal A: `COMMIT;` → the browser finishes immediately.
 13. Repeat steps 10–11 but **wait > 50 seconds** → the browser shows the error `Lock wait timeout exceeded` (`innodb_lock_wait_timeout` defaults to 50 s). Note it in `docs/ujian-manual-tlk.md` — this is the **correct** behaviour (the request does not continue without the lock).
-14. Repeat step 1 (two applicants, same slot, overlapping dates) → now only **one** succeeds; the second gets *"Slot ini sudah ditempah bagi tarikh yang bertindih."* (This slot is already booked for overlapping dates.) Update TM-TLK-16 → ✅.
+14. First *Tolak* (Reject) `pemohon2`'s A-03 booking from steps 11–12 (`pelulus` → `/tlk/keputusan`; BR-TLK-04). Then repeat step 1 (two applicants, same slot, overlapping dates) → now only **one** succeeds; the second gets *"Slot ini sudah ditempah bagi tarikh yang bertindih."* (This slot is already booked for overlapping dates.) Update TM-TLK-16 → ✅.
 
 15. Commit `TLK: transaksi + kunci baris BR-TLK-01/04/05, keputusan & status_logs`.
 

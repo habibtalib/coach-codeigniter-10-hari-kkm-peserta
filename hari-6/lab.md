@@ -898,6 +898,12 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
 
 **E. Buktikan kunci dengan dua sesi MySQL (demo wajib)**
 
+**Sebelum langkah 10:** `BookingService` v2 kini menguatkuasakan BR-TLK-04, dan `pemohon1` serta `pemohon2` masih ada tempahan aktif dari Hari 5 dan langkah 1. Tanpa langkah ini, langkah 11 dan 14 terkena BR-TLK-04 (*"Anda sudah mempunyai satu tempahan aktif…"*), bukan hasil yang dijangka. Kosongkan melalui aplikasi supaya `status_logs` lengkap: `pelulus` → `/tlk/keputusan` → *Tolak* setiap tempahan `pending` milik `pemohon1` dan `pemohon2` (sebab ≥ 10 aksara); pemohon → butiran → *Batalkan* setiap tempahan `approved`. Sahkan (0 baris bagi `user_id` `pemohon1` & `pemohon2`):
+
+```sql
+SELECT user_id, ref_no, status FROM slot_bookings WHERE status IN ('pending', 'approved');
+```
+
 10. Terminal A (klien MySQL):
 
     ```sql
@@ -911,7 +917,7 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
 11. Pelayar: log masuk `pemohon2`, mohon slot **A-03** → tekan *Hantar*. Pelayar **berpusing** (menunggu kunci).
 12. Dalam masa 50 saat, Terminal A: `COMMIT;` → pelayar serta-merta selesai.
 13. Ulang langkah 10–11 tetapi **tunggu > 50 saat** → pelayar memaparkan ralat `Lock wait timeout exceeded` (`innodb_lock_wait_timeout` lalai 50 s). Catat dalam `docs/ujian-manual-tlk.md` — ini tingkah laku yang **betul** (permintaan tidak meneruskan tanpa kunci).
-14. Ulang langkah 1 (dua pemohon, slot sama, tarikh bertindih) → kini hanya **satu** berjaya; yang kedua mendapat *"Slot ini sudah ditempah bagi tarikh yang bertindih."* Kemas kini TM-TLK-16 → ✅.
+14. *Tolak* dahulu tempahan A-03 `pemohon2` dari langkah 11–12 (`pelulus` → `/tlk/keputusan`; BR-TLK-04). Kemudian ulang langkah 1 (dua pemohon, slot sama, tarikh bertindih) → kini hanya **satu** berjaya; yang kedua mendapat *"Slot ini sudah ditempah bagi tarikh yang bertindih."* Kemas kini TM-TLK-16 → ✅.
 
 15. Commit `TLK: transaksi + kunci baris BR-TLK-01/04/05, keputusan & status_logs`.
 

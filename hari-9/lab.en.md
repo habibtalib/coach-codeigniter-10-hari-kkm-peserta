@@ -2009,11 +2009,11 @@ php spark laporan:explain pas "" 2026-09-01 2026-09-30
 
 **7. Record your observations** in `docs/laporan-spec.md` → section "Prestasi" (Performance): for each query, note `type`, `key`, `rows` for the main table (`b` / `p`). Answer: *which query has no index for its main filter?*
 
-**8. Commit & merge.**
+**8. Commit & open the MR.**
 
 ```bash
 git add -A && git commit -m "RPT: ujian jumlah laporan = SQL + arahan laporan:explain"
-git push -u origin feat/laporan    # open an MR to main → trainer/neighbour comments → you merge
+git push -u origin feat/laporan    # open an MR to main → trainer/neighbour comments; do NOT merge yet — Labs 9.1b–9.4b add commits to this MR
 ```
 
 ### ✅ Checkpoint 9.4 — **M3 done**
@@ -2722,6 +2722,8 @@ Run again and write down the failure message (Quiz S8). Restore → green.
 git add tests/ && git commit -m "RPT: ujian ringkasan status, jumlah RPT-03 & lembaran Excel"
 git push    # MR feat/laporan dikemas kini — tiada MR baharu (Hari 4)
 ```
+
+After the trainer/neighbour approves the review, **merge** the `feat/laporan` MR into `main` (M3 done; Day 10 starts from `main`).
 
 ### ✅ Checkpoint
 - [ ] `composer test -- tests/Services/ReportServiceTest.php` → all green (≥ 12 tests: 7 from Lab 9.4 + 5 from Lab 9.4b) (Quiz S8).
