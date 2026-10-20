@@ -52,7 +52,7 @@ Demo your `kelas-ci-<nama>` project (GitLab + `/zon`) and explain the 7 steps of
    | 6 | View | | |
    | 7 | Response | | |
 
-8. Commit and push (`git add docs/kitaran-request.md && git commit -m "DOCS: kitaran request /zon" && git push`), then give the trainer a 3-minute demo: your GitLab project page, `/zon?q=aras`, and the table above.
+8. Commit and push (`git add docs/kitaran-request.md && git commit -m "DOCS: kitaran request /zon" && git push`; PowerShell: run `git add`, `git commit` and `git push` one at a time), then give the trainer a 3-minute demo: your GitLab project page, `/zon?q=aras`, and the table above.
 
 ### ✅ Checkpoint
 - `docs/kitaran-request.md` complete with 7 rows of evidence, pushed to GitLab (Quiz S1).
@@ -1208,11 +1208,16 @@ Trace one **POST** request (the `/jabatan/baharu` form from Lab 3.3) with the De
    - **Database** tab: the number of queries and their SQL. Click the `SELECT 1 FROM departments …` query to see its *trace*: it comes from `Validation\Rules->is_unique()`, not from the controller.
    - **Views** tab: the number of views loaded during the POST.
    - **Routes** tab: the matched controller and method.
-4. Second terminal (keep `serve` running). Git Bash converts `/jabatan` into a Windows path (`C:/Program Files/Git/jabatan`), so put `MSYS_NO_PATHCONV=1` in front:
+4. Second terminal (keep `serve` running). Pick the tab for your terminal. Git Bash converts `/jabatan` into a Windows path (`C:/Program Files/Git/jabatan`), so put `MSYS_NO_PATHCONV=1` in front. PowerShell does not convert paths, so type the command without that prefix:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    MSYS_NO_PATHCONV=1 php spark filter:check POST /jabatan
    MSYS_NO_PATHCONV=1 php spark filter:check GET /zon
+   ```
+
+   ```powershell tab="PowerShell"
+   php spark filter:check POST /jabatan
+   php spark filter:check GET /zon
    ```
 
    Read the *Before Filters* column: `forcehttps pagecache csrf` for both. The `csrf` filter runs on every request, but it only **verifies the token** on POST.
@@ -1240,8 +1245,14 @@ Trace one **POST** request (the `/jabatan/baharu` form from Lab 3.3) with the De
 
 8. Commit and push:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add docs/kitaran-request.md && git commit -m "DOCS: kitaran request POST /jabatan" && git push
+   ```
+
+   ```powershell tab="PowerShell"
+   git add docs/kitaran-request.md
+   git commit -m "DOCS: kitaran request POST /jabatan"
+   git push
    ```
 
 ### ✅ Checkpoint
@@ -1256,6 +1267,8 @@ Trace one **POST** request (the `/jabatan/baharu` form from Lab 3.3) with the De
 | The History tab has no POST row | The toolbar was opened on an old page, or the `writable/debugbar/` folder is not writable | Reload `/jabatan` after Simpan, then open History; check that `writable/debugbar/` exists |
 | The Views tab shows `jabatan/index` | You loaded the **GET** `/jabatan` row, not the POST | Click **Load** on the row whose *Method* column = `POST` |
 | `Can't find a route: "POST C:/Program Files/Git/jabatan"` | Git Bash converted `/jabatan` into a Windows path | Put `MSYS_NO_PATHCONV=1` in front of the command |
+| `MSYS_NO_PATHCONV=1 : The term 'MSYS_NO_PATHCONV=1' is not recognized` | A Git Bash command typed in PowerShell | Use the **PowerShell** tab: drop `MSYS_NO_PATHCONV=1` |
+| `The token '&&' is not a valid statement separator` | Windows PowerShell 5.1 does not support `&&` | Use the **PowerShell** tab: run `git add`, `git commit` and `git push` one at a time |
 | *The action you requested is not allowed.* on a normal Simpan | The tab was open too long, or the form was loaded before `serve` restarted | Reload `/jabatan/baharu` (new token), then submit again |
 
 ### ⭐ Bonus challenge
@@ -1311,10 +1324,16 @@ Put the Shield filters `session` and `permission:admin.access` on the Day 3 rout
    > `permission:admin.access` asks "*what* are you allowed to do?". Only the `admin` group has it (`admin.*` in `$matrix`). The same filter goes on the GET (form) **and** the POST (save) — if the POST is not protected, anyone logged in can submit the form directly.
 3. Verify:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    php -l app/Config/Routes.php
    php spark routes | grep -E "jabatan|zon"
    MSYS_NO_PATHCONV=1 php spark filter:check GET /jabatan/baharu
+   ```
+
+   ```powershell tab="PowerShell"
+   php -l app/Config/Routes.php
+   php spark routes | Select-String "jabatan|zon"
+   php spark filter:check GET /jabatan/baharu
    ```
 
    `jabatan`, `zon` and `zon/([0-9]+)` → `csrf session`; `jabatan/baharu`, `jabatan/([0-9]+)/edit` (GET) and `jabatan`, `jabatan/([0-9]+)` (POST) → `csrf permission:admin.access`. `filter:check` shows the `CodeIgniter\Shield\Filters\PermissionFilter:admin.access` class after `CSRF`.
@@ -1360,8 +1379,14 @@ Put the Shield filters `session` and `permission:admin.access` on the Day 3 rout
    `shield:user delete` removes the `users` row permanently; `auth_identities` and `auth_groups_users` go with it (Shield's `ON DELETE CASCADE` FKs — you prove this in Lab 4.3b).
 7. Commit and push **the docs file only** (`Routes.php` goes into the `SETUP:` commit in Lab 4.4 step 2):
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add docs/akses-route.md && git commit -m "DOCS: matriks akses route Hari 3" && git push
+   ```
+
+   ```powershell tab="PowerShell"
+   git add docs/akses-route.md
+   git commit -m "DOCS: matriks akses route Hari 3"
+   git push
    ```
 
 ### ✅ Checkpoint
@@ -1558,8 +1583,14 @@ Prove every Lab 4.3 constraint with real queries in the MySQL client — FK with
     Expected: 2 rows — `TLK` and `PAS`, the current year, `last_number` `0` — with no `Duplicate entry` error. Tomorrow `ReferenceNumberService::next('TLK')` locks this `TLK` row and generates `TLK-2026-0001`.
 11. Commit and push **the docs file only** (the seeder goes into the `SETUP:` commit in Lab 4.4 step 2):
 
-    ```bash
+    ```bash tab="Git Bash / macOS / Linux"
     git add docs/ujian-fk.md && git commit -m "DOCS: ujian FK & ON DELETE" && git push
+    ```
+
+    ```powershell tab="PowerShell"
+    git add docs/ujian-fk.md
+    git commit -m "DOCS: ujian FK & ON DELETE"
+    git push
     ```
 
 ### ✅ Checkpoint
@@ -1661,6 +1692,8 @@ Run a full merge request cycle a second time with a real change (the project `RE
    Git Bash menukar `/jabatan` kepada path Windows, jadi letak `MSYS_NO_PATHCONV=1` di hadapan:
 
        MSYS_NO_PATHCONV=1 php spark filter:check GET /jabatan/baharu
+
+   PowerShell tidak menukar path, jadi taip arahan tanpa `MSYS_NO_PATHCONV=1`.
 
    Lajur *Before Filters* mesti mengandungi `permission:admin.access`.
    ```

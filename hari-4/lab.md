@@ -52,7 +52,7 @@ Mendemokan projek `kelas-ci-<nama>` anda (GitLab + `/zon`) dan menerangkan 7 lan
    | 6 | View | | |
    | 7 | Response | | |
 
-8. Commit dan push (`git add docs/kitaran-request.md && git commit -m "DOCS: kitaran request /zon" && git push`), kemudian demo 3 minit kepada jurulatih: halaman projek GitLab anda, `/zon?q=aras`, dan jadual di atas.
+8. Commit dan push (`git add docs/kitaran-request.md && git commit -m "DOCS: kitaran request /zon" && git push`; PowerShell: jalankan `git add`, `git commit` dan `git push` satu demi satu), kemudian demo 3 minit kepada jurulatih: halaman projek GitLab anda, `/zon?q=aras`, dan jadual di atas.
 
 ### ✅ Checkpoint
 - `docs/kitaran-request.md` lengkap 7 baris dengan bukti, di-push ke GitLab (Kuiz S1).
@@ -1208,11 +1208,16 @@ Menjejak satu request **POST** (borang `/jabatan/baharu` dari Lab 3.3) dengan De
    - Tab **Database**: bilangan query dan teks SQL. Klik query `SELECT 1 FROM departments …` untuk melihat *trace*: ia datang dari `Validation\Rules->is_unique()`, bukan dari controller.
    - Tab **Views**: bilangan view yang dimuat semasa POST.
    - Tab **Routes**: controller dan method yang dipadan.
-4. Terminal kedua (biarkan `serve` berjalan). Git Bash menukar `/jabatan` kepada path Windows (`C:/Program Files/Git/jabatan`), jadi letak `MSYS_NO_PATHCONV=1` di hadapan:
+4. Terminal kedua (biarkan `serve` berjalan). Pilih tab ikut terminal anda. Git Bash menukar `/jabatan` kepada path Windows (`C:/Program Files/Git/jabatan`), jadi letak `MSYS_NO_PATHCONV=1` di hadapan. PowerShell tidak menukar path, jadi taip arahan tanpa awalan itu:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    MSYS_NO_PATHCONV=1 php spark filter:check POST /jabatan
    MSYS_NO_PATHCONV=1 php spark filter:check GET /zon
+   ```
+
+   ```powershell tab="PowerShell"
+   php spark filter:check POST /jabatan
+   php spark filter:check GET /zon
    ```
 
    Baca lajur *Before Filters*: `forcehttps pagecache csrf` bagi kedua-duanya. Filter `csrf` berjalan pada setiap request, tetapi hanya **mengesahkan token** pada POST.
@@ -1240,8 +1245,14 @@ Menjejak satu request **POST** (borang `/jabatan/baharu` dari Lab 3.3) dengan De
 
 8. Commit dan push:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add docs/kitaran-request.md && git commit -m "DOCS: kitaran request POST /jabatan" && git push
+   ```
+
+   ```powershell tab="PowerShell"
+   git add docs/kitaran-request.md
+   git commit -m "DOCS: kitaran request POST /jabatan"
+   git push
    ```
 
 ### ✅ Checkpoint
@@ -1256,6 +1267,8 @@ Menjejak satu request **POST** (borang `/jabatan/baharu` dari Lab 3.3) dengan De
 | Tab History tiada baris POST | Toolbar dibuka pada halaman lama, atau folder `writable/debugbar/` tidak boleh ditulis | Muat semula `/jabatan` selepas Simpan, kemudian buka History; semak `writable/debugbar/` wujud |
 | Tab Views menunjukkan `jabatan/index` | Baris **GET** `/jabatan` yang dimuat, bukan POST | Klik **Load** pada baris yang lajur *Method* = `POST` |
 | `Can't find a route: "POST C:/Program Files/Git/jabatan"` | Git Bash menukar `/jabatan` kepada path Windows | Letak `MSYS_NO_PATHCONV=1` di hadapan arahan |
+| `MSYS_NO_PATHCONV=1 : The term 'MSYS_NO_PATHCONV=1' is not recognized` | Arahan Git Bash ditaip dalam PowerShell | Guna tab **PowerShell**: buang `MSYS_NO_PATHCONV=1` |
+| `The token '&&' is not a valid statement separator` | Windows PowerShell 5.1 tidak menyokong `&&` | Guna tab **PowerShell**: jalankan `git add`, `git commit` dan `git push` satu demi satu |
 | *The action you requested is not allowed.* semasa Simpan biasa | Tab dibuka terlalu lama atau borang dimuat sebelum `serve` dimulakan semula | Muat semula `/jabatan/baharu` (token baharu), kemudian hantar semula |
 
 ### ⭐ Cabaran tambahan
@@ -1311,10 +1324,16 @@ Memasang filter Shield `session` dan `permission:admin.access` pada route Hari 3
    > `permission:admin.access` bertanya "*apa* yang anda boleh buat?". Hanya group `admin` mempunyainya (`admin.*` dalam `$matrix`). Filter yang sama pada GET (borang) **dan** POST (simpan) — jika POST tidak dilindungi, sesiapa yang log masuk boleh menghantar borang terus.
 3. Sahkan:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    php -l app/Config/Routes.php
    php spark routes | grep -E "jabatan|zon"
    MSYS_NO_PATHCONV=1 php spark filter:check GET /jabatan/baharu
+   ```
+
+   ```powershell tab="PowerShell"
+   php -l app/Config/Routes.php
+   php spark routes | Select-String "jabatan|zon"
+   php spark filter:check GET /jabatan/baharu
    ```
 
    `jabatan`, `zon` dan `zon/([0-9]+)` → `csrf session`; `jabatan/baharu`, `jabatan/([0-9]+)/edit` (GET) dan `jabatan`, `jabatan/([0-9]+)` (POST) → `csrf permission:admin.access`. `filter:check` menunjukkan kelas `CodeIgniter\Shield\Filters\PermissionFilter:admin.access` selepas `CSRF`.
@@ -1360,8 +1379,14 @@ Memasang filter Shield `session` dan `permission:admin.access` pada route Hari 3
    `shield:user delete` memadam baris `users` secara kekal; `auth_identities` dan `auth_groups_users` ikut terpadam (FK `ON DELETE CASCADE` Shield — anda membuktikannya dalam Lab 4.3b).
 7. Commit dan push **fail docs sahaja** (`Routes.php` masuk commit `SETUP:` dalam Lab 4.4 langkah 2):
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add docs/akses-route.md && git commit -m "DOCS: matriks akses route Hari 3" && git push
+   ```
+
+   ```powershell tab="PowerShell"
+   git add docs/akses-route.md
+   git commit -m "DOCS: matriks akses route Hari 3"
+   git push
    ```
 
 ### ✅ Checkpoint
@@ -1558,8 +1583,14 @@ Membuktikan setiap kekangan Lab 4.3 dengan query sebenar dalam klien MySQL — F
     Dijangka: 2 baris — `TLK` dan `PAS`, tahun semasa, `last_number` `0` — tanpa ralat `Duplicate entry`. Esok `ReferenceNumberService::next('TLK')` mengunci baris `TLK` ini dan menjana `TLK-2026-0001`.
 11. Commit dan push **fail docs sahaja** (seeder masuk commit `SETUP:` dalam Lab 4.4 langkah 2):
 
-    ```bash
+    ```bash tab="Git Bash / macOS / Linux"
     git add docs/ujian-fk.md && git commit -m "DOCS: ujian FK & ON DELETE" && git push
+    ```
+
+    ```powershell tab="PowerShell"
+    git add docs/ujian-fk.md
+    git commit -m "DOCS: ujian FK & ON DELETE"
+    git push
     ```
 
 ### ✅ Checkpoint
@@ -1661,6 +1692,8 @@ Menjalankan kitaran merge request lengkap kali kedua dengan perubahan sebenar (`
    Git Bash menukar `/jabatan` kepada path Windows, jadi letak `MSYS_NO_PATHCONV=1` di hadapan:
 
        MSYS_NO_PATHCONV=1 php spark filter:check GET /jabatan/baharu
+
+   PowerShell tidak menukar path, jadi taip arahan tanpa `MSYS_NO_PATHCONV=1`.
 
    Lajur *Before Filters* mesti mengandungi `permission:admin.access`.
    ```
