@@ -2147,17 +2147,13 @@ Rakam babak 12 (dua pelulus serentak) sebagai GIF pendek untuk demo capstone Har
 
 ## Semakan kendiri — akhir hari
 
-```bash tab="Git Bash / macOS / Linux"
+```bash
 git log --oneline -8
 php spark routes | grep pas/              # 11 laluan Pas; semakan dengan permission:
 composer test -- --testdox | tail -20   # semua hijau
 ```
 
-```powershell tab="PowerShell"
-git log --oneline -8
-php spark routes | Select-String pas/    # 11 laluan Pas; semakan dengan permission:
-composer test '--' --testdox | Select-Object -Last 20   # semua hijau
-```
+🪟 PowerShell: `php spark routes | Select-String pas/`, `composer test '--' --testdox | Select-Object -Last 20`.
 
 - [ ] Satu permohonan bergerak `submitted → under_review → approved` dengan 3 baris `status_logs` (Kuiz S1).
 - [ ] Penyemak tidak boleh meluluskan melalui DevTools/curl; `pelulus` tidak boleh memulakan semakan pukal — kedua-duanya redirect, status kekal (Kuiz S6).

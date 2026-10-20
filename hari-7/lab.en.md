@@ -2718,7 +2718,7 @@ Automate 10 Lab 7.4 boundary cases and 4 Lab 7.3b cases in `tests/feature/Pas/Pa
 
 ## Self-check — end of day
 
-```bash tab="Git Bash / macOS / Linux"
+```bash
 git log --oneline -9                    # 8 "PAS:" commits today (4 core labs + 4 follow-up labs)
 php spark routes | grep pas/permohonan  # 6 routes (5 + Lab 7.3b), session filter
 composer test -- --no-coverage tests/feature/Pas/PassSubmitTest.php   # OK (Lab 7.4b)
@@ -2726,12 +2726,6 @@ ls writable/uploads/pas/ | head         # random names only
 git status                              # clean; writable/uploads not tracked
 ```
 
-```powershell tab="PowerShell"
-git log --oneline -9                                    # 8 "PAS:" commits today (4 core labs + 4 follow-up labs)
-php spark routes | Select-String pas/permohonan         # 6 routes (5 + Lab 7.3b), session filter
-composer test '--' --no-coverage tests/feature/Pas/PassSubmitTest.php   # OK (Lab 7.4b)
-Get-ChildItem writable/uploads/pas/ -Name | Select-Object -First 10  # random names only
-git status                                              # clean; writable/uploads not tracked
-```
+🪟 PowerShell: `php spark routes | Select-String pas/permohonan`, `composer test '--' --no-coverage tests/feature/Pas/PassSubmitTest.php`, `Get-ChildItem writable/uploads/pas/ -Name | Select-Object -First 10`.
 
 Participants who fall behind: copy from `templates/kod/` (**Templat & Rujukan** module) **after** the trainer/a peer has explained each part — and mark it in the commit (`PAS: … (rujuk templat)`).

@@ -2718,7 +2718,7 @@ Mengautomasikan 10 kes sempadan Lab 7.4 dan 4 kes Lab 7.3b dalam `tests/feature/
 
 ## Semakan kendiri — akhir hari
 
-```bash tab="Git Bash / macOS / Linux"
+```bash
 git log --oneline -9                    # 8 commit PAS: hari ini (4 lab teras + 4 lab lanjutan)
 php spark routes | grep pas/permohonan  # 6 laluan (5 + Lab 7.3b), filter session
 composer test -- --no-coverage tests/feature/Pas/PassSubmitTest.php   # OK (Lab 7.4b)
@@ -2726,12 +2726,6 @@ ls writable/uploads/pas/ | head         # nama rawak sahaja
 git status                              # bersih; writable/uploads tidak dijejak
 ```
 
-```powershell tab="PowerShell"
-git log --oneline -9                                    # 8 commit PAS: hari ini (4 lab teras + 4 lab lanjutan)
-php spark routes | Select-String pas/permohonan         # 6 laluan (5 + Lab 7.3b), filter session
-composer test '--' --no-coverage tests/feature/Pas/PassSubmitTest.php   # OK (Lab 7.4b)
-Get-ChildItem writable/uploads/pas/ -Name | Select-Object -First 10  # nama rawak sahaja
-git status                                              # bersih; writable/uploads tidak dijejak
-```
+🪟 PowerShell: `php spark routes | Select-String pas/permohonan`, `composer test '--' --no-coverage tests/feature/Pas/PassSubmitTest.php`, `Get-ChildItem writable/uploads/pas/ -Name | Select-Object -First 10`.
 
 Peserta yang ketinggalan: salin dari `templates/kod/` (modul **Templat & Rujukan**) **selepas** jurulatih/rakan menerangkan setiap bahagian — dan tandakan dalam commit (`PAS: … (rujuk templat)`).

@@ -2147,17 +2147,13 @@ Record scene 12 (two approvers at the same time) as a short GIF for the Day 10 c
 
 ## Self-check — end of day
 
-```bash tab="Git Bash / macOS / Linux"
+```bash
 git log --oneline -8
 php spark routes | grep pas/              # 11 Pass routes; review routes with permission:
 composer test -- --testdox | tail -20   # all green
 ```
 
-```powershell tab="PowerShell"
-git log --oneline -8
-php spark routes | Select-String pas/    # 11 Pass routes; review routes with permission:
-composer test '--' --testdox | Select-Object -Last 20   # all green
-```
+🪟 PowerShell: `php spark routes | Select-String pas/`, `composer test '--' --testdox | Select-Object -Last 20`.
 
 - [ ] One application moves `submitted → under_review → approved` with 3 `status_logs` rows (Quiz S1).
 - [ ] The reviewer cannot approve through DevTools/curl; `pelulus` cannot start a bulk review — both redirect, status unchanged (Quiz S6).
