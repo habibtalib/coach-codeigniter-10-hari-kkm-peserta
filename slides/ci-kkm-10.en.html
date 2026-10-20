@@ -1198,158 +1198,218 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 4 · S1 — Request flow</div>
-  <h2 class="wide">The life cycle of one request in CodeIgniter 4</h2>
+  <div class="eyebrow">Day 4 · S1 — Request cycle</div>
+  <h2 class="wide">One request, seven steps</h2>
   <div class="flow">
     <div class="node"><span class="k">01</span><b>public/index.php</b><span>single front controller</span></div><div class="arr">→</div>
     <div class="node"><span class="k">02</span><b>Routes.php</b><span>URL → Controller::method</span></div><div class="arr">→</div>
     <div class="node"><span class="k">03</span><b>Filters (before)</b><span>csrf · session · permission</span></div><div class="arr">→</div>
-    <div class="node hot"><span class="k">04</span><b>Controller</b><span>thin: receive &amp; hand off</span></div><div class="arr">→</div>
+    <div class="node hot"><span class="k">04</span><b>Controller</b><span>thin: receive &amp; hand over</span></div><div class="arr">→</div>
     <div class="node hot"><span class="k">05</span><b>Service</b><span>business rules</span></div><div class="arr">→</div>
     <div class="node"><span class="k">06</span><b>Model</b><span>Query Builder + validation</span></div><div class="arr">→</div>
     <div class="node"><span class="k">07</span><b>View + after</b><span><code>esc()</code> → Response</span></div>
   </div>
-  <div class="grid c3 mt24">
-    <div class="card side m-tlk"><h3>Controller</h3><p>Read input, call the Service, return <code>view()</code> or <code>redirect()</code>. No SQL, no rules.</p></div>
-    <div class="card side m-pas"><h3>Service</h3><p>BR-TLK/BR-PAS, transactions, status transitions, logs. Testable without HTTP.</p></div>
-    <div class="card side m-rpt"><h3>Model &amp; Enum</h3><p>Data access + <code>$validationRules</code>. The enum is the single source of status.</p></div>
-  </div>
-  <aside class="notes"><p>Lukis aliran ini di papan dan rujuk semula sepanjang kursus. Soalan kuiz: "Di mana semakan pertindihan tarikh diletakkan?" — dalam Service, bukan Controller atau View.</p></aside>
+  <div class="callout tip mt24"><span class="i">💡</span><div><b>Controller</b> thin · <b>Service</b> = rules · <b>Model</b> = data. Trace <code>/zon?q=aras</code> with the Debug Toolbar (Lab 4.1).</div></div>
+  <aside class="notes"><p>Lukis aliran ini di papan dan rujuk semula sepanjang kursus. Soalan: di mana semakan pertindihan tarikh? Dalam Service, bukan Controller atau View.</p></aside>
 </section>
 
-<section class="slide codey">
-  <div class="eyebrow">Day 4 · S2 — Structure &amp; .env</div>
-  <h2>The same project, growing every day</h2>
+<section class="slide">
+  <div class="eyebrow">Day 4 · S5 — S1 follow-up</div>
+  <h2>GET vs POST: same flow, three differences</h2>
+  <table class="t">
+    <tr><th>Step</th><th>GET <code>/zon?q=aras</code></th><th>POST <code>/jabatan</code></th></tr>
+    <tr><td>Filter <code>csrf</code></td><td>No token checked</td><td>Token checked; missing → <code>403</code></td></tr>
+    <tr><td>Model</td><td><code>LIKE</code> + <code>COUNT</code> (pager)</td><td><code>is_unique</code> + <code>INSERT</code></td></tr>
+    <tr><td>View</td><td><code>zon/index</code> + layout</td><td>None</td></tr>
+    <tr><td>Response</td><td><code>200</code> + HTML</td><td><code>303</code> + <code>Location</code> (PRG)</td></tr>
+  </table>
+  <div class="callout tip mt24"><span class="i">🔎</span><div>After a redirect the Toolbar shows the GET. POST data: <b>History</b> tab → <b>Load</b>.</div></div>
+  <aside class="notes"><p>Toolbar di bawah halaman selepas redirect milik request GET terakhir. Tunjuk tab History → Load untuk melihat POST. Lab 4.1b.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 4 · S2 — Composer</div>
+  <h2>Composer: the PHP package manager</h2>
   <div class="split">
-    <div class="codewrap"><div class="codebar">kelas-ci-&lt;nama&gt;/<span class="lang">tree</span></div>
-<pre class="code sm" data-lang="text">kelas-ci-&lt;nama&gt;/      <span class="c">← the Day 2 project</span>
-├── app/
-│   ├── Config/       Routes · Auth* · AuthGroups*
-│   ├── Controllers/  Jabatan · Zon · Home*
-│   ├── Models/       DepartmentModel · UserModel*
-│   ├── Database/     Migrations/ (2 + 8*)
-│   └── Views/        jabatan/ · zon/ · layouts/main.php*
-├── public/           index.php — web root
-├── writable/  tests/
-├── .env              <span class="c">← never commit!</span>
-└── .env.example      <span class="c">← Lab 3.1b</span>
-<span class="c">* = new on Day 4</span></pre></div>
     <div class="stack">
-      <div class="codewrap"><div class="codebar">.env (already exists — add what is missing)<span class="lang">env</span></div>
+      <div class="card side m-tlk"><h3><code>composer.json</code></h3><p>The packages you asked for. <b>Commit.</b></p></div>
+      <div class="card side m-pas"><h3><code>composer.lock</code></h3><p>Exact versions installed. <b>Commit</b> — a fresh clone gets the same versions.</p></div>
+      <div class="card side m-stat"><h3><code>vendor/</code></h3><p>Downloaded package code. <b>Don't edit, don't commit.</b></p></div>
+    </div>
+    <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="c"># hentikan php spark serve dahulu (Ctrl+C)</span>
+<span class="f">composer</span> require codeigniter4/shield  <span class="c"># + composer.json &amp; .lock</span>
+<span class="f">composer</span> show codeigniter4/shield     <span class="c"># versi dipasang</span>
+<span class="f">git</span> status                            <span class="c"># json &amp; lock berubah</span>
+<span class="f">composer</span> install                      <span class="c"># klon baharu → vendor/</span></pre></div>
+  </div>
+  <aside class="notes"><p>Composer sama seperti create-project Hari 2. Hentikan serve sebelum require. Internet lambat: guna shield-vendor.zip dari USB (nota penceramah).</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 4 · S2 — .env</div>
+  <h2><code>.env</code>: add, don't copy again</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">.env (already exists)<span class="lang">env</span></div>
 <pre class="code sm" data-lang="env"><span class="v">CI_ENVIRONMENT</span> =<span class="s"> development</span>
 <span class="v">app.baseURL</span> =<span class="s"> 'http://localhost:8080/'</span>
-<span class="v">app.indexPage</span> =<span class="s"> ''</span>   <span class="c"># new on Day 4</span>
+<span class="v">app.indexPage</span> =<span class="s"> ''</span>   <span class="c"># baharu Hari 4</span>
 <span class="v">app.appTimezone</span> =<span class="s"> 'Asia/Kuala_Lumpur'</span>
-
-<span class="v">database.default.hostname</span> =<span class="s"> localhost</span>
-<span class="v">database.default.database</span> =<span class="s"> kkm_latihan</span>
-<span class="v">database.default.username</span> =<span class="s"> kkm_dev</span>
-<span class="v">database.default.DBDriver</span> =<span class="s"> MySQLi</span>
-<span class="v">database.default.charset</span>  =<span class="s"> utf8mb4</span></pre></div>
-      <div class="callout warn"><span class="i">⚠️</span><div><b>Do not</b> run <code>cp env .env</code> again — it overwrites your Day 3 settings. Open the existing <code>.env</code> and add the missing lines.</div></div>
-    </div>
-  </div>
-  <aside class="notes"><p>Tunjukkan projek jurulatih sendiri (siap Lab 3.4): fail Hari 2–3 kekal, Hari 4 hanya menambah fail bertanda *. Hanya folder public/ didedahkan kepada web server — sebab itu fail muat naik Hari 7 disimpan di writable/. Ralat lazim: # masih di depan baris .env, localhost vs 127.0.0.1.</p></aside>
-</section>
-
-<section class="slide codey">
-  <div class="eyebrow">Day 4 · S2 — Shield &amp; Spark</div>
-  <h2>Install Shield in the existing project</h2>
-  <div class="split">
-    <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
-<pre class="code sm" data-lang="bash"><span class="f">cd</span> ~/latihan/kelas-ci-&lt;nama&gt;      <span class="c"># continue the Day 3 project</span>
-<span class="f">php</span> <span class="k">spark</span> db:table <span class="n">--show</span>       <span class="c"># departments, parking_zones</span>
-<span class="c"># stop serve first (Ctrl+C)</span>
-<span class="f">composer</span> require codeigniter4/shield
-<span class="f">php</span> <span class="k">spark</span> shield:setup        <span class="c"># Auth, AuthGroups, routes + migrate --all</span>
-<span class="f">php</span> <span class="k">spark</span> shield:model UserModel <span class="c"># your own user model</span>
-
-<span class="f">php</span> <span class="k">spark</span> make:migration AddProfileFieldsToUsers
-<span class="f">php</span> <span class="k">spark</span> migrate             <span class="c"># the 8 remaining migrations (Lab 4.3)</span>
-<span class="f">php</span> <span class="k">spark</span> db:seed DatabaseSeeder
-<span class="f">php</span> <span class="k">spark</span> routes              <span class="c"># check routes &amp; filters</span>
-<span class="f">php</span> <span class="k">spark</span> serve               <span class="c"># http://localhost:8080</span></pre></div>
+<span class="v">database.default.database</span> =<span class="s"> kkm_latihan</span></pre></div>
     <div class="stack">
-      <div class="codewrap"><div class="codebar">app/Config/Routes.php — only the / line changes<span class="lang">php</span></div>
-<pre class="code sm" data-lang="php"><span class="v">$routes</span>-&gt;<span class="f">get</span>(<span class="s">'/'</span>, <span class="s">'Home::index'</span>,
-    [<span class="s">'filter'</span> =&gt; <span class="s">'session'</span>, <span class="s">'as'</span> =&gt; <span class="s">'home'</span>]);
-<span class="v">$routes</span>-&gt;<span class="f">get</span>(<span class="s">'jabatan'</span>, <span class="s">'Jabatan::index'</span>);
-<span class="v">$routes</span>-&gt;<span class="f">get</span>(<span class="s">'zon'</span>, <span class="s">'Zon::index'</span>);
-<span class="c">// … the other Day 3 routes stay …</span>
-
-<span class="f">service</span>(<span class="s">'auth'</span>)-&gt;<span class="f">routes</span>(<span class="v">$routes</span>);</pre></div>
-      <div class="callout tip"><span class="i">💡</span><div>The Day 3 routes (<code>jabatan</code>, <code>zon</code>) <b>stay</b>. <code>shield:setup</code> already added <code>service('auth')->routes()</code> — do not add it twice.</div></div>
+      <div class="callout warn"><span class="i">⚠️</span><div><b>Don't</b> <code>cp env .env</code> again — it overwrites your Day 3 settings.</div></div>
+      <div class="callout tip"><span class="i">🔒</span><div><code>.env</code> is not committed. <code>env</code> (template) &amp; <code>.env.example</code> are.</div></div>
     </div>
   </div>
-  <aside class="notes"><p>Tiada create-project dan tiada cp env .env: projek kelas-ci-nama sudah wujud sejak Lab 2.2. shield:setup menyalin Auth dan AuthGroups ke app/Config, menambah route auth dan menjalankan migrate --all. Jalankan php spark routes selepas setiap perubahan route untuk mengesahkan filter.</p></aside>
+  <aside class="notes"><p>Buka .env sedia ada dan tambah baris yang tertinggal. Ralat lazim: # masih di depan baris, localhost vs 127.0.0.1.</p></aside>
 </section>
 
-<section class="slide codey">
+<section class="slide">
+  <div class="eyebrow">Day 4 · S2 — Shield</div>
+  <h2>Shield: login ready-made, not hand-written</h2>
+  <div class="grid c3">
+    <div class="card side m-tlk"><h3>Login &amp; hashing</h3><p><code>/login</code> · <code>/logout</code>; passwords hashed in <code>auth_identities</code>.</p></div>
+    <div class="card side m-pas"><h3>Group &amp; permission</h3><p><code>Config/AuthGroups.php</code> + <code>auth_groups_users</code>.</p></div>
+    <div class="card side m-rpt"><h3>Route filters</h3><p><code>session</code> · <code>group:…</code> · <code>permission:…</code></p></div>
+  </div>
+  <div class="mt24"><div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="f">composer</span> require codeigniter4/shield
+<span class="f">php</span> <span class="k">spark</span> shield:setup   <span class="c"># Auth, AuthGroups, route auth + migrate --all</span>
+<span class="f">php</span> <span class="k">spark</span> routes         <span class="c"># /login, /logout muncul</span></pre></div></div>
+  <aside class="notes"><p>Baca output shield:setup — jangan tekan y membuta tuli. /register ditutup dengan Auth::$allowRegistration = false; akaun dicipta admin.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 4 · S2 — Shield + profile</div>
+  <h2>Profile fields on <code>users</code>: 3 steps</h2>
+  <div class="split">
+    <ol class="steps tight">
+      <li><div><b>Your own migration</b><span><code>AddProfileFieldsToUsers</code> (S3) — not in <code>vendor/</code>.</span></div></li>
+      <li><div><b><code>shield:model UserModel</code></b><span>Add <code>full_name</code>, <code>staff_no</code>, <code>department_id</code>, <code>phone</code> to <code>$allowedFields</code>.</span></div></li>
+      <li><div><b><code>Auth::$userProvider</code></b><span>Shield uses <code>App\Models\UserModel</code>.</span></div></li>
+    </ol>
+    <div class="stack">
+      <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="f">php</span> <span class="k">spark</span> shield:model UserModel</pre></div>
+      <div class="codewrap"><div class="codebar">app/Config/Auth.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="c">// app/Config/Auth.php</span>
+<span class="k">public</span> <span class="t">string</span> <span class="v">$userProvider</span> = \<span class="t">App</span>\<span class="t">Models</span>\<span class="t">UserModel</span>::<span class="k">class</span>;</pre></div>
+      <div class="callout warn"><span class="i">⚠️</span><div>Without steps 2–3, <code>full_name</code> is <b>silently ignored</b> on save.</div></div>
+    </div>
+  </div>
+  <aside class="notes"><p>Jangan sekali-kali ubah migration Shield dalam vendor/. Uji: simpan pengguna dengan full_name, semak lajur dalam database.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 4 · S2 — Roles</div>
+  <h2>SPEC §4 roles: <code>AuthGroups</code></h2>
+  <div class="codewrap"><div class="codebar">app/Config/AuthGroups.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">public</span> <span class="t">array</span> <span class="v">$matrix</span> = [
+    <span class="s">'applicant'</span> =&gt; [<span class="s">'tlk.apply'</span>, <span class="s">'pas.apply'</span>],
+    <span class="s">'reviewer'</span>  =&gt; [<span class="s">'pas.review'</span>, <span class="s">'laporan.view'</span>],
+    <span class="s">'approver'</span>  =&gt; [<span class="s">'tlk.decide'</span>, <span class="s">'pas.approve'</span>, <span class="s">'laporan.view'</span>, <span class="s">'statistik.view'</span>],
+    <span class="s">'admin'</span>     =&gt; [<span class="s">'admin.*'</span>, <span class="s">'tlk.*'</span>, <span class="s">'pas.*'</span>, <span class="s">'laporan.*'</span>, <span class="s">'statistik.*'</span>],
+];</pre></div>
+  <div class="grid c2 mt24">
+    <div class="card side m-stat"><h3><code>group:admin</code></h3><p>Asks <b>who</b> you are.</p></div>
+    <div class="card side m-tlk"><h3><code>permission:tlk.decide</code></h3><p>Asks <b>what</b> you may do. <b>Prefer this</b> — later only the matrix changes, not Routes.</p></div>
+  </div>
+  <aside class="notes"><p>Setiap permission juga diisytihar dalam $permissions dengan keterangan BM. Fail penuh: templates/kod/AuthGroups.php.txt.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 4 · S2 — Layout</div>
+  <h2>Bootstrap layout: one frame, many pages</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">app/Views/home.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php">&lt;?= <span class="v">$this</span>-&gt;<span class="f">extend</span>(<span class="s">'layouts/main'</span>) ?&gt;
+&lt;?= <span class="v">$this</span>-&gt;<span class="f">section</span>(<span class="s">'content'</span>) ?&gt;
+    &lt;h1&gt;&lt;?= <span class="f">esc</span>(<span class="f">auth</span>()-&gt;<span class="f">user</span>()-&gt;full_name) ?&gt;&lt;/h1&gt;
+&lt;?= <span class="v">$this</span>-&gt;<span class="f">endSection</span>() ?&gt;</pre></div>
+    <div class="stack">
+      <div class="card flat"><span class="k">layouts/main.php</span><p>navbar · <code>partials/flash</code> · <code>renderSection('content')</code> · footer</p></div>
+      <div class="callout warn"><span class="i">⚠️</span><div>A menu shown by <code>can()</code> is only UI convenience. The real control is the <b>route filter</b>.</div></div>
+    </div>
+  </div>
+  <aside class="notes"><p>Flash success/message hijau, error merah, dipapar sekali selepas redirect. Ralat per medan dipapar dalam view borang, bukan layout.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 4 · S6 — S2 follow-up</div>
+  <h2>Shield filters on <code>/jabatan</code> &amp; <code>/zon</code></h2>
+  <table class="t">
+    <tr><th>Filter</th><th>Not logged in</th><th>Logged in, no right</th></tr>
+    <tr><td><code>session</code></td><td>→ <code>/login</code></td><td>Allowed</td></tr>
+    <tr><td><code>group:admin</code></td><td>→ <code>/login</code></td><td>→ <code>/</code> + flash <code>error</code></td></tr>
+    <tr><td><code>permission:admin.access</code></td><td>→ <code>/login</code></td><td>→ <code>/</code> + flash <code>error</code></td></tr>
+  </table>
+  <div class="split mt24">
+    <div class="callout warn"><span class="i">⚠️</span><div>Protect the GET (form) <b>and</b> the POST (save) — otherwise a direct POST still gets in.</div></div>
+    <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="f">php</span> <span class="k">spark</span> routes      <span class="c"># lajur Before Filters</span>
+<span class="v">MSYS_NO_PATHCONV</span>=<span class="n">1</span> <span class="f">php</span> <span class="k">spark</span> filter:check GET /jabatan/baharu</pre></div>
+  </div>
+  <aside class="notes"><p>Uji dengan dua akaun: admin dan pemohon1. Akaun tanpa seeder: php spark shield:user create -n nama -e emel -g group. Lab 4.2b.</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Day 4 · S3 — Migration</div>
-  <h2>ERD → migration: <code style="font-size:.8em">slot_bookings</code></h2>
-  <div class="codewrap"><div class="codebar">app/Database/Migrations/2026-10-06-000500_CreateSlotBookings.php<span class="lang">php</span></div>
-<pre class="code sm" data-lang="php"><span class="k">class</span> <span class="t">CreateSlotBookings</span> <span class="k">extends</span> <span class="t">Migration</span>
-{
-    <span class="k">public</span> <span class="k">function</span> <span class="f">up</span>(): <span class="k">void</span>
-    {
-        <span class="v">$uint</span> = [<span class="s">'type'</span> =&gt; <span class="s">'INT'</span>, <span class="s">'unsigned'</span> =&gt; <span class="k">true</span>];
-        <span class="v">$time</span> = [<span class="s">'type'</span> =&gt; <span class="s">'DATETIME'</span>, <span class="s">'null'</span> =&gt; <span class="k">true</span>];
-        <span class="v">$this</span>-&gt;forge-&gt;<span class="f">addField</span>([
-            <span class="s">'id'</span>         =&gt; <span class="v">$uint</span> + [<span class="s">'auto_increment'</span> =&gt; <span class="k">true</span>],
-            <span class="s">'ref_no'</span>     =&gt; [<span class="s">'type'</span> =&gt; <span class="s">'VARCHAR'</span>, <span class="s">'constraint'</span> =&gt; <span class="n">20</span>],
-            <span class="s">'user_id'</span>    =&gt; <span class="v">$uint</span>, <span class="s">'vehicle_id'</span> =&gt; <span class="v">$uint</span>, <span class="s">'slot_id'</span> =&gt; <span class="v">$uint</span>,
-            <span class="s">'start_date'</span> =&gt; [<span class="s">'type'</span> =&gt; <span class="s">'DATE'</span>], <span class="s">'end_date'</span> =&gt; [<span class="s">'type'</span> =&gt; <span class="s">'DATE'</span>],
-            <span class="s">'reason'</span>     =&gt; [<span class="s">'type'</span> =&gt; <span class="s">'TEXT'</span>],
-            <span class="s">'status'</span>     =&gt; [<span class="s">'type'</span> =&gt; <span class="s">'VARCHAR'</span>, <span class="s">'constraint'</span> =&gt; <span class="n">20</span>, <span class="s">'default'</span> =&gt; <span class="s">'pending'</span>],
-            <span class="s">'decided_by'</span> =&gt; <span class="v">$uint</span> + [<span class="s">'null'</span> =&gt; <span class="k">true</span>], <span class="s">'decided_at'</span> =&gt; <span class="v">$time</span>,
-            <span class="s">'created_at'</span> =&gt; <span class="v">$time</span>, <span class="s">'updated_at'</span> =&gt; <span class="v">$time</span>,
-        ]);
-        <span class="v">$this</span>-&gt;forge-&gt;<span class="f">addPrimaryKey</span>(<span class="s">'id'</span>)-&gt;<span class="f">addUniqueKey</span>(<span class="s">'ref_no'</span>);
-        <span class="v">$this</span>-&gt;forge-&gt;<span class="f">addKey</span>([<span class="s">'slot_id'</span>, <span class="s">'start_date'</span>, <span class="s">'end_date'</span>])-&gt;<span class="f">addKey</span>(<span class="s">'status'</span>);
-        <span class="v">$this</span>-&gt;forge-&gt;<span class="f">addForeignKey</span>(<span class="s">'slot_id'</span>, <span class="s">'parking_slots'</span>, <span class="s">'id'</span>, <span class="s">''</span>, <span class="s">'RESTRICT'</span>);
-        <span class="v">$this</span>-&gt;forge-&gt;<span class="f">createTable</span>(<span class="s">'slot_bookings'</span>);
-    }
-
-    <span class="k">public</span> <span class="k">function</span> <span class="f">down</span>(): <span class="k">void</span> { <span class="v">$this</span>-&gt;forge-&gt;<span class="f">dropTable</span>(<span class="s">'slot_bookings'</span>); }
-}</pre></div>
-  <aside class="notes"><p>Tunjukkan pemetaan terus daripada docs/erd-rujukan.md: setiap baris kamus menjadi satu entri addField. Susunan migration penting — parking_slots mesti wujud sebelum slot_bookings kerana FK. Ingatkan: CreateDepartmentsTable dan CreateParkingZonesTable dari Hari 3 kekal — jangan ubah migration yang sudah dijalankan; cipta migration baharu.</p></aside>
+  <h2>Migrations: schema in Git, not a <code>.sql</code> script</h2>
+  <div class="grid c3">
+    <div class="card side m-tlk"><h3>Recorded</h3><p>The <code>migrations</code> table knows which files ran.</p></div>
+    <div class="card side m-pas"><h3>Reversible</h3><p><code>down()</code> + <code>migrate:rollback</code></p></div>
+    <div class="card side m-rpt"><h3>Fresh clone</h3><p><code>git pull</code> → <code>php spark migrate</code></p></div>
+  </div>
+  <div class="split mt24">
+    <div class="card flat"><span class="k">ORDER = FK ORDER</span><p>departments · parking_zones (Day 3) → users (profile) → parking_slots → vehicles → slot_bookings → pass_applications → pass_documents → status_logs · reference_sequences</p></div>
+    <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="f">php</span> <span class="k">spark</span> make:migration CreateParkingSlotsTable
+<span class="f">php</span> <span class="k">spark</span> migrate
+<span class="f">php</span> <span class="k">spark</span> migrate:status   <span class="c"># 10 migration App: Migrated</span></pre></div>
+  </div>
+  <aside class="notes"><p>Jana 8 fail baki satu demi satu mengikut tertib FK; cap masa menyusunnya selepas dua migration Hari 3. Jangan ubah migration yang sudah dijalankan.</p></aside>
 </section>
 
-<section class="slide codey">
+<section class="slide">
   <div class="eyebrow">Day 4 · S3 — Seeder</div>
-  <h2>Synthetic users with Shield roles</h2>
+  <h2>Idempotent seeder: safe to run again</h2>
   <div class="split l">
     <div class="codewrap"><div class="codebar">app/Database/Seeds/UserSeeder.php<span class="lang">php</span></div>
-<pre class="code sm" data-lang="php"><span class="k">namespace</span> <span class="t">App</span>\<span class="t">Database</span>\<span class="t">Seeds</span>;
-
-<span class="k">use</span> <span class="t">CodeIgniter</span>\<span class="t">Database</span>\<span class="t">Seeder</span>;
-<span class="k">use</span> <span class="t">CodeIgniter</span>\<span class="t">Shield</span>\<span class="t">Entities</span>\<span class="t">User</span>;
-
-<span class="k">class</span> <span class="t">UserSeeder</span> <span class="k">extends</span> <span class="t">Seeder</span>
-{
-    <span class="k">public</span> <span class="k">function</span> <span class="f">run</span>(): <span class="k">void</span>
-    {
-        <span class="v">$users</span> = <span class="f">auth</span>()-&gt;<span class="f">getProvider</span>();
-        <span class="v">$akaun</span> = [<span class="s">'pemohon1'</span> =&gt; <span class="s">'applicant'</span>, <span class="s">'pemohon2'</span> =&gt; <span class="s">'applicant'</span>,
-                  <span class="s">'penyemak'</span> =&gt; <span class="s">'reviewer'</span>, <span class="s">'pelulus'</span> =&gt; <span class="s">'approver'</span>,
-                  <span class="s">'admin'</span>    =&gt; <span class="s">'admin'</span>];
-
-        <span class="k">foreach</span> (<span class="v">$akaun</span> <span class="k">as</span> <span class="v">$nama</span> =&gt; <span class="v">$group</span>) {
-            <span class="v">$users</span>-&gt;<span class="f">save</span>(<span class="k">new</span> <span class="t">User</span>([
-                <span class="s">'username'</span> =&gt; <span class="v">$nama</span>, <span class="s">'password'</span> =&gt; <span class="s">'Latihan@2026'</span>,
-                <span class="s">'email'</span>    =&gt; <span class="s">"{$nama}@latihan.test"</span>,
-            ]));
-            <span class="v">$users</span>-&gt;<span class="f">findById</span>(<span class="v">$users</span>-&gt;<span class="f">getInsertID</span>())-&gt;<span class="f">addGroup</span>(<span class="v">$group</span>);
-        }
-    }
-}</pre></div>
+<pre class="code sm" data-lang="php"><span class="v">$users</span> = <span class="f">auth</span>()-&gt;<span class="f">getProvider</span>();
+<span class="k">if</span> (<span class="v">$users</span>-&gt;<span class="f">findByCredentials</span>([<span class="s">'email'</span> =&gt; <span class="v">$p</span>[<span class="s">'email'</span>]]) !== <span class="k">null</span>) {
+    <span class="k">continue</span>;                        <span class="c">// sudah wujud → langkau</span>
+}
+<span class="v">$users</span>-&gt;<span class="f">save</span>(<span class="v">$user</span>);                 <span class="c">// kata laluan di-hash oleh Shield</span>
+<span class="v">$users</span>-&gt;<span class="f">findById</span>(<span class="v">$users</span>-&gt;<span class="f">getInsertID</span>())-&gt;<span class="f">addGroup</span>(<span class="v">$p</span>[<span class="s">'group'</span>]);</pre></div>
     <div class="stack">
-      <div class="card flat"><span class="k">DatabaseSeeder</span><p>Calls them all: <code>DepartmentSeeder</code>, <code>UserSeeder</code>, zones, slots, vehicles.</p></div>
       <div class="card flat"><span class="k">5 ACCOUNTS</span><p><code>pemohon1</code> · <code>pemohon2</code> · <code>penyemak</code> · <code>pelulus</code> · <code>admin</code> <code>@latihan.test</code></p></div>
-      <div class="callout warn"><span class="i">⚠️</span><div>Training passwords only. Made-up vehicle plates, e.g. <code>WXX 1234</code>.</div></div>
+      <div class="card flat"><span class="k">DatabaseSeeder</span><p>Department → User → Parking → Vehicle (FK order)</p></div>
+      <div class="callout warn"><span class="i">⚠️</span><div>Synthetic data only. Made-up plates, e.g. <code>WXX 1234</code>.</div></div>
     </div>
   </div>
-  <aside class="notes"><p>Shield menyimpan kata laluan secara hash — kita tidak pernah menyimpan kata laluan teks biasa. <code>addGroup()</code> menulis ke jadual auth_groups_users. Uji log masuk dengan setiap akaun selepas seed.</p></aside>
+  <aside class="notes"><p>Pengguna Shield tidak diisi terus ke jadual users — e-mel dan hash tinggal dalam auth_identities. Jalankan db:seed dua kali: tiada ralat.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 4 · S7 — S3 follow-up</div>
+  <h2>FKs in action: <code>ON DELETE</code></h2>
+  <div class="split">
+    <table class="t">
+      <tr><th>Delete parent</th><th>Effect</th></tr>
+      <tr><td><code>RESTRICT</code></td><td><code>ERROR 1451</code> — zone <code>A</code></td></tr>
+      <tr><td><code>SET NULL</code></td><td>Silent: child → <code>NULL</code> — department <code>BPA</code></td></tr>
+      <tr><td><code>CASCADE</code></td><td>Silent: child deleted too — <code>penyemak</code></td></tr>
+    </table>
+    <div class="stack">
+      <div class="codewrap"><div class="codebar">MySQL client<span class="lang">sql</span></div>
+<pre class="code sm" data-lang="sql"><span class="k">START TRANSACTION</span>;
+<span class="k">DELETE FROM</span> departments <span class="k">WHERE</span> code = <span class="s">'BPA'</span>;
+<span class="k">SELECT</span> username, department_id <span class="k">FROM</span> users <span class="k">ORDER BY</span> id;  <span class="c">-- NULL?</span>
+<span class="k">ROLLBACK</span>;</pre></div>
+      <div class="callout tip"><span class="i">🔢</span><div><code>ReferenceSequenceSeeder</code>: TLK &amp; PAS, <code>last_number = 0</code>, <code>ignore(true)</code>.</div></div>
+    </div>
+  </div>
+  <aside class="notes"><p>SET NULL dan CASCADE tidak memberi amaran — sebab itu DELETE diuji dalam transaksi. Jangan INSERT dalam ujian ini: AUTO_INCREMENT tetap bertambah. Lab 4.3b.</p></aside>
 </section>
 
 <section class="slide">
@@ -1357,24 +1417,39 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <h2>A branch per feature, MRs into your own <code>main</code></h2>
   <div class="split">
     <ol class="steps tight">
-      <li><div><b><code>SETUP:</code> commits</b><span>Shield + layout, then 8 migrations + seeders — no <code>.env</code>, no <code>vendor/</code>.</span></div></li>
-      <li><div><b>One feature = one branch</b><span><code>feat/pelan-kerja</code> today; <code>feat/tlk-model</code> … from Day 5.</span></div></li>
-      <li><div><b>MR → comment → merge</b><span>The trainer/neighbour (Reporter) comments; you (Owner) click Merge.</span></div></li>
-      <li><div><b>Fresh clone</b><span>Clone into a second folder + <code>kkm_latihan_test</code> → <code>migrate --all</code> + seed → log in.</span></div></li>
+      <li><div><b>Commit <code>SETUP:</code></b><span>Shield + layout, migrations + seeder. No <code>.env</code>, <code>vendor/</code>.</span></div></li>
+      <li><div><b>One feature = one branch</b><span><code>feat/pelan-kerja</code></span></div></li>
+      <li><div><b>MR → comment → merge</b><span>Trainer (Reporter) comments; you click Merge.</span></div></li>
+      <li><div><b>Fresh clone</b><span><code>migrate --all</code> + seed → log in.</span></div></li>
     </ol>
-    <div class="stack">
-      <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
+    <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
 <pre class="code sm" data-lang="bash"><span class="f">git</span> switch <span class="n">-c</span> feat/pelan-kerja
 <span class="f">git</span> add docs/pelan-kerja.md
 <span class="f">git</span> commit <span class="n">-m</span> <span class="s">"DOCS: pelan kerja + DoD"</span>
 <span class="f">git</span> push <span class="n">-u</span> origin feat/pelan-kerja
-<span class="c"># GitLab: Create merge request → Merge</span>
-<span class="f">git</span> switch main &amp;&amp; <span class="f">git</span> pull
-<span class="f">git</span> log <span class="n">--oneline --graph -5</span></pre></div>
-      <div class="callout tip"><span class="i">⭐</span><div>Done early? Take the follow-up labs (S5–S8) and ⭐ challenges — not tomorrow's module.</div></div>
-    </div>
+<span class="c"># GitLab: Create merge request → Merge</span></pre></div>
   </div>
-  <aside class="notes"><p>Tunjukkan semula Definition of Done dari slaid cara kerja. Setiap peserta bekerja dalam repo sendiri; jurulatih menyemak MR di GitLab. Pastikan setiap peserta push commit SETUP: dan merge feat/pelan-kerja sebelum pulang — Hari 5 bermula dengan git switch -c feat/tlk-model dari main yang sama.</p></aside>
+  <aside class="notes"><p>Pastikan setiap peserta push commit SETUP: dan merge feat/pelan-kerja sebelum pulang — Hari 5 bermula dengan git switch -c feat/tlk-model.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 4 · S8 — S4 follow-up</div>
+  <h2>Second MR: comment → fix → merge</h2>
+  <div class="split">
+    <ol class="steps tight">
+      <li><div><b>Review comment</b><span>Trainer asks for a change on the <i>Changes</i> tab.</span></div></li>
+      <li><div><b>Push to the same branch</b><span>The same MR updates — no new MR.</span></div></li>
+      <li><div><b>Reply + <i>Resolve thread</i></b><span>The reviewer knows it's handled.</span></div></li>
+      <li><div><b>Merge + <i>Delete source branch</i></b><span>Merge commit, no Squash.</span></div></li>
+    </ol>
+    <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="f">git</span> commit <span class="n">-am</span> <span class="s">"DOCS: README — semakan filter (komen MR)"</span>
+<span class="f">git</span> push                 <span class="c"># MR yang sama dikemas kini</span>
+<span class="c"># GitLab: Resolve thread → Merge</span>
+<span class="f">git</span> switch main &amp;&amp; <span class="f">git</span> pull
+<span class="f">git</span> fetch <span class="n">--prune</span> &amp;&amp; <span class="f">git</span> branch <span class="n">-d</span> feat/readme-projek</pre></div>
+  </div>
+  <aside class="notes"><p>Komen semakan diurus pada branch yang sama — tiada MR baharu. Merge commit, jangan Squash. Lab 4.4b.</p></aside>
 </section>
 
 <section class="slide">

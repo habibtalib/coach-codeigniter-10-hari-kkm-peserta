@@ -4,7 +4,7 @@ Dek slaid kursus **Coaching Pembangunan Aplikasi Menggunakan CodeIgniter** (10 h
 
 | Fail | Keterangan |
 |------|------------|
-| `ci-kkm-10.html` | Dek penuh (117 slaid), **satu fail self-contained**: CSS + JavaScript inline, fon sistem, tiada CDN. Berfungsi **tanpa internet**. |
+| `ci-kkm-10.html` | Dek penuh (128 slaid), **satu fail self-contained**: CSS + JavaScript inline, fon sistem, tiada CDN. Berfungsi **tanpa internet**. |
 
 Kandungan patuh [`../docs/spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) dan [`../JADUAL.md`](../JADUAL.md). Jika SPEC berubah (nama jadual, enum, kelas, route), kemas kini slaid yang berkaitan.
 
@@ -38,14 +38,14 @@ Pentas slaid tetap 1280×720 (16:9) dan diskala automatik mengikut saiz tetingka
 
 Tetikus & sentuh: klik **separuh kiri** = sebelum, **separuh kanan** = seterusnya. Pada tablet, **leret** kiri/kanan.
 
-Pautan terus: tambah `#n` pada URL, cth `ci-kkm-10.html#56` membuka slaid 56 (Hari 5). URL dikemas kini semasa bergerak.
+Pautan terus: tambah `#n` pada URL, cth `ci-kkm-10.html#76` membuka slaid 76 (Hari 5). URL dikemas kini semasa bergerak.
 
 ## Cetak ke PDF
 
 1. Buka dek dalam **Chrome/Edge** → `Ctrl/Cmd + P`.
 2. Destinasi: **Save as PDF**. Saiz kertas **A4**, orientasi **Landskap**, margin **Tiada**.
 3. Hidupkan **Background graphics**.
-4. Simpan. Hasil: satu slaid bagi setiap halaman A4 landskap (117 halaman), nombor halaman di penjuru, **nota penceramah tidak dicetak**.
+4. Simpan. Hasil: satu slaid bagi setiap halaman A4 landskap (128 halaman), nombor halaman di penjuru, **nota penceramah tidak dicetak**.
 
 ## Cara mengedit
 
