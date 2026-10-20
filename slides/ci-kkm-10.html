@@ -1192,9 +1192,28 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span><em>S1</em>Menerangkan 7 langkah kitaran request CI4 dengan menjejak <code>/zon</code> dalam projek sendiri (Debug Toolbar).</span></li>
     <li><span><em>S2</em>Melengkapkan <code>.env</code> sedia ada, memasang Shield dalam projek yang sama, dan membina layout Bootstrap <code>layouts/main.php</code>.</span></li>
     <li><span><em>S3</em>Menulis 8 migration baki (selepas <code>departments</code> + <code>parking_zones</code> Hari 3) dan seeder — <b>10 jadual</b> SPEC §3.</span></li>
-    <li><span><em>S4</em>Menolak commit <code>SETUP:</code>, menjalankan MR ke <code>main</code> sendiri, dan membuktikan repo lengkap dengan klon baharu.</span></li>
+    <li><span><em>S4</em>Menolak commit <code>SETUP:</code>, menjalankan MR (Merge Request) ke <code>main</code> sendiri, dan membuktikan repo lengkap dengan klon baharu.</span></li>
   </ul>
   <aside class="notes"><p>S1 bermula dengan demo 3 minit setiap peserta: halaman GitLab kelas-ci-nama + /zon?q=aras. Peserta yang projeknya belum berjalan dibantu dahulu (laluan kejar dalam nota penceramah) — mereka menyambung projek sendiri, bukan mencipta semula.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 4 · Istilah hari ini</div>
+  <h2>Istilah yang akan anda dengar hari ini</h2>
+  <table class="t">
+      <tr><th>Istilah</th><th>Maksud</th></tr>
+      <tr><td><b>MR</b> — Merge Request</td><td>Permintaan menggabungkan branch ke <code>main</code> di GitLab; disemak &amp; dikomen dahulu (GitHub: Pull Request).</td></tr>
+      <tr><td><b>DoD</b> — Definition of Done</td><td>Senarai semak yang mesti lulus sebelum tugasan dikira siap.</td></tr>
+      <tr><td><b>Reporter / Owner</b></td><td>Peranan GitLab: Reporter boleh baca &amp; komen; Owner boleh push &amp; merge.</td></tr>
+      <tr><td><b>Composer</b></td><td>Pengurus pakej PHP: memasang CodeIgniter, Shield dan pakej lain ke <code>vendor/</code>.</td></tr>
+      <tr><td><b>Shield</b></td><td>Package rasmi CI4 untuk log masuk, group &amp; permission.</td></tr>
+      <tr><td><b>Migration / Seeder</b></td><td>Fail PHP yang mencipta jadual / mengisi data permulaan.</td></tr>
+      <tr><td><b>Idempoten</b></td><td>Boleh dijalankan berulang kali tanpa ralat atau data berganda.</td></tr>
+      <tr><td><b>FK</b> — Foreign Key</td><td>Lajur yang menunjuk ke rekod dalam jadual lain.</td></tr>
+      <tr><td><b>CSRF</b></td><td>Token dalam setiap borang POST — menyekat hantaran palsu dari laman lain.</td></tr>
+      <tr><td><b>PRG</b> — Post/Redirect/Get</td><td>Selepas POST, server redirect (<code>303</code>) supaya refresh tidak menghantar borang semula.</td></tr>
+  </table>
+  <aside class="notes"><p>Baca sekali dengan pantas dan rujuk semula apabila istilah muncul. Tanya: siapa pernah guna Pull Request di GitHub? MR ialah benda yang sama di GitLab.</p></aside>
 </section>
 
 <section class="slide">
@@ -1218,10 +1237,10 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <h2>GET vs POST: aliran sama, tiga beza</h2>
   <table class="t">
     <tr><th>Langkah</th><th>GET <code>/zon?q=aras</code></th><th>POST <code>/jabatan</code></th></tr>
-    <tr><td>Filter <code>csrf</code></td><td>Tiada token disemak</td><td>Token disemak; tiada → <code>403</code></td></tr>
+    <tr><td>Filter <code>csrf</code></td><td>Tiada token disemak</td><td>Token CSRF disemak; tiada → <code>403</code></td></tr>
     <tr><td>Model</td><td><code>LIKE</code> + <code>COUNT</code> (pager)</td><td><code>is_unique</code> + <code>INSERT</code></td></tr>
     <tr><td>View</td><td><code>zon/index</code> + layout</td><td>Tiada</td></tr>
-    <tr><td>Response</td><td><code>200</code> + HTML</td><td><code>303</code> + <code>Location</code> (PRG)</td></tr>
+    <tr><td>Response</td><td><code>200</code> + HTML</td><td><code>303</code> + <code>Location</code> (PRG: Post/Redirect/Get)</td></tr>
   </table>
   <div class="callout tip mt24"><span class="i">🔎</span><div>Toolbar selepas redirect milik GET. Data POST: tab <b>History</b> → <b>Load</b>.</div></div>
   <aside class="notes"><p>Toolbar di bawah halaman selepas redirect milik request GET terakhir. Tunjuk tab History → Load untuk melihat POST. Lab 4.1b.</p></aside>
@@ -1361,7 +1380,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div class="card side m-rpt"><h3>Klon baharu</h3><p><code>git pull</code> → <code>php spark migrate</code></p></div>
   </div>
   <div class="split mt24">
-    <div class="card flat"><span class="k">TERTIB = TERTIB FK</span><p>departments · parking_zones (Hari 3) → users (profil) → parking_slots → vehicles → slot_bookings → pass_applications → pass_documents → status_logs · reference_sequences</p></div>
+    <div class="card flat"><span class="k">TERTIB = TERTIB FK (FOREIGN KEY)</span><p>departments · parking_zones (Hari 3) → users (profil) → parking_slots → vehicles → slot_bookings → pass_applications → pass_documents → status_logs · reference_sequences</p></div>
     <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
 <pre class="code sm" data-lang="bash"><span class="f">php</span> <span class="k">spark</span> make:migration CreateParkingSlotsTable
 <span class="f">php</span> <span class="k">spark</span> migrate
@@ -1372,7 +1391,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <section class="slide">
   <div class="eyebrow">Hari 4 · S3 — Seeder</div>
-  <h2>Seeder idempoten: boleh dijalankan berulang kali</h2>
+  <h2>Seeder idempoten: boleh dijalankan berulang kali tanpa ralat</h2>
   <div class="split l">
     <div class="codewrap"><div class="codebar">app/Database/Seeds/UserSeeder.php<span class="lang">php</span></div>
 <pre class="code sm" data-lang="php"><span class="v">$users</span> = <span class="f">auth</span>()-&gt;<span class="f">getProvider</span>();
@@ -1419,7 +1438,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <ol class="steps tight">
       <li><div><b>Commit <code>SETUP:</code></b><span>Shield + layout, migration + seeder. Tiada <code>.env</code>, <code>vendor/</code>.</span></div></li>
       <li><div><b>Satu ciri = satu branch</b><span><code>feat/pelan-kerja</code></span></div></li>
-      <li><div><b>MR → komen → merge</b><span>Jurulatih (Reporter) komen; anda klik Merge.</span></div></li>
+      <li><div><b>MR (Merge Request) → komen → merge</b><span>Jurulatih (Reporter: baca &amp; komen) komen; anda (Owner) klik Merge.</span></div></li>
       <li><div><b>Klon baharu</b><span><code>migrate --all</code> + seed → log masuk.</span></div></li>
     </ol>
     <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
@@ -1440,7 +1459,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
       <li><div><b>Komen semakan</b><span>Jurulatih minta perubahan pada tab <i>Changes</i>.</span></div></li>
       <li><div><b>Push ke branch sama</b><span>MR yang sama dikemas kini — tiada MR baharu.</span></div></li>
       <li><div><b>Balas + <i>Resolve thread</i></b><span>Penyemak tahu komen sudah diurus.</span></div></li>
-      <li><div><b>Merge + <i>Delete source branch</i></b><span>Merge commit, tanpa Squash.</span></div></li>
+      <li><div><b>Merge + <i>Delete source branch</i></b><span>Merge commit, tanpa Squash (Squash = gabung semua commit jadi satu).</span></div></li>
     </ol>
     <div class="codewrap"><div class="codebar">terminal · Git Bash<span class="lang">bash</span></div>
 <pre class="code sm" data-lang="bash"><span class="f">git</span> commit <span class="n">-am</span> <span class="s">"DOCS: README — semakan filter (komen MR)"</span>
