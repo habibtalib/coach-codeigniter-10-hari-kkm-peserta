@@ -2,7 +2,7 @@
 
 [← README Hari 9](./README.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [Jadual](../JADUAL.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
-> **Branch kerja:** `git switch main && git pull && git switch -c feat/laporan`
+> **Branch kerja:** `git switch main && git pull && git switch -c feat/laporan`; PowerShell: jalankan `git switch main`, `git pull` dan `git switch -c` satu demi satu
 > **Prefix commit:** `RPT:` · Setiap langkah memberi **kod lengkap untuk disalin**. Baca setiap baris sebelum menjalankannya — anda mesti boleh menerangkannya (KOLABORASI §3). Buntu: baca mesej ralat penuh, tanya jurulatih atau rakan sebelah, atau guna AI untuk *menerangkan* ralat.
 
 | Lab | Sesi | Masa | Hasil |
@@ -26,7 +26,7 @@
 - Membina borang filter `GET` yang mengekalkan nilai selepas dihantar.
 
 ### Prasyarat
-- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
 - M1 & M2 siap dan di-merge; `php spark migrate:status` semua *Yes*.
 - Data sintetik wujud: `php spark db:seed DatabaseSeeder`; data demo laporan disediakan dalam **langkah 0**.
 - Boleh log masuk sebagai `penyemak@latihan.test`, `pelulus@latihan.test`, `admin@latihan.test`, `pemohon1@latihan.test` (kata laluan `Latihan@2026`).
@@ -77,8 +77,12 @@ $routes->group('laporan', [
 });
 ```
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 php spark routes | grep laporan
+```
+
+```powershell tab="PowerShell"
+php spark routes | Select-String laporan
 ```
 
 **3. Cipta controller rangka.**
@@ -328,7 +332,7 @@ $selected = static fn ($current, $value): string => (string) $current === (strin
 
 > Menyembunyikan menu hanyalah **kemudahan UI**. Kawalan sebenar ialah filter route di langkah 2.
 
-**6. Commit.** `git add -A && git commit -m "RPT: laluan, controller rangka & borang penapis GET"`
+**6. Commit.** `git add -A && git commit -m "RPT: laluan, controller rangka & borang penapis GET"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 
 ### ✅ Checkpoint 9.1
 - [ ] `php spark routes | grep laporan` menunjukkan 3 route dengan filter `permission:laporan.view` (Kuiz S1).
@@ -1115,7 +1119,7 @@ Dalam `app/Views/laporan/index.php`, gantikan baris `<?php // JADUAL & PAGINATIO
 <?= $pager->makeLinks($result['page'], $result['perPage'], $result['total']) ?>
 ```
 
-**10. Commit.** `git add app/ && git commit -m "RPT: ReportService (join, when, groupBy, selectCount) + pagination"`
+**10. Commit.** `git add app/ && git commit -m "RPT: ReportService (join, when, groupBy, selectCount) + pagination"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 
 ### ✅ Checkpoint 9.2
 - [ ] `/laporan/tempahan?status=approved` → "Jumlah rekod" **sama** dengan hasil SQL (Kuiz S2):
@@ -1162,9 +1166,15 @@ Dalam `app/Views/laporan/index.php`, gantikan baris `<?php // JADUAL & PAGINATIO
 
 **1. Pasang pustaka.**
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 composer require dompdf/dompdf phpoffice/phpspreadsheet
 git add composer.json composer.lock && git commit -m "RPT: tambah dompdf & phpspreadsheet"
+```
+
+```powershell tab="PowerShell"
+composer require dompdf/dompdf phpoffice/phpspreadsheet
+git add composer.json composer.lock
+git commit -m "RPT: tambah dompdf & phpspreadsheet"
 ```
 
 **2. Cipta `app/Services/ExportService.php`** dan daftar `exportService()` dalam `app/Config/Services.php` (corak sama seperti `reportService()`). Dua kaedah awam, `pdf()` dan `xlsx()`:
@@ -1638,7 +1648,7 @@ mysql -u kkm_dev -p -e "UPDATE users SET staff_no = '001234' WHERE username = 'p
 
 🪟 Jika prompt kata laluan tidak muncul dalam Git Bash: `winpty mysql …` (seperti Hari 6).
 
-**7. Commit.** `git add app/ && git commit -m "RPT: eksport PDF (Dompdf) & Excel (PhpSpreadsheet)"`
+**7. Commit.** `git add app/ && git commit -m "RPT: eksport PDF (Dompdf) & Excel (PhpSpreadsheet)"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 
 ### ✅ Checkpoint 9.3
 - [ ] Tapis RPT-01 `status=approved` → skrin: *N* rekod → PDF: "Jumlah rekod: *N*" → Excel: *N* baris data (baris 6 hingga 5+*N*). **Tiga nombor sama.** (Kuiz S3)
@@ -2011,8 +2021,14 @@ php spark laporan:explain pas "" 2026-09-01 2026-09-30
 
 **8. Commit & buka MR.**
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 git add -A && git commit -m "RPT: ujian jumlah laporan = SQL + arahan laporan:explain"
+git push -u origin feat/laporan    # buka MR ke main → jurulatih/rakan sebelah komen; JANGAN merge lagi — Lab 9.1b–9.4b menambah commit ke MR ini
+```
+
+```powershell tab="PowerShell"
+git add -A
+git commit -m "RPT: ujian jumlah laporan = SQL + arahan laporan:explain"
 git push -u origin feat/laporan    # buka MR ke main → jurulatih/rakan sebelah komen; JANGAN merge lagi — Lab 9.1b–9.4b menambah commit ke MR ini
 ```
 
@@ -2047,7 +2063,7 @@ git push -u origin feat/laporan    # buka MR ke main → jurulatih/rakan sebelah
 - Membina **cip filter aktif**: satu klik membuang satu filter, filter lain kekal.
 
 ### Prasyarat
-- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
 - [Lab 9.1](#lab-91--reka-bentuk-laporan--borang-penapis-get-s1) siap: borang filter mengekalkan nilai selepas **Tapis**.
 
 ### Langkah
@@ -2176,7 +2192,7 @@ foreach ($chipDefs as $key => [$label, $group]) {
 5. `/laporan/penggunaan` → pilih Bulan *Jun* → **Tapis** → klik **Tahun ini**. Catat pilihan dropdown Bulan dan butang yang gelap (Kuiz S5).
 6. Uji `esc()`: buka `/laporan/tempahan?from=<b>x</b>`. Cip memaparkan teks `<b>x</b>` secara literal, bukan huruf tebal.
 
-**5. Commit.** `git add -A && git commit -m "RPT: tempoh pantas & cip penapis aktif"`
+**5. Commit.** `git add -A && git commit -m "RPT: tempoh pantas & cip penapis aktif"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 
 ### ✅ Checkpoint
 - [ ] `docs/laporan-spec.md` ada baris "Tempoh pantas" dan "Filter aktif" yang lengkap untuk 3 laporan (Kuiz S5).
@@ -2399,7 +2415,7 @@ Controller **tidak berubah**: `$result` sudah dihantar ke view, jadi view terus 
 
 **6. Uji baris JUMLAH RPT-03.** Buka `/laporan/penggunaan?year=<tahun ini>&month=<bulan ini>`. Baris JUMLAH (tebal, bawah jadual) memaparkan `3 zon` (atau bilangan zon anda). Kira dengan tangan: Σ *Hari-Slot Ditempah* ÷ Σ *Kapasiti* × 100. Hasilnya mesti sama dengan *Penggunaan (%)* baris JUMLAH. Jika zon anda berbeza saiz, purata biasa peratus zon memberi nombor yang **berbeza**.
 
-**7. Commit.** `git add app/ && git commit -m "RPT: ringkasan status (subquery + groupBy) & baris jumlah RPT-03"`
+**7. Commit.** `git add app/ && git commit -m "RPT: ringkasan status (subquery + groupBy) & baris jumlah RPT-03"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 
 ### ✅ Checkpoint
 - [ ] `/laporan/tempahan` tanpa filter: jumlah nombor butang ringkasan = "Jumlah rekod" = `SELECT COUNT(*) FROM slot_bookings` (Kuiz S6).
@@ -2552,7 +2568,7 @@ dan baris tandatangan `xlsx()`:
 3. `/laporan/pas` → **Eksport PDF**. Selepas "Jumlah rekod: *N*" ada jadual Status/Bilangan; JUMLAH = *N*.
 4. `/laporan/penggunaan` → **Eksport Excel**. Kira tab di bawah tetingkap Excel (Kuiz S7).
 
-**8. Commit.** `git add app/ && git commit -m "RPT: lembaran Ringkasan Excel & ringkasan PDF"`
+**8. Commit.** `git add app/ && git commit -m "RPT: lembaran Ringkasan Excel & ringkasan PDF"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 
 ### ✅ Checkpoint
 - [ ] Excel RPT-01/RPT-02: tab kedua *Ringkasan* dengan angka setiap status = butang ringkasan skrin, dan fail dibuka pada tab data (Kuiz S7).
@@ -2718,8 +2734,14 @@ Jalankan semula dan catat mesej kegagalan (Kuiz S8). Pulihkan → hijau.
 
 **7. Commit & push ke MR yang sama.**
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 git add tests/ && git commit -m "RPT: ujian ringkasan status, jumlah RPT-03 & lembaran Excel"
+git push    # MR feat/laporan dikemas kini — tiada MR baharu (Hari 4)
+```
+
+```powershell tab="PowerShell"
+git add tests/
+git commit -m "RPT: ujian ringkasan status, jumlah RPT-03 & lembaran Excel"
 git push    # MR feat/laporan dikemas kini — tiada MR baharu (Hari 4)
 ```
 

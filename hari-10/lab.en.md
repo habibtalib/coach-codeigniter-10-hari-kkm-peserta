@@ -2,7 +2,7 @@
 
 [← Day 10 README](./README.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [Schedule](../JADUAL.md) · [Capstone Rubric](../docs/rubrik-capstone.md) · [⚡ spark commands](../docs/arahan-spark.md)
 
-> **Working branch:** `git switch main && git pull && git switch -c feat/statistik`
+> **Working branch:** `git switch main && git pull && git switch -c feat/statistik`; PowerShell: run `git switch main`, `git pull` and `git switch -c` one at a time
 > **Commit prefix:** `STAT:` (dashboard/cache) · `FIX:` (UAT bug fixes)
 > **Trainer reference code:** `templates/kod/` (**Templat & Rujukan** module) — `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt`.
 
@@ -23,7 +23,7 @@
 - Draw bar, doughnut, horizontal bar and line charts with Chart.js 4.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - M1, M2, M3 merged into `main`; `composer test` green.
 - Enough seed data: `DemoDataSeeder` from Lab 9.1 step 0 (≥ 20 bookings, ≥ 15 Pass applications with various statuses & months).
 - Internet for the Chart.js CDN (or a local copy — see 🧯).
@@ -42,10 +42,16 @@ $routes->group('statistik', [
 });
 ```
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 php spark routes | grep statistik
 # MSYS_NO_PATHCONV=1: Git Bash (Windows) does not turn /statistik into a C:/… path; no effect on macOS/Linux
 MSYS_NO_PATHCONV=1 php spark filter:check GET /statistik
+```
+
+```powershell tab="PowerShell"
+php spark routes | Select-String statistik
+# PowerShell does not rewrite /statistik into a C:/… path, so no prefix is needed
+php spark filter:check GET /statistik
 ```
 
 **2. Service — start WITHOUT a cache.** Create `app/Services/StatisticsService.php`:
@@ -556,7 +562,7 @@ $cards = [
 <?php endif ?>
 ```
 
-**9. Commit.** `git add -A && git commit -m "STAT: StatisticsService, dashboard KPI + 4 carta Chart.js"`
+**9. Commit.** `git add -A && git commit -m "STAT: StatisticsService, dashboard KPI + 4 carta Chart.js"`; PowerShell: run `git add` and `git commit` one at a time
 
 ### ✅ Checkpoint 10.1
 - [ ] `pelulus@latihan.test` and `admin@latihan.test` → `/statistik` shows 4 cards + 4 charts.
@@ -724,7 +730,7 @@ composer test                                                # ALL green — no 
 
 **9. Repeat step 4 manually.** Approve another Pass application → `/statistik` → "Pas menunggu" (Pending passes) drops **immediately**; "Data dijana" (Data generated) = the current time.
 
-**10. Commit & merge.** `git add app/ tests/ && git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit status (TLK & PAS)"`, then `git push -u origin feat/statistik` → open an MR to `main` → merge (Lab 10.3 starts from `main`).
+**10. Commit & merge.** `git add app/ tests/ && git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit status (TLK & PAS)"`; PowerShell: run `git add` and `git commit` one at a time, then `git push -u origin feat/statistik` → open an MR to `main` → merge (Lab 10.3 starts from `main`).
 
 ### ✅ Checkpoint 10.2
 - [ ] Second reload of `/statistik` → 0 aggregate queries in the Debug Toolbar.
@@ -760,7 +766,7 @@ composer test                                                # ALL green — no 
 - Labs 10.1 & 10.2 complete and merged into `main`.
 - Create the file `docs/UAT-signoff.md` and copy in the content of the template `templates/dokumen/uat-signoff-templat.md` (**Templat & Rujukan** module).
 - Create the file `docs/kes-ujian-akhir.md` and copy in the content of the template `templates/dokumen/kes-ujian-templat.md` (**Templat & Rujukan** module).
-- Clean database: `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder`.
+- Clean database: `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder`; PowerShell: run `php spark migrate:refresh` and `php spark db:seed` one at a time.
 
 ### Steps
 
@@ -782,13 +788,13 @@ git switch -c fix/bug-001-<ringkas>
 | b. Failing test | Write a PHPUnit test (unit/service or `FeatureTestTrait`) | `composer test -- --filter <namaUjian>` **red** — keep a terminal screenshot |
 | c. Fix | A **minimal** change | A small & focused `git diff` |
 | d. Pass | That test is green **+** all of `composer test` is green | Terminal screenshot |
-| e. Commit | `git add app/ tests/ docs/ && git commit -m "FIX: <ringkasan> (BUG-001)"` → merge | Bug log: *Closed* |
+| e. Commit | `git add app/ tests/ docs/ && git commit -m "FIX: <ringkasan> (BUG-001)"`; PowerShell: run `git add` and `git commit` one at a time → merge | Bug log: *Closed* |
 
 > **No bugs found?** The trainer will give you a "planted bug" (see the BUG-007 example in README §3.3). Practise the full cycle on that bug.
 
 **5. Security checklist K1–K10** (README §3.4), ~10 minutes. Tick K1–K10 yourself: run the evidence commands below (K2, K3, K4, K5, K7) and check the remaining Ks visually. The trainer then **spot-checks 3 Ks** on your machine — K3 always, plus 2 of the trainer's choice — so every tick must be provable on the spot.
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 # K2 — output without esc() (every remaining line must be justified; ignore app/Views/errors/)
 grep -rnF '<?= $' app/Views | grep -vF 'esc(' | grep -vF '$this->'
 
@@ -809,14 +815,45 @@ MSYS_NO_PATHCONV=1 php spark filter:check GET /laporan/tempahan
 grep -rn -e '->query(' app/
 ```
 
+```powershell tab="PowerShell"
+# K2 — output without esc() (every remaining line must be justified; ignore app/Views/errors/)
+Get-ChildItem app/Views -Recurse -File | Select-String -SimpleMatch '<?= $' | Where-Object { $_.Line -notlike '*esc(*' -and $_.Line -notlike '*$this->*' }
+
+# K3 — .env never went into Git
+git ls-files | Select-String "(^|/)\.env$"
+git log --all --oneline -- .env
+
+# K4 — no uploaded files in public/
+Get-ChildItem public -Recurse -File -Include *.pdf, *.jpg, *.png | Where-Object { $_.FullName -notmatch 'assets' } | ForEach-Object FullName
+
+# K5 — a filter on every protected route
+php spark routes
+php spark filter:check GET /statistik
+php spark filter:check GET /laporan/tempahan
+
+# K7 — raw queries (every hit must use ? bindings; justified exception: EXPLAIN in
+#      app/Commands/ReportExplain.php — SQL compiled by the Query Builder, no web user input)
+Get-ChildItem app -Recurse -File | Select-String -SimpleMatch '->query('
+```
+
 Tick each K in `docs/UAT-signoff.md` §5/§6 (or an appendix).
 
 **6. Prepare for the demo.**
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 git switch main && git pull
 composer test                              # green — test the `main` you are about to tag
 git add docs/ && git commit -m "SETUP: UAT-signoff, log pepijat & senarai semak K1–K10"
+git tag -a v1.0-capstone -m "Capstone CI-KKM-10"
+git push origin main --tags
+```
+
+```powershell tab="PowerShell"
+git switch main
+git pull
+composer test                              # green — test the `main` you are about to tag
+git add docs/
+git commit -m "SETUP: UAT-signoff, log pepijat & senarai semak K1–K10"
 git tag -a v1.0-capstone -m "Capstone CI-KKM-10"
 git push origin main --tags
 ```
@@ -834,11 +871,11 @@ Write a **1-page demo script** (following the format in README §4.1) and make s
 | Symptom | Cause | Fix |
 |--------|-------|--------------|
 | Logging in as a second role replaces the first role's session | Normal tabs share the session cookie | Use incognito windows / separate browser profiles |
-| UAT fails because of yesterday's data (e.g. slot already booked) | The DB is not clean | `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder` |
+| UAT fails because of yesterday's data (e.g. slot already booked) | The DB is not clean | `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder`; PowerShell: run `php spark migrate:refresh` and `php spark db:seed` one at a time |
 | `The action you requested is not allowed.` during UAT | Form left open too long → CSRF token expired, or `csrf_field()` missing | Reload the form; if it keeps happening, check that the form has `csrf_field()` |
 | Feature test fails with `Config\Security::$csrfProtection is set to 'cookie'` | Shield configuration | `app/Config/Security.php` → `$csrfProtection = 'session'` (Day 4) |
 | Tests pass on your machine but fail on a neighbour's machine | Depends on seed data/today's date | Own fixtures in the test; relative (`+1 day`) or fixed dates |
-| `git tag` rejected: *already exists* | Tag created before the fix | `git tag -d v1.0-capstone && git tag -a v1.0-capstone -m "…"` (before pushing) |
+| `git tag` rejected: *already exists* | Tag created before the fix | `git tag -d v1.0-capstone && git tag -a v1.0-capstone -m "…"`; PowerShell: run `git tag -d` and `git tag -a` one at a time (before pushing) |
 
 ### ⭐ Bonus challenge
 - Write a `FeatureTestTrait` test for UAT-08: `applicant` → `GET /statistik` and `/laporan/tempahan` → not 200.

@@ -2,7 +2,7 @@
 
 [← README Hari 10](./README.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [Jadual](../JADUAL.md) · [Rubrik Capstone](../docs/rubrik-capstone.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
-> **Branch kerja:** `git switch main && git pull && git switch -c feat/statistik`
+> **Branch kerja:** `git switch main && git pull && git switch -c feat/statistik`; PowerShell: jalankan `git switch main`, `git pull` dan `git switch -c` satu demi satu
 > **Prefix commit:** `STAT:` (dashboard/cache) · `FIX:` (pembetulan pepijat UAT)
 > **Kod rujukan jurulatih:** `templates/kod/` (modul **Templat & Rujukan**) — `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt`.
 
@@ -23,7 +23,7 @@
 - Melukis carta bar, doughnut, bar mendatar dan line dengan Chart.js 4.
 
 ### Prasyarat
-- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
 - M1, M2, M3 di-merge ke `main`; `composer test` hijau.
 - Data seed cukup: `DemoDataSeeder` dari Lab 9.1 langkah 0 (≥ 20 tempahan, ≥ 15 permohonan pas pelbagai status & bulan).
 - Internet untuk CDN Chart.js (atau salinan tempatan — lihat 🧯).
@@ -42,10 +42,16 @@ $routes->group('statistik', [
 });
 ```
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 php spark routes | grep statistik
 # MSYS_NO_PATHCONV=1: Git Bash (Windows) tidak menukar /statistik kepada laluan C:/…; tiada kesan di macOS/Linux
 MSYS_NO_PATHCONV=1 php spark filter:check GET /statistik
+```
+
+```powershell tab="PowerShell"
+php spark routes | Select-String statistik
+# PowerShell tidak menukar /statistik kepada laluan C:/…, jadi tiada awalan diperlukan
+php spark filter:check GET /statistik
 ```
 
 **2. Service — mula TANPA cache.** Cipta `app/Services/StatisticsService.php`:
@@ -556,7 +562,7 @@ $cards = [
 <?php endif ?>
 ```
 
-**9. Commit.** `git add -A && git commit -m "STAT: StatisticsService, dashboard KPI + 4 carta Chart.js"`
+**9. Commit.** `git add -A && git commit -m "STAT: StatisticsService, dashboard KPI + 4 carta Chart.js"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 
 ### ✅ Checkpoint 10.1
 - [ ] `pelulus@latihan.test` dan `admin@latihan.test` → `/statistik` memaparkan 4 kad + 4 carta.
@@ -724,7 +730,7 @@ composer test                                                # SEMUA hijau — t
 
 **9. Ulang langkah 4 secara manual.** Lulus satu lagi permohonan pas → `/statistik` → "Pas menunggu" turun **serta-merta**; "Data dijana" = masa sekarang.
 
-**10. Commit & merge.** `git add app/ tests/ && git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit status (TLK & PAS)"`, kemudian `git push -u origin feat/statistik` → buka MR ke `main` → merge (Lab 10.3 bermula dari `main`).
+**10. Commit & merge.** `git add app/ tests/ && git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit status (TLK & PAS)"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu, kemudian `git push -u origin feat/statistik` → buka MR ke `main` → merge (Lab 10.3 bermula dari `main`).
 
 ### ✅ Checkpoint 10.2
 - [ ] Muat semula kedua `/statistik` → 0 query aggregate dalam Debug Toolbar.
@@ -760,7 +766,7 @@ composer test                                                # SEMUA hijau — t
 - Lab 10.1 & 10.2 siap dan di-merge ke `main`.
 - Cipta fail `docs/UAT-signoff.md` dan salin kandungan templat `templates/dokumen/uat-signoff-templat.md` (modul **Templat & Rujukan**).
 - Cipta fail `docs/kes-ujian-akhir.md` dan salin kandungan templat `templates/dokumen/kes-ujian-templat.md` (modul **Templat & Rujukan**).
-- Database bersih: `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder`.
+- Database bersih: `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder`; PowerShell: jalankan `php spark migrate:refresh` dan `php spark db:seed` satu demi satu.
 
 ### Langkah
 
@@ -782,13 +788,13 @@ git switch -c fix/bug-001-<ringkas>
 | b. Ujian gagal | Tulis ujian PHPUnit (unit/service atau `FeatureTestTrait`) | `composer test -- --filter <namaUjian>` **merah** — simpan tangkapan terminal |
 | c. Baiki | Perubahan **minimum** | `git diff` kecil & fokus |
 | d. Lulus | Ujian tadi hijau **+** `composer test` semua hijau | Tangkapan terminal |
-| e. Commit | `git add app/ tests/ docs/ && git commit -m "FIX: <ringkasan> (BUG-001)"` → merge | Log pepijat: *Ditutup* |
+| e. Commit | `git add app/ tests/ docs/ && git commit -m "FIX: <ringkasan> (BUG-001)"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu → merge | Log pepijat: *Ditutup* |
 
 > **Tiada pepijat ditemui?** Jurulatih akan memberi satu "pepijat tanaman" (rujuk contoh BUG-007 dalam README §3.3). Latih kitaran penuh pada pepijat itu.
 
 **5. Senarai semak keselamatan K1–K10** (README §3.4), ~10 minit. Tanda K1–K10 sendiri: jalankan arahan bukti di bawah (K2, K3, K4, K5, K7) dan semak baki K secara visual. Selepas itu jurulatih **semak rawak 3 K** pada mesin anda — K3 sentiasa, ditambah 2 pilihan jurulatih — jadi setiap tanda mesti boleh dibuktikan serta-merta.
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 # K2 — output tanpa esc() (setiap baris baki mesti dijustifikasi; abaikan app/Views/errors/)
 grep -rnF '<?= $' app/Views | grep -vF 'esc(' | grep -vF '$this->'
 
@@ -809,14 +815,45 @@ MSYS_NO_PATHCONV=1 php spark filter:check GET /laporan/tempahan
 grep -rn -e '->query(' app/
 ```
 
+```powershell tab="PowerShell"
+# K2 — output tanpa esc() (setiap baris baki mesti dijustifikasi; abaikan app/Views/errors/)
+Get-ChildItem app/Views -Recurse -File | Select-String -SimpleMatch '<?= $' | Where-Object { $_.Line -notlike '*esc(*' -and $_.Line -notlike '*$this->*' }
+
+# K3 — .env tidak pernah masuk Git
+git ls-files | Select-String "(^|/)\.env$"
+git log --all --oneline -- .env
+
+# K4 — tiada fail muat naik dalam public/
+Get-ChildItem public -Recurse -File -Include *.pdf, *.jpg, *.png | Where-Object { $_.FullName -notmatch 'assets' } | ForEach-Object FullName
+
+# K5 — filter pada setiap laluan dilindungi
+php spark routes
+php spark filter:check GET /statistik
+php spark filter:check GET /laporan/tempahan
+
+# K7 — query mentah (setiap hit mesti guna binding ?; pengecualian sah: EXPLAIN dalam
+#      app/Commands/ReportExplain.php — SQL dikompil Query Builder, tiada input pengguna web)
+Get-ChildItem app -Recurse -File | Select-String -SimpleMatch '->query('
+```
+
 Tanda setiap K dalam `docs/UAT-signoff.md` §5/§6 (atau lampiran).
 
 **6. Sediakan untuk demo.**
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 git switch main && git pull
 composer test                              # hijau — uji `main` yang akan ditag
 git add docs/ && git commit -m "SETUP: UAT-signoff, log pepijat & senarai semak K1–K10"
+git tag -a v1.0-capstone -m "Capstone CI-KKM-10"
+git push origin main --tags
+```
+
+```powershell tab="PowerShell"
+git switch main
+git pull
+composer test                              # hijau — uji `main` yang akan ditag
+git add docs/
+git commit -m "SETUP: UAT-signoff, log pepijat & senarai semak K1–K10"
 git tag -a v1.0-capstone -m "Capstone CI-KKM-10"
 git push origin main --tags
 ```
@@ -834,11 +871,11 @@ Tulis **skrip demo 1 halaman** (ikut format README §4.1) dan pastikan anda bole
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
 | Log masuk peranan kedua menukar sesi peranan pertama | Tab biasa berkongsi kuki sesi | Guna tetingkap incognito / profil pelayar berasingan |
-| UAT gagal kerana data semalam (cth slot sudah ditempah) | DB tidak bersih | `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder` |
+| UAT gagal kerana data semalam (cth slot sudah ditempah) | DB tidak bersih | `php spark migrate:refresh --all && php spark db:seed DatabaseSeeder`; PowerShell: jalankan `php spark migrate:refresh` dan `php spark db:seed` satu demi satu |
 | `The action you requested is not allowed.` semasa UAT | Borang dibuka lama → token CSRF tamat, atau `csrf_field()` tertinggal | Muat semula borang; jika berulang, semak borang tersebut ada `csrf_field()` |
 | Ujian feature gagal `Config\Security::$csrfProtection is set to 'cookie'` | Konfigurasi Shield | `app/Config/Security.php` → `$csrfProtection = 'session'` (Hari 4) |
 | Ujian lulus di mesin sendiri, gagal pada rakan | Bergantung pada data seed/tarikh hari ini | Fixture sendiri dalam ujian; tarikh relatif (`+1 day`) atau tetap |
-| `git tag` ditolak: *already exists* | Tag dicipta sebelum pembetulan | `git tag -d v1.0-capstone && git tag -a v1.0-capstone -m "…"` (sebelum push) |
+| `git tag` ditolak: *already exists* | Tag dicipta sebelum pembetulan | `git tag -d v1.0-capstone && git tag -a v1.0-capstone -m "…"`; PowerShell: jalankan `git tag -d` dan `git tag -a` satu demi satu (sebelum push) |
 
 ### ⭐ Cabaran tambahan
 - Tulis ujian `FeatureTestTrait` untuk UAT-08: `applicant` → `GET /statistik` dan `/laporan/tempahan` → bukan 200.

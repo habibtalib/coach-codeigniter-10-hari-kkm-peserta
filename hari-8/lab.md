@@ -22,8 +22,14 @@
 
 1. Branch baharu dari branch Hari 7 yang telah di-push:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git switch feat/pas-permohonan && git pull
+   git switch -c feat/pas-kelulusan
+   ```
+
+   ```powershell tab="PowerShell"
+   git switch feat/pas-permohonan
+   git pull
    git switch -c feat/pas-kelulusan
    ```
 
@@ -51,7 +57,7 @@
 Melaksanakan `startReview()`, `approve()`, `reject()` melalui satu `transition()` berkunci yang menguatkuasa BR-PAS-01, BR-PAS-03 dan BR-PAS-05, serta `ReviewController` yang nipis.
 
 ### Prasyarat
-- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
 - Lab 8.0 selesai. `PassWorkflowService` Hari 7 (`canView`, `submit`, `documentPath`) berfungsi.
 
 ### Langkah
@@ -527,8 +533,12 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
 
    Alternatif `curl` (salin kuki sesi `ci_session` dan token CSRF dari DevTools):
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    curl -i -X POST http://localhost:8080/pas/semakan/5/approve -b "ci_session=<nilai>" -d "csrf_test_name=<token>&remarks=serangan"
+   ```
+
+   ```powershell tab="PowerShell"
+   curl.exe -i -X POST http://localhost:8080/pas/semakan/5/approve -b "ci_session=<nilai>" -d "csrf_test_name=<token>&remarks=serangan"
    ```
 
 2. **Semak `app/Config/AuthGroups.php`** terhadap SPEC §4: 4 groups, 8 permissions, `$matrix` tepat. `$defaultGroup = 'applicant'`. Jika ada yang berbeza, gantikan seluruh kandungan fail dengan versi di bawah:
@@ -625,8 +635,12 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
 
 4. **Sahkan gabungan filter:**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    php spark routes | grep pas/      # PowerShell: php spark routes | Select-String "pas/"
+   ```
+
+   ```powershell tab="PowerShell"
+   php spark routes | Select-String "pas/"
    ```
 
    Lajur *Before Filters* untuk `pas/semakan/([0-9]+)/approve` mesti mengandungi **kedua-dua** `group:reviewer,approver,admin` dan `permission:pas.approve` (CI 4.5.4+ menggabungkan filter kumpulan & route). `csrf` turut tersenarai kerana ia filter global.
@@ -790,8 +804,12 @@ Memaparkan sejarah `status_logs` pada halaman butiran, dan menulis `PassAccessTe
 
 4. **Sediakan ujian:**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    mkdir -p tests/feature/Pas
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force tests\feature\Pas | Out-Null
    ```
 
    Cipta `tests/feature/Pas/PassAccessTest.php` dengan kandungan di bawah. **Baca setiap ujian** satu per satu dan tanda dalam jadual README §3.2 sel matriks mana yang diliputi.
@@ -1215,9 +1233,17 @@ Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahk
 
 3. **Gabung ke `main`:**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    composer test                             # SEMUA ujian (TLK + Pas) hijau
    git switch main && git pull
+   git merge --no-ff feat/pas-kelulusan -m "PAS: M2 siap — aliran kelulusan, RBAC, status_logs, ujian"
+   git push
+   ```
+
+   ```powershell tab="PowerShell"
+   composer test                             # SEMUA ujian (TLK + Pas) hijau
+   git switch main
+   git pull
    git merge --no-ff feat/pas-kelulusan -m "PAS: M2 siap — aliran kelulusan, RBAC, status_logs, ujian"
    git push
    ```
@@ -1352,7 +1378,7 @@ Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahk
               return array_map('intval', $ids);
           }
       ```
-   2. `php spark list | grep pas` → `pas:expire` tersenarai di bawah kumpulan **Pas**.
+   2. `php spark list | grep pas` (PowerShell: `php spark list | Select-String pas`) → `pas:expire` tersenarai di bawah kumpulan **Pas**.
    3. Sediakan data: `UPDATE pass_applications SET valid_until = CURDATE() - INTERVAL 1 DAY WHERE id = <id A>;`
    4. Buka senarai `pemohon1` — badge sudah **Tamat Tempoh** (dari `displayStatus()`), walaupun DB masih `approved`.
    5. `php spark pas:expire --dry-run` → senarai ID, tiada perubahan.
@@ -1385,7 +1411,7 @@ Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahk
 Menggunakan semula `startReview()` dan `transition()` (Lab 8.1) untuk ciri baharu: penyemak menanda beberapa permohonan **Dihantar** di `/pas/semakan` dan memulakan semakan sekali gus. Setiap permohonan melalui transaksi dan baris `status_logs` sendiri; satu kegagalan BR-PAS-01 tidak menghentikan yang lain.
 
 ### Prasyarat
-- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
 - [Lab 8.1](#lab-81--aliran-kelulusan-s1) siap. Baris `$this->authorize(...)` masih dikomen — sama seperti Lab 8.1; Lab 8.2 mengaktifkannya.
 - Tetingkap pelayar Lab 8.1 (`penyemak`, `pelulus`). Langkah 6 memerlukan satu **sesi lain** yang ada `pas.review`: `admin@latihan.test` dalam pelayar lain.
 
@@ -1573,9 +1599,14 @@ Menggunakan semula `startReview()` dan `transition()` (Lab 8.1) untuk ciri bahar
 
 5. **Sahkan:**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    php -l app/Controllers/Pas/ReviewController.php
    php spark routes | grep pukal      # PowerShell: php spark routes | Select-String "pukal"
+   ```
+
+   ```powershell tab="PowerShell"
+   php -l app/Controllers/Pas/ReviewController.php
+   php spark routes | Select-String "pukal"
    ```
 
    Baris `pas/semakan/pukal/review` mempunyai Before Filters `csrf group:reviewer,approver,admin` sahaja — tiada `permission:`. Lab 8.2b membaikinya.
@@ -1600,8 +1631,13 @@ Menggunakan semula `startReview()` dan `transition()` (Lab 8.1) untuk ciri bahar
 
 10. **Commit:**
 
-    ```bash
+    ```bash tab="Git Bash / macOS / Linux"
     git add app/ && git commit -m "PAS: mula semakan pukal melalui startReview()"
+    ```
+
+    ```powershell tab="PowerShell"
+    git add app/
+    git commit -m "PAS: mula semakan pukal melalui startReview()"
     ```
 
 ### ✅ Checkpoint 8.1b
@@ -1616,7 +1652,7 @@ Menggunakan semula `startReview()` dan `transition()` (Lab 8.1) untuk ciri bahar
 |--------|-------|--------------|
 | *The action you requested is not allowed.* selepas klik **Mula Semakan (yang ditanda)** | Halaman dibuka sebelum POST lain dalam sesi yang sama — token CSRF sudah ditukar | Muat semula `/pas/semakan` dan tanda semula; untuk langkah 6 guna pelayar lain (sesi berasingan) |
 | `Undefined variable $canReview` | `index()` belum diganti | Langkah 3(b) |
-| `The route for "pas.review.pukal" cannot be found.` | Route langkah 2 tiada atau salah nama `as` | Semak `Routes.php`; `php spark routes \| grep pukal` |
+| `The route for "pas.review.pukal" cannot be found.` | Route langkah 2 tiada atau salah nama `as` | Semak `Routes.php`; `php spark routes \| grep pukal` (PowerShell: `php spark routes \| Select-String pukal`) |
 | `Class "App\Controllers\Pas\PageNotFoundException" not found` | Baris `use` langkah 3(a) tertinggal | Tambah `use CodeIgniter\Exceptions\PageNotFoundException;` |
 | Halaman ralat `DomainException` (bukan flash merah) | `try/catch` dalam gelung tertinggal — exception pertama menghentikan semua | Salin semula `reviewBatch()` langkah 3(c) |
 | Route pukal hilang selepas Lab 8.2 | Kumpulan berasingan turut diganti dalam Lab 8.2 langkah 3 | Tampal semula blok langkah 2 selepas kumpulan `pas/semakan` |
@@ -1633,17 +1669,22 @@ Menggunakan semula `startReview()` dan `transition()` (Lab 8.1) untuk ciri bahar
 Menutup lubang Lab 8.1b: route pukal hanya ada filter `group:`, jadi `pelulus` sampai ke controller. Membuktikan Lapisan 2 (`authorize()` dari Lab 8.2) sudah menolak dengan 403, menambah Lapisan 1 `permission:pas.review`, dan merekod matriks 4 peranan × route pukal dalam `docs/ujian-manual-pas.md`.
 
 ### Prasyarat
-- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
 - [Lab 8.2](#lab-82--kawalan-akses-ikut-peranan-s2) siap: `authorize()` aktif dalam `startReview()`, `approve()` dan `reject()`.
 - [Lab 8.1b](#lab-81b--mula-semakan-pukal-dari-baris-gilir-s5) siap. Sekurang-kurangnya **tiga** permohonan `submitted` (langkah 6: UT-PAS-29 menanda 2, UT-PAS-30 menanda 1) dan satu `under_review` (hantar lagi sebagai `pemohon2` jika perlu).
 
 ### Langkah
 
-1. **Ukur.** Git Bash menukar path yang bermula dengan `/`, jadi letak `MSYS_NO_PATHCONV=1` di hadapan:
+1. **Ukur.** Pilih tab ikut terminal anda. Git Bash menukar path yang bermula dengan `/`, jadi letak `MSYS_NO_PATHCONV=1` di hadapan. PowerShell tidak menukar path, jadi taip arahan tanpa awalan itu:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    MSYS_NO_PATHCONV=1 php spark filter:check POST /pas/semakan/pukal/review
    MSYS_NO_PATHCONV=1 php spark filter:check POST /pas/semakan/1/review
+   ```
+
+   ```powershell tab="PowerShell"
+   php spark filter:check POST /pas/semakan/pukal/review
+   php spark filter:check POST /pas/semakan/1/review
    ```
 
    Bandingkan lajur *Before Filters*: route individu ada `permission:pas.review`; route pukal tiada.
@@ -1698,8 +1739,13 @@ Menutup lubang Lab 8.1b: route pukal hanya ada filter `group:`, jadi `pelulus` s
 
 7. **Commit:**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add app/ docs/ && git commit -m "PAS: permission:pas.review pada route pukal + UT-PAS-27..30"
+   ```
+
+   ```powershell tab="PowerShell"
+   git add app/ docs/
+   git commit -m "PAS: permission:pas.review pada route pukal + UT-PAS-27..30"
    ```
 
 ### ✅ Checkpoint 8.2b
@@ -1717,6 +1763,8 @@ Menutup lubang Lab 8.1b: route pukal hanya ada filter `group:`, jadi `pelulus` s
 | `403` selepas langkah 3 juga | Token lama — halaman tidak dimuat semula selepas POST sebelumnya; filter `csrf` menolak dengan 403 sebelum filter Shield | Muat semula halaman sebelum setiap `fetch` |
 | `404 …/pas/semakan/pukal/review` | URL aplikasi berbeza (cth `index.php` atau subfolder Laragon) | Guna URL yang sama seperti pelayar; semak `app.indexPage` dan `app.baseURL` |
 | `filter:check`: `Can't find a route: "POST C:/Program Files/Git/pas/…"` | Git Bash menukar path | `MSYS_NO_PATHCONV=1` di hadapan arahan |
+| `MSYS_NO_PATHCONV=1 : The term 'MSYS_NO_PATHCONV=1' is not recognized` | Arahan Git Bash ditaip dalam PowerShell | Guna tab **PowerShell**: buang `MSYS_NO_PATHCONV=1` |
+| `The token '&&' is not a valid statement separator` | Windows PowerShell 5.1 tidak menyokong `&&` | Guna tab **PowerShell**: jalankan `git add` dan `git commit` satu demi satu |
 
 ### ⭐ Cabaran tambahan
 Dalam `ReviewController::reviewBatch()`, tambah `log_message('warning', …)` dalam `catch (PermissionException $e)` (ID pengguna, senarai `ids`, masa). Kenapa log ini sepatutnya **kosong** selepas langkah 3?
@@ -1963,8 +2011,13 @@ Menulis `PassBatchReviewTest` (5 ujian) bagi route pukal — positif, kegagalan 
 
 7. **Commit:**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add tests/ docs/ && git commit -m "PAS: ujian fungsian route pukal + jadual mutasi"
+   ```
+
+   ```powershell tab="PowerShell"
+   git add tests/ docs/
+   git commit -m "PAS: ujian fungsian route pukal + jadual mutasi"
    ```
 
 ### ✅ Checkpoint 8.3b
@@ -1999,8 +2052,14 @@ Menambah babak `admin` kepada demo M2: admin memohon, memulakan semakan pukal da
 
 1. **Branch:**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git switch main && git pull
+   git switch -c docs/demo-m2
+   ```
+
+   ```powershell tab="PowerShell"
+   git switch main
+   git pull
    git switch -c docs/demo-m2
    ```
 
@@ -2052,9 +2111,18 @@ Menambah babak `admin` kepada demo M2: admin memohon, memulakan semakan pukal da
 
 12. **Commit & gabung:**
 
-    ```bash
+    ```bash tab="Git Bash / macOS / Linux"
     git add docs/demo-m2.md && git commit -m "DOCS: demo M2 peranan admin + dapatan pemisahan tugas"
     git switch main && git merge --no-ff docs/demo-m2 -m "DOCS: demo M2 peranan admin" && git push
+    git branch -d docs/demo-m2
+    ```
+
+    ```powershell tab="PowerShell"
+    git add docs/demo-m2.md
+    git commit -m "DOCS: demo M2 peranan admin + dapatan pemisahan tugas"
+    git switch main
+    git merge --no-ff docs/demo-m2 -m "DOCS: demo M2 peranan admin"
+    git push
     git branch -d docs/demo-m2
     ```
 
@@ -2079,10 +2147,16 @@ Rakam babak 12 (dua pelulus serentak) sebagai GIF pendek untuk demo capstone Har
 
 ## Semakan kendiri — akhir hari
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 git log --oneline -8
 php spark routes | grep pas/              # 11 laluan Pas; semakan dengan permission:
 composer test -- --testdox | tail -20   # semua hijau
+```
+
+```powershell tab="PowerShell"
+git log --oneline -8
+php spark routes | Select-String pas/    # 11 laluan Pas; semakan dengan permission:
+composer test '--' --testdox | Select-Object -Last 20   # semua hijau
 ```
 
 - [ ] Satu permohonan bergerak `submitted → under_review → approved` dengan 3 baris `status_logs` (Kuiz S1).

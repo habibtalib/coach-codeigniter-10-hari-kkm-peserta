@@ -22,20 +22,30 @@
 
 1. New branch from the latest `main`:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git switch main && git pull
+   git switch -c feat/pas-permohonan
+   ```
+
+   ```powershell tab="PowerShell"
+   git switch main
+   git pull
    git switch -c feat/pas-permohonan
    ```
 
 2. Check the PHP upload limits and the `fileinfo` extension:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    php --ini                                   # location of the loaded php.ini
    php -i | grep -E "upload_max_filesize|post_max_size|max_file_uploads"
    php -m | grep -i fileinfo                   # must print: fileinfo
    ```
 
-   If you are not in Git Bash (PowerShell): `php -i | Select-String "upload_max_filesize|post_max_size"`.
+   ```powershell tab="PowerShell"
+   php --ini                                   # location of the loaded php.ini
+   php -i | Select-String "upload_max_filesize|post_max_size|max_file_uploads"
+   php -m | Select-String fileinfo             # must print: fileinfo
+   ```
 
 3. If `upload_max_filesize` < `8M` or `post_max_size` < `16M`, edit `php.ini` (Laragon: *Menu → PHP → php.ini*; otherwise: `php --ini`):
 
@@ -70,7 +80,7 @@
 Write `PassType`, `PassStatus`, the `PassApplication` Entity, `PassApplicationModel` and `PassDocumentModel` so that they comply with SPEC §2.2 & §3.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - Lab 7.0 done. `BookingStatus` and `SlotBooking` (Day 5) can be used as a pattern.
 
 ### Steps
@@ -240,8 +250,12 @@ Write `PassType`, `PassStatus`, the `PassApplication` Entity, `PassApplicationMo
 
 3. **Test the enum straight away** with a small script (not committed):
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    mkdir -p writable/scratch
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force writable\scratch | Out-Null
    ```
 
    In VS Code, create the file `writable/scratch/enum-check.php` (*File → New File*) with this content:
@@ -529,7 +543,7 @@ Write `PassType`, `PassStatus`, the `PassApplication` Entity, `PassApplicationMo
 |---------|-------|-----|
 | `Fatal error: Constant expression contains invalid operations` | `implode()` in the default value of `$validationRules` | Fill it in inside `protected function initialize(): void` |
 | `UnhandledMatchError` in `label()` | New `case` without a `match` arm | Add the arm; this is a safety feature, not a bug |
-| `Class "App\Enums\PassStatus" not found` | File name/namespace mismatch (e.g. `app/enums/`) | Folder `app/Enums/` (capital E), `namespace App\Enums;`. 🪟 Windows ignores upper/lower case, so `app/enums` works on your laptop but fails on a Linux server and on a colleague's macOS laptop. Fix it through Git: `git mv app/enums app/Enums-tmp && git mv app/Enums-tmp app/Enums` |
+| `Class "App\Enums\PassStatus" not found` | File name/namespace mismatch (e.g. `app/enums/`) | Folder `app/Enums/` (capital E), `namespace App\Enums;`. 🪟 Windows ignores upper/lower case, so `app/enums` works on your laptop but fails on a Linux server and on a colleague's macOS laptop. Fix it through Git: `git mv app/enums app/Enums-tmp && git mv app/Enums-tmp app/Enums`; PowerShell: run the two `git mv` commands one at a time |
 | `ValueError: "Approved" is not a valid backing value` | `PassStatus::from('Approved')` — DB values are lowercase | Use `->value` when saving; `from()` is only for DB data |
 | `/cuba-model-pas` → `"ok": 5` (it succeeded!) | `$validationRules` is empty — `initialize()` not called / misspelt | Exact name `initialize`, visibility `protected` |
 
@@ -1512,10 +1526,16 @@ Build the application form with 1–3 documents stored securely (BR-PAS-02), the
 
 7. **Confirm in three places:**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    cd ~/latihan/kelas-ci-<nama>         # back to the project folder (step 5 left you in ~/ujian-pas)
    ls -la writable/uploads/pas/          # 2 files, random names e.g. 1727251200_3f2a9c1e7b0d4a5c6e81.pdf
    ls public/ | grep -i upload            # NO output
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\latihan\kelas-ci-<nama>                  # back to the project folder (step 5 left you in $HOME\ujian-pas)
+   Get-ChildItem -Force writable/uploads/pas/          # 2 files, random names e.g. 1727251200_3f2a9c1e7b0d4a5c6e81.pdf
+   Get-ChildItem public/ -Name | Select-String upload  # NO output
    ```
 
    ```sql
@@ -1598,7 +1618,7 @@ Run at least 10 (target 17) boundary test cases for upload, validation and owner
    Copy-Item surat-sokongan.pdf surat-2.pdf; Copy-Item surat-sokongan.pdf surat-3.pdf
    ```
 
-2. **Create `docs/ujian-manual-pas.md`** and copy the table below. Run each case; fill in the *Actual* and *Result* columns. After **every** case, check `ls writable/uploads/pas/ | wc -l` from the **project folder** (`cd ~/latihan/kelas-ci-<nama>`, not `~/ujian-pas`) — the count only goes up for cases that are expected to succeed.
+2. **Create `docs/ujian-manual-pas.md`** and copy the table below. Run each case; fill in the *Actual* and *Result* columns. After **every** case, check `ls writable/uploads/pas/ | wc -l` (PowerShell: `(Get-ChildItem writable/uploads/pas/).Count`) from the **project folder** (`cd ~/latihan/kelas-ci-<nama>`, not `~/ujian-pas`) — the count only goes up for cases that are expected to succeed.
 
    | ID | Case | Steps | Expected | Actual | Result |
    |----|------|-------|----------|--------|--------|
@@ -1656,7 +1676,7 @@ Run at least 10 (target 17) boundary test cases for upload, validation and owner
 Add three new methods to the Lab 7.1 code using the same patterns (`match`, a static enum method, Entity methods): `PassType::icon()`, `PassStatus::pending()`/`isPending()`, and `PassApplication::validityDays()`/`daysRemaining()`, then test them in `php spark shell` without the database.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - [Lab 7.1](#lab-71--enums-entity--model-s1) is done and committed.
 - `php spark shell` (PsySH) from [Lab 3.2b](../hari-3/lab.en.md#lab-32b--query-builder-in-the-console-s6) works.
 
@@ -1761,8 +1781,13 @@ Add three new methods to the Lab 7.1 code using the same patterns (`match`, a st
 
 6. **Commit:**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add app/ && git commit -m "PAS: PassType::icon, PassStatus::pending, validityDays & daysRemaining"
+   ```
+
+   ```powershell tab="PowerShell"
+   git add app/
+   git commit -m "PAS: PassType::icon, PassStatus::pending, validityDays & daysRemaining"
    ```
 
 ### ✅ Checkpoint
@@ -1791,7 +1816,7 @@ Add three new methods to the Lab 7.1 code using the same patterns (`match`, a st
 Add a `?pass_type=` filter and a `?q=` search (reference number or purpose) to `/pas/permohonan` through Model scopes, prove that `orLike()` without `groupStart()` leaks other people's applications (BR-PAS-04), and show the type icon and the validity period (Lab 7.1b).
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - [Lab 7.2](#lab-72--routes-service--listdetail-views-s2) and [Lab 7.1b](#lab-71b--enum--entity-icons-pending-statuses--validity-period-s5) are done. The `PAS-2026-9001` (`pemohon1`) and `PAS-2026-9002` (`pemohon2`) data from Lab 7.2 step 7 exist.
 
 ### Steps
@@ -2009,8 +2034,13 @@ Add a `?pass_type=` filter and a `?q=` search (reference number or purpose) to `
 
 9. **Commit** (the bracketed `search()` version only):
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add app/ && git commit -m "PAS: penapis jenis & carian Permohonan Saya (BR-PAS-04)"
+   ```
+
+   ```powershell tab="PowerShell"
+   git add app/
+   git commit -m "PAS: penapis jenis & carian Permohonan Saya (BR-PAS-04)"
    ```
 
 ### ✅ Checkpoint
@@ -2040,7 +2070,7 @@ Add a `?pass_type=` filter and a `?q=` search (reference number or purpose) to `
 Build a `POST /pas/permohonan/{id}/dokumen` route that lets the **owner** add documents to an existing `submitted` application, with the same file rules as Lab 7.3, the **3 documents per application** limit (BR-PAS-02) checked before `move()` and again under a `FOR UPDATE` row lock, and file cleanup on failure.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - [Lab 7.3](#lab-73--form-validation-upload--download-s3) is done: `PAS-2026-0001` owned by `pemohon1` has **2** documents (`surat-sokongan.pdf`, `gambar.png`).
 - The `~/ujian-pas/` folder has `surat-sokongan.pdf` and `gambar.png` (Lab 7.3 step 5).
 
@@ -2048,11 +2078,19 @@ Build a `POST /pas/permohonan/{id}/dokumen` route that lets the **owner** add do
 
 1. **Extra test files:**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    cd ~/ujian-pas
    cp surat-sokongan.pdf surat-2.pdf; cp surat-sokongan.pdf surat-3.pdf
    printf '<?php phpinfo(); ?>\n' > borang.pdf
    cd ~/latihan/kelas-ci-<nama>
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\ujian-pas
+   Copy-Item surat-sokongan.pdf surat-2.pdf
+   Copy-Item surat-sokongan.pdf surat-3.pdf
+   Set-Content -Path borang.pdf -Value '<?php phpinfo(); ?>' -Encoding ascii
+   cd $HOME\latihan\kelas-ci-<nama>
    ```
 
 2. **Route.** In `app/Config/Routes.php`, add these two lines **after** the closing `});` of the `pas/permohonan` group (not inside it):
@@ -2062,7 +2100,7 @@ Build a `POST /pas/permohonan/{id}/dokumen` route that lets the **owner** add do
    $routes->post('pas/permohonan/(:num)/dokumen', 'Pas\ApplicationController::addDocuments/$1', ['as' => 'pas.dokumen.tambah', 'filter' => 'session']);
    ```
 
-   Lab 8.2 will replace the whole `pas/permohonan` group; a route outside the group is not touched. Check: `php spark routes | grep pas/permohonan` → **6** rows, including `POST | pas/permohonan/([0-9]+)/dokumen | pas.dokumen.tambah`.
+   Lab 8.2 will replace the whole `pas/permohonan` group; a route outside the group is not touched. Check: `php spark routes | grep pas/permohonan` (PowerShell: `php spark routes | Select-String pas/permohonan`) → **6** rows, including `POST | pas/permohonan/([0-9]+)/dokumen | pas.dokumen.tambah`.
 
 3. **Service — public method.** In `app/Services/PassWorkflowService.php`, add this block **right after** the `submit()` method (before the `canView()` docblock). Every `use` it needs is already there since Lab 7.3:
 
@@ -2214,7 +2252,7 @@ Build a `POST /pas/permohonan/{id}/dokumen` route that lets the **owner** add do
    <?php /* Hari 8: panel tindakan pegawai + sejarah status akan ditambah di sini */ ?>
    ```
 
-7. **Test as `pemohon1`** on `PAS-2026-0001` (2 documents). After each attempt, run `ls writable/uploads/pas/ | wc -l` from the project folder:
+7. **Test as `pemohon1`** on `PAS-2026-0001` (2 documents). After each attempt, run `ls writable/uploads/pas/ | wc -l` (PowerShell: `(Get-ChildItem writable/uploads/pas/).Count`) from the project folder:
 
    | # | Files chosen | Expected |
    |---|-----------|----------|
@@ -2239,8 +2277,13 @@ Build a `POST /pas/permohonan/{id}/dokumen` route that lets the **owner** add do
 
 10. **Commit:**
 
-    ```bash
+    ```bash tab="Git Bash / macOS / Linux"
     git add app/ && git commit -m "PAS: tambah dokumen susulan, had 3 dokumen setiap permohonan (BR-PAS-02)"
+    ```
+
+    ```powershell tab="PowerShell"
+    git add app/
+    git commit -m "PAS: tambah dokumen susulan, had 3 dokumen setiap permohonan (BR-PAS-02)"
     ```
 
 ### ✅ Checkpoint
@@ -2272,7 +2315,7 @@ Build a `POST /pas/permohonan/{id}/dokumen` route that lets the **owner** add do
 Automate 10 Lab 7.4 boundary cases and 4 Lab 7.3b cases in `tests/feature/Pas/PassSubmitTest.php` with a fake `UploadedFile`, `#[DataProvider]` and a "no side effects" check (no row, no orphan file), then prove the tests catch a `>` vs `>=` bug with a deliberate mutation.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - [Lab 7.4](#lab-74--manual-boundary-case-testing-s4) and [Lab 7.3b](#lab-73b--adding-follow-up-documents-to-an-application-s7) are done.
 - The `kkm_latihan_test` test database and `database.tests.*` in `.env` (Lab 6.3): `php spark db:table --show --dbgroup tests` works.
 
@@ -2335,8 +2378,12 @@ Automate 10 Lab 7.4 boundary cases and 4 Lab 7.3b cases in `tests/feature/Pas/Pa
 
 2. **The test class.**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    mkdir -p tests/feature/Pas
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force tests\feature\Pas | Out-Null
    ```
 
    `tests/feature/Pas/PassSubmitTest.php`
@@ -2594,10 +2641,16 @@ Automate 10 Lab 7.4 boundary cases and 4 Lab 7.3b cases in `tests/feature/Pas/Pa
 
 3. **Run it** and compare the number of files on disk before and after:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    ls writable/uploads/pas/ | wc -l
    composer test -- --no-coverage --testdox tests/feature/Pas/PassSubmitTest.php
    ls writable/uploads/pas/ | wc -l
+   ```
+
+   ```powershell tab="PowerShell"
+   (Get-ChildItem writable/uploads/pas/).Count
+   composer test '--' --no-coverage --testdox tests/feature/Pas/PassSubmitTest.php
+   (Get-ChildItem writable/uploads/pas/).Count
    ```
 
    Record the last line `OK (… tests, … assertions)` (Quiz S8 question). The number of files on disk is the **same** before and after — `tearDown()` deletes only the files the test created.
@@ -2631,8 +2684,14 @@ Automate 10 Lab 7.4 boundary cases and 4 Lab 7.3b cases in `tests/feature/Pas/Pa
 
 6. **Commit and push:**
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add tests/ docs/ && git commit -m "PAS: ujian PHPUnit kes sempadan muat naik (BR-PAS-02/06)"
+   git push
+   ```
+
+   ```powershell tab="PowerShell"
+   git add tests/ docs/
+   git commit -m "PAS: ujian PHPUnit kes sempadan muat naik (BR-PAS-02/06)"
    git push
    ```
 
@@ -2659,12 +2718,20 @@ Automate 10 Lab 7.4 boundary cases and 4 Lab 7.3b cases in `tests/feature/Pas/Pa
 
 ## Self-check — end of day
 
-```bash
+```bash tab="Git Bash / macOS / Linux"
 git log --oneline -9                    # 8 "PAS:" commits today (4 core labs + 4 follow-up labs)
 php spark routes | grep pas/permohonan  # 6 routes (5 + Lab 7.3b), session filter
 composer test -- --no-coverage tests/feature/Pas/PassSubmitTest.php   # OK (Lab 7.4b)
 ls writable/uploads/pas/ | head         # random names only
 git status                              # clean; writable/uploads not tracked
+```
+
+```powershell tab="PowerShell"
+git log --oneline -9                                    # 8 "PAS:" commits today (4 core labs + 4 follow-up labs)
+php spark routes | Select-String pas/permohonan         # 6 routes (5 + Lab 7.3b), session filter
+composer test '--' --no-coverage tests/feature/Pas/PassSubmitTest.php   # OK (Lab 7.4b)
+Get-ChildItem writable/uploads/pas/ -Name | Select-Object -First 10  # random names only
+git status                                              # clean; writable/uploads not tracked
 ```
 
 Participants who fall behind: copy from `templates/kod/` (**Templat & Rujukan** module) **after** the trainer/a peer has explained each part — and mark it in the commit (`PAS: … (rujuk templat)`).

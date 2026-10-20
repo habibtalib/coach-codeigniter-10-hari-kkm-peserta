@@ -23,7 +23,7 @@
 Mendemokan projek `kelas-ci-<nama>` anda (GitLab + `/zon`) dan menerangkan 7 langkah kitaran request CI4 dengan bukti dari Debug Toolbar.
 
 ### Prasyarat
-- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
 - [Lab 3.4](../hari-3/lab.md#lab-34--carian--pagination-zon-s4) siap: `/zon` berfungsi dan GitLab menunjukkan commit `ZON:`.
 
 ### Langkah
@@ -82,7 +82,7 @@ Menyediakan ujian (`composer test`) dalam projek `kelas-ci-<nama>`, menyemak `.e
 - Route, controller, layout view, borang, validation dan CSRF sudah dibuat dalam `kelas-ci-<nama>` (Lab 2.2–2.4). Lab ini menambah ujian, Shield dan Bootstrap dalam projek yang sama.
 - Database `kkm_latihan` & `kkm_latihan_test` + pengguna `kkm_dev` ([Lab 3.1](../hari-3/lab.md#lab-31--database-mysql--env-s1))
 - PHP ≥ 8.2 dengan `intl`, `mbstring`, `mysqli` (`php -m`)
-- `php.ini` (untuk muat naik dokumen Pas, Hari 7): `upload_max_filesize = 8M` dan `post_max_size = 16M` atau lebih. Semak: `php -i | grep -E "upload_max_filesize|post_max_size"`. Cari fail dengan `php --ini`; mulakan semula `php spark serve` selepas menukar.
+- `php.ini` (untuk muat naik dokumen Pas, Hari 7): `upload_max_filesize = 8M` dan `post_max_size = 16M` atau lebih. Semak: `php -i | grep -E "upload_max_filesize|post_max_size"` (PowerShell: `php -i | Select-String "upload_max_filesize|post_max_size"`). Cari fail dengan `php --ini`; mulakan semula `php spark serve` selepas menukar.
 
 ### Langkah
 
@@ -121,7 +121,7 @@ Menyediakan ujian (`composer test`) dalam projek `kelas-ci-<nama>`, menyemak `.e
 
    > Versi 4.7.x dipasang? Tidak mengapa — kursus memerlukan **4.6+**.
 
-   Commit: `git add composer.json phpunit.dist.xml && git commit -m "SETUP: composer test tanpa coverage"`.
+   Commit: `git add composer.json phpunit.dist.xml && git commit -m "SETUP: composer test tanpa coverage"` (PowerShell: jalankan `git add` dan `git commit` satu demi satu).
 
 **B. `.env`**
 
@@ -149,9 +149,14 @@ Menyediakan ujian (`composer test`) dalam projek `kelas-ci-<nama>`, menyemak `.e
 
 4. Sahkan `.env` diabaikan Git:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git status --short | grep -c "\.env$"     # mesti 0
    git check-ignore -v .env                 # mesti menunjukkan baris .gitignore
+   ```
+
+   ```powershell tab="PowerShell"
+   (git status --short | Select-String "\.env$").Count  # mesti 0
+   git check-ignore -v .env                             # mesti menunjukkan baris .gitignore
    ```
 
 5. Uji connection:
@@ -1081,9 +1086,15 @@ Menolak commit `SETUP:` yang bersih ke GitLab, menulis pelan kerja anda, mencuba
 
 1. Semak apa yang akan di-commit — **tiada** `.env`, `vendor/`, `writable/session/*`:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git status --short | head -30
    git status --short | grep -E "\.env$|^.. vendor/" || echo "OK: tiada fail sulit/vendor"
+   ```
+
+   ```powershell tab="PowerShell"
+   git status --short | Select-Object -First 30
+   $m = git status --short | Select-String "\.env$|^.. vendor/"
+   if ($m) { $m } else { "OK: tiada fail sulit/vendor" }
    ```
 
 2. Commit berperingkat (mesej bermakna, prefix `SETUP:`):
@@ -1149,12 +1160,20 @@ Menolak commit `SETUP:` yang bersih ke GitLab, menulis pelan kerja anda, mencuba
 
 6. **Klon baharu** ke folder lain untuk membuktikan repo lengkap. Klon menggunakan database ujian supaya semua jadual dibina dari kosong (jadual di dalamnya dipadam semula setiap kali ujian dijalankan, jadi ia selamat diguna). Hentikan `php spark serve` projek asal dahulu (`Ctrl+C`):
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    cd ~/latihan
    git clone https://<gitlab-kkm>/<pengguna>/kelas-ci-<nama>.git kelas-ci-<nama>-klon
    cd kelas-ci-<nama>-klon
    composer install
    cp ../kelas-ci-<nama>/.env .env
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\latihan
+   git clone https://<gitlab-kkm>/<pengguna>/kelas-ci-<nama>.git kelas-ci-<nama>-klon
+   cd kelas-ci-<nama>-klon
+   composer install
+   Copy-Item ../kelas-ci-<nama>/.env .env
    ```
 
    Dalam `.env` klon, tukar **satu** baris: `database.default.database = kkm_latihan_test`. Kemudian:
@@ -1165,7 +1184,7 @@ Menolak commit `SETUP:` yang bersih ke GitLab, menulis pelan kerja anda, mencuba
    php spark serve
    ```
 
-   Log masuk sebagai `pelulus@latihan.test` / `Latihan@2026`. Berjaya? Padam folder klon: `cd ~/latihan && rm -rf kelas-ci-<nama>-klon`.
+   Log masuk sebagai `pelulus@latihan.test` / `Latihan@2026`. Berjaya? Padam folder klon: `cd ~/latihan && rm -rf kelas-ci-<nama>-klon` (PowerShell: `cd $HOME\latihan`, kemudian `Remove-Item -Recurse -Force kelas-ci-<nama>-klon`).
 
 ### ✅ Checkpoint
 - `git log --oneline` menunjukkan ≥ 2 commit `SETUP:` dan satu merge `feat/pelan-kerja` di GitLab (Kuiz S4).
@@ -1194,7 +1213,7 @@ Lindungi `main` di GitLab (*Settings → Repository → Protected branches*: *Al
 Menjejak satu request **POST** (borang `/jabatan/baharu` dari Lab 3.3) dengan Debug Toolbar dan `php spark filter:check`, kemudian membandingkannya dengan jejak GET `/zon` dari Lab 4.1: filter `csrf`, validation `is_unique`, `INSERT` dan redirect `303`.
 
 ### Prasyarat
-- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
 - [Lab 4.1](#lab-41--demo-projek--jejak-kitaran-request-s1) siap: `docs/kitaran-request.md` sudah di-push.
 - [Lab 3.3](../hari-3/lab.md#lab-33--model--halaman-jabatan-s3) siap: `/jabatan/baharu` menyimpan jabatan baharu.
 
@@ -1282,7 +1301,7 @@ Selepas Lab 4.2, ulang jejak ini untuk **POST `/login`**: query apa yang Shield 
 Memasang filter Shield `session` dan `permission:admin.access` pada route Hari 3 (`/jabatan`, `/zon`, `/jabatan/baharu`), membuktikannya dengan `php spark routes` dan `filter:check`, dan mengujinya dengan dua akaun ujian (`admin` dan `applicant`) yang dicipta dengan `php spark shield:user`.
 
 ### Prasyarat
-- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
 - [Lab 4.2](#lab-42--projek-ci4-env-shield--layout-s2) checkpoint lulus: `/` dialih ke `/login`, `AuthGroups` ikut SPEC §4, layout `layouts/main.php` + `partials/flash.php` wujud.
 - Lab 4.3 **belum** dibuat: jadual `users` belum ada medan profil dan belum ada pengguna sintetik. Lab ini mencipta dua akaun ujian sementara dan memadamnya di hujung lab.
 
@@ -1290,8 +1309,12 @@ Memasang filter Shield `session` dan `permission:admin.access` pada route Hari 3
 
 1. **Sebelum.** Lihat lubang akses sekarang:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    php spark routes | grep -E "jabatan|zon"
+   ```
+
+   ```powershell tab="PowerShell"
+   php spark routes | Select-String "jabatan|zon"
    ```
 
    Lajur *Before Filters* hanya `csrf`. Buka `http://localhost:8080/zon` dalam tetingkap **incognito** (belum log masuk): senarai zon dipaparkan kepada sesiapa sahaja.
@@ -1415,7 +1438,7 @@ Sembunyikan pautan *+ Jabatan baharu* dalam `app/Views/jabatan/index.php` daripa
 Membuktikan setiap kekangan Lab 4.3 dengan query sebenar dalam klien MySQL — FK tanpa induk (`1452`), UNIQUE komposit (`1062`), `RESTRICT` (`1451`), `SET NULL` dan `CASCADE` — tanpa merosakkan data (transaksi + `ROLLBACK`), kemudian menambah `ReferenceSequenceSeeder` yang idempoten.
 
 ### Prasyarat
-- 🪟 **Windows:** jalankan semua blok `bash` dalam terminal **Git Bash** VS Code, bukan PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
 - [Lab 4.3](#lab-43--migration--seeder-daripada-erd-s3) checkpoint lulus: 18 jadual, 5 pengguna, 12 slot, 5 kenderaan dalam `kkm_latihan`.
 - Lab 4.2b selesai (akaun ujian sudah dipadam).
 
@@ -1625,8 +1648,14 @@ Menjalankan kitaran merge request lengkap kali kedua dengan perubahan sebenar (`
 
 1. Mulakan branch baharu daripada `main` terkini:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git switch main && git pull
+   git switch -c feat/readme-projek
+   ```
+
+   ```powershell tab="PowerShell"
+   git switch main
+   git pull
    git switch -c feat/readme-projek
    ```
 
@@ -1731,7 +1760,7 @@ Menjalankan kitaran merge request lengkap kali kedua dengan perubahan sebenar (`
 |--------|-------|--------------|
 | `git push` ditolak (`rejected … fetch first`) | README diedit terus di GitLab (cth *Apply suggestion*) | `git pull` pada branch itu dahulu, kemudian `git push` |
 | Graf lurus tanpa commit merge | *Squash commits* ditanda, atau kaedah merge projek *Fast-forward* | *Settings → Merge requests → Merge method* = **Merge commit**; jangan tanda *Squash* |
-| `error: the branch 'feat/readme-projek' is not fully merged` | `git pull` belum dibuat selepas merge | `git switch main && git pull`, kemudian ulang `git branch -d` |
+| `error: the branch 'feat/readme-projek' is not fully merged` | `git pull` belum dibuat selepas merge | `git switch main && git pull` (PowerShell: jalankan `git switch main` dan `git pull` satu demi satu), kemudian ulang `git branch -d` |
 | README tidak dipaparkan di GitLab | Nama fail bukan `README.md` di akar projek | `git mv` ke `README.md` di akar |
 
 ### ⭐ Cabaran tambahan

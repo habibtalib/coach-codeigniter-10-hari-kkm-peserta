@@ -24,9 +24,9 @@
 Write `SlotAvailabilityService` (`hasOverlap()` & `availableSlots()`) and a view of free slots for a date range in the TLK (Special Vehicle Parking — *Tempat Letak Kenderaan Khas*) module.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - Day 5 merged into `main`; `TLK-2026-0001` exists
-- `git switch main && git pull && git switch -c feat/tlk-ketersediaan`
+- `git switch main && git pull && git switch -c feat/tlk-ketersediaan` (PowerShell: run `git switch main`, `git pull` and `git switch -c` one at a time)
 
 ### Steps
 
@@ -253,7 +253,7 @@ Write `SlotAvailabilityService` (`hasOverlap()` & `availableSlots()`) and a view
 
 | Symptom | Cause | Fix |
 |--------|-------|--------------|
-| `/tlk/tempahan/ketersediaan` → 404 | Route not added yet, misspelt, or placed outside the `tlk/tempahan` group | `php spark routes \| grep ketersediaan` |
+| `/tlk/tempahan/ketersediaan` → 404 | Route not added yet, misspelt, or placed outside the `tlk/tempahan` group | `php spark routes \| grep ketersediaan` (PowerShell: `php spark routes \| Select-String ketersediaan`) |
 | Deleted (soft-deleted) slots appear | Using `$this->slots->builder()` (raw Query Builder) | Use Model methods (`withZone()->…->findAll()`) — the `deleted_at` filter is automatic |
 | All slots disappear | Subquery without `whereIn('status', …)` / condition reversed | Check the table from step 1 |
 | `Call to undefined method … whereNotIn() closure` | Old CI version | CI ≥ 4.6 supports closure subqueries |
@@ -1615,10 +1615,18 @@ Polish the TLK module UI (badges, flash messages, confirmation, Bootstrap pagina
 
 8. Update `docs/ujian-manual-tlk.md` (TM-TLK-16 ✅), tick the M1 DoD (README §4.2) in `docs/pelan-kerja.md`, then:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add -A && git commit -m "TLK: penambahbaikan UI — badge, flash, pengesahan, pagination"
    git tag -a m1-siap -m "M1 TLK siap: ketersediaan, transaksi, keputusan, ujian"
    git push && git push --tags
+   ```
+
+   ```powershell tab="PowerShell"
+   git add -A
+   git commit -m "TLK: penambahbaikan UI — badge, flash, pengesahan, pagination"
+   git tag -a m1-siap -m "M1 TLK siap: ketersediaan, transaksi, keputusan, ujian"
+   git push
+   git push --tags
    ```
 
 ### ✅ Checkpoint
@@ -1648,7 +1656,7 @@ Polish the TLK module UI (badges, flash messages, confirmation, Bootstrap pagina
 Reuse the BR-TLK-01 overlap condition in a **JOIN** (not `NOT IN`) to build the busy-slot board `/tlk/tempahan/ketersediaan/sibuk` for approvers and admins: which active bookings occupy a slot in a date range, who the applicant is, and whether the slot is still active.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - The [Lab 6.1](#lab-61--slot-availability-check-s1) checkpoint passes; you are still on the `feat/tlk-ketersediaan` branch (not merged yet).
 - Booking `TLK-2026-0001` (slot A-01, `pemohon1`, *Menunggu* / Pending) exists.
 
@@ -1809,10 +1817,16 @@ Reuse the BR-TLK-01 overlap condition in a **JOIN** (not `NOT IN`) to build the 
 
 6. Check:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    php -l app/Services/SlotAvailabilityService.php
    php -l app/Controllers/Tlk/BookingController.php
    php spark routes | grep ketersediaan
+   ```
+
+   ```powershell tab="PowerShell"
+   php -l app/Services/SlotAvailabilityService.php
+   php -l app/Controllers/Tlk/BookingController.php
+   php spark routes | Select-String "ketersediaan"
    ```
 
    The `tlk/tempahan/ketersediaan/sibuk` row shows the filters `csrf session permission:tlk.decide`.
@@ -1826,8 +1840,13 @@ Reuse the BR-TLK-01 overlap condition in a **JOIN** (not `NOT IN`) to build the 
 
 8. Commit:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add app/ && git commit -m "TLK: papan slot sibuk untuk pelulus (BR-TLK-01 dalam JOIN)"
+   ```
+
+   ```powershell tab="PowerShell"
+   git add app/
+   git commit -m "TLK: papan slot sibuk untuk pelulus (BR-TLK-01 dalam JOIN)"
    ```
 
 ### ✅ Checkpoint
@@ -1841,8 +1860,8 @@ Reuse the BR-TLK-01 overlap condition in a **JOIN** (not `NOT IN`) to build the 
 | Symptom | Cause | Fix |
 |--------|-------|--------------|
 | `Column 'status' in where clause is ambiguous` | `whereIn('status', …)` without a table name — Shield's `users` also has a `status` column | `slot_bookings.status` (step 1) |
-| `pemohon1` can open the board | The `permission:tlk.decide` filter is missing or misspelt | Check step 2; `php spark routes \| grep sibuk` |
-| `/tlk/tempahan/ketersediaan/sibuk` → 404 | Route missing, or placed outside the `tlk/tempahan` group | `php spark routes \| grep sibuk` |
+| `pemohon1` can open the board | The `permission:tlk.decide` filter is missing or misspelt | Check step 2; `php spark routes \| grep sibuk` (PowerShell: `php spark routes \| Select-String sibuk`) |
+| `/tlk/tempahan/ketersediaan/sibuk` → 404 | Route missing, or placed outside the `tlk/tempahan` group | `php spark routes \| grep sibuk` (PowerShell: `php spark routes \| Select-String sibuk`) |
 | Bookings on a deleted (soft-deleted) slot appear | The `parking_slots.deleted_at` condition is missing | `->where('parking_slots.deleted_at', null)` |
 | `Undefined array key "zone_code"` in the view | The `AS zone_code` alias is missing from `select()` | Copy the `select()` from step 1 again |
 
@@ -1991,9 +2010,14 @@ Write a Spark command `php spark tlk:expire` that changes `approved` bookings wh
    }
    ```
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    php -l app/Commands/ExpireBookingsCommand.php
    php spark list | grep -A2 "^TLK"
+   ```
+
+   ```powershell tab="PowerShell"
+   php -l app/Commands/ExpireBookingsCommand.php
+   php spark list | Select-String "^TLK" -Context 0,2
    ```
 
    `php spark list` shows a `TLK` group with `tlk:expire`.
@@ -2040,8 +2064,13 @@ Write a Spark command `php spark tlk:expire` that changes `approved` bookings wh
 
 8. Commit:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add app/ && git commit -m "TLK: command tlk:expire (approved → expired melalui transition)"
+   ```
+
+   ```powershell tab="PowerShell"
+   git add app/
+   git commit -m "TLK: command tlk:expire (approved → expired melalui transition)"
    ```
 
 ### ✅ Checkpoint
@@ -2439,9 +2468,15 @@ Write PHPUnit tests for the new rules from Labs 6.1b–6.2b — the busy board (
 
 6. Run all the TLK tests, then add two rows with your findings from steps 4–5 to the "Ujian mutasi" (mutation tests) section of `docs/ujian-manual-tlk.md`:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    composer test -- --no-coverage tests/tlk
    git add tests/ docs/ && git commit -m "TLK: ujian papan slot sibuk & tlk:expire"
+   ```
+
+   ```powershell tab="PowerShell"
+   composer test '--' --no-coverage tests/tlk
+   git add tests/ docs/
+   git commit -m "TLK: ujian papan slot sibuk & tlk:expire"
    ```
 
 ### ✅ Checkpoint
@@ -2511,8 +2546,14 @@ Use Claude Code in your `kelas-ci-<nama>` project as a **reviewer**: block `.env
 
 3. **Start Claude Code** in the project root:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    cd ~/latihan/kelas-ci-<nama>
+   git branch --show-current     # feat/tlk-ujian
+   claude
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\latihan\kelas-ci-<nama>
    git branch --show-current     # feat/tlk-ujian
    claude
    ```
@@ -2795,8 +2836,14 @@ Polish the *Tempahan Saya* (My Bookings) list (`/tlk/tempahan`) with the UI patt
 
 8. Commit and push:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    git add app/ && git commit -m "TLK: gilap senarai Tempahan Saya (tab status, batal terus)" && git push
+   ```
+
+   ```powershell tab="PowerShell"
+   git add app/
+   git commit -m "TLK: gilap senarai Tempahan Saya (tab status, batal terus)"
+   git push
    ```
 
 ### ✅ Checkpoint

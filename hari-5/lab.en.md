@@ -23,16 +23,20 @@
 Write the `BookingStatus` & `SlotCategory` enums, the `SlotBooking` Entity and the TLK (Special Vehicle Parking — *Tempat Letak Kenderaan Khas*) Models with `$allowedFields` + `$validationRules`, proven by unit tests.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - Day 4 finished: 10 migrations + seeders, login works
-- `git switch main && git pull && git switch -c feat/tlk-model`
+- `git switch main && git pull && git switch -c feat/tlk-model` (PowerShell: run `git switch main`, `git pull` and `git switch -c` one at a time)
 
 ### Steps
 
 1. Create the folders that do not exist yet in appstarter:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    mkdir -p app/Enums app/Entities app/Services app/Validation tests/tlk
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force app/Enums, app/Entities, app/Services, app/Validation, tests/tlk | Out-Null
    ```
 
 2. **Enum `BookingStatus`** — README §1.1, complete with `allowedTransitions()`, `isFinal()` (returns `true` if `allowedTransitions()` is empty) and `options()`:
@@ -632,7 +636,7 @@ Write the `BookingStatus` & `SlotCategory` enums, the `SlotBooking` Entity and t
 Build `Admin/SlotController` (list, add, edit, soft delete) and a paginated `Tlk/BookingController::index` scoped to the owner.
 
 ### Prerequisites
-- Lab 5.1 and 5.1b checkpoints passed and merged: `git switch main && git merge --no-ff feat/tlk-model`
+- Lab 5.1 and 5.1b checkpoints passed and merged: `git switch main && git merge --no-ff feat/tlk-model` (PowerShell: run `git switch main` and `git merge` one at a time)
 - `git switch -c feat/tlk-crud`
 
 ### Steps
@@ -961,12 +965,17 @@ Build `Admin/SlotController` (list, add, edit, soft delete) and a paginated `Tlk
 
 7. Test:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    php spark routes | grep -E "admin/slot|tlk/tempahan"
    php spark serve
    ```
 
-8. Commit: `git add app/ && git commit -m "TLK: CRUD slot admin + senarai tempahan berpagination"`.
+   ```powershell tab="PowerShell"
+   php spark routes | Select-String "admin/slot|tlk/tempahan"
+   php spark serve
+   ```
+
+8. Commit: `git add app/ && git commit -m "TLK: CRUD slot admin + senarai tempahan berpagination"` (PowerShell: run `git add` and `git commit` one at a time).
 
 ### ✅ Checkpoint
 - Log in as `admin@latihan.test` → `http://localhost:8080/admin/slot` → 10 slots + a page link `2` (12 seeded slots) (Quiz S2).
@@ -998,7 +1007,7 @@ Build `Admin/SlotController` (list, add, edit, soft delete) and a paginated `Tlk
 Build the booking form with server-side validation (including BR-TLK-03), `ReferenceNumberService`, `BookingService` v1, and generate `TLK-2026-0001`.
 
 ### Prerequisites
-- Labs 5.2 and 5.2b merged (`git switch main && git merge --no-ff feat/tlk-crud`); `git switch -c feat/tlk-borang-tempahan`
+- Labs 5.2 and 5.2b merged (`git switch main && git merge --no-ff feat/tlk-crud`; PowerShell: run `git switch main` and `git merge` one at a time); `git switch -c feat/tlk-borang-tempahan`
 
 ### Steps
 
@@ -1583,7 +1592,7 @@ Build the booking form with server-side validation (including BR-TLK-03), `Refer
 Run the TLK manual test list systematically and record bugs with repeatable steps.
 
 ### Prerequisites
-- Labs 5.1–5.3 and 5.1b–5.3b merged into `main` (`git switch main && git merge --no-ff feat/tlk-borang-tempahan`); `php spark db:seed DatabaseSeeder` (complete base data)
+- Labs 5.1–5.3 and 5.1b–5.3b merged into `main` (`git switch main && git merge --no-ff feat/tlk-borang-tempahan`; PowerShell: run `git switch main` and `git merge` one at a time); `php spark db:seed DatabaseSeeder` (complete base data)
 - Two browsers (or one normal + one *incognito*)
 
 ### Steps
@@ -1639,7 +1648,7 @@ Turn TM-TLK-08 to TM-TLK-11 into PHPUnit tests for `BookingRules` (without a DB)
 Write `$validationRules` and Malay `$validationMessages` for `ParkingZoneModel` (including `is_unique` with `{id}`) and `VehicleModel`, add the helper methods `slotCount()` and `VehicleModel::normalisePlate()`, then prove them with `Model::validate()` in `php spark shell` and a unit test without the DB. Lab 5.2b (zone CRUD) and Lab 5.3b (vehicle form) depend on this code.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - [Lab 5.1](#lab-51--enum-entity--model-s1) checkpoint passed; you are still on the `feat/tlk-model` branch (not merged yet).
 - `php spark shell` from [Lab 3.2b](../hari-3/lab.en.md#lab-32b--query-builder-in-the-console-s6) works.
 
@@ -1888,7 +1897,7 @@ Add a test `testNormalisePlateIsIdempotent()`: `normalisePlate(normalisePlate($x
 Build zone CRUD at `/admin/slot/zon` in `Admin/SlotController` (SPEC §5: *CRUD slot & zon*) with the Lab 5.2 pattern — field whitelist, `validateData()` with the Model rules, PRG, `group:admin` filter — and block deleting a zone that still has slots with a Malay message, not FK error `1451`.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - [Lab 5.2](#lab-52--slot-crud-admin--booking-list-s2) checkpoint passed; you are still on the `feat/tlk-crud` branch (not merged yet).
 - [Lab 5.1b](#lab-51b--model-rules-for-zones--vehicles-s5) done: `ParkingZoneModel` has rules and `slotCount()`.
 
@@ -2103,10 +2112,16 @@ Build zone CRUD at `/admin/slot/zon` in `Admin/SlotController` (SPEC §5: *CRUD 
 
 6. Verify:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    php -l app/Controllers/Admin/SlotController.php
    php -l app/Config/Routes.php
    php spark routes | grep "admin/slot/zon"
+   ```
+
+   ```powershell tab="PowerShell"
+   php -l app/Controllers/Admin/SlotController.php
+   php -l app/Config/Routes.php
+   php spark routes | Select-String "admin/slot/zon"
    ```
 
    Expected: 6 `admin/slot/zon…` rows, each with the `group:admin` filter.
@@ -2153,7 +2168,7 @@ Add a **Slot** column to the zone list using `slotCount()`, and hide the **Padam
 Build the `/kenderaan` form so users register their **own** vehicles with the Lab 5.3 recipe: normalise input before validation, the custom rule `valid_plate_no` (the `VehicleRules` class registered in `$ruleSets`), Malay messages with `{value}`, `getValidated()`, `user_id` from the session and PRG.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - [Lab 5.3](#lab-53--booking-form-validation--tlk-2026-0001-s3) checkpoint passed (`TLK-2026-0001` exists); you are still on the `feat/tlk-borang-tempahan` branch (not merged yet).
 - [Lab 5.1b](#lab-51b--model-rules-for-zones--vehicles-s5) done: `VehicleModel::normalisePlate()` and the Malay messages exist.
 
@@ -2393,10 +2408,16 @@ Build the `/kenderaan` form so users register their **own** vehicles with the La
 
 7. Verify:
 
-   ```bash
+   ```bash tab="Git Bash / macOS / Linux"
    php -l app/Validation/VehicleRules.php
    php -l app/Controllers/VehicleController.php
    php spark routes | grep kenderaan
+   ```
+
+   ```powershell tab="PowerShell"
+   php -l app/Validation/VehicleRules.php
+   php -l app/Controllers/VehicleController.php
+   php spark routes | Select-String "kenderaan"
    ```
 
    Expected: `kenderaan` and `kenderaan/new` (GET), `kenderaan` (POST) — all three `session`.
@@ -2426,7 +2447,7 @@ Build the `/kenderaan` form so users register their **own** vehicles with the La
 | `"valid_plate_no" is not a valid rule.` | `VehicleRules` not registered | Step 2 — `app/Config/Validation.php` → `$ruleSets` |
 | ` wxx 4321` rejected with *"Format no. plat tidak sah"* | `normalisePlate()` is called after `validateData()`, or not at all | Normalise **first** (step 3, the `$data['plate_no'] = …` line) |
 | Error page `Duplicate entry 'WXX 1234' for key 'vehicles.plate_no'` | `is_unique[vehicles.plate_no]` missing; only the DB UNIQUE catches it | Add `is_unique` in `rules()` |
-| `Unable to find a route named "vehicle.new"` in the booking form | Step 4 not done or the file not saved | Add the `kenderaan` group; `php spark routes \| grep vehicle` |
+| `Unable to find a route named "vehicle.new"` in the booking form | Step 4 not done or the file not saved | Add the `kenderaan` group; `php spark routes \| grep vehicle` (PowerShell: `php spark routes \| Select-String vehicle`) |
 | `WXX 4321` appears in pemohon2's list | `user_id` taken from `getPost()` | `$row['user_id'] = auth()->id();` only |
 | English message *The plate_no field …* | `messages()` keys do not match the rule names | Keys = `required`, `max_length`, `valid_plate_no`, `is_unique` |
 
@@ -2441,7 +2462,7 @@ Write `tests/tlk/VehicleRulesTest.php` (no DB, like the Lab 5.4 challenge): `(ne
 Run 12 manual test cases for the Lab 5.1b–5.3b features, investigate one failing case (a soft-deleted slot blocks deleting a zone) with `php spark shell`, record that bug with reproducible steps, and clean up the test data with the permanent delete `delete($id, true)`.
 
 ### Prerequisites
-- 🪟 **Windows:** run every `bash` block in the VS Code **Git Bash** terminal, not PowerShell ([`persediaan.md`](../docs/persediaan.md) §5).
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
 - [Lab 5.4](#lab-54--manual-testing--bug-records-s4) finished; `feat/tlk-model`, `feat/tlk-crud`, `feat/tlk-borang-tempahan` (including the Lab 5.1b–5.3b commits) merged into `main`.
 - Two browsers (or one normal + one incognito).
 
