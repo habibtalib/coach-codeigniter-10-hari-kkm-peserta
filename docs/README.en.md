@@ -26,12 +26,13 @@
 
 ## Side tracks (optional)
 
-Not counted in progress or assessment. Finish before Day 4; the last Jira step (*sprint*) happens in Day 4 S4.
+Not counted in progress or assessment. Design Thinking and Jira: finish before Day 4; the last Jira step (*sprint*) happens in Day 4 S4.
 
 | File | Contents | When to use |
 |------|-----------|-----------|
 | [`trek-design-thinking.md`](./trek-design-thinking.md) | Design Thinking on the TLK & Pass requirements: Empathize → Define → Ideate → Prototype → Test | Day 1–3 · finish before Day 4 |
 | [`trek-jira.md`](./trek-jira.md) | Free Jira Cloud: *backlog* from the requirements, *stories* with AC, *sprint* planning | Day 1–4 · finish before Day 4 |
+| [`trek-2fa.md`](./trek-2fa.md) | Two-step verification (TOTP / Google Authenticator) as a Shield *action*: migration, service, action, views, test | After Day 8 |
 
 ## `templates/` — document templates & reference code
 

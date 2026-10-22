@@ -26,12 +26,13 @@
 
 ## Trek sampingan (pilihan)
 
-Tidak dikira dalam kemajuan atau penilaian. Siapkan sebelum Hari 4; langkah akhir Jira (*sprint*) dibuat pada Hari 4 S4.
+Tidak dikira dalam kemajuan atau penilaian. Design Thinking dan Jira: siapkan sebelum Hari 4; langkah akhir Jira (*sprint*) dibuat pada Hari 4 S4.
 
 | Fail | Kandungan | Bila guna |
 |------|-----------|-----------|
 | [`trek-design-thinking.md`](./trek-design-thinking.md) | Design Thinking pada keperluan TLK & Pas: Empathize → Define → Ideate → Prototype → Test | Hari 1–3 · siap sebelum Hari 4 |
 | [`trek-jira.md`](./trek-jira.md) | Jira Cloud percuma: *backlog* daripada keperluan, *story* dengan AC, perancangan *sprint* | Hari 1–4 · siap sebelum Hari 4 |
+| [`trek-2fa.md`](./trek-2fa.md) | Pengesahan dua langkah (TOTP / Google Authenticator) sebagai *action* Shield: migration, service, action, view, ujian | Selepas Hari 8 |
 
 ## `templates/` — templat dokumen & kod rujukan
 

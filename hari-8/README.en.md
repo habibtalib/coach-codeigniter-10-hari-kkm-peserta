@@ -484,6 +484,8 @@ foreach ($ids as $id) {
 
 `status_logs.actor_id` is required (FK), so the command uses `--actor <id>` or the first admin. On a real server it is scheduled with cron (`10 0 * * * cd /var/www/app && php spark pas:expire`). Windows server: Task Scheduler, in Command Prompt as administrator — not Git Bash (`schtasks /create /tn KKM-PasExpire /sc daily /st 00:10 /tr "cmd /c cd /d C:\laragon\www\app && php spark pas:expire"`). Reference: `ExpirePassesCommand.php.txt` (**Templat & Rujukan** module).
 
+**Side track (optional):** [Two-step verification (2FA) with Shield](../docs/trek-2fa.md) — add a Google Authenticator code to your project's login.
+
 ### 🎯 Quiz S4
 
 1. In the demo, the approver presses **Approve** again in a second browser (page opened before the approval) after the application is already `approved`. What should the system owner see?

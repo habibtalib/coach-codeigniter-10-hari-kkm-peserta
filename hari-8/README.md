@@ -484,6 +484,8 @@ foreach ($ids as $id) {
 
 `status_logs.actor_id` wajib (FK), jadi command menggunakan `--actor <id>` atau admin pertama. Pada server sebenar ia dijadualkan dengan cron (`10 0 * * * cd /var/www/app && php spark pas:expire`). Server Windows: Task Scheduler, dalam Command Prompt sebagai pentadbir — bukan Git Bash (`schtasks /create /tn KKM-PasExpire /sc daily /st 00:10 /tr "cmd /c cd /d C:\laragon\www\app && php spark pas:expire"`). Rujukan: `ExpirePassesCommand.php.txt` (modul **Templat & Rujukan**).
 
+**Trek sampingan (pilihan):** [Pengesahan dua langkah (2FA) dengan Shield](../docs/trek-2fa.md) — tambah kod Google Authenticator pada log masuk projek anda.
+
 ### 🎯 Kuiz S4
 
 1. Dalam demo, pelulus menekan **Lulus** sekali lagi dalam pelayar kedua (halaman dibuka sebelum kelulusan) selepas permohonan sudah `approved`. Apakah yang patut dilihat oleh pemilik sistem?
