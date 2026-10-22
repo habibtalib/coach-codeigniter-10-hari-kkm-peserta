@@ -24,7 +24,13 @@
 | `900101010005` | Approver | Approve / reject |
 | `900101010006` | Administrator | Users, reference codes, announcements, audit log, reports |
 
-Officers (02–06) must enrol in **two-step verification** at their first login: an authenticator app (for example Google Authenticator) or a passkey. Follow the steps on the **Keselamatan akaun** page; keep the recovery codes, which are shown once.
+Officers (02–06) use **two-step verification**. In the demo, all five accounts share one key: add the key below manually in an authenticator app (for example Google Authenticator — time-based, 6 digits), then enter the 6-digit code after the password.
+
+```text
+ESPKPDEMOLATIHANCIKKMSEPULUHXXYZ
+```
+
+The shared training accounts cannot change their password or 2FA factors. To try 2FA enrolment, passkeys and password reset, **register your own account** on the Daftar page. Demo data is reset every day at 03:00.
 
 ## Compare with your module
 

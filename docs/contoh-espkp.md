@@ -24,7 +24,13 @@
 | `900101010005` | Pelulus | Lulus / tidak lulus |
 | `900101010006` | Pentadbir | Pengguna, kod rujukan, hebahan, log audit, laporan |
 
-Pegawai (02–06) wajib mendaftar **pengesahan dua langkah** semasa log masuk pertama: aplikasi pengesah (contoh Google Authenticator) atau passkey. Ikut arahan pada halaman **Keselamatan akaun**; simpan kod pemulihan yang dipaparkan sekali.
+Pegawai (02–06) menggunakan **pengesahan dua langkah**. Dalam demo, kelima-lima akaun berkongsi satu kunci: tambah kunci di bawah secara manual dalam aplikasi pengesah (contoh Google Authenticator — jenis berasaskan masa, 6 digit), kemudian masukkan kod 6 digit selepas kata laluan.
+
+```text
+ESPKPDEMOLATIHANCIKKMSEPULUHXXYZ
+```
+
+Akaun latihan kongsi tidak boleh ditukar kata laluan atau faktor 2FA-nya. Untuk mencuba pendaftaran 2FA, passkey dan set semula kata laluan, **daftar akaun sendiri** di halaman Daftar. Data demo diset semula setiap hari jam 03:00.
 
 ## Bandingkan dengan modul anda
 
