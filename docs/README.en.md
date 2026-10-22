@@ -21,6 +21,7 @@
 | [`nota.md`](./nota.md) | Index of the topical notes `nota-01` … `nota-12` (MVC, migrations, model/enum, validation, transactions, Shield, uploads, reports, cache, testing, security, Git) | Follow the links in the labs |
 | [`rujukan-keperluan.md`](./rujukan-keperluan.md) | The original requirements & design material (flowcharts, AC, URS) — optional reading | When you want the requirements theory |
 | [`erd-rujukan.md`](./erd-rujukan.md) | A finished ERD for the 10 tables, matching SPEC §3 — no need to draw it yourself | When writing migrations & models (Lab 3.2, Lab 4.3) |
+| [`contoh-espkp.md`](./contoh-espkp.md) | Finished example app **eSPKP Contoh** (demo at <https://eskp.synctexts.com>): training accounts, what to try, mapping to Days 3–10 | Compare with your module (Day 4 onwards) and before the capstone demo |
 | [`arahan-spark.md`](./arahan-spark.md) | `php spark` commands — generate controllers, models, migrations, seeders, filters, tests; database & inspection commands | Every time you create a new file (Day 2 onwards) |
 
 ## Side tracks (optional)
