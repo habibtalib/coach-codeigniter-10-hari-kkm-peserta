@@ -15,7 +15,7 @@
       "env": "app.baseURL",
       "default": "http://localhost:8080/",
       "scope": "cohort",
-      "days": [4, 5, 6, 7, 8, 9, 10]
+      "days": [3, 4, 5, 6, 7, 8, 9, 10]
     },
     {
       "key": "db_host",
@@ -24,7 +24,7 @@
       "env": "database.default.hostname",
       "default": "localhost",
       "scope": "cohort",
-      "days": [4, 5, 6, 7, 8, 9, 10]
+      "days": [3, 4, 5, 6, 7, 8, 9, 10]
     },
     {
       "key": "db_name",
@@ -33,7 +33,7 @@
       "env": "database.default.database",
       "default": "kkm_latihan",
       "scope": "cohort",
-      "days": [4, 5, 6, 7, 8, 9, 10]
+      "days": [3, 4, 5, 6, 7, 8, 9, 10]
     },
     {
       "key": "db_user",
@@ -42,7 +42,7 @@
       "env": "database.default.username",
       "default": "kkm_dev",
       "scope": "cohort",
-      "days": [4, 5, 6, 7, 8, 9, 10]
+      "days": [3, 4, 5, 6, 7, 8, 9, 10]
     },
     {
       "key": "db_test_name",
@@ -51,7 +51,7 @@
       "env": "database.tests.database",
       "default": "kkm_latihan_test",
       "scope": "cohort",
-      "days": [4, 5, 6, 8, 9, 10]
+      "days": [3, 4, 5, 6, 7, 8, 9, 10]
     },
     {
       "key": "git_remote",

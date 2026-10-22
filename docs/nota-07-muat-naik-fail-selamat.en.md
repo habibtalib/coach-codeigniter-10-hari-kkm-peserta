@@ -1,6 +1,6 @@
 # 07 · Secure File Upload
 
-> Topic notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
+Topic notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Notes objectives
 
@@ -80,7 +80,7 @@ CI4 file rules check **every** file in `documents[]`. There are three things tha
 2. **Extension ↔ content consistency** — `guessExtension()` (from the real MIME type) must be on the allowlist.
 3. **Files that PHP failed to upload** (e.g. larger than `upload_max_filesize`) — `isValid()`.
 
-> `ext_in` reads the extension from the client's file name; `mime_in` uses `getMimeType()`, which **detects the type from the content** through the PHP `fileinfo` extension. Both are needed. Make sure `fileinfo` is enabled (see [`docs/persediaan.md`](persediaan.md)).
+> ⚠️ **Warning:** `ext_in` reads the extension from the client's file name; `mime_in` uses `getMimeType()`, which **detects the type from the content** through the PHP `fileinfo` extension. Both are needed. Make sure `fileinfo` is enabled (see [`docs/persediaan.md`](persediaan.md)).
 
 ---
 
@@ -178,7 +178,7 @@ class PassWorkflowService
 
 Why is `stored_path` **relative**? If the application moves to another server (`/var/www/…` → `D:\apps\…`), an absolute path in the DB breaks. Join it with `WRITEPATH` when reading.
 
-> **Consistency with transactions:** moving a file to disk is **not** part of the DB transaction. If the `pass_applications` insert fails after the file was moved, the file becomes an orphan. A simple pattern: save the application record first inside a transaction, then the files; if a file fails, `unlink()` the files already moved and roll back.
+> ⚠️ **Common mistake:** moving a file to disk is **not** part of the DB transaction. If the `pass_applications` insert fails after the file was moved, the file becomes an orphan. A simple pattern: save the application record first inside a transaction, then the files; if a file fails, `unlink()` the files already moved and roll back.
 
 In the controller:
 

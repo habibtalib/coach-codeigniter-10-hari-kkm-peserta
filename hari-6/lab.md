@@ -1,6 +1,6 @@
 # Lab Hari 6 — Modul TLK (Bahagian 2)
 
-[⬅️ README Hari 6](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**) · [⚡ Arahan spark](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 > **Peraturan lab:** hari ini tentang **ketepatan di bawah tekanan**, bukan kelajuan. Setiap langkah memberi kod lengkap untuk disalin. Isi jadual pertindihan (Lab 6.1 langkah 1) **sebelum** menyalin query, dan baca setiap baris transaksi sebelum menjalankannya. AI boleh membantu menerangkan `Lock wait timeout` atau `errno` — tetapi anda mesti boleh menerangkan kenapa kunci diambil mengikut tertib pengguna → slot.
 
@@ -335,7 +335,7 @@ Menaik taraf `BookingService` kepada versi 2 (transaksi + `FOR UPDATE` + BR-TLK-
    }
    ```
 
-   > Tandatangan `record()` dan `history()` **dikunci** — Modul Pas (Hari 8) memanggilnya dengan `'PAS'`.
+   > ⚠️ Tandatangan `record()` dan `history()` **dikunci** — Modul Pas (Hari 8) memanggilnya dengan `'PAS'`.
 
 **C. `BookingService` versi 2**
 
@@ -912,7 +912,7 @@ SELECT user_id, ref_no, status FROM slot_bookings WHERE status IN ('pending', 'a
     SELECT id FROM parking_slots WHERE id = 3 FOR UPDATE;   -- kunci baris A-03 melalui PRIMARY KEY
     ```
 
-    > Kenapa ikut `id`? InnoDB mengunci baris yang **diimbas melalui index**. `WHERE slot_no = 'A-03'` tiada index sendiri (hanya komposit `zone_id, slot_no`) → imbasan penuh → **semua** baris slot terkunci. Itulah juga sebabnya `lockRow()` sentiasa mengunci ikut `id`.
+    Kunci ikut `id` kerana InnoDB mengunci setiap baris yang diimbas: `slot_no` tiada index sendiri (hanya komposit `zone_id, slot_no`), jadi `WHERE slot_no = 'A-03'` mengunci **semua** baris slot. Itulah juga sebabnya `lockRow()` mengunci ikut `id`.
 
 11. Pelayar: log masuk `pemohon2`, mohon slot **A-03** → tekan *Hantar*. Pelayar **berpusing** (menunggu kunci).
 12. Dalam masa 50 saat, Terminal A: `COMMIT;` → pelayar serta-merta selesai.
@@ -1603,7 +1603,6 @@ Menggilap UI Modul TLK (badge, flash, pengesahan, pagination Bootstrap, menu iku
    -- 0 baris bagi user_id pemohon1 & pemohon2
    ```
 
-
    | # | Peranan | Tindakan | Tunjuk |
    |---|---------|----------|--------|
    | 1 | pemohon1 | Semak slot kosong → mohon A-04 | `TLK-…` baharu, badge *Menunggu*, sejarah 1 baris |
@@ -1692,7 +1691,7 @@ Menggunakan semula syarat pertindihan BR-TLK-01 dalam **JOIN** (bukan `NOT IN`) 
        }
    ```
 
-   > Lab 6.1 bertanya *"slot mana **tiada** tempahan?"* (`NOT IN`). Papan ini bertanya *"tempahan mana **menduduki** slot?"* (`JOIN`). Syarat pertindihan sama. Jadual `users` Shield juga ada lajur `status`, jadi setiap lajur ditulis dengan nama jadual (`slot_bookings.status`). `builder()` ialah Query Builder mentah: soft delete tidak ditapis automatik, jadi syarat `deleted_at` ditulis sendiri.
+   Lab 6.1 mencari slot yang **tiada** tempahan (`NOT IN`); papan ini mencari tempahan yang **menduduki** slot (`JOIN`) dengan syarat pertindihan yang sama. Setiap lajur ditulis dengan nama jadual kerana `users` Shield juga ada lajur `status`, dan syarat `deleted_at` ditulis sendiri kerana `builder()` mentah tidak mengecualikan soft delete.
 
 2. Route — dalam kumpulan `tlk/tempahan` (`app/Config/Routes.php`), terus selepas route `ketersediaan` dan **sebelum** `(:num)`:
 
@@ -1866,7 +1865,7 @@ Menggunakan semula syarat pertindihan BR-TLK-01 dalam **JOIN** (bukan `NOT IN`) 
 | `Undefined array key "zone_code"` dalam view | Alias `AS zone_code` tertinggal dalam `select()` | Salin semula `select()` langkah 1 |
 
 ### ⭐ Cabaran tambahan
-- Tambah penapis zon (`zone_id`) pada papan, sama seperti halaman slot kosong.
+- Tambah filter zon (`zone_id`) pada papan, sama seperti halaman slot kosong.
 - Paparkan juga slot aktif yang **kosong** sebagai baris kelabu di bawah jadual (panggil `availableSlots()` dengan julat yang sama), supaya pelulus nampak keseluruhan zon sekali pandang.
 
 ---
@@ -1919,7 +1918,7 @@ Menulis Spark command `php spark tlk:expire` yang menukar tempahan `approved` ya
        }
    ```
 
-   > `expire()` tidak membuka transaksi sendiri: `transition()` sudah mengunci baris tempahan, menyemak `canTransitionTo()`, mengemas kini status dan menulis log dalam satu transaksi. Semakan tarikh dibuat sebelum kunci kerana `end_date` tidak pernah berubah selepas tempahan dicipta; status pula disemak semula di bawah kunci.
+   `expire()` tidak membuka transaksi sendiri kerana `transition()` sudah mengunci baris, menyemak `canTransitionTo()`, mengemas kini status dan menulis log dalam satu transaksi. Tarikh disemak sebelum kunci (`end_date` tidak berubah); status disemak semula di bawah kunci.
 
 2. Cipta `app/Commands/ExpireBookingsCommand.php`:
 
@@ -2454,7 +2453,7 @@ Menulis ujian PHPUnit untuk peraturan baharu Lab 6.1b–6.2b — papan sibuk (st
    composer test -- --no-coverage --testdox tests/tlk/ExpireBookingTest.php
    ```
 
-   > `command('tlk:expire')` menjalankan command di dalam ujian (pada DB kumpulan `tests`). `CLI::write()` menulis ke `STDOUT`, bukan ke output PHP biasa, jadi `StreamFilterTrait` menangkapnya untuk `getStreamFilterBuffer()`.
+   `command('tlk:expire')` menjalankan command dalam ujian (DB kumpulan `tests`); `CLI::write()` menulis ke `STDOUT`, jadi `StreamFilterTrait` menangkapnya untuk `getStreamFilterBuffer()`.
 
 3. Jalankan kedua-dua fail bersama dan catat baris terakhir output (soalan Kuiz S7):
 

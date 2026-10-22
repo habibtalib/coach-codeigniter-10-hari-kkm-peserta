@@ -1,10 +1,8 @@
 # Day 10 Lab — Statistics (M4) & Capstone
 
-[← Day 10 README](./README.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [Schedule](../JADUAL.md) · [Capstone Rubric](../docs/rubrik-capstone.md) · [⚡ spark commands](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Schedule](../JADUAL.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module) · [Capstone Rubric](../docs/rubrik-capstone.md) · [⚡ spark commands](../docs/arahan-spark.md)
 
-> **Working branch:** `git switch main && git pull && git switch -c feat/statistik`; PowerShell: run `git switch main`, `git pull` and `git switch -c` one at a time
-> **Commit prefix:** `STAT:` (dashboard/cache) · `FIX:` (UAT bug fixes)
-> **Trainer reference code:** `templates/kod/` (**Templat & Rujukan** module) — `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt`.
+**Working branch:** `git switch main && git pull && git switch -c feat/statistik` (PowerShell: run them one at a time) · **Commit prefix:** `STAT:` (dashboard/cache), `FIX:` (UAT bug fixes) · **Reference code:** `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt` (**Templat & Rujukan** module)
 
 | Lab | Session | Duration | Outcome |
 |-----|------|--------|-------|
@@ -719,7 +717,7 @@ Places where it must go (in the Day 5–6 reference template):
 | `submit()` | `null → submitted` ("Pas menunggu" (Pending passes) +1) |
 | `transition()` (called by `startReview()`, `approve()`, `reject()`, `expire()`) | all other transitions, including `pas:expire` |
 
-> ✋ **Stop & think (2 min):** Why not inside the `try` block **before** `transCommit()`? Why not in the controller? Write your answer in the commit message. (Answer: README §2.4; the controller is not the only caller — the Spark command `pas:expire` does not go through a controller.)
+**Stop & think (2 min):** why not inside the `try` block **before** `transCommit()`, and why not in the controller? Write your answer in the commit message.
 
 **8. Run it again.**
 
@@ -790,7 +788,7 @@ git switch -c fix/bug-001-<ringkas>
 | d. Pass | That test is green **+** all of `composer test` is green | Terminal screenshot |
 | e. Commit | `git add app/ tests/ docs/ && git commit -m "FIX: <ringkasan> (BUG-001)"`; PowerShell: run `git add` and `git commit` one at a time → merge | Bug log: *Closed* |
 
-> **No bugs found?** The trainer will give you a "planted bug" (see the BUG-007 example in README §3.3). Practise the full cycle on that bug.
+No bugs found? The trainer will give you a "planted bug" (the BUG-007 example in README §3.3); practise the full cycle on it.
 
 **5. Security checklist K1–K10** (README §3.4), ~10 minutes. Tick K1–K10 yourself: run the evidence commands below (K2, K3, K4, K5, K7) and check the remaining Ks visually. The trainer then **spot-checks 3 Ks** on your machine — K3 always, plus 2 of the trainer's choice — so every tick must be provable on the spot.
 

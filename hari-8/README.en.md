@@ -293,7 +293,7 @@ $routes->group('pas/semakan', ['namespace' => 'App\Controllers\Pas', 'filter' =>
 | `authorize()` in the Service | **403** + `errors/forbidden` | Should not happen if the filters are correct — if it does, it signals a misconfigured route; a 403 is clear in the log |
 | `canView()` (someone else's record) | **404** | Do not reveal that the ID exists (Day 7) |
 
-> 💡 **Tip:** Want the Shield filters to return a clear page too? Change `permission_denied` and `group_denied` in `app/Config/Auth.php` to a route that shows a message, e.g. `'/akses-ditolak'`. Do not change files in `vendor/`.
+For a clearer refusal page, change `permission_denied` and `group_denied` in `app/Config/Auth.php` to a route that shows a message (e.g. `'/akses-ditolak'`); do not change files in `vendor/`.
 
 ### 2.5 Buttons: UX, not security
 
@@ -405,7 +405,6 @@ public function testPenyemakTidakBolehLuluskan(): void
 
 > ⚠️ **Common mistakes**
 > - Testing only the *happy path*. Access control bugs are almost **always** in the negative tests nobody wrote.
-> - Only `assertRedirect()` for negative tests — it passes even if the Service already changed the status before the redirect. Add a DB check.
 > - Sharing users between tests with `$migrateOnce`/`$refresh = false` → tests depend on their order.
 
 ### 🎯 Quiz S3

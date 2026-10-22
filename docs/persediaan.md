@@ -52,11 +52,11 @@ Pengalaman kursus lepas: **30–60 minit pertama hari koding pertama hilang** ke
 | macOS | **Laravel Herd** (PHP sahaja, ringan) atau `brew install php@8.3` |
 | Linux (Ubuntu) | `sudo apt install php8.3-cli php8.3-intl php8.3-mbstring php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml` |
 
-> Herd dan Laragon membawa PHP sendiri. Pastikan `php` dalam terminal ialah **PHP yang sama** yang anda jangka: `which php` (macOS/Linux/Git Bash) atau `where php` (Command Prompt).
+Herd dan Laragon membawa PHP sendiri. Pastikan `php` dalam terminal ialah **PHP yang sama** yang anda jangka: `which php` (macOS/Linux/Git Bash) atau `where php` (Command Prompt).
 
 ### Windows (Laragon) — langkah demi langkah
 
-> 🪟 **Windows:** semua blok `bash` dalam kursus ini dijalankan dalam **Git Bash**, bukan PowerShell. Pasang Git for Windows dan jadikan Git Bash terminal lalai VS Code (§5) **sebelum** langkah 5 di bawah.
+> ⚠️ **Windows:** semua blok `bash` dalam kursus ini dijalankan dalam **Git Bash**, bukan PowerShell. Pasang Git for Windows dan jadikan Git Bash terminal lalai VS Code (§5) **sebelum** langkah 5 di bawah.
 
 1. **Muat turun Laragon Full** dari <https://laragon.org/download>. Guna **Laragon 8.x terkini** (semakan Okt 2026: 8.7.0), satu pemasang `laragon-wamp.exe` (±229 MB) yang membawa PHP 8.1–8.5, MySQL 8.4/9.x, Apache, Nginx dan Composer. Pasang ke folder lalai `C:\laragon`.
 2. **Lesen.** Sejak versi 7, Laragon bukan lagi perisian percuma sepenuhnya. Penggunaan tanpa lesen dibenarkan untuk tujuan bukan komersial; tetingkap peringatan lesen dipaparkan setiap kali Laragon dimulakan — tutup sahaja. Untuk laptop jabatan, semak dengan unit ICT sama ada lesen diperlukan.
@@ -149,7 +149,7 @@ max_execution_time = 60
 date.timezone = Asia/Kuala_Lumpur
 ```
 
-> Kenapa `upload_max_filesize` lebih besar daripada 2 MB? Supaya **aplikasi** (validasi `max_size`) yang menolak fail 3 MB dengan mesej BM yang jelas — bukan PHP yang membuang fail secara senyap sebelum sampai ke controller.
+Kenapa `upload_max_filesize` lebih besar daripada 2 MB? Supaya **aplikasi** (validasi `max_size`) yang menolak fail 3 MB dengan mesej BM yang jelas — bukan PHP yang membuang fail secara senyap sebelum sampai ke controller.
 
 ---
 
@@ -166,7 +166,7 @@ Composer version 2.8.x 2025-xx-xx xx:xx:xx
 PHP version 8.3.12 (/path/to/php)
 ```
 
-> Pastikan baris *PHP version* menunjukkan **8.2+** — Composer mungkin menggunakan PHP lain daripada terminal anda.
+Pastikan baris *PHP version* menunjukkan **8.2+** — Composer mungkin menggunakan PHP lain daripada terminal anda.
 
 ```bash
 composer diagnose      # semua baris patut "OK" (amaran proksi boleh diabaikan jika tiada proksi)
@@ -253,9 +253,7 @@ mysql -u kkm_dev -p -e "SHOW DATABASES LIKE 'kkm_latihan%';"
 +--------------------------+
 ```
 
-> 🪟 **Windows:** dalam terminal VS Code (Git Bash), `mysql -p` bertanya kata laluan seperti biasa. Dalam tetingkap Git Bash berasingan (mintty), `mysql` boleh tergantung tanpa prompt — tambah `winpty` di hadapan: `winpty mysql -u kkm_dev -p`.
-
-> **Kenapa MySQL untuk ujian, bukan SQLite?** BR-TLK-05 memerlukan `SELECT … FOR UPDATE`, yang tidak disokong SQLite. Lihat [`nota-10-ujian-phpunit-ci4.md`](nota-10-ujian-phpunit-ci4.md).
+> ⚠️ **Windows:** dalam terminal VS Code (Git Bash), `mysql -p` bertanya kata laluan seperti biasa. Dalam tetingkap Git Bash berasingan (mintty), `mysql` boleh tergantung tanpa prompt — tambah `winpty` di hadapan: `winpty mysql -u kkm_dev -p`.
 
 Alat GUI (pilih satu): HeidiSQL (Laragon: butang **Database**), phpMyAdmin (perlu Apache Laragon), TablePlus, DBeaver, atau MySQL Workbench.
 
@@ -287,7 +285,7 @@ git config --global core.autocrlf input     # macOS/Linux; Windows: true
 git config --global core.editor "code --wait"   # mesej commit dibuka dalam VS Code, bukan Vim
 ```
 
-> Tanpa `core.editor`, Git membuka **Vim** untuk mesej commit (cth `git pull` yang mencipta commit merge). Terperangkap dalam Vim? Tekan `Esc`, taip `:wq`, tekan `Enter`.
+> ⚠️ **Kesilapan lazim:** tanpa `core.editor`, Git membuka **Vim** untuk mesej commit (cth `git pull` yang mencipta commit merge). Terperangkap dalam Vim? Tekan `Esc`, taip `:wq`, tekan `Enter`.
 
 ### VS Code — Git Bash sebagai terminal lalai (Windows)
 
@@ -307,7 +305,7 @@ Terminal lalai VS Code di Windows ialah PowerShell. Kebanyakan arahan kursus (`&
 
    Baris kosong, atau `$SHELL` dicetak semula? Anda masih dalam PowerShell/Command Prompt — ulang langkah 1–2.
 
-> Path dalam Git Bash: `C:\Users\ali\latihan` ditulis `/c/Users/ali/latihan`, dan `~` = `C:\Users\ali`.
+Path dalam Git Bash: `C:\Users\ali\latihan` ditulis `/c/Users/ali/latihan`, dan `~` = `C:\Users\ali`.
 
 ### VS Code — sambungan wajib & disyorkan
 
@@ -327,7 +325,7 @@ code --install-extension bierner.markdown-mermaid
 code --install-extension EditorConfig.EditorConfig
 ```
 
-> Nyahaktifkan extension PHP terbina VS Code (*PHP Language Features*) jika Intelephense memaparkan cadangan berganda.
+Nyahaktifkan extension PHP terbina VS Code (*PHP Language Features*) jika Intelephense memaparkan cadangan berganda.
 
 ---
 
@@ -342,7 +340,7 @@ php spark --version     # atau: php spark
 ```
 
 ```text
-CodeIgniter v4.6.x Command Line Tool - Server Time: 2026-xx-xx xx:xx:xx UTC+08:00
+CodeIgniter v4.7.x Command Line Tool - Server Time: 2026-xx-xx xx:xx:xx UTC+08:00
 ```
 
 ```bash
@@ -355,9 +353,9 @@ CodeIgniter development server started on http://localhost:8080
 Press Control-C to stop.
 ```
 
-Buka <http://localhost:8080> → halaman *Welcome to CodeIgniter 4.6.x*. ✅
+Buka <http://localhost:8080> → halaman *Welcome to CodeIgniter 4.7.x*. ✅
 
-> 🪟 **Windows:** cipta `.env` dengan `cp env .env` dalam Git Bash — **jangan** dengan Notepad (ia boleh menyimpan `.env.txt`). Hidupkan *File Explorer → View → Show → File name extensions* supaya nama penuh `.env` kelihatan. Sunting kandungannya dalam VS Code.
+> ⚠️ **Windows:** cipta `.env` dengan `cp env .env` dalam Git Bash — **jangan** dengan Notepad (ia boleh menyimpan `.env.txt`). Hidupkan *File Explorer → View → Show → File name extensions* supaya nama penuh `.env` kelihatan. Sunting kandungannya dalam VS Code.
 
 DB connection — sunting `.env`:
 

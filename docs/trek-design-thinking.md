@@ -21,7 +21,7 @@ Empathize → Define → Ideate → Prototype → Test
 | 4. Prototype | Hari 3 (bacaan: wireframe, [`rujukan-keperluan.md`](./rujukan-keperluan.md) Bahagian 3 S3) | 20 minit | `docs/dt/04-prototaip.md` |
 | 5. Test | Hari 3, selepas kelas · ulang pada Hari 10 S3 (UAT) | 40 minit | `docs/dt/05-ujian.md` |
 
-> **Di mana fail disimpan:** `docs/dt/` ialah folder dalam **repo anda sendiri** (`~/latihan/kelas-ci-<nama>/docs/dt/`, repo yang dicipta dalam Lab 2.2), **bukan** folder `docs/` halaman kursus ini. Commit dengan awalan `DOCS:`, cth `git commit -m "DOCS: DT persona & empathy map"`.
+**Di mana fail disimpan:** `docs/dt/` ialah folder dalam **repo anda sendiri** (`~/latihan/kelas-ci-<nama>/docs/dt/`, repo yang dicipta dalam Lab 2.2), **bukan** folder `docs/` halaman kursus ini. Commit dengan awalan `DOCS:`, cth `git commit -m "DOCS: DT persona & empathy map"`.
 
 Input utama ialah nota temu bual anda dengan pemilik sistem dalam persona (Puan Noraini untuk TLK, Encik Faizal untuk Pas) dalam `docs/temubual-tlk.md` dan `docs/temubual-pas.md`. Persona Design Thinking di bawah ialah **pengguna akhir rekaan** (pemohon, penyemak), bukan pemilik sistem. Semua nama dan data adalah **sintetik**.
 

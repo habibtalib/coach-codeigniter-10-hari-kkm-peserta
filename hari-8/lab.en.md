@@ -1,8 +1,6 @@
 # Day 8 Lab — Pass Module (2): Approval Flow, RBAC & Access Tests
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 8 Notes](./README.md) · [⚡ spark commands](../docs/arahan-spark.md)
-
-> Work **individually** in `kelas-ci-<nama>`; show your output to the trainer or the person next to you before ticking it off. Run every command from the **CI4 project root**. Every step gives **complete code to copy**. Read every line before you run it — you must be able to explain it (KOLABORASI §3). Stuck: read the full error message, ask the trainer or your neighbour, or use AI to *explain* the error.
+[⬅️ README](./README.md) · [Schedule](../JADUAL.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module) · [⚡ spark commands](../docs/arahan-spark.md)
 
 | Lab | Session | Time | Output |
 |-----|---------|------|--------|
@@ -623,7 +621,7 @@ Configure `AuthGroups` exactly as in SPEC §4, add a `permission:` filter per ac
        $routes->get('dokumen/(:num)', 'ApplicationController::download/$1', ['as' => 'pas.dokumen']);
    });
 
-   // CI 4.5+ MENGGABUNGKAN filter kumpulan dengan filter route.
+   // CI 4.5.4+ MENGGABUNGKAN filter kumpulan dengan filter route.
    $routes->group('pas/semakan', ['namespace' => 'App\Controllers\Pas', 'filter' => 'group:reviewer,approver,admin'], static function ($routes): void {
        $routes->get('/', 'ReviewController::index', ['as' => 'pas.semakan']);
        // Filter permission per tindakan — tanpanya, reviewer boleh POST ke /approve (group sahaja tidak cukup)
@@ -748,7 +746,7 @@ Show the `status_logs` history on the details page, and write a `PassAccessTest`
    $caseOf = static fn (?string $value) => $value === null ? null : $enum::tryFrom($value);
 
    // PassStatus::badge() memulangkan 'text-bg-info'; BookingStatus::badge() memulangkan 'warning'.
-   // Normalkan supaya partial ini benar-benar generik (TLK & PAS) — lihat penyelesaian/hari-8/README.md.
+   // Normalkan supaya partial ini benar-benar generik (TLK & PAS).
    $badgeClass = static fn (?object $case): string => $case === null
        ? 'text-bg-light'
        : (str_starts_with($case->badge(), 'text-bg-') ? $case->badge() : 'text-bg-' . $case->badge());

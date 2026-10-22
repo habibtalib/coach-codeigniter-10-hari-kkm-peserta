@@ -1,8 +1,8 @@
 # Day 1 Lab — Scope Chart, Interviews & Requirements List
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 1 README](./README.md)
+[⬅️ README](./README.md) · [Schedule](../JADUAL.md) · [SPEC canon](../docs/spesifikasi-sistem.md)
 
-> Every lab today produces **Markdown documents**, not code (except Lab 1.5 in S4: CI4 basics on Laragon). Every trainee does the **same** task individually and checks their own work against the SPEC.
+> ℹ️ Every lab today produces **Markdown documents**, not code (except Lab 1.5 in S4: CI4 basics on Laragon). Every trainee does the **same** task individually and checks their own work against the SPEC.
 
 | Lab | Session | Output |
 |-----|---------|--------|
@@ -24,7 +24,7 @@
    echo "# Sistem TLK & Pas — Dokumen Keperluan" > README.md
    git add . && git commit -m "SETUP: mula repo dokumen"
    ```
-   > Still in PowerShell? `&&` fails in Windows PowerShell 5.1, and `>` writes `README.md` as UTF-16 (Git and GitLab show it as garbled text). Switch to Git Bash, delete `README.md`, repeat.
+   > ⚠️ Still in PowerShell? `&&` fails in Windows PowerShell 5.1, and `>` writes `README.md` as UTF-16 (Git and GitLab show it as garbled text). Switch to Git Bash, delete `README.md`, repeat.
 2. Open the folder in VS Code. Install the **Markdown Preview Mermaid Support** extension (or use <https://mermaid.live>).
 
 ✅ **Checkpoint:** `git log --oneline` shows one commit `SETUP: mula repo dokumen`.
@@ -126,8 +126,7 @@ Run a 35-minute interview with the system owner (the trainer playing a persona),
    - ≥ 1 question about **who** approves
    - ≥ 1 question about the booking **duration**
    - ≥ 1 question about slot **types/categories**
-3. **Interview (35 min, whole class).** The trainer plays the system owner persona. Each trainee takes a turn to ask at least 1 question; everyone takes notes in their own file.
-   > Ground rule: the system owner answers **only** what is asked. Important information may be hidden behind follow-up questions.
+3. **Interview (35 min, whole class).** The trainer plays the system owner persona. Each trainee takes a turn to ask at least 1 question; everyone takes notes in their own file. The system owner answers **only** what is asked, so important information may be hidden behind follow-up questions.
 4. **Summarise (20 min).** Fill in the "Answer" column. Then fill in the **Pain points** table with ≥ 5 rows `PP-TLK-01`… Every pain point must have all four elements (who, problem, impact, requirement).
 5. In section **C. Rules discovered**, match your findings to the BRs in the SPEC:
    ```markdown
@@ -331,7 +330,7 @@ Run an empty CodeIgniter 4 project on a Windows laptop and build one MVC route (
    Open <http://localhost:8080/hello>.
 6. Explain the request flow to your neighbour: **Routes → Controller → View**. Full steps and explanation: [Skeleton tutorial — Part A](../docs/tutorial-rangka.en.md#part-a--ci4-basics-on-your-laptop-day-1).
 
-> `ci4-asas` is a practice project only and can be deleted. The real project is created inside the `sistem-tlk-pas` repo on Day 4, Lab 4.2.
+> ℹ️ `ci4-asas` is a practice project only and can be deleted. The real project is created inside the `sistem-tlk-pas` repo on Day 4, Lab 4.2.
 
 ### ✅ Checkpoint
 - [ ] `php spark serve` runs and <http://localhost:8080> shows the *Welcome to CodeIgniter* page.

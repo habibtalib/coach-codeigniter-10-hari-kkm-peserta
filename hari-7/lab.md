@@ -1,8 +1,6 @@
 # Lab Hari 7 — Modul Pas (1): Model, CRUD & Muat Naik Selamat
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 Nota Hari 7](./README.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
-
-> Kerja **individu** dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. Semua arahan dijalankan dari **akar projek CI4** anda (folder yang ada `spark`). Setiap langkah memberi **kod lengkap untuk disalin**. Baca setiap baris sebelum menjalankannya — anda mesti boleh menerangkannya (KOLABORASI §3). Buntu: baca mesej ralat penuh, tanya jurulatih atau rakan sebelah, atau guna AI untuk *menerangkan* ralat.
+[⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
@@ -10,7 +8,7 @@
 | 7.1 | S1 | 09:10–10:00 | Enum, Entity, 2 Model |
 | 7.1b | S5 | 10:00–10:30 | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` diuji dalam `php spark shell` |
 | 7.2 | S2 | 10:45–12:00 | Route, Service (`canView`), senarai & butiran |
-| 7.2b | S6 | 12:00–12:30 | Penapis `?pass_type=` + carian `?q=` (bukti kebocoran `orLike()` tanpa kurungan) |
+| 7.2b | S6 | 12:00–12:30 | Filter `?pass_type=` + carian `?q=` (bukti kebocoran `orLike()` tanpa kurungan) |
 | 7.3 | S3 | 14:30–15:30 | Borang + validasi + muat naik + muat turun |
 | 7.3b | S7 | 15:30–16:00 | Tambah dokumen susulan (maks. 3 setiap permohonan, kunci `FOR UPDATE`) |
 | 7.4 | S4 | 16:00–16:35 | 17 kes ujian sempadan direkod |
@@ -1211,7 +1209,7 @@ Membina borang permohonan dengan 1–3 dokumen yang disimpan secara selamat (BR-
 
    Sebelum meneruskan, terangkan dengan lisan kepada jurulatih atau rakan sebelah: *"Kenapa fail dipindah SEBELUM `transBegin()`, dan apa yang berlaku kepada fail jika `record()` gagal?"*
 
-2. **Tambah `new()`, `create()`, `download()`, `rules()`, `uploadedFiles()`** dalam `ApplicationController` — gantikan seluruh kandungan fail dengan versi lengkap Hari 7 di bawah. `index()` kekal seperti Lab 7.2b (penapis jenis + carian); `show()`, `findVisibleOr404()` dan `protected $helpers = ['form', 'url'];` kekal seperti Lab 7.2.
+2. **Tambah `new()`, `create()`, `download()`, `rules()`, `uploadedFiles()`** dalam `ApplicationController` — gantikan seluruh kandungan fail dengan versi lengkap Hari 7 di bawah. `index()` kekal seperti Lab 7.2b (filter jenis + carian); `show()`, `findVisibleOr404()` dan `protected $helpers = ['form', 'url'];` kekal seperti Lab 7.2.
 
    `app/Controllers/Pas/ApplicationController.php`
 
@@ -1813,7 +1811,7 @@ Menambah tiga kaedah baharu pada kod Lab 7.1 dengan corak yang sama (`match`, ka
 ## Lab 7.2b — Penapis Jenis & Carian pada "Permohonan Saya" (S6)
 
 ### 🎯 Objektif
-Menambah penapis `?pass_type=` dan carian `?q=` (no. rujukan atau tujuan) pada `/pas/permohonan` melalui skop Model, membuktikan bahawa `orLike()` tanpa `groupStart()` membocorkan permohonan orang lain (BR-PAS-04), dan memaparkan ikon jenis serta tempoh sah (Lab 7.1b).
+Menambah filter `?pass_type=` dan carian `?q=` (no. rujukan atau tujuan) pada `/pas/permohonan` melalui skop Model, membuktikan bahawa `orLike()` tanpa `groupStart()` membocorkan permohonan orang lain (BR-PAS-04), dan memaparkan ikon jenis serta tempoh sah (Lab 7.1b).
 
 ### Prasyarat
 - 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
@@ -1897,7 +1895,7 @@ Menambah penapis `?pass_type=` dan carian `?q=` (no. rujukan atau tujuan) pada `
        }
    ```
 
-4. **View.** Gantikan seluruh kandungan `app/Views/pas/index.php`. Berbanding Lab 7.2: dua medan penapis baharu, pautan *Set semula*, kiraan `$pager->getTotal()`, ikon jenis dan bilangan hari tempoh sah:
+4. **View.** Gantikan seluruh kandungan `app/Views/pas/index.php`. Berbanding Lab 7.2: dua medan filter baharu, pautan *Set semula*, kiraan `$pager->getTotal()`, ikon jenis dan bilangan hari tempoh sah:
 
    ```php
    <?= $this->extend('layouts/main') ?>
@@ -2008,14 +2006,14 @@ Menambah penapis `?pass_type=` dan carian `?q=` (no. rujukan atau tujuan) pada `
 
    Muat semula `?q=sintetik` sebagai `pemohon2`: kini **1** permohonan (`PAS-2026-9002`). Tab Database menunjukkan `AND ( … LIKE … OR … LIKE … )`.
 
-7. **Uji penapis sebagai `pemohon1`.** Catat nombor rujukan dan kiraan bagi setiap URL:
+7. **Uji filter sebagai `pemohon1`.** Catat nombor rujukan dan kiraan bagi setiap URL:
 
    | URL | Semak |
    |-----|-------|
    | `/pas/permohonan` | 4 permohonan; lajur Jenis berikon; `PAS-2026-9005` → `(1 hari)` |
    | `/pas/permohonan?pass_type=kontraktor&q=blok` | Soalan Kuiz S6 |
    | `/pas/permohonan?q=BLOK` | Huruf besar/kecil — collation `utf8mb4_unicode_ci` (Hari 3) |
-   | `/pas/permohonan?status=approved&pass_type=kontraktor` | Dua penapis serentak (status + jenis) |
+   | `/pas/permohonan?status=approved&pass_type=kontraktor` | Dua filter serentak (status + jenis) |
    | `/pas/permohonan?pass_type=vip&q[]=x` | Tiada ralat; senarai penuh (input asing diabaikan) |
 
 8. **Tempoh sah di halaman butiran.** Dalam `app/Views/pas/show.php`, gantikan pasangan `<dt>Tempoh sah</dt>` + `<dd>…</dd>` dengan blok di bawah. Buka `PAS-2026-9004` (`approved`): badge *Baki N hari* muncul; pada `PAS-2026-9001` (`submitted`) tiada badge.

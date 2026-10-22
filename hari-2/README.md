@@ -76,8 +76,6 @@ Keputusan lisan **hilang**. Keputusan bertulis boleh dirujuk semasa pertikaian H
 | D-03 | | FR-PAS-xx (notifikasi SMS) | ❌ Ditolak | Tiada bajet; pemohon semak status melalui sistem → Won't | Puan Noraini |
 | D-04 | | Q-04 (tempoh simpanan dokumen) | ⏸️ Ditangguh | Encik Faizal rujuk pegawai rekod; tidak menyekat pembangunan | Encik Faizal, tarikh akhir Hari 8 |
 
-> 💡 **Tip:** Keputusan "Ditangguh" yang tiada tarikh akhir akan kekal tertangguh selamanya. Sentiasa tulis **siapa** dan **bila**.
-
 ### 1.3 Menyelesaikan kekaburan
 
 Semasa pengesahan, cari kata-kata kabur dan gantikan dengan nilai konkrit:
@@ -128,7 +126,7 @@ Selepas URS v1.0 ditandatangani (petang ini), sebarang perubahan melalui **permo
 
 | Perkara | Nilai |
 |---------|-------|
-| Pelayan GitLab | `https://<gitlab-kkm>` |
+| Server GitLab | `https://<gitlab-kkm>` |
 | Nama projek | `kelas-ci-<nama>` (huruf kecil, tanpa ruang) |
 | Visibility | **Private** |
 | Ahli | Jurulatih sebagai **Reporter** (boleh baca, tidak boleh push) |

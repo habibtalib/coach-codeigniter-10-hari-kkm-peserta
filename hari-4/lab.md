@@ -1,6 +1,6 @@
 # Lab Hari 4 — Development Kickoff
 
-[⬅️ README Hari 4](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · [🤝 KOLABORASI](../docs/kolaborasi.md) · 🧩 Template kod (modul **Templat & Rujukan**) · [⚡ Arahan spark](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [KOLABORASI](../docs/kolaborasi.md) · 🧩 Template kod (modul **Templat & Rujukan**) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 > **Peraturan lab:** Setiap langkah memberi **kod lengkap untuk disalin**. Baca setiap baris sebelum menjalankannya — anda mesti boleh menerangkannya (KOLABORASI §3). Buntu: baca mesej ralat penuh, tanya jurulatih atau rakan sebelah, atau guna AI untuk *menerangkan* ralat.
 
@@ -119,8 +119,6 @@ Menyediakan ujian (`composer test`) dalam projek `kelas-ci-<nama>`, menyemak `.e
    ls app public writable spark
    ```
 
-   > Versi 4.7.x dipasang? Tidak mengapa — kursus memerlukan **4.6+**.
-
    Commit: `git add composer.json phpunit.dist.xml && git commit -m "SETUP: composer test tanpa coverage"` (PowerShell: jalankan `git add` dan `git commit` satu demi satu).
 
 **B. `.env`**
@@ -145,7 +143,7 @@ Menyediakan ujian (`composer test`) dalam projek `kelas-ci-<nama>`, menyemak `.e
    database.default.DBCollat = utf8mb4_unicode_ci
    ```
 
-   > Port 8080 sudah digunakan aplikasi lain? Tukar **dua-dua** tempat: `app.baseURL = 'http://localhost:8081/'` dalam `.env` dan `php spark serve --port 8081`. Jika hanya port ditukar, `base_url()`, pautan dan redirect Shield masih menuju `:8080`.
+   > ⚠️ Port 8080 sudah digunakan aplikasi lain? Tukar **dua-dua** tempat: `app.baseURL = 'http://localhost:8081/'` dalam `.env` dan `php spark serve --port 8081`. Jika hanya port ditukar, `base_url()`, pautan dan redirect Shield masih menuju `:8080`.
 
 4. Sahkan `.env` diabaikan Git:
 
@@ -324,9 +322,7 @@ Menyediakan ujian (`composer test`) dalam projek `kelas-ci-<nama>`, menyemak `.e
     <?php endif ?>
     ```
 
-    > Konvensyen flash kursus: `success` (TLK) dan `message` (Pas, Hari 7–8) = mesej berjaya (hijau); `error` = merah. Partial ini memaparkan kedua-dua kunci berjaya supaya controller Pas berfungsi tanpa ubah suai.
-    >
-    > Ralat validasi **per medan** tidak diletak di sini. Borang memaparkannya dengan `validation_show_error('medan')` (Hari 5), dibawa oleh `redirect()->back()->withInput()`.
+    Kunci `success` (TLK) dan `message` (Pas, Hari 7–8) dipapar hijau, `error` merah. Ralat validasi **per medan** tidak di sini — borang memaparkannya dengan `validation_show_error('medan')` (Hari 5).
 
 13. Cipta `app/Views/layouts/main.php` — kerangka minimum (Hari 6 S4 kita akan menggilapnya):
 
@@ -361,7 +357,7 @@ Menyediakan ujian (`composer test`) dalam projek `kelas-ci-<nama>`, menyemak `.e
     </html>
     ```
 
-    > Tiada internet di makmal? Muat turun `bootstrap.min.css`, `bootstrap.bundle.min.js` dan folder `bootstrap-icons/font` ke `public/assets/` dan tukar `href` kepada `base_url('assets/…')`.
+    > ℹ️ Tiada internet di makmal? Muat turun `bootstrap.min.css`, `bootstrap.bundle.min.js` dan folder `bootstrap-icons/font` ke `public/assets/` dan tukar `href` kepada `base_url('assets/…')`.
 
 14. Cipta `app/Views/home.php`:
 
@@ -514,7 +510,7 @@ Melengkapkan 10 migration spesifikasi §3 (2 dari Lab 3.2 + 8 baharu, dengan FK,
    php spark migrate
    ```
 
-5. Isi 7 migration selebihnya dengan kod di bawah (berdasarkan [`erd-rujukan.md`](../docs/erd-rujukan.md) dan spesifikasi §3). Gantikan seluruh kandungan setiap fail yang dijana `make:migration`; nama kelas sudah sepadan. Jana dan isi **satu fail pada satu masa**, mengikut tertib ini (jangan jana semua dahulu — `php spark migrate` dalam petua ⏱️ di bawah akan menjalankan fail yang masih kosong):
+5. Isi 7 migration selebihnya dengan kod di bawah (berdasarkan [`erd-rujukan.md`](../docs/erd-rujukan.md) dan spesifikasi §3). Gantikan seluruh kandungan setiap fail yang dijana `make:migration`; nama kelas sudah sepadan. Jana dan isi **satu fail pada satu masa**, mengikut tertib ini (jangan jana semua dahulu — `php spark migrate` akan menjalankan fail yang masih kosong):
 
    ```bash
    php spark make:migration CreateParkingSlotsTable
@@ -809,7 +805,7 @@ Melengkapkan 10 migration spesifikasi §3 (2 dari Lab 3.2 + 8 baharu, dengan FK,
    }
    ```
 
-   > ⏱️ Jalankan `php spark migrate` selepas setiap satu atau dua fail supaya ralat FK mudah dikesan. Selepas semuanya siap, terangkan satu FK dan satu `ON DELETE` kepada jurulatih.
+   Jalankan `php spark migrate` selepas setiap satu atau dua fail supaya ralat FK mudah dikesan. Selepas semuanya siap, terangkan satu FK dan satu `ON DELETE` kepada jurulatih.
 
 6. Jalankan semua:
 
@@ -1106,9 +1102,7 @@ Menolak commit `SETUP:` yang bersih ke GitLab, menulis pelan kerja anda, mencuba
    git commit -m "SETUP: 8 migration SPEC §3 + seeder sintetik"
    ```
 
-   > `writable` di-commit untuk mengekalkan struktur folder sahaja: subfolder `cache/`, `logs/`, `session/`, `uploads/`, `debugbar/` hanya mengandungi `index.html` (`.gitignore` appstarter mengabaikan fail lain), jadi log dan sesi tidak ikut di-commit. Tanpanya, klon baharu (langkah 6) tiada `writable/` dan gagal.
-
-   > Versi CI 4.6 menamakan fail ujian `phpunit.xml.dist`; 4.7+ `phpunit.dist.xml`. Corak `phpunit*.dist*` menambah yang wujud.
+   `writable` di-commit hanya untuk struktur folder — subfolder di dalamnya mengandungi `index.html` sahaja (`.gitignore` appstarter mengabaikan fail lain), jadi log dan sesi tidak ikut; tanpanya klon baharu (langkah 6) gagal. Corak `phpunit*.dist*` menambah fail ujian yang wujud (`phpunit.xml.dist` pada 4.6, `phpunit.dist.xml` pada 4.7+).
 
 3. Push ke GitLab:
 
@@ -1344,7 +1338,7 @@ Memasang filter Shield `session` dan `permission:admin.access` pada route Hari 3
    service('auth')->routes($routes);
    ```
 
-   > `permission:admin.access` bertanya "*apa* yang anda boleh buat?". Hanya group `admin` mempunyainya (`admin.*` dalam `$matrix`). Filter yang sama pada GET (borang) **dan** POST (simpan) — jika POST tidak dilindungi, sesiapa yang log masuk boleh menghantar borang terus.
+   Filter yang sama pada GET (borang) **dan** POST (simpan) — jika POST tidak dilindungi, sesiapa yang log masuk boleh menghantar borang terus.
 3. Sahkan:
 
    ```bash tab="Git Bash / macOS / Linux"

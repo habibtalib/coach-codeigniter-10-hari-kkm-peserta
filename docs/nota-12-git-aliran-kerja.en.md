@@ -1,6 +1,6 @@
 # 12 · Git — One Branch, One Feature Workflow
 
-> Topical notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Working agreement: [`docs/kolaborasi.md`](kolaborasi.md) · Index: [`README.md`](./nota.md)
+Topical notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Working agreement: [`docs/kolaborasi.md`](kolaborasi.md) · Index: [`README.md`](./nota.md)
 
 ## Note objectives
 
@@ -52,7 +52,7 @@ git config --global pull.rebase false                         # pull = merge (ea
 git config --global core.editor "code --wait"                 # commit messages open in VS Code, not Vim
 ```
 
-> Without `core.editor`, `git commit` without `-m`, `git commit --amend` and a `git pull` that creates a merge commit open **Vim** in the terminal. Stuck in Vim? Press `Esc`, type `:wq`, press `Enter` (save & quit). With `code --wait`, Git opens a VS Code tab — edit the message, save, **close that tab** to continue.
+With `code --wait`, Git opens a VS Code tab for the commit message — edit, save, **close that tab** to continue. Stuck in Vim? See [`persediaan.md`](persediaan.md) §5.
 
 ### `.gitignore` — what must NOT go into Git
 
@@ -231,9 +231,7 @@ $routes->group('pas/permohonan', ['filter' => 'session'], static function ($rout
 
 If you get confused and want to start again: `git merge --abort`.
 
-**Reducing conflicts:** pull `main` often; split `Routes.php` into blocks per module with marker comments (`// ── TLK ──`, `// ── PAS ──`); don't reformat the whole file in a feature commit.
-
-> Migration conflicts: don't edit a migration that has already been run (on another laptop or on the server) — create a **new** migration (`php spark make:migration AddXToY`).
+**Reducing conflicts:** pull `main` often; split `Routes.php` into blocks per module with marker comments (`// ── TLK ──`, `// ── PAS ──`); don't reformat the whole file in a feature commit. Never edit a migration that has already been run — create a **new** one (`php spark make:migration AddXToY`).
 
 ---
 
@@ -249,7 +247,7 @@ If you get confused and want to start again: `git merge --abort`.
 | Undo a commit that has been pushed (safe) | `git revert <hash>` |
 | Committed on `main` by mistake (not yet pushed) | `git switch -c feat/nama-betul` → `git switch main` → `git reset --hard origin/main` |
 
-> `reset --hard` deletes local changes that have not been committed — check `git status` first.
+> ⚠️ **Warning:** `reset --hard` deletes local changes that have not been committed — check `git status` first.
 
 ---
 

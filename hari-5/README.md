@@ -143,7 +143,7 @@ stateDiagram-v2
 | `->value` | enum → DB | `'status' => BookingStatus::Pending->value` |
 | `->label()` / `->badge()` | enum → UI | View |
 
-> ⚠️ **Kesilapan lazim:** Menyimpan label BM (`'Diluluskan'`) dalam DB. DB menyimpan **nilai** (`approved`); label hanya di UI. Jika pemilik sistem minta tukar "Diluluskan" → "Lulus", hanya satu baris `label()` berubah.
+DB menyimpan **nilai** (`approved`), bukan label BM (`'Diluluskan'`) — label hanya di UI, jadi menukar "Diluluskan" → "Lulus" hanya mengubah satu baris `label()`.
 
 `SlotCategory` mengikut corak sama dengan 5 kes (`oku`, `mengandung`, `pegawai_kanan`, `kenderaan_rasmi`, `pelawat_vip`) + `label()`, `icon()` (Bootstrap Icons) dan `options()` untuk dropdown.
 
@@ -179,9 +179,7 @@ class SlotBooking extends Entity
 }
 ```
 
-Dalam view: `<?= esc($booking->statusLabel()) ?>` — bukan `if ($booking->status == 'approved') echo 'Diluluskan'` bertaburan.
-
-> 💡 **Tip:** `start_date`/`end_date` **tidak** dimasukkan ke `$dates` — lajur DATE lebih mudah dibanding sebagai string `'Y-m-d'` dan terus dihantar semula ke `<input type="date">`.
+Dalam view: `<?= esc($booking->statusLabel()) ?>` — bukan `if ($booking->status == 'approved') echo 'Diluluskan'` bertaburan. `start_date`/`end_date` sengaja **tidak** dalam `$dates`: sebagai string `'Y-m-d'` ia mudah dibanding dan terus diisi semula ke `<input type="date">`.
 
 ### 1.3 Model — pintu pangkalan data yang berdisiplin
 
@@ -231,8 +229,6 @@ class SlotBookingModel extends Model
 | `listing()` pulangkan `static` | Boleh dirantai: `$model->listing()->where('slot_bookings.user_id', $id)->paginate(10)` |
 
 `ParkingSlotModel` pula menggunakan `$useSoftDeletes = true` (SPEC: `parking_slots.deleted_at`) — `delete($id)` hanya mengisi `deleted_at`; `find()`/`findAll()` automatik menyembunyikan baris itu.
-
-> ⚠️ **Kesilapan lazim:** `is_unique[parking_slots.slot_no]` untuk UNIQUE(`zone_id`,`slot_no`). Peraturan `is_unique` CI4 hanya menyemak **satu** lajur — `A-01` di zon B akan ditolak secara salah. Semakan komposit dibuat dalam `ParkingSlotModel::isSlotNoTaken($zoneId, $slotNo, $ignoreId)`.
 
 ### 🎯 Kuiz S1
 
@@ -358,8 +354,6 @@ public function index(): string
 
 Dalam view: `<?= $pager->links() ?>` menghasilkan pautan `?page=2` (gaya Bootstrap ditambah pada Hari 6 S4). Filter `status` dikekalkan kerana pager membawa query string semasa.
 
-> ⚠️ **Kesilapan lazim:** Menapis pemilik dalam **view** (`if ($b->user_id == auth()->id())`). Rekod orang lain masih diambil dari DB, pagination salah, dan JSON/eksport kemudian akan membocorkan data. Tapis dalam **query**.
-
 ### 🎯 Kuiz S2
 
 1. Kenapa `SlotController` memulangkan `redirect()` selepas POST berjaya (corak Post/Redirect/Get)?
@@ -394,7 +388,7 @@ Dalam view: `<?= $pager->links() ?>` menghasilkan pautan `?page=2` (gaya Bootstr
 
 BR-TLK-03 ialah kes sempadan: ia disemak di **kedua-dua** lapisan — borang memberi mesej mesra di bawah medan; Service mempertahankan peraturan walaupun dipanggil dari tempat lain (ujian, Spark command).
 
-> 📌 **Takrif kanun BR-TLK-03:** `end_date >= start_date`; `start_date` boleh **hari ini** (bukan semalam); dan `(end_date − start_date) ≤ 90` hari — iaitu ditolak jika `diff()->days > 90`. Tempahan satu hari (`end_date = start_date`) dibenarkan.
+Takrif kanun BR-TLK-03: `end_date >= start_date`; `start_date` boleh **hari ini** (bukan semalam); dan `(end_date − start_date) ≤ 90` hari, iaitu ditolak jika `diff()->days > 90`. Tempahan satu hari (`end_date = start_date`) dibenarkan.
 
 ### 3.2 Peraturan validasi tersuai
 
@@ -446,9 +440,9 @@ $rules = [
 
 Mesej BM dihantar sebagai argumen kedua `$this->validate($rules, $messages)`. Dalam view, `validation_show_error('start_date')` memaparkan ralat medan itu, dan `old('start_date')` mengisi semula nilai.
 
-> ⚠️ **Kesilapan lazim:** `<input type="date" min="…">` dianggap "sudah validasi". Atribut HTML boleh dibuang dengan DevTools dalam 5 saat. **Validasi server wajib** (KOLABORASI DoD).
+> ⚠️ **Amaran:** `<input type="date" min="…">` bukan validasi — atribut HTML boleh dibuang dengan DevTools dalam 5 saat. **Validasi server wajib** (KOLABORASI DoD).
 
-> ⚠️ **Kesilapan lazim:** Menerima `user_id` daripada borang (`<input type="hidden" name="user_id">`). Pemohon boleh menukarnya dan memohon bagi pihak orang lain. `user_id` **sentiasa** `auth()->id()`.
+> ⚠️ **Amaran:** Jangan terima `user_id` daripada borang (`<input type="hidden" name="user_id">`) — pemohon boleh menukarnya dan memohon bagi pihak orang lain. `user_id` **sentiasa** `auth()->id()`.
 
 ### 3.3 Nombor rujukan — kenapa bukan `COUNT(*) + 1`?
 
@@ -654,8 +648,6 @@ Senarai penuh ±14 kes dalam [Lab 5.4](./lab.md#lab-54--ujian-manual--rekod-pepi
 - **Sebenar:** "The zone_id field is required."
 - **Keterukan:** Rendah (kosmetik) · **Status:** Dibaiki (commit a1b2c3d)
 ```
-
-> 💡 **Tip:** Jika anda tidak boleh menulis **langkah untuk menghasilkan semula**, ia belum laporan pepijat — ia khabar angin. Kitaran KOLABORASI §3: *reproduce → ujian gagal → baiki → ujian lulus*.
 
 ### 🎯 Kuiz S4
 

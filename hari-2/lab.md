@@ -1,6 +1,6 @@
 # Lab Hari 2 — Pengesahan Keperluan & Projek CI Anda di GitLab
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 README Hari 2](./README.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 | Lab | Sesi | Hasil |
 |-----|------|-------|
@@ -9,7 +9,7 @@
 | [Lab 2.3](#lab-23--route-controller--layout-view-s3) | S3 | `/hello`, `/hello/<nama>`, `layout.php`; 2 commit di-push |
 | [Lab 2.4](#lab-24--borang-validation--csrf-s4) | S4 | Borang `/daftar` + validation + CSRF; commit di-push |
 
-> Mulai Lab 2.2 semua kerja dalam projek **individu** `kelas-ci-<nama>`. Lab carta alir, acceptance criteria dan URS yang asal kini bacaan pilihan dalam [`docs/rujukan-keperluan.md`](../docs/rujukan-keperluan.md).
+> ℹ️ Mulai Lab 2.2 semua kerja dalam projek **individu** `kelas-ci-<nama>`. Lab carta alir, acceptance criteria dan URS yang asal kini bacaan pilihan dalam [`docs/rujukan-keperluan.md`](../docs/rujukan-keperluan.md).
 
 ---
 
@@ -175,7 +175,7 @@ Membina aliran MVC dalam `kelas-ci-<nama>`: route → controller → view, route
 - [Lab 2.2](#lab-22--projek-ci-anda-di-gitlab-s2) siap: commit pertama kelihatan di GitLab.
 - Dua terminal Git Bash dalam folder `~/latihan/kelas-ci-<nama>`: satu untuk `php spark serve`, satu untuk Git.
 
-> 🔍 **Bukti kerja:** platform menanda checkpoint lab ini apabila anda **lulus Kuiz hari** — soalannya hanya boleh dijawab dengan menjalankan kod. Jurulatih juga membuka repo GitLab anda secara rawak.
+Checkpoint lab ini ditanda apabila anda lulus Kuiz hari, yang hanya boleh dijawab dengan menjalankan kod; jurulatih juga membuka repo GitLab anda secara rawak.
 
 ### Langkah
 1. **Route → controller → view pertama.** Tambah dalam `app/Config/Routes.php`:

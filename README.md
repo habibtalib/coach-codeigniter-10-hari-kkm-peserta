@@ -25,16 +25,16 @@ Peta kursus ([`JADUAL.md`](./JADUAL.md) § Ringkasan fasa):
 
 | Anda… | Buka |
 |-------|------|
-| Jurulatih | [`JADUAL.md`](./JADUAL.md) → `hari-N/nota-penceramah.md` → [`slides/`](./slides/) |
 | Peserta | [`docs/persediaan.md`](./docs/persediaan.md) → `hari-N/README.md` → `hari-N/lab.md` |
+| Untuk jurulatih | [`JADUAL.md`](./JADUAL.md) → `hari-N/nota-penceramah.md` → [`slides/`](./slides/) |
 
 ## Setiap hari mengandungi
 
 | Fail | Isi |
 |------|-----|
-| `README.md` | 🎯 **Objektif pembelajaran boleh diukur** (ditag S1–S4) · jadual ikut tentatif · nota konsep setiap sesi · hasil hari · semakan kendiri |
+| `README.md` | 🎯 **Objektif pembelajaran boleh diukur** (ditag S1–S4 pada Hari 1–2 dan 10; S1–S8 pada Hari 3–9) · jadual ikut tentatif · nota konsep setiap sesi · hasil hari · semakan kendiri |
 | `lab.md` | 🎯 Objektif → Prasyarat → langkah bernombor → ✅ Checkpoint → 🧯 Masalah lazim → ⭐ Cabaran |
-| `nota-penceramah.md` | Pecahan masa minit-demi-minit, mesej utama, soalan, salah faham lazim, pelan kejar |
+| `nota-penceramah.md` (jurulatih sahaja) | Pecahan masa minit-demi-minit, mesej utama, soalan, salah faham lazim, pelan kejar |
 
 ## Apa yang baharu berbanding edisi 15 hari
 
@@ -56,7 +56,7 @@ JADUAL.md  CLAUDE.md
 hari-1/ … hari-10/     README.md · lab.md · nota-penceramah.md
 docs/nota-NN-*.md      nota topikal (MVC, migration, model/enum, validasi, transaksi, Shield, upload, laporan, cache, ujian, keselamatan, Git)
 templates/dokumen/     URS, acceptance criteria, kamus data, kes ujian, UAT sign-off
-templates/kod/         kod rujukan jurulatih (*.php.txt) — kunci jawapan
+templates/kod/         kod rujukan / templat (*.php.txt) — modul Templat & Rujukan
 docs/                  persediaan, repo kelas-ci (trek-gitlab), ERD rujukan, pustaka prompt, rubrik capstone, glosari
 slides/                ci-kkm-10.html (buka terus dalam pelayar)
 ```

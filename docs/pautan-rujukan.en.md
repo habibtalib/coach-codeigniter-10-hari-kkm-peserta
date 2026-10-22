@@ -1,7 +1,7 @@
 # Official Reference Links — by day
 
-> All links checked in September 2026. CodeIgniter documentation refers to the **latest 4.x version** (compatible with 4.6+). If an example in the documentation differs from the course notes, **docs/spesifikasi-sistem.md decides the names**, and the official documentation decides the **API**.
-> Topic notes: [`nota.md`](nota.md)
+All links checked in September 2026. CodeIgniter documentation refers to the **latest 4.x version** (compatible with 4.6+). If an example in the documentation differs from the course notes, **docs/spesifikasi-sistem.md decides the names**, and the official documentation decides the **API**.
+Topic notes: [`nota.md`](nota.md)
 
 ## Core references (keep open throughout the course)
 
@@ -14,7 +14,7 @@
 | Mermaid | <https://mermaid.js.org/intro/> |
 | OWASP Top 10 | <https://owasp.org/Top10/> |
 
-> Tip: in the CI4 User Guide, use the search box at the top left. Make sure the page is not for **CodeIgniter 3** (`codeigniter.com/userguide3/`).
+> 💡 **Tip:** in the CI4 User Guide, use the search box at the top left. Make sure the page is not for **CodeIgniter 3** (`codeigniter.com/userguide3/`).
 
 ---
 

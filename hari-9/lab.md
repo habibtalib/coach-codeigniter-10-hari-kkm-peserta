@@ -1,9 +1,8 @@
 # Lab Hari 9 — Modul Laporan (M3)
 
-[← README Hari 9](./README.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [Jadual](../JADUAL.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
-> **Branch kerja:** `git switch main && git pull && git switch -c feat/laporan`; PowerShell: jalankan `git switch main`, `git pull` dan `git switch -c` satu demi satu
-> **Prefix commit:** `RPT:` · Setiap langkah memberi **kod lengkap untuk disalin**. Baca setiap baris sebelum menjalankannya — anda mesti boleh menerangkannya (KOLABORASI §3). Buntu: baca mesej ralat penuh, tanya jurulatih atau rakan sebelah, atau guna AI untuk *menerangkan* ralat.
+**Branch kerja:** `git switch main && git pull && git switch -c feat/laporan` (PowerShell: jalankan satu demi satu) · **Prefix commit:** `RPT:`
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
@@ -322,15 +321,13 @@ $selected = static fn ($current, $value): string => (string) $current === (strin
 <?= $this->endSection() ?>
 ```
 
-**5. Tambah pautan menu** dalam `app/Views/layouts/main.php` hanya jika pengguna ada kebenaran. Letak dalam `<ul class="navbar-nav me-auto">`, terus sebelum `</ul>` penutupnya:
+**5. Tambah pautan menu** dalam `app/Views/layouts/main.php` hanya jika pengguna ada kebenaran (kemudahan UI sahaja — kawalan sebenar ialah filter route di langkah 2). Letak dalam `<ul class="navbar-nav me-auto">`, terus sebelum `</ul>` penutupnya:
 
 ```php
 <?php if (auth()->loggedIn() && auth()->user()->can('laporan.view')): ?>
     <li class="nav-item"><a class="nav-link" href="<?= url_to('laporan.tempahan') ?>">Laporan</a></li>
 <?php endif ?>
 ```
-
-> Menyembunyikan menu hanyalah **kemudahan UI**. Kawalan sebenar ialah filter route di langkah 2.
 
 **6. Commit.** `git add -A && git commit -m "RPT: laluan, controller rangka & borang penapis GET"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 

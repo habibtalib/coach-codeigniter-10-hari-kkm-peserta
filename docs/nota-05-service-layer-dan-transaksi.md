@@ -1,6 +1,6 @@
 # 05 · Service Layer, Transaksi & Keadaan Perlumbaan
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -65,7 +65,7 @@ class BookingController extends BaseController
 }
 ```
 
-> Yang penting ialah **empat langkah**: validasi → service → tangkap ralat domain → redirect. Controller tidak menyentuh `db_connect()` langsung.
+Yang penting ialah **empat langkah**: validasi → service → tangkap ralat domain → redirect. Controller tidak menyentuh `db_connect()` langsung.
 
 ### Daftar Service dalam `app/Config/Services.php`
 
@@ -180,7 +180,7 @@ if ($db->transStatus() === false) {
 }
 ```
 
-> **Ingat:** transaksi hanya berkesan pada enjin **InnoDB** (SPEC §1). Jadual MyISAM mengabaikan transaksi secara senyap.
+> ⚠️ **Amaran:** transaksi hanya berkesan pada enjin **InnoDB** (SPEC §1). Jadual MyISAM mengabaikan transaksi secara senyap.
 
 ---
 
@@ -336,7 +336,7 @@ public function hasOverlap(int $slotId, string $start, string $end, ?int $exclud
 }
 ```
 
-> **Semasa meluluskan** (`DecisionController` → `BookingService::approve()`), ulang corak yang sama: kunci baris slot `FOR UPDATE`, semak pertindihan dengan `status = approved` sahaja (abaikan rekod sendiri), kemudian kemas kini + `status_logs`.
+**Semasa meluluskan** (`DecisionController` → `BookingService::approve()`), ulang corak yang sama: kunci baris slot `FOR UPDATE`, semak pertindihan dengan `status = approved` sahaja (abaikan rekod sendiri), kemudian kemas kini + `status_logs`.
 
 ---
 

@@ -76,8 +76,6 @@ Spoken decisions **get lost**. Written decisions can be referred to during a dis
 | D-03 | | FR-PAS-xx (SMS notifications) | ❌ Rejected | No budget; applicants check status in the system → Won't | Puan Noraini |
 | D-04 | | Q-04 (document retention period) | ⏸️ Deferred | Encik Faizal to consult the records officer; does not block development | Encik Faizal, due Day 8 |
 
-> 💡 **Tip:** A "Deferred" decision with no due date stays deferred forever. Always write **who** and **when**.
-
 ### 1.3 Resolving vagueness
 
 During sign-off, look for vague words and replace them with concrete values:

@@ -52,11 +52,11 @@ Experience from past courses: **the first 30–60 minutes of the first coding da
 | macOS | **Laravel Herd** (PHP only, lightweight) or `brew install php@8.3` |
 | Linux (Ubuntu) | `sudo apt install php8.3-cli php8.3-intl php8.3-mbstring php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml` |
 
-> Herd and Laragon bring their own PHP. Make sure `php` in the terminal is **the same PHP** you expect: `which php` (macOS/Linux/Git Bash) or `where php` (Command Prompt).
+Herd and Laragon bring their own PHP. Make sure `php` in the terminal is **the same PHP** you expect: `which php` (macOS/Linux/Git Bash) or `where php` (Command Prompt).
 
 ### Windows (Laragon) — step by step
 
-> 🪟 **Windows:** every `bash` block in this course runs in **Git Bash**, not PowerShell. Install Git for Windows and make Git Bash the VS Code default terminal (§5) **before** step 5 below.
+> ⚠️ **Windows:** every `bash` block in this course runs in **Git Bash**, not PowerShell. Install Git for Windows and make Git Bash the VS Code default terminal (§5) **before** step 5 below.
 
 1. **Download Laragon Full** from <https://laragon.org/download>. Use the **latest Laragon 8.x** (checked Oct 2026: 8.7.0), one installer `laragon-wamp.exe` (±229 MB) that ships PHP 8.1–8.5, MySQL 8.4/9.x, Apache, Nginx and Composer. Install to the default folder `C:\laragon`.
 2. **Licence.** Since version 7, Laragon is no longer fully free software. Unlicensed use is allowed for non-commercial purposes; a licence reminder window appears every time Laragon starts — just close it. For a department laptop, check with your ICT unit whether a licence is needed.
@@ -149,7 +149,7 @@ max_execution_time = 60
 date.timezone = Asia/Kuala_Lumpur
 ```
 
-> Why is `upload_max_filesize` larger than 2 MB? So that the **application** (`max_size` validation) is what rejects a 3 MB file with a clear Malay message — not PHP silently dropping the file before it reaches the controller.
+Why is `upload_max_filesize` larger than 2 MB? So that the **application** (`max_size` validation) is what rejects a 3 MB file with a clear Malay message — not PHP silently dropping the file before it reaches the controller.
 
 ---
 
@@ -166,7 +166,7 @@ Composer version 2.8.x 2025-xx-xx xx:xx:xx
 PHP version 8.3.12 (/path/to/php)
 ```
 
-> Make sure the *PHP version* line shows **8.2+** — Composer may be using a different PHP from your terminal.
+Make sure the *PHP version* line shows **8.2+** — Composer may be using a different PHP from your terminal.
 
 ```bash
 composer diagnose      # every line should be "OK" (proxy warnings can be ignored if you have no proxy)
@@ -253,9 +253,7 @@ mysql -u kkm_dev -p -e "SHOW DATABASES LIKE 'kkm_latihan%';"
 +--------------------------+
 ```
 
-> 🪟 **Windows:** in the VS Code terminal (Git Bash), `mysql -p` asks for the password as usual. In a separate Git Bash window (mintty), `mysql` can hang with no prompt — put `winpty` in front: `winpty mysql -u kkm_dev -p`.
-
-> **Why MySQL for tests, not SQLite?** BR-TLK-05 needs `SELECT … FOR UPDATE`, which SQLite does not support. See [`nota-10-ujian-phpunit-ci4.md`](nota-10-ujian-phpunit-ci4.md).
+> ⚠️ **Windows:** in the VS Code terminal (Git Bash), `mysql -p` asks for the password as usual. In a separate Git Bash window (mintty), `mysql` can hang with no prompt — put `winpty` in front: `winpty mysql -u kkm_dev -p`.
 
 GUI tool (choose one): HeidiSQL (Laragon: **Database** button), phpMyAdmin (needs Laragon's Apache), TablePlus, DBeaver, or MySQL Workbench.
 
@@ -287,7 +285,7 @@ git config --global core.autocrlf input     # macOS/Linux; Windows: true
 git config --global core.editor "code --wait"   # commit messages open in VS Code, not Vim
 ```
 
-> Without `core.editor`, Git opens **Vim** for commit messages (e.g. a `git pull` that creates a merge commit). Stuck in Vim? Press `Esc`, type `:wq`, press `Enter`.
+> ⚠️ **Common mistake:** without `core.editor`, Git opens **Vim** for commit messages (e.g. a `git pull` that creates a merge commit). Stuck in Vim? Press `Esc`, type `:wq`, press `Enter`.
 
 ### VS Code — Git Bash as the default terminal (Windows)
 
@@ -307,7 +305,7 @@ The VS Code default terminal on Windows is PowerShell. Most course commands (`&&
 
    An empty line, or `$SHELL` printed back? You are still in PowerShell/Command Prompt — repeat steps 1–2.
 
-> Paths in Git Bash: `C:\Users\ali\latihan` is written `/c/Users/ali/latihan`, and `~` = `C:\Users\ali`.
+Paths in Git Bash: `C:\Users\ali\latihan` is written `/c/Users/ali/latihan`, and `~` = `C:\Users\ali`.
 
 ### VS Code — required & recommended extensions
 
@@ -327,7 +325,7 @@ code --install-extension bierner.markdown-mermaid
 code --install-extension EditorConfig.EditorConfig
 ```
 
-> Disable VS Code's built-in PHP extension (*PHP Language Features*) if Intelephense shows duplicate suggestions.
+Disable VS Code's built-in PHP extension (*PHP Language Features*) if Intelephense shows duplicate suggestions.
 
 ---
 
@@ -342,7 +340,7 @@ php spark --version     # or: php spark
 ```
 
 ```text
-CodeIgniter v4.6.x Command Line Tool - Server Time: 2026-xx-xx xx:xx:xx UTC+08:00
+CodeIgniter v4.7.x Command Line Tool - Server Time: 2026-xx-xx xx:xx:xx UTC+08:00
 ```
 
 ```bash
@@ -355,9 +353,9 @@ CodeIgniter development server started on http://localhost:8080
 Press Control-C to stop.
 ```
 
-Open <http://localhost:8080> → the *Welcome to CodeIgniter 4.6.x* page. ✅
+Open <http://localhost:8080> → the *Welcome to CodeIgniter 4.7.x* page. ✅
 
-> 🪟 **Windows:** create `.env` with `cp env .env` in Git Bash — **not** with Notepad (it may save `.env.txt`). Turn on *File Explorer → View → Show → File name extensions* so the full name `.env` is visible. Edit its contents in VS Code.
+> ⚠️ **Windows:** create `.env` with `cp env .env` in Git Bash — **not** with Notepad (it may save `.env.txt`). Turn on *File Explorer → View → Show → File name extensions* so the full name `.env` is visible. Edit its contents in VS Code.
 
 DB connection — edit `.env`:
 

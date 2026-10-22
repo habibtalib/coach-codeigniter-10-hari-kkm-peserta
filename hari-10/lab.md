@@ -1,10 +1,8 @@
 # Lab Hari 10 — Statistik (M4) & Capstone
 
-[← README Hari 10](./README.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [Jadual](../JADUAL.md) · [Rubrik Capstone](../docs/rubrik-capstone.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**) · [Rubrik Capstone](../docs/rubrik-capstone.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
-> **Branch kerja:** `git switch main && git pull && git switch -c feat/statistik`; PowerShell: jalankan `git switch main`, `git pull` dan `git switch -c` satu demi satu
-> **Prefix commit:** `STAT:` (dashboard/cache) · `FIX:` (pembetulan pepijat UAT)
-> **Kod rujukan jurulatih:** `templates/kod/` (modul **Templat & Rujukan**) — `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt`.
+**Branch kerja:** `git switch main && git pull && git switch -c feat/statistik` (PowerShell: jalankan satu demi satu) · **Prefix commit:** `STAT:` (dashboard/cache), `FIX:` (pembetulan pepijat UAT) · **Kod rujukan:** `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt` (modul **Templat & Rujukan**)
 
 | Lab | Sesi | Tempoh | Hasil |
 |-----|------|--------|-------|
@@ -719,7 +717,7 @@ Tempat yang mesti ada (dalam template rujukan Hari 5–6):
 | `submit()` | `null → submitted` ("Pas menunggu" +1) |
 | `transition()` (dipanggil oleh `startReview()`, `approve()`, `reject()`, `expire()`) | semua peralihan lain, termasuk `pas:expire` |
 
-> ✋ **Berhenti & fikir (2 min):** Kenapa bukan di dalam blok `try` **sebelum** `transCommit()`? Kenapa bukan dalam controller? Tulis jawapan anda dalam mesej commit. (Jawapan: README §2.4; controller bukan satu-satunya pemanggil — Spark `pas:expire` tidak melalui controller.)
+**Berhenti & fikir (2 min):** kenapa bukan di dalam blok `try` **sebelum** `transCommit()`, dan kenapa bukan dalam controller? Tulis jawapan anda dalam mesej commit.
 
 **8. Jalankan semula.**
 
@@ -790,7 +788,7 @@ git switch -c fix/bug-001-<ringkas>
 | d. Lulus | Ujian tadi hijau **+** `composer test` semua hijau | Tangkapan terminal |
 | e. Commit | `git add app/ tests/ docs/ && git commit -m "FIX: <ringkasan> (BUG-001)"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu → merge | Log pepijat: *Ditutup* |
 
-> **Tiada pepijat ditemui?** Jurulatih akan memberi satu "pepijat tanaman" (rujuk contoh BUG-007 dalam README §3.3). Latih kitaran penuh pada pepijat itu.
+Tiada pepijat ditemui? Jurulatih akan memberi satu "pepijat tanaman" (contoh BUG-007 dalam README §3.3); latih kitaran penuh padanya.
 
 **5. Senarai semak keselamatan K1–K10** (README §3.4), ~10 minit. Tanda K1–K10 sendiri: jalankan arahan bukti di bawah (K2, K3, K4, K5, K7) dan semak baki K secara visual. Selepas itu jurulatih **semak rawak 3 K** pada mesin anda — K3 sentiasa, ditambah 2 pilihan jurulatih — jadi setiap tanda mesti boleh dibuktikan serta-merta.
 

@@ -74,7 +74,7 @@ Satu aplikasi web **CodeIgniter 4.6+** untuk sebuah fasiliti KKM (rekaan) yang m
 | M3 | **Laporan** | Senarai bertapis + eksport PDF/Excel (RPT-01..03) | Penyemak, pelulus, pentadbir | — |
 | M4 | **Statistik** | Dashboard KPI & carta merentas M1 dan M2 | Pelulus, pentadbir | — |
 
-> 💡 **Tip:** M1 dan M2 ialah modul **transaksi** (data dicipta dan berubah status). M3 dan M4 ialah modul **bacaan** (membaca data M1/M2). Jika M1/M2 salah reka, M3/M4 akan melaporkan data yang salah. Sebab itu dua hari pertama berat pada TLK dan Pas.
+M1 dan M2 ialah modul **transaksi** (data dicipta dan berubah status); M3 dan M4 ialah modul **bacaan** yang melaporkan data M1/M2. Jika M1/M2 salah reka, laporan turut salah — sebab itu dua hari pertama berat pada TLK dan Pas.
 
 ### 1.2 Carta skop — Dalam skop vs Luar skop
 
@@ -121,8 +121,6 @@ Pihak berkepentingan = sesiapa yang **menggunakan**, **meluluskan**, **terkesan 
 | Pentadbir sistem (Unit ICT) | Urus zon, slot, pengguna | `admin` | Tinggi |
 | Pengurusan fasiliti | Lihat statistik penggunaan | `approver` (`statistik.view`) | Tinggi |
 | Pengawal keselamatan di pintu | Sahkan pas di lapangan | *(tiada akaun — pengguna tidak langsung)* | Rendah |
-
-> 💡 **Tip:** Pengawal di pintu **tiada akaun**, tetapi tetap pihak berkepentingan — keperluan mereka (cth "nombor rujukan mesti mudah dibaca") mempengaruhi format `PAS-2026-0001`. Pengguna tidak langsung sering dilupakan.
 
 Peta pengaruh–kepentingan membantu tentukan siapa yang mesti ditemu bual dahulu:
 
@@ -197,7 +195,7 @@ Temu bual berstruktur = senarai soalan disediakan **sebelum** berjumpa, disusun 
 | "Bagaimana jika…?" | Cari pengecualian (edge case) | "Bagaimana jika dua orang mohon slot yang sama pada hari yang sama?" |
 | 5 Kenapa | Cari punca sebenar | "Kenapa slot OKU diguna orang lain?" → … → "Tiada rekod tempoh sah" |
 
-> 💡 **Tip:** Soalan "Bagaimana jika…?" ialah soalan paling bernilai dalam temu bual. Hampir setiap peraturan perniagaan dalam SPEC (BR-TLK-01 hingga 06) boleh ditemui dengan soalan jenis ini.
+Soalan "Bagaimana jika…?" paling bernilai: hampir setiap peraturan perniagaan dalam SPEC (BR-TLK-01 hingga 06) ditemui dengan soalan jenis ini.
 
 ### 2.2 Senario domain TLK (as-is ringkas)
 
@@ -248,10 +246,6 @@ stateDiagram-v2
     cancelled --> [*]
     expired --> [*]
 ```
-
-> 💡 **Tip:** Perhatikan — mengikut SPEC, tempahan `pending` **tidak** boleh terus menjadi `cancelled`. Jika pemilik sistem berkata "pemohon boleh batal bila-bila masa", itu **percanggahan** yang mesti dicatat sebagai soalan terbuka untuk Hari 2.
-
-> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Empathize](../docs/trek-design-thinking.md): bina persona dan empathy map daripada nota temu bual TLK anda. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
 
 ### 🎯 Kuiz S2
 
@@ -334,9 +328,7 @@ Siapa boleh menukar ke status mana (SPEC §2.2) — jadual ini akan menjadi `Pas
 | PP-PAS-04 | Pengawal pintu | Tidak tahu pas kontraktor sudah tamat | Kontraktor tamat kontrak masih masuk | Status `expired` |
 | PP-PAS-05 | Audit dalaman | Tiada rekod siapa semak & siapa lulus | Teguran audit | **BR-PAS-05**, `status_logs` |
 
-⚠️ **Kesilapan lazim:** Mengabaikan **siapa boleh melihat** dokumen. Dokumen pas mengandungi maklumat peribadi. Keperluan "pemohon hanya lihat permohonan sendiri" (**BR-PAS-04**) mesti ditulis hari ini — pada Hari 8 ia menjadi ujian akses negatif (pemohon2 cuba buka permohonan pemohon1 → 403/404).
-
-> 💡 **Tip:** Untuk setiap jenis data peribadi (IC, geran, surat lantikan), tanya tiga soalan: **siapa boleh muat naik, siapa boleh lihat, berapa lama disimpan**. Jawapan ketiga (tempoh simpanan) sering tiada — rekod sebagai soalan terbuka.
+⚠️ **Kesilapan lazim:** Mengabaikan **siapa boleh melihat** dokumen. Dokumen pas mengandungi maklumat peribadi. Keperluan "pemohon hanya lihat permohonan sendiri" (**BR-PAS-04**) mesti ditulis hari ini — pada Hari 8 ia menjadi ujian akses negatif (pemohon2 cuba buka permohonan pemohon1 → 403/404). Bagi setiap jenis data peribadi (IC, geran, surat lantikan), tanya **siapa boleh muat naik, siapa boleh lihat, berapa lama disimpan**; tempoh simpanan yang belum dijawab direkod sebagai soalan terbuka.
 
 ### 🎯 Kuiz S3
 
@@ -444,11 +436,11 @@ Konvensyen ID:
 | **C**ould | Bagus jika ada masa | Carian nombor plat, cetak pas |
 | **W**on't (fasa ini) | Dipersetujui **tidak** dibuat sekarang | SMS, bayaran, ANPR |
 
-> 💡 **Tip:** Peraturan praktikal — jika lebih 60% keperluan anda ialah "Must", anda belum benar-benar memprioritikan. Tanya: "Jika ini tiada pada Hari 10, adakah demo gagal?"
+Peraturan praktikal: jika lebih 60% keperluan anda "Must", anda belum memprioritikan. Tanya: "Jika ini tiada pada Hari 10, adakah demo gagal?"
 
 ⚠️ **Kesilapan lazim:** Membiarkan lajur "Won't" kosong. "Won't" ialah alat paling berkuasa untuk mengawal skop — ia merekod secara bertulis bahawa pemilik sistem **bersetuju** sesuatu tidak dibuat.
 
-> ⭐ **Trek sampingan (pilihan):** [Jira](../docs/trek-jira.md): buka tapak Jira Cloud percuma dan bina backlog daripada `keperluan-awal.md`. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
+**Trek sampingan (pilihan):** [Design Thinking — Empathize](../docs/trek-design-thinking.md) · [Jira](../docs/trek-jira.md)
 
 ### 🎯 Kuiz S4
 
@@ -478,7 +470,7 @@ Simpan dalam folder `docs/` repo anda (dicommit dengan prefix `SETUP:` — lihat
 - [ ] `docs/keperluan-awal.md` — ≥ 16 FR (≥ 8 `FR-TLK-nn`, ≥ 6 `FR-PAS-nn`, ≥ 1 `FR-RPT-nn`, ≥ 1 `FR-STAT-nn`) + ≥ 5 `NFR-nn`, setiap satu dengan MoSCoW + rujukan BR (jika ada)
 - [ ] `docs/soalan-terbuka.md` — soalan yang belum dijawab pemilik sistem (dibawa ke Hari 2 S1)
 
-> ⏱️ Item yang belum siap boleh dilengkapkan semasa imbas semula Hari 2 (08:30).
+Item yang belum siap boleh dilengkapkan semasa imbas semula Hari 2 (08:30).
 
 ---
 
@@ -517,8 +509,6 @@ Hari 1–3 tidak menulis kod sistem, tetapi persekitaran disediakan hari ini dal
 
 3. Buka <http://localhost:8080> — halaman *Welcome to CodeIgniter* bermaksud PHP, Composer dan CI4 berfungsi.
 4. Rasa MVC kali pertama: satu route `/hello` → controller `Hello` → view `hello.php` (Bahagian A tutorial).
-
-> `ci4-asas` ialah projek latihan sahaja dan boleh dipadam. Projek sebenar dicipta dalam repo `sistem-tlk-pas` pada Hari 4 Lab 4.2. 3 checkpoint Lab 1.5 dikira dalam kemajuan Hari 1.
 
 ---
 

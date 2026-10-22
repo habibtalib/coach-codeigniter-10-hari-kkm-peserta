@@ -1,6 +1,6 @@
 # 04 · Validation and Forms
 
-> Topical notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
+Topical notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Notes objectives
 
@@ -130,7 +130,7 @@ Built-in rules used often in the project:
 | `regex_match[/…/]` | Special format | plate `WXX 1234` |
 | `uploaded`, `max_size`, `ext_in`, `mime_in` | Files | see [notes 07](./nota-07-muat-naik-fail-selamat.md) |
 
-> **Tip:** generate the `in_list` list from the enum so it is not repeated: `'in_list[' . implode(',', \App\Enums\PassType::values()) . ']'` (add `values()` to the enum as in [notes 03](./nota-03-model-entity-dan-enum.md)).
+> 💡 **Tip:** generate the `in_list` list from the enum so it is not repeated: `'in_list[' . implode(',', \App\Enums\PassType::values()) . ']'` (add `values()` to the enum as in [notes 03](./nota-03-model-entity-dan-enum.md)).
 
 ---
 

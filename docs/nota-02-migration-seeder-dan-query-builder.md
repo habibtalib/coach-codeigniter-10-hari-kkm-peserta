@@ -1,6 +1,6 @@
 # 02 · Migration, Seeder dan Query Builder
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -213,7 +213,7 @@ class UserSeeder extends Seeder
 php spark db:seed DatabaseSeeder
 ```
 
-> Plat kenderaan dalam `VehicleSeeder` mesti **rekaan** — cth `WXX 1234`, `VBB 5678`.
+> ⚠️ **Amaran:** plat kenderaan dalam `VehicleSeeder` mesti **rekaan** — cth `WXX 1234`, `VBB 5678`.
 
 ---
 

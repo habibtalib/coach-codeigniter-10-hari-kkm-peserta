@@ -18,7 +18,7 @@ Aliran Git setempat (branch, commit, merge, konflik) diterangkan dalam [Nota 12]
 | Hari 2, Lab 2.2 (S2) | §2–§5: log masuk, HTTPS + Git Credential Manager, projek private, jurulatih sebagai Reporter, push pertama | 40 |
 | Hari 4, Lab 4.4 (S4) | §6: branch `feat/…` → MR ke `main` sendiri → komen → merge; klon baharu dalam folder kedua | 15 |
 
-> Hari 2–3 anda push terus ke `main`. Mulai Hari 4 S4, setiap perubahan melalui branch `feat/…` dan MR.
+Hari 2–3 anda push terus ke `main`. Mulai Hari 4 S4, setiap perubahan melalui branch `feat/…` dan MR.
 
 ---
 
@@ -52,7 +52,7 @@ ssh -T git@<gitlab-kkm>
 
 Kali pertama, jawab `yes` untuk cap jari hos. Output yang betul: `Welcome to GitLab, @<pengguna>!` Tukar remote kepada SSH: `git remote set-url origin git@<gitlab-kkm>:<pengguna>/kelas-ci-<nama>.git`.
 
-> Fail `~/.ssh/id_ed25519` (tanpa `.pub`) ialah kunci **peribadi**. Jangan tampal, commit atau hantar ia kepada sesiapa. Yang ditampal ke GitLab hanyalah `id_ed25519.pub`.
+> ⚠️ **Amaran:** Fail `~/.ssh/id_ed25519` (tanpa `.pub`) ialah kunci **peribadi**. Jangan tampal, commit atau hantar ia kepada sesiapa. Yang ditampal ke GitLab hanyalah `id_ed25519.pub`.
 
 ---
 

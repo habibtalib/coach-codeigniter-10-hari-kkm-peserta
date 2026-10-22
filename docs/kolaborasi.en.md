@@ -1,6 +1,6 @@
 # KOLABORASI — Working Agreement
 
-> How we work throughout the 10 days. Technical canon: [`docs/spesifikasi-sistem.md`](./spesifikasi-sistem.md).
+How we work throughout the 10 days. Technical canon: [`docs/spesifikasi-sistem.md`](./spesifikasi-sistem.md).
 
 ## 1. Git — one branch per feature
 

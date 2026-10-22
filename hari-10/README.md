@@ -69,8 +69,6 @@ KPI yang tidak ditakrif dengan tepat akan dipertikaikan dalam mesyuarat pertama.
 | **Permohonan pas menunggu** | Permohonan yang belum diputuskan | `status IN ('submitted','under_review')` |
 | **Purata hari untuk lulus pas** | Purata masa dari hantar hingga lulus | `AVG(TIMESTAMPDIFF(HOUR, created_at, approved_at)) / 24` bagi `approved_at IS NOT NULL` |
 
-> 💡 **Tip — kenapa `approved_at IS NOT NULL` dan bukan `status = 'approved'`?** Pas yang diluluskan bulan lepas dan kini `expired` tetap *pernah* diluluskan. Jika kita tapis ikut status semasa, purata akan berubah setiap kali `pas:expire` berjalan — walaupun tiada kelulusan baharu. Guna **fakta sejarah** (`approved_at`), bukan keadaan semasa.
-
 > ⚠️ **Kesilapan lazim — purata dalam hari integer.** `TIMESTAMPDIFF(DAY, ...)` membundarkan ke bawah: permohonan yang diluluskan selepas 23 jam = 0 hari. Kira dalam **jam** kemudian bahagi 24 untuk pecahan yang jujur (cth 1.4 hari).
 
 ### 1.2 Pilih carta yang betul untuk soalan yang betul
@@ -82,7 +80,7 @@ KPI yang tidak ditakrif dengan tepat akan dipertikaikan dalam mesyuarat pertama.
 | Zon mana paling sesak bulan ini? | **Bar mendatar** (`indexAxis: 'y'`) | Label zon panjang; mudah disusun dari tertinggi |
 | Adakah permohonan pas meningkat? | **Line** | Trend masa berterusan (12 bulan) |
 
-> ⚠️ **Kesilapan lazim — pie/doughnut untuk trend masa**, atau line untuk kategori tanpa tertib (zon). Bentuk carta membawa makna; bentuk yang salah mengelirukan walaupun datanya betul.
+Bentuk carta membawa makna: pie/doughnut untuk trend masa, atau line untuk kategori tanpa tertib (zon), mengelirukan walaupun datanya betul.
 
 ### 1.3 Seni bina: view + endpoint JSON
 
@@ -259,10 +257,7 @@ Jika cache dikosongkan sebelum `COMMIT`, permintaan lain boleh membina semula ca
 | **TTL + delete semasa tulis** ✅ (pilihan kita) | Segar selepas perubahan; TTL sebagai jaring keselamatan | Mesti ingat setiap tempat yang menulis; terlepas satu = basi | Tulisan jarang, bacaan kerap (kes kita) |
 | **Kemas kini cache semasa tulis** (write-through) | Tiada MISS selepas tulis | Kompleks; risiko kiraan salah; ulang logik | Jarang perlu untuk aplikasi jabatan |
 
-> 💡 **Tip — "Ada dua perkara sukar dalam sains komputer: invalidasi cache dan menamakan sesuatu."** Kita ringankan kedua-duanya: **satu** kunci (`StatisticsService::CACHE_KEY`), dan invalidasi di **satu** tempat per service (kaedah peribadi `transition()` + kaedah cipta).
-
 > ⚠️ **Kesilapan lazim:**
-> - Menaip `'stat_dashboard'` di 5 tempat → satu tersalah eja (`'stats_dashboard'`) → tiada ralat, cuma basi. Guna **pemalar**.
 > - Cache data **per pengguna** di bawah kunci global. Dashboard kita sama untuk semua `approver`/`admin`, jadi satu kunci selamat. Jika kelak ada data ikut jabatan pengguna, kunci mesti mengandungi id jabatan (`stat_dashboard_dept_3`) — jika tidak, data jabatan A bocor kepada jabatan B.
 > - Lupa path tulis lain: `pas:expire` (Spark) juga mengubah status — tetapi kerana ia melalui `PassWorkflowService::transition()`, ia diliputi secara automatik. Inilah ganjaran "satu pintu untuk perubahan status" dari Hari 6 & 8.
 
@@ -326,7 +321,7 @@ Jalankan **mengikut tertib** — setiap langkah menyediakan data untuk langkah s
 | 14 | `penyemak@latihan.test` | RPT-02 tapis status Diluluskan → eksport PDF & Excel | Jumlah skrin = PDF = Excel = `COUNT(*)` | UAT-09 |
 | 15 | `admin@latihan.test` | RPT-03 bulan semasa; bandingkan dengan carta "Penggunaan ikut zon" | Peratus **sama** | UAT-09, UAT-10 |
 
-> 💡 **Tip:** Selepas **setiap** langkah, terus isi "Hasil sebenar" dan status ✅/❌ dalam templat sebelum klik langkah seterusnya. Jangan baiki pepijat semasa UAT — **rekod dahulu**, baiki kemudian mengikut keterukan.
+Selepas **setiap** langkah, isi "Hasil sebenar" dan status ✅/❌ dalam templat sebelum langkah seterusnya. Jangan baiki pepijat semasa UAT — **rekod dahulu**, baiki kemudian mengikut keterukan.
 
 ### 3.3 Kitaran pembetulan pepijat (KOLABORASI §3)
 
@@ -359,8 +354,6 @@ flowchart LR
    ```
 4. **Lulus** — ujian tadi hijau **dan** `composer test` (semua) hijau.
 5. **Commit** — `git commit -m "FIX: RPT-02 julat tarikh separuh-terbuka (BUG-007)"`; kemas kini log pepijat → *Ditutup*.
-
-> ⚠️ **Kesilapan lazim — baiki dahulu, tulis ujian kemudian.** Ujian yang ditulis selepas pembetulan hampir selalu lulus — ia tidak membuktikan apa-apa. Ujian mesti **dilihat gagal** sekurang-kurangnya sekali.
 
 ### 3.4 Senarai semak keselamatan akhir
 
@@ -424,7 +417,7 @@ Rubrik penuh & helaian markah: [`docs/rubrik-capstone.md`](../docs/rubrik-capsto
 
 Terdapat juga 5 **gate kritikal** (cth pemohon tidak boleh melihat rekod orang lain, `.env` tidak dalam Git) — satu gate gagal menghadkan keputusan kepada *Lulus bersyarat*.
 
-> 💡 **Tip demo:** Sediakan **data demo** sebelum mula (`migrate:refresh` + seed), buka tab pelayar untuk setiap peranan, dan tulis skrip 1 halaman. Demo yang gagal hampir selalu kerana "data semalam" atau "lupa kata laluan", bukan kerana kod.
+Sebelum demo, sediakan **data demo** (`migrate:refresh` + seed), satu tab pelayar untuk setiap peranan, dan skrip 1 halaman — demo biasanya gagal kerana "data semalam" atau "lupa kata laluan", bukan kerana kod.
 
 ### 4.2 Retrospektif — Start / Stop / Continue
 

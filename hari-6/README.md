@@ -79,11 +79,7 @@ TIDAK bertindih   ⇔  E.end_date < N.start  OR  E.start_date > N.end
 BERTINDIH         ⇔  NOT(…)  ⇔  E.start_date <= N.end  AND  E.end_date >= N.start
 ```
 
-Itulah syarat SPEC BR-TLK-01: **`start_date <= :end AND end_date >= :start`**. Dua perbandingan sahaja — meliputi semua 5 kes di atas. Tarikh **inklusif**: hari terakhir tempahan masih dikira digunakan (N3 bertindih pada 10 Okt).
-
-> ⚠️ **Kesilapan lazim:** Menulis empat syarat `OR` (mula di dalam, tamat di dalam, meliputi, di dalam). Ia mudah tertinggal satu kes (biasanya "meliputi") dan lebih perlahan. Dua syarat `AND` sudah lengkap.
-
-> ⚠️ **Kesilapan lazim:** Guna `<` dan `>` (eksklusif). Tempahan 10–20 Okt dan 20–25 Okt akan dianggap tidak bertindih — dua kereta di slot sama pada 20 Okt.
+Itulah syarat SPEC BR-TLK-01: **`start_date <= :end AND end_date >= :start`**. Dua perbandingan sahaja — meliputi semua 5 kes di atas. Tarikh **inklusif**: hari terakhir tempahan masih dikira digunakan (N3 bertindih pada 10 Okt). Empat syarat `OR` berasingan (mula di dalam, tamat di dalam, meliputi, di dalam) mudah tertinggal satu kes dan lebih perlahan — dua syarat `AND` ini sudah lengkap.
 
 ### 1.2 `SlotAvailabilityService`
 
@@ -150,9 +146,7 @@ WHERE parking_slots.is_active = 1
 ORDER BY parking_zones.code, parking_slots.slot_no
 ```
 
-Paparan `/tlk/tempahan/ketersediaan` ialah borang **GET** (filter dalam URL → boleh ditanda buku & dikongsi). Controller mengesahkan tarikh dengan validator biasa sebelum memanggil service. Fail penuh: `templates/kod/SlotAvailabilityService.php.txt` (modul **Templat & Rujukan**).
-
-> 💡 **Tip:** Paparan slot kosong ialah **maklumat**, bukan jaminan. Antara pemohon melihat "A-02 kosong" dan menekan "Hantar", orang lain mungkin menempahnya. Itulah sebabnya S2 menyemak semula **dalam transaksi**.
+Paparan `/tlk/tempahan/ketersediaan` ialah borang **GET** (filter dalam URL → boleh ditanda buku & dikongsi). Controller mengesahkan tarikh dengan validator biasa sebelum memanggil service. Fail penuh: `templates/kod/SlotAvailabilityService.php.txt` (modul **Templat & Rujukan**). Senarai slot kosong ialah maklumat, bukan jaminan: orang lain mungkin menempah slot itu sebelum pemohon menekan "Hantar", sebab itu S2 menyemak semula **dalam transaksi**.
 
 ### 🎯 Kuiz S1
 
@@ -296,8 +290,6 @@ private function lockRow(string $table, int $id, string $columns = 'id'): ?objec
 | `reference_sequences` | Nombor rujukan unik (Hari 5) | `Duplicate entry` |
 
 **Transaksi bersarang CI4.** `ReferenceNumberService::next()` memanggil `transBegin()` sendiri. Kerana connection sama sudah dalam transaksi, CI4 hanya menambah kedalaman (depth) — `transCommit()` dalaman tidak commit sebenar; hanya transaksi luar yang commit/rollback. Hasilnya: jika tempahan gagal, nombor rujukan **tidak hilang** (tiada jurang `0005 → 0007`). Syarat: kedua-dua service guna connection **sama** — `db_connect()` (dikongsi) dalam `Config\Services`. **Deadlock (1213) dalam transaksi luar:** `next()` **tidak** cuba semula — InnoDB telah me-rollback semua kerja `BookingService`; ralat dilontar kepada pemanggil. `next()` hanya cuba semula apabila ia memiliki transaksi sendiri (`transDepth === 0`).
-
-> ⚠️ **Kesilapan lazim:** `SELECT … FOR UPDATE` **di luar** transaksi. Dalam mod autocommit, kunci dilepaskan serta-merta selepas SELECT — tiada perlindungan langsung. Kunci hanya bermakna antara `transBegin()` dan `transCommit()`.
 
 > ⚠️ **Kesilapan lazim:** Menangkap `DomainException` di dalam `try` Service dan meneruskan. Setiap `throw` mesti sampai ke `catch (Throwable)` yang memanggil `transRollback()` — jika tidak, transaksi terbiar terbuka dan kunci dipegang sehingga connection tamat.
 
@@ -542,8 +534,6 @@ final class DecisionAccessTest extends CIUnitTestCase
 
 CSRF dihidupkan secara global — dalam `setUp()` ujian fungsian kita **menyahaktifkannya untuk ujian sahaja** (kita menguji akses, bukan CSRF) dan memulihkannya dalam `tearDown()`. Kod penuh dalam Lab 6.3.
 
-> 💡 **Tip:** Tulis ujian **gagal dahulu**. Contoh: tulis `testCreateRejectsOverlappingBooking` sebelum menambah `hasOverlap()` dalam `create()` → merah → tambah → hijau. Itulah kitaran KOLABORASI §3: *reproduce → ujian gagal → baiki → ujian lulus*.
-
 ### 🎯 Kuiz S3
 
 1. Kenapa ujian `BookingServiceTest` menggunakan MySQL `kkm_latihan_test`, bukan SQLite `:memory:` lalai appstarter?
@@ -605,8 +595,6 @@ Badge:
 ```php
 <span class="badge text-bg-<?= esc($b->statusBadge(), 'attr') ?>"><?= esc($b->statusLabel()) ?></span>
 ```
-
-> ⚠️ **Kesilapan lazim:** Dialog pengesahan dianggap kawalan keselamatan. Ia hanya **UX**. Penyerang menghantar POST terus tanpa JavaScript — server (filter + `canTransitionTo()`) yang menjaga.
 
 Layout akhir: `templates/kod/layout-main.php.txt` (modul **Templat & Rujukan**).
 

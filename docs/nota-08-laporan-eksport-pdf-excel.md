@@ -1,6 +1,6 @@
 # 08 · Laporan Bertapis & Eksport PDF/Excel
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -136,9 +136,9 @@ class ReportService
 }
 ```
 
-> Dalam `usageByZone()` nilai tarikh dicantum ke SQL — ini **selamat hanya kerana** ia dijana oleh `sprintf('%04d…')` daripada integer yang telah disahkan (`in_list`/julat). Jangan sekali-kali cantum `$this->request->getGet('month')` secara terus (SPEC §9).
->
-> Kadar penggunaan (%) = `used_days / (total_slots × bilangan hari dalam bulan) × 100` — kira dalam PHP; elak bahagi dengan sifar jika zon tiada slot. Nota: `COUNT(DISTINCT s.id)` betul walaupun join tempahan menggandakan baris slot.
+> ⚠️ **Amaran:** Dalam `usageByZone()` nilai tarikh dicantum ke SQL — ini **selamat hanya kerana** ia dijana oleh `sprintf('%04d…')` daripada integer yang telah disahkan (`in_list`/julat). Jangan sekali-kali cantum `$this->request->getGet('month')` secara terus (SPEC §9).
+
+Kadar penggunaan (%) = `used_days / (total_slots × bilangan hari dalam bulan) × 100` — kira dalam PHP; elak bahagi dengan sifar jika zon tiada slot. Nota: `COUNT(DISTINCT s.id)` betul walaupun join tempahan menggandakan baris slot.
 
 ---
 
@@ -249,8 +249,6 @@ private function pdf(string $code, string $view, array $rows, array $filters)
     </tbody>
 </table>
 ```
-
-> Jika `SlotBookingModel::$returnType` ialah Entity `SlotBooking`, `$r->status` mungkin sudah enum mengikut cara anda menulis Entity (lihat [nota 03](./nota-03-model-entity-dan-enum.md)). Sesuaikan.
 
 ---
 

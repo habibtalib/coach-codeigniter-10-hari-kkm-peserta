@@ -1,6 +1,6 @@
 # 06 · Shield: Pengesahan (Authn) & Kawalan Akses Berperanan (RBAC)
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -36,7 +36,7 @@ php spark routes            # sahkan /login, /logout, /register wujud
 
 `shield:setup` menambah `service('auth')->routes($routes);` dalam `Routes.php` dan mendaftar alias filter Shield (`session`, `tokens`, `chain`, `group`, `permission`, `auth-rates`, `force-reset`) secara automatik melalui *Registrar* Shield — anda **tidak perlu** menaip alias itu sendiri dalam `Config\Filters`.
 
-> Medan tambahan `users` (`full_name`, `staff_no`, `department_id`, `phone`) — lihat [nota 02](./nota-02-migration-seeder-dan-query-builder.md). Untuk menyimpannya melalui Shield, jana model sendiri: `php spark shield:model UserModel`, tambah medan ke `$allowedFields`, dan tetapkan `Config\Auth::$userProvider = \App\Models\UserModel::class`.
+Medan tambahan `users` (`full_name`, `staff_no`, `department_id`, `phone`) — lihat [nota 02](./nota-02-migration-seeder-dan-query-builder.md). Untuk menyimpannya melalui Shield, jana model sendiri: `php spark shield:model UserModel`, tambah medan ke `$allowedFields`, dan tetapkan `Config\Auth::$userProvider = \App\Models\UserModel::class`.
 
 ---
 
@@ -155,7 +155,7 @@ $routes->group('pas/semakan', ['filter' => 'group:reviewer,approver,admin'], sta
 
 Nota tingkah laku: filter `group:`/`permission:` akan meminta log masuk jika pengguna belum log masuk; jika sudah log masuk tetapi tiada hak, Shield redirect dengan mesej ralat (boleh diubah dalam `Config\Auth`). Sahkan dengan `php spark routes` — lajur *Filters* mesti menunjukkan filter yang betul.
 
-> **Perhatian:** filter `group:reviewer,approver,admin` membenarkan **reviewer** mengakses `/approve`. Lapisan kedua (Service / `can('pas.approve')`) mesti menolaknya. Inilah sebab kita perlukan lebih daripada satu lapisan.
+> ⚠️ **Amaran:** filter `group:reviewer,approver,admin` membenarkan **reviewer** mengakses `/approve`. Lapisan kedua (Service / `can('pas.approve')`) mesti menolaknya. Inilah sebab kita perlukan lebih daripada satu lapisan.
 
 ---
 

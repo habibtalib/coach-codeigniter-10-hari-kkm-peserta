@@ -1,6 +1,6 @@
 # 11 · Keselamatan Aplikasi Web (OWASP × CodeIgniter 4)
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -136,7 +136,7 @@ public array $globals = [
 fetch(url, { method: 'POST', headers: { '<?= csrf_header() ?>': '<?= csrf_hash() ?>' }, body: data });
 ```
 
-> CSRF hanya melindungi POST/PUT/PATCH/DELETE. Oleh itu **jangan** buat tindakan yang mengubah data melalui GET (cth `GET /tlk/tempahan/5/cancel`).
+> ⚠️ **Amaran:** CSRF hanya melindungi POST/PUT/PATCH/DELETE. Oleh itu **jangan** buat tindakan yang mengubah data melalui GET (cth `GET /tlk/tempahan/5/cancel`).
 
 ---
 

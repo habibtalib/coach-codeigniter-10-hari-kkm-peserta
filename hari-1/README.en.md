@@ -74,7 +74,7 @@ A **CodeIgniter 4.6+** web application for a (fictional) KKM facility that manag
 | M3 | **Reports** | Filtered lists + PDF/Excel export (RPT-01..03) | Reviewers, approvers, administrators | — |
 | M4 | **Statistics** | KPI dashboard & charts across M1 and M2 | Approvers, administrators | — |
 
-> 💡 **Tip:** M1 and M2 are **transaction** modules (data is created and changes status). M3 and M4 are **read** modules (they read M1/M2 data). If M1/M2 are designed wrongly, M3/M4 will report wrong data. That is why the first two days focus heavily on TLK and Pass.
+M1 and M2 are **transaction** modules (data is created and changes status); M3 and M4 are **read** modules that report M1/M2 data. If M1/M2 are designed wrongly, the reports are wrong too — that is why the first two days focus heavily on TLK and Pass.
 
 ### 1.2 Scope chart — In scope vs Out of scope
 
@@ -121,8 +121,6 @@ Stakeholder = anyone who **uses**, **approves**, **is affected by** or **funds**
 | System administrator (ICT Unit) | Manage zones, slots, users | `admin` | High |
 | Facility management | View usage statistics | `approver` (`statistik.view`) | High |
 | Security guards at the gate | Verify passes on the ground | *(no account — indirect user)* | Low |
-
-> 💡 **Tip:** The guards at the gate **have no account**, but they are still stakeholders — their needs (e.g. "the reference number must be easy to read") shape the `PAS-2026-0001` format. Indirect users are often forgotten.
 
 The influence–interest map helps decide who must be interviewed first:
 
@@ -197,7 +195,7 @@ Structured interview = a list of questions prepared **before** the meeting, orde
 | "What if…?" | Finding exceptions (*edge cases*) | "What if two people apply for the same slot on the same day?" |
 | 5 Whys | Finding the root cause | "Why is the OKU slot used by someone else?" → … → "No record of the valid period" |
 
-> 💡 **Tip:** The "What if…?" question is the most valuable question in an interview. Almost every business rule in the SPEC (BR-TLK-01 to 06) can be found with this type of question.
+The "What if…?" question is the most valuable: almost every business rule in the SPEC (BR-TLK-01 to 06) is found with this type of question.
 
 ### 2.2 TLK domain scenario (short as-is)
 
@@ -248,10 +246,6 @@ stateDiagram-v2
     cancelled --> [*]
     expired --> [*]
 ```
-
-> 💡 **Tip:** Note — according to the SPEC, a `pending` booking can **not** go straight to `cancelled`. If the system owner says "applicants can cancel at any time", that is a **conflict** that must be noted as an open question for Day 2.
-
-> ⭐ **Side track (optional):** [Design Thinking — Empathize](../docs/trek-design-thinking.md): build a persona and an *empathy map* from your TLK interview notes. Not counted in progress; finish before Day 4.
 
 ### 🎯 Quiz S2
 
@@ -334,9 +328,7 @@ Who can change to which status (SPEC §2.2) — this table becomes `PassStatus::
 | PP-PAS-04 | Gate guard | Does not know a contractor pass has expired | Contractors whose contract has ended still get in | Status `expired` |
 | PP-PAS-05 | Internal audit | No record of who reviewed & who approved | Audit findings | **BR-PAS-05**, `status_logs` |
 
-⚠️ **Common mistake:** Ignoring **who can see** the documents. Pass documents contain personal information. The requirement "applicants only see their own applications" (**BR-PAS-04**) must be written today — on Day 8 it becomes a negative access test (pemohon2 tries to open pemohon1's application → 403/404).
-
-> 💡 **Tip:** For every type of personal data (IC, vehicle registration, appointment letter), ask three questions: **who can upload, who can see, how long it is kept**. The answer to the third (retention period) is often missing — record it as an open question.
+⚠️ **Common mistake:** Ignoring **who can see** the documents. Pass documents contain personal information. The requirement "applicants only see their own applications" (**BR-PAS-04**) must be written today — on Day 8 it becomes a negative access test (pemohon2 tries to open pemohon1's application → 403/404). For every type of personal data (IC, vehicle registration, appointment letter), ask **who can upload, who can see, how long it is kept**; a retention period nobody has answered is recorded as an open question.
 
 ### 🎯 Quiz S3
 
@@ -444,11 +436,11 @@ ID convention:
 | **C**ould | Nice to have if there is time | Plate number search, pass printing |
 | **W**on't (this phase) | Agreed **not** to be done now | SMS, payments, ANPR |
 
-> 💡 **Tip:** Practical rule — if more than 60% of your requirements are "Must", you have not really prioritised. Ask: "If this is missing on Day 10, does the demo fail?"
+Practical rule: if more than 60% of your requirements are "Must", you have not prioritised. Ask: "If this is missing on Day 10, does the demo fail?"
 
 ⚠️ **Common mistake:** Leaving the "Won't" column empty. "Won't" is the most powerful tool for controlling scope — it records in writing that the system owner **agreed** something will not be done.
 
-> ⭐ **Side track (optional):** [Jira](../docs/trek-jira.md): open a free Jira Cloud site and build a *backlog* from `keperluan-awal.md`. Not counted in progress; finish before Day 4.
+**Side tracks (optional):** [Design Thinking — Empathize](../docs/trek-design-thinking.md) · [Jira](../docs/trek-jira.md)
 
 ### 🎯 Quiz S4
 
@@ -478,7 +470,7 @@ Save in the `docs/` folder of your repo (committed with the `SETUP:` prefix — 
 - [ ] `docs/keperluan-awal.md` — ≥ 16 FRs (≥ 8 `FR-TLK-nn`, ≥ 6 `FR-PAS-nn`, ≥ 1 `FR-RPT-nn`, ≥ 1 `FR-STAT-nn`) + ≥ 5 `NFR-nn`, each with MoSCoW + BR reference (if any)
 - [ ] `docs/soalan-terbuka.md` — questions not yet answered by the system owner (carried to Day 2 S1)
 
-> ⏱️ Unfinished items may be completed during the Day 2 recap (08:30).
+Unfinished items may be completed during the Day 2 recap (08:30).
 
 ---
 
@@ -517,8 +509,6 @@ Days 1–3 write no system code, but the environment is set up today in S4 ([Lab
 
 3. Open <http://localhost:8080>. The *Welcome to CodeIgniter* page means PHP, Composer and CI4 work.
 4. A first taste of MVC: one route `/hello` → controller `Hello` → view `hello.php` (Part A of the tutorial).
-
-> `ci4-asas` is a practice project only and can be deleted. The real project is created inside the `sistem-tlk-pas` repo on Day 4, Lab 4.2. The 3 Lab 1.5 checkpoints count towards Day 1 progress.
 
 ---
 

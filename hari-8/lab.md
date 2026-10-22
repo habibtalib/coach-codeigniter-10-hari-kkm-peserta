@@ -1,8 +1,6 @@
 # Lab Hari 8 — Modul Pas (2): Aliran Kelulusan, RBAC & Ujian Akses
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 Nota Hari 8](./README.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
-
-> Kerja **individu** dalam `kelas-ci-<nama>`; tunjuk output kepada jurulatih atau rakan sebelah sebelum menanda. Semua arahan dari **akar projek CI4**. Setiap langkah memberi **kod lengkap untuk disalin**. Baca setiap baris sebelum menjalankannya — anda mesti boleh menerangkannya (KOLABORASI §3). Buntu: baca mesej ralat penuh, tanya jurulatih atau rakan sebelah, atau guna AI untuk *menerangkan* ralat.
+[⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
@@ -13,7 +11,7 @@
 | 8.2b | S6 | 12:00–12:30 | `permission:pas.review` pada route pukal + matriks 4 peranan |
 | 8.3 | S3 | 14:30–15:30 | Garis masa `status_logs` + `PassAccessTest` hijau |
 | 8.3b | S7 | 15:30–16:00 | `PassBatchReviewTest` (5 ujian) + 2 mutasi |
-| 8.4 | S4 | 16:00–16:35 | Demo 3 peranan, DoD, gabung ke `main` · ⭐ `pas:expire` |
+| 8.4 | S4 | 16:00–16:35 | Demo 3 peranan, DoD, merge ke `main` · ⭐ `pas:expire` |
 | 8.4b | S8 | 16:35–17:00 | Demo peranan `admin` + dapatan pemisahan tugas (`docs/demo-m2.md`) |
 
 ---
@@ -623,7 +621,7 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
        $routes->get('dokumen/(:num)', 'ApplicationController::download/$1', ['as' => 'pas.dokumen']);
    });
 
-   // CI 4.5+ MENGGABUNGKAN filter kumpulan dengan filter route.
+   // CI 4.5.4+ MENGGABUNGKAN filter kumpulan dengan filter route.
    $routes->group('pas/semakan', ['namespace' => 'App\Controllers\Pas', 'filter' => 'group:reviewer,approver,admin'], static function ($routes): void {
        $routes->get('/', 'ReviewController::index', ['as' => 'pas.semakan']);
        // Filter permission per tindakan — tanpanya, reviewer boleh POST ke /approve (group sahaja tidak cukup)
@@ -748,7 +746,7 @@ Memaparkan sejarah `status_logs` pada halaman butiran, dan menulis `PassAccessTe
    $caseOf = static fn (?string $value) => $value === null ? null : $enum::tryFrom($value);
 
    // PassStatus::badge() memulangkan 'text-bg-info'; BookingStatus::badge() memulangkan 'warning'.
-   // Normalkan supaya partial ini benar-benar generik (TLK & PAS) — lihat penyelesaian/hari-8/README.md.
+   // Normalkan supaya partial ini benar-benar generik (TLK & PAS).
    $badgeClass = static fn (?object $case): string => $case === null
        ? 'text-bg-light'
        : (str_starts_with($case->badge(), 'text-bg-') ? $case->badge() : 'text-bg-' . $case->badge());
@@ -1220,7 +1218,7 @@ Memaparkan sejarah `status_logs` pada halaman butiran, dan menulis `PassAccessTe
 ## Lab 8.4 — Demo 3 Peranan & M2 Siap (S4)
 
 ### 🎯 Objektif
-Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahkan DoD, dan menggabungkan M2 ke `main`.
+Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahkan DoD, dan merge M2 ke `main`.
 
 ### Prasyarat
 - Lab 8.1–8.3 selesai; semua ujian hijau.
@@ -1231,7 +1229,7 @@ Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahk
 
 2. **Demo kepada rakan sebelah** (5 minit). Rakan sebelah memegang **senarai semak DoD** (README §4.2) dan menandakan setiap item yang dibuktikan semasa demo. Tukar peranan.
 
-3. **Gabung ke `main`:**
+3. **Merge ke `main`:**
 
    ```bash tab="Git Bash / macOS / Linux"
    composer test                             # SEMUA ujian (TLK + Pas) hijau
@@ -1394,7 +1392,7 @@ Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahk
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| Konflik gabung dalam `app/Config/Routes.php` | TLK dan Pas menambah route di tempat yang sama | Kekalkan **kedua-dua** kumpulan; jalankan `php spark routes` selepas menyelesaikan |
+| Konflik merge dalam `app/Config/Routes.php` | TLK dan Pas menambah route di tempat yang sama | Kekalkan **kedua-dua** kumpulan; jalankan `php spark routes` selepas menyelesaikan |
 | `pas:expire` tidak tersenarai | Namespace/folder salah | `app/Commands/`, `namespace App\Commands;`, kelas `extends BaseCommand` |
 | `Tiada actor sah` | Tiada pengguna dalam group `admin` | `php spark pas:expire --actor <id admin>` atau jalankan `UserSeeder` |
 | `pas:expire` tidak menjumpai pas yang tamat semalam (00:00–08:00) | `app.appTimezone` masih `UTC` | `.env`: `app.appTimezone = 'Asia/Kuala_Lumpur'` |
@@ -2045,7 +2043,7 @@ Tambah `testAdminBolehMulakanSemakanPukal` (admin melalui `pas.*`), dan `testIdT
 Menambah babak `admin` kepada demo M2: admin memohon, memulakan semakan pukal dan meluluskan permohonannya sendiri (SPEC §4 membenarkannya melalui `pas.*`); membuktikan BR-PAS-01 dengan dua pelulus serentak (`admin` dan `pelulus`); dan merekod dapatan pemisahan tugas untuk pemilik sistem dalam `docs/demo-m2.md`.
 
 ### Prasyarat
-- [Lab 8.4](#lab-84--demo-3-peranan--m2-siap-s4) siap: `feat/pas-kelulusan` (termasuk Lab 8.1b–8.3b) sudah digabung ke `main`.
+- [Lab 8.4](#lab-84--demo-3-peranan--m2-siap-s4) siap: `feat/pas-kelulusan` (termasuk Lab 8.1b–8.3b) sudah di-merge ke `main`.
 - Tetingkap `pelulus` (inkognito) dan `admin` (pelayar lain) log masuk.
 
 ### Langkah
@@ -2109,7 +2107,7 @@ Menambah babak `admin` kepada demo M2: admin memohon, memulakan semakan pukal da
 
 11. **Demo kepada rakan sebelah** (3 minit): langkah 4–8 sahaja. Rakan sebelah mengisi lajur *Hasil* baris 11–13 pada salinan mereka.
 
-12. **Commit & gabung:**
+12. **Commit & merge:**
 
     ```bash tab="Git Bash / macOS / Linux"
     git add docs/demo-m2.md && git commit -m "DOCS: demo M2 peranan admin + dapatan pemisahan tugas"

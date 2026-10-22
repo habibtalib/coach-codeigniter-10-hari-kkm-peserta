@@ -1,6 +1,6 @@
 # 04 · Validasi dan Borang
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -130,7 +130,7 @@ Peraturan terbina yang kerap digunakan dalam projek:
 | `regex_match[/…/]` | Format khas | plat `WXX 1234` |
 | `uploaded`, `max_size`, `ext_in`, `mime_in` | Fail | lihat [nota 07](./nota-07-muat-naik-fail-selamat.md) |
 
-> **Tip:** jana senarai `in_list` daripada enum supaya tidak berulang: `'in_list[' . implode(',', \App\Enums\PassType::values()) . ']'` (tambah `values()` pada enum seperti dalam [nota 03](./nota-03-model-entity-dan-enum.md)).
+> 💡 **Tip:** jana senarai `in_list` daripada enum supaya tidak berulang: `'in_list[' . implode(',', \App\Enums\PassType::values()) . ']'` (tambah `values()` pada enum seperti dalam [nota 03](./nota-03-model-entity-dan-enum.md)).
 
 ---
 

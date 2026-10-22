@@ -106,7 +106,7 @@ erDiagram
     }
 ```
 
-> 💡 **Tip:** `php spark db:table pass_applications --metadata` shows the type of each field straight from the DB. Compare it with SPEC §3 line by line.
+Check each field's type straight from the DB with `php spark db:table pass_applications --metadata`, then compare it with SPEC §3 line by line.
 
 ### 1.2 Two enums — one source of truth
 
@@ -218,10 +218,7 @@ public function ownedBy(int $userId): static
 
 `PassDocumentModel` in turn has a `mime` rule `in_list[application/pdf,image/jpeg,image/png]` and a `size_bytes` rule `less_than_equal_to[2097152]` — the last line of defence if some other code tries to save an invalid document.
 
-> ⚠️ **Common mistakes**
-> - Adding `status` to the form and letting `$allowedFields` accept it → the applicant can send `status=approved` using DevTools. The status is **set by the Service**, never from input.
-> - `protected $validationRules = ['pass_type' => 'in_list[' . implode(...) . ']'];` → *Fatal error: Constant expression contains invalid operations*. Move it to `initialize()`.
-> - Forgetting `'?integer'` → a `null` `vehicle_id` becomes `0`, and the FK fails (`Cannot add or update a child row`).
+> ⚠️ **Common mistake:** Forgetting `'?integer'` → a `null` `vehicle_id` becomes `0`, and the FK fails (`Cannot add or update a child row`).
 
 ### 🎯 Quiz S1
 
@@ -336,7 +333,7 @@ public function index(): string
 
 `purpose` is free text from the user — if it is displayed without `esc()`, a `<script>` in the application purpose will run in the browser of the **reviewing officer** (stored XSS). Attribute context uses `esc($x, 'attr')`.
 
-> 💡 **Tip:** The `(:num)` route parameter reaches the controller as a **string**. Declare `show(string $id)` and convert with `(int) $id` — clearer than relying on automatic type conversion.
+The `(:num)` route parameter reaches the controller as a **string**, so declare `show(string $id)` and convert it yourself with `(int) $id`.
 
 > ⚠️ **Common mistakes**
 > - `->where('user_id', …)` without a table prefix, then adding `join('users')` tomorrow → *Column 'user_id' in where clause is ambiguous*. Always `pass_applications.user_id`.
@@ -553,8 +550,6 @@ Tomorrow (Day 8 S3) we write automated PHPUnit tests for access control. File up
 ### 4.3 Recording bugs
 
 Each failed case → one row in the format *Steps to reproduce · Expected · Actual · Severity*. Follow the KOLABORASI §3 discipline: **reproduce → failing test → fix → passing test** — do not "fix" anything before you can reproduce the problem twice.
-
-> 💡 **Tip:** After each test, look in three places: (1) the message on screen, (2) `ls writable/uploads/pas/`, (3) `SELECT * FROM pass_documents ORDER BY id DESC LIMIT 3;`. A test that "passes" on screen but leaves an orphan file on disk has actually **failed**.
 
 ### 🎯 Quiz S4
 

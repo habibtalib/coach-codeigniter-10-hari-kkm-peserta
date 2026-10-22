@@ -1,6 +1,6 @@
 # 11 · Web Application Security (OWASP × CodeIgniter 4)
 
-> Topical notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
+Topical notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Note objectives
 
@@ -136,7 +136,7 @@ public array $globals = [
 fetch(url, { method: 'POST', headers: { '<?= csrf_header() ?>': '<?= csrf_hash() ?>' }, body: data });
 ```
 
-> CSRF only protects POST/PUT/PATCH/DELETE. So **don't** perform actions that change data through GET (e.g. `GET /tlk/tempahan/5/cancel`).
+> ⚠️ **Warning:** CSRF only protects POST/PUT/PATCH/DELETE. So **don't** perform actions that change data through GET (e.g. `GET /tlk/tempahan/5/cancel`).
 
 ---
 

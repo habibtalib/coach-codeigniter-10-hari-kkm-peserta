@@ -6,7 +6,7 @@
 
 ## 1. ERD rujukan (sepadan spesifikasi §3)
 
-> Semua jadual ada `id` INT UNSIGNED AUTO_INCREMENT PK, `created_at` dan `updated_at` (DATETIME NULL), kecuali `status_logs` (`created_at` sahaja — log audit tidak dikemas kini). `deleted_at` hanya pada `parking_slots`. Jadual `users` ialah jadual **Shield** — hanya medan tambahan kursus ditunjukkan (Shield juga mempunyai `username`, `status`, `active`, `last_active`, `deleted_at`; e-mel & kata laluan disimpan dalam `auth_identities`).
+Semua jadual ada `id` INT UNSIGNED AUTO_INCREMENT PK, `created_at` dan `updated_at` (DATETIME NULL), kecuali `status_logs` (`created_at` sahaja — log audit tidak dikemas kini). `deleted_at` hanya pada `parking_slots`. Jadual `users` ialah jadual **Shield** — hanya medan tambahan kursus ditunjukkan (Shield juga mempunyai `username`, `status`, `active`, `last_active`, `deleted_at`; e-mel & kata laluan disimpan dalam `auth_identities`).
 
 ```mermaid
 erDiagram

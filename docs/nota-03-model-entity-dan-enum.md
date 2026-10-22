@@ -1,6 +1,6 @@
 # 03 · Model, Entity dan Enum
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -51,15 +51,15 @@ enum BookingStatus: string   // "backed" — setiap case ada nilai string yang d
         };
     }
 
-    /** Kelas CSS Bootstrap 5.3 untuk badge */
+    /** Warna kontekstual Bootstrap 5.3 — guna sebagai `text-bg-{badge}`. */
     public function badge(): string
     {
         return match ($this) {
-            self::Pending   => 'text-bg-warning',
-            self::Approved  => 'text-bg-success',
-            self::Rejected  => 'text-bg-danger',
-            self::Cancelled => 'text-bg-secondary',
-            self::Expired   => 'text-bg-dark',
+            self::Pending   => 'warning',
+            self::Approved  => 'success',
+            self::Rejected  => 'danger',
+            self::Cancelled => 'secondary',
+            self::Expired   => 'dark',
         };
     }
 
@@ -127,7 +127,7 @@ BookingStatus::Approved->value;        // 'approved' — untuk simpan ke DB
 BookingStatus::Pending->label();       // 'Menunggu'
 ```
 
-> **Kenapa `match` dan bukan `switch`?** `match` mesti meliputi semua kes — jika anda tambah `case` baharu dan lupa kemas kini `label()`, PHP melontar `UnhandledMatchError` semasa ujian, bukan diam-diam memaparkan kosong.
+**Kenapa `match` dan bukan `switch`?** `match` mesti meliputi semua kes — jika anda tambah `case` baharu dan lupa kemas kini `label()`, PHP melontar `UnhandledMatchError` semasa ujian, bukan diam-diam memaparkan kosong.
 
 `SlotCategory` (`oku`, `mengandung`, `pegawai_kanan`, `kenderaan_rasmi`, `pelawat_vip`) dan `PassType` (`kenderaan`, `kakitangan`, `kontraktor`) ditulis dengan cara yang sama (hanya `label()`).
 
@@ -184,8 +184,6 @@ class SlotBooking extends Entity
 - Logik kecil yang **tentang rekod itu sendiri** (`isOwnedBy`, `durationDays`, `statusEnum`) duduk di satu tempat — view dan service memanggilnya, tidak mengulang.
 - Jenis data konsisten (`$casts`) — `user_id` sentiasa `int`, jadi `===` berfungsi.
 - `$entity->hasChanged('status')` membolehkan Model menyimpan medan yang berubah sahaja.
-
-> **Nota CI 4.7+:** CI 4.7 memperkenalkan cast `enum` (`'status' => 'enum[App\Enums\BookingStatus]'`) supaya `$booking->status` terus menjadi enum. Kursus ini menyasarkan **4.6+**, jadi kita guna getter `statusEnum()` yang berfungsi pada kedua-dua versi.
 
 ---
 
@@ -307,7 +305,7 @@ $id = $model->getInsertID();
 
 ```php
 <?php $status = $booking->statusEnum(); ?>
-<span class="badge <?= $status->badge() ?>"><?= esc($status->label()) ?></span>
+<span class="badge text-bg-<?= $status->badge() ?>"><?= esc($status->label()) ?></span>
 
 <?php if ($status === \App\Enums\BookingStatus::Approved && $booking->isOwnedBy(auth()->id())): ?>
     <form method="post" action="<?= site_url('tlk/tempahan/' . $booking->id . '/batal') ?>">

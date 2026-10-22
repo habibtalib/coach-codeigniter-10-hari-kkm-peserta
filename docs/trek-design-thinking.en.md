@@ -21,7 +21,7 @@ Empathize → Define → Ideate → Prototype → Test
 | 4. Prototype | Day 3 (reading: wireframes, [`rujukan-keperluan.md`](./rujukan-keperluan.md) Part 3 S3) | 20 min | `docs/dt/04-prototaip.md` |
 | 5. Test | Day 3, after class · repeat on Day 10 S3 (UAT) | 40 min | `docs/dt/05-ujian.md` |
 
-> **Where the files go:** `docs/dt/` is a folder in **your own repo** (`~/latihan/kelas-ci-<nama>/docs/dt/`, the repo created in Lab 2.2), **not** the `docs/` folder of this course page. Commit with the `DOCS:` prefix, e.g. `git commit -m "DOCS: DT persona & empathy map"`.
+**Where the files go:** `docs/dt/` is a folder in **your own repo** (`~/latihan/kelas-ci-<nama>/docs/dt/`, the repo created in Lab 2.2), **not** the `docs/` folder of this course page. Commit with the `DOCS:` prefix, e.g. `git commit -m "DOCS: DT persona & empathy map"`.
 
 The main input is your interview notes with the system owner in persona (Puan Noraini for TLK, Encik Faizal for Pass) in `docs/temubual-tlk.md` and `docs/temubual-pas.md`. The Design Thinking personas below are **fictional end users** (applicants, reviewers), not the system owner. All names and data are **synthetic**.
 

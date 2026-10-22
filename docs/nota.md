@@ -1,7 +1,7 @@
 # Nota Topikal — CI-KKM-10
 
-> Nota mendalam yang dirujuk **merentas hari**. README setiap `hari-N/` memberi ringkasan konsep sesi; folder ini menerangkan **kenapa** sesuatu corak digunakan, dengan kod beranotasi, kesilapan lazim dan pautan rasmi.
-> Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Jadual: [`JADUAL.md`](../JADUAL.md) · Kontrak kerja: [`docs/kolaborasi.md`](kolaborasi.md)
+Nota mendalam yang dirujuk **merentas hari**. README setiap `hari-N/` memberi ringkasan konsep sesi; folder ini menerangkan **kenapa** sesuatu corak digunakan, dengan kod beranotasi, kesilapan lazim dan pautan rasmi.
+Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Jadual: [`JADUAL.md`](../JADUAL.md) · Kontrak kerja: [`docs/kolaborasi.md`](kolaborasi.md)
 
 ## Cara guna
 
@@ -51,4 +51,4 @@ Setiap fail mempunyai struktur yang sama supaya mudah diimbas:
 - **Bacaan buku** — halaman berkaitan dalam *CodeIgniter 4 Foundations* (Lonnie Ezell, 2021), dengan nota di mana kursus ini berbeza daripada buku (buku ditulis untuk CI 4.1 dan terbit sebelum Shield). Nota 12 (Git) tiada bahagian ini.
 - **Digunakan pada Hari N** — sesi di mana nota ini dipakai.
 
-> **Disiplin AI:** jika anda meminta Claude Code menerangkan mana-mana nota ini, guna prompt dalam [`../docs/pustaka-prompt.md`](pustaka-prompt.md). Faham dahulu, terima kemudian.
+**Disiplin AI:** jika anda meminta Claude Code menerangkan mana-mana nota ini, guna prompt dalam [`../docs/pustaka-prompt.md`](pustaka-prompt.md). Faham dahulu, terima kemudian.

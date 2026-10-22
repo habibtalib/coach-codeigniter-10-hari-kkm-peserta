@@ -18,7 +18,7 @@ The local Git flow (branch, commit, merge, conflicts) is explained in [Note 12](
 | Day 2, Lab 2.2 (S2) | §2–§5: log in, HTTPS + Git Credential Manager, private project, trainer as Reporter, first push | 40 |
 | Day 4, Lab 4.4 (S4) | §6: `feat/…` branch → MR into your own `main` → comment → merge; a fresh clone in a second folder | 15 |
 
-> On Days 2–3 you push straight to `main`. From Day 4 S4, every change goes through a `feat/…` branch and an MR.
+On Days 2–3 you push straight to `main`. From Day 4 S4, every change goes through a `feat/…` branch and an MR.
 
 ---
 
@@ -52,7 +52,7 @@ ssh -T git@<gitlab-kkm>
 
 The first time, answer `yes` to the host fingerprint. The correct output: `Welcome to GitLab, @<pengguna>!` Switch the remote to SSH: `git remote set-url origin git@<gitlab-kkm>:<pengguna>/kelas-ci-<nama>.git`.
 
-> The file `~/.ssh/id_ed25519` (without `.pub`) is the **private** key. Never paste, commit or send it to anyone. Only `id_ed25519.pub` goes into GitLab.
+> ⚠️ **Warning:** The file `~/.ssh/id_ed25519` (without `.pub`) is the **private** key. Never paste, commit or send it to anyone. Only `id_ed25519.pub` goes into GitLab.
 
 ---
 

@@ -1,6 +1,6 @@
 # 12 · Git — Aliran Kerja Satu Cabang Satu Ciri
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Kontrak kerja: [`docs/kolaborasi.md`](kolaborasi.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Kontrak kerja: [`docs/kolaborasi.md`](kolaborasi.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -52,7 +52,7 @@ git config --global pull.rebase false                         # pull = merge (le
 git config --global core.editor "code --wait"                 # mesej commit dibuka dalam VS Code, bukan Vim
 ```
 
-> Tanpa `core.editor`, `git commit` tanpa `-m`, `git commit --amend` dan `git pull` yang mencipta commit merge membuka **Vim** dalam terminal. Terperangkap dalam Vim? Tekan `Esc`, taip `:wq`, tekan `Enter` (simpan & keluar). Dengan `code --wait`, Git membuka tab VS Code — sunting mesej, simpan, **tutup tab** itu untuk meneruskan.
+Dengan `code --wait`, Git membuka tab VS Code untuk mesej commit — sunting, simpan, **tutup tab** itu untuk meneruskan. Terperangkap dalam Vim? Lihat [`persediaan.md`](persediaan.md) §5.
 
 ### `.gitignore` — apa yang TIDAK boleh masuk Git
 
@@ -231,9 +231,7 @@ $routes->group('pas/permohonan', ['filter' => 'session'], static function ($rout
 
 Jika keliru dan mahu mula semula: `git merge --abort`.
 
-**Mengurangkan konflik:** pull `main` kerap; pecahkan `Routes.php` kepada blok ikut modul dengan komen penanda (`// ── TLK ──`, `// ── PAS ──`); jangan format semula keseluruhan fail dalam commit ciri.
-
-> Konflik migration: jangan sunting migration yang sudah dijalankan (di laptop lain atau di server) — cipta migration **baharu** (`php spark make:migration AddXToY`).
+**Mengurangkan konflik:** pull `main` kerap; pecahkan `Routes.php` kepada blok ikut modul dengan komen penanda (`// ── TLK ──`, `// ── PAS ──`); jangan format semula keseluruhan fail dalam commit ciri. Migration yang sudah dijalankan jangan disunting — cipta migration **baharu** (`php spark make:migration AddXToY`).
 
 ---
 
@@ -249,7 +247,7 @@ Jika keliru dan mahu mula semula: `git merge --abort`.
 | Undur commit yang sudah di-push (selamat) | `git revert <hash>` |
 | Tersilap commit pada `main` (belum push) | `git switch -c feat/nama-betul` → `git switch main` → `git reset --hard origin/main` |
 
-> `reset --hard` memadam perubahan setempat yang belum di-commit — semak `git status` dahulu.
+> ⚠️ **Amaran:** `reset --hard` memadam perubahan setempat yang belum di-commit — semak `git status` dahulu.
 
 ---
 

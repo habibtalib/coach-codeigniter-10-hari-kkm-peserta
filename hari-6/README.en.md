@@ -79,11 +79,7 @@ NO overlap        ⇔  E.end_date < N.start  OR  E.start_date > N.end
 OVERLAP           ⇔  NOT(…)  ⇔  E.start_date <= N.end  AND  E.end_date >= N.start
 ```
 
-That is the SPEC condition for BR-TLK-01: **`start_date <= :end AND end_date >= :start`**. Only two comparisons — covering all 5 cases above. Dates are **inclusive**: the last day of a booking still counts as used (N3 overlaps on 10 Oct).
-
-> ⚠️ **Common mistake:** Writing four `OR` conditions (starts inside, ends inside, covers, inside). It is easy to miss one case (usually "covers") and it is slower. Two `AND` conditions are already complete.
-
-> ⚠️ **Common mistake:** Using `<` and `>` (exclusive). Bookings 10–20 Oct and 20–25 Oct would be treated as not overlapping — two cars in the same slot on 20 Oct.
+That is the SPEC condition for BR-TLK-01: **`start_date <= :end AND end_date >= :start`**. Only two comparisons — covering all 5 cases above. Dates are **inclusive**: the last day of a booking still counts as used (N3 overlaps on 10 Oct). Four separate `OR` conditions (starts inside, ends inside, covers, inside) easily miss a case and run slower — these two `AND` conditions are already complete.
 
 ### 1.2 `SlotAvailabilityService`
 
@@ -150,9 +146,7 @@ WHERE parking_slots.is_active = 1
 ORDER BY parking_zones.code, parking_slots.slot_no
 ```
 
-The `/tlk/tempahan/ketersediaan` view is a **GET** form (filters in the URL → can be bookmarked & shared). The controller validates the dates with the normal validator before calling the service. Full file: `templates/kod/SlotAvailabilityService.php.txt` (**Templat & Rujukan** module).
-
-> 💡 **Tip:** The free-slot view is **information**, not a guarantee. Between the applicant seeing "A-02 free" and pressing "Hantar" (Submit), someone else may book it. That is why S2 checks again **inside a transaction**.
+The `/tlk/tempahan/ketersediaan` view is a **GET** form (filters in the URL → can be bookmarked & shared). The controller validates the dates with the normal validator before calling the service. Full file: `templates/kod/SlotAvailabilityService.php.txt` (**Templat & Rujukan** module). The free-slot list is information, not a guarantee: someone else may book the slot before the applicant presses "Hantar" (Submit), which is why S2 checks again **inside a transaction**.
 
 ### 🎯 Quiz S1
 
@@ -296,8 +290,6 @@ private function lockRow(string $table, int $id, string $columns = 'id'): ?objec
 | `reference_sequences` | Unique reference number (Day 5) | `Duplicate entry` |
 
 **CI4 nested transactions.** `ReferenceNumberService::next()` calls its own `transBegin()`. Because the same connection is already in a transaction, CI4 only increases the *depth* — the inner `transCommit()` does not really commit; only the outer transaction commits/rolls back. The result: if the booking fails, the reference number is **not lost** (no `0005 → 0007` gap). The condition: both services use the **same** connection — `db_connect()` (shared) in `Config\Services`. **Deadlock (1213) inside the outer transaction:** `next()` does **not** retry — InnoDB has already rolled back all of the `BookingService` work; the error is thrown to the caller. `next()` only retries when it owns its own transaction (`transDepth === 0`).
-
-> ⚠️ **Common mistake:** `SELECT … FOR UPDATE` **outside** a transaction. In *autocommit* mode, the lock is released immediately after the SELECT — no protection at all. A lock only means something between `transBegin()` and `transCommit()`.
 
 > ⚠️ **Common mistake:** Catching a `DomainException` inside the Service's `try` and carrying on. Every `throw` must reach the `catch (Throwable)` that calls `transRollback()` — otherwise the transaction is left open and the lock is held until the connection ends.
 
@@ -542,8 +534,6 @@ final class DecisionAccessTest extends CIUnitTestCase
 
 CSRF is enabled globally — in the functional tests' `setUp()` we **disable it for the tests only** (we are testing access, not CSRF) and restore it in `tearDown()`. Full code in Lab 6.3.
 
-> 💡 **Tip:** Write the test **failing first**. Example: write `testCreateRejectsOverlappingBooking` before adding `hasOverlap()` to `create()` → red → add it → green. That is the KOLABORASI §3 cycle: *reproduce → failing test → fix → passing test*.
-
 ### 🎯 Quiz S3
 
 1. Why do the `BookingServiceTest` tests use MySQL `kkm_latihan_test`, not the appstarter's default SQLite `:memory:`?
@@ -605,8 +595,6 @@ Badge:
 ```php
 <span class="badge text-bg-<?= esc($b->statusBadge(), 'attr') ?>"><?= esc($b->statusLabel()) ?></span>
 ```
-
-> ⚠️ **Common mistake:** Treating the confirmation dialog as a security control. It is only **UX**. An attacker sends a POST directly without JavaScript — the server (filter + `canTransitionTo()`) is what guards it.
 
 Final layout: `templates/kod/layout-main.php.txt` (**Templat & Rujukan** module).
 

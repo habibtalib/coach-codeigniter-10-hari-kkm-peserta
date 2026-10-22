@@ -17,8 +17,6 @@ From Day 2 you build your own application in `kelas-ci-<nama>`: route → contro
 1. Make sure your laptop is **ready** before class (T1).
 2. See the **Route → Controller → Model → View** flow once more in a separate project, following the official CI4 tutorial (T2).
 
-> 📚 The old tasks T3 (refine the ERD) and T4 (acceptance criteria) have been removed. A finished ERD is in [`erd-rujukan.md`](./erd-rujukan.md); the original ERD, data dictionary and AC material is now optional reading in [`rujukan-keperluan.md`](./rujukan-keperluan.md).
-
 ---
 
 ## T1 — Check the environment

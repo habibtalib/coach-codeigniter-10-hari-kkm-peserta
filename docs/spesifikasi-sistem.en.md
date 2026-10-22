@@ -185,9 +185,9 @@ Principles: **Thin controller** (receive request → call service → return vie
 | Day | Title (from the tentative schedule) | Main deliverable |
 |------|----------------------|---------------------------|
 | 1 | Project Kickoff & Requirement Deep Dive | Scope chart · initial list of functional (FR) & non-functional (NFR) requirements for TLK & Pass |
-| 2 | Requirement Finalization & Process Flow | **Approved URS** · as-is/to-be flowcharts · acceptance criteria (Given/When/Then) |
-| 3 | Database Design & UI/UX Foundation | **Mermaid ERD** · data dictionary · main screen wireframes · pre-course assignment handed out |
-| 4 | Assignment Review & Development Kickoff | CI4 project running · `.env` · Shield · **all migrations + seeders** · work plan & solo Git flow |
+| 2 | Requirement Sign-off & Your CI Project on GitLab | FRs confirmed with the system owner · `kelas-ci-<nama>` project on GitLab · route, controller, layout view · `/daftar` form with validation & CSRF |
+| 3 | Database, Migrations, Models & Search | `kkm_dev` database + `.env` · first migrations & seeders (`departments`, `parking_zones`) · model + `/jabatan` pages · `/zon` search & pagination |
+| 4 | Development Kickoff: Shield, Full Schema & Git Flow | MVC request cycle · Shield + roles · **all migrations + seeders** from the reference ERD · solo Git flow & first MR |
 | 5 | TLK (1) | Booking Model + Entity + CRUD · form + validation · `TLK-2026-0001` generated |
 | 6 | TLK (2) | Availability check · overlap prevention in a transaction · approve/reject · tests · **M1 done** |
 | 7 | Pass (1) | Application CRUD · form + secure document upload |
@@ -198,11 +198,11 @@ Principles: **Thin controller** (receive request → call service → return vie
 ## 8. Daily material format
 
 Each `hari-N/`:
-- `README.md` — **Learning Objectives** (measurable) · 4-session timetable (exact tentative times) · concept notes for each session · day deliverables · self-check · links.
+- `README.md` — **Learning Objectives** (measurable) · session timetable (exact times from [`JADUAL.md`](../JADUAL.md)) · concept notes for each session · day deliverables · self-check · links.
 - `lab.md` — hands-on: each lab is **🎯 Objective → Prerequisites → numbered steps → ✅ Checkpoint → 🧯 Troubleshooting → ⭐ Extra challenge**.
 - `nota-penceramah.md` — minute-by-minute time breakdown, key messages, questions to ask, common misconceptions, "done" criteria before moving on.
 
-Fixed daily rhythm (from the tentative schedule): 08:30–09:00 recap · S1 09:00–10:30 · break 10:30–10:45 · S2 10:45–12:30 · lunch 12:30–14:30 · S3 14:30–16:00 · S4 16:00–17:00.
+Daily rhythm: 08:30–09:00 recap · break 10:30–10:45 · lunch 12:30–14:30. Days 1, 2 and 10 have 4 sessions: S1 09:00–10:30 · S2 10:45–12:30 · S3 14:30–16:00 · S4 16:00–17:00. Days 3–9 have 8 sessions; each core session is followed by a follow-up session: S1 09:00–10:00 · S5 10:00–10:30 · S2 10:45–12:00 · S6 12:00–12:30 · S3 14:30–15:30 · S7 15:30–16:00 · S4 16:00–16:35 · S8 16:35–17:00 (Days 3 and 6 differ slightly; see `JADUAL.md`).
 
 ## 9. Additional details (locked while preparing the material)
 
@@ -222,7 +222,7 @@ Fixed daily rhythm (from the tentative schedule): 08:30–09:00 recap · S1 09:0
 | Environment | `app.appTimezone = 'Asia/Kuala_Lumpur'`; CSRF enabled manually in `Filters::$globals`; MySQL test DB `kkm_latihan_test` (not SQLite — no `FOR UPDATE`), empty `DBPrefix` |
 | Capstone rubric | Functionality 30 · Security 20 · Code quality 20 · Testing 15 · Demo 15 ([`docs/rubrik-capstone.md`](./rubrik-capstone.md)) |
 
-The reference code has been run on CodeIgniter 4.7.4 + Shield 1.4.1 + PHP 8.4 + MySQL (PHPUnit tests pass); "4.6+" remains valid.
+The reference code is tested on CodeIgniter 4.7.5 + Shield 1.4.1 + PHP 8.3 + MySQL (PHPUnit tests pass). Course minimum: CI 4.6+.
 
 ## 10. Don'ts
 

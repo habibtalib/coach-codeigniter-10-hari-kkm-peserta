@@ -1,6 +1,6 @@
 # 09 · Statistics, Chart.js & Cache
 
-> Topic notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
+Topic notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Notes objectives
 
@@ -266,7 +266,7 @@ class StatisticsService
 }
 ```
 
-> **Note:** the condition `b.status = 'approved'` in `join()` is a fixed literal (not user input) — safe. Never concatenate user input into a join/where string.
+> ⚠️ **Warning:** the condition `b.status = 'approved'` in `join()` is a fixed literal (not user input) — safe. Never concatenate user input into a join/where string.
 
 ---
 

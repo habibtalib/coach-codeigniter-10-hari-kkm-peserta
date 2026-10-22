@@ -1,8 +1,6 @@
 # Lab Day 5 — TLK Module (Part 1)
 
-[⬅️ README Day 5](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module) · [⚡ spark commands](../docs/arahan-spark.md)
-
-> **Lab rules:** individual work in `kelas-ci-<nama>`; show your output to the trainer or the person next to you before ticking it off. Every step gives **complete code to copy**. Read every line before you run it — you must be able to explain it (KOLABORASI §3). Stuck: read the full error message, ask the trainer or your neighbour, or use AI to *explain* the error. The Whoops page shows the file & line.
+[⬅️ README](./README.md) · [Schedule](../JADUAL.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module) · [⚡ spark commands](../docs/arahan-spark.md)
 
 | Lab | Session | Branch | Result |
 |-----|------|--------|-------|
@@ -282,7 +280,7 @@ Write the `BookingStatus` & `SlotCategory` enums, the `SlotBooking` Entity and t
    }
    ```
 
-   > ℹ️ `durationDays()` is the **display** duration (inclusive, +1): the maximum booking 2026-10-01 → 2026-12-30 shows *91 hari*. BR-TLK-03 instead checks `end_date − start_date ≤ 90` (date difference, no +1) — do not use `durationDays()` for that rule.
+   > ⚠️ `durationDays()` is the **display** duration (inclusive, +1): the maximum booking 2026-10-01 → 2026-12-30 shows *91 hari*. BR-TLK-03 instead checks `end_date − start_date ≤ 90` (date difference, no +1) — do not use `durationDays()` for that rule.
 
 5. Unit tests **without a DB** — `tests/tlk/BookingStatusTest.php`:
 
@@ -358,9 +356,7 @@ Write the `BookingStatus` & `SlotCategory` enums, the `SlotBooking` Entity and t
    php spark make:model SlotBookingModel --table slot_bookings
    ```
 
-   > `DepartmentModel` from Lab 3.3 does not change. `ParkingZoneModel` from Lab 3.4 only gains `dropdown()` — replace the file with the version below (`cari()` is kept). Without `--table`, the default table name is wrong (`parkingslots`); see [spark commands](../docs/arahan-spark.md).
-
-   > `make:model` generates many default settings. **Replace** the whole content of each generated file with the code below so you can read the Model on one screen.
+   `--table` is needed for `ParkingSlotModel` and `SlotBookingModel` — without it the default table name is wrong (`parkingslots`). **Replace** the whole content of each generated file with the code below. `DepartmentModel` (Lab 3.3) does not change; `ParkingZoneModel` (Lab 3.4) only gains `dropdown()`, so replace it with the version below (`cari()` is kept).
 
    | Model | `$returnType` | Special settings | Extra methods |
    |-------|---------------|--------------|-----------------|
@@ -601,7 +597,6 @@ Write the `BookingStatus` & `SlotCategory` enums, the `SlotBooking` Entity and t
    }
    ```
 
-
 7. Commit:
 
    ```bash
@@ -827,7 +822,7 @@ Build `Admin/SlotController` (list, add, edit, soft delete) and a paginated `Tlk
    <?= $this->endSection() ?>
    ```
 
-   > The `data-confirm` attribute will be switched on by the layout script on Day 6 S4. Today, delete happens straight away.
+   The `data-confirm` attribute only becomes active on Day 6 S4; today, delete happens straight away.
 
 4. `app/Views/admin/slot/form.php` — use `form_dropdown()` (the `form` helper is loaded in `BaseController`) and `old()`:
 
@@ -961,7 +956,7 @@ Build `Admin/SlotController` (list, add, edit, soft delete) and a paginated `Tlk
    <?= $this->endSection() ?>
    ```
 
-   > `url_to('tlk.show', …)` will throw an error until the `tlk.show` route is added in Lab 5.3. In the meantime, replace it with `#` **or** go ahead to Lab 5.3 step 1 first.
+   > ℹ️ `url_to('tlk.show', …)` will throw an error until the `tlk.show` route is added in Lab 5.3. In the meantime, replace it with `#` **or** go ahead to Lab 5.3 step 1 first.
 
 7. Test:
 
@@ -1019,7 +1014,7 @@ Build the booking form with server-side validation (including BR-TLK-03), `Refer
    $routes->get('(:num)', 'BookingController::show/$1', ['as' => 'tlk.show']);
    ```
 
-   > The `permission:tlk.apply` filter on a route is **added** to the group's `session` filter. Approvers (no `tlk.apply`) cannot apply.
+   The `permission:tlk.apply` filter is **added** to the group's `session` filter, so approvers (no `tlk.apply`) cannot apply.
 
 2. **Validation rules `BookingRules`** — README §3.2, complete with `parse()`:
 
@@ -1730,7 +1725,7 @@ Write `$validationRules` and Malay `$validationMessages` for `ParkingZoneModel` 
    }
    ```
 
-   > `{id}` in `is_unique[parking_zones.code,id,{id}]` is replaced with the `id` value in the data being validated: on **edit**, the zone's own row is excluded. CI4 requires a rule for the `id` field when `{id}` is used (the `DepartmentModel` pattern from Lab 3.3b). `{value}` in a message is replaced with the rejected value.
+   `{id}` in `is_unique[parking_zones.code,id,{id}]` is replaced with the `id` of the data being validated, so on **edit** the zone's own row is excluded; CI4 requires a rule for the `id` field when `{id}` is used (the `DepartmentModel` pattern from Lab 3.3b).
 
 2. **`VehicleModel`** — replace the whole Lab 5.1 file. `dropdownForUser()` stays; Malay messages and the **static** method `normalisePlate()` are added:
 
@@ -1794,7 +1789,7 @@ Write `$validationRules` and Malay `$validationMessages` for `ParkingZoneModel` 
    }
    ```
 
-   > `normalisePlate()` does not touch the DB, so it can be tested without a database and called without a Model object: `VehicleModel::normalisePlate($input)`.
+   `normalisePlate()` does not touch the DB, so it can be tested without a database and called without a Model object: `VehicleModel::normalisePlate($input)`.
 
 3. **Unit test without the DB** — `tests/tlk/VehicleModelTest.php`:
 

@@ -1,6 +1,6 @@
 # 01 · MVC dan Kitaran Request CodeIgniter 4
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -23,7 +23,7 @@ MVC memisahkan tiga tanggungjawab supaya perubahan di satu tempat tidak memecahk
 
 Projek kita menambah satu lapisan lagi: **Service** (`BookingService`, `PassWorkflowService`, …) untuk logik perniagaan. Sebabnya: peraturan seperti BR-TLK-01 (tiada pertindihan) perlu digunakan dari controller, Spark command **dan** ujian PHPUnit. Jika logik itu terperangkap dalam controller, ia tidak boleh diguna semula dan sukar diuji. Lihat [`05-service-layer-dan-transaksi.md`](./nota-05-service-layer-dan-transaksi.md).
 
-> **Prinsip SPEC §5:** *Controller nipis. Logik perniagaan dalam Service. Model = akses data + `$validationRules`. Enum = satu-satunya sumber status.*
+**Prinsip SPEC §5:** *Controller nipis. Logik perniagaan dalam Service. Model = akses data + `$validationRules`. Enum = satu-satunya sumber status.*
 
 ---
 
@@ -222,7 +222,7 @@ CI4 menyediakan **View Layouts** — satu fail kerangka (navbar, CSS Bootstrap) 
         <tr>
             <td><a href="<?= site_url('tlk/tempahan/' . $b->id) ?>"><?= esc($b->ref_no) ?></a></td>
             <td><?= esc($b->start_date) ?> – <?= esc($b->end_date) ?></td>
-            <td><span class="badge <?= $b->statusEnum()->badge() ?>"><?= esc($b->statusEnum()->label()) ?></span></td>
+            <td><span class="badge text-bg-<?= $b->statusEnum()->badge() ?>"><?= esc($b->statusEnum()->label()) ?></span></td>
         </tr>
     <?php endforeach ?>
     </tbody>

@@ -19,7 +19,7 @@ Di akhir hari ini, peserta boleh:
 | O5 | **Melaksanakan** muat naik selamat BR-PAS-02: nama `getRandomName()`, simpan di `writable/uploads/pas/`, hanya `stored_path` dalam DB, transaksi + pembersihan fail, muat turun melalui controller dengan semakan pemilikan | S3 | Fail di cakera bernama rawak; `public/` tiada fail; muat turun berjaya untuk pemilik sahaja |
 | O6 | **Menguji** sekurang-kurangnya 10 kes sempadan muat naik & validasi, dan **menerangkan** risiko OWASP yang setiap satu cegah | S4 | `docs/ujian-manual-pas.md` lengkap dengan keputusan Lulus/Gagal |
 | O7 | **Menulis** `PassType::icon()`, `PassStatus::pending()` dan kaedah Entity `validityDays()`/`daysRemaining()` yang boleh diuji dengan tarikh tetap | S5 | [Lab 7.1b](./lab.md#lab-71b--enum--entity-ikon-status-menunggu--tempoh-sah-s5); output `php spark shell` |
-| O8 | **Membina** penapis jenis dan carian dalam skop pemilik dengan `groupStart()`/`groupEnd()`, dan **membuktikan** kebocoran BR-PAS-04 jika kurungan tiada | S6 | [Lab 7.2b](./lab.md#lab-72b--penapis-jenis--carian-pada-permohonan-saya-s6); `pemohon2` di `?q=sintetik` → 1 permohonan |
+| O8 | **Membina** filter jenis dan carian dalam skop pemilik dengan `groupStart()`/`groupEnd()`, dan **membuktikan** kebocoran BR-PAS-04 jika kurungan tiada | S6 | [Lab 7.2b](./lab.md#lab-72b--penapis-jenis--carian-pada-permohonan-saya-s6); `pemohon2` di `?q=sintetik` → 1 permohonan |
 | O9 | **Membina** tambah dokumen susulan untuk pemilik dengan had 3 dokumen setiap permohonan, disemak sebelum `move()` dan di bawah kunci `FOR UPDATE` | S7 | [Lab 7.3b](./lab.md#lab-73b--tambah-dokumen-susulan-pada-permohonan-s7); dokumen ke-4 ditolak tanpa fail yatim |
 | O10 | **Mengautomasikan** kes sempadan Lab 7.4 dengan PHPUnit (`FakeUploadedFile`, `#[DataProvider]`) dan **menunjukkan** ujian menangkap mutasi `>` → `>=` | S8 | [Lab 7.4b](./lab.md#lab-74b--automasikan-kes-sempadan-dengan-phpunit-s8); `OK (14 tests, …)` |
 
@@ -34,7 +34,7 @@ Di akhir hari ini, peserta boleh:
 | 10:00–10:30 | S5 | Lanjutan S1: kaedah enum & Entity tambahan | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` diuji dalam `php spark shell` |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–12:00 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran |
-| 12:00–12:30 | S6 | Lanjutan S2: penapis jenis & carian | Penapis `?pass_type=` + carian `?q=` dalam skop pemilik; bukti kebocoran `orLike()` tanpa kurungan |
+| 12:00–12:30 | S6 | Lanjutan S2: filter jenis & carian | Filter `?pass_type=` + carian `?q=` dalam skop pemilik; bukti kebocoran `orLike()` tanpa kurungan |
 | 12:30–14:30 | — | Makan tengah hari | — |
 | 14:30–15:30 | S3 | Borang, validasi & muat naik dokumen | Muat naik fail selamat (jenis/saiz/nama rawak/luar `public`) |
 | 15:30–16:00 | S7 | Lanjutan S3: tambah dokumen susulan | Had 3 dokumen setiap permohonan, semakan sebelum `move()` dan di bawah kunci `FOR UPDATE` |
@@ -106,7 +106,7 @@ erDiagram
     }
 ```
 
-> 💡 **Tip:** `php spark db:table pass_applications --metadata` memaparkan jenis setiap medan terus dari DB. Bandingkan dengan SPEC §3 baris demi baris.
+Semak jenis setiap medan terus dari DB dengan `php spark db:table pass_applications --metadata`, kemudian bandingkan dengan SPEC §3 baris demi baris.
 
 ### 1.2 Dua enum — satu sumber kebenaran
 
@@ -218,10 +218,7 @@ public function ownedBy(int $userId): static
 
 `PassDocumentModel` pula mempunyai rule `mime` `in_list[application/pdf,image/jpeg,image/png]` dan `size_bytes` `less_than_equal_to[2097152]` — pertahanan terakhir jika ada kod lain cuba menyimpan dokumen yang tidak sah.
 
-> ⚠️ **Kesilapan lazim**
-> - Menambah `status` pada borang dan membiarkan `$allowedFields` menerimanya → pemohon boleh hantar `status=approved` menggunakan DevTools. Status **ditetapkan oleh Service**, tidak pernah dari input.
-> - `protected $validationRules = ['pass_type' => 'in_list[' . implode(...) . ']'];` → *Fatal error: Constant expression contains invalid operations*. Pindahkan ke `initialize()`.
-> - Lupa `'?integer'` → `vehicle_id` `null` menjadi `0`, dan FK gagal (`Cannot add or update a child row`).
+> ⚠️ **Kesilapan lazim:** Lupa `'?integer'` → `vehicle_id` `null` menjadi `0`, dan FK gagal (`Cannot add or update a child row`).
 
 ### 🎯 Kuiz S1
 
@@ -336,7 +333,7 @@ public function index(): string
 
 `purpose` ialah teks bebas pengguna — jika dipapar tanpa `esc()`, `<script>` dalam tujuan permohonan akan berjalan dalam pelayar **pegawai penyemak** (XSS tersimpan). Konteks atribut menggunakan `esc($x, 'attr')`.
 
-> 💡 **Tip:** Parameter route `(:num)` sampai ke controller sebagai **string**. Isytihar `show(string $id)` dan tukar `(int) $id` — lebih jelas daripada bergantung pada penukaran jenis automatik.
+Parameter route `(:num)` sampai ke controller sebagai **string**, jadi isytihar `show(string $id)` dan tukar sendiri dengan `(int) $id`.
 
 > ⚠️ **Kesilapan lazim**
 > - `->where('user_id', …)` tanpa awalan jadual, kemudian esok menambah `join('users')` → *Column 'user_id' in where clause is ambiguous*. Sentiasa `pass_applications.user_id`.
@@ -554,8 +551,6 @@ Esok (Hari 8 S3) kita menulis ujian PHPUnit automatik untuk kawalan akses. Muat 
 
 Setiap kes yang gagal → satu baris dengan format *Langkah untuk hasilkan semula · Dijangka · Sebenar · Keterukan*. Ikut disiplin KOLABORASI §3: **reproduce → ujian gagal → baiki → ujian lulus** — jangan "baiki" sebelum anda boleh menghasilkan semula masalah itu dua kali.
 
-> 💡 **Tip:** Selepas setiap ujian, lihat tiga tempat: (1) mesej pada skrin, (2) `ls writable/uploads/pas/`, (3) `SELECT * FROM pass_documents ORDER BY id DESC LIMIT 3;`. Ujian yang "lulus" di skrin tetapi meninggalkan fail yatim di cakera sebenarnya **gagal**.
-
 ### 🎯 Kuiz S4
 
 1. Menggunakan analisis nilai sempadan untuk BR-PAS-02 (saiz ≤ 2 MB), pasangan kes ujian manakah yang paling tepat?
@@ -623,7 +618,7 @@ Skop `ownedBy()` hanya selamat jika **setiap** syarat lain berada **di dalam** s
 
 `AND` diikat lebih kuat daripada `OR` dalam SQL. Inilah sebab `groupStart()`/`groupEnd()` wujud — gunakannya setiap kali `orWhere()`/`orLike()` digabung dengan skop keselamatan. `findVisibleOr404()` masih menyekat halaman butiran (404), tetapi senarai sudah membocorkan nombor rujukan, tujuan dan tarikh: **dua** lapisan diperlukan, bukan satu.
 
-Input penapis dijadikan enum dengan `PassType::tryFrom()` (nilai asing → `null` → tiada penapis) dan carian dipotong 50 aksara. `$pager->links()` mengekalkan `?pass_type=` dan `?q=` dalam pautan halaman seterusnya.
+Input filter dijadikan enum dengan `PassType::tryFrom()` (nilai asing → `null` → tiada filter) dan carian dipotong 50 aksara. `$pager->links()` mengekalkan `?pass_type=` dan `?q=` dalam pautan halaman seterusnya.
 
 Lab: [Lab 7.2b](./lab.md#lab-72b--penapis-jenis--carian-pada-permohonan-saya-s6)
 

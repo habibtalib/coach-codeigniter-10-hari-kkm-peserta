@@ -18,7 +18,7 @@ The CI4 and Shield commands were verified with CodeIgniter **4.7.5** + Shield **
 | F | First migration + seeder (`departments`, `parking_zones`) | `~/latihan/kelas-ci-<nama>` | Day 3 (Lab 3.2) | 20 |
 | G | `composer test` smoke test | `~/latihan/kelas-ci-<nama>` | Day 4 (Lab 4.2) | 10 |
 
-> **Two folders, two purposes.** `ci4-asas` is a **practice-only** project for Day 1 — not a Git repo, and safe to delete at any time. The real project is `kelas-ci-<nama>`: your private repo on GitLab (GitLab KKM), created in Day 2 Lab 2.2 and used up to Day 10. Parts B–G all happen in this folder. The course order is B → C → F → D → E → G (Part F is done on Day 3, before Shield). Neither folder needs to be in `C:\laragon\www`: the course serves the app with `php spark serve`, not Laragon's Apache.
+**Two folders, two purposes.** `ci4-asas` is a **practice-only** project for Day 1 — not a Git repo, and safe to delete at any time. The real project is `kelas-ci-<nama>`: your private repo on GitLab (GitLab KKM), created in Day 2 Lab 2.2 and used up to Day 10. Parts B–G all happen in this folder. The course order is B → C → F → D → E → G (Part F is done on Day 3, before Shield). Neither folder needs to be in `C:\laragon\www`: the course serves the app with `php spark serve`, not Laragon's Apache.
 
 ---
 
@@ -66,7 +66,7 @@ Run the `ci4-asas` practice project on <http://localhost:8080>, turn on the Debu
    php spark --version
    ```
 
-   > 🛡️ `composer create-project` slow, or `The process exceeded the timeout`? Windows Defender scans every file in `vendor/`. See [`persediaan.md`](./persediaan.md) §8 (`composer config --global process-timeout 900`, a scan exclusion if the ICT unit allows it).
+   > ⚠️ **Windows:** `composer create-project` slow, or `The process exceeded the timeout`? Windows Defender scans every file in `vendor/`. See [`persediaan.md`](./persediaan.md) §8 (`composer config --global process-timeout 900`, a scan exclusion if the ICT unit allows it).
 
 3. **Start the server:**
 
@@ -76,7 +76,7 @@ Run the `ci4-asas` practice project on <http://localhost:8080>, turn on the Debu
 
    Open <http://localhost:8080>. Stop it with Ctrl+C.
 
-   > 🛡️ The first time, **Windows Defender Firewall** may ask whether `php.exe` may use the network. Tick **Private networks** only → *Allow access*. If you pick *Cancel*, `localhost` still works; only other computers can't connect.
+   > ℹ️ **Windows:** the first time, **Windows Defender Firewall** may ask whether `php.exe` may use the network. Tick **Private networks** only → *Allow access*. If you pick *Cancel*, `localhost` still works; only other computers can't connect.
 
 4. **`.env` for development.** Copy the template:
 
@@ -149,7 +149,7 @@ Run the `ci4-asas` practice project on <http://localhost:8080>, turn on the Debu
     MSYS_NO_PATHCONV=1 php spark filter:check GET /hello
     ```
 
-    > **`MSYS_NO_PATHCONV=1`:** Git Bash converts arguments that start with `/` into Windows paths (`/hello` → `C:/Program Files/Git/hello`). This prefix turns the conversion off for one command. Command Prompt doesn't need it: `php spark filter:check GET /hello`.
+    > ⚠️ **Git Bash — `MSYS_NO_PATHCONV=1`:** Git Bash converts arguments that start with `/` into Windows paths (`/hello` → `C:/Program Files/Git/hello`). This prefix turns the conversion off for one command. Command Prompt doesn't need it: `php spark filter:check GET /hello`.
 
 ### You should see
 
@@ -324,7 +324,7 @@ Connect `kelas-ci-<nama>` to the `kkm_latihan` database with the `kkm_dev` user,
    database.default.DBCollat = utf8mb4_unicode_ci
    ```
 
-   > Port 8080 busy? Change it in **both** places: `app.baseURL = 'http://localhost:8081/'` and `php spark serve --port 8081`.
+   Port 8080 busy? Change it in **both** places: `app.baseURL = 'http://localhost:8081/'` and `php spark serve --port 8081`.
 
 3. Confirm Git ignores `.env` and the connection works:
 
@@ -381,7 +381,7 @@ Install CodeIgniter Shield, generate your own `UserModel`, turn off self-registr
 
    `shield:setup` copies `Auth.php`, `AuthGroups.php`, `AuthToken.php` into `app/Config/`, adds `service('auth')->routes($routes);` to `Routes.php`, sets CSRF to `session` and runs the Shield migrations.
 
-   > 🪟 In a separate Git Bash window (mintty, not the VS Code terminal), the interactive questions can hang. Put `winpty` in front: `winpty php spark shield:setup`.
+   > ⚠️ **Windows:** in a separate Git Bash window (mintty, not the VS Code terminal), the interactive questions can hang. Put `winpty` in front: `winpty php spark shield:setup`.
 
 2. Generate your own user model and add the profile fields in `app/Models/UserModel.php`:
 
@@ -508,7 +508,7 @@ Build the **route → controller → view** flow with one Bootstrap 5.3 layout (
 - `filter:check` → the *Before Filters* column for `/` contains `session`.
 - `php spark serve` → open <http://localhost:8080/> (not logged in) → **redirected** to `http://localhost:8080/login` (no `index.php` in the URL), the Shield login page.
 
-> There are no users to log in with yet — `UserSeeder` is built in Lab 4.3. **Don't** create your own test users in `kkm_latihan`: the Lab 4.3 checkpoint counts exactly 5 rows in `auth_groups_users`.
+> ⚠️ **Common mistake:** there are no users to log in with yet — `UserSeeder` is built in Lab 4.3. **Don't** create your own test users in `kkm_latihan`: the Lab 4.3 checkpoint counts exactly 5 rows in `auth_groups_users`.
 
 ### 🧯 Troubleshooting
 

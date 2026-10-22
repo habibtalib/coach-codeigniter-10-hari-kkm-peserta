@@ -1,8 +1,6 @@
 # Lab Day 7 — Pass Module (1): Model, CRUD & Secure Upload
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 7 notes](./README.md) · [⚡ spark commands](../docs/arahan-spark.md)
-
-> Work **individually** in `kelas-ci-<nama>`; show your output to the trainer or the person next to you before ticking it off. Run every command from the **root of your CI4 project** (the folder that contains `spark`). Every step gives **complete code to copy**. Read every line before you run it — you must be able to explain it (KOLABORASI §3). Stuck: read the full error message, ask the trainer or your neighbour, or use AI to *explain* the error.
+[⬅️ README](./README.md) · [Schedule](../JADUAL.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [⚡ spark commands](../docs/arahan-spark.md)
 
 | Lab | Session | Time | Outcome |
 |-----|---------|------|---------|

@@ -1,6 +1,6 @@
 # Lab Hari 3 — Database, Migration, Model & Carian
 
-[📅 Jadual](../JADUAL.md) · [📘 Spesifikasi](../docs/spesifikasi-sistem.md) · [📖 README Hari 3](./README.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 | Lab | Sesi | Hasil |
 |-----|------|-------|
@@ -13,7 +13,7 @@
 | [Lab 3.3b](#lab-33b--edit-jabatan-s7) | S7 | `/jabatan/<id>/edit` dengan `update()` dan `is_unique` `{id}`; commit di-push |
 | [Lab 3.4b](#lab-34b--butiran-zon--susunan-s8) | S8 | `/zon/<id>` (butiran + 404) dan susunan `?sort=`; commit di-push |
 
-> Semua kerja dalam projek **individu** `~/latihan/kelas-ci-<nama>` (Hari 2). Jadual & medan ikut [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §3 dan [`erd-rujukan.md`](../docs/erd-rujukan.md) — anda tidak perlu melukis ERD sendiri. Bahan ERD/kamus data/wireframe yang asal kini bacaan pilihan dalam [`rujukan-keperluan.md`](../docs/rujukan-keperluan.md).
+> ℹ️ Semua kerja dalam projek **individu** `~/latihan/kelas-ci-<nama>` (Hari 2). Jadual & medan ikut [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §3 dan [`erd-rujukan.md`](../docs/erd-rujukan.md) — anda tidak perlu melukis ERD sendiri. Bahan ERD/kamus data/wireframe yang asal kini bacaan pilihan dalam [`rujukan-keperluan.md`](../docs/rujukan-keperluan.md).
 
 ---
 
@@ -26,7 +26,7 @@ Mencipta database pembangunan dan ujian dengan pengguna khusus `kkm_dev`, menyam
 - [Lab 2.4](../hari-2/lab.md#lab-24--borang-validation--csrf-s4) siap: GitLab menunjukkan 4 commit.
 - Laragon → **Start All** (MySQL hijau). Terminal Git Bash dalam VS Code.
 
-> 🔍 **Bukti kerja:** platform menanda checkpoint lab hari ini apabila anda **lulus kuiz sesi** lab itu (Kuiz S1 untuk Lab 3.1, … Kuiz S4 untuk Lab 3.4, di halaman sesi) — soalannya hanya boleh dijawab dengan menjalankan kod.
+Checkpoint setiap lab hari ini ditanda apabila anda lulus kuiz sesinya (Kuiz S1 untuk Lab 3.1, … Kuiz S4 untuk Lab 3.4, di halaman sesi), yang hanya boleh dijawab dengan menjalankan kod.
 
 ### Langkah
 1. **Semak MySQL:**
@@ -675,7 +675,7 @@ Menyambung kumpulan database `tests` ke `kkm_latihan_test` melalui `.env`, membu
    ```
    Jadual kecil di atas output menunjukkan `database` = `kkm_latihan_test`, `DBDriver` = `MySQLi` dan `DBPrefix` kosong, diikuti *Database has no tables!*. Jalankan `php spark config:check Database` sekali lagi: blok `tests` kini mengikut `.env`.
 
-   Database ujian kekal kosong hari ini — jadualnya dibina oleh ujian PHPUnit Hari 6 (`DatabaseTestTrait`). **Jangan** jalankan `php spark migrate -g tests`: dalam CI 4.7 pilihan `-g` tidak menukar connection, jadi migration cuba mencipta jadual dalam `kkm_latihan`.
+   Database ujian kosong buat masa ini; Lab 4.4 (klon repo) dan ujian PHPUnit Hari 6 (`DatabaseTestTrait`) akan mengisinya. **Jangan** jalankan `php spark migrate -g tests`: dalam CI 4.7 pilihan `-g` tidak menukar connection, jadi migration cuba mencipta jadual dalam `kkm_latihan`.
 4. **Templat `.env.example`.** Cipta fail baharu `.env.example` di root projek (sebelah `.env`):
 
    `.env.example`
@@ -847,7 +847,7 @@ Menambah `/jabatan/(:num)/edit` (borang terisi) dan POST `/jabatan/(:num)` yang 
 ### Prasyarat
 - [Lab 3.3](#lab-33--model--halaman-jabatan-s3) siap: `/jabatan` menyenaraikan 5 jabatan termasuk `BPP`.
 
-> ⚠️ Uji edit pada `BPP` sahaja. **Jangan** tukar kod empat jabatan asal (`BTM`, `BKW`, `BSM`, `BPA`): `UserSeeder` Hari 4 mencari jabatan ikut kod. Lab ini tidak membina **padam** jabatan: mulai Hari 4 `users.department_id` merujuk `departments`, jadi memadam jabatan akan mengosongkan jabatan pengguna.
+> ⚠️ **Amaran:** Uji edit pada `BPP` sahaja. **Jangan** tukar kod empat jabatan asal (`BTM`, `BKW`, `BSM`, `BPA`): `UserSeeder` Hari 4 mencari jabatan ikut kod. Lab ini tidak membina **padam** jabatan: mulai Hari 4 `users.department_id` merujuk `departments`, jadi memadam jabatan akan mengosongkan jabatan pengguna.
 
 ### Langkah
 1. **Route** — tambah di bawah tiga route `jabatan` dalam `app/Config/Routes.php`:
@@ -1060,7 +1060,7 @@ Membina halaman butiran `/zon/(:num)` yang memulangkan 404 (`PageNotFoundExcepti
 ### Prasyarat
 - [Lab 3.4](#lab-34--carian--pagination-zon-s4) siap: `/zon` dengan carian dan pagination.
 
-> Lab ini **tidak** membina tambah/edit zon — CRUD pentadbir datang kemudian. `ParkingZoneModel` tidak diubah (Hari 5 menggantikan fail itu); semua logik baharu dalam controller dan view.
+Lab ini **tidak** membina tambah/edit zon (CRUD pentadbir datang kemudian) dan tidak mengubah `ParkingZoneModel` (Hari 5 menggantikannya); semua logik baharu dalam controller dan view.
 
 ### Langkah
 1. **Route** — tambah di bawah route `zon` dalam `app/Config/Routes.php`:

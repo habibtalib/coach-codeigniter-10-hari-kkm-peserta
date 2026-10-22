@@ -1,7 +1,7 @@
 # Senarai Semak Modul M1–M4
 
-> Guna di **hujung setiap sesi pembinaan** (S4 Hari 5–10) dan sebelum ✅ checkpoint jurulatih. Setiap baris dipetakan kepada **Definition of Done** ([`docs/kolaborasi.md`](kolaborasi.md) §2) dan peraturan perniagaan **`BR-*`** ([`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §2).
-> Salin fail ini ke repo projek anda (`docs/semakan-modul.md`) dan tandakan `[x]` sendiri. Satu baris hanya ditanda jika anda boleh menerangkannya kepada jurulatih atau rakan sebelah tanpa melihat nota.
+Guna di **hujung setiap sesi pembinaan** (S4 Hari 5–10) dan sebelum ✅ checkpoint jurulatih. Setiap baris dipetakan kepada **Definition of Done** ([`docs/kolaborasi.md`](kolaborasi.md) §2) dan peraturan perniagaan **`BR-*`** ([`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §2).
+Salin fail ini ke repo projek anda (`docs/semakan-modul.md`) dan tandakan `[x]` sendiri. Satu baris hanya ditanda jika anda boleh menerangkannya kepada jurulatih atau rakan sebelah tanpa melihat nota.
 
 ## Legenda DoD
 

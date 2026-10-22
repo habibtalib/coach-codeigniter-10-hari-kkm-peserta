@@ -1,6 +1,6 @@
 # 05 · Service Layer, Transactions & Race Conditions
 
-> Topical notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
+Topical notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Notes objectives
 
@@ -65,7 +65,7 @@ class BookingController extends BaseController
 }
 ```
 
-> What matters are the **four steps**: validate → service → catch domain error → redirect. The controller never touches `db_connect()`.
+What matters are the **four steps**: validate → service → catch domain error → redirect. The controller never touches `db_connect()`.
 
 ### Register the Service in `app/Config/Services.php`
 
@@ -180,7 +180,7 @@ if ($db->transStatus() === false) {
 }
 ```
 
-> **Remember:** transactions only work on the **InnoDB** engine (SPEC §1). MyISAM tables silently ignore transactions.
+> ⚠️ **Warning:** transactions only work on the **InnoDB** engine (SPEC §1). MyISAM tables silently ignore transactions.
 
 ---
 
@@ -336,7 +336,7 @@ public function hasOverlap(int $slotId, string $start, string $end, ?int $exclud
 }
 ```
 
-> **When approving** (`DecisionController` → `BookingService::approve()`), repeat the same pattern: lock the slot row `FOR UPDATE`, check overlap against `status = approved` only (ignore the record itself), then update + `status_logs`.
+**When approving** (`DecisionController` → `BookingService::approve()`), repeat the same pattern: lock the slot row `FOR UPDATE`, check overlap against `status = approved` only (ignore the record itself), then update + `status_logs`.
 
 ---
 

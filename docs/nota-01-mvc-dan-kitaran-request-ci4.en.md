@@ -1,6 +1,6 @@
 # 01 · MVC and the CodeIgniter 4 Request Cycle
 
-> Topic notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
+Topic notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Objectives of these notes
 
@@ -23,7 +23,7 @@ MVC separates three responsibilities so that a change in one place does not brea
 
 Our project adds one more layer: **Service** (`BookingService`, `PassWorkflowService`, …) for business logic. The reason: rules such as BR-TLK-01 (no overlap) must be used from the controller, a Spark command **and** PHPUnit tests. If that logic is trapped in a controller, it cannot be reused and is hard to test. See [`05-service-layer-dan-transaksi.md`](./nota-05-service-layer-dan-transaksi.md).
 
-> **SPEC §5 principle:** *Thin controllers. Business logic in Services. Model = data access + `$validationRules`. Enum = the single source of status.*
+**SPEC §5 principle:** *Thin controllers. Business logic in Services. Model = data access + `$validationRules`. Enum = the single source of status.*
 
 ---
 
@@ -222,7 +222,7 @@ CI4 provides **View Layouts** — one skeleton file (navbar, Bootstrap CSS) and 
         <tr>
             <td><a href="<?= site_url('tlk/tempahan/' . $b->id) ?>"><?= esc($b->ref_no) ?></a></td>
             <td><?= esc($b->start_date) ?> – <?= esc($b->end_date) ?></td>
-            <td><span class="badge <?= $b->statusEnum()->badge() ?>"><?= esc($b->statusEnum()->label()) ?></span></td>
+            <td><span class="badge text-bg-<?= $b->statusEnum()->badge() ?>"><?= esc($b->statusEnum()->label()) ?></span></td>
         </tr>
     <?php endforeach ?>
     </tbody>

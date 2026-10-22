@@ -1,7 +1,7 @@
 # Module Checklist M1–M4
 
-> Use it at the **end of every build session** (S4 of Days 5–10) and before the trainer's ✅ checkpoint. Each row maps to the **Definition of Done** ([`docs/kolaborasi.md`](kolaborasi.md) §2) and to the business rules **`BR-*`** ([`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §2).
-> Copy this file into your project repo (`docs/semakan-modul.md`) and tick `[x]` yourself. Only tick a row if you can explain it to the trainer or a neighbour without looking at your notes.
+Use it at the **end of every build session** (S4 of Days 5–10) and before the trainer's ✅ checkpoint. Each row maps to the **Definition of Done** ([`docs/kolaborasi.md`](kolaborasi.md) §2) and to the business rules **`BR-*`** ([`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) §2).
+Copy this file into your project repo (`docs/semakan-modul.md`) and tick `[x]` yourself. Only tick a row if you can explain it to the trainer or a neighbour without looking at your notes.
 
 ## DoD legend
 

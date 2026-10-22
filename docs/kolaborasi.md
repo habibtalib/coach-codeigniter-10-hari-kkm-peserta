@@ -1,6 +1,6 @@
 # KOLABORASI — Kontrak Kerja
 
-> Cara kerja sepanjang 10 hari. Kanun teknikal: [`docs/spesifikasi-sistem.md`](./spesifikasi-sistem.md).
+Cara kerja sepanjang 10 hari. Kanun teknikal: [`docs/spesifikasi-sistem.md`](./spesifikasi-sistem.md).
 
 ## 1. Git — satu branch per ciri
 

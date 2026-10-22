@@ -6,7 +6,7 @@
 
 ## 1. Reference ERD (matches specification §3)
 
-> Every table has `id` INT UNSIGNED AUTO_INCREMENT PK, `created_at` and `updated_at` (DATETIME NULL), except `status_logs` (`created_at` only — an audit log is never updated). `deleted_at` is only on `parking_slots`. The `users` table is a **Shield** table — only the course's extra fields are shown (Shield also has `username`, `status`, `active`, `last_active`, `deleted_at`; e-mail & password are stored in `auth_identities`).
+Every table has `id` INT UNSIGNED AUTO_INCREMENT PK, `created_at` and `updated_at` (DATETIME NULL), except `status_logs` (`created_at` only — an audit log is never updated). `deleted_at` is only on `parking_slots`. The `users` table is a **Shield** table — only the course's extra fields are shown (Shield also has `username`, `status`, `active`, `last_active`, `deleted_at`; e-mail & password are stored in `auth_identities`).
 
 ```mermaid
 erDiagram

@@ -1,6 +1,6 @@
 # 09 · Statistik, Chart.js & Cache
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -266,7 +266,7 @@ class StatisticsService
 }
 ```
 
-> **Nota:** keadaan `b.status = 'approved'` dalam `join()` ialah literal tetap (bukan input pengguna) — selamat. Jangan sesekali cantum input pengguna ke dalam string join/where.
+> ⚠️ **Amaran:** keadaan `b.status = 'approved'` dalam `join()` ialah literal tetap (bukan input pengguna) — selamat. Jangan sesekali cantum input pengguna ke dalam string join/where.
 
 ---
 

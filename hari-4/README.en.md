@@ -73,8 +73,6 @@ Each participant opens their own `kelas-ci-<nama>` GitLab project, shows `/zon?q
 | Request cycle | No `docs/kitaran-request.md` | Half the table, no evidence | 7 steps with Debug Toolbar / `spark routes` evidence |
 | Explanation | Cannot explain | Explains with help | Explains one step unaided with the right file |
 
-> 💡 **Tip:** The score is not for ranking — it decides **who needs help** during S2. Participants scoring ≤ 4 sit near the trainer.
-
 The news app from [`tugasan-persediaan.md`](../docs/tugasan-persediaan.md) is no longer required (T1–T2 optional) — the request cycle is traced directly on your project.
 
 ### 1.2 The CodeIgniter 4 request cycle
@@ -115,8 +113,6 @@ sequenceDiagram
 
 **Mapping to our project:** from tomorrow, step 5 is split in two — **Service** (business logic: overlap, 90-day limit, transactions) and **Model** (data access + format validation). A controller never contains business-rule `if`s.
 
-> ⚠️ **Common mistake:** "My controller calls `$db->query()` directly — it's faster." It works, but it cannot be tested without HTTP, cannot be reused by a Spark command, and raw SQL easily gets mixed with user input. SPEC §5: *Thin controller, logic in the Service.*
-
 ### 🎯 Quiz S1
 
 1. In the CI4 request cycle, which component runs **before** the controller and decides whether the user can reach the controller?
@@ -141,7 +137,7 @@ sequenceDiagram
 
 Your project was created on Day 2 ([Lab 2.2](../hari-2/lab.en.md#lab-22--your-ci-project-on-gitlab-s2)) — today there is no new project and no `ci4-tmp` copy. The same structure now receives Shield, the Bootstrap layout and 8 more migrations.
 
-> 📌 **Version:** this course needs **CodeIgniter 4.6+**. On Day 2, `composer create-project` may have installed **4.7.x** — that is fine; all the code in this material has been tested on 4.7 with Shield 1.4. A small difference you may notice: the test config file is named `phpunit.dist.xml` (4.7) or `phpunit.xml.dist` (4.6).
+> ℹ️ **Version:** the course needs **CodeIgniter 4.6+** and this material is tested on 4.7.5 + Shield 1.4.1; the only difference you may notice is the test config file name (`phpunit.dist.xml` on 4.7, `phpunit.xml.dist` on 4.6).
 
 ```text
 kelas-ci-<nama>/
@@ -157,7 +153,7 @@ kelas-ci-<nama>/
 └── spark           ← CLI: php spark …
 ```
 
-> 💡 **Tip:** If you wonder "where should this file go?" — application code → `app/`; files generated at runtime → `writable/`; files the browser loads directly → `public/`. Pass upload documents (Day 7) go into `writable/uploads/`, **not** `public/`.
+Application code → `app/`; files generated at runtime → `writable/`; files the browser loads directly → `public/`. So Pass upload documents (Day 7) go into `writable/uploads/`, **not** `public/`.
 
 ### 2.2 `.env` — per-machine configuration
 
@@ -190,7 +186,7 @@ database.default.DBCollat = utf8mb4_unicode_ci
 | `app.appTimezone` | CI4 sets the PHP time zone from this value. The default `UTC` → between 00:00–08:00 Malaysia time, "today" is still yesterday and the *start date not in the past* rule (BR-TLK-03) goes wrong |
 | `database.default.*` | Connection for the `default` group. The `tests` group (Day 6) is set separately |
 
-> ⚠️ **Common mistake:** Editing `app/Config/Database.php` with the real password. That file **is committed**. Passwords go in `.env` only.
+> ⚠️ **Warning:** Never put the real password in `app/Config/Database.php` — that file **is committed**. Passwords go in `.env` only.
 
 ### 2.3 CodeIgniter Shield — what we get
 
@@ -257,9 +253,7 @@ public array $matrix = [
 ];
 ```
 
-Every permission must also be declared in `$permissions` (key + Malay description). Full file: `templates/kod/AuthGroups.php.txt` (**Templat & Rujukan** module).
-
-> 💡 **Tip:** `group:admin` asks "*who* are you?"; `permission:tlk.decide` asks "*what* can you do?". Prefer **permissions** — if tomorrow admins must also approve, only the matrix changes, not Routes.
+Every permission must also be declared in `$permissions` (key + Malay description). Full file: `templates/kod/AuthGroups.php.txt` (**Templat & Rujukan** module). Prefer `permission:tlk.decide` (*what* you can do) over `group:admin` (*who* you are): if tomorrow admins must also approve, only the matrix changes, not Routes.
 
 **CSRF is already global** (KOLABORASI §5) since [Lab 2.4](../hari-2/lab.en.md#lab-24--form-validation--csrf-s4) — `shield:setup` does **not** change it (CI 4.6/4.7). After setup, check that `app/Config/Filters.php` still looks like this and that `php spark routes` still shows `csrf` in the *Before Filters* column:
 
@@ -298,7 +292,7 @@ The layout includes the partial `partials/flash.php`, which shows the `session('
 
 In the layout, the navbar shows menus **by permission** (`$user->can('tlk.decide')`, `$user->inGroup('admin')`). Remember: hiding a menu is only a **UI convenience**. The real control is the route filter on the server.
 
-> ⚠️ **Common mistake:** `<?= $user->full_name ?>` without `esc()`. If someone registers with the name `<script>…</script>`, that script runs in the approver's browser (stored XSS). **Every** data output → `esc()`; inside an HTML attribute → `esc($x, 'attr')`.
+> ⚠️ **Warning:** `<?= $user->full_name ?>` without `esc()` is stored XSS — a name like `<script>…</script>` runs in the approver's browser. **Every** data output → `esc()`; inside an HTML attribute → `esc($x, 'attr')`.
 
 Full reference layout: `templates/kod/layout-main.php.txt` (**Templat & Rujukan** module).
 
@@ -344,7 +338,7 @@ The table design is already done: [`erd-rujukan.md`](../docs/erd-rujukan.md) and
 
 ### 3.2 Migration order = FK order
 
-A parent table **must exist** before the child table that references it. The timestamp in the file name (`2026-01-05-090001_…`) decides the order.
+A parent table **must exist** before the child table that references it. The timestamp in the file name (`2026-01-05-090001_…`) decides the order, so generate the 8 remaining files one at a time in the diagram's order below (03 → 10) with `php spark make:migration AddProfileFieldsToUsers`, `CreateParkingSlotsTable`, … — the automatic timestamps sort them after the two Day 3 migrations.
 
 ```mermaid
 flowchart TD
@@ -361,8 +355,6 @@ flowchart TD
     U2 --> SL["09 status_logs"]
     RS["10 reference_sequences (no FK)"]
 ```
-
-> 💡 **Tip:** Generate the 8 remaining files one at a time **in the order above** (03 → 10) with `php spark make:migration AddProfileFieldsToUsers`, `CreateParkingSlotsTable`, … — the automatic timestamps will sort them after the two Day 3 migrations.
 
 ### 3.3 From the reference ERD to Forge
 
@@ -442,8 +434,6 @@ $this->forge->processIndexes('users');   // apply the key/FK added above to the 
 
 All 10 migrations (tested with `migrate` + `migrate:rollback`): `templates/kod/migration-core-tables.php.txt` (**Templat & Rujukan** module).
 
-> ⚠️ **Common mistake:** Mismatched FK types — `user_id` INT (signed) referencing `users.id` INT **UNSIGNED** → MySQL `errno: 150 "Foreign key constraint is incorrectly formed"`. Both columns must have the same type & `unsigned`.
-
 ### 3.4 Seeders — repeatable synthetic data
 
 Seeders fill in the initial data. Our requirement: **idempotent** (can be run again and again without errors).
@@ -498,8 +488,6 @@ Password for all: **`Latihan@2026`**. Full file: `templates/kod/UserSeeder.php.t
 | `php spark make:seeder XSeeder` | Generate a seeder |
 | `php spark db:seed DatabaseSeeder` | Run a seeder |
 | `php spark db:table --show` / `db:table users --metadata` | View tables / structure without a GUI |
-
-> ⚠️ **Common mistake:** Changing a migration file that **has already been run**, then `php spark migrate` → "Nothing to migrate". CI4 does not re-read the file contents: the `migrations` table records `version` (the file-name timestamp) + `class`, and a migration whose `version` + `class` pair is already in the table is skipped. During early development: `migrate:rollback` → change → `migrate`. After the code is shared: write a **new** migration.
 
 ### 🎯 Quiz S3
 
@@ -567,9 +555,7 @@ gitGraph
 
 A feature is "done" only when **all seven** boxes are ticked: the specification §2 business rules (BR) pass manual testing · validation on the server · access controlled on the server · status transitions logged · PHPUnit tests pass · no `.env`/secrets in commits · **you can explain every line to the trainer**. Copy this list into `docs/pelan-kerja.md`.
 
-> 💡 **Tip — AI discipline:** Claude Code can explain an `errno: 150` error or suggest an index name. It does **not** generate whole modules for you to copy. Quick test: can you explain that line without looking at the AI screen?
-
-> ⭐ **Side track (optional):** [Jira](../docs/trek-jira.md): plan the first *sprint* before you start coding. [GitLab](../docs/trek-gitlab.md): the CI4 project through the first *merge request*. Not counted in progress; this is the last step of the track.
+**Side tracks (optional):** [Jira](../docs/trek-jira.md) · [GitLab](../docs/trek-gitlab.md)
 
 ### 🎯 Quiz S4
 

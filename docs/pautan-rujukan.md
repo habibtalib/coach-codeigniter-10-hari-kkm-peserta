@@ -1,7 +1,7 @@
 # Pautan Rujukan Rasmi — ikut hari
 
-> Semua pautan disemak pada September 2026. Dokumentasi CodeIgniter merujuk **versi terkini 4.x** (serasi 4.6+). Jika contoh dalam dokumentasi berbeza dengan nota kursus, **docs/spesifikasi-sistem.md menentukan nama**, dokumentasi rasmi menentukan **API**.
-> Nota topikal: [`nota.md`](nota.md)
+Semua pautan disemak pada September 2026. Dokumentasi CodeIgniter merujuk **versi terkini 4.x** (serasi 4.6+). Jika contoh dalam dokumentasi berbeza dengan nota kursus, **docs/spesifikasi-sistem.md menentukan nama**, dokumentasi rasmi menentukan **API**.
+Nota topikal: [`nota.md`](nota.md)
 
 ## Rujukan teras (buka sepanjang kursus)
 
@@ -14,7 +14,7 @@
 | Mermaid | <https://mermaid.js.org/intro/> |
 | OWASP Top 10 | <https://owasp.org/Top10/> |
 
-> Tip: dalam User Guide CI4, guna kotak carian di kiri atas. Pastikan halaman bukan untuk **CodeIgniter 3** (`codeigniter.com/userguide3/`).
+> 💡 **Tip:** dalam User Guide CI4, guna kotak carian di kiri atas. Pastikan halaman bukan untuk **CodeIgniter 3** (`codeigniter.com/userguide3/`).
 
 ---
 

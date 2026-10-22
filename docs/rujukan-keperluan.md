@@ -139,8 +139,6 @@ flowchart TB
 - Melupakan lorong **Sistem**. Banyak peraturan (nombor rujukan, tamat tempoh, log) dilakukan oleh sistem, bukan manusia.
 - Carta terlalu terperinci (setiap klik butang). Carta alir menunjukkan **langkah perniagaan**, bukan interaksi UI — itu tugas wireframe (Hari 3).
 
-> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Define/Ideate](../docs/trek-design-thinking.md): tulis problem statement dan soalan How Might We untuk to-be anda. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
-
 ### S3 — Acceptance Criteria Given/When/Then (14:30–16:00)
 
 #### 3.1 Anatomi AC
@@ -270,8 +268,6 @@ Senario: Pemohon tidak boleh lihat permohonan orang lain
 | `When pengguna isi borang dan hantar dan semak status` | Tiga tindakan | Pecah kepada tiga senario |
 | `Given ada data` | Data tidak konkrit | `Given slot A-01 ada tempahan approved 2026-10-01 hingga 2026-10-10` |
 | `Then sistem guna FOR UPDATE` | Menguji pelaksanaan, bukan tingkah laku | Uji hasil: dua kelulusan serentak → hanya satu berjaya |
-
-> ⭐ **Trek sampingan (pilihan):** [Jira](../docs/trek-jira.md): tukar FR anda menjadi story Jira dengan acceptance criteria Given/When/Then. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
 
 ### S4 — Muktamadkan URS v1.0 (16:00–17:00)
 
@@ -512,7 +508,7 @@ Semalam anda disuruh menyenaraikan kata nama dalam URS. Tapis senarai itu:
 | Kategori slot, status, jenis pas | ❌ bukan jadual | Nilai tetap → **enum PHP** (`SlotCategory`, `BookingStatus`, `PassStatus`, `PassType`) disimpan sebagai `VARCHAR(20)` |
 | Laporan, statistik | ❌ bukan jadual | Dikira daripada data sedia ada (M3/M4) |
 
-> 💡 **Tip:** Peranan **bukan** medan dalam `users`. Shield menyimpannya dalam jadual `auth_groups_users` sendiri. Jangan tambah `users.role` — ia akan bercanggah dengan Shield.
+> ⚠️ **Kesilapan lazim:** peranan **bukan** medan dalam `users`. Shield menyimpannya dalam jadual `auth_groups_users` sendiri. Jangan tambah `users.role` — ia akan bercanggah dengan Shield.
 
 #### 1.2 Kardinaliti
 
@@ -541,9 +537,7 @@ Semalam anda disuruh menyenaraikan kata nama dalam URS. Tapis senarai itu:
 | `\|\|--\|{` | tepat satu → satu atau banyak |
 | `\|\|--\|\|` | tepat satu → tepat satu |
 
-
-> ERD rujukan penuh: [`erd-rujukan.md`](./erd-rujukan.md).
-
+Hubungan penuh semua 10 jadual dilukis dalam [`erd-rujukan.md`](./erd-rujukan.md).
 
 ### S2 — Jadual, Medan & Hubungan; Kamus Data & 3NF (10:45–12:30)
 
@@ -607,8 +601,6 @@ Index bermula dengan `slot_id` — MySQL terus melompat ke tempahan slot itu sah
 | `pass_documents.application_id` | `CASCADE` | Dokumen milik permohonan sepenuhnya |
 | `status_logs.actor_id` | `RESTRICT` | Jejak audit mesti kekal |
 
-> 💡 **Tip:** `parking_slots` menggunakan **soft delete** (`deleted_at`) kerana slot yang ditutup masih dirujuk oleh tempahan lama. Soft delete + `RESTRICT` = sejarah selamat.
-
 #### 2.4 Normalisasi ke 3NF — worked example
 
 Kerani Unit Keselamatan menyimpan hamparan Excel ini (data rekaan):
@@ -662,7 +654,6 @@ flowchart LR
 | `pass_documents` | — | `mime`, `size_bytes` disimpan untuk semakan & paparan |
 | `status_logs` | — | `from_status` NULL untuk rekod pertama (cipta → `pending`/`submitted`) |
 | `reference_sequences` | (`prefix`, `year`) | Satu baris setiap prefix setahun |
-
 
 ### S3 — Wireframe UI/UX Skrin Utama (14:30–16:00)
 
@@ -730,7 +721,7 @@ flowchart LR
  Dijana sistem (tidak dalam borang): ref_no, user_id, status=pending
 ```
 
-> 💡 **Tip:** Perhatikan medan yang **tiada** dalam borang: `user_id`, `status`, `ref_no`, `decided_by`. Jika ia dihantar dari borang, pengguna boleh memalsukannya (mass assignment). Wireframe yang baik menandakan medan "dijana sistem" secara jelas — Hari 5 ia menjadi `$allowedFields` yang ketat.
+> ⚠️ **Amaran:** perhatikan medan yang **tiada** dalam borang: `user_id`, `status`, `ref_no`, `decided_by`. Jika ia dihantar dari borang, pengguna boleh memalsukannya (mass assignment). Wireframe yang baik menandakan medan "dijana sistem" secara jelas — Hari 5 ia menjadi `$allowedFields` yang ketat.
 
 #### 3.5 Contoh wireframe W5 — Semakan pas
 
@@ -761,11 +752,8 @@ flowchart LR
 ⚠️ **Kesilapan lazim:**
 - Wireframe dengan butang yang tiada FR (cth "Edit permohonan" — pemilik sistem kata tidak boleh edit selepas hantar).
 - Tiada ruang untuk **mesej ralat** dan **keadaan kosong** ("Tiada tempahan lagi. [Mohon baharu]").
-- Menunjukkan butang Lulus kepada `reviewer` (tiada `pas.approve`). Butang ikut kebenaran — dan pelayan menyemak semula.
+- Menunjukkan butang Lulus kepada `reviewer` (tiada `pas.approve`). Butang ikut kebenaran — dan server menyemak semula.
 - Terlalu cantik terlalu awal. Jika anda memilih warna, anda sudah terlalu jauh untuk hari ini.
-
-> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Prototype](../docs/trek-design-thinking.md): lukis *journey map*, kemudian terjemahkan kepada wireframe. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
-
 
 ### S4 — Semakan Reka Bentuk & Tugasan Persediaan (16:00–17:00)
 
@@ -804,7 +792,7 @@ Diedarkan hari ini, disemak **Hari 4 S1 (09:00)**. Butiran penuh & rubrik: [`doc
 | T3 | Perhalusi ERD anda berdasarkan semakan hari ini | 30 minit |
 | T4 | Tulis 3 acceptance criteria baharu (Given/When/Then) | 30 minit |
 
-> ⭐ **Trek sampingan (pilihan):** [Design Thinking — Test](../docs/trek-design-thinking.md): buat hallway test wireframe dengan seorang rakan. [GitLab](../docs/trek-gitlab.md): log masuk, kunci SSH, projek *private* dan MR pertama. Tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
+**Trek sampingan (pilihan):** [Design Thinking](../docs/trek-design-thinking.md) · [Jira](../docs/trek-jira.md) · [GitLab](../docs/trek-gitlab.md) — tidak dikira dalam kemajuan; siapkan sebelum Hari 4.
 
 ---
 
@@ -974,7 +962,7 @@ Melakar wireframe kesetiaan rendah bagi 6 skrin utama mengikut aliran pengguna t
 
 #### ✅ Checkpoint
 - 6 fail PNG + sumber dalam `docs/wireframe/`.
-- Setiap medan borang W2 dan W4 wujud dalam `docs/kamus-data.md` (kecuali Zon di W2 — penapis paparan, ditanda "tidak disimpan").
+- Setiap medan borang W2 dan W4 wujud dalam `docs/kamus-data.md` (kecuali Zon di W2 — filter paparan, ditanda "tidak disimpan").
 - W2 dan W4 **tidak** mengandungi `user_id`, `status` atau `ref_no` sebagai input.
 - Label status BM tepat: Menunggu, Diluluskan, Ditolak, Dibatalkan, Tamat Tempoh, Dihantar, Dalam Semakan.
 - W5 menunjukkan butang berbeza untuk `reviewer` dan `approver`.

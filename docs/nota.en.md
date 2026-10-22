@@ -1,7 +1,7 @@
 # Topical Notes — CI-KKM-10
 
-> In-depth notes referred to **across days**. Each `hari-N/` README gives a summary of the session concepts; this folder explains **why** a pattern is used, with annotated code, common mistakes and official links.
-> Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Schedule: [`JADUAL.md`](../JADUAL.md) · Working agreement: [`docs/kolaborasi.md`](kolaborasi.md)
+In-depth notes referred to **across days**. Each `hari-N/` README gives a summary of the session concepts; this folder explains **why** a pattern is used, with annotated code, common mistakes and official links.
+Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Schedule: [`JADUAL.md`](../JADUAL.md) · Working agreement: [`docs/kolaborasi.md`](kolaborasi.md)
 
 ## How to use
 
@@ -51,4 +51,4 @@ Every file has the same structure so it is easy to scan:
 - **Book reading** — the matching pages in *CodeIgniter 4 Foundations* (Lonnie Ezell, 2021), with a note where this course differs from the book (the book targets CI 4.1 and predates Shield). Note 12 (Git) has no such section.
 - **Used on Day N** — the sessions where this note is used.
 
-> **AI discipline:** if you ask Claude Code to explain any of these notes, use the prompts in [`../docs/pustaka-prompt.md`](pustaka-prompt.md). Understand first, accept later.
+**AI discipline:** if you ask Claude Code to explain any of these notes, use the prompts in [`../docs/pustaka-prompt.md`](pustaka-prompt.md). Understand first, accept later.

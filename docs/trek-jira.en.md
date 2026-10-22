@@ -5,7 +5,7 @@
 
 > ⚠️ **Finish before Day 4.** Coding starts on Day 4. Setup and the backlog happen on Days 1–2, stories with acceptance criteria on Day 2, and sprint planning on Day 4 S4 before the first line of module code.
 
-> 🔒 **Synthetic data only.** Jira Cloud is an external service. Don't put real KKM data (patient/staff names, real plates), screenshots of internal systems, passwords or `.env` content into cards. Use made-up values as in SPEC §10 (`pemohon1@latihan.test`, `WXX 1234`).
+> ⚠️ **Warning — synthetic data only.** Jira Cloud is an external service. Don't put real KKM data (patient/staff names, real plates), screenshots of internal systems, passwords or `.env` content into cards. Use made-up values as in SPEC §10 (`pemohon1@latihan.test`, `WXX 1234`).
 
 ## 1. Purpose
 
@@ -22,7 +22,7 @@ At the office, most IT teams track work in a tool such as Jira. This track build
 
 **Core rule:** every piece of work has a card. If you are working on something that isn't on the board, stop and create its card first.
 
-> 💡 **Current Jira terms.** The Jira Cloud interface now calls a *project* a **space**, an *issue* a **work item** and an *issue type* a **work type**. This page uses the current menu labels (space, work item), but the concepts are the same as in older Jira material.
+> 💡 **Current Jira terms.** The Jira Cloud interface now calls a *project* a **space**, an *issue* a **work item** and an *issue type* a **work type**. This page uses the current menu labels (space, work item), but the concepts are the same as in older Jira material. Prices, plan limits and importer menus can also change; if they differ on the course day, follow the Atlassian page.
 
 ## 2. When
 
@@ -68,8 +68,6 @@ Checked on 2026-10-15 against the official Atlassian pages (see Sources):
 | Agile features | Scrum and Kanban boards, backlog, agile reporting |
 | Support | Atlassian Community only |
 | Limits | Permissions, roles and work-item-level security are limited; configuration shared between spaces isn't available |
-
-> Plan prices and limits can change. If the Atlassian page shows different figures on the course day, follow that page.
 
 ### 4.2 Create the site & space
 
@@ -250,8 +248,6 @@ Format rules: wrap content that contains commas in `"…"`; don't drop the comma
 5. Map the values: a team-managed space only accepts work types that **already exist** (Epic, Story, Task, Bug) → **Begin Import**.
 6. Open the backlog: check that every Story has an Epic as its parent and that the number of Stories equals the number of Story rows in the CSV.
 
-> Jira's importer menus change from time to time. If the menu labels differ, see the Atlassian page *Import data from a CSV file* (Sources section).
-
 ## 7. Sprints before code
 
 ### 7.1 Sprint map
@@ -352,7 +348,7 @@ For participants who know GitLab Issues/Boards ([`trek-gitlab.md`](./trek-gitlab
 | Assignee | Assignee | |
 | `Closes #14` in an MR | `TLKPAS-12` in the branch, commit, MR title | The Development panel needs GitLab for Jira Cloud |
 
-> Choose **one** tool as the backlog's source of truth. If you use both GitLab Issues and Jira, GitLab manages code and MRs; Jira manages the backlog and sprints.
+Choose **one** tool as the backlog's source of truth. If you use both GitLab Issues and Jira, GitLab manages code and MRs; Jira manages the backlog and sprints.
 
 ## 10. Three common mistakes
 

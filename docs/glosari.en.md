@@ -1,7 +1,7 @@
 # Glossary Malay ↔ English
 
-> Terms used throughout the CI-KKM-10 course. Convention: prose in **Malay**, code and technical terms in **English**. In prose, technical terms are written in plain English (see the table below); names from code are written as `code`.
-> Domain names (tables, enums, statuses) follow [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) and are **not translated in code**.
+Terms used throughout the CI-KKM-10 course. Convention: prose in **Malay**, code and technical terms in **English**. In prose, technical terms are written in plain English (see the table below); names from code are written as `code`.
+Domain names (tables, enums, statuses) follow [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) and are **not translated in code**.
 
 ## Technical terms in prose
 

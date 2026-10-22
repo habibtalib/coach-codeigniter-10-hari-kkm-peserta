@@ -1,9 +1,8 @@
 # Lab Day 9 — Report Module (M3)
 
-[← Day 9 README](./README.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [Schedule](../JADUAL.md) · [⚡ spark commands](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Schedule](../JADUAL.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [⚡ spark commands](../docs/arahan-spark.md)
 
-> **Working branch:** `git switch main && git pull && git switch -c feat/laporan`; PowerShell: run `git switch main`, `git pull` and `git switch -c` one at a time
-> **Commit prefix:** `RPT:` · Every step gives **complete code to copy**. Read every line before you run it — you must be able to explain it (KOLABORASI §3). Stuck: read the full error message, ask the trainer or your neighbour, or use AI to *explain* the error.
+**Working branch:** `git switch main && git pull && git switch -c feat/laporan` (PowerShell: run them one at a time) · **Commit prefix:** `RPT:`
 
 | Lab | Session | Time | Outcome |
 |-----|---------|------|---------|
@@ -322,15 +321,13 @@ $selected = static fn ($current, $value): string => (string) $current === (strin
 <?= $this->endSection() ?>
 ```
 
-**5. Add a menu link** in `app/Views/layouts/main.php` only if the user has the permission. Put it inside `<ul class="navbar-nav me-auto">`, just before its closing `</ul>`:
+**5. Add a menu link** in `app/Views/layouts/main.php` only if the user has the permission (a UI convenience only — the real control is the route filter in step 2). Put it inside `<ul class="navbar-nav me-auto">`, just before its closing `</ul>`:
 
 ```php
 <?php if (auth()->loggedIn() && auth()->user()->can('laporan.view')): ?>
     <li class="nav-item"><a class="nav-link" href="<?= url_to('laporan.tempahan') ?>">Laporan</a></li>
 <?php endif ?>
 ```
-
-> Hiding the menu is only a **UI convenience**. The real control is the route filter in step 2.
 
 **6. Commit.** `git add -A && git commit -m "RPT: laluan, controller rangka & borang penapis GET"`; PowerShell: run `git add` and `git commit` one at a time
 

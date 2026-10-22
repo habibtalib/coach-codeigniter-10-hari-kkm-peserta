@@ -139,8 +139,6 @@ flowchart TB
 - Forgetting the **System** lane. Many rules (reference numbers, expiry, logs) are done by the system, not by people.
 - Charts that are too detailed (every button click). A flowchart shows **business steps**, not UI interaction — that is the wireframe's job (Day 3).
 
-> ⭐ **Side track (optional):** [Design Thinking — Define/Ideate](../docs/trek-design-thinking.md): write *problem statements* and *How Might We* questions for your to-be. Not counted in progress; finish before Day 4.
-
 ### S3 — Acceptance Criteria Given/When/Then (14:30–16:00)
 
 #### 3.1 Anatomy of an AC
@@ -270,8 +268,6 @@ Scenario: An applicant cannot view someone else's application
 | `When pengguna isi borang dan hantar dan semak status` | Three actions | Split into three scenarios |
 | `Given ada data` | Data not concrete | `Given slot A-01 ada tempahan approved 2026-10-01 hingga 2026-10-10` |
 | `Then sistem guna FOR UPDATE` | Tests the implementation, not the behaviour | Test the result: two simultaneous approvals → only one succeeds |
-
-> ⭐ **Side track (optional):** [Jira](../docs/trek-jira.md): turn your FRs into Jira *stories* with Given/When/Then *acceptance criteria*. Not counted in progress; finish before Day 4.
 
 ### S4 — Finalise URS v1.0 (16:00–17:00)
 
@@ -512,7 +508,7 @@ Yesterday you were asked to list the nouns in the URS. Filter that list:
 | Slot category, status, pass type | ❌ not a table | Fixed values → **PHP enums** (`SlotCategory`, `BookingStatus`, `PassStatus`, `PassType`) stored as `VARCHAR(20)` |
 | Report, statistics | ❌ not a table | Computed from existing data (M3/M4) |
 
-> 💡 **Tip:** A role is **not** a field in `users`. Shield stores it in its own `auth_groups_users` table. Don't add `users.role` — it will conflict with Shield.
+> ⚠️ **Common mistake:** a role is **not** a field in `users`. Shield stores it in its own `auth_groups_users` table. Don't add `users.role` — it will conflict with Shield.
 
 #### 1.2 Cardinality
 
@@ -541,9 +537,7 @@ Yesterday you were asked to list the nouns in the URS. Filter that list:
 | `\|\|--\|{` | exactly one → one or many |
 | `\|\|--\|\|` | exactly one → exactly one |
 
-
-> Full reference ERD: [`erd-rujukan.md`](./erd-rujukan.md).
-
+The full relationships for all 10 tables are drawn in [`erd-rujukan.md`](./erd-rujukan.md).
 
 ### S2 — Tables, Fields & Relationships; Data Dictionary & 3NF (10:45–12:30)
 
@@ -607,8 +601,6 @@ The index starts with `slot_id` — MySQL jumps straight to that slot's bookings
 | `pass_documents.application_id` | `CASCADE` | Documents belong wholly to the application |
 | `status_logs.actor_id` | `RESTRICT` | The audit trail must stay |
 
-> 💡 **Tip:** `parking_slots` uses **soft delete** (`deleted_at`) because a closed slot is still referenced by old bookings. Soft delete + `RESTRICT` = safe history.
-
 #### 2.4 Normalisation to 3NF — worked example
 
 A Security Unit clerk keeps this Excel spreadsheet (made-up data; the column headers stay in Malay as the clerk wrote them):
@@ -662,7 +654,6 @@ flowchart LR
 | `pass_documents` | — | `mime`, `size_bytes` stored for checks & display |
 | `status_logs` | — | `from_status` NULL for the first record (create → `pending`/`submitted`) |
 | `reference_sequences` | (`prefix`, `year`) | One row per prefix per year |
-
 
 ### S3 — UI/UX Wireframes of the Main Screens (14:30–16:00)
 
@@ -730,7 +721,7 @@ flowchart LR
  System-generated (not in the form): ref_no, user_id, status=pending
 ```
 
-> 💡 **Tip:** Notice the fields that are **not** in the form: `user_id`, `status`, `ref_no`, `decided_by`. If they were sent from the form, the user could forge them (*mass assignment*). A good wireframe marks "system-generated" fields clearly — on Day 5 they become a strict `$allowedFields`.
+> ⚠️ **Warning:** notice the fields that are **not** in the form: `user_id`, `status`, `ref_no`, `decided_by`. If they were sent from the form, the user could forge them (*mass assignment*). A good wireframe marks "system-generated" fields clearly — on Day 5 they become a strict `$allowedFields`.
 
 #### 3.5 Example wireframe W5 — Pass review
 
@@ -763,9 +754,6 @@ flowchart LR
 - No space for **error messages** and the **empty state** ("No bookings yet. [Apply now]").
 - Showing the Approve button to `reviewer` (no `pas.approve`). Buttons follow the permission — and the server checks again.
 - Too pretty too early. If you are choosing colours, you have gone too far for today.
-
-> ⭐ **Side track (optional):** [Design Thinking — Prototype](../docs/trek-design-thinking.md): draw a *journey map*, then turn it into wireframes. Not counted in progress; finish before Day 4.
-
 
 ### S4 — Design Review & Preparation Assignment (16:00–17:00)
 
@@ -804,7 +792,7 @@ Handed out today, reviewed on **Day 4 S1 (09:00)**. Full details & rubric: [`doc
 | T3 | Refine your ERD based on today's review | 30 minutes |
 | T4 | Write 3 new acceptance criteria (Given/When/Then) | 30 minutes |
 
-> ⭐ **Side track (optional):** [Design Thinking — Test](../docs/trek-design-thinking.md): run a *hallway test* of your wireframes with one colleague. [GitLab](../docs/trek-gitlab.md): log in, SSH key, *private* project and first MR. Not counted in progress; finish before Day 4.
+**Side tracks (optional):** [Design Thinking](../docs/trek-design-thinking.md) · [Jira](../docs/trek-jira.md) · [GitLab](../docs/trek-gitlab.md) — not counted in progress; finish before Day 4.
 
 ---
 

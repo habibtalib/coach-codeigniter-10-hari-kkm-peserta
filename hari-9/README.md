@@ -95,9 +95,9 @@ Sebelum menulis satu baris kod, jawab lima soalan untuk setiap laporan:
 | Eksport | PDF (≤2,000) · Excel (≤10,000) | sama | sama |
 | Siapa boleh lihat | `laporan.view` → **reviewer, approver, admin** (SPEC §4). `applicant` **tidak**. | sama | sama |
 
-> 💡 **Tip — rumus RPT-03.** Penggunaan (%) = hari-slot ditempah ÷ (bil. slot aktif × bil. hari dalam tempoh) × 100. Contoh: Zon A ada 2 slot aktif, Jun ada 30 hari → kapasiti 60 hari-slot. Dua tempahan diluluskan meliputi 10 + 5 hari dalam Jun → 15/60 = **25.0 %**. Hanya status `approved` dan `expired` (pernah digunakan) dikira; `pending`, `rejected`, `cancelled` tidak.
+**Rumus RPT-03:** Penggunaan (%) = hari-slot ditempah ÷ (bil. slot aktif × bil. hari dalam tempoh) × 100. Contoh: Zon A ada 2 slot aktif dan Jun ada 30 hari → kapasiti 60 hari-slot; dua tempahan diluluskan meliputi 10 + 5 hari → 15/60 = **25.0 %**. Hanya status `approved` dan `expired` dikira.
 
-> ⚠️ **Kesilapan lazim — "reviewer boleh lihat RPT-01?"** Ya, kerana SPEC memberi `laporan.view` kepada reviewer, dan kebenaran itu meliputi ketiga-tiga laporan. Jika pemilik sistem mahu kawalan lebih halus (cth `laporan.tlk`), itu **perubahan SPEC** — rekod sebagai soalan terbuka, jangan ubah senyap-senyap.
+Reviewer boleh melihat ketiga-tiga laporan kerana `laporan.view` meliputi semuanya. Kawalan lebih halus (cth `laporan.tlk`) ialah **perubahan SPEC** — rekod sebagai soalan terbuka.
 
 ### 1.3 Kenapa borang penapis guna `GET`, bukan `POST`?
 
@@ -131,7 +131,7 @@ flowchart TD
 <a href="<?= current_url() . '?' . esc(http_build_query($query + ['export' => 'pdf']), 'attr') ?>">Eksport PDF</a>
 ```
 
-> 💡 **Tip:** Bina pautan eksport daripada `$filters` yang telah dinormalkan, **bukan** `$_GET` mentah. Nilai tidak sah (cth `status=bogus`) sudah dibuang, jadi PDF tidak akan "menapis" dengan sesuatu yang skrin abaikan.
+Pautan eksport dibina daripada `$filters` yang telah dinormalkan, **bukan** `$_GET` mentah, supaya PDF tidak menapis dengan nilai yang skrin abaikan (cth `status=bogus`).
 
 ### 🎯 Kuiz S1
 
@@ -169,7 +169,7 @@ $f['status'] = BookingStatus::tryFrom($this->str($input, 'status') ?? '')?->valu
 private const SORTABLE = ['tempahan' => ['ref_no' => 'b.ref_no', 'zone' => 'z.code', /* ... */]];
 ```
 
-> ⚠️ **Kesilapan lazim — `orderBy($this->request->getGet('sort'))`.** Query Builder meng-escape **nilai**, tetapi nama lajur dalam `orderBy()` ialah **pengecam**, bukan nilai. Input seperti `sort=(SELECT SLEEP(5))` boleh lolos atau menyebabkan ralat SQL yang membocorkan struktur jadual. Sentiasa guna **peta whitelist**.
+> ⚠️ **Amaran:** Jangan hantar input pengguna terus ke `orderBy()` — nama lajur ialah pengecam dan tidak di-escape. Sentiasa petakan melalui **whitelist** (`SORTABLE`).
 
 ### 2.2 Langkah 2 — builder dengan `join()` + penapis dinamik `when()`
 
@@ -216,8 +216,6 @@ Untuk DATETIME, guna julat **separuh-terbuka** `[from 00:00, to+1 hari 00:00)`:
 ->where('p.created_at >=', $from . ' 00:00:00')
 ->where('p.created_at <', (new DateTimeImmutable($to))->modify('+1 day')->format('Y-m-d 00:00:00'))
 ```
-
-> 💡 **Tip:** Jangan balut lajur dengan fungsi (`WHERE DATE(created_at) <= ?`). Ia betul dari segi logik tetapi MySQL tidak boleh guna index pada lajur tersebut — lihat EXPLAIN di S4.
 
 ### 2.4 Aggregate: `selectCount()` + `groupBy()` (RPT-03)
 
@@ -343,7 +341,7 @@ thead  { display: table-header-group; }       /* pengepala jadual diulang */
 tr     { page-break-inside: avoid; }
 ```
 
-> 💡 **Tip — kenapa "Dijana pada … oleh …"?** Laporan yang dicetak akan hidup lebih lama daripada skrin. Tanpa tarikh jana dan nama pengguna, tiada siapa tahu sama ada angka itu semalam atau tahun lepas — ini keperluan **jejak audit** yang ringkas.
+Pengaki "Dijana pada … oleh …" ialah **jejak audit** ringkas: laporan bercetak hidup lebih lama daripada skrin, jadi pembaca perlu tahu bila dan oleh siapa angka itu dijana.
 
 ### 3.3 PhpSpreadsheet — `.xlsx` yang kemas
 
@@ -381,8 +379,6 @@ public function exportRows(string $report, array $filters, string $format): iter
     return $this->streamRows($report, $this->applySort($builder, $report, $filters)); // ← generator
 }
 ```
-
-> ⚠️ **Kesilapan lazim — "naikkan sahaja `memory_limit` ke -1".** Itu menangguhkan masalah sehingga server pengeluaran jatuh. Had yang jelas + mesej "kecilkan julat filter" ialah reka bentuk yang jujur. Untuk data > 10,000 baris, cadangkan CSV (penstriman sebenar) atau kerja latar belakang — ⭐ cabaran.
 
 ### 🎯 Kuiz S3
 
@@ -453,8 +449,6 @@ Cara membaca lajur utama:
 | `Extra` | `Using index`, `Using where` | `Using filesort`, `Using temporary` (pada jadual besar) |
 
 SPEC §3 sudah menyediakan `INDEX(status)` dan `INDEX(slot_id, start_date, end_date)` pada `slot_bookings`, serta `INDEX(status)` pada `pass_applications`. Filter RPT-02 mengikut `created_at` **tiada** index — pada 500 baris latihan ia tidak ketara, pada 500,000 baris ia ketara. Lab S4 menunjukkan cara mengukur sebelum memutuskan.
-
-> 💡 **Tip:** Index mempercepat `SELECT` tetapi memperlahankan `INSERT/UPDATE` dan memakan ruang. **Ukur dahulu** (EXPLAIN + Debug Toolbar → tab *Database*), baru tambah. Index tambahan ialah keputusan reka bentuk — rekod dalam `docs/log-keputusan.md` (Hari 2).
 
 ### 🎯 Kuiz S4
 

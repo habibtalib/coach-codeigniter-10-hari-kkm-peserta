@@ -1,6 +1,6 @@
 # Lab Day 6 — TLK Module (Part 2)
 
-[⬅️ README Day 6](./README.md) · [📘 SPEC](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module) · [⚡ spark commands](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Schedule](../JADUAL.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module) · [⚡ spark commands](../docs/arahan-spark.md)
 
 > **Lab rules:** today is about **accuracy under pressure**, not speed. Every step gives complete code to copy. Fill in the overlap table (Lab 6.1 step 1) **before** copying the query, and read every line of the transaction before running it. AI can help explain `Lock wait timeout` or `errno` — but you must be able to explain why the locks are taken in the order user → slot.
 
@@ -335,7 +335,7 @@ Upgrade `BookingService` to version 2 (transaction + `FOR UPDATE` + BR-TLK-01/04
    }
    ```
 
-   > The signatures of `record()` and `history()` are **locked** — the Pass module (Day 8) calls them with `'PAS'`.
+   > ⚠️ The signatures of `record()` and `history()` are **locked** — the Pass module (Day 8) calls them with `'PAS'`.
 
 **C. `BookingService` version 2**
 
@@ -912,7 +912,7 @@ SELECT user_id, ref_no, status FROM slot_bookings WHERE status IN ('pending', 'a
     SELECT id FROM parking_slots WHERE id = 3 FOR UPDATE;   -- lock row A-03 through the PRIMARY KEY
     ```
 
-    > Why by `id`? InnoDB locks the rows that are **scanned through an index**. `WHERE slot_no = 'A-03'` has no index of its own (only the composite `zone_id, slot_no`) → full scan → **all** slot rows are locked. That is also why `lockRow()` always locks by `id`.
+    Lock by `id` because InnoDB locks every row it scans: `slot_no` has no index of its own (only the composite `zone_id, slot_no`), so `WHERE slot_no = 'A-03'` locks **all** slot rows. That is also why `lockRow()` locks by `id`.
 
 11. Browser: log in as `pemohon2`, apply for slot **A-03** → press *Hantar* (Submit). The browser **spins** (waiting for the lock).
 12. Within 50 seconds, in Terminal A: `COMMIT;` → the browser finishes immediately.
@@ -1603,7 +1603,6 @@ Polish the TLK module UI (badges, flash messages, confirmation, Bootstrap pagina
    -- 0 rows for the user_id of pemohon1 & pemohon2
    ```
 
-
    | # | Role | Action | Show |
    |---|---------|----------|--------|
    | 1 | pemohon1 | Check free slots → apply for A-04 | New `TLK-…`, badge *Menunggu* (Pending), 1 history row |
@@ -1692,7 +1691,7 @@ Reuse the BR-TLK-01 overlap condition in a **JOIN** (not `NOT IN`) to build the 
        }
    ```
 
-   > Lab 6.1 asks *"which slots have **no** booking?"* (`NOT IN`). This board asks *"which bookings **occupy** a slot?"* (`JOIN`). The overlap condition is the same. Shield's `users` table also has a `status` column, so every column is written with its table name (`slot_bookings.status`). `builder()` is the raw Query Builder: soft deletes are not filtered automatically, so we write the `deleted_at` condition ourselves.
+   Lab 6.1 looks for slots with **no** booking (`NOT IN`); this board looks for bookings that **occupy** a slot (`JOIN`) with the same overlap condition. Every column carries its table name because Shield's `users` also has a `status` column, and we write the `deleted_at` condition ourselves because the raw `builder()` does not exclude soft deletes.
 
 2. Route — in the `tlk/tempahan` group (`app/Config/Routes.php`), right after the `ketersediaan` route and **before** `(:num)`:
 
@@ -1919,7 +1918,7 @@ Write a Spark command `php spark tlk:expire` that changes `approved` bookings wh
        }
    ```
 
-   > `expire()` opens no transaction of its own: `transition()` already locks the booking row, checks `canTransitionTo()`, updates the status and writes the log in one transaction. The date check runs before the lock because `end_date` never changes after a booking is created; the status is checked again under the lock.
+   `expire()` opens no transaction of its own because `transition()` already locks the row, checks `canTransitionTo()`, updates the status and writes the log in one transaction. The date is checked before the lock (`end_date` never changes); the status is checked again under the lock.
 
 2. Create `app/Commands/ExpireBookingsCommand.php`:
 
@@ -2454,7 +2453,7 @@ Write PHPUnit tests for the new rules from Labs 6.1b–6.2b — the busy board (
    composer test -- --no-coverage --testdox tests/tlk/ExpireBookingTest.php
    ```
 
-   > `command('tlk:expire')` runs the command inside the test (on the `tests` group DB). `CLI::write()` writes to `STDOUT`, not to normal PHP output, so `StreamFilterTrait` captures it for `getStreamFilterBuffer()`.
+   `command('tlk:expire')` runs the command inside the test (`tests` group DB); `CLI::write()` writes to `STDOUT`, so `StreamFilterTrait` captures it for `getStreamFilterBuffer()`.
 
 3. Run both files together and note the last line of the output (Quiz S7 question):
 

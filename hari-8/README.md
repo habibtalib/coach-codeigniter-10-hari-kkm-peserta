@@ -293,7 +293,7 @@ $routes->group('pas/semakan', ['namespace' => 'App\Controllers\Pas', 'filter' =>
 | `authorize()` dalam Service | **403** + `errors/forbidden` | Tidak sepatutnya berlaku jika filter betul — jika berlaku, ia petanda route tersalah konfigur; 403 jelas dalam log |
 | `canView()` (rekod orang lain) | **404** | Jangan dedahkan kewujudan ID (Hari 7) |
 
-> 💡 **Tip:** Mahu filter Shield juga memulangkan halaman yang jelas? Tukar `permission_denied` dan `group_denied` dalam `app/Config/Auth.php` kepada route yang memaparkan mesej, cth `'/akses-ditolak'`. Jangan ubah fail dalam `vendor/`.
+Untuk halaman tolak yang lebih jelas, tukar `permission_denied` dan `group_denied` dalam `app/Config/Auth.php` kepada route yang memaparkan mesej (cth `'/akses-ditolak'`); jangan ubah fail dalam `vendor/`.
 
 ### 2.5 Butang: UX, bukan keselamatan
 
@@ -405,7 +405,6 @@ public function testPenyemakTidakBolehLuluskan(): void
 
 > ⚠️ **Kesilapan lazim**
 > - Menguji hanya happy path. Pepijat kawalan akses hampir **selalu** dalam ujian negatif yang tidak ditulis.
-> - `assertRedirect()` sahaja untuk ujian negatif — lulus walaupun Service sudah mengubah status sebelum redirect. Tambah semakan DB.
 > - Berkongsi pengguna antara ujian dengan `$migrateOnce`/`$refresh = false` → ujian bergantung pada susunan.
 
 ### 🎯 Kuiz S3
@@ -706,7 +705,7 @@ Satu `UPDATE` pukal akan memintas BR-PAS-01 (boleh menukar `rejected` kepada `ex
 
 Hari 9 — **Modul Laporan (M3)**: RPT-01 (tempahan TLK) dan **RPT-02 (permohonan Pas)** dengan filter, aggregate dan eksport PDF/Excel.
 
-- Pastikan `main` mengandungi M1 **dan** M2 (gabung `feat/pas-kelulusan`).
+- Pastikan `main` mengandungi M1 **dan** M2 (merge `feat/pas-kelulusan`).
 - Cipta sekurang-kurangnya **8 permohonan Pas** dengan status berbeza (`submitted`, `under_review`, `approved`, `rejected`) dan tarikh berlainan — laporan esok perlu data untuk ditapis. Sertakan sekurang-kurangnya satu daripada setiap `pass_type`.
 - Semak `composer show dompdf/dompdf phpoffice/phpspreadsheet` — jika belum dipasang, lihat [`docs/persediaan.md`](../docs/persediaan.md).
 - Soalan untuk difikirkan: *Siapa yang patut boleh melihat RPT-02 — dan filter route apa yang akan anda gunakan?* (Petunjuk: SPEC §6.)

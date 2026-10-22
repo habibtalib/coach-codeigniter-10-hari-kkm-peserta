@@ -1,6 +1,6 @@
 # 10 · PHPUnit Testing in CodeIgniter 4
 
-> Topical notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
+Topical notes (cross-day reference) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Note objectives
 
@@ -76,7 +76,7 @@ database.tests.DBPrefix =
 database.tests.port = 3306
 ```
 
-> **Empty `DBPrefix`:** appstarter sets the prefix `db_` for the `tests` group. Query Builder adds the prefix automatically, but raw SQL (e.g. `SELECT id FROM parking_slots … FOR UPDATE`) does not — empty the prefix so it is consistent with development.
+> ⚠️ **Common mistake:** **Empty `DBPrefix`:** appstarter sets the prefix `db_` for the `tests` group. Query Builder adds the prefix automatically, but raw SQL (e.g. `SELECT id FROM parking_slots … FOR UPDATE`) does not — empty the prefix so it is consistent with development.
 
 Alternative: set it in `phpunit.xml.dist` (copy it to `phpunit.xml` if you want to change it locally):
 
@@ -161,8 +161,6 @@ final class PassStatusTest extends CIUnitTestCase
 }
 ```
 
-> The array key names (`'dihantar → diluluskan …'`) are shown when a test fails — easy to identify.
-
 ---
 
 ## 6. DB test — date overlap (BR-TLK-01)
@@ -226,7 +224,7 @@ final class SlotAvailabilityServiceTest extends CIUnitTestCase
 }
 ```
 
-> `hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool` is the same method as in [note 02](./nota-02-migration-seeder-dan-query-builder.md) and [note 05](./nota-05-service-layer-dan-transaksi.md) — `true` means **overlapping** (slot not available).
+`hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool` is the same method as in [note 02](./nota-02-migration-seeder-dan-query-builder.md) and [note 05](./nota-05-service-layer-dan-transaksi.md) — `true` means **overlapping** (slot not available).
 
 ---
 
@@ -338,7 +336,7 @@ final class ReviewAccessTest extends CIUnitTestCase
 }
 ```
 
-> In the `testing`/`development` environments, `Config\Security::$redirect` is false, so an invalid token → exception. In `production` it becomes a redirect with an error message.
+In the `testing`/`development` environments, `Config\Security::$redirect` is false, so an invalid token → exception. In `production` it becomes a redirect with an error message.
 
 ### 7.4 Ownership (BR-PAS-04) — applicant A cannot view applicant B's application
 
@@ -362,7 +360,7 @@ public function testApplicantCannotViewOthersApplication(): void
 }
 ```
 
-> **Why `expectException` and not `assertStatus(404)`?** Without `set404Override()` in `Routes.php`, CI4 rethrows `PageNotFoundException` from `run()` — so the test catches the exception. If your project sets a 404 override, change it to `->assertStatus(404)`. The POST route in the example (`/pas/semakan/1/review`) is also just an example — match it to your `Routes.php`.
+**Why `expectException` and not `assertStatus(404)`?** Without `set404Override()` in `Routes.php`, CI4 rethrows `PageNotFoundException` from `run()` — so the test catches the exception. If your project sets a 404 override, change it to `->assertStatus(404)`. The POST route in the example (`/pas/semakan/1/review`) is also just an example — match it to your `Routes.php`.
 
 Frequently used TestResponse methods: `assertStatus(403)`, `assertOK()`, `assertRedirect()`, `assertRedirectTo('/path')`, `assertSee('teks')`, `assertDontSee('teks')`, `assertSessionHas('message')`, `assertJSONFragment([...])`.
 

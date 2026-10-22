@@ -39,7 +39,7 @@ Tidak dikira dalam kemajuan atau penilaian. Siapkan sebelum Hari 4; langkah akhi
 | `../templates/dokumen/` (modul **Templat & Rujukan**) | Templat URS, acceptance criteria (Given/When/Then), kamus data, kes ujian manual, skrip UAT | Peserta — Hari 1–3, 5, 7, 10 |
 | `../templates/kod/` (modul **Templat & Rujukan**) | Rujukan kod CI4 (`*.php.txt`) — migration, model, enum, service, controller | **Jurulatih** — untuk menyemak kerja peserta. Peserta menaip kod sendiri. |
 
-> Fail `*.php.txt` sengaja bukan `.php` supaya tidak disalin terus ke `app/`. Peraturan KOLABORASI §3 terpakai: peserta mesti boleh menerangkan setiap baris.
+Fail `*.php.txt` sengaja bukan `.php` supaya tidak disalin terus ke `app/`. Peraturan KOLABORASI §3 terpakai: peserta mesti boleh menerangkan setiap baris.
 
 ## `slides/` — dek slaid
 

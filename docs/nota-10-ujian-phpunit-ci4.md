@@ -1,6 +1,6 @@
 # 10 · Ujian PHPUnit dalam CodeIgniter 4
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -76,7 +76,7 @@ database.tests.DBPrefix =
 database.tests.port = 3306
 ```
 
-> **`DBPrefix` kosong:** appstarter menetapkan prefix `db_` untuk kumpulan `tests`. Query Builder menambah prefix secara automatik, tetapi SQL mentah (cth `SELECT id FROM parking_slots … FOR UPDATE`) tidak — kosongkan prefix supaya konsisten dengan pembangunan.
+> ⚠️ **Kesilapan lazim:** **`DBPrefix` kosong:** appstarter menetapkan prefix `db_` untuk kumpulan `tests`. Query Builder menambah prefix secara automatik, tetapi SQL mentah (cth `SELECT id FROM parking_slots … FOR UPDATE`) tidak — kosongkan prefix supaya konsisten dengan pembangunan.
 
 Alternatif: tetapkan dalam `phpunit.xml.dist` (disalin ke `phpunit.xml` jika mahu ubah setempat):
 
@@ -161,8 +161,6 @@ final class PassStatusTest extends CIUnitTestCase
 }
 ```
 
-> Nama kunci array (`'dihantar → diluluskan …'`) dipaparkan apabila ujian gagal — mudah dikenal pasti.
-
 ---
 
 ## 6. Ujian DB — pertindihan tarikh (BR-TLK-01)
@@ -226,7 +224,7 @@ final class SlotAvailabilityServiceTest extends CIUnitTestCase
 }
 ```
 
-> `hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool` ialah method yang sama seperti dalam [nota 02](./nota-02-migration-seeder-dan-query-builder.md) dan [nota 05](./nota-05-service-layer-dan-transaksi.md) — `true` bermaksud **bertindih** (slot tidak tersedia).
+`hasOverlap(int $slotId, string $start, string $end, ?int $excludeBookingId = null): bool` ialah method yang sama seperti dalam [nota 02](./nota-02-migration-seeder-dan-query-builder.md) dan [nota 05](./nota-05-service-layer-dan-transaksi.md) — `true` bermaksud **bertindih** (slot tidak tersedia).
 
 ---
 
@@ -338,7 +336,7 @@ final class ReviewAccessTest extends CIUnitTestCase
 }
 ```
 
-> Dalam persekitaran `testing`/`development`, `Config\Security::$redirect` palsu, jadi token tidak sah → exception. Di `production` ia menjadi redirect dengan mesej ralat.
+Dalam persekitaran `testing`/`development`, `Config\Security::$redirect` palsu, jadi token tidak sah → exception. Di `production` ia menjadi redirect dengan mesej ralat.
 
 ### 7.4 Pemilikan (BR-PAS-04) — pemohon A tidak boleh lihat permohonan pemohon B
 
@@ -362,7 +360,7 @@ public function testApplicantCannotViewOthersApplication(): void
 }
 ```
 
-> **Kenapa `expectException` dan bukan `assertStatus(404)`?** Tanpa `set404Override()` dalam `Routes.php`, CI4 membaling semula `PageNotFoundException` dari `run()` — jadi ujian menangkap exception. Jika projek anda menetapkan 404 override, tukar kepada `->assertStatus(404)`. Route POST dalam contoh (`/pas/semakan/1/review`) juga contoh — padankan dengan `Routes.php` anda.
+**Kenapa `expectException` dan bukan `assertStatus(404)`?** Tanpa `set404Override()` dalam `Routes.php`, CI4 membaling semula `PageNotFoundException` dari `run()` — jadi ujian menangkap exception. Jika projek anda menetapkan 404 override, tukar kepada `->assertStatus(404)`. Route POST dalam contoh (`/pas/semakan/1/review`) juga contoh — padankan dengan `Routes.php` anda.
 
 Kaedah TestResponse yang kerap digunakan: `assertStatus(403)`, `assertOK()`, `assertRedirect()`, `assertRedirectTo('/path')`, `assertSee('teks')`, `assertDontSee('teks')`, `assertSessionHas('message')`, `assertJSONFragment([...])`.
 

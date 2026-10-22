@@ -1,6 +1,6 @@
 # 06 · Shield: Authentication (Authn) & Role-Based Access Control (RBAC)
 
-> Topical notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
+Topical notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Notes objectives
 
@@ -36,7 +36,7 @@ php spark routes            # confirm /login, /logout, /register exist
 
 `shield:setup` adds `service('auth')->routes($routes);` to `Routes.php` and registers the Shield filter aliases (`session`, `tokens`, `chain`, `group`, `permission`, `auth-rates`, `force-reset`) automatically through the Shield *Registrar* — you **do not need** to type those aliases yourself in `Config\Filters`.
 
-> Extra `users` fields (`full_name`, `staff_no`, `department_id`, `phone`) — see [notes 02](./nota-02-migration-seeder-dan-query-builder.md). To save them through Shield, generate your own model: `php spark shield:model UserModel`, add the fields to `$allowedFields`, and set `Config\Auth::$userProvider = \App\Models\UserModel::class`.
+Extra `users` fields (`full_name`, `staff_no`, `department_id`, `phone`) — see [notes 02](./nota-02-migration-seeder-dan-query-builder.md). To save them through Shield, generate your own model: `php spark shield:model UserModel`, add the fields to `$allowedFields`, and set `Config\Auth::$userProvider = \App\Models\UserModel::class`.
 
 ---
 
@@ -155,7 +155,7 @@ $routes->group('pas/semakan', ['filter' => 'group:reviewer,approver,admin'], sta
 
 Note on behaviour: the `group:`/`permission:` filters ask the user to log in if they are not logged in yet; if they are logged in but lack the right, Shield redirects with an error message (this can be changed in `Config\Auth`). Confirm with `php spark routes` — the *Filters* column must show the correct filter.
 
-> **Caution:** the filter `group:reviewer,approver,admin` lets a **reviewer** reach `/approve`. The second layer (Service / `can('pas.approve')`) must reject it. This is why we need more than one layer.
+> ⚠️ **Warning:** the filter `group:reviewer,approver,admin` lets a **reviewer** reach `/approve`. The second layer (Service / `can('pas.approve')`) must reject it. This is why we need more than one layer.
 
 ---
 

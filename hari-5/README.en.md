@@ -143,7 +143,7 @@ stateDiagram-v2
 | `->value` | enum → DB | `'status' => BookingStatus::Pending->value` |
 | `->label()` / `->badge()` | enum → UI | View |
 
-> ⚠️ **Common mistake:** Storing the Malay label (`'Diluluskan'`) in the DB. The DB stores the **value** (`approved`); the label lives only in the UI. If the system owner asks to change "Diluluskan" → "Lulus", only one line of `label()` changes.
+The DB stores the **value** (`approved`), not the Malay label (`'Diluluskan'`) — the label lives only in the UI, so changing "Diluluskan" → "Lulus" changes only one line of `label()`.
 
 `SlotCategory` follows the same pattern with 5 cases (`oku`, `mengandung`, `pegawai_kanan`, `kenderaan_rasmi`, `pelawat_vip`) + `label()`, `icon()` (Bootstrap Icons) and `options()` for dropdowns.
 
@@ -179,9 +179,7 @@ class SlotBooking extends Entity
 }
 ```
 
-In the view: `<?= esc($booking->statusLabel()) ?>` — not `if ($booking->status == 'approved') echo 'Diluluskan'` scattered everywhere.
-
-> 💡 **Tip:** `start_date`/`end_date` are **not** added to `$dates` — DATE columns are easier to compare as `'Y-m-d'` strings and can be passed straight back to `<input type="date">`.
+In the view: `<?= esc($booking->statusLabel()) ?>` — not `if ($booking->status == 'approved') echo 'Diluluskan'` scattered everywhere. `start_date`/`end_date` are deliberately **not** in `$dates`: as `'Y-m-d'` strings they are easy to compare and go straight back into `<input type="date">`.
 
 ### 1.3 Model — a disciplined database gateway
 
@@ -231,8 +229,6 @@ class SlotBookingModel extends Model
 | `listing()` returns `static` | Chainable: `$model->listing()->where('slot_bookings.user_id', $id)->paginate(10)` |
 
 `ParkingSlotModel`, on the other hand, uses `$useSoftDeletes = true` (SPEC: `parking_slots.deleted_at`) — `delete($id)` only fills `deleted_at`; `find()`/`findAll()` hide that row automatically.
-
-> ⚠️ **Common mistake:** `is_unique[parking_slots.slot_no]` for UNIQUE(`zone_id`,`slot_no`). CI4's `is_unique` rule checks only **one** column — `A-01` in zone B would be wrongly rejected. The composite check is done in `ParkingSlotModel::isSlotNoTaken($zoneId, $slotNo, $ignoreId)`.
 
 ### 🎯 Quiz S1
 
@@ -358,8 +354,6 @@ public function index(): string
 
 In the view: `<?= $pager->links() ?>` produces `?page=2` links (Bootstrap styling is added in Day 6 S4). The `status` filter is kept because the pager carries the current query string.
 
-> ⚠️ **Common mistake:** Filtering by owner in the **view** (`if ($b->user_id == auth()->id())`). Other people's records are still fetched from the DB, pagination is wrong, and a later JSON/export will leak data. Filter in the **query**.
-
 ### 🎯 Quiz S2
 
 1. Why does `SlotController` return a `redirect()` after a successful POST (the Post/Redirect/Get pattern)?
@@ -394,7 +388,7 @@ In the view: `<?= $pager->links() ?>` produces `?page=2` links (Bootstrap stylin
 
 BR-TLK-03 is a boundary case: it is checked in **both** layers — the form gives a friendly message under the field; the Service enforces the rule even when called from elsewhere (tests, a Spark command).
 
-> 📌 **Canonical definition of BR-TLK-03:** `end_date >= start_date`; `start_date` may be **today** (not yesterday); and `(end_date − start_date) ≤ 90` days — i.e. rejected if `diff()->days > 90`. A one-day booking (`end_date = start_date`) is allowed.
+The canonical definition of BR-TLK-03: `end_date >= start_date`; `start_date` may be **today** (not yesterday); and `(end_date − start_date) ≤ 90` days, i.e. rejected if `diff()->days > 90`. A one-day booking (`end_date = start_date`) is allowed.
 
 ### 3.2 Custom validation rules
 
@@ -446,9 +440,9 @@ $rules = [
 
 The Malay messages are passed as the second argument of `$this->validate($rules, $messages)`. In the view, `validation_show_error('start_date')` shows that field's error, and `old('start_date')` refills the value.
 
-> ⚠️ **Common mistake:** Treating `<input type="date" min="…">` as "already validated". An HTML attribute can be removed with DevTools in 5 seconds. **Server-side validation is mandatory** (KOLABORASI DoD).
+> ⚠️ **Warning:** `<input type="date" min="…">` is not validation — an HTML attribute can be removed with DevTools in 5 seconds. **Server-side validation is mandatory** (KOLABORASI DoD).
 
-> ⚠️ **Common mistake:** Accepting `user_id` from the form (`<input type="hidden" name="user_id">`). The applicant can change it and apply on behalf of someone else. `user_id` is **always** `auth()->id()`.
+> ⚠️ **Warning:** Never accept `user_id` from the form (`<input type="hidden" name="user_id">`) — the applicant can change it and apply on behalf of someone else. `user_id` is **always** `auth()->id()`.
 
 ### 3.3 Reference number — why not `COUNT(*) + 1`?
 
@@ -654,8 +648,6 @@ The full list of ±14 cases is in [Lab 5.4](./lab.md#lab-54--ujian-manual--rekod
 - **Actual:** "The zone_id field is required."
 - **Severity:** Low (cosmetic) · **Status:** Fixed (commit a1b2c3d)
 ```
-
-> 💡 **Tip:** If you cannot write the **steps to reproduce**, it is not a bug report yet — it is a rumour. KOLABORASI §3 cycle: *reproduce → failing test → fix → passing test*.
 
 ### 🎯 Quiz S4
 

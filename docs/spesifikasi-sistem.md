@@ -185,9 +185,9 @@ Prinsip: **Controller nipis** (terima request → panggil service → pulang vie
 | Hari | Tajuk (ikut tentatif) | Hasil utama (deliverable) |
 |------|----------------------|---------------------------|
 | 1 | Project Kickoff & Requirement Deep Dive | Carta skop · senarai awal keperluan fungsian (FR) & bukan fungsian (NFR) TLK & Pas |
-| 2 | Requirement Finalization & Process Flow | **URS disahkan** · carta alir as-is/to-be · acceptance criteria (Given/When/Then) |
-| 3 | Database Design & UI/UX Foundation | **ERD Mermaid** · kamus data · wireframe skrin utama · tugasan persediaan diedar |
-| 4 | Assignment Review & Development Kickoff | Projek CI4 berjalan · `.env` · Shield · **semua migration + seeder** · pelan kerja & aliran Git solo |
+| 2 | Pengesahan Keperluan & Projek CI di GitLab | FR disahkan bersama pemilik sistem · projek `kelas-ci-<nama>` di GitLab · route, controller, layout view · borang `/daftar` dengan validation & CSRF |
+| 3 | Database, Migration, Model & Carian | Database `kkm_dev` + `.env` · migration & seeder pertama (`departments`, `parking_zones`) · model + halaman `/jabatan` · carian & pagination `/zon` |
+| 4 | Development Kickoff: Shield, Skema Penuh & Aliran Git | Kitaran request MVC · Shield + peranan · **semua migration + seeder** daripada ERD rujukan · aliran Git solo & MR pertama |
 | 5 | TLK (1) | Model + Entity + CRUD tempahan · borang + validasi · `TLK-2026-0001` dijana |
 | 6 | TLK (2) | Semakan ketersediaan · anti-pertindihan dalam transaksi · lulus/tolak · ujian · **M1 siap** |
 | 7 | Pas (1) | CRUD permohonan · borang + muat naik dokumen selamat |
@@ -198,11 +198,11 @@ Prinsip: **Controller nipis** (terima request → panggil service → pulang vie
 ## 8. Format bahan setiap hari
 
 Setiap `hari-N/`:
-- `README.md` — **Objektif Pembelajaran** (boleh diukur) · jadual 4 sesi (masa tentatif tepat) · nota konsep setiap sesi · hasil hari · semakan kendiri · pautan.
+- `README.md` — **Objektif Pembelajaran** (boleh diukur) · jadual sesi (masa tepat ikut [`JADUAL.md`](../JADUAL.md)) · nota konsep setiap sesi · hasil hari · semakan kendiri · pautan.
 - `lab.md` — hands-on: setiap lab **🎯 Objektif → Prasyarat → langkah bernombor → ✅ Checkpoint → 🧯 Masalah lazim → ⭐ Cabaran tambahan**.
 - `nota-penceramah.md` — pecahan masa minit-demi-minit, mesej utama, soalan untuk ditanya, salah faham lazim, kriteria "siap" sebelum bergerak.
 
-Rentak harian tetap (dari tentatif): 08:30–09:00 recap · S1 09:00–10:30 · rehat 10:30–10:45 · S2 10:45–12:30 · makan 12:30–14:30 · S3 14:30–16:00 · S4 16:00–17:00.
+Rentak harian: 08:30–09:00 recap · rehat 10:30–10:45 · makan 12:30–14:30. Hari 1, 2 dan 10 ada 4 sesi: S1 09:00–10:30 · S2 10:45–12:30 · S3 14:30–16:00 · S4 16:00–17:00. Hari 3–9 ada 8 sesi; setiap sesi teras diikuti sesi lanjutan: S1 09:00–10:00 · S5 10:00–10:30 · S2 10:45–12:00 · S6 12:00–12:30 · S3 14:30–15:30 · S7 15:30–16:00 · S4 16:00–16:35 · S8 16:35–17:00 (Hari 3 dan 6 berbeza sedikit; lihat `JADUAL.md`).
 
 ## 9. Butiran tambahan (dikunci semasa penyediaan bahan)
 
@@ -222,7 +222,7 @@ Rentak harian tetap (dari tentatif): 08:30–09:00 recap · S1 09:00–10:30 · 
 | Persekitaran | `app.appTimezone = 'Asia/Kuala_Lumpur'`; CSRF dihidupkan manual di `Filters::$globals`; DB ujian MySQL `kkm_latihan_test` (bukan SQLite — tiada `FOR UPDATE`), `DBPrefix` kosong |
 | Rubrik capstone | Kefungsian 30 · Keselamatan 20 · Kualiti kod 20 · Ujian 15 · Demo 15 ([`docs/rubrik-capstone.md`](./rubrik-capstone.md)) |
 
-Kod rujukan telah dijalankan pada CodeIgniter 4.7.4 + Shield 1.4.1 + PHP 8.4 + MySQL (ujian PHPUnit lulus); "4.6+" kekal sah.
+Kod rujukan diuji pada CodeIgniter 4.7.5 + Shield 1.4.1 + PHP 8.3 + MySQL (ujian PHPUnit lulus). Minimum kursus: CI 4.6+.
 
 ## 10. Jangan
 

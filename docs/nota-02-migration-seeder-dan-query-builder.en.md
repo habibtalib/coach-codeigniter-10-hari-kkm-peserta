@@ -1,6 +1,6 @@
 # 02 · Migrations, Seeders and the Query Builder
 
-> Topic notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
+Topic notes (reference across days) · Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Index: [`README.md`](./nota.md)
 
 ## Objectives of these notes
 
@@ -213,7 +213,7 @@ class UserSeeder extends Seeder
 php spark db:seed DatabaseSeeder
 ```
 
-> Vehicle plates in `VehicleSeeder` must be **made up** — e.g. `WXX 1234`, `VBB 5678`.
+> ⚠️ **Warning:** vehicle plates in `VehicleSeeder` must be **made up** — e.g. `WXX 1234`, `VBB 5678`.
 
 ---
 

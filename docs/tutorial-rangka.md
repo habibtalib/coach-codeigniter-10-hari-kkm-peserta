@@ -18,7 +18,7 @@ Arahan CI4 dan Shield disahkan dengan CodeIgniter **4.7.5** + Shield **1.4.1** p
 | F | Migration pertama + seeder (`departments`, `parking_zones`) | `~/latihan/kelas-ci-<nama>` | Hari 3 (Lab 3.2) | 20 |
 | G | Ujian asap `composer test` | `~/latihan/kelas-ci-<nama>` | Hari 4 (Lab 4.2) | 10 |
 
-> **Dua folder, dua tujuan.** `ci4-asas` ialah projek **latihan sahaja** untuk Hari 1 — bukan repo Git dan boleh dipadam bila-bila masa. Projek sebenar ialah `kelas-ci-<nama>`: repo private anda di GitLab (GitLab KKM), dicipta dalam Lab 2.2 Hari 2 dan digunakan hingga Hari 10. Bahagian B–G semuanya dalam folder ini. Tertib kursus ialah B → C → F → D → E → G (Bahagian F dibuat pada Hari 3, sebelum Shield). Kedua-dua folder tidak perlu berada dalam `C:\laragon\www`: kursus menghidangkan aplikasi dengan `php spark serve`, bukan Apache Laragon.
+**Dua folder, dua tujuan.** `ci4-asas` ialah projek **latihan sahaja** untuk Hari 1 — bukan repo Git dan boleh dipadam bila-bila masa. Projek sebenar ialah `kelas-ci-<nama>`: repo private anda di GitLab (GitLab KKM), dicipta dalam Lab 2.2 Hari 2 dan digunakan hingga Hari 10. Bahagian B–G semuanya dalam folder ini. Tertib kursus ialah B → C → F → D → E → G (Bahagian F dibuat pada Hari 3, sebelum Shield). Kedua-dua folder tidak perlu berada dalam `C:\laragon\www`: kursus menghidangkan aplikasi dengan `php spark serve`, bukan Apache Laragon.
 
 ---
 
@@ -66,7 +66,7 @@ Menjalankan projek latihan `ci4-asas` di <http://localhost:8080>, menghidupkan D
    php spark --version
    ```
 
-   > 🛡️ `composer create-project` lambat atau `The process exceeded the timeout`? Windows Defender mengimbas setiap fail dalam `vendor/`. Lihat [`persediaan.md`](./persediaan.md) §8 (`composer config --global process-timeout 900`, pengecualian imbasan jika dibenarkan unit ICT).
+   > ⚠️ **Windows:** `composer create-project` lambat atau `The process exceeded the timeout`? Windows Defender mengimbas setiap fail dalam `vendor/`. Lihat [`persediaan.md`](./persediaan.md) §8 (`composer config --global process-timeout 900`, pengecualian imbasan jika dibenarkan unit ICT).
 
 3. **Jalankan server:**
 
@@ -76,7 +76,7 @@ Menjalankan projek latihan `ci4-asas` di <http://localhost:8080>, menghidupkan D
 
    Buka <http://localhost:8080>. Hentikan dengan Ctrl+C.
 
-   > 🛡️ Kali pertama, **Windows Defender Firewall** mungkin bertanya sama ada `php.exe` dibenarkan pada rangkaian. Tanda **Private networks** sahaja → *Allow access*. Jika anda pilih *Cancel*, `localhost` masih berfungsi; hanya komputer lain tidak dapat sambung.
+   > ℹ️ **Windows:** kali pertama, **Windows Defender Firewall** mungkin bertanya sama ada `php.exe` dibenarkan pada rangkaian. Tanda **Private networks** sahaja → *Allow access*. Jika anda pilih *Cancel*, `localhost` masih berfungsi; hanya komputer lain tidak dapat sambung.
 
 4. **`.env` untuk pembangunan.** Salin template:
 
@@ -149,7 +149,7 @@ Menjalankan projek latihan `ci4-asas` di <http://localhost:8080>, menghidupkan D
     MSYS_NO_PATHCONV=1 php spark filter:check GET /hello
     ```
 
-    > **`MSYS_NO_PATHCONV=1`:** Git Bash menukar argumen yang bermula dengan `/` kepada path Windows (`/hello` → `C:/Program Files/Git/hello`). Awalan ini mematikan penukaran untuk satu arahan. Command Prompt tidak perlu: `php spark filter:check GET /hello`.
+    > ⚠️ **Git Bash — `MSYS_NO_PATHCONV=1`:** Git Bash menukar argumen yang bermula dengan `/` kepada path Windows (`/hello` → `C:/Program Files/Git/hello`). Awalan ini mematikan penukaran untuk satu arahan. Command Prompt tidak perlu: `php spark filter:check GET /hello`.
 
 ### Anda patut nampak
 
@@ -324,7 +324,7 @@ Menyambung `kelas-ci-<nama>` ke database `kkm_latihan` dengan pengguna `kkm_dev`
    database.default.DBCollat = utf8mb4_unicode_ci
    ```
 
-   > Port 8080 sibuk? Tukar **dua-dua** tempat: `app.baseURL = 'http://localhost:8081/'` dan `php spark serve --port 8081`.
+   Port 8080 sibuk? Tukar **dua-dua** tempat: `app.baseURL = 'http://localhost:8081/'` dan `php spark serve --port 8081`.
 
 3. Sahkan `.env` diabaikan Git dan connection berfungsi:
 
@@ -381,7 +381,7 @@ Memasang CodeIgniter Shield, menjana `UserModel` sendiri, mematikan daftar sendi
 
    `shield:setup` menyalin `Auth.php`, `AuthGroups.php`, `AuthToken.php` ke `app/Config/`, menambah `service('auth')->routes($routes);` ke `Routes.php`, menetapkan CSRF kepada `session` dan menjalankan migration Shield.
 
-   > 🪟 Dalam tetingkap Git Bash berasingan (mintty, bukan terminal VS Code), soalan interaktif boleh tergantung. Tambah `winpty` di hadapan: `winpty php spark shield:setup`.
+   > ⚠️ **Windows:** dalam tetingkap Git Bash berasingan (mintty, bukan terminal VS Code), soalan interaktif boleh tergantung. Tambah `winpty` di hadapan: `winpty php spark shield:setup`.
 
 2. Jana model pengguna sendiri dan tambah medan profil dalam `app/Models/UserModel.php`:
 
@@ -508,7 +508,7 @@ Membina aliran **route → controller → view** dengan satu layout Bootstrap 5.
 - `filter:check` → lajur *Before Filters* untuk `/` mengandungi `session`.
 - `php spark serve` → buka <http://localhost:8080/> (belum log masuk) → **dialih** ke `http://localhost:8080/login` (tiada `index.php` dalam URL), halaman log masuk Shield.
 
-> Belum ada pengguna untuk log masuk — `UserSeeder` dibina dalam Lab 4.3. **Jangan** cipta pengguna ujian sendiri dalam `kkm_latihan`: checkpoint Lab 4.3 mengira tepat 5 baris dalam `auth_groups_users`.
+> ⚠️ **Kesilapan lazim:** belum ada pengguna untuk log masuk — `UserSeeder` dibina dalam Lab 4.3. **Jangan** cipta pengguna ujian sendiri dalam `kkm_latihan`: checkpoint Lab 4.3 mengira tepat 5 baris dalam `auth_groups_users`.
 
 ### 🧯 Masalah lazim
 

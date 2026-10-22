@@ -1,6 +1,6 @@
 # 07 · Muat Naik Fail Selamat
 
-> Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
+Nota topikal (rujukan merentas hari) · Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Indeks: [`README.md`](./nota.md)
 
 ## Objektif nota
 
@@ -80,7 +80,7 @@ Rules fail CI4 memeriksa **setiap** fail dalam `documents[]`. Tiga perkara yang 
 2. **Konsistensi extension ↔ kandungan** — `guessExtension()` (dari MIME sebenar) mesti dalam senarai putih.
 3. **Fail yang gagal dimuat naik** oleh PHP (cth melebihi `upload_max_filesize`) — `isValid()`.
 
-> `ext_in` membaca extension dari nama klien; `mime_in` menggunakan `getMimeType()` yang **mengesan jenis dari kandungan** melalui PHP extension `fileinfo`. Kedua-duanya diperlukan. Pastikan `fileinfo` dihidupkan (lihat [`docs/persediaan.md`](persediaan.md)).
+> ⚠️ **Amaran:** `ext_in` membaca extension dari nama klien; `mime_in` menggunakan `getMimeType()` yang **mengesan jenis dari kandungan** melalui PHP extension `fileinfo`. Kedua-duanya diperlukan. Pastikan `fileinfo` dihidupkan (lihat [`docs/persediaan.md`](persediaan.md)).
 
 ---
 
@@ -178,7 +178,7 @@ class PassWorkflowService
 
 Kenapa `stored_path` **relatif**? Jika aplikasi dipindah ke server lain (`/var/www/…` → `D:\apps\…`), path mutlak dalam DB akan rosak. Gabungkan dengan `WRITEPATH` semasa baca.
 
-> **Konsistensi dengan transaksi:** fail dipindah ke cakera **bukan** sebahagian transaksi DB. Jika insert `pass_applications` gagal selepas fail dipindah, fail menjadi yatim. Corak mudah: simpan rekod permohonan dahulu dalam transaksi, kemudian fail; jika fail gagal, `unlink()` fail yang sudah dipindah dan rollback.
+> ⚠️ **Kesilapan lazim:** fail dipindah ke cakera **bukan** sebahagian transaksi DB. Jika insert `pass_applications` gagal selepas fail dipindah, fail menjadi yatim. Corak mudah: simpan rekod permohonan dahulu dalam transaksi, kemudian fail; jika fail gagal, `unlink()` fail yang sudah dipindah dan rollback.
 
 Dalam controller:
 

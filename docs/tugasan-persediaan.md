@@ -17,8 +17,6 @@ Mulai Hari 2 anda membina aplikasi sendiri dalam `kelas-ci-<nama>`: route → co
 1. Pastikan laptop anda **sedia** sebelum kelas (T1).
 2. Lihat aliran **Route → Controller → Model → View** sekali lagi dalam projek berasingan, ikut tutorial rasmi CI4 (T2).
 
-> 📚 Tugasan lama T3 (perhalusi ERD) dan T4 (acceptance criteria) telah dibuang. ERD siap tersedia dalam [`erd-rujukan.md`](./erd-rujukan.md); bahan ERD, kamus data dan AC yang asal kini bacaan pilihan dalam [`rujukan-keperluan.md`](./rujukan-keperluan.md).
-
 ---
 
 ## T1 — Semak persekitaran

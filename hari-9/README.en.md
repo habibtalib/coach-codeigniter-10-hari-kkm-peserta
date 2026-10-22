@@ -95,9 +95,9 @@ Before writing a single line of code, answer five questions for each report:
 | Export | PDF (≤2,000) · Excel (≤10,000) | same | same |
 | Who can view | `laporan.view` → **reviewer, approver, admin** (SPEC §4). `applicant` **cannot**. | same | same |
 
-> 💡 **Tip — the RPT-03 formula.** Utilisation (%) = booked slot-days ÷ (no. of active slots × no. of days in the period) × 100. Example: Zone A has 2 active slots, June has 30 days → capacity 60 slot-days. Two approved bookings cover 10 + 5 days in June → 15/60 = **25.0 %**. Only the statuses `approved` and `expired` (already used) are counted; `pending`, `rejected`, `cancelled` are not.
+**RPT-03 formula:** Utilisation (%) = booked slot-days ÷ (no. of active slots × no. of days in the period) × 100. Example: Zone A has 2 active slots and June has 30 days → capacity 60 slot-days; two approved bookings cover 10 + 5 days → 15/60 = **25.0 %**. Only the statuses `approved` and `expired` are counted.
 
-> ⚠️ **Common mistake — "can a reviewer view RPT-01?"** Yes, because the SPEC gives `laporan.view` to reviewers, and that permission covers all three reports. If the system owner wants finer control (e.g. `laporan.tlk`), that is a **SPEC change** — record it as an open question, don't change it quietly.
+Reviewers can view all three reports because `laporan.view` covers them all. Finer control (e.g. `laporan.tlk`) is a **SPEC change** — record it as an open question.
 
 ### 1.3 Why does the filter form use `GET`, not `POST`?
 
@@ -131,7 +131,7 @@ flowchart TD
 <a href="<?= current_url() . '?' . esc(http_build_query($query + ['export' => 'pdf']), 'attr') ?>">Eksport PDF</a>
 ```
 
-> 💡 **Tip:** Build the export link from the normalised `$filters`, **not** from raw `$_GET`. Invalid values (e.g. `status=bogus`) have already been removed, so the PDF will never "filter" by something the screen ignores.
+The export link is built from the normalised `$filters`, **not** from raw `$_GET`, so the PDF never filters by a value the screen ignores (e.g. `status=bogus`).
 
 ### 🎯 Quiz S1
 
@@ -169,7 +169,7 @@ $f['status'] = BookingStatus::tryFrom($this->str($input, 'status') ?? '')?->valu
 private const SORTABLE = ['tempahan' => ['ref_no' => 'b.ref_no', 'zone' => 'z.code', /* ... */]];
 ```
 
-> ⚠️ **Common mistake — `orderBy($this->request->getGet('sort'))`.** The Query Builder escapes **values**, but the column name in `orderBy()` is an **identifier**, not a value. Input such as `sort=(SELECT SLEEP(5))` can slip through or cause an SQL error that leaks the table structure. Always use a **whitelist map**.
+> ⚠️ **Warning:** Never pass user input straight to `orderBy()` — column names are identifiers and are not escaped. Always map them through a **whitelist** (`SORTABLE`).
 
 ### 2.2 Step 2 — a builder with `join()` + dynamic `when()` filters
 
@@ -216,8 +216,6 @@ For DATETIME, use a **half-open** range `[from 00:00, to + 1 day 00:00)`:
 ->where('p.created_at >=', $from . ' 00:00:00')
 ->where('p.created_at <', (new DateTimeImmutable($to))->modify('+1 day')->format('Y-m-d 00:00:00'))
 ```
-
-> 💡 **Tip:** Don't wrap the column in a function (`WHERE DATE(created_at) <= ?`). It is logically correct, but MySQL cannot use an index on that column — see EXPLAIN in S4.
 
 ### 2.4 Aggregates: `selectCount()` + `groupBy()` (RPT-03)
 
@@ -343,7 +341,7 @@ thead  { display: table-header-group; }       /* table header repeated */
 tr     { page-break-inside: avoid; }
 ```
 
-> 💡 **Tip — why "Generated on … by …"?** A printed report lives longer than the screen. Without the generation date and the user's name, nobody knows whether the figures are from yesterday or last year — this is a simple **audit trail** requirement.
+The "Generated on … by …" footer is a simple **audit trail**: a printed report outlives the screen, so the reader must know when and by whom the figures were generated.
 
 ### 3.3 PhpSpreadsheet — a tidy `.xlsx`
 
@@ -381,8 +379,6 @@ public function exportRows(string $report, array $filters, string $format): iter
     return $this->streamRows($report, $this->applySort($builder, $report, $filters)); // ← generator
 }
 ```
-
-> ⚠️ **Common mistake — "just raise `memory_limit` to -1".** That only postpones the problem until the production server goes down. A clear limit + a "narrow the filter range" message is honest design. For data > 10,000 rows, propose CSV (true streaming) or a background job — ⭐ challenge.
 
 ### 🎯 Quiz S3
 
@@ -453,8 +449,6 @@ How to read the main columns:
 | `Extra` | `Using index`, `Using where` | `Using filesort`, `Using temporary` (on large tables) |
 
 SPEC §3 already provides `INDEX(status)` and `INDEX(slot_id, start_date, end_date)` on `slot_bookings`, and `INDEX(status)` on `pass_applications`. The RPT-02 filter on `created_at` has **no** index — with 500 training rows it is not noticeable, with 500,000 rows it is. The S4 lab shows how to measure before deciding.
-
-> 💡 **Tip:** An index speeds up `SELECT` but slows down `INSERT/UPDATE` and takes up space. **Measure first** (EXPLAIN + Debug Toolbar → *Database* tab), then add. An extra index is a design decision — record it in `docs/log-keputusan.md` (Day 2).
 
 ### 🎯 Quiz S4
 

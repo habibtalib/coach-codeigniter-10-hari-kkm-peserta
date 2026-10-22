@@ -73,8 +73,6 @@ Setiap peserta membuka projek GitLab `kelas-ci-<nama>` sendiri, menunjukkan `/zo
 | Kitaran request | `docs/kitaran-request.md` tiada | Jadual separuh, tanpa bukti | 7 langkah dengan bukti Debug Toolbar / `spark routes` |
 | Penerangan | Tidak dapat menerangkan | Menerangkan dengan bantuan | Menerangkan satu langkah sendiri dengan fail yang betul |
 
-> 💡 **Tip:** Skor bukan untuk ranking — ia menentukan **siapa perlu bantuan** semasa S2. Peserta skor ≤ 4 duduk berhampiran jurulatih.
-
 Aplikasi berita [`tugasan-persediaan.md`](../docs/tugasan-persediaan.md) tidak lagi wajib (T1–T2 pilihan) — kitaran request dijejak terus pada projek anda.
 
 ### 1.2 Kitaran request CodeIgniter 4
@@ -115,8 +113,6 @@ sequenceDiagram
 
 **Pemetaan ke projek kita:** mulai esok, langkah 5 dipecah dua — **Service** (logik perniagaan: pertindihan, had 90 hari, transaksi) dan **Model** (akses data + validasi format). Controller tidak pernah mengandungi `if` peraturan perniagaan.
 
-> ⚠️ **Kesilapan lazim:** "Controller saya panggil `$db->query()` terus — lebih cepat." Ia berfungsi, tetapi tidak boleh diuji tanpa HTTP, tidak boleh diguna semula oleh Spark command, dan SQL mentah mudah tercampur input pengguna. SPEC §5: *Controller nipis, logik dalam Service.*
-
 ### 🎯 Kuiz S1
 
 1. Dalam kitaran request CI4, apakah komponen yang berjalan **sebelum** controller dan menentukan sama ada pengguna boleh sampai ke controller?
@@ -141,7 +137,7 @@ sequenceDiagram
 
 Projek anda dicipta pada Hari 2 ([Lab 2.2](../hari-2/lab.md#lab-22--projek-ci-anda-di-gitlab-s2)) — hari ini tiada projek baharu, tiada salinan `ci4-tmp`. Struktur yang sama akan menerima Shield, layout Bootstrap dan 8 migration lagi.
 
-> 📌 **Versi:** kursus ini memerlukan **CodeIgniter 4.6+**. Pada Hari 2, `composer create-project` mungkin memasang **4.7.x** — itu tidak mengapa; semua kod bahan ini telah diuji pada 4.7 dengan Shield 1.4. Perbezaan kecil yang anda mungkin nampak: fail ujian bernama `phpunit.dist.xml` (4.7) atau `phpunit.xml.dist` (4.6).
+> ℹ️ **Versi:** kursus memerlukan **CodeIgniter 4.6+** dan bahan ini diuji pada 4.7.5 + Shield 1.4.1; satu-satunya beza yang anda mungkin nampak ialah nama fail konfigurasi ujian (`phpunit.dist.xml` pada 4.7, `phpunit.xml.dist` pada 4.6).
 
 ```text
 kelas-ci-<nama>/
@@ -157,7 +153,7 @@ kelas-ci-<nama>/
 └── spark           ← CLI: php spark …
 ```
 
-> 💡 **Tip:** Jika anda tertanya "fail ini patut di mana?" — kod aplikasi → `app/`; fail dijana semasa larian → `writable/`; fail yang pelayar muat terus → `public/`. Dokumen muat naik Pas (Hari 7) masuk `writable/uploads/`, **bukan** `public/`.
+Kod aplikasi → `app/`; fail dijana semasa larian → `writable/`; fail yang pelayar muat terus → `public/`. Jadi dokumen muat naik Pas (Hari 7) masuk `writable/uploads/`, **bukan** `public/`.
 
 ### 2.2 `.env` — konfigurasi ikut mesin
 
@@ -190,7 +186,7 @@ database.default.DBCollat = utf8mb4_unicode_ci
 | `app.appTimezone` | CI4 menetapkan zon waktu PHP daripada nilai ini. Lalai `UTC` → antara 00:00–08:00 waktu Malaysia, "hari ini" masih semalam dan peraturan *tarikh mula bukan masa lalu* (BR-TLK-03) tersilap |
 | `database.default.*` | Connection kumpulan `default`. Kumpulan `tests` (Hari 6) ditetapkan berasingan |
 
-> ⚠️ **Kesilapan lazim:** Menyunting `app/Config/Database.php` dengan kata laluan sebenar. Fail itu **di-commit**. Kata laluan hanya dalam `.env`.
+> ⚠️ **Amaran:** Jangan tulis kata laluan sebenar dalam `app/Config/Database.php` — fail itu **di-commit**. Kata laluan hanya dalam `.env`.
 
 ### 2.3 CodeIgniter Shield — apa yang kita dapat
 
@@ -257,9 +253,7 @@ public array $matrix = [
 ];
 ```
 
-Setiap permission mesti juga diisytihar dalam `$permissions` (kunci + keterangan BM). Fail penuh: `templates/kod/AuthGroups.php.txt` (modul **Templat & Rujukan**).
-
-> 💡 **Tip:** `group:admin` bertanya "*siapa* anda?"; `permission:tlk.decide` bertanya "*apa* yang anda boleh buat?". Utamakan **permission** — jika esok admin juga perlu melulus, hanya matrix berubah, bukan Routes.
+Setiap permission mesti juga diisytihar dalam `$permissions` (kunci + keterangan BM). Fail penuh: `templates/kod/AuthGroups.php.txt` (modul **Templat & Rujukan**). Utamakan `permission:tlk.decide` (*apa* yang anda boleh buat) berbanding `group:admin` (*siapa* anda): jika esok admin juga perlu melulus, hanya matrix berubah, bukan Routes.
 
 **CSRF sudah global** (KOLABORASI §5) sejak [Lab 2.4](../hari-2/lab.md#lab-24--borang-validation--csrf-s4) — `shield:setup` **tidak** mengubahnya (CI 4.6/4.7). Selepas setup, semak `app/Config/Filters.php` masih begini dan `php spark routes` masih menunjukkan `csrf` dalam lajur *Before Filters*:
 
@@ -298,7 +292,7 @@ Layout memasukkan partial `partials/flash.php` yang memaparkan mesej `session('s
 
 Dalam layout, navbar memaparkan menu **ikut kebenaran** (`$user->can('tlk.decide')`, `$user->inGroup('admin')`). Ingat: menyembunyikan menu hanya **kemudahan UI**. Kawalan sebenar ialah filter route di server.
 
-> ⚠️ **Kesilapan lazim:** `<?= $user->full_name ?>` tanpa `esc()`. Jika seseorang mendaftar dengan nama `<script>…</script>`, skrip itu berjalan dalam pelayar pelulus (XSS tersimpan). **Setiap** output data → `esc()`; dalam atribut HTML → `esc($x, 'attr')`.
+> ⚠️ **Amaran:** `<?= $user->full_name ?>` tanpa `esc()` ialah XSS tersimpan — nama `<script>…</script>` akan berjalan dalam pelayar pelulus. **Setiap** output data → `esc()`; dalam atribut HTML → `esc($x, 'attr')`.
 
 Layout rujukan lengkap: `templates/kod/layout-main.php.txt` (modul **Templat & Rujukan**).
 
@@ -344,7 +338,7 @@ Reka bentuk jadual sudah siap: [`erd-rujukan.md`](../docs/erd-rujukan.md) dan [`
 
 ### 3.2 Tertib migration = tertib FK
 
-Jadual induk **mesti wujud** sebelum jadual anak yang merujuknya. Cap masa pada nama fail (`2026-01-05-090001_…`) menentukan tertib.
+Jadual induk **mesti wujud** sebelum jadual anak yang merujuknya. Cap masa pada nama fail (`2026-01-05-090001_…`) menentukan tertib, jadi jana 8 fail baki satu demi satu ikut tertib rajah di bawah (03 → 10) dengan `php spark make:migration AddProfileFieldsToUsers`, `CreateParkingSlotsTable`, … — cap masa automatik menyusunnya selepas dua migration Hari 3.
 
 ```mermaid
 flowchart TD
@@ -361,8 +355,6 @@ flowchart TD
     U2 --> SL["09 status_logs"]
     RS["10 reference_sequences (tiada FK)"]
 ```
-
-> 💡 **Tip:** Jana 8 fail baki satu demi satu **mengikut tertib di atas** (03 → 10) dengan `php spark make:migration AddProfileFieldsToUsers`, `CreateParkingSlotsTable`, … — cap masa automatik akan menyusunnya selepas dua migration Hari 3.
 
 ### 3.3 Dari ERD rujukan ke Forge
 
@@ -442,8 +434,6 @@ $this->forge->processIndexes('users');   // guna key/FK yang ditambah di atas pa
 
 Semua 10 migration (diuji `migrate` + `migrate:rollback`): `templates/kod/migration-core-tables.php.txt` (modul **Templat & Rujukan**).
 
-> ⚠️ **Kesilapan lazim:** Jenis FK tidak sepadan — `user_id` INT (signed) merujuk `users.id` INT **UNSIGNED** → MySQL `errno: 150 "Foreign key constraint is incorrectly formed"`. Kedua-dua lajur mesti jenis & `unsigned` sama.
-
 ### 3.4 Seeder — data sintetik yang boleh diulang
 
 Seeder mengisi data permulaan. Syarat kita: **idempoten** (boleh dijalankan berulang kali tanpa ralat).
@@ -498,8 +488,6 @@ Kata laluan semua: **`Latihan@2026`**. Fail penuh: `templates/kod/UserSeeder.php
 | `php spark make:seeder XSeeder` | Jana seeder |
 | `php spark db:seed DatabaseSeeder` | Jalankan seeder |
 | `php spark db:table --show` / `db:table users --metadata` | Lihat jadual / struktur tanpa GUI |
-
-> ⚠️ **Kesilapan lazim:** Mengubah fail migration yang **sudah dijalankan**, kemudian `php spark migrate` → "Nothing to migrate". CI4 tidak membaca semula kandungan fail: jadual `migrations` merekod `version` (cap masa nama fail) + `class`, dan migration yang pasangan `version` + `class`-nya sudah ada dalam jadual akan dilangkau. Semasa pembangunan awal: `migrate:rollback` → ubah → `migrate`. Selepas kod dikongsi: tulis migration **baharu**.
 
 ### 🎯 Kuiz S3
 
@@ -567,9 +555,7 @@ gitGraph
 
 Satu ciri "siap" hanya apabila **ketujuh-tujuh** kotak ditanda: peraturan perniagaan (BR) spesifikasi §2 lulus diuji manual · validasi di server · akses dikawal di server · peralihan status dilog · ujian PHPUnit lulus · tiada `.env`/rahsia dalam commit · **anda boleh menerangkan setiap baris kepada jurulatih**. Salin senarai ini ke `docs/pelan-kerja.md`.
 
-> 💡 **Tip — disiplin AI:** Claude Code boleh menerangkan ralat `errno: 150` atau mencadang nama index. Ia **tidak** menjana modul penuh untuk anda salin. Ujian cepat: bolehkah anda menerangkan baris itu tanpa melihat skrin AI?
-
-> ⭐ **Trek sampingan (pilihan):** [Jira](../docs/trek-jira.md): rancang sprint pertama sebelum mula menulis kod. [GitLab](../docs/trek-gitlab.md): projek CI4 melalui merge request pertama. Tidak dikira dalam kemajuan; ini langkah akhir trek.
+**Trek sampingan (pilihan):** [Jira](../docs/trek-jira.md) · [GitLab](../docs/trek-gitlab.md)
 
 ### 🎯 Kuiz S4
 

@@ -69,8 +69,6 @@ A KPI that is not precisely defined will be disputed in the first meeting. Every
 | **Pass applications pending** | Applications not yet decided | `status IN ('submitted','under_review')` |
 | **Average days to approve a pass** | Average time from submission to approval | `AVG(TIMESTAMPDIFF(HOUR, created_at, approved_at)) / 24` for `approved_at IS NOT NULL` |
 
-> 💡 **Tip — why `approved_at IS NOT NULL` and not `status = 'approved'`?** A pass approved last month that is now `expired` was still approved *at some point*. If we filter by the current status, the average changes every time `pas:expire` runs — even without any new approvals. Use a **historical fact** (`approved_at`), not the current state.
-
 > ⚠️ **Common mistake — averages in whole days.** `TIMESTAMPDIFF(DAY, ...)` rounds down: an application approved after 23 hours = 0 days. Calculate in **hours** and then divide by 24 for an honest fraction (e.g. 1.4 days).
 
 ### 1.2 Choose the right chart for the right question
@@ -82,7 +80,7 @@ A KPI that is not precisely defined will be disputed in the first meeting. Every
 | Which zone is the busiest this month? | **Horizontal bar** (`indexAxis: 'y'`) | Long zone labels; easy to sort from highest |
 | Are pass applications increasing? | **Line** | Continuous time trend (12 months) |
 
-> ⚠️ **Common mistake — pie/doughnut for a time trend**, or a line for categories without an order (zones). The shape of a chart carries meaning; the wrong shape misleads even when the data is correct.
+The shape of a chart carries meaning: a pie/doughnut for a time trend, or a line for unordered categories (zones), misleads even when the data is correct.
 
 ### 1.3 Architecture: view + JSON endpoint
 
@@ -259,10 +257,7 @@ If the cache is cleared before `COMMIT`, another request can rebuild the cache f
 | **TTL + delete on write** ✅ (our choice) | Fresh after a change; TTL as a safety net | Must remember every place that writes; miss one = stale | Rare writes, frequent reads (our case) |
 | **Update the cache on write** (*write-through*) | No MISS after a write | Complex; risk of wrong counts; duplicated logic | Rarely needed for departmental applications |
 
-> 💡 **Tip — "There are two hard things in computer science: cache invalidation and naming things."** We make both easier: **one** key (`StatisticsService::CACHE_KEY`), and invalidation in **one** place per service (the private `transition()` method + the create method).
-
 > ⚠️ **Common mistakes:**
-> - Typing `'stat_dashboard'` in 5 places → one is misspelt (`'stats_dashboard'`) → no error, just stale data. Use a **constant**.
 > - Caching **per-user** data under a global key. Our dashboard is the same for every `approver`/`admin`, so one key is safe. If later there is data by the user's department, the key must contain the department id (`stat_dashboard_dept_3`) — otherwise department A's data leaks to department B.
 > - Forgetting other write paths: `pas:expire` (Spark) also changes statuses — but because it goes through `PassWorkflowService::transition()`, it is covered automatically. This is the reward of "one door for status changes" from Days 6 & 8.
 
@@ -326,7 +321,7 @@ Run it **in order** — each step prepares the data for the next step. Use a sep
 | 14 | `penyemak@latihan.test` | RPT-02 filter status Approved → export PDF & Excel | Screen total = PDF = Excel = `COUNT(*)` | UAT-09 |
 | 15 | `admin@latihan.test` | RPT-03 for the current month; compare with the "Utilisation by zone" chart | **Same** percentage | UAT-09, UAT-10 |
 
-> 💡 **Tip:** After **every** step, fill in "Actual result" and the ✅/❌ status in the template before you click the next step. Don't fix bugs during UAT — **record first**, fix later by severity.
+After **every** step, fill in "Actual result" and the ✅/❌ status in the template before the next step. Don't fix bugs during UAT — **record first**, fix later by severity.
 
 ### 3.3 The bug-fixing cycle (KOLABORASI §3)
 
@@ -359,8 +354,6 @@ flowchart LR
    ```
 4. **Pass** — the test is now green **and** `composer test` (all tests) is green.
 5. **Commit** — `git commit -m "FIX: RPT-02 julat tarikh separuh-terbuka (BUG-007)"`; update the bug log → *Closed*.
-
-> ⚠️ **Common mistake — fix first, write the test later.** A test written after the fix almost always passes — it proves nothing. A test must be **seen failing** at least once.
 
 ### 3.4 Final security checklist
 
@@ -424,7 +417,7 @@ Full rubric & mark sheet: [`docs/rubrik-capstone.md`](../docs/rubrik-capstone.md
 
 There are also 5 **critical gates** (e.g. an applicant must not be able to see other people's records, `.env` not in Git) — one failed gate limits the result to *Conditional pass*.
 
-> 💡 **Demo tip:** Prepare the **demo data** before you start (`migrate:refresh` + seed), open a browser tab for each role, and write a 1-page script. A demo that fails is almost always because of "yesterday's data" or a "forgotten password", not because of the code.
+Before the demo, prepare the **demo data** (`migrate:refresh` + seed), one browser tab per role, and a 1-page script — demos usually fail because of "yesterday's data" or a "forgotten password", not the code.
 
 ### 4.2 Retrospective — Start / Stop / Continue
 

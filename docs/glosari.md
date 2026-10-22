@@ -1,7 +1,7 @@
 # Glosari BM ↔ English
 
-> Istilah yang digunakan sepanjang kursus CI-KKM-10. Konvensyen: prosa **Bahasa Melayu**, kod & istilah teknikal **English**. Dalam prosa, istilah teknikal ditulis dalam English biasa (lihat jadual di bawah); nama dalam kod ditulis dalam `kod`.
-> Nama domain (jadual, enum, status) mengikut [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) dan **tidak diterjemah dalam kod**.
+Istilah yang digunakan sepanjang kursus CI-KKM-10. Konvensyen: prosa **Bahasa Melayu**, kod & istilah teknikal **English**. Dalam prosa, istilah teknikal ditulis dalam English biasa (lihat jadual di bawah); nama dalam kod ditulis dalam `kod`.
+Nama domain (jadual, enum, status) mengikut [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) dan **tidak diterjemah dalam kod**.
 
 ## Istilah teknikal dalam prosa
 

@@ -1,6 +1,6 @@
 # Day 2 Lab — Requirement Sign-off & Your CI Project on GitLab
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC canon](../docs/spesifikasi-sistem.md) · [📖 Day 2 README](./README.md) · [⚡ spark commands](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Schedule](../JADUAL.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [⚡ spark commands](../docs/arahan-spark.md)
 
 | Lab | Session | Output |
 |-----|---------|--------|
@@ -9,7 +9,7 @@
 | [Lab 2.3](#lab-23--route-controller--layout-view-s3) | S3 | `/hello`, `/hello/<nama>`, `layout.php`; 2 commits pushed |
 | [Lab 2.4](#lab-24--form-validation--csrf-s4) | S4 | `/daftar` form + validation + CSRF; commit pushed |
 
-> From Lab 2.2 all work happens in your **individual** project `kelas-ci-<nama>`. The original flowchart, acceptance criteria and URS labs are now optional reading in [`docs/rujukan-keperluan.md`](../docs/rujukan-keperluan.md).
+> ℹ️ From Lab 2.2 all work happens in your **individual** project `kelas-ci-<nama>`. The original flowchart, acceptance criteria and URS labs are now optional reading in [`docs/rujukan-keperluan.md`](../docs/rujukan-keperluan.md).
 
 ---
 
@@ -175,7 +175,7 @@ Build the MVC flow in `kelas-ci-<nama>`: route → controller → view, a route 
 - [Lab 2.2](#lab-22--your-ci-project-on-gitlab-s2) done: the first commit is visible on GitLab.
 - Two Git Bash terminals in `~/latihan/kelas-ci-<nama>`: one for `php spark serve`, one for Git.
 
-> 🔍 **Proof of work:** the platform ticks this lab's checkpoints when you **pass the Day quiz** — its questions can only be answered by running the code. The trainer also opens your GitLab repo at random.
+This lab's checkpoints are ticked when you pass the Day quiz, which can only be answered by running the code; the trainer also opens your GitLab repo at random.
 
 ### Steps
 1. **First route → controller → view.** Add to `app/Config/Routes.php`:

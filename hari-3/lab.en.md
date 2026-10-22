@@ -1,6 +1,6 @@
 # Day 3 Lab — Database, Migrations, Models & Search
 
-[📅 Schedule](../JADUAL.md) · [📘 Specification](../docs/spesifikasi-sistem.md) · [📖 Day 3 README](./README.md) · [⚡ spark commands](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Schedule](../JADUAL.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [⚡ spark commands](../docs/arahan-spark.md)
 
 | Lab | Session | Output |
 |-----|---------|--------|
@@ -13,7 +13,7 @@
 | [Lab 3.3b](#lab-33b--edit-a-department-s7) | S7 | `/jabatan/<id>/edit` with `update()` and `is_unique` `{id}`; commit pushed |
 | [Lab 3.4b](#lab-34b--zone-details--sorting-s8) | S8 | `/zon/<id>` (details + 404) and `?sort=` ordering; commit pushed |
 
-> All work happens in your **individual** project `~/latihan/kelas-ci-<nama>` (Day 2). Tables & fields follow [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §3 and [`erd-rujukan.md`](../docs/erd-rujukan.md) — you do not draw the ERD yourself. The original ERD/data dictionary/wireframe material is now optional reading in [`rujukan-keperluan.md`](../docs/rujukan-keperluan.md).
+> ℹ️ All work happens in your **individual** project `~/latihan/kelas-ci-<nama>` (Day 2). Tables & fields follow [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §3 and [`erd-rujukan.md`](../docs/erd-rujukan.md) — you do not draw the ERD yourself. The original ERD/data dictionary/wireframe material is now optional reading in [`rujukan-keperluan.md`](../docs/rujukan-keperluan.md).
 
 ---
 
@@ -26,7 +26,7 @@ Create the development and test databases with a dedicated user `kkm_dev`, conne
 - [Lab 2.4](../hari-2/lab.en.md#lab-24--form-validation--csrf-s4) done: GitLab shows 4 commits.
 - Laragon → **Start All** (MySQL green). A Git Bash terminal in VS Code.
 
-> 🔍 **Proof of work:** the platform ticks today's lab checkpoints when you **pass that lab's session quiz** (Quiz S1 for Lab 3.1, … Quiz S4 for Lab 3.4, on the session page) — its questions can only be answered by running the code.
+Each lab's checkpoints today are ticked when you pass its session quiz (Quiz S1 for Lab 3.1, … Quiz S4 for Lab 3.4, on the session page), which can only be answered by running the code.
 
 ### Steps
 1. **Check MySQL:**
@@ -675,7 +675,7 @@ Connect the `tests` database group to `kkm_latihan_test` through `.env`, prove t
    ```
    The small table at the top of the output shows `database` = `kkm_latihan_test`, `DBDriver` = `MySQLi` and an empty `DBPrefix`, followed by *Database has no tables!*. Run `php spark config:check Database` again: the `tests` block now follows `.env`.
 
-   The test database stays empty today — its tables are built by the Day 6 PHPUnit tests (`DatabaseTestTrait`). Do **not** run `php spark migrate -g tests`: in CI 4.7 the `-g` option does not switch the connection, so the migrations try to create the tables in `kkm_latihan`.
+   The test database is empty for now; Lab 4.4 (the repo clone) and the Day 6 PHPUnit tests (`DatabaseTestTrait`) will fill it. Do **not** run `php spark migrate -g tests`: in CI 4.7 the `-g` option does not switch the connection, so the migrations try to create the tables in `kkm_latihan`.
 4. **The `.env.example` template.** Create a new file `.env.example` in the project root (next to `.env`):
 
    `.env.example`
@@ -847,7 +847,7 @@ Add `/jabatan/(:num)/edit` (a filled form) and POST `/jabatan/(:num)` that calls
 ### Prerequisites
 - [Lab 3.3](#lab-33--model--the-jabatan-pages-s3) done: `/jabatan` lists 5 departments including `BPP`.
 
-> ⚠️ Test editing on `BPP` only. Do **not** change the codes of the four original departments (`BTM`, `BKW`, `BSM`, `BPA`): the Day 4 `UserSeeder` looks departments up by code. This lab does not build **delete**: from Day 4 `users.department_id` references `departments`, so deleting a department would clear the department of its users.
+> ⚠️ **Warning:** Test editing on `BPP` only. Do **not** change the codes of the four original departments (`BTM`, `BKW`, `BSM`, `BPA`): the Day 4 `UserSeeder` looks departments up by code. This lab does not build **delete**: from Day 4 `users.department_id` references `departments`, so deleting a department would clear the department of its users.
 
 ### Steps
 1. **Routes** — add below the three `jabatan` routes in `app/Config/Routes.php`:
@@ -1060,7 +1060,7 @@ Build a `/zon/(:num)` details page that returns a 404 (`PageNotFoundException`) 
 ### Prerequisites
 - [Lab 3.4](#lab-34--zone-search--pagination-s4) done: `/zon` with search and pagination.
 
-> This lab does **not** build adding/editing zones — admin CRUD comes later. `ParkingZoneModel` is not changed (Day 5 replaces that file); all the new logic lives in the controller and views.
+This lab does **not** build adding/editing zones (admin CRUD comes later) and does not change `ParkingZoneModel` (Day 5 replaces it); all the new logic lives in the controller and views.
 
 ### Steps
 1. **Route** — add below the `zon` route in `app/Config/Routes.php`:

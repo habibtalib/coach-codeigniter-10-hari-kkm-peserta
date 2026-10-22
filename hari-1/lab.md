@@ -1,8 +1,8 @@
 # Lab Hari 1 — Carta Skop, Temu Bual & Senarai Keperluan
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [📖 README Hari 1](./README.md)
+[⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md)
 
-> Semua lab hari ini menghasilkan **dokumen Markdown**, bukan kod (kecuali Lab 1.5 dalam S4: CI4 asas di Laragon). Setiap peserta membuat tugasan yang **sama** secara individu dan menyemak kerja sendiri terhadap SPEC.
+> ℹ️ Semua lab hari ini menghasilkan **dokumen Markdown**, bukan kod (kecuali Lab 1.5 dalam S4: CI4 asas di Laragon). Setiap peserta membuat tugasan yang **sama** secara individu dan menyemak kerja sendiri terhadap SPEC.
 
 | Lab | Sesi | Hasil |
 |-----|------|-------|
@@ -24,7 +24,7 @@
    echo "# Sistem TLK & Pas — Dokumen Keperluan" > README.md
    git add . && git commit -m "SETUP: mula repo dokumen"
    ```
-   > Masih dalam PowerShell? `&&` gagal dalam Windows PowerShell 5.1, dan `>` menulis `README.md` sebagai UTF-16 (Git dan GitLab memaparkannya sebagai teks rosak). Tukar ke Git Bash, padam `README.md`, ulang.
+   > ⚠️ Masih dalam PowerShell? `&&` gagal dalam Windows PowerShell 5.1, dan `>` menulis `README.md` sebagai UTF-16 (Git dan GitLab memaparkannya sebagai teks rosak). Tukar ke Git Bash, padam `README.md`, ulang.
 2. Buka folder dalam VS Code. Pasang extension **Markdown Preview Mermaid Support** (atau guna <https://mermaid.live>).
 
 ✅ **Checkpoint:** `git log --oneline` menunjukkan satu commit `SETUP: mula repo dokumen`.
@@ -126,8 +126,7 @@ Mengendalikan temu bual 35 minit dengan pemilik sistem (jurulatih dalam persona)
    - ≥ 1 soalan tentang **siapa** meluluskan
    - ≥ 1 soalan tentang **tempoh** tempahan
    - ≥ 1 soalan tentang **jenis/kategori** slot
-3. **Temu bual (35 minit, seluruh kelas).** Jurulatih memakai persona pemilik sistem. Setiap peserta bergilir bertanya sekurang-kurangnya 1 soalan; semua peserta mencatat dalam fail sendiri.
-   > Peraturan main: pemilik sistem **hanya** menjawab apa yang ditanya. Maklumat penting mungkin tersembunyi di sebalik soalan susulan.
+3. **Temu bual (35 minit, seluruh kelas).** Jurulatih memakai persona pemilik sistem. Setiap peserta bergilir bertanya sekurang-kurangnya 1 soalan; semua peserta mencatat dalam fail sendiri. Pemilik sistem **hanya** menjawab apa yang ditanya, jadi maklumat penting mungkin tersembunyi di sebalik soalan susulan.
 4. **Rumuskan (20 minit).** Isi lajur "Jawapan". Kemudian isi jadual **Pain point** dengan ≥ 5 baris `PP-TLK-01`… Setiap pain point mesti ada keempat-empat elemen (siapa, masalah, kesan, keperluan).
 5. Dalam bahagian **C. Peraturan yang ditemui**, padankan penemuan anda dengan BR dalam SPEC:
    ```markdown
@@ -331,7 +330,7 @@ Menjalankan projek CodeIgniter 4 kosong di laptop Windows dan membina satu route
    Buka <http://localhost:8080/hello>.
 6. Terangkan kepada rakan sebelah aliran request: **Routes → Controller → View**. Langkah penuh dan penerangan: [Tutorial rangka — Bahagian A](../docs/tutorial-rangka.md#bahagian-a--ci4-asas-di-laptop-hari-1).
 
-> `ci4-asas` ialah projek latihan sahaja dan boleh dipadam. Projek sebenar dicipta dalam repo `sistem-tlk-pas` pada Hari 4 Lab 4.2.
+> ℹ️ `ci4-asas` ialah projek latihan sahaja dan boleh dipadam. Projek sebenar dicipta dalam repo `sistem-tlk-pas` pada Hari 4 Lab 4.2.
 
 ### ✅ Checkpoint
 - [ ] `php spark serve` berjalan dan <http://localhost:8080> memaparkan halaman *Welcome to CodeIgniter*.

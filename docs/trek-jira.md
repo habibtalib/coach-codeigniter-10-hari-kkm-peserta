@@ -5,7 +5,7 @@
 
 > ⚠️ **Siap sebelum Hari 4.** Kod bermula Hari 4. Persediaan dan backlog dibuat Hari 1–2, story dengan acceptance criteria Hari 2, dan sprint planning Hari 4 S4 sebelum baris kod pertama modul.
 
-> 🔒 **Data sintetik sahaja.** Jira Cloud ialah perkhidmatan luar. Jangan masukkan data KKM sebenar (nama pesakit/kakitangan, plat sebenar), tangkapan skrin sistem dalaman, kata laluan atau kandungan `.env` ke dalam kad. Guna nilai rekaan seperti dalam SPEC §10 (`pemohon1@latihan.test`, `WXX 1234`).
+> ⚠️ **Amaran — data sintetik sahaja.** Jira Cloud ialah perkhidmatan luar. Jangan masukkan data KKM sebenar (nama pesakit/kakitangan, plat sebenar), tangkapan skrin sistem dalaman, kata laluan atau kandungan `.env` ke dalam kad. Guna nilai rekaan seperti dalam SPEC §10 (`pemohon1@latihan.test`, `WXX 1234`).
 
 ## 1. Tujuan
 
@@ -22,7 +22,7 @@ Di pejabat, kebanyakan pasukan IT menjejak kerja dalam alat seperti Jira. Trek i
 
 **Peraturan teras:** setiap kerja ada kad. Jika anda sedang mengerjakan sesuatu yang tiada pada board, berhenti dan cipta kadnya dahulu.
 
-> 💡 **Istilah Jira terkini.** Antara muka Jira Cloud kini memanggil *project* sebagai **space**, *issue* sebagai **work item** dan *issue type* sebagai **work type**. Halaman ini guna label menu semasa (space, work item) tetapi konsepnya sama dengan bahan Jira yang lebih lama.
+> 💡 **Istilah Jira terkini.** Antara muka Jira Cloud kini memanggil *project* sebagai **space**, *issue* sebagai **work item** dan *issue type* sebagai **work type**. Halaman ini guna label menu semasa (space, work item) tetapi konsepnya sama dengan bahan Jira yang lebih lama. Harga, had pelan dan menu importer juga boleh berubah; jika berbeza pada hari kursus, ikut halaman Atlassian.
 
 ## 2. Bila
 
@@ -68,8 +68,6 @@ Disemak pada 2026-10-15 daripada halaman rasmi Atlassian (lihat bahagian Sumber)
 | Ciri agile | Board Scrum dan Kanban, backlog, laporan agile |
 | Sokongan | Komuniti Atlassian sahaja |
 | Had | Kebenaran, peranan dan keselamatan peringkat work item adalah terhad; konfigurasi dikongsi antara space tidak tersedia |
-
-> Harga dan had pelan boleh berubah. Jika halaman Atlassian menunjukkan angka lain pada hari kursus, ikut halaman itu.
 
 ### 4.2 Cipta site & space
 
@@ -250,8 +248,6 @@ Peraturan format: kandungan yang ada koma dibalut `"…"`; jangan buang koma unt
 5. Padankan nilai: space team-managed hanya menerima work type yang **sudah wujud** (Epic, Story, Task, Bug) → **Begin Import**.
 6. Buka backlog: semak setiap Story ada Epic sebagai parent dan bilangan Story sama dengan bilangan baris CSV Story.
 
-> Menu importer Jira berubah dari semasa ke semasa. Jika label menu berbeza, rujuk halaman Atlassian *Import data from a CSV file* (bahagian Sumber).
-
 ## 7. Sprint sebelum kod
 
 ### 7.1 Peta sprint
@@ -352,7 +348,7 @@ Bagi peserta yang biasa dengan GitLab Issues/Boards ([`trek-gitlab.md`](./trek-g
 | Assignee | Assignee | |
 | `Closes #14` dalam MR | `TLKPAS-12` dalam branch, commit, tajuk MR | Panel Development perlu GitLab for Jira Cloud |
 
-> Pilih **satu** alat sebagai sumber kebenaran backlog. Jika anda guna GitLab Issues dan Jira, GitLab mengurus kod dan MR; Jira mengurus backlog dan sprint.
+Pilih **satu** alat sebagai sumber kebenaran backlog. Jika anda guna GitLab Issues dan Jira, GitLab mengurus kod dan MR; Jira mengurus backlog dan sprint.
 
 ## 10. Tiga kesilapan lazim
 

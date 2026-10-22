@@ -25,16 +25,16 @@ Course map ([`JADUAL.md`](./JADUAL.md) § Phase summary):
 
 | You are… | Open |
 |-------|------|
-| Trainer | [`JADUAL.md`](./JADUAL.md) → `hari-N/nota-penceramah.md` → [`slides/`](./slides/) |
 | Participant | [`docs/persediaan.md`](./docs/persediaan.md) → `hari-N/README.md` → `hari-N/lab.md` |
+| For trainers | [`JADUAL.md`](./JADUAL.md) → `hari-N/nota-penceramah.md` → [`slides/`](./slides/) |
 
 ## Each day contains
 
 | File | Contents |
 |------|-----|
-| `README.md` | 🎯 **Measurable learning objectives** (tagged S1–S4) · timetable following the tentative schedule · concept notes for each session · day deliverables · self-check |
+| `README.md` | 🎯 **Measurable learning objectives** (tagged S1–S4 on Days 1–2 and 10; S1–S8 on Days 3–9) · timetable following the tentative schedule · concept notes for each session · day deliverables · self-check |
 | `lab.md` | 🎯 Objective → Prerequisites → numbered steps → ✅ Checkpoint → 🧯 Troubleshooting → ⭐ Challenge |
-| `nota-penceramah.md` | Minute-by-minute time breakdown, key messages, questions, common misconceptions, catch-up plan |
+| `nota-penceramah.md` (trainers only) | Minute-by-minute time breakdown, key messages, questions, common misconceptions, catch-up plan |
 
 ## What is new compared with the 15-day edition
 
@@ -56,7 +56,7 @@ JADUAL.md  CLAUDE.md
 hari-1/ … hari-10/     README.md · lab.md · nota-penceramah.md
 docs/nota-NN-*.md      topical notes (MVC, migration, model/enum, validation, transactions, Shield, upload, reports, cache, testing, security, Git)
 templates/dokumen/     URS, acceptance criteria, data dictionary, test cases, UAT sign-off
-templates/kod/         trainer reference code (*.php.txt) — answer key
+templates/kod/         reference code / templates (*.php.txt) — Templat & Rujukan module
 docs/                  setup, kelas-ci repo (trek-gitlab), reference ERD, prompt library, capstone rubric, glossary
 slides/                ci-kkm-10.html (open directly in the browser)
 ```
