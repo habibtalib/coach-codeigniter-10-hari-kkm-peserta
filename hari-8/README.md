@@ -786,15 +786,19 @@ Lab: [Lab 8.4b](./lab.md#lab-84b--demo-peranan-keempat-admin--dapatan-pemisahan-
 
 ## 🤖 Prompting hari ini
 
-Guna Claude Code dalam mod *Plan* (`Shift+Tab` / `Alt+M`) untuk prompt di bawah: Claude menerang, menyemak dan merancang; anda menulis dan memahami setiap baris yang di-commit ([`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`.
+Setiap slice: rancang dalam mod *Plan* (`Shift+Tab` / `Alt+M`), kemudian Claude Code melaksana dalam mod *Manual* — anda membaca dan meluluskan setiap diff, menjalankan ujian, `semak-ci4`, dan mesti boleh menerangkan setiap baris yang di-commit (7 pintu semakan, [`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`.
 
 | Sesi | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
 |---|---|---|---|
-| S1 · Aliran kelulusan | AI-05 (BR-PAS-01/03/05) dengan `@app/Services/PassWorkflowService.php`; tanya di mana `FOR UPDATE` dan `status_logs` | Buka fail:baris; ulang ujian sesi kedua `pelulus` | 8.1 langkah 10 |
-| S2 · RBAC Shield | AI-07 + tool MCP `ci4-spark` `routes` dan `filter_check` pada 3 route POST semakan | `php spark filter:check POST /pas/semakan/1/approve` | 8.2 langkah 10 |
-| S3 · Ujian akses | AI-09: matriks peranan × tindakan dari `@tests/feature/Pas/PassAccessTest.php`; AI-10 untuk pepijat | `!composer test -- tests/feature/Pas` | 8.3 langkah 8 |
-| S4 · Demo & M2 | Subagent `semak-ci4` pada modul Pas (`esc()`, CSRF, filter, pemilikan) | Buka setiap fail:baris; dapatan sahih → `FIX:` | 8.4 langkah 5 |
-| S5–S8 · Lanjutan | AI-07 + `filter_check POST /pas/semakan/pukal/review`; AI-09 untuk `PassBatchReviewTest` | `!composer test -- tests/feature/Pas` | — |
+| S9 · Slice 3: aliran kelulusan | Pelan slice (mod *Plan*, tiada kod) → AI-19 (laksana langkah 1 pelan sahaja, mod Manual) → AI-20 untuk diff `transition()` → subagent `semak-ci4` pada `PassWorkflowService` | Permohonan A `approved` dengan 3 baris `status_logs`; `!composer test` | 8.10 |
+| S10 · Slice 4: RBAC & skop | Tool MCP `ci4-spark` `filter_check` sebelum pelan → pelan RBAC (SPEC §4) → AI-19 → AI-20 → `semak-ci4` pada `AuthGroups.php` dan `Routes.php` | `php spark filter:check POST /pas/semakan/1/approve`; `pemohon2` → 404 | 8.11 |
+| S11 · Slice 5: ujian akses | Pelan daripada matriks anda → AI-19 untuk ujian; AI-09 untuk sel matriks; AI-10 untuk pepijat yang tidak ditangkap; `semak-ci4` pada garis masa | `!composer test -- tests/feature/Pas/PassAccessTest.php`; 2 mutasi menggagalkan ujian | 8.12 |
+| S12 · Demo M2 | `semak-ci4` pada modul penuh → AI-08 (DoD, BR-PAS-01..06); AI-02 jika satu baris tidak dapat diterangkan | `git diff main...feat/pas-claude`: 3 baris rawak diterangkan tanpa Claude | 8.13 |
+| S1 · Aliran kelulusan (kod rujukan) | AI-05 (BR-PAS-01/03/05) dengan `@app/Services/PassWorkflowService.php`; tanya di mana `FOR UPDATE` dan `status_logs` | Buka fail:baris; ulang ujian sesi kedua `pelulus` | 8.1 langkah 10 |
+| S2 · RBAC Shield (kod rujukan) | AI-07 + tool MCP `ci4-spark` `routes` dan `filter_check` pada 3 route POST semakan | `php spark filter:check POST /pas/semakan/1/approve` | 8.2 langkah 10 |
+| S3 · Ujian akses (kod rujukan) | AI-09: matriks peranan × tindakan dari `@tests/feature/Pas/PassAccessTest.php`; AI-10 untuk pepijat | `!composer test -- tests/feature/Pas` | 8.3 langkah 8 |
+| S4 · Demo & M2 (kod rujukan) | Subagent `semak-ci4` pada modul Pas (`esc()`, CSRF, filter, pemilikan) | Buka setiap fail:baris; dapatan sahih → `FIX:` | 8.4 langkah 5 |
+| S5–S8 · Lanjutan (kod rujukan) | AI-07 + `filter_check POST /pas/semakan/pukal/review`; AI-09 untuk `PassBatchReviewTest` | `!composer test -- tests/feature/Pas` | — |
 
 ---
 

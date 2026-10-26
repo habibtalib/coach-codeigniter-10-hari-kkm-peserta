@@ -748,15 +748,19 @@ Lab: [Lab 9.4b](./lab.md#lab-94b--ujian-ringkasan-jumlah--lembaran-excel-s8)
 
 ## 🤖 Prompting hari ini
 
-Guna Claude Code dalam mod *Plan* (`Shift+Tab` / `Alt+M`) untuk prompt di bawah: Claude menerang, menyemak dan merancang; anda menulis dan memahami setiap baris yang di-commit ([`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`.
+Setiap slice: rancang dalam mod *Plan* (`Shift+Tab` / `Alt+M`), kemudian Claude Code melaksana dalam mod *Manual* — anda membaca dan meluluskan setiap diff, menjalankan ujian, `semak-ci4`, dan mesti boleh menerangkan setiap baris yang di-commit (7 pintu semakan, [`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`.
 
 | Sesi | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
 |---|---|---|---|
-| S1 · Reka bentuk laporan | Semak `@docs/laporan-spec.md` lawan borang penapis; `esc(…, 'attr')`; tool MCP `routes` untuk `permission:laporan.view` | *View Page Source* dengan `?from=%22%3E%3Cb%3Ex` | 9.1 langkah 7 |
-| S2 · Query aggregate | Semakan binding Query Builder & whitelist `applySort()` (gaya AI-04); tool MCP `db_table` untuk index | Debug Toolbar → Database; `php spark db:table slot_bookings --metadata` | 9.2 langkah 11 |
-| S3 · Eksport PDF/Excel | Semakan keselamatan eksport gaya AI-06: formula injection, `esc()` PDF, kebenaran, had baris | Nama sintetik `=1+1` kekal teks dalam Excel | 9.3 langkah 8 |
-| S4 · Ujian & prestasi | AI-09 untuk cabang tanpa ujian; terangkan output `laporan:explain` (AI-03) | `!composer test -- tests/Services/ReportServiceTest.php` | 9.4 langkah 9 |
-| S5–S8 · Lanjutan | AI-04 pada kaedah ringkasan status & baris JUMLAH; AI-09 untuk ujian ringkasan | Jumlah ringkasan = `GROUP BY` SQL anda | — |
+| S9 · L1: penapis whitelist | Pelan daripada jadual input → hasil penapis → AI-19 → AI-20 untuk `normaliseFilters()` → `semak-ci4` kategori 4 (`orderBy`, whitelist) | Tool MCP `filter_check` untuk `GET /laporan/pas`; `php spark routes` | 9.10 |
+| S10 · L2: senarai & RPT-03 | Pelan "satu sumber `$filters`" → AI-19 → AI-20 untuk pautan pager/eksport → `semak-ci4` kategori 1 (`esc()` konteks attr/url) | *View Page Source* dengan `?from=%22%3E%3Cb%3Ex`; penapis kekal di halaman 2 | 9.11 |
+| S11 · L3: eksport selamat | Pelan eksport → AI-19 → `semak-ci4` pada `ExportService` → semakan eksport gaya AI-06 (formula, `esc()` PDF, had baris) | Nama sintetik `=1+1` kekal teks dalam Excel; skrin = PDF = Excel | 9.12 |
+| S12 · L4: ujian & prestasi | Pelan ujian daripada nombor tangan → AI-19; AI-09; AI-08 (DoD) sebelum MR; tool MCP `db_table` (index) dan `migrate_status` (tiada migration baharu) | `!composer test -- tests/Services/ReportServiceTest.php`; mutasi `<` → `<=` gagal | 9.13 |
+| S1 · Reka bentuk laporan (kod rujukan) | Semak `@docs/laporan-spec.md` lawan borang penapis; `esc(…, 'attr')`; tool MCP `routes` untuk `permission:laporan.view` | *View Page Source* dengan `?from=%22%3E%3Cb%3Ex` | 9.1 langkah 7 |
+| S2 · Query aggregate (kod rujukan) | Semakan binding Query Builder & whitelist `applySort()` (gaya AI-04); tool MCP `db_table` untuk index | Debug Toolbar → Database; `php spark db:table slot_bookings --metadata` | 9.2 langkah 11 |
+| S3 · Eksport PDF/Excel (kod rujukan) | Semakan keselamatan eksport gaya AI-06: formula injection, `esc()` PDF, kebenaran, had baris | Nama sintetik `=1+1` kekal teks dalam Excel | 9.3 langkah 8 |
+| S4 · Ujian & prestasi (kod rujukan) | AI-09 untuk cabang tanpa ujian; terangkan output `laporan:explain` (AI-03) | `!composer test -- tests/Services/ReportServiceTest.php` | 9.4 langkah 9 |
+| S5–S8 · Lanjutan (kod rujukan) | AI-04 pada kaedah ringkasan status & baris JUMLAH; AI-09 untuk ujian ringkasan | Jumlah ringkasan = `GROUP BY` SQL anda | — |
 
 ---
 

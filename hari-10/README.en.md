@@ -615,15 +615,16 @@ Participants who do not meet criteria 2–5 but attend ≥ 80 % receive a **cert
 
 ## 🤖 Today's prompting
 
-Use Claude Code in *Plan* mode (`Shift+Tab` / `Alt+M`) for the prompts below: Claude explains, reviews and plans; you write and understand every committed line ([`kolaborasi.md`](../docs/kolaborasi.en.md) §3). Full prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md). Record the answers you verified in `docs/nota-claude.md`. After the course: AI-15 for an existing project; AI-16 → AI-18 → AI-17 for a new project.
+Every slice: plan in *Plan* mode (`Shift+Tab` / `Alt+M`), then Claude Code implements in *Manual* mode — you read and approve each diff, run the tests and `semak-ci4`, and must be able to explain every committed line (7 review gates, [`kolaborasi.md`](../docs/kolaborasi.en.md) §3). Full prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md). Record the answers you verified in `docs/nota-claude.md`. After the course: AI-15 for an existing project; AI-16 → AI-18 → AI-17 for a new project.
 
 | Session | Prompt & Claude Code feature | Verify it yourself | Lab |
 |---|---|---|---|
-| S1 · Statistics dashboard | AI-04 on the 4 KPIs & chart datasets against the §1.1 definitions; check `innerHTML` in `dashboard.php` | Your own SQL = the KPI card | 10.1 step 10 |
-| S2 · Cache | List every `transCommit()` against `cache()->delete()`; AI-09 for `StatisticsCacheTest` | `grep` `transCommit`/`CACHE_KEY`; `!composer test` | 10.2 step 11 |
+| S1 · Statistics dashboard (reference code) | AI-04 on the 4 KPIs & chart datasets against the §1.1 definitions; check `innerHTML` in `dashboard.php` | Your own SQL = the KPI card | 10.1 step 10 |
+| S2 · Cache (reference code) | List every `transCommit()` against `cache()->delete()`; AI-09 for `StatisticsCacheTest` | `grep` `transCommit`/`CACHE_KEY`; `!composer test` | 10.2 step 11 |
 | S3 · UAT & bugs | The `semak-ci4` subagent on K2/K5/K7; AI-10 (red test first); AI-08 on `!git diff --staged` before `FIX:` | Your K marks in `docs/UAT-signoff.md` | 10.3 step 7 |
-| S4 · Demo & handover | AI-18 on `@README.md` and `@CLAUDE.md`; update the project `CLAUDE.md` | 2 issues fixed by you and committed | 10.4 step 7 |
-| S5 · Statistics with Claude Code | 4-slice plan (*Plan* mode) → Manual mode diffs → `semak-ci4` subagent → `ci4-spark` `routes`/`filter_check` tools | `!composer test`; the browser; 3 lines per slice in `docs/nota-claude.md` | 10.10 |
+| S4 · Demo & handover (reference code) | AI-18 on `@README.md` and `@CLAUDE.md`; update the project `CLAUDE.md` | 2 issues fixed by you and committed | 10.4 step 7 |
+| S5 · Statistics slices 1–3 | 4-slice plan (*Plan* mode) → AI-19 (implement Slice N only, Manual mode) → AI-20 → `semak-ci4` → `ci4-spark` `routes`/`filter_check` tools | `!composer test`; the browser; 3 lines per slice in `docs/nota-claude.md` | 10.10 |
+| S5 · Statistics slice 4 (cache) | AI-10: `StatisticsCacheTest` first (red) → AI-19 list every `transCommit()` → `semak-ci4` on the services | `!composer test -- tests/Services/StatisticsCacheTest.php` red, then green | 10.10 |
 | S6 · Capstone preparation | `semak-ci4` on the whole repo; AI-08 (DoD); AI-09 (test gaps); AI-10; AI-18 (README/CLAUDE.md/PRD) | Every finding Accept/Reject with evidence; tests red when the rule is broken | 10.11 |
 | S7 · Demo & reflection | AI-14 (practise the explain-the-code segment) | Accept/reject reflection with commit/test evidence | 10.12 |
 

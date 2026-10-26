@@ -786,15 +786,19 @@ Lab: [Lab 8.4b](./lab.en.md#lab-84b--fourth-role-demo-admin--separation-of-dutie
 
 ## 🤖 Today's prompting
 
-Use Claude Code in *Plan* mode (`Shift+Tab` / `Alt+M`) for the prompts below: Claude explains, reviews and plans; you write and understand every committed line ([`kolaborasi.md`](../docs/kolaborasi.en.md) §3). Full prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md). Record the answers you verified in `docs/nota-claude.md`.
+Every slice: plan in *Plan* mode (`Shift+Tab` / `Alt+M`), then Claude Code implements in *Manual* mode — you read and approve each diff, run the tests and `semak-ci4`, and must be able to explain every committed line (7 review gates, [`kolaborasi.md`](../docs/kolaborasi.en.md) §3). Full prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md). Record the answers you verified in `docs/nota-claude.md`.
 
 | Session | Prompt & Claude Code feature | Verify it yourself | Lab |
 |---|---|---|---|
-| S1 · Approval flow | AI-05 (BR-PAS-01/03/05) with `@app/Services/PassWorkflowService.php`; ask where `FOR UPDATE` and `status_logs` are | Open the file:line; repeat the second `pelulus` session test | 8.1 step 10 |
-| S2 · Shield RBAC | AI-07 + the `ci4-spark` MCP tools `routes` and `filter_check` on the 3 review POST routes | `php spark filter:check POST /pas/semakan/1/approve` | 8.2 step 10 |
-| S3 · Access tests | AI-09: role × action matrix from `@tests/feature/Pas/PassAccessTest.php`; AI-10 for bugs | `!composer test -- tests/feature/Pas` | 8.3 step 8 |
-| S4 · Demo & M2 | The `semak-ci4` subagent on the Pas module (`esc()`, CSRF, filters, ownership) | Open each file:line; a real finding → `FIX:` | 8.4 step 5 |
-| S5–S8 · Extensions | AI-07 + `filter_check POST /pas/semakan/pukal/review`; AI-09 for `PassBatchReviewTest` | `!composer test -- tests/feature/Pas` | — |
+| S9 · Slice 3: approval flow | Slice plan (*Plan* mode, no code) → AI-19 (implement plan step 1 only, Manual mode) → AI-20 for the `transition()` diff → `semak-ci4` subagent on `PassWorkflowService` | Application A `approved` with 3 `status_logs` rows; `!composer test` | 8.10 |
+| S10 · Slice 4: RBAC & scope | The `ci4-spark` MCP tool `filter_check` before the plan → RBAC plan (SPEC §4) → AI-19 → AI-20 → `semak-ci4` on `AuthGroups.php` and `Routes.php` | `php spark filter:check POST /pas/semakan/1/approve`; `pemohon2` → 404 | 8.11 |
+| S11 · Slice 5: access tests | Plan from your matrix → AI-19 for the tests; AI-09 for the matrix cells; AI-10 for an uncaught bug; `semak-ci4` on the timeline | `!composer test -- tests/feature/Pas/PassAccessTest.php`; 2 mutations fail a test | 8.12 |
+| S12 · M2 demo | `semak-ci4` on the whole module → AI-08 (DoD, BR-PAS-01..06); AI-02 if a line can't be explained | `git diff main...feat/pas-claude`: 3 random lines explained without Claude | 8.13 |
+| S1 · Approval flow (reference code) | AI-05 (BR-PAS-01/03/05) with `@app/Services/PassWorkflowService.php`; ask where `FOR UPDATE` and `status_logs` are | Open the file:line; repeat the second `pelulus` session test | 8.1 step 10 |
+| S2 · Shield RBAC (reference code) | AI-07 + the `ci4-spark` MCP tools `routes` and `filter_check` on the 3 review POST routes | `php spark filter:check POST /pas/semakan/1/approve` | 8.2 step 10 |
+| S3 · Access tests (reference code) | AI-09: role × action matrix from `@tests/feature/Pas/PassAccessTest.php`; AI-10 for bugs | `!composer test -- tests/feature/Pas` | 8.3 step 8 |
+| S4 · Demo & M2 (reference code) | The `semak-ci4` subagent on the Pas module (`esc()`, CSRF, filters, ownership) | Open each file:line; a real finding → `FIX:` | 8.4 step 5 |
+| S5–S8 · Extensions (reference code) | AI-07 + `filter_check POST /pas/semakan/pukal/review`; AI-09 for `PassBatchReviewTest` | `!composer test -- tests/feature/Pas` | — |
 
 ---
 
