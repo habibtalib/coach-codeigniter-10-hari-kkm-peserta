@@ -2547,10 +2547,12 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
   <h1>Pass Module — Part 2 (Claude Code)</h1>
   <div><span class="chip m-pas">M2 · approval, RBAC &amp; audit</span></div>
   <div class="sessions">
+    <div><i>S13</i><span>Morning: Lab 7.10 — Pass slice 1 (from <code>docs/pelan-pas.md</code>)</span></div>
+    <div><i>S14</i><span>Morning: Lab 7.11 — Pass slice 2, secure upload</span></div>
     <div><i>S9</i><span>Pass approval flow (slice 3)</span></div>
     <div><i>S10</i><span>Shield RBAC &amp; access scope (slice 4)</span></div>
     <div><i>S11</i><span>Access tests &amp; status history (slice 5)</span></div>
-    <div><i>S12</i><span>M2 demo &amp; final review — <b>M2 done</b></span></div>
+    <div><i>S12</i><span>M2 demo &amp; merge — start of Day 9 / homework</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span></div>
   <div class="daynum">08</div>
@@ -2561,6 +2563,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
   <div class="eyebrow">Day 8 · Today's objectives</div>
   <h2>By the end of today, you can…</h2>
   <ul class="checks sm">
+    <li><span><em>S13–14</em>Implement slices 1–2 from <code>docs/keperluan-pas.md</code> &amp; <code>pelan-pas.md</code> (Lab 7.10/7.11) through the 7 gates.</span></li>
     <li><span><em>S9</em>Assess the <code>transition()</code> diff: <code>FOR UPDATE</code>, <code>canTransitionTo()</code>, <code>status_logs</code> in the transaction.</span></li>
     <li><span><em>S10</em>Prove <code>permission:</code>, <code>authorize()</code> &amp; <code>canView()</code> with <code>filter_check</code> and attacks.</span></li>
     <li><span><em>S11</em>Write the access matrix yourself; positive/negative <code>PassAccessTest</code> + 2 mutations.</span></li>
@@ -2575,6 +2578,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
   <h2>Today's slice plan: Pass slices 3–5</h2>
   <table class="t">
     <tr><th>Slice</th><th>A good diff has</th><th>Reject if</th></tr>
+    <tr><td><b>Slices 1–2 · S13/S14</b><br><span class="small">Morning · Lab 7.10/7.11</span></td><td>Follows <code>docs/keperluan-pas.md</code>; <code>ownedBy()</code> in the Model; files outside <code>public/</code>, random names</td><td>A new Pass migration; owner check in the view; a slice outside the plan</td></tr>
     <tr><td><b>Slice 3 · S9</b><br><span class="small">Approval flow · Lab 8.10</span></td><td><code>SELECT … FOR UPDATE</code> after <code>transBegin()</code>; <code>record()</code> before <code>transCommit()</code>; remarks ≥ 10 chars</td><td><code>status</code> from <code>getPost()</code>; check before the transaction; <code>approved_at</code> in <code>reject()</code></td></tr>
     <tr><td><b>Slice 4 · S10</b><br><span class="small">RBAC &amp; scope · Lab 8.11</span></td><td><code>permission:pas.approve</code> per route; <code>$actor-&gt;can()</code>; <code>canView()</code> → 404</td><td><code>inGroup('approver')</code> instead of <code>can()</code>; 403 for non-owners; permissions outside SPEC §4</td></tr>
     <tr><td><b>Slice 5 · S11</b><br><span class="small">Tests &amp; timeline · Lab 8.12</span></td><td>Negative tests check the response <b>and</b> the DB; <code>esc()</code> on <code>remarks</code></td><td><code>assertRedirect()</code> only; tests changed to go green</td></tr>

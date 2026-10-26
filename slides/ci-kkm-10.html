@@ -2547,10 +2547,12 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
   <h1>Modul Pas — Bahagian 2 (Claude Code)</h1>
   <div><span class="chip m-pas">M2 · kelulusan, RBAC &amp; audit</span></div>
   <div class="sessions">
+    <div><i>S13</i><span>Pagi: Lab 7.10 — Pas slice 1 (ikut <code>docs/pelan-pas.md</code>)</span></div>
+    <div><i>S14</i><span>Pagi: Lab 7.11 — Pas slice 2, muat naik selamat</span></div>
     <div><i>S9</i><span>Aliran kelulusan Pas (slice 3)</span></div>
     <div><i>S10</i><span>RBAC Shield &amp; skop akses (slice 4)</span></div>
     <div><i>S11</i><span>Ujian akses &amp; sejarah status (slice 5)</span></div>
-    <div><i>S12</i><span>Demo M2 &amp; semakan akhir — <b>M2 siap</b></span></div>
+    <div><i>S12</i><span>Demo M2 &amp; merge — awal Hari 9 / kerja rumah</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span></div>
   <div class="daynum">08</div>
@@ -2561,6 +2563,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
   <div class="eyebrow">Hari 8 · Objektif hari ini</div>
   <h2>Pada akhir hari ini, anda boleh…</h2>
   <ul class="checks sm">
+    <li><span><em>S13–14</em>Melaksana slice 1–2 daripada <code>docs/keperluan-pas.md</code> &amp; <code>pelan-pas.md</code> (Lab 7.10/7.11) melalui 7 pintu.</span></li>
     <li><span><em>S9</em>Menilai diff <code>transition()</code>: <code>FOR UPDATE</code>, <code>canTransitionTo()</code>, <code>status_logs</code> dalam transaksi.</span></li>
     <li><span><em>S10</em>Membuktikan <code>permission:</code>, <code>authorize()</code> &amp; <code>canView()</code> dengan <code>filter_check</code> dan serangan.</span></li>
     <li><span><em>S11</em>Menulis matriks akses sendiri; <code>PassAccessTest</code> positif/negatif + 2 mutasi.</span></li>
@@ -2575,6 +2578,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
   <h2>Slice plan hari ini: Pas slice 3–5</h2>
   <table class="t">
     <tr><th>Slice</th><th>Diff yang baik</th><th>Tolak jika</th></tr>
+    <tr><td><b>Slice 1–2 · S13/S14</b><br><span class="small">Pagi · Lab 7.10/7.11</span></td><td>Ikut <code>docs/keperluan-pas.md</code>; <code>ownedBy()</code> dalam Model; fail di luar <code>public/</code>, nama rawak</td><td>Migration Pas baharu; semakan pemilik dalam view; slice di luar pelan</td></tr>
     <tr><td><b>Slice 3 · S9</b><br><span class="small">Aliran kelulusan · Lab 8.10</span></td><td><code>SELECT … FOR UPDATE</code> selepas <code>transBegin()</code>; <code>record()</code> sebelum <code>transCommit()</code>; catatan ≥ 10 aksara</td><td><code>status</code> dari <code>getPost()</code>; semakan sebelum transaksi; <code>approved_at</code> dalam <code>reject()</code></td></tr>
     <tr><td><b>Slice 4 · S10</b><br><span class="small">RBAC &amp; skop · Lab 8.11</span></td><td><code>permission:pas.approve</code> per route; <code>$actor-&gt;can()</code>; <code>canView()</code> → 404</td><td><code>inGroup('approver')</code> ganti <code>can()</code>; 403 untuk bukan pemilik; permission di luar SPEC §4</td></tr>
     <tr><td><b>Slice 5 · S11</b><br><span class="small">Ujian &amp; garis masa · Lab 8.12</span></td><td>Ujian negatif semak respons <b>dan</b> DB; <code>esc()</code> pada <code>remarks</code></td><td><code>assertRedirect()</code> sahaja; ujian diubah supaya hijau</td></tr>
