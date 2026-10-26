@@ -488,6 +488,25 @@ Melaksanakan `startReview()`, `approve()`, `reject()` melalui satu `transition()
    SELECT record_id, from_status, to_status, actor_id, remarks, created_at FROM status_logs WHERE module = 'PAS' ORDER BY id;
    ```
 
+10. **Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal (berdasarkan AI-05):
+
+   ```text
+   Mod Plan. Jangan ubah sebarang fail.
+   Baca @app/Services/PassWorkflowService.php dan @app/Controllers/Pas/ReviewController.php.
+   Peraturan:
+   - BR-PAS-01: peralihan status hanya ikut jadual, dikuatkuasa oleh PassStatus::canTransitionTo().
+   - BR-PAS-03: penolakan mesti ada remarks (min 10 aksara).
+   - BR-PAS-05: setiap peralihan status direkod dalam status_logs.
+   Untuk setiap peraturan beri: Status (Dipenuhi / Separa / Tidak), fail:baris yang menguatkuasakannya,
+   dan input contoh yang memecahkannya jika Separa/Tidak.
+   Kemudian jawab: adakah semakan status dan kemas kini berlaku dalam SATU transaksi dengan
+   SELECT ... FOR UPDATE? Tunjuk baris. Jangan tulis semula kod.
+   ```
+
+   Cari dalam jawapan: `canTransitionTo()` dipanggil dalam `transition()`, semakan panjang `remarks` dalam `reject()`, `$this->statusLogs->record()` dalam `transition()`, dan `FOR UPDATE` selepas `transBegin()`.
+
+   Sahkan sendiri: buka setiap fail:baris dalam VS Code. Bandingkan dengan keputusan langkah 8–9 (tolak "tak ok", klik **Lulus** dalam sesi kedua `pelulus`). Rekod dalam `docs/nota-claude.md` (cipta fail jika belum ada): dakwaan yang anda sahkan, dakwaan yang salah, dan setiap "Tidak" yang benar sebagai tugasan untuk Lab 8.3 (ujian gagal dahulu, baiki sendiri).
+
 ### ✅ Checkpoint 8.1
 - [ ] Permohonan A: `approved`, `reviewed_by` = id penyemak, `approved_by` = id pelulus, kedua-dua cap masa diisi (Kuiz S1).
 - [ ] `status_logs` untuk A: 3 baris (`NULL→submitted`, `submitted→under_review`, `under_review→approved`) (Kuiz S1).
@@ -495,6 +514,7 @@ Melaksanakan `startReview()`, `approve()`, `reject()` melalui satu `transition()
 - [ ] Klik **Lulus** dalam sesi kedua `pelulus` → "Peralihan status "Diluluskan" → "Diluluskan" tidak dibenarkan." dan **tiada** baris log tambahan (Kuiz S1).
 - [ ] `pemohon1` membuka `/pas/semakan` → ditolak (redirect dengan mesej) (Kuiz S1).
 - [ ] Commit: `git add app/ && git commit -m "PAS: aliran semak/lulus/tolak melalui PassWorkflowService"` (Kuiz S1)
+- [ ] Prompting: semakan BR-PAS-01/03/05 dalam mod *Plan* direkod dalam `docs/nota-claude.md` dengan sekurang-kurangnya 2 fail:baris yang anda buka sendiri (Kuiz S1).
 
 ### 🧯 Masalah lazim
 
@@ -689,6 +709,27 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
    | UT-PAS-25 | `admin` | Mula semak → Lulus | Berjaya (`pas.*`) |
    | UT-PAS-26 | `pemohon2` | GET `/pas/permohonan/{id pemohon1}` | 404 |
 
+10. **Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal (AI-07 + tool MCP `ci4-spark`):
+
+   ```text
+   Mod Plan. Jangan ubah sebarang fail.
+   Guna tool ci4-spark: routes, kemudian filter_check untuk POST /pas/semakan/1/review,
+   POST /pas/semakan/1/approve dan POST /pas/semakan/1/reject.
+   Matriks: applicant = pas.apply; reviewer = pas.review; approver = pas.approve; admin = pas.*.
+   Untuk setiap route: siapa BOLEH, siapa TIDAK, dan di mana ia dikuatkuasa di server
+   (filter route, authorize() dalam @app/Services/PassWorkflowService.php, atau canView()).
+   Kenal pasti tindakan yang hanya dilindungi oleh butang dalam view.
+   Senaraikan ujian akses positif & negatif yang belum ada dalam @docs/ujian-manual-pas.md. Jangan tulis kod.
+   ```
+
+   Luluskan setiap panggilan tool (`ci4-spark - routes`, `ci4-spark - filter_check`). Cari dalam jawapan: `group:reviewer,approver,admin` pada ketiga-tiga route, `permission:pas.approve` pada `/approve`, `permission:pas.review,pas.approve` pada `/reject`, dan `authorize()` sebagai Lapisan 2.
+
+   Sahkan sendiri: jalankan `MSYS_NO_PATHCONV=1 php spark filter:check POST /pas/semakan/1/approve` dalam Git Bash dan bandingkan dengan jawapan tool MCP.
+
+   🪟 PowerShell: `php spark filter:check POST /pas/semakan/1/approve` (tanpa `MSYS_NO_PATHCONV=1`; awalan itu hanya menghalang Git Bash menukar `/pas/...` kepada path Windows).
+
+   Jika Claude mencadangkan ujian negatif yang tiada dalam UT-PAS-21..26, tambah sebagai UT-PAS-27 dan uji sendiri. Rekod perbezaan antara MCP dan perintah anda dalam `docs/nota-claude.md`.
+
 ### ✅ Checkpoint 8.2
 - [ ] `php spark routes` menunjukkan filter gabungan pada ketiga-tiga route POST semakan (Kuiz S2).
 - [ ] UT-PAS-20 (selepas) — penyemak tidak boleh meluluskan melalui DevTools/curl; status kekal (Kuiz S2).
@@ -696,6 +737,7 @@ Mengkonfigur `AuthGroups` tepat SPEC §4, menambah filter `permission:` per tind
 - [ ] UT-PAS-21 hingga 26 lulus (Kuiz S2).
 - [ ] Anda boleh menerangkan: *filter route vs `authorize()` vs `canView()` — apa yang setiap satu lindungi* (Kuiz S2).
 - [ ] Commit: `git add app/ docs/ && git commit -m "PAS: RBAC Shield — permission per tindakan + authorize() dalam Service"` (Kuiz S2)
+- [ ] Prompting: jawapan `filter_check` (MCP) untuk 3 route POST semakan sama dengan `php spark filter:check` yang anda jalankan sendiri; perbezaan direkod dalam `docs/nota-claude.md` (Kuiz S2).
 
 ### 🧯 Masalah lazim
 
@@ -1188,11 +1230,28 @@ Memaparkan sejarah `status_logs` pada halaman butiran, dan menulis `PassAccessTe
        }
    ```
 
+8. **Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal (AI-09):
+
+   ```text
+   Mod Plan. Jangan ubah sebarang fail.
+   Baca @tests/feature/Pas/PassAccessTest.php dan @app/Services/PassWorkflowService.php.
+   Bina matriks peranan × tindakan: pemohon1, pemohon2, penyemak, pelulus, admin ×
+   lihat, review, approve, reject, muat turun dokumen.
+   Untuk setiap sel tandakan: diuji (nama kaedah ujian) atau TIADA ujian.
+   Untuk 3 sel TIADA yang paling berisiko, cadangkan kes ujian dalam jadual
+   | Given | When | Then | BR |. JANGAN tulis kod ujian.
+   ```
+
+   Cari dalam jawapan: nama kaedah ujian yang **wujud** dalam fail anda (bukan rekaan) dan sel negatif (peranan salah, status salah) sebagai keutamaan.
+
+   Sahkan sendiri: cari setiap nama kaedah dalam `PassAccessTest.php` (`Ctrl+F`). Pilih satu kes yang dicadangkan, tulis ujian itu sendiri, kemudian dalam Claude Code taip `!composer test -- tests/feature/Pas` (awalan `!` menjalankan perintah shell terus; output masuk ke perbualan). Ujian baharu mesti hijau, dan merah apabila anda buang sementara filter atau `authorize()` yang melindunginya (seperti langkah 6). Pulihkan kod selepas itu.
+
 ### ✅ Checkpoint 8.3
 - [ ] Garis masa dipapar dengan 3 entri untuk A, termasuk catatan kelulusan (Kuiz S3).
 - [ ] `composer test -- tests/feature/Pas` → semua hijau (13 + ujian anda) (Kuiz S3).
 - [ ] Jadual mutasi (langkah 6) diisi — setiap mutasi menyebabkan sekurang-kurangnya satu ujian gagal (Kuiz S3).
 - [ ] Commit: `git add app/ tests/ && git commit -m "PAS: garis masa status_logs + ujian akses peranan"` (Kuiz S3)
+- [ ] Prompting: matriks AI-09 disemak (setiap nama ujian wujud) dan satu kes yang dicadangkan ditulis sendiri, hijau dengan `!composer test -- tests/feature/Pas` (Kuiz S3).
 
 ### 🧯 Masalah lazim
 
@@ -1383,10 +1442,25 @@ Mendemokan aliran Pas hujung-ke-hujung dengan 3 peranan dalam 5 minit, mengesahk
    6. `php spark pas:expire` → `✔ PAS-2026-000N → Tamat Tempoh`; semak `status_logs` ada `approved → expired`.
    7. Jalankan sekali lagi → "Tiada pas untuk ditamatkan".
 
+5. **Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal (subagent `semak-ci4` dari Lab 7.7):
+
+   ```text
+   Guna subagent semak-ci4 untuk menyemak modul Pas: app/Controllers/Pas,
+   app/Services/PassWorkflowService.php, app/Views/pas dan kumpulan pas/ dalam app/Config/Routes.php.
+   Fokus: esc() pada output view, csrf_field() dalam setiap form POST, filter permission pada
+   setiap route POST, semakan pemilikan dalam show() dan download(), binding Query Builder.
+   Beri jadual | Fail:baris | Isu | Keterukan | Cara saya sahkan |. Jangan ubah fail.
+   ```
+
+   Cari: baris `semak-ci4` muncul (subagent berjalan), kemudian jadual dapatan dengan fail:baris.
+
+   Sahkan sendiri: buka setiap fail:baris. Dapatan sahih → kitaran AI-10 (ujian gagal dahulu, baiki sendiri, `!composer test` hijau, commit `FIX:`). Dapatan palsu → tulis sebabnya. Rekod kedua-duanya dalam `docs/nota-claude.md`.
+
 ### ✅ Checkpoint 8.4
 - [ ] Demo 5 minit lulus semua item DoD (ditandatangani rakan sebelah) (Kuiz S4).
 - [ ] `main` mengandungi M1 + M2; `composer test` hijau pada `main` (Kuiz S4).
 - [ ] ⭐ `pas:expire` menukar pas tamat tempoh dengan log (Kuiz S4).
+- [ ] Prompting: dapatan `semak-ci4` untuk modul Pas disemak satu demi satu dan direkod dalam `docs/nota-claude.md` (sahih/palsu) (Kuiz S4).
 
 ### 🧯 Masalah lazim
 

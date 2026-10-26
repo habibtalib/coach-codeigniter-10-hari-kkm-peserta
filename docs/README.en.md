@@ -12,6 +12,7 @@
 | [`trek-gitlab.md`](./trek-gitlab.md) | Your `kelas-ci-<nama>` repo on KKM's GitLab (GitLab KKM): log in, HTTPS + Git Credential Manager/token, *private* project, trainer as Reporter, protect `main`, MR into your own `main` | Day 2 (Lab 2.2) · Day 4 S4 (first MR) |
 | [`tutorial-claude-code.md`](./tutorial-claude-code.md) | Claude Code setup (Windows): install, log in, `.claude/settings.json` blocking `.env`, *Plan* mode, KKM proxy | Before Day 6 |
 | [`pustaka-prompt.md`](./pustaka-prompt.md) | Claude Code / AI prompt library for **learning** (explain errors, check logic, suggest tests, explain code line by line, upload security review) | Day 4–10, when stuck |
+| [`tutorial-prompt-projek.md`](./tutorial-prompt-projek.md) | Prompting Claude Code: prompt anatomy, the explore → plan → implement → verify loop, existing project, new project from a PRD, PRD template & review (AI-15..AI-18) | Day 7 S12 |
 | [`pautan-rujukan.md`](./pautan-rujukan.md) | Official documentation links organised by day | Throughout the course |
 | [`senarai-semak-modul.md`](./senarai-semak-modul.md) | M1–M4 progress checklist mapped to the Definition of Done & `BR-*` rules | End of every build session; before the demo |
 | [`rubrik-capstone.md`](./rubrik-capstone.md) | Assessment rubric for the Day 10 capstone demo | Day 9 (read), Day 10 S4 (assessed) |

@@ -612,6 +612,20 @@ Lab: [Lab 9.4b](./lab.md#lab-94b--ujian-ringkasan-jumlah--lembaran-excel-s8)
 
 ---
 
+## 🤖 Prompting hari ini
+
+Guna Claude Code dalam mod *Plan* (`Shift+Tab` / `Alt+M`) untuk prompt di bawah: Claude menerang, menyemak dan merancang; anda menulis dan memahami setiap baris yang di-commit ([`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`.
+
+| Sesi | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
+|---|---|---|---|
+| S1 · Reka bentuk laporan | Semak `@docs/laporan-spec.md` lawan borang penapis; `esc(…, 'attr')`; tool MCP `routes` untuk `permission:laporan.view` | *View Page Source* dengan `?from=%22%3E%3Cb%3Ex` | 9.1 langkah 7 |
+| S2 · Query aggregate | Semakan binding Query Builder & whitelist `applySort()` (gaya AI-04); tool MCP `db_table` untuk index | Debug Toolbar → Database; `php spark db:table slot_bookings --metadata` | 9.2 langkah 11 |
+| S3 · Eksport PDF/Excel | Semakan keselamatan eksport gaya AI-06: formula injection, `esc()` PDF, kebenaran, had baris | Nama sintetik `=1+1` kekal teks dalam Excel | 9.3 langkah 8 |
+| S4 · Ujian & prestasi | AI-09 untuk cabang tanpa ujian; terangkan output `laporan:explain` (AI-03) | `!composer test -- tests/Services/ReportServiceTest.php` | 9.4 langkah 9 |
+| S5–S8 · Lanjutan | AI-04 pada kaedah ringkasan status & baris JUMLAH; AI-09 untuk ujian ringkasan | Jumlah ringkasan = `GROUP BY` SQL anda | — |
+
+---
+
 ## 📦 Hasil Hari Ini
 
 - [ ] `app/Services/ReportService.php` — filter whitelist, 2 builder (RPT-01/02), aggregate RPT-03, pagination, `exportRows()` berhad

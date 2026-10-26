@@ -460,6 +460,19 @@ Participants who do not meet criteria 2–5 but attend ≥ 80 % receive a **cert
 
 ---
 
+## 🤖 Today's prompting
+
+Use Claude Code in *Plan* mode (`Shift+Tab` / `Alt+M`) for the prompts below: Claude explains, reviews and plans; you write and understand every committed line ([`kolaborasi.md`](../docs/kolaborasi.en.md) §3). Full prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md). Record the answers you verified in `docs/nota-claude.md`. After the course: AI-15 for an existing project; AI-16 → AI-18 → AI-17 for a new project.
+
+| Session | Prompt & Claude Code feature | Verify it yourself | Lab |
+|---|---|---|---|
+| S1 · Statistics dashboard | AI-04 on the 4 KPIs & chart datasets against the §1.1 definitions; check `innerHTML` in `dashboard.php` | Your own SQL = the KPI card | 10.1 step 10 |
+| S2 · Cache | List every `transCommit()` against `cache()->delete()`; AI-09 for `StatisticsCacheTest` | `grep` `transCommit`/`CACHE_KEY`; `!composer test` | 10.2 step 11 |
+| S3 · UAT & bugs | The `semak-ci4` subagent on K2/K5/K7; AI-10 (red test first); AI-08 on `!git diff --staged` before `FIX:` | Your K marks in `docs/UAT-signoff.md` | 10.3 step 7 |
+| S4 · Demo & handover | AI-18 on `@README.md` and `@CLAUDE.md`; update the project `CLAUDE.md` | 2 issues fixed by you and committed | 10.4 step 7 |
+
+---
+
 ## 📦 Deliverables — Today's Output
 
 - [ ] `app/Services/StatisticsService.php` — 4 KPIs, 4 datasets, 10-minute `remember()`, `CACHE_KEY` constant

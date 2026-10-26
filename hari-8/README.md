@@ -647,6 +647,20 @@ Lab: [Lab 8.4b](./lab.md#lab-84b--demo-peranan-keempat-admin--dapatan-pemisahan-
 
 ---
 
+## 🤖 Prompting hari ini
+
+Guna Claude Code dalam mod *Plan* (`Shift+Tab` / `Alt+M`) untuk prompt di bawah: Claude menerang, menyemak dan merancang; anda menulis dan memahami setiap baris yang di-commit ([`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`.
+
+| Sesi | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
+|---|---|---|---|
+| S1 · Aliran kelulusan | AI-05 (BR-PAS-01/03/05) dengan `@app/Services/PassWorkflowService.php`; tanya di mana `FOR UPDATE` dan `status_logs` | Buka fail:baris; ulang ujian sesi kedua `pelulus` | 8.1 langkah 10 |
+| S2 · RBAC Shield | AI-07 + tool MCP `ci4-spark` `routes` dan `filter_check` pada 3 route POST semakan | `php spark filter:check POST /pas/semakan/1/approve` | 8.2 langkah 10 |
+| S3 · Ujian akses | AI-09: matriks peranan × tindakan dari `@tests/feature/Pas/PassAccessTest.php`; AI-10 untuk pepijat | `!composer test -- tests/feature/Pas` | 8.3 langkah 8 |
+| S4 · Demo & M2 | Subagent `semak-ci4` pada modul Pas (`esc()`, CSRF, filter, pemilikan) | Buka setiap fail:baris; dapatan sahih → `FIX:` | 8.4 langkah 5 |
+| S5–S8 · Lanjutan | AI-07 + `filter_check POST /pas/semakan/pukal/review`; AI-09 untuk `PassBatchReviewTest` | `!composer test -- tests/feature/Pas` | — |
+
+---
+
 ## 📦 Hasil Hari Ini
 
 - [ ] `PassWorkflowService`: `startReview`, `approve`, `reject`, `expire`, `history`, `transition`, `authorize`

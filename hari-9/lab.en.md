@@ -331,11 +331,29 @@ $selected = static fn ($current, $value): string => (string) $current === (strin
 
 **6. Commit.** `git add -A && git commit -m "RPT: laluan, controller rangka & borang penapis GET"`; PowerShell: run `git add` and `git commit` one at a time
 
+**7. Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste:
+
+```text
+Plan mode. Do not change any file.
+Read @docs/laporan-spec.md and @app/Views/laporan/index.php.
+1. For RPT-01..03: does every filter in the spec card have a field in the form, and the other way round?
+2. List every user input value printed back in the view. Does it go through esc()
+   with the right context ('attr' inside an attribute)?
+3. Why must this form be method="get"? Give one effect of changing it to POST.
+4. Use the ci4-spark routes tool: do all three report routes have the permission:laporan.view filter?
+Answer in a table with file:line. Do not rewrite the code.
+```
+
+Look for in the answer: `esc(..., 'attr')` on every `value="…"`, `selected` compared as strings, and the reasons for GET (the URL can be bookmarked; pagination & export carry the same filters).
+
+Verify it yourself: open `/laporan/tempahan?from=%22%3E%3Cb%3Ex` as `penyemak@latihan.test`, then *View Page Source* (`Ctrl+U`). You must see `&quot;&gt;&lt;b&gt;x` in the `value` attribute, not a raw `<b>` tag. Compare the answer to item 4 with `php spark routes` (the first item of Checkpoint 9.1). Record it in `docs/nota-claude.md` (create the file if it does not exist).
+
 ### ✅ Checkpoint 9.1
 - [ ] `php spark routes | grep laporan` shows 3 routes with the `permission:laporan.view` filter (Quiz S1).
 - [ ] Log in as `pemohon1@latihan.test` → `/laporan/tempahan` is **denied** (the Shield filter *redirects*, no data shown). As `penyemak@latihan.test` → allowed (Quiz S1).
 - [ ] Choose a status + dates → click **Tapis** (Filter) → the URL contains `?from=...&status=...` and the dropdown **still** shows the choice you made (Quiz S1).
 - [ ] Spec cards complete for the 3 reports and checked by the trainer (Quiz S1).
+- [ ] Prompting: the filter form review in *Plan* mode is recorded; *View Page Source* shows `?from=` escaped in the `value` attribute (Quiz S1).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -1118,6 +1136,23 @@ In `app/Views/laporan/index.php`, replace the line `<?php // JADUAL & PAGINATION
 
 **10. Commit.** `git add app/ && git commit -m "RPT: ReportService (join, when, groupBy, selectCount) + pagination"`; PowerShell: run `git add` and `git commit` one at a time
 
+**11. Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste (Query Builder binding review + the `db_table` MCP tool):
+
+```text
+Plan mode. Do not change any file.
+1. Read @app/Services/ReportService.php. For every value from $filters that reaches a query
+   (where, when, orderBy, limit), give the file:line and classify it: bound/escaped by Query Builder,
+   checked against a whitelist, or concatenated straight into SQL.
+2. Does applySort() reject columns and directions that are not in the whitelist? Give example input.
+3. Use the ci4-spark db_table tool for slot_bookings and pass_applications. List the existing indexes,
+   and for each RPT-01/RPT-02 filter say whether an index can be used.
+Tables only. Do not rewrite the code.
+```
+
+Look for in the answer: `where()`/`when()` values are bound by Query Builder; `orderBy()` takes a column name, so the column **must** come from the `applySort()` whitelist; no `$filters` value is concatenated straight into an SQL string.
+
+Verify it yourself: open `/laporan/tempahan?sort=nonsense&dir=sideways`, then Debug Toolbar → **Database** tab: `ORDER BY` uses the default column. Run `php spark db:table slot_bookings --metadata` and compare the index list with the `db_table` answer. Keep the index list for Lab 9.4 (EXPLAIN). Record it in `docs/nota-claude.md`.
+
 ### ✅ Checkpoint 9.2
 - [ ] `/laporan/tempahan?status=approved` → "Jumlah rekod" (total records) is **the same** as the SQL result (Quiz S2):
   ```sql
@@ -1128,6 +1163,7 @@ In `app/Views/laporan/index.php`, replace the line `<?php // JADUAL & PAGINATION
 - [ ] `/laporan/tempahan?sort=nonsense` does not error — it falls back to the default sort order (Quiz S2).
 - [ ] `/laporan/penggunaan?year=2026&month=6` shows every zone (including zones without bookings = 0.0 %) (Quiz S2).
 - [ ] Thin controller: each method only reads filters → calls `ReportService` → view/export (no queries, joins or calculations); no `$this->db` in the controller (Quiz S2).
+- [ ] Prompting: every `$filters` value in `ReportService` is classified (bind/whitelist), and the `db_table` index list matches `php spark db:table --metadata`; recorded in `docs/nota-claude.md` (Quiz S2).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -1647,6 +1683,32 @@ mysql -u kkm_dev -p -e "UPDATE users SET staff_no = '001234' WHERE username = 'p
 
 **7. Commit.** `git add app/ && git commit -m "RPT: eksport PDF (Dompdf) & Excel (PhpSpreadsheet)"`; PowerShell: run `git add` and `git commit` one at a time
 
+**8. Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste (export security review, AI-06 style):
+
+```text
+Plan mode. Do not change any file.
+Review export security in @app/Services/ExportService.php, @app/Views/laporan/pdf.php
+and the export method in @app/Controllers/Laporan/ReportController.php.
+Report in a table | Risk | Control present? (Yes/No/Partial) | Evidence file:line | How I test it |:
+1. Formula injection in Excel (text starting with =, +, -, @)
+2. PDF output without esc() (HTML in a name)
+3. Export without a permission check (opening ?export=xlsx directly)
+4. Row & memory limit: what is the maximum number of rows, and what happens above it?
+5. File name & the Content-Disposition header
+6. Export filters that differ from the screen filters
+Do NOT rewrite the code. Explain only.
+```
+
+Look for in the answer: `setCellValueExplicit(..., DataType::TYPE_STRING)` for text, `esc()` in `pdf.php`, the row limit in `exportRows()`, and the same builder for the screen and the export.
+
+Verify it yourself: note `pemohon2`'s original `full_name` (`SELECT full_name FROM users WHERE username = 'pemohon2';`), change it to a formula, export RPT-02 to Excel, then restore it:
+
+```bash
+mysql -u kkm_dev -p -e "UPDATE users SET full_name = '=1+1' WHERE username = 'pemohon2'" kkm_latihan
+```
+
+The name cell must show the text `=1+1`, not `2`. Afterwards restore `pemohon2`'s original `full_name` with the same `UPDATE`. 🪟 If the password prompt does not appear in Git Bash: `winpty mysql …` (as in step 6). Record the findings in `docs/nota-claude.md`.
+
 ### ✅ Checkpoint 9.3
 - [ ] Filter RPT-01 by `status=approved` → screen: *N* records → PDF: "Jumlah rekod: *N*" → Excel: *N* data rows (rows 6 to 5+*N*). **All three numbers match.** (Quiz S3)
 - [ ] PDF: A4 **landscape**; the header repeats on every page; footer "Dijana pada … oleh *your name*"; "Muka 1 / 3" (Page 1 / 3) in the bottom-right corner (Quiz S3).
@@ -1654,6 +1716,7 @@ mysql -u kkm_dev -p -e "UPDATE users SET staff_no = '001234' WHERE username = 'p
 - [ ] Excel: the header row is **bold**; columns are wide enough; scroll down → the header stays (frozen); No. Pekerja (staff number) `001234` keeps its leading zeros (Quiz S3).
 - [ ] File name: `laporan-tempahan-20260925-143012.pdf` (Quiz S3).
 - [ ] Log in as `pemohon1@latihan.test` and open `/laporan/pas?export=xlsx` directly → **denied** (Quiz S3).
+- [ ] Prompting: the export review in *Plan* mode is recorded, and the synthetic name `=1+1` stays text in the Excel file (Quiz S3).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -2029,12 +2092,30 @@ git commit -m "RPT: ujian jumlah laporan = SQL + arahan laporan:explain"
 git push -u origin feat/laporan    # open an MR to main → trainer/neighbour comments; do NOT merge yet — Labs 9.1b–9.4b add commits to this MR
 ```
 
+**9. Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste (AI-09 + reading EXPLAIN):
+
+```text
+Plan mode. Do not change any file.
+1. Read @tests/Services/ReportServiceTest.php and @app/Services/ReportService.php.
+   List the branches in normaliseFilters(), applySort() and usageByZone() that have NO test.
+   For the 3 riskiest give | Given | When | Then |. Do NOT write test code.
+2. Here is my php spark laporan:explain output:
+[paste the output of step 6]
+Explain the type, key and rows columns for tables b and p. What index suits RPT-02
+with a date filter only, and what does it cost on INSERT?
+```
+
+Look for in the answer: real branches (reversed range, month outside 1–12, invalid sort column) and an explanation of `type = ALL` that matches README §4.2.
+
+Verify it yourself: pick one branch, write that test yourself, then type `!composer test -- tests/Services/ReportServiceTest.php` in Claude Code: green. Compare the EXPLAIN reading with your notes in `docs/laporan-spec.md` → "Prestasi". Do **not** add the suggested index today; note it as a suggestion in `docs/nota-claude.md`.
+
 ### ✅ Checkpoint 9.4 — **M3 done**
 - [ ] `composer test -- tests/Services/ReportServiceTest.php` → all green (≥ 7 tests) (Quiz S4).
 - [ ] The mutation in step 5 makes exactly **one** test fail; it has been restored (Quiz S4).
 - [ ] The output of `laporan:explain tempahan approved` shows `key = status` (or another index) for table `b` — not `type = ALL` (Quiz S4).
 - [ ] You can explain to the trainer why RPT-02 with only a date filter shows `type = ALL` on `p` (Quiz S4).
 - [ ] DoD KOLABORASI §2 ticked for M3 (Quiz S4).
+- [ ] Prompting: one untested branch (from AI-09) is now tested by you and green; Claude's EXPLAIN reading is compared with README §4.2 (Quiz S4).
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |

@@ -4,7 +4,8 @@
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
-| 7.6 | S9 | 09:20–10:30 | Claude Code disahkan; `CLAUDE.md` standard kursus; `CLAUDE.local.md`; mod Plan |
+| 7.6 | S9 | 09:10–10:00 | Claude Code disahkan; `CLAUDE.md` standard kursus; `CLAUDE.local.md`; mod Plan |
+| 7.9 | S12 | 10:05–10:30 | `docs/nota-claude.md` (3 prompt onboarding); PRD latihan `~/latihan/prd-latihan/docs/prd.md` + pelan slice + 2 pembetulan |
 | 7.7 | S10 | 11:00–11:45 | Subagent `semak-ci4` + `docs/semakan-ci4-hari6.md`; skill `migration-ci4` |
 | 7.8 | S11 | 11:55–12:30 | Server MCP `ci4-spark` diuji & didaftar dalam `.mcp.json`; Context7; MySQL/GitLab pilihan |
 | 7.0 | Awal S1 | 10 min | Branch Git + `php.ini` sedia untuk muat naik |
@@ -17,7 +18,7 @@
 | 7.4 | S4 | 16:00–16:35 | 17 kes ujian sempadan direkod |
 | 7.4b | S8 | 16:35–17:00 | `PassSubmitTest` PHPUnit: 14 kes sempadan automatik + mutasi `>=` |
 
-> ℹ️ **Jadual Hari 7 (dikemas kini):** Lab 7.6–7.8 (Claude Code) pada waktu pagi; Lab 7.0, 7.1 dan 7.2 (+7.1b/7.2b jika sempat) bermula 14:30. Lab 7.3, 7.4 (dan 7.3b/7.4b) disambung pada pagi Hari 8. Masa 7.0–7.4b dalam jadual di atas ialah jadual asal.
+> ℹ️ **Jadual Hari 7 (dikemas kini):** Lab 7.6, 7.9, 7.7 dan 7.8 (Claude Code) pada waktu pagi; Lab 7.0, 7.1 dan 7.2 (+7.1b/7.2b jika sempat) bermula 14:30. Lab 7.3, 7.4 (dan 7.3b/7.4b) disambung pada pagi Hari 8. Masa 7.0–7.4b dalam jadual di atas ialah jadual asal.
 
 ---
 
@@ -184,6 +185,141 @@ Mengesahkan Claude Code berfungsi dalam `kelas-ci-<nama>`, menjana `CLAUDE.md` d
 
 ### ⭐ Cabaran tambahan
 - Tambah satu peraturan bersyarat laluan: cipta `.claude/rules/views.md` dengan frontmatter `paths: ["app/Views/**"]` yang mengingatkan `esc()` dan `csrf_field()`. Semak dengan `/context` bahawa ia hanya dimuatkan selepas Claude membaca fail view.
+
+---
+
+## Lab 7.9 — Prompting: Projek Sedia Ada, Projek Baharu & PRD (S12)
+
+> 🛡️ **Data sintetik sahaja.** Idea latihan ialah rekaan; jangan guna nama, aduan atau sistem KKM sebenar. PRD latihan disimpan dalam folder latihan berasingan `~/latihan/prd-latihan/`, **bukan** dalam `kelas-ci-<nama>`, dan ia **bukan** perubahan kepada SPEC kursus.
+
+### 🎯 Objektif
+Menulis tiga prompt onboarding dalam mod *Plan* pada projek `kelas-ci-<nama>` dan merekod jawapan yang telah disahkan, mendraf PRD kecil untuk idea latihan melalui temu bual dengan Claude, meminta pelan *vertical slice* tanpa kod, dan menyemak PRD secara kritis serta membetulkan 2 isu sendiri. Rujukan: [`tutorial-prompt-projek.md`](../docs/tutorial-prompt-projek.md) · prompt [AI-15..AI-18](../docs/pustaka-prompt.md#f--projek--prd).
+
+### Prasyarat
+- Lab 7.6 siap: `CLAUDE.md` projek di-commit dan anda tahu menukar ke mod *Plan* (`Shift+Tab` atau `Alt+M`).
+- 🪟 **Windows:** terminal Git Bash dalam VS Code. Blok arahan yang ada dua tab: pilih **PowerShell** jika terminal anda PowerShell.
+
+### Langkah
+
+1. **Onboarding projek sedia ada (8 minit).** Dalam `kelas-ci-<nama>`, mulakan `claude`, tukar ke **plan mode**, dan hantar tiga prompt ini satu demi satu ([AI-15](../docs/pustaka-prompt.md#ai-15--onboarding-projek-sedia-ada)):
+
+   ```text
+   Terangkan struktur projek ini dalam 10 baris: folder utama dalam app/, peranan setiap satu, dan di mana ujian berada. Jangan ubah fail.
+   ```
+
+   ```text
+   Di mana logik kelulusan tempahan TLK berada? Senaraikan fail dan nama kaedah, dari route hingga status_logs.
+   ```
+
+   ```text
+   Jejak satu request: POST /tlk/tempahan dari route, filter, controller, service, model hingga redirect. Tunjukkan nama fail pada setiap langkah.
+   ```
+
+   Untuk setiap jawapan, buka **satu** fail yang disebut dan sahkan dakwaan itu sendiri. Rekod dalam fail baharu `docs/nota-claude.md` (anda yang menaip, bukan Claude):
+
+   `docs/nota-claude.md`
+
+   ```markdown
+   # Nota onboarding Claude Code — kelas-ci-<nama>
+
+   | # | Prompt | Ringkasan jawapan (3 baris) | Disahkan dalam fail | Betul? |
+   |---|--------|-----------------------------|---------------------|--------|
+   | 1 | Struktur projek | ... | app/... | Ya / Separa / Tidak |
+   | 2 | Logik kelulusan TLK | ... | app/Services/BookingService.php | ... |
+   | 3 | Aliran POST /tlk/tempahan | ... | app/Config/Routes.php | ... |
+   ```
+
+   Tekan `Shift+Tab` untuk keluar dari mod *Plan*, kemudian taip `/exit`.
+
+2. **Folder latihan projek baharu.** PRD latihan **tidak** masuk ke `kelas-ci-<nama>`:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   mkdir -p ~/latihan/prd-latihan/docs
+   cd ~/latihan/prd-latihan
+   git init
+   claude
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force $HOME\latihan\prd-latihan\docs
+   cd $HOME\latihan\prd-latihan
+   git init
+   claude
+   ```
+
+3. **Temu bual PRD (10 minit).** Kekal dalam mod lalai (**bukan** *accept edits*) supaya Claude meminta kebenaran sebelum menulis fail. Hantar ([AI-16](../docs/pustaka-prompt.md#ai-16--temu-bual-prd)):
+
+   ```text
+   Saya mahu membina aplikasi web kecil: Aduan Kerosakan Kemudahan. Kakitangan melapor kerosakan kemudahan pejabat (lif, penghawa dingin, lampu), dan juruteknik mengemas kini status aduan.
+   Temu bual saya untuk mendraf PRD. Tanya SATU soalan pada satu masa, maksimum 8 soalan, meliputi: masalah, pengguna & peranan, dalam/luar skop, keperluan fungsian, peraturan perniagaan, keselamatan, data/entiti, kriteria penerimaan.
+   Selepas temu bual, draf docs/prd.md dengan bahagian: Masalah, Pengguna & peranan, Skop, Keperluan fungsian (FR-01..), Peraturan perniagaan (BR-01..), NFR, Data/entiti, Kriteria penerimaan (AC-01.., format Diberi/Apabila/Maka), Milestone.
+   Hadkan kepada 2 peranan dan 5 keperluan fungsian. Data sintetik sahaja. Jangan tulis kod.
+   ```
+
+   Jawab soalan Claude dengan ringkas. Jika tersekat, guna jawapan ini:
+
+   | Topik | Jawapan latihan |
+   |-------|-----------------|
+   | Peranan | `pelapor` (kakitangan) dan `juruteknik` |
+   | Keperluan | Hantar aduan · lihat aduan sendiri · senarai semua aduan (juruteknik) · tukar status · tambah catatan tindakan |
+   | Status | `baru` → `dalam_tindakan` → `selesai` |
+   | Luar skop | Notifikasi SMS, aplikasi mudah alih, inventori alat ganti |
+
+   Apabila Claude meminta kebenaran menulis `docs/prd.md`, **baca draf dahulu**, kemudian luluskan. Semak: tepat 2 peranan, FR-01..FR-05, setiap FR ada sekurang-kurangnya satu AC.
+
+4. **Pelan *vertical slice* tanpa kod (5 minit).** Tukar ke **plan mode** dan hantar ([AI-17](../docs/pustaka-prompt.md#ai-17--prd--pelan-vertical-slice)):
+
+   ```text
+   Mod Plan. Baca @docs/prd.md. Pecahkan kepada vertical slice (maksimum 4). Setiap slice: nama pendek, FR/BR/AC yang dipenuhi, fail CodeIgniter 4.7 yang terlibat, cara uji. Susun ikut kebergantungan. Tandakan FR yang tidak masuk mana-mana slice. Jangan tulis kod.
+   ```
+
+   Jika Claude menawarkan untuk melaksanakan pelan, pilih **No** / teruskan merancang. Taip sendiri nama slice di bahagian *Milestone* dalam `docs/prd.md` (cth `M1 — Slice 1: pelapor menghantar aduan (FR-01, AC-01)`). Semak `git status`: hanya `docs/prd.md` yang wujud, tiada fail PHP.
+
+5. **Semak PRD secara kritis (5 minit).** Masih dalam **plan mode** ([AI-18](../docs/pustaka-prompt.md#ai-18--semak-prd)):
+
+   ```text
+   Mod Plan. Semak @docs/prd.md secara kritis sebagai penguji dan pemilik sistem. Jangan ubah fail. Senaraikan maksimum 6 isu dalam jadual (bahagian · isu · kenapa penting · cadangan pembetulan): peranan yang tiada, BR yang kabur, AC yang tidak boleh diuji, FR tanpa AC, skop yang melebar, data tanpa pemilik.
+   ```
+
+   Pilih **2** isu dan betulkan **sendiri** dalam VS Code (contoh: tukar "aduan diproses segera" kepada BR yang boleh diuji; tambah AC "pelapor B membuka aduan pelapor A → 404"). Tambah bahagian `## Log perubahan` di hujung PRD dengan dua baris: tarikh · perubahan · sebab.
+
+6. **Commit (anda sendiri).**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   git add docs/prd.md
+   git commit -m "PRD: draf Aduan Kerosakan Kemudahan + 2 pembetulan semakan"
+   cd ~/latihan/kelas-ci-<nama>
+   git add docs/nota-claude.md
+   git commit -m "CHORE: nota onboarding Claude Code"
+   ```
+
+   ```powershell tab="PowerShell"
+   git add docs/prd.md
+   git commit -m "PRD: draf Aduan Kerosakan Kemudahan + 2 pembetulan semakan"
+   cd $HOME\latihan\kelas-ci-<nama>
+   git add docs/nota-claude.md
+   git commit -m "CHORE: nota onboarding Claude Code"
+   ```
+
+### ✅ Checkpoint
+- [ ] `docs/nota-claude.md` dalam `kelas-ci-<nama>` merekod 3 prompt onboarding, setiap satu dengan fail yang anda buka sendiri untuk mengesahkan jawapan (Kuiz S12).
+- [ ] `~/latihan/prd-latihan/docs/prd.md` mempunyai 2 peranan, FR-01..FR-05, sekurang-kurangnya satu BR dan satu AC bagi setiap FR (Kuiz S12).
+- [ ] Bahagian *Milestone* menyenaraikan slice daripada pelan mod *Plan*, dan `git status` dalam `prd-latihan` tidak menunjukkan sebarang fail kod (Kuiz S12).
+- [ ] Dua isu daripada semakan AI-18 dibetulkan oleh anda sendiri dan direkod dalam `## Log perubahan` (Kuiz S12).
+- [ ] `git log --oneline` dalam `prd-latihan` menunjukkan commit `PRD: …`. 🪟 PowerShell: `git -C $HOME\latihan\prd-latihan log --oneline` (Kuiz S12).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| Claude terus menulis PRD tanpa bertanya | Prompt tidak menyebut "SATU soalan pada satu masa" | `Esc`, kemudian hantar semula prompt AI-16 penuh |
+| Claude menjana fail PHP atau `composer.json` | Mod *accept edits* aktif, atau anda meluluskan pelan | Tolak (`No`); padam fail itu; guna **plan mode** untuk langkah 4–5 |
+| `docs/prd.md` ditulis dalam `kelas-ci-<nama>` | `claude` dimulakan dalam folder yang salah | Pindahkan fail ke `~/latihan/prd-latihan/docs/`; `git restore --staged` jika sudah di-`add` |
+| PRD terlalu panjang (10+ FR) | Had tidak disebut | Minta: "Hadkan kepada 5 FR paling penting; pindahkan yang lain ke Luar skop" |
+| Jawapan onboarding menyebut fail yang tiada | Claude meneka | Rekod "Tidak" dalam `docs/nota-claude.md`; ini bukti kenapa setiap dakwaan perlu disahkan |
+
+### ⭐ Cabaran tambahan
+- Minta Claude (mod *Plan*) membandingkan PRD latihan anda dengan bahagian M1 TLK dalam [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md): apakah yang ada dalam SPEC tetapi tiada dalam PRD (jadual, medan, enum, route)? Tulis 3 baris dalam `docs/nota-claude.md` tentang beza PRD dan SPEC.
 
 ---
 

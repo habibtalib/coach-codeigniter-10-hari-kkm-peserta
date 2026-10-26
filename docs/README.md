@@ -12,6 +12,7 @@
 | [`trek-gitlab.md`](./trek-gitlab.md) | Repo anda `kelas-ci-<nama>` di GitLab KKM (GitLab KKM): log masuk, HTTPS + Git Credential Manager/token, projek *private*, jurulatih sebagai Reporter, lindungi `main`, MR ke `main` sendiri | Hari 2 (Lab 2.2) · Hari 4 S4 (MR pertama) |
 | [`tutorial-claude-code.md`](./tutorial-claude-code.md) | Persediaan Claude Code (Windows): pasang, log masuk, `.claude/settings.json` menyekat `.env`, mod *Plan*, proxy KKM | Sebelum Hari 6 |
 | [`pustaka-prompt.md`](./pustaka-prompt.md) | Pustaka prompt Claude Code / AI untuk **belajar** (terang ralat, semak logik, cadang ujian, terang kod baris demi baris, semakan keselamatan muat naik) | Hari 4–10, bila tersekat |
+| [`tutorial-prompt-projek.md`](./tutorial-prompt-projek.md) | Prompting Claude Code: anatomi prompt, gelung teroka → rancang → laksana → sahkan, projek sedia ada, projek baharu daripada PRD, templat & semakan PRD (AI-15..AI-18) | Hari 7 S12 |
 | [`pautan-rujukan.md`](./pautan-rujukan.md) | Pautan dokumentasi rasmi disusun ikut hari | Sepanjang kursus |
 | [`senarai-semak-modul.md`](./senarai-semak-modul.md) | Senarai semak kemajuan M1–M4 dipetakan kepada Definition of Done & peraturan `BR-*` | Hujung setiap sesi pembinaan; sebelum demo |
 | [`rubrik-capstone.md`](./rubrik-capstone.md) | Rubrik penilaian demo capstone Hari 10 | Hari 9 (baca), Hari 10 S4 (dinilai) |

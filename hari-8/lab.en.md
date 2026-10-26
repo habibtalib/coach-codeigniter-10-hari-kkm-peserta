@@ -488,6 +488,25 @@ Implement `startReview()`, `approve()` and `reject()` through one locked `transi
    SELECT record_id, from_status, to_status, actor_id, remarks, created_at FROM status_logs WHERE module = 'PAS' ORDER BY id;
    ```
 
+10. **Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste (based on AI-05):
+
+   ```text
+   Plan mode. Do not change any file.
+   Read @app/Services/PassWorkflowService.php and @app/Controllers/Pas/ReviewController.php.
+   Rules:
+   - BR-PAS-01: status transitions follow the table only, enforced by PassStatus::canTransitionTo().
+   - BR-PAS-03: a rejection must have remarks (min 10 characters).
+   - BR-PAS-05: every status transition is recorded in status_logs.
+   For each rule give: Status (Met / Partial / Not met), the file:line that enforces it,
+   and an example input that breaks it if Partial/Not met.
+   Then answer: do the status check and the update happen in ONE transaction with
+   SELECT ... FOR UPDATE? Show the lines. Do not rewrite the code.
+   ```
+
+   Look for in the answer: `canTransitionTo()` called in `transition()`, the `remarks` length check in `reject()`, the `$this->statusLogs->record()` call in `transition()`, and `FOR UPDATE` after `transBegin()`.
+
+   Verify it yourself: open each file:line in VS Code. Compare with the results of steps 8–9 (reject with "tak ok", click **Lulus** in the second `pelulus` session). Record in `docs/nota-claude.md` (create the file if it does not exist): the claims you verified, the claims that were wrong, and each real "Not met" as a task for Lab 8.3 (failing test first, fix it yourself).
+
 ### ✅ Checkpoint 8.1
 - [ ] Application A: `approved`, `reviewed_by` = the reviewer's id, `approved_by` = the approver's id, both timestamps filled in (Quiz S1).
 - [ ] `status_logs` for A: 3 rows (`NULL→submitted`, `submitted→under_review`, `under_review→approved`) (Quiz S1).
@@ -495,6 +514,7 @@ Implement `startReview()`, `approve()` and `reject()` through one locked `transi
 - [ ] Clicking **Lulus** in the second `pelulus` session → "Peralihan status "Diluluskan" → "Diluluskan" tidak dibenarkan." and **no** extra log row (Quiz S1).
 - [ ] `pemohon1` opens `/pas/semakan` → refused (redirect with a message) (Quiz S1).
 - [ ] Commit: `git add app/ && git commit -m "PAS: aliran semak/lulus/tolak melalui PassWorkflowService"` (Quiz S1)
+- [ ] Prompting: the BR-PAS-01/03/05 review in *Plan* mode is recorded in `docs/nota-claude.md` with at least 2 file:line references you opened yourself (Quiz S1).
 
 ### 🧯 Troubleshooting
 
@@ -689,6 +709,27 @@ Configure `AuthGroups` exactly as in SPEC §4, add a `permission:` filter per ac
    | UT-PAS-25 | `admin` | Start review → Approve | Succeeds (`pas.*`) |
    | UT-PAS-26 | `pemohon2` | GET `/pas/permohonan/{id pemohon1}` (pemohon1's id) | 404 |
 
+10. **Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste (AI-07 + the `ci4-spark` MCP tools):
+
+   ```text
+   Plan mode. Do not change any file.
+   Use the ci4-spark tools: routes, then filter_check for POST /pas/semakan/1/review,
+   POST /pas/semakan/1/approve and POST /pas/semakan/1/reject.
+   Matrix: applicant = pas.apply; reviewer = pas.review; approver = pas.approve; admin = pas.*.
+   For each route: who CAN, who CANNOT, and where it is enforced on the server
+   (route filter, authorize() in @app/Services/PassWorkflowService.php, or canView()).
+   Identify any action protected only by a button in the view.
+   List the positive & negative access tests not yet in @docs/ujian-manual-pas.md. Do not write code.
+   ```
+
+   Approve each tool call (`ci4-spark - routes`, `ci4-spark - filter_check`). Look for in the answer: `group:reviewer,approver,admin` on all three routes, `permission:pas.approve` on `/approve`, `permission:pas.review,pas.approve` on `/reject`, and `authorize()` as Layer 2.
+
+   Verify it yourself: run `MSYS_NO_PATHCONV=1 php spark filter:check POST /pas/semakan/1/approve` in Git Bash and compare it with the MCP tool's answer.
+
+   🪟 PowerShell: `php spark filter:check POST /pas/semakan/1/approve` (without `MSYS_NO_PATHCONV=1`; that prefix only stops Git Bash from turning `/pas/...` into a Windows path).
+
+   If Claude suggests a negative test that is not in UT-PAS-21..26, add it as UT-PAS-27 and test it yourself. Record any difference between MCP and your own command in `docs/nota-claude.md`.
+
 ### ✅ Checkpoint 8.2
 - [ ] `php spark routes` shows the combined filters on all three review POST routes (Quiz S2).
 - [ ] UT-PAS-20 (after) — the reviewer cannot approve through DevTools/curl; the status is unchanged (Quiz S2).
@@ -696,6 +737,7 @@ Configure `AuthGroups` exactly as in SPEC §4, add a `permission:` filter per ac
 - [ ] UT-PAS-21 to 26 pass (Quiz S2).
 - [ ] You can explain: *route filter vs `authorize()` vs `canView()` — what each one protects* (Quiz S2).
 - [ ] Commit: `git add app/ docs/ && git commit -m "PAS: RBAC Shield — permission per tindakan + authorize() dalam Service"` (Quiz S2)
+- [ ] Prompting: the `filter_check` (MCP) answer for the 3 review POST routes matches the `php spark filter:check` you ran yourself; differences are recorded in `docs/nota-claude.md` (Quiz S2).
 
 ### 🧯 Troubleshooting
 
@@ -1188,11 +1230,28 @@ Show the `status_logs` history on the details page, and write a `PassAccessTest`
        }
    ```
 
+8. **Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste (AI-09):
+
+   ```text
+   Plan mode. Do not change any file.
+   Read @tests/feature/Pas/PassAccessTest.php and @app/Services/PassWorkflowService.php.
+   Build a role × action matrix: pemohon1, pemohon2, penyemak, pelulus, admin ×
+   view, review, approve, reject, download document.
+   For each cell mark: tested (test method name) or NO test.
+   For the 3 riskiest NO cells, suggest test cases in a table
+   | Given | When | Then | BR |. Do NOT write test code.
+   ```
+
+   Look for in the answer: test method names that **exist** in your file (not invented) and negative cells (wrong role, wrong status) as the priority.
+
+   Verify it yourself: search for each method name in `PassAccessTest.php` (`Ctrl+F`). Pick one suggested case, write that test yourself, then in Claude Code type `!composer test -- tests/feature/Pas` (the `!` prefix runs a shell command directly; the output goes into the conversation). The new test must be green, and red when you temporarily remove the filter or `authorize()` that protects it (as in step 6). Restore the code afterwards.
+
 ### ✅ Checkpoint 8.3
 - [ ] The timeline shows 3 entries for A, including the approval remarks (Quiz S3).
 - [ ] `composer test -- tests/feature/Pas` → all green (13 + your test) (Quiz S3).
 - [ ] The mutation table (step 6) is filled in — every mutation makes at least one test fail (Quiz S3).
 - [ ] Commit: `git add app/ tests/ && git commit -m "PAS: garis masa status_logs + ujian akses peranan"` (Quiz S3)
+- [ ] Prompting: the AI-09 matrix is checked (every test name exists) and one suggested case is written by you, green with `!composer test -- tests/feature/Pas` (Quiz S3).
 
 ### 🧯 Troubleshooting
 
@@ -1383,10 +1442,25 @@ Demo the Pass flow end to end with 3 roles in 5 minutes, confirm the DoD, and me
    6. `php spark pas:expire` → `✔ PAS-2026-000N → Tamat Tempoh`; check that `status_logs` has `approved → expired`.
    7. Run it again → "Tiada pas untuk ditamatkan" (no passes to expire).
 
+5. **Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste (the `semak-ci4` subagent from Lab 7.7):
+
+   ```text
+   Use the semak-ci4 subagent to review the Pas module: app/Controllers/Pas,
+   app/Services/PassWorkflowService.php, app/Views/pas and the pas/ groups in app/Config/Routes.php.
+   Focus: esc() on view output, csrf_field() in every POST form, a permission filter on
+   every POST route, ownership checks in show() and download(), Query Builder binding.
+   Give a table | File:line | Issue | Severity | How I verify it |. Do not change any file.
+   ```
+
+   Look for: the `semak-ci4` line appears (the subagent runs), then a findings table with file:line.
+
+   Verify it yourself: open each file:line. A real finding → the AI-10 cycle (failing test first, fix it yourself, `!composer test` green, commit `FIX:`). A false finding → write down why. Record both in `docs/nota-claude.md`.
+
 ### ✅ Checkpoint 8.4
 - [ ] The 5-minute demo passes every DoD item (signed off by the person next to you) (Quiz S4).
 - [ ] `main` contains M1 + M2; `composer test` is green on `main` (Quiz S4).
 - [ ] ⭐ `pas:expire` changes expired passes, with a log (Quiz S4).
+- [ ] Prompting: the `semak-ci4` findings for the Pas module are checked one by one and recorded in `docs/nota-claude.md` (real/false) (Quiz S4).
 
 ### 🧯 Troubleshooting
 

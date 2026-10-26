@@ -175,6 +175,8 @@ Check with `/permissions` in Claude Code: the *Deny* tab lists the four rules ab
 
 The course prompts are in [`pustaka-prompt.en.md`](./pustaka-prompt.en.md): **AI-01** (explain an error), **AI-02** (explain code line by line), **AI-09** (suggest test cases), **AI-05** (review against BR).
 
+Prompting for an existing project, a new project and a PRD: [`tutorial-prompt-projek.md`](./tutorial-prompt-projek.md) (Day 7 S12).
+
 ## 7. KKM network: proxy & domains
 
 If `claude` hangs or login fails on the office network, ask IT to allow these domains (HTTPS 443):

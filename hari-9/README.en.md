@@ -612,6 +612,20 @@ Lab: [Lab 9.4b](./lab.en.md#lab-94b--testing-the-summary-jumlah--excel-sheet-s8)
 
 ---
 
+## 🤖 Today's prompting
+
+Use Claude Code in *Plan* mode (`Shift+Tab` / `Alt+M`) for the prompts below: Claude explains, reviews and plans; you write and understand every committed line ([`kolaborasi.md`](../docs/kolaborasi.en.md) §3). Full prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md). Record the answers you verified in `docs/nota-claude.md`.
+
+| Session | Prompt & Claude Code feature | Verify it yourself | Lab |
+|---|---|---|---|
+| S1 · Report design | Check `@docs/laporan-spec.md` against the filter form; `esc(…, 'attr')`; the `routes` MCP tool for `permission:laporan.view` | *View Page Source* with `?from=%22%3E%3Cb%3Ex` | 9.1 step 7 |
+| S2 · Aggregate queries | Query Builder binding & `applySort()` whitelist review (AI-04 style); the `db_table` MCP tool for indexes | Debug Toolbar → Database; `php spark db:table slot_bookings --metadata` | 9.2 step 11 |
+| S3 · PDF/Excel export | Export security review, AI-06 style: formula injection, PDF `esc()`, permission, row limit | The synthetic name `=1+1` stays text in Excel | 9.3 step 8 |
+| S4 · Tests & performance | AI-09 for untested branches; explain the `laporan:explain` output (AI-03) | `!composer test -- tests/Services/ReportServiceTest.php` | 9.4 step 9 |
+| S5–S8 · Extensions | AI-04 on the status summary methods & the JUMLAH row; AI-09 for the summary tests | Summary totals = your SQL `GROUP BY` | — |
+
+---
+
 ## 📦 Deliverables — Today's Output
 
 - [ ] `app/Services/ReportService.php` — whitelisted filters, 2 builders (RPT-01/02), RPT-03 aggregate, pagination, limited `exportRows()`

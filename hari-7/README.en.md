@@ -25,6 +25,7 @@ By the end of today, participants can:
 | O11 | **Write** a project `CLAUDE.md` to the course standard and **tell apart** user memory, project memory and `CLAUDE.local.md` | S9 | [Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9); `CLAUDE.md` committed, `CLAUDE.local.md` in `.gitignore` |
 | O12 | **Create** the read-only `semak-ci4` subagent and the `migration-ci4` skill, and **verify** AI findings against the real code | S10 | [Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10); `docs/semakan-ci4-hari6.md` |
 | O13 | **Install** and **test** the `ci4-spark` MCP server (JSON-RPC over stdio, read-only) and **register** Context7 | S11 | [Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11); `.mcp.json` + 5 JSON-RPC replies |
+| O14 | **Write** onboarding and plan prompts in *Plan* mode for an existing project, and **draft** and **review** a practice PRD before any code | S12 | [Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12); `docs/nota-claude.md` + `~/latihan/prd-latihan/docs/prd.md` |
 
 ---
 
@@ -33,7 +34,8 @@ By the end of today, participants can:
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 6 recap | — |
-| 09:00–10:30 | S9 | Claude Code: install, `CLAUDE.md` & Plan mode | Write the project `CLAUDE.md` to the course standard; tell user/project/local memory apart ([Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9)) |
+| 09:00–10:00 | S9 | Claude Code: install, `CLAUDE.md` & Plan mode | Write the project `CLAUDE.md` to the course standard; tell user/project/local memory apart ([Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9)) |
+| 10:00–10:30 | S12 | Claude Code: prompting, new projects & PRD | Write onboarding and plan prompts in Plan mode; draft and review a practice PRD ([Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12)) |
 | 10:30–10:45 | — | Morning break | — |
 | 10:45–11:45 | S10 | Claude Code: subagents & skills | Read-only `semak-ci4` subagent on Day 6 code; `migration-ci4` skill ([Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10)) |
 | 11:45–12:30 | S11 | Claude Code: MCP for CodeIgniter | `ci4-spark` MCP server (PHP, read-only) tested & registered; Context7; MySQL/GitLab optional ([Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
@@ -71,9 +73,9 @@ flowchart LR
 
 ---
 
-## S9 — Claude Code: Install, CLAUDE.md & Plan Mode (09:00–10:30)
+## S9 — Claude Code: Install, CLAUDE.md & Plan Mode (09:00–10:00)
 
-> ℹ️ **Day 7 morning = Claude Code.** S9–S11 replace S1/S5/S2/S6 in the morning. The Pass Module (S1, S2) starts at 14:30. Labs: [Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9) · [Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10) · [Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11).
+> ℹ️ **Day 7 morning = Claude Code.** S9, S12, S10 and S11 replace S1/S5/S2/S6 in the morning. The Pass Module (S1, S2) starts at 14:30. Labs: [Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9) · [Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12) · [Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10) · [Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11).
 
 ### 9.1 From Lab 6.3c to today
 
@@ -160,6 +162,51 @@ Leave *Plan* mode only when you understand the plan and want Claude to make smal
    - [ ] `.claude/settings.json`
    - [ ] `%USERPROFILE%\.claude\CLAUDE.md`
    > The project `CLAUDE.md` is committed and shared. `~/.claude/CLAUDE.md` applies to **all** your projects. `CLAUDE.local.md` is loaded together with the project `CLAUDE.md`, but stays on your laptop if it is in `.gitignore`.
+
+---
+
+## S12 — Claude Code: Prompting, New Projects & PRD (10:00–10:30)
+
+> ℹ️ Full tutorial: [`tutorial-prompt-projek.md`](../docs/tutorial-prompt-projek.md) · Prompts AI-15..AI-18: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md#f--project--prd) · Lab: [Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12).
+
+### 12.1 Prompt anatomy
+
+A good prompt has five parts: **context** (`@file`, `BR-*` IDs, the SPEC, `CLAUDE.md`), **task** (one thing), **constraints** ("do not change files", "CI 4.7, not CI3"), **how to verify** (`composer test`, `php spark routes`, the browser) and **answer format** (table, numbered steps). Add "ask me first if anything is unclear", and break the work into small steps you can verify in 5–10 minutes.
+
+### 12.2 The working loop
+
+**Explore → plan (*Plan* mode) → implement one small step → verify → commit.** You write or understand every line; Claude explains, plans and reviews. A "build the complete Pass module" prompt is an anti-pattern ([`kolaborasi.md`](../docs/kolaborasi.md) §3).
+
+### 12.3 Existing project vs new project
+
+| | Existing project (`kelas-ci-<nama>`) | New project |
+|---|---|---|
+| Start with | Onboarding prompts in *Plan* mode (AI-15): structure, where the logic lives, request flow | PRD interview (AI-16) → `docs/prd.md` |
+| Then | `/init` → review `CLAUDE.md` against the course standard | Review the PRD (AI-18), fix it yourself; a `CLAUDE.md` that points to the PRD |
+| Before code | A numbered plan that refers to `BR-*` and the SPEC | A *vertical slice* plan (AI-17) |
+| While working | Read the *diff*, `composer test`, `/clear` between tasks | `composer create-project codeigniter4/appstarter`, then slice by slice |
+
+### 12.4 PRD vs SPEC
+
+A **PRD** describes **what** and **why**: problem, roles, scope, FR, BR, NFR, data, acceptance criteria, milestones. The **SPEC** ([`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) in this course) describes **how**: tables, fields, enums, classes, routes. A Claude-drafted PRD must be reviewed: missing roles, unclear BRs, untestable criteria.
+
+### 🎯 Quiz S12
+
+> Answer after Lab 7.9. Passing this quiz marks the Lab 7.9 checkpoint.
+
+1. You have just received a colleague's CodeIgniter project and need to add one filter to a list. What is the most suitable first step with Claude Code?
+   - [ ] Ask Claude to rewrite the list controller so the filter is added straight away
+   - [x] In Plan mode, ask Claude to explain the project structure and that list's request flow, then ask for a numbered plan before any change
+   - [ ] Run composer create-project for a new project and copy the features one by one
+   - [ ] Ask Claude to write a complete CLAUDE.md and accept it without reading it
+   > An existing project starts with onboarding and a plan in Plan mode. You need to understand the structure and request flow before changing code, and the plan becomes a task list you review.
+
+2. Claude drafts the Facility Damage Complaints PRD. One acceptance criterion says "The system is easy for all staff to use." What is the right action?
+   - [ ] Accept it because a PRD is a planning document, not a test
+   - [ ] Move the sentence to the SPEC because it is a technical requirement
+   - [ ] Ask Claude to generate the whole application first, then check that criterion
+   - [x] Rewrite it yourself as a testable criterion, for example reporter B opens reporter A's complaint and gets 404
+   > Acceptance criteria must be testable: they have a clear input and expected result. The PRD review (AI-18) looks for criteria like this, and you fix them yourself in docs/prd.md.
 
 ---
 

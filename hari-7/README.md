@@ -25,6 +25,7 @@ Di akhir hari ini, peserta boleh:
 | O11 | **Menulis** `CLAUDE.md` projek mengikut standard kursus dan **membezakan** memori pengguna, projek dan `CLAUDE.local.md` | S9 | [Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9); `CLAUDE.md` di-commit, `CLAUDE.local.md` dalam `.gitignore` |
 | O12 | **Mencipta** subagent baca sahaja `semak-ci4` dan skill `migration-ci4`, dan **mengesahkan** dapatan AI terhadap kod sebenar | S10 | [Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10); `docs/semakan-ci4-hari6.md` |
 | O13 | **Memasang** dan **menguji** server MCP `ci4-spark` (JSON-RPC stdio, baca sahaja) serta **mendaftarkan** Context7 | S11 | [Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11); `.mcp.json` + 5 balasan JSON-RPC |
+| O14 | **Menulis** prompt onboarding dan pelan dalam mod *Plan* untuk projek sedia ada, serta **mendraf** dan **menyemak** PRD latihan sebelum sebarang kod | S12 | [Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12); `docs/nota-claude.md` + `~/latihan/prd-latihan/docs/prd.md` |
 
 ---
 
@@ -33,7 +34,8 @@ Di akhir hari ini, peserta boleh:
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 6 | — |
-| 09:00–10:30 | S9 | Claude Code: pasang, `CLAUDE.md` & mod Plan | Menulis `CLAUDE.md` projek ikut standard kursus; membezakan memori pengguna/projek/tempatan ([Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9)) |
+| 09:00–10:00 | S9 | Claude Code: pasang, `CLAUDE.md` & mod Plan | Menulis `CLAUDE.md` projek ikut standard kursus; membezakan memori pengguna/projek/tempatan ([Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9)) |
+| 10:00–10:30 | S12 | Claude Code: prompting, projek baharu & PRD | Menulis prompt onboarding & pelan dalam mod Plan; mendraf dan menyemak PRD latihan ([Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12)) |
 | 10:30–10:45 | — | Rehat pagi | — |
 | 10:45–11:45 | S10 | Claude Code: subagent & skill | Subagent baca sahaja `semak-ci4` pada kod Hari 6; skill `migration-ci4` ([Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10)) |
 | 11:45–12:30 | S11 | Claude Code: MCP untuk CodeIgniter | Server MCP `ci4-spark` (PHP, baca sahaja) diuji & didaftar; Context7; MySQL/GitLab pilihan ([Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
@@ -71,9 +73,9 @@ flowchart LR
 
 ---
 
-## S9 — Claude Code: Pasang, CLAUDE.md & Mod Plan (09:00–10:30)
+## S9 — Claude Code: Pasang, CLAUDE.md & Mod Plan (09:00–10:00)
 
-> ℹ️ **Pagi Hari 7 = Claude Code.** S9–S11 menggantikan S1/S5/S2/S6 pada waktu pagi. Modul Pas (S1, S2) bermula 14:30. Lab: [Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9) · [Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10) · [Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11).
+> ℹ️ **Pagi Hari 7 = Claude Code.** S9, S12, S10 dan S11 menggantikan S1/S5/S2/S6 pada waktu pagi. Modul Pas (S1, S2) bermula 14:30. Lab: [Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9) · [Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12) · [Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10) · [Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11).
 
 ### 9.1 Dari Lab 6.3c ke hari ini
 
@@ -160,6 +162,51 @@ Keluar dari mod *Plan* hanya apabila anda faham pelannya dan mahu Claude membuat
    - [ ] `.claude/settings.json`
    - [ ] `%USERPROFILE%\.claude\CLAUDE.md`
    > `CLAUDE.md` projek di-commit dan dikongsi. `~/.claude/CLAUDE.md` terpakai pada **semua** projek anda. `CLAUDE.local.md` dimuatkan bersama `CLAUDE.md` projek, tetapi kekal dalam laptop anda jika ia dalam `.gitignore`.
+
+---
+
+## S12 — Claude Code: Prompting, Projek Baharu & PRD (10:00–10:30)
+
+> ℹ️ Tutorial penuh: [`tutorial-prompt-projek.md`](../docs/tutorial-prompt-projek.md) · Prompt AI-15..AI-18: [`pustaka-prompt.md`](../docs/pustaka-prompt.md#f--projek--prd) · Lab: [Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12).
+
+### 12.1 Anatomi prompt
+
+Prompt yang baik ada lima bahagian: **konteks** (`@fail`, ID `BR-*`, SPEC, `CLAUDE.md`), **tugas** (satu perkara), **kekangan** ("jangan ubah fail", "CI 4.7, bukan CI3"), **cara mengesahkan** (`composer test`, `php spark routes`, pelayar) dan **format jawapan** (jadual, langkah bernombor). Tambah "tanya saya dahulu jika ada yang kabur", dan pecahkan kerja kepada langkah kecil yang boleh disahkan dalam 5–10 minit.
+
+### 12.2 Gelung kerja
+
+**Teroka → rancang (mod *Plan*) → laksana satu langkah kecil → sahkan → commit.** Anda menulis atau memahami setiap baris; Claude menerangkan, merancang dan menyemak. Prompt "buatkan modul Pas lengkap" ialah anti-corak ([`kolaborasi.md`](../docs/kolaborasi.md) §3).
+
+### 12.3 Projek sedia ada vs projek baharu
+
+| | Projek sedia ada (`kelas-ci-<nama>`) | Projek baharu |
+|---|---|---|
+| Mula dengan | Prompt onboarding dalam mod *Plan* (AI-15): struktur, lokasi logik, aliran request | Temu bual PRD (AI-16) → `docs/prd.md` |
+| Kemudian | `/init` → semak `CLAUDE.md` ikut standard kursus | Semak PRD (AI-18), betulkan sendiri; `CLAUDE.md` menunjuk ke PRD |
+| Sebelum kod | Pelan bernombor yang merujuk `BR-*` dan SPEC | Pelan *vertical slice* (AI-17) |
+| Semasa kerja | Baca *diff*, `composer test`, `/clear` antara tugas | `composer create-project codeigniter4/appstarter`, kemudian slice demi slice |
+
+### 12.4 PRD vs SPEC
+
+**PRD** menerangkan **apa** dan **kenapa**: masalah, peranan, skop, FR, BR, NFR, data, kriteria penerimaan, milestone. **SPEC** ([`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) dalam kursus ini) menerangkan **bagaimana**: jadual, medan, enum, kelas, route. PRD yang didraf Claude mesti disemak: peranan yang tiada, BR yang kabur, kriteria yang tidak boleh diuji.
+
+### 🎯 Kuiz S12
+
+> Jawab selepas Lab 7.9. Lulus kuiz ini menanda checkpoint Lab 7.9.
+
+1. Anda baru menerima projek CodeIgniter rakan sekerja dan perlu menambah satu filter pada senarai. Apakah langkah pertama yang paling sesuai dengan Claude Code?
+   - [ ] Minta Claude menulis semula controller senarai supaya filter itu ditambah terus
+   - [x] Dalam mod Plan, minta Claude menerangkan struktur projek dan aliran request senarai itu, kemudian minta pelan bernombor sebelum sebarang perubahan
+   - [ ] Jalankan composer create-project untuk projek baharu dan salin ciri satu demi satu
+   - [ ] Minta Claude menulis CLAUDE.md lengkap dan terus terima tanpa membacanya
+   > Projek sedia ada bermula dengan onboarding dan pelan dalam mod Plan. Anda perlu faham struktur dan aliran request sebelum mengubah kod, dan pelan menjadi senarai tugas yang anda semak.
+
+2. Claude mendraf PRD Aduan Kerosakan Kemudahan. Satu kriteria penerimaan berbunyi "Sistem mudah digunakan oleh semua kakitangan." Apakah tindakan yang betul?
+   - [ ] Terima kerana PRD ialah dokumen perancangan, bukan ujian
+   - [ ] Pindahkan ayat itu ke SPEC kerana ia keperluan teknikal
+   - [ ] Minta Claude menjana keseluruhan aplikasi dahulu, kemudian semak kriteria itu
+   - [x] Tulis semula sendiri sebagai kriteria yang boleh diuji, contohnya pelapor B membuka aduan pelapor A dan menerima 404
+   > Kriteria penerimaan mesti boleh diuji: ada input dan jangkaan yang jelas. Semakan PRD (AI-18) mencari kriteria seperti ini, dan anda membetulkannya sendiri dalam docs/prd.md.
 
 ---
 

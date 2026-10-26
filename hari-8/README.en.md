@@ -647,6 +647,20 @@ Lab: [Lab 8.4b](./lab.en.md#lab-84b--fourth-role-demo-admin--separation-of-dutie
 
 ---
 
+## 🤖 Today's prompting
+
+Use Claude Code in *Plan* mode (`Shift+Tab` / `Alt+M`) for the prompts below: Claude explains, reviews and plans; you write and understand every committed line ([`kolaborasi.md`](../docs/kolaborasi.en.md) §3). Full prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md). Record the answers you verified in `docs/nota-claude.md`.
+
+| Session | Prompt & Claude Code feature | Verify it yourself | Lab |
+|---|---|---|---|
+| S1 · Approval flow | AI-05 (BR-PAS-01/03/05) with `@app/Services/PassWorkflowService.php`; ask where `FOR UPDATE` and `status_logs` are | Open the file:line; repeat the second `pelulus` session test | 8.1 step 10 |
+| S2 · Shield RBAC | AI-07 + the `ci4-spark` MCP tools `routes` and `filter_check` on the 3 review POST routes | `php spark filter:check POST /pas/semakan/1/approve` | 8.2 step 10 |
+| S3 · Access tests | AI-09: role × action matrix from `@tests/feature/Pas/PassAccessTest.php`; AI-10 for bugs | `!composer test -- tests/feature/Pas` | 8.3 step 8 |
+| S4 · Demo & M2 | The `semak-ci4` subagent on the Pas module (`esc()`, CSRF, filters, ownership) | Open each file:line; a real finding → `FIX:` | 8.4 step 5 |
+| S5–S8 · Extensions | AI-07 + `filter_check POST /pas/semakan/pukal/review`; AI-09 for `PassBatchReviewTest` | `!composer test -- tests/feature/Pas` | — |
+
+---
+
 ## 📦 Deliverables — Today's Output
 
 - [ ] `PassWorkflowService`: `startReview`, `approve`, `reject`, `expire`, `history`, `transition`, `authorize`

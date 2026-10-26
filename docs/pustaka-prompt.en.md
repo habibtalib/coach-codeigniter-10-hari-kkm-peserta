@@ -54,6 +54,10 @@ flowchart LR
 | **AI-12** | Convert a sketch to Mermaid | Design | 1–3 |
 | **AI-13** | Small permitted boilerplate | Build | 4–10 |
 | **AI-14** | Quiz me | Understand | Daily recap |
+| **AI-15** | Onboarding an existing project | Project | 7 |
+| **AI-16** | PRD interview | Project | 7 |
+| **AI-17** | PRD → *vertical slice* plan | Project | 7 |
+| **AI-18** | Review a PRD | Project | 7 |
 
 ---
 
@@ -349,6 +353,77 @@ common car models in Malaysia, colour). No real data. Format: PHP array.
 
 ---
 
+## F · Project & PRD
+
+Full tutorial: [`tutorial-prompt-projek.md`](tutorial-prompt-projek.md). AI-15, AI-17 and AI-18 run in *Plan* mode; for AI-16, leave *Plan* mode only when Claude asks permission to write `docs/prd.md`, and read the draft first. Claude drafts plans, PRDs and explanations, you write the code.
+
+### AI-15 — Onboarding an existing project
+
+- **When to use:** The first day in a project that already has code (`kelas-ci-<nama>`, a colleague's project, a new project at work).
+- **Don't:** Ask Claude to "fix what is wrong" before you understand the structure.
+
+```prompt title="AI-15"
+Plan mode. Do not change any file.
+1. Explain this project's structure in 10 lines: the main folders in app/, the role of each, where the tests are.
+2. Where does the <TLK booking approval> logic live? List the files and method names.
+3. Trace one request <POST /tlk/tempahan> from the route, filter, controller, service, model to the redirect.
+For every claim, give the file name so I can check it myself.
+```
+
+- **After:** Open at least one file for each answer and verify it. Record a summary in `docs/nota-claude.md`.
+
+### AI-16 — PRD interview
+
+- **When to use:** Before a new project, when all you have is a one-sentence idea.
+- **Don't:** Ask Claude to "write a complete PRD" straight away with no questions; it will guess roles and rules.
+
+```prompt title="AI-16"
+I want to build a small web application: <Facility Damage Complaints: staff report damage, technicians update the status>.
+Interview me to draft a PRD. Ask ONE question at a time, at most 12 questions, covering:
+problem, users & roles, in/out of scope, functional requirements, business rules,
+security & performance, data/entities, acceptance criteria, milestones.
+After the interview, draft docs/prd.md with the sections: Problem, Users & roles, Scope,
+Functional requirements (FR-01..), Business rules (BR-01..), NFR, Data/entities,
+Acceptance criteria (AC-01.., Given/When/Then format), Milestones.
+Synthetic data only. Do not write code.
+```
+
+- **After:** Read every FR and BR. Delete anything you did not say in the interview. Review it with AI-18.
+
+### AI-17 — PRD → *vertical slice* plan
+
+- **When to use:** After the PRD is reviewed, before `composer create-project` or before a big feature.
+- **Don't:** Accept a layered plan ("all migrations first"); ask for slices that can be tested on their own.
+
+```prompt title="AI-17"
+Plan mode. Read @docs/prd.md. Break it into vertical slices (at most 6).
+Each slice: short name, the FR/BR/AC it meets, the CodeIgniter 4.7 files involved,
+how to test (composer test or browser steps), and dependencies.
+Order them by dependency. Mark any FR that is in no slice. Do not write code.
+```
+
+- **After:** Every FR must be in one slice. The first slice must be demoable within one day.
+
+### AI-18 — Review a PRD
+
+- **When to use:** After a PRD draft (from AI-16 or your own writing), before the plan.
+- **Don't:** Ask Claude to rewrite the PRD; ask for a list of issues and fix them yourself.
+
+```prompt title="AI-18"
+Plan mode. Review @docs/prd.md critically as a tester and system owner. Do not change files.
+List the issues in a table (section · issue · why it matters · suggested fix) for:
+1. Missing roles (who approves, who administers the reference data?)
+2. BRs that are unclear or cannot be enforced in code
+3. ACs that cannot be tested (no clear input/expected result)
+4. FRs without an AC, or ACs without an FR
+5. Scope creep, and data/entities with no owner
+At most 8 issues, most important first.
+```
+
+- **After:** Pick at least 2 issues and fix them **yourself** in `docs/prd.md`. Commit `PRD: …`.
+
+---
+
 ## Anti-patterns — prompts that are **not** allowed
 
 | ❌ Prompt | Why it is wrong | ✅ Replace with |
@@ -358,6 +433,7 @@ common car models in Malaysia, colour). No real data. Format: PHP array.
 | "Write all the tests for my project." | Tests you don't understand = false confidence | AI-09 → write them yourself |
 | "Change this code so it passes the tests." | Can weaken the tests or hide bugs | AI-10 + fix it yourself |
 | Pasting `.env` / real user data | Leak of secrets/government data | Paste a sample `env` without values |
+| "Build the complete complaints app from this PRD." | A PRD is planning input, not an order to generate code; you cannot explain the result | AI-17 (slice plan) → build slice by slice |
 
 ---
 

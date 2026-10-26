@@ -4,7 +4,8 @@
 
 | Lab | Session | Time | Outcome |
 |-----|---------|------|---------|
-| 7.6 | S9 | 09:20–10:30 | Claude Code verified; course-standard `CLAUDE.md`; `CLAUDE.local.md`; Plan mode |
+| 7.6 | S9 | 09:10–10:00 | Claude Code verified; course-standard `CLAUDE.md`; `CLAUDE.local.md`; Plan mode |
+| 7.9 | S12 | 10:05–10:30 | `docs/nota-claude.md` (3 onboarding prompts); practice PRD `~/latihan/prd-latihan/docs/prd.md` + slice plan + 2 fixes |
 | 7.7 | S10 | 11:00–11:45 | `semak-ci4` subagent + `docs/semakan-ci4-hari6.md`; `migration-ci4` skill |
 | 7.8 | S11 | 11:55–12:30 | `ci4-spark` MCP server tested & registered in `.mcp.json`; Context7; MySQL/GitLab optional |
 | 7.0 | Start of S1 | 10 min | Git branch + `php.ini` ready for uploads |
@@ -17,7 +18,7 @@
 | 7.4 | S4 | 16:00–16:35 | 17 boundary test cases recorded |
 | 7.4b | S8 | 16:35–17:00 | PHPUnit `PassSubmitTest`: 14 automated boundary cases + `>=` mutation |
 
-> ℹ️ **Day 7 schedule (updated):** Labs 7.6–7.8 (Claude Code) in the morning; Labs 7.0, 7.1 and 7.2 (+7.1b/7.2b if time allows) start at 14:30. Lab 7.3, 7.4 (and 7.3b/7.4b) continue on Day 8 morning. The 7.0–7.4b times in the table above are the original schedule.
+> ℹ️ **Day 7 schedule (updated):** Labs 7.6, 7.9, 7.7 and 7.8 (Claude Code) in the morning; Labs 7.0, 7.1 and 7.2 (+7.1b/7.2b if time allows) start at 14:30. Lab 7.3, 7.4 (and 7.3b/7.4b) continue on Day 8 morning. The 7.0–7.4b times in the table above are the original schedule.
 
 ---
 
@@ -184,6 +185,141 @@ Confirm Claude Code works in `kelas-ci-<nama>`, generate `CLAUDE.md` with `/init
 
 ### ⭐ Bonus challenge
 - Add one path-scoped rule: create `.claude/rules/views.md` with the frontmatter `paths: ["app/Views/**"]` that reminds about `esc()` and `csrf_field()`. Check with `/context` that it only loads after Claude reads a view file.
+
+---
+
+## Lab 7.9 — Prompting: Existing Project, New Project & PRD (S12)
+
+> 🛡️ **Synthetic data only.** The practice idea is made up; do not use real KKM names, complaints or systems. The practice PRD is saved in a separate practice folder `~/latihan/prd-latihan/`, **not** in `kelas-ci-<nama>`, and it is **not** a change to the course SPEC.
+
+### 🎯 Objective
+Write three onboarding prompts in *Plan* mode on the `kelas-ci-<nama>` project and record the verified answers, draft a small PRD for a practice idea through an interview with Claude, ask for a *vertical slice* plan without code, and review the PRD critically and fix 2 issues yourself. Reference: [`tutorial-prompt-projek.md`](../docs/tutorial-prompt-projek.md) · prompts [AI-15..AI-18](../docs/pustaka-prompt.en.md#f--project--prd).
+
+### Prerequisites
+- Lab 7.6 done: the project `CLAUDE.md` is committed and you know how to switch to *Plan* mode (`Shift+Tab` or `Alt+M`).
+- 🪟 **Windows:** Git Bash terminal in VS Code. For command blocks with two tabs: choose **PowerShell** if your terminal is PowerShell.
+
+### Steps
+
+1. **Onboarding an existing project (8 minutes).** In `kelas-ci-<nama>`, start `claude`, switch to **plan mode**, and send these three prompts one at a time ([AI-15](../docs/pustaka-prompt.en.md#ai-15--onboarding-an-existing-project)):
+
+   ```text
+   Explain this project's structure in 10 lines: the main folders in app/, the role of each, and where the tests are. Do not change files.
+   ```
+
+   ```text
+   Where does the TLK booking approval logic live? List the files and method names, from the route to status_logs.
+   ```
+
+   ```text
+   Trace one request: POST /tlk/tempahan from the route, filter, controller, service, model to the redirect. Show the file name at each step.
+   ```
+
+   For each answer, open **one** file it mentions and verify that claim yourself. Record it in a new file `docs/nota-claude.md` (you type it, not Claude):
+
+   `docs/nota-claude.md`
+
+   ```markdown
+   # Claude Code onboarding notes — kelas-ci-<nama>
+
+   | # | Prompt | Answer summary (3 lines) | Verified in file | Correct? |
+   |---|--------|--------------------------|------------------|----------|
+   | 1 | Project structure | ... | app/... | Yes / Partly / No |
+   | 2 | TLK approval logic | ... | app/Services/BookingService.php | ... |
+   | 3 | POST /tlk/tempahan flow | ... | app/Config/Routes.php | ... |
+   ```
+
+   Press `Shift+Tab` to leave *Plan* mode, then type `/exit`.
+
+2. **Practice folder for a new project.** The practice PRD does **not** go into `kelas-ci-<nama>`:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   mkdir -p ~/latihan/prd-latihan/docs
+   cd ~/latihan/prd-latihan
+   git init
+   claude
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force $HOME\latihan\prd-latihan\docs
+   cd $HOME\latihan\prd-latihan
+   git init
+   claude
+   ```
+
+3. **PRD interview (10 minutes).** Stay in the default mode (**not** *accept edits*) so Claude asks permission before writing a file. Send ([AI-16](../docs/pustaka-prompt.en.md#ai-16--prd-interview)):
+
+   ```text
+   I want to build a small web application: Facility Damage Complaints. Staff report damage to office facilities (lifts, air conditioners, lights), and technicians update the complaint status.
+   Interview me to draft a PRD. Ask ONE question at a time, at most 8 questions, covering: problem, users & roles, in/out of scope, functional requirements, business rules, security, data/entities, acceptance criteria.
+   After the interview, draft docs/prd.md with the sections: Problem, Users & roles, Scope, Functional requirements (FR-01..), Business rules (BR-01..), NFR, Data/entities, Acceptance criteria (AC-01.., Given/When/Then format), Milestones.
+   Limit it to 2 roles and 5 functional requirements. Synthetic data only. Do not write code.
+   ```
+
+   Answer Claude's questions briefly. If you get stuck, use these answers:
+
+   | Topic | Practice answer |
+   |-------|-----------------|
+   | Roles | `pelapor` (staff reporter) and `juruteknik` (technician) |
+   | Requirements | Submit a complaint · see own complaints · list all complaints (technician) · change status · add an action note |
+   | Status | `baru` → `dalam_tindakan` → `selesai` |
+   | Out of scope | SMS notifications, a mobile app, spare-parts inventory |
+
+   When Claude asks permission to write `docs/prd.md`, **read the draft first**, then approve. Check: exactly 2 roles, FR-01..FR-05, every FR has at least one AC.
+
+4. **A *vertical slice* plan without code (5 minutes).** Switch to **plan mode** and send ([AI-17](../docs/pustaka-prompt.en.md#ai-17--prd--vertical-slice-plan)):
+
+   ```text
+   Plan mode. Read @docs/prd.md. Break it into vertical slices (at most 4). Each slice: short name, the FR/BR/AC it meets, the CodeIgniter 4.7 files involved, how to test. Order them by dependency. Mark any FR that is in no slice. Do not write code.
+   ```
+
+   If Claude offers to implement the plan, choose **No** / keep planning. Type the slice names yourself in the *Milestones* section of `docs/prd.md` (e.g. `M1 — Slice 1: pelapor menghantar aduan (FR-01, AC-01)`). Check `git status`: only `docs/prd.md` exists, no PHP files.
+
+5. **Review the PRD critically (5 minutes).** Still in **plan mode** ([AI-18](../docs/pustaka-prompt.en.md#ai-18--review-a-prd)):
+
+   ```text
+   Plan mode. Review @docs/prd.md critically as a tester and system owner. Do not change files. List at most 6 issues in a table (section · issue · why it matters · suggested fix): missing roles, unclear BRs, untestable ACs, FRs without an AC, scope creep, data with no owner.
+   ```
+
+   Pick **2** issues and fix them **yourself** in VS Code (example: change "complaints are handled immediately" into a testable BR; add the AC "reporter B opens reporter A's complaint → 404"). Add a `## Log perubahan` (change log) section at the end of the PRD with two lines: date · change · reason.
+
+6. **Commit (yourself).**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   git add docs/prd.md
+   git commit -m "PRD: draf Aduan Kerosakan Kemudahan + 2 pembetulan semakan"
+   cd ~/latihan/kelas-ci-<nama>
+   git add docs/nota-claude.md
+   git commit -m "CHORE: nota onboarding Claude Code"
+   ```
+
+   ```powershell tab="PowerShell"
+   git add docs/prd.md
+   git commit -m "PRD: draf Aduan Kerosakan Kemudahan + 2 pembetulan semakan"
+   cd $HOME\latihan\kelas-ci-<nama>
+   git add docs/nota-claude.md
+   git commit -m "CHORE: nota onboarding Claude Code"
+   ```
+
+### ✅ Checkpoint
+- [ ] `docs/nota-claude.md` in `kelas-ci-<nama>` records the 3 onboarding prompts, each with a file you opened yourself to verify the answer (Quiz S12).
+- [ ] `~/latihan/prd-latihan/docs/prd.md` has 2 roles, FR-01..FR-05, at least one BR and one AC for every FR (Quiz S12).
+- [ ] The *Milestones* section lists the slices from the *Plan* mode plan, and `git status` in `prd-latihan` shows no code files (Quiz S12).
+- [ ] Two issues from the AI-18 review were fixed by you and recorded in `## Log perubahan` (Quiz S12).
+- [ ] `git log --oneline` in `prd-latihan` shows the `PRD: …` commit. 🪟 PowerShell: `git -C $HOME\latihan\prd-latihan log --oneline` (Quiz S12).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Claude writes the PRD straight away without asking | The prompt did not say "ONE question at a time" | `Esc`, then send the full AI-16 prompt again |
+| Claude generates PHP files or `composer.json` | *Accept edits* mode is on, or you approved the plan | Refuse (`No`); delete the file; use **plan mode** for steps 4–5 |
+| `docs/prd.md` is written in `kelas-ci-<nama>` | `claude` was started in the wrong folder | Move the file to `~/latihan/prd-latihan/docs/`; `git restore --staged` if it was already `add`ed |
+| The PRD is too long (10+ FRs) | No limit was given | Ask: "Limit it to the 5 most important FRs; move the rest to Out of scope" |
+| An onboarding answer names a file that does not exist | Claude guessed | Record "No" in `docs/nota-claude.md`; this is proof of why every claim must be verified |
+
+### ⭐ Bonus challenge
+- Ask Claude (*Plan* mode) to compare your practice PRD with the M1 TLK section in [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md): what is in the SPEC but not in the PRD (tables, fields, enums, routes)? Write 3 lines in `docs/nota-claude.md` about the difference between a PRD and a SPEC.
 
 ---
 

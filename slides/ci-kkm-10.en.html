@@ -1910,29 +1910,368 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <section class="slide dark divider" data-label="Day 7 · Pass (1)">
   <div class="eyebrow">Day 7 · Phase B — Set Up &amp; Build</div>
-  <h1>Pass Module — Part 1</h1>
-  <div><span class="chip m-pas">M2 · Pass applications &amp; documents</span></div>
+  <h1>Claude Code &amp; Pass Module — Part 1</h1>
+  <div><span class="chip m-pas">Claude Code · M2 Pass applications</span></div>
   <div class="sessions">
-    <div><i>S1</i>Pass application Migration &amp; Model</div>
-    <div><i>S2</i>Basic CRUD Controller &amp; View</div>
-    <div><i>S3</i>Form, validation &amp; document upload</div>
-    <div><i>S4</i>Manual testing &amp; review; wrap-up</div>
+    <div><i>S9</i><span>Claude Code: install on Windows, <code>CLAUDE.md</code>, Plan mode</span></div>
+    <div><i>S12</i><span>Prompting, new projects &amp; PRD</span></div>
+    <div><i>S10</i><span>Subagent &amp; skill for the CI4 project</span></div>
+    <div><i>S11</i><span>MCP: <code>ci4-spark</code>, MySQL, Context7</span></div>
+    <div><i>S1</i><span>Afternoon: pass application Migration &amp; Model</span></div>
+    <div><i>S2</i><span>Afternoon: list (owner scope) &amp; detail</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span><span></span></div>
   <div class="daynum">07</div>
-  <aside class="notes"><p>Corak Hari 5 diulang — enum, Entity, Model, Service. Tumpuan baharu hari ini: skop pemilik dan muat naik fail yang selamat.</p></aside>
+  <aside class="notes"><p>Pagi Claude Code (S9, S12, S10, S11), petang modul Pas S1 dan S2. Corak Hari 5 diulang untuk Pas — enum, Entity, Model, Service. Muat naik selamat (S3) dan kes sempadan (S4) bersambung pagi Hari 8.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 7 · Today's objectives</div>
   <h2>By the end of today, you can…</h2>
-  <ul class="checks">
+  <ul class="checks sm">
+    <li><span><em>S9</em>Install Claude Code on Windows, log in, block <code>.env</code> and write the project <code>CLAUDE.md</code>.</span></li>
+    <li><span><em>S12</em>Write structured prompts and draft a PRD for a new project.</span></li>
+    <li><span><em>S10</em>Create the <code>semak-ci4</code> subagent &amp; <code>migration-ci4</code> skill, and verify AI findings.</span></li>
+    <li><span><em>S11</em>Install &amp; test the <code>ci4-spark</code> MCP server and register Context7.</span></li>
     <li><span><em>S1</em>Write the <code>PassApplication</code> &amp; <code>PassDocument</code> Model/Entity.</span></li>
     <li><span><em>S2</em>Build the list (owner scope) &amp; application detail view.</span></li>
-    <li><span><em>S3</em>Upload files securely: type, size, random name, outside <code>public/</code>.</span></li>
-    <li><span><em>S4</em>Test upload &amp; validation edge cases.</span></li>
   </ul>
-  <aside class="notes"><p>Tanya peserta: berapa banyak kod Hari 5 yang boleh diguna semula? ReferenceNumberService dan StatusLogModel terus diguna; yang lain mengikut corak yang sama.</p></aside>
+  <p class="small mt16">Upload (S3) and edge cases (S4) continue on the morning of Day 8.</p>
+  <aside class="notes"><p>Empat objektif pagi diukur melalui Kuiz S9–S12; dua objektif petang melalui checkpoint Lab 7.1 dan 7.2. Tanya peserta: berapa banyak kod Hari 5 yang boleh diguna semula untuk Pas? ReferenceNumberService dan StatusLogModel terus diguna.</p></aside>
+</section>
+
+<!-- ---------------------------- DAY 7 · MORNING: CLAUDE CODE ---------------------------- -->
+
+<section class="slide dark divider">
+  <div class="eyebrow">Day 7 · Morning 09:00–12:30</div>
+  <h1>Morning: Claude Code</h1>
+  <div><span class="chip m-a">Install · CLAUDE.md · Prompts &amp; PRD · Subagent · Skill · MCP</span></div>
+  <div class="sessions">
+    <div><i>S9</i><span>Install on Windows, log in, block <code>.env</code>, <code>CLAUDE.md</code>, Plan mode</span></div>
+    <div><i>S12</i><span>Prompting, new projects &amp; PRD</span></div>
+    <div><i>S10</i><span>Subagent <code>semak-ci4</code> &amp; skill <code>migration-ci4</code></span></div>
+    <div><i>S11</i><span>MCP: <code>ci4-spark</code>, MySQL, Context7, GitLab</span></div>
+  </div>
+  <p class="small mt24" style="max-width:880px">Labs 7.6 · 7.9 · 7.7 · 7.8 on pelatih.my<br><span style="color:#8FA2C6">Reference: docs/tutorial-claude-code.en.md · docs/tutorial-prompt-projek.en.md</span></p>
+  <aside class="notes"><p>Pagi ini sepenuhnya Claude Code; modul Pas bermula 14:30. Peranan Claude tidak berubah: penjelas dan penyemak, bukan penjana modul. Tanya dahulu siapa yang sudah berjaya menjalankan claude --version sejak Lab 6.3c, dan pasangkan peserta yang belum dengan rakan yang sudah.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · Today's schedule</div>
+  <h2>Claude Code in the morning, Pass module in the afternoon</h2>
+  <table class="t">
+    <tr><th>Time</th><th>Session</th><th>Topic</th><th>Lab</th></tr>
+    <tr><td>09:00–10:00</td><td><b>S9</b></td><td>Install on Windows, log in, <code>settings.json</code> deny, <code>CLAUDE.md</code>, Plan mode</td><td>7.6</td></tr>
+    <tr><td>10:00–10:30</td><td><b>S12</b></td><td>Prompting, existing vs new projects, PRD</td><td>7.9</td></tr>
+    <tr><td>10:30–10:45</td><td>—</td><td>Morning break</td><td>—</td></tr>
+    <tr><td>10:45–11:45</td><td><b>S10</b></td><td>Subagent <code>semak-ci4</code> &amp; skill <code>migration-ci4</code></td><td>7.7</td></tr>
+    <tr><td>11:45–12:30</td><td><b>S11</b></td><td>MCP: <code>ci4-spark</code>, MySQL, Context7, GitLab</td><td>7.8</td></tr>
+    <tr><td>14:30–17:00</td><td><b>S1 + S2</b></td><td>Pass: Model/Entity, list &amp; detail (7.1b/7.2b if time)</td><td>7.1, 7.2</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Lab 7.3 (upload) and 7.4 (edge cases) continue on the <b>morning of Day 8</b>.</div></div>
+  <aside class="notes"><p>Tunjukkan perubahan jadual: S9 hanya sejam, jadi pemasangan mesti siap dalam 20 minit pertama. S12 ialah sesi baharu tentang prompt dan PRD. Petang hanya S1 dan S2 modul Pas; S3/S4 dipindah ke pagi Hari 8.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S9 — Data rules</div>
+  <h2>Read first: what you may give Claude</h2>
+  <div class="split">
+    <div class="card top m-tlk"><span class="k">ALLOWED</span><h3>Training project only</h3>
+      <ul>
+        <li><code>kelas-ci-&lt;nama&gt;</code> with synthetic data (<code>@latihan.test</code>, plate <code>WXX 1234</code>)</li>
+        <li>Error messages, your own code, <code>composer test</code> output</li>
+        <li>Concept questions ("why <code>FOR UPDATE</code>?")</li>
+      </ul>
+    </div>
+    <div class="card top m-stat"><span class="k">NOT ALLOWED</span><h3>Real systems &amp; secrets</h3>
+      <ul>
+        <li>eSPKP code or database, or any real KKM system</li>
+        <li><code>.env</code>, passwords, GitLab tokens, PATs</li>
+        <li>Real personal data: names, IC numbers, e-mails, phones</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Everything you type, and every file Claude reads, <b>is sent to Anthropic's servers</b>. MCP servers point only at the training DB <code>kkm_latihan</code>.</div></div>
+  <aside class="notes"><p>Peraturan ini terpakai untuk semua lab pagi ini (7.6 hingga 7.9). Tekankan bahawa fail yang dibaca Claude juga dihantar, bukan hanya prompt. Jika ragu, jangan tampal; tanya jurulatih dahulu. (2 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S9 — Windows: pre-check</div>
+  <h2>Pre-check (1 minute) in Windows PowerShell</h2>
+  <div class="codewrap"><div class="codebar">Windows PowerShell<span class="lang">powershell</span></div>
+<pre class="code" data-lang="powershell">[Environment]::Is64BitOperatingSystem
+curl.exe -sI https://downloads.claude.ai/claude-code-releases/latest</pre></div>
+  <div class="grid c3 mt16">
+    <div class="card top m-a"><span class="num-badge">1</span><h3>Must be <code>True</code></h3><p><code>False</code> = 32-bit Windows; Claude Code cannot be installed. Follow the trainer demo.</p></div>
+    <div class="card top m-a"><span class="num-badge">2</span><h3>Must be <code>200 OK</code></h3><p><code>403</code>, no output or <i>Could not resolve host</i> = the network blocks <code>downloads.claude.ai</code>.</p></div>
+    <div class="card top m-a"><span class="num-badge">3</span><h3><code>curl.exe</code>, not <code>curl</code></h3><p>In PowerShell, <code>curl</code> is an alias for <code>Invoke-WebRequest</code>.</p></div>
+  </div>
+  <p class="small mt16">Requirements: Windows 10 1809+ / 11, 64-bit · Git for Windows · course Claude account (the free plan does not include Claude Code).</p>
+  <aside class="notes"><p>Semua peserta jalankan dua baris ini serentak dan angkat tangan jika baris pertama bukan True atau curl tidak memulangkan 200. Yang disekat rangkaian terus ke slaid proxy dalam tutorial §7 atau guna kaedah C. (3 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S9 — Windows: install</div>
+  <h2>Pick <u>one</u> install method (no <i>Run as administrator</i>)</h2>
+  <div class="stack">
+    <div class="codewrap"><div class="codebar">A · Windows PowerShell (recommended) — prompt <code>PS C:\</code><span class="lang">powershell</span></div>
+<pre class="code" data-lang="powershell">irm https://claude.ai/install.ps1 | iex</pre></div>
+    <div class="codewrap"><div class="codebar">B · Command Prompt (CMD) — if ICT blocks PowerShell<span class="lang">bat</span></div>
+<pre class="code" data-lang="bat">curl -fsSL https://claude.ai/install.cmd -o install.cmd &amp;&amp; install.cmd &amp;&amp; del install.cmd</pre></div>
+    <div class="codewrap"><div class="codebar">C · WinGet — if scripts are blocked (no auto-update)<span class="lang">powershell</span></div>
+<pre class="code" data-lang="powershell">winget install Anthropic.ClaudeCode</pre></div>
+  </div>
+  <div class="split mt16">
+    <div class="callout warn"><span class="i">⚠️</span><div><b>Do not</b> open <i>Windows PowerShell (x86)</i>: it is 32-bit and the installer rejects it.</div></div>
+    <div class="callout tip"><span class="i">💡</span><div>No progress display: wait for the prompt to return (1–3 minutes), then close <b>all</b> VS Code windows.</div></div>
+  </div>
+  <aside class="notes"><p>Kesilapan paling lazim: menjalankan arahan Mac curl ... install.sh | bash dalam PowerShell, atau arahan CMD dalam PowerShell (ralat token &amp;&amp;). A dan B memasang ke %USERPROFILE%\.local\bin dan auto-kemas kini; WinGet perlu winget upgrade sendiri. Selepas pasang, VS Code mesti ditutup sepenuhnya supaya PATH baharu dibaca. (8 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S9 — Verify &amp; PATH</div>
+  <h2>Verify, and fix PATH if <code>claude</code> is not found</h2>
+  <div class="split">
+    <div class="stack">
+      <div class="codewrap"><div class="codebar">Git Bash terminal (VS Code)<span class="lang">bash</span></div>
+<pre class="code" data-lang="bash">claude --version   <span class="c"># 2.1.x (Claude Code)</span>
+claude doctor      <span class="c"># no errors</span></pre></div>
+      <div class="card flat side m-a"><h3>Claude Code's shell</h3><p>With Git for Windows, commands run through <b>Git Bash</b>. Git in a non-default location? Set <code>CLAUDE_CODE_GIT_BASH_PATH</code> in <code>~/.claude/settings.json</code>.</p></div>
+    </div>
+    <div class="stack">
+      <div class="codewrap"><div class="codebar">Windows PowerShell — does the file exist?<span class="lang">powershell</span></div>
+<pre class="code sm" data-lang="powershell">Test-Path "$env:USERPROFILE\.local\bin\claude.exe"</pre></div>
+      <div class="codewrap"><div class="codebar"><code>True</code> → add to the user PATH (once)<span class="lang">powershell</span></div>
+<pre class="code sm" data-lang="powershell">$p = [Environment]::GetEnvironmentVariable('PATH', 'User')
+[Environment]::SetEnvironmentVariable('PATH',
+  "$p;$env:USERPROFILE\.local\bin", 'User')</pre></div>
+      <p class="small"><code>False</code> = not installed: repeat the install step. After changing PATH, close all VS Code and terminals.</p>
+    </div>
+  </div>
+  <aside class="notes"><p>Kebanyakan "command not found" berpunca daripada VS Code yang tidak ditutup selepas memasang. Hanya jika masih gagal, jalankan Test-Path; True bermakna fail ada tetapi PATH belum dikemas kini. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S9 — Log in &amp; deny rules</div>
+  <h2>Log in, <code>/status</code>, and block <code>.env</code></h2>
+  <div class="split r">
+    <div class="stack">
+      <ol class="steps tight">
+        <li><div><b>Start</b><span><code>cd ~/latihan/kelas-ci-&lt;nama&gt;</code> then <code>claude</code></span></div></li>
+        <li><div><b>Log in</b><span>The browser opens: course account. Didn't open? Press <code>c</code>, paste the URL.</span></div></li>
+        <li><div><b>Check</b><span><code>/status</code>: your e-mail · <code>/permissions</code>: 4 <i>Deny</i> rules</span></div></li>
+      </ol>
+      <div class="callout tip"><span class="i">💡</span><div><code>OAuth error: Invalid code</code> = code expired/truncated. <code>/logout</code>, try again quickly.</div></div>
+    </div>
+    <div class="codewrap"><div class="codebar">.claude/settings.json (committed)<span class="lang">json</span></div>
+<pre class="code sm" data-lang="json">{
+  <span class="s">"permissions"</span>: {
+    <span class="s">"defaultMode"</span>: <span class="s">"default"</span>,
+    <span class="s">"deny"</span>: [
+      <span class="s">"Read(./.env)"</span>,
+      <span class="s">"Read(./writable/uploads/**)"</span>,
+      <span class="s">"Read(./writable/session/**)"</span>,
+      <span class="s">"Read(./writable/logs/**)"</span>
+    ]
+  }
+}</pre></div>
+  </div>
+  <p class="small mt16"><code>deny</code> is enforced by Claude Code, not the model. <code>.claude/settings.local.json</code> (personal permissions) goes in <code>.gitignore</code>.</p>
+  <aside class="notes"><p>defaultMode default bermaksud Claude bertanya sebelum setiap edit dan arahan shell. Peraturan deny Read juga menyekat cat .env, tetapi tidak menyekat skrip yang anda luluskan sendiri, jadi jangan luluskan arahan yang anda tidak faham. Dalam lab, uji dengan bertanya nilai password dalam .env dan tekan No jika ditawar arahan alternatif. (7 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S9 — CLAUDE.md</div>
+  <h2><code>CLAUDE.md</code>: project context read every session</h2>
+  <div class="split">
+    <div class="stack">
+      <div class="card top m-a"><span class="k">/init → rewrite</span><h3>Draft, then the course standard</h3><p><code>/init</code> drafts from <code>composer.json</code>, <code>app/</code>, <code>tests/</code>. Replace it with the Lab 7.6 template, &lt; 200 lines, no secrets.</p></div>
+      <div class="card"><span class="k">REQUIRED CONTENT</span>
+        <ul>
+          <li><b>Role</b>: explainer &amp; reviewer, not module generator</li>
+          <li><b>Stack</b>: CI 4.7 + Shield, PHP 8.2+, MySQL 8, test DB</li>
+          <li><b>Commands</b>: <code>composer test</code>, <code>php spark routes</code></li>
+          <li><b>Folder conventions</b> &amp; <b>Rules</b> (<code>.env</code>, synthetic data)</li>
+        </ul>
+      </div>
+    </div>
+    <table class="t">
+      <tr><th>Scope</th><th>File</th><th>Commit?</th></tr>
+      <tr><td>User</td><td><code>~/.claude/CLAUDE.md</code></td><td>No</td></tr>
+      <tr><td>Project</td><td><code>./CLAUDE.md</code></td><td><b>Yes</b></td></tr>
+      <tr><td>Local</td><td><code>./CLAUDE.local.md</code></td><td>No (<code>.gitignore</code>)</td></tr>
+    </table>
+  </div>
+  <p class="small mt16">Check with <code>/memory</code> and <code>/context</code>. New file? <code>/exit</code> and run <code>claude</code> again.</p>
+  <aside class="notes"><p>Ketiga-tiga fail digabungkan, bukan ditulis ganti; yang paling dekat dengan folder kerja dibaca terakhir. Minta peserta catat satu perkara betul dan satu yang salah dalam draf /init sebelum menggantikannya. (10 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S9 — Plan mode &amp; keys</div>
+  <h2>Plan mode first: read and propose, no files changed</h2>
+  <table class="t">
+    <tr><th>Key / command</th><th>Function</th></tr>
+    <tr><td><code>Shift+Tab</code> · Windows: <code>Alt+M</code></td><td>Switch mode: <b>Manual</b> → <i>accept edits</i> → <b>Plan</b></td></tr>
+    <tr><td><code>Esc</code></td><td>Stop the answer in progress</td></tr>
+    <tr><td><code>@app/Services/BookingService.php</code></td><td>Reference a specific file in the prompt</td></tr>
+    <tr><td><code>!composer test -- --no-coverage tests/tlk</code></td><td>Run a command directly; output goes into the conversation</td></tr>
+    <tr><td><code>/clear</code></td><td>Start a fresh conversation between tasks</td></tr>
+  </table>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div><b>Do not</b> use <i>accept edits</i>, <i>auto</i> or <i>bypass permissions</i> in this course. Read the <i>diff</i> first; reject (<code>No</code>) if you don't understand it.</div></div>
+  <aside class="notes"><p>Demo: mod Plan, tanya aliran BookingService::approve() dari route hingga status_logs. Tunjukkan tiada permintaan Edit atau Write, kemudian buka fail sebenar dan sahkan satu dakwaan. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S12 — Prompt anatomy</div>
+  <h2>Five parts of a prompt, one work loop</h2>
+  <div class="flow">
+    <div class="node"><span class="k">1</span><b>Context</b><span><code>@file</code>, BR-*, SPEC</span></div><div class="arr">·</div>
+    <div class="node"><span class="k">2</span><b>Task</b><span>one thing only</span></div><div class="arr">·</div>
+    <div class="node"><span class="k">3</span><b>Constraints</b><span>"don't change files", CI 4.7</span></div><div class="arr">·</div>
+    <div class="node"><span class="k">4</span><b>Verification</b><span><code>composer test</code>, browser</span></div><div class="arr">·</div>
+    <div class="node"><span class="k">5</span><b>Format</b><span>table, ≤ 5 steps</span></div>
+  </div>
+  <div class="flow mt24">
+    <div class="node hot"><span class="k">EXPLORE</span><b>Read &amp; ask</b><span>Plan mode</span></div><div class="arr">→</div>
+    <div class="node hot"><span class="k">PLAN</span><b>Numbered plan</b><span>file · change · how to test</span></div><div class="arr">→</div>
+    <div class="node hot"><span class="k">IMPLEMENT</span><b>One small step</b><span>you write / read the diff</span></div><div class="arr">→</div>
+    <div class="node hot"><span class="k">VERIFY</span><b>Tests &amp; browser</b><span>fail → implement again</span></div><div class="arr">→</div>
+    <div class="node hot"><span class="k">COMMIT</span><b>You can explain it</b><span><code>PAS: …</code></span></div>
+  </div>
+  <div class="callout danger mt24"><span class="i">⛔</span><div>Anti-pattern: "Build the complete Pass module". Hundreds of lines with no checkpoints. Ask Claude to <b>ask first</b> (≤ 3 questions) when unclear.</div></div>
+  <aside class="notes"><p>Bandingkan prompt lemah "Buatkan validasi untuk tempahan TLK" dengan versi lima bahagian dalam tutorial prompt. Satu prompt bersamaan satu tugas yang boleh disahkan dalam 5 hingga 10 minit. (7 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S12 — Existing vs new project</div>
+  <h2>Existing: understand first. New: PRD first.</h2>
+  <div class="split">
+    <div class="card top m-tlk"><span class="k">A · EXISTING PROJECT</span><h3>Onboarding in Plan mode</h3>
+      <ul>
+        <li>"Explain this project's structure in 10 lines. Don't change files."</li>
+        <li>"Where is the TLK approval logic? Files &amp; methods, route → <code>status_logs</code>."</li>
+        <li>"Trace <code>POST /tlk/tempahan</code> from route to redirect."</li>
+        <li><code>/init</code> → review <code>CLAUDE.md</code>; ask for a ≤ 5-step plan</li>
+      </ul>
+    </div>
+    <div class="card top m-pas"><span class="k">B · NEW PROJECT</span><h3>Don't start with <code>composer create-project</code></h3>
+      <ul>
+        <li>"Interview me to draft a PRD. ONE question at a time, 12 at most."</li>
+        <li>Draft <code>docs/prd.md</code> from the template; you review &amp; fix it yourself</li>
+        <li>A short <code>CLAUDE.md</code> that points to the PRD</li>
+        <li><i>Vertical slice</i> plan → only then code, one slice at a time</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Verify <b>one</b> claim per answer by opening the file yourself. Claude can be confident and wrong.</div></div>
+  <aside class="notes"><p>Dalam Lab 7.9 peserta cuba kedua-dua laluan: onboarding pada kelas-ci-nama, kemudian temu bual PRD untuk satu idea sistem kecil. Tegaskan bahawa Claude mendraf PRD, tetapi peserta yang menyemak dan membetulkannya. (8 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S12 — PRD</div>
+  <h2>PRD: what and why, before code</h2>
+  <div class="split l">
+    <div class="grid c3">
+      <div class="card flat"><span class="k">1</span><h3 class="mb0">Problem</h3></div>
+      <div class="card flat"><span class="k">2</span><h3 class="mb0">Users &amp; roles</h3></div>
+      <div class="card flat"><span class="k">3</span><h3 class="mb0">Scope / out of scope</h3></div>
+      <div class="card flat"><span class="k">4 · FR-01…</span><h3 class="mb0">Functional requirements</h3></div>
+      <div class="card flat"><span class="k">5 · BR-01…</span><h3 class="mb0">Business rules</h3></div>
+      <div class="card flat"><span class="k">6</span><h3 class="mb0">NFR</h3></div>
+      <div class="card flat"><span class="k">7</span><h3 class="mb0">Data / entities</h3></div>
+      <div class="card flat"><span class="k">8 · AC-01…</span><h3 class="mb0">Acceptance criteria</h3></div>
+      <div class="card flat"><span class="k">9</span><h3 class="mb0">Milestones</h3></div>
+    </div>
+    <table class="t">
+      <tr><th></th><th>PRD</th><th>SPEC</th></tr>
+      <tr><td>Answers</td><td><b>What</b> &amp; <b>why</b></td><td><b>How</b></td></tr>
+      <tr><td>Content</td><td>FR, BR, AC, milestones</td><td>Tables, enums, classes, routes</td></tr>
+      <tr><td>Readers</td><td>System owner, testers</td><td>Developers</td></tr>
+      <tr><td>When</td><td>Before design</td><td>After the PRD is agreed</td></tr>
+    </table>
+  </div>
+  <p class="small mt16">Every requirement has an ID so plans, tests and commits can reference it. In this course: Day 1–2 URS = PRD; <code>spesifikasi-sistem.md</code> = SPEC.</p>
+  <aside class="notes"><p>Semak PRD yang didraf Claude untuk peranan yang tiada, BR yang kabur dan AC yang tidak boleh diuji. Betulkan sendiri dalam docs/prd.md, jangan minta Claude menulis semula keseluruhannya. PRD di-commit dan dikemas kini dahulu sebelum kod apabila keputusan berubah. (10 minit)</p></aside>
+</section>
+
+<section class="slide codey">
+  <div class="eyebrow">Day 7 · S10 — Subagent &amp; skill</div>
+  <h2>Subagent <code>semak-ci4</code> &amp; skill <code>migration-ci4</code></h2>
+  <div class="split">
+    <div class="stack">
+      <div class="codewrap"><div class="codebar">.claude/agents/semak-ci4.md<span class="lang">markdown</span></div>
+<pre class="code sm" data-lang="markdown">---
+<span class="k">name</span>: semak-ci4
+<span class="k">description</span>: Penyemak keselamatan CodeIgniter 4
+  (BACA SAHAJA). Guna selepas mengubah controller,
+  view, model, route atau filter.
+<span class="k">tools</span>: Read, Grep, Glob
+<span class="k">model</span>: sonnet
+---
+<span class="c">5 checks: esc() · CSRF · filters/ownership ·
+Query Builder binding · validation/mass assignment</span></pre></div>
+      <p class="small">Own context, limited tools, returns a summary. Record findings in <code>docs/semakan-ci4-hari6.md</code> (<i>Verified?</i> column).</p>
+    </div>
+    <div class="stack">
+      <div class="codewrap"><div class="codebar">.claude/skills/migration-ci4/SKILL.md<span class="lang">markdown</span></div>
+<pre class="code sm" data-lang="markdown">---
+<span class="k">name</span>: migration-ci4
+<span class="k">description</span>: Konvensyen migration &amp; seeder
+  kursus CI-KKM-10. Guna apabila menulis, mendraf
+  atau menyemak migration, seeder, skema jadual.
+<span class="k">argument-hint</span>: "[nama jadual]"
+---
+<span class="c">FK INT unsigned · createTable(..., true) ·
+down() reverses up() · NEVER run migrate</span></pre></div>
+      <p class="small">Loaded when the request matches the <code>description</code>, or directly: <code>/migration-ci4 vehicle_notes</code>.</p>
+    </div>
+  </div>
+  <aside class="notes"><p>Subagent berjalan dengan tetingkap konteks baharu, jadi 20 fail yang dibaca tidak memenuhkan perbualan utama. Folder .claude/agents baru dicipta? /exit dan claude semula. Uji had tool: minta semak-ci4 membetulkan sendiri dapatan; ia tidak boleh kerana tiada Edit. Skill baharu dikesan tanpa mula semula; jika tidak, /reload-skills. (15 minit demo, selebihnya lab)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S10 — When to use what</div>
+  <h2><code>CLAUDE.md</code> vs skill vs subagent</h2>
+  <table class="t">
+    <tr><th></th><th><code>CLAUDE.md</code></th><th>Skill</th><th>Subagent</th></tr>
+    <tr><td>File</td><td><code>./CLAUDE.md</code></td><td><code>.claude/skills/&lt;name&gt;/SKILL.md</code></td><td><code>.claude/agents/&lt;name&gt;.md</code></td></tr>
+    <tr><td>Loaded when</td><td>Every session, automatically</td><td>When the request matches <code>description</code>, or <code>/name</code></td><td>When a task is delegated (<code>@agent-name</code>)</td></tr>
+    <tr><td>Context</td><td>Main conversation</td><td>Main conversation</td><td><b>Fresh window</b>; returns a summary</td></tr>
+    <tr><td>Tool limits</td><td>—</td><td>— (follows the session)</td><td><code>tools:</code> e.g. <code>Read, Grep, Glob</code></td></tr>
+    <tr><td>For</td><td>Stack, commands, fixed rules</td><td>Specific conventions / workflows</td><td>Heavy reviews, separate tasks</td></tr>
+    <tr><td>Course</td><td>Lab 7.6 template</td><td><code>migration-ci4</code></td><td><code>semak-ci4</code></td></tr>
+  </table>
+  <aside class="notes"><p>Peraturan ringkas: perkara yang perlu sentiasa diketahui masuk CLAUDE.md; pengetahuan yang hanya perlu kadang-kadang jadi skill; tugas yang membaca banyak fail atau perlu tool terhad jadi subagent. Tanya peserta: di mana peraturan esc() patut diletak? (3 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S11 — MCP</div>
+  <h2>MCP: Claude Code calls tools from other programs</h2>
+  <div class="grid c4">
+    <div class="card top m-a tint"><span class="k">STDIO · PHP · REQUIRED</span><h3><code>ci4-spark</code></h3><p>Course template. Read-only tools: <code>routes</code>, <code>migrate_status</code>, <code>db_table</code>, <code>filter_check</code>. Input checked by regex; no shell.</p></div>
+    <div class="card top m-n"><span class="k">HTTP · REQUIRED</span><h3>Context7</h3><p>Current CI4 / Shield documentation. <code>user</code> scope.</p></div>
+    <div class="card top m-n"><span class="k">STDIO · NODE · IF TIME</span><h3>MySQL</h3><p><code>@benborla29/mcp-server-mysql</code>, user <code>claude_ro</code> (<code>SELECT</code> only) on <code>kkm_latihan</code>.</p></div>
+    <div class="card top m-n"><span class="k">HTTP · DEMO</span><h3>GitLab</h3><p>GitLab KKM: issues, MRs, pipelines. Trainer demo if MCP is not enabled.</p></div>
+  </div>
+  <div class="codewrap mt16"><div class="codebar">Git Bash, project root → .mcp.json (committed, no secrets)<span class="lang">bash</span></div>
+<pre class="code" data-lang="bash">claude mcp add --scope project ci4-spark -- php tools/ci4-spark-mcp.php</pre></div>
+  <p class="small mt8">JSON-RPC 2.0: <code>initialize</code> → <code>tools/list</code> → <code>tools/call</code>. Test first: <code>php tools/ci4-spark-mcp.php &lt; tools/ujian-mcp.jsonl</code> · check <code>/mcp</code>: <i>connected</i>, 4 tools.</p>
+  <aside class="notes"><p>Baca templat ci4-spark 3 minit bersama: tools(), callTool() dengan regex, dan spark() dengan proc_open tanpa shell. Balasan id 4 (db_table dengan "users; DROP TABLE users") ialah soalan kuiz, jadi jangan dedahkan jawapannya. Kelayakan MySQL guna skop local, bukan .mcp.json. Jangan sekali-kali halakan MCP ke DB KKM. (10 minit demo)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · Common Windows problems</div>
+  <h2>Common Windows problems</h2>
+  <table class="t">
+    <tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+    <tr><td><code>claude: command not found</code></td><td>Terminal opened before install / PATH</td><td>Close all VS Code; <code>Test-Path</code> + user PATH</td></tr>
+    <tr><td><code>'irm' is not recognized</code></td><td>Run in CMD</td><td>Use Windows PowerShell (method A)</td></tr>
+    <tr><td><code>does not support 32-bit Windows</code></td><td>Opened <i>PowerShell (x86)</i></td><td>Open Windows PowerShell without (x86)</td></tr>
+    <tr><td><code>parameter name 'fsSL'</code> / <code>'&amp;&amp;' is not valid</code></td><td>Mac or CMD command in PowerShell</td><td>Method A, or open CMD for method B</td></tr>
+    <tr><td>HTML error, <code>403</code>, <i>Connecting…</i></td><td>Office proxy/firewall</td><td><code>curl.exe</code> check; <code>HTTPS_PROXY</code>; method C</td></tr>
+    <tr><td><code>Shift+Tab</code> doesn't switch mode</td><td>Terminal without VT input mode</td><td><code>Alt+M</code></td></tr>
+  </table>
+  <aside class="notes"><p>Paparkan slaid ini semasa peserta memasang dan biarkan mereka mencari gejala sendiri. Senarai penuh 16 baris ada dalam tutorial Claude Code, bahagian Masalah lazim. Yang masih gagal selepas 20 minit: pasangkan dengan rakan dan ikut demo jurulatih. (rujukan)</p></aside>
 </section>
 
 <section class="slide codey">
@@ -2315,6 +2654,19 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 </section>
 
 <section class="slide">
+  <div class="eyebrow">Day 8 · Today's prompting</div>
+  <h2>🤖 Today's prompting: approval &amp; RBAC</h2>
+  <table class="t">
+    <tr><th>Session</th><th>Prompt</th><th>Claude Code feature</th></tr>
+    <tr><td><b>S1 Approval flow</b></td><td><b>AI-04</b> check the <code>PassWorkflowService</code> transition logic without rewriting</td><td>Plan mode · <code>@app/Services/PassWorkflowService.php</code></td></tr>
+    <tr><td><b>S2 Shield RBAC</b></td><td><b>AI-07</b> access control review (roles + ownership)</td><td><code>semak-ci4</code> subagent on <code>app/Config/Routes.php</code> &amp; filters · <code>ci4-spark</code> <code>filter_check GET /pas/permohonan</code></td></tr>
+    <tr><td><b>S3 Access tests</b></td><td><b>AI-09</b> suggest access test cases · <b>AI-10</b> failing test first for a bug</td><td><code>!composer test -- --no-coverage tests/feature/Pas</code></td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Verify each <code>semak-ci4</code> finding with <code>filter_check</code> or a test before fixing it.</div></div>
+  <aside class="notes"><p>Guna mod Plan untuk setiap semakan; peserta membetulkan kod sendiri. Minta setiap peserta menjalankan semak-ci4 pada filter Pas dan mengesahkan sekurang-kurangnya satu dapatan dengan filter_check atau ujian. (5 minit, sebelum wrap-up)</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Day 8 · Today's outputs</div>
   <h2>M2 done — check the DoD</h2>
   <ul class="checks done">
@@ -2532,6 +2884,19 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 </section>
 
 <section class="slide">
+  <div class="eyebrow">Day 9 · Today's prompting</div>
+  <h2>🤖 Today's prompting: reports &amp; export</h2>
+  <table class="t">
+    <tr><th>Session</th><th>Prompt</th><th>Claude Code feature</th></tr>
+    <tr><td><b>S1–S2 Report queries</b></td><td><b>AI-04</b> check the <code>ReportService</code> aggregate logic; review Query Builder binding (no input concatenated into SQL)</td><td>Plan mode · <code>@app/Services/ReportService.php</code> · <code>semak-ci4</code> category 4</td></tr>
+    <tr><td><b>S2 Performance</b></td><td>"Does this query use an index? Suggest one, don't write a migration."</td><td><code>ci4-spark</code> <code>db_table</code> (schema &amp; indexes) · <code>migrate_status</code></td></tr>
+    <tr><td><b>S3 PDF/Excel export</b></td><td><b>AI-07</b> export within role scope · <b>AI-09</b> export test cases (empty, large, special characters)</td><td><code>!composer test</code> · <code>@app/Services/ExportService.php</code></td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Report filters come from the user: whitelist for <code>orderBy</code>, binding for <code>where</code>.</div></div>
+  <aside class="notes"><p>Tekankan dua risiko hari ini: input filter laporan yang dicantum ke SQL, dan eksport yang membocorkan data di luar skop peranan. db_table membantu menyemak indeks sebelum mengubah query; jangan jalankan migration tanpa semakan. (5 minit, sebelum wrap-up)</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Day 9 · Today's outputs</div>
   <h2>M3 done — check the DoD</h2>
   <ul class="checks done">
@@ -2710,6 +3075,19 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div class="card flat"><h3>Explanation</h3><p>Explain one Service line by line.</p></div>
   </div>
   <aside class="notes"><p>Setiap peserta demo 15 minit: 10 minit aliran, 5 minit soal jawab pemilik sistem. Pemilik sistem menilai menggunakan rubrik di slaid penutup. Tamatkan dengan retrospektif: apa berjalan baik, apa perlu diubah, apa yang akan anda guna di tempat kerja.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 10 · Today's prompting</div>
+  <h2>🤖 Today's prompting: statistics, capstone &amp; handover</h2>
+  <table class="t">
+    <tr><th>Session</th><th>Prompt</th><th>Claude Code feature</th></tr>
+    <tr><td><b>S1–S2 Statistics &amp; cache</b></td><td><b>AI-09</b> test cases for <code>StatisticsService</code> (no data, cache expired)</td><td>Plan mode · <code>@app/Services/StatisticsService.php</code> · <code>ci4-spark</code> <code>routes</code> for <code>/statistik/data</code></td></tr>
+    <tr><td><b>S3 Final tests &amp; DoD</b></td><td><b>AI-08</b> pre-commit review (DoD) · <b>AI-10</b> for last bugs</td><td><code>!composer test</code> · <code>semak-ci4</code> on all of <code>app/</code></td></tr>
+    <tr><td><b>S4 Handover</b></td><td>Update <code>CLAUDE.md</code> (commands, rules) · <b>AI-18</b> review the handover README/PRD</td><td><code>/memory</code> · Plan mode · <code>@README.md</code></td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Commit only code you can explain line by line during the demo.</div></div>
+  <aside class="notes"><p>Hari terakhir: Claude membantu menyemak, bukan menyiapkan capstone. Kemas kini CLAUDE.md supaya pasukan penyelenggara mewarisi arahan dan peraturan yang sama, dan guna AI-18 untuk menyemak README/PRD serahan. (5 minit, sebelum wrap-up)</p></aside>
 </section>
 
 <section class="slide">

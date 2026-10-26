@@ -175,6 +175,8 @@ Semak dengan `/permissions` dalam Claude Code: tab *Deny* menyenaraikan empat pe
 
 Prompt kursus ada dalam [`pustaka-prompt.md`](./pustaka-prompt.md): **AI-01** (terang ralat), **AI-02** (terang kod baris demi baris), **AI-09** (cadang kes ujian), **AI-05** (semak terhadap BR).
 
+Prompting untuk projek sedia ada, projek baharu dan PRD: [`tutorial-prompt-projek.md`](./tutorial-prompt-projek.md) (Hari 7 S12).
+
 ## 7. Rangkaian KKM: proxy & domain
 
 Jika `claude` tergantung atau log masuk gagal di rangkaian pejabat, minta IT membenarkan domain ini (HTTPS 443):

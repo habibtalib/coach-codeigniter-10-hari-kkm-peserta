@@ -562,6 +562,24 @@ $cards = [
 
 **9. Commit.** `git add -A && git commit -m "STAT: StatisticsService, dashboard KPI + 4 carta Chart.js"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 
+**10. Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal (AI-04):
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+Semak LOGIK 4 KPI dan 4 dataset carta dalam @app/Services/StatisticsService.php terhadap takrif ini:
+[tampal jadual takrif KPI dari README §1.1]
+Jadual | Kaedah | Takrif dipenuhi? | Kes sempadan tidak dikendalikan (input contoh) | fail:baris |, termasuk:
+- bulan tanpa data (mesti 0, bukan hilang)
+- status yang dikira dan tidak dikira
+- julat tarikh (hari pertama/terakhir bulan, tempahan yang meliputi hari ini)
+Kemudian semak @app/Views/statistik/dashboard.php: adakah data dimasukkan ke DOM dengan innerHTML?
+JANGAN tulis semula kod.
+```
+
+Cari dalam jawapan: `status IN ('pending','approved')` untuk tempahan aktif, `TIMESTAMPDIFF(HOUR, …) / 24` untuk purata hari, 12 bulan diisi 0, dan `textContent` (bukan `innerHTML`) untuk mesej ralat.
+
+Sahkan sendiri: untuk setiap isu, jalankan SQL sendiri dan bandingkan dengan kad KPI, cth `SELECT COUNT(*) FROM slot_bookings WHERE status IN ('pending','approved');`. Isu sahih → kitaran AI-10 (ujian gagal dahulu). Rekod dalam `docs/nota-claude.md` (cipta fail jika belum ada).
+
 ### ✅ Checkpoint 10.1
 - [ ] `pelulus@latihan.test` dan `admin@latihan.test` → `/statistik` memaparkan 4 kad + 4 carta.
 - [ ] `penyemak@latihan.test` dan `pemohon1@latihan.test` → `/statistik` **dan** `/statistik/data` disekat.
@@ -569,6 +587,7 @@ $cards = [
 - [ ] Carta bar menunjukkan 12 bulan (bulan tanpa data = bar kosong, bukan hilang).
 - [ ] Carta zon ialah bar **mendatar**; peratus zon = RPT-03 bulan semasa (`/laporan/penggunaan`).
 - [ ] Konsol pelayar (F12) tiada ralat.
+- [ ] Prompting: semakan KPI AI-04 direkod dalam `docs/nota-claude.md`; setiap isu disahkan atau ditolak dengan SQL yang anda jalankan sendiri.
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
@@ -730,12 +749,35 @@ composer test                                                # SEMUA hijau — t
 
 **10. Commit & merge.** `git add app/ tests/ && git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit status (TLK & PAS)"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu, kemudian `git push -u origin feat/statistik` → buka MR ke `main` → merge (Lab 10.3 bermula dari `main`).
 
+**11. Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal (liputan invalidasi + AI-09):
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+1. Senaraikan setiap transCommit() dalam app/Services/. Untuk setiap satu: kaedah, peralihan status,
+   dan sama ada cache()->delete(StatisticsService::CACHE_KEY) berlaku SELEPAS commit, SEBELUM commit, atau tiada.
+2. Baca @tests/Services/StatisticsCacheTest.php: peralihan mana yang tidak diuji?
+   Cadangkan 2 kes ujian (Given / When / Then), termasuk pas:expire. JANGAN tulis kod.
+```
+
+Cari dalam jawapan: setiap `transCommit()` dalam `BookingService` dan `PassWorkflowService` diikuti `cache()->delete(...)`; tiada `delete` sebelum commit atau dalam controller.
+
+Sahkan sendiri:
+
+```bash
+grep -n -e "transCommit" -e "CACHE_KEY" app/Services/*.php
+```
+
+🪟 PowerShell: `Select-String -Path app\Services\*.php -Pattern "transCommit|CACHE_KEY"`
+
+Senarai Claude mesti sama dengan output ini. Tulis satu kes yang dicadangkan sendiri, kemudian `!composer test -- tests/Services/StatisticsCacheTest.php` dalam Claude Code: hijau. Commit `STAT: ujian cache tambahan` pada `main` sebelum Lab 10.3.
+
 ### ✅ Checkpoint 10.2
 - [ ] Muat semula kedua `/statistik` → 0 query aggregate dalam Debug Toolbar.
 - [ ] `StatisticsCacheTest` **pernah merah** (langkah 5) dan kini **hijau** (langkah 8) — tunjuk kepada jurulatih dalam sejarah terminal.
 - [ ] `grep -n "CACHE_KEY" app/Services/*.php` → sekurang-kurangnya 4 hit di `BookingService`/`PassWorkflowService` (2 setiap satu) dan **tiada** string `'stat_dashboard'` bertaip di luar `StatisticsService`.
 - [ ] Setiap `cache()->delete(...)` berada **selepas** `transCommit()`.
 - [ ] Anda boleh menerangkan 1 kelebihan & 1 kelemahan "TTL + delete" berbanding "TTL sahaja".
+- [ ] Prompting: senarai `transCommit()` Claude sama dengan `grep` anda sendiri, dan satu kes ujian cache tambahan ditulis sendiri dan hijau.
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
@@ -858,12 +900,27 @@ git push origin main --tags
 
 Tulis **skrip demo 1 halaman** (ikut format README §4.1) dan pastikan anda boleh menerangkan mana-mana fail.
 
+**7. Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal (subagent `semak-ci4` + AI-08):
+
+```text
+Guna subagent semak-ci4 untuk menyemak semula K2, K5 dan K7 (README §3.4) pada seluruh app/:
+- K2: setiap <?= $ dalam app/Views tanpa esc()
+- K5: route dalam app/Config/Routes.php tanpa filter session, group atau permission
+- K7: setiap ->query( dan sama ada ia guna binding ?
+Beri jadual | K | Fail:baris | Lulus/Gagal | Sebab |. Jangan ubah fail.
+```
+
+Cari: baris `semak-ci4` muncul, kemudian jadual dengan fail:baris.
+
+Sahkan sendiri: bandingkan dengan tanda K2/K5/K7 dalam `docs/UAT-signoff.md` dari arahan anda di langkah 5. Setiap "Gagal" yang arahan anda terlepas: buka fail:baris. Jika sahih, rekod sebagai `BUG-00N` dalam `docs/kes-ujian-akhir.md`; jangan alih tag `v1.0-capstone`. Baiki selepas demo dengan kitaran AI-10, dan sebelum setiap commit `FIX:`, jalankan AI-08 ke atas `!git diff --staged` dalam Claude Code.
+
 ### ✅ Checkpoint 10.3
 - [ ] `docs/UAT-signoff.md` §4: UAT-01..UAT-10 semuanya bertanda (✅/❌/⚠️) — tiada ⬜.
 - [ ] Semua senario **Kritikal** ✅, atau setiap ❌ ada Bug-ID dan pelan tindakan.
 - [ ] ≥ 1 pepijat ditutup dengan bukti ujian **merah → hijau**.
 - [ ] K1–K10 ditanda dengan bukti arahan.
 - [ ] Tag `v1.0-capstone` wujud: `git tag -l`.
+- [ ] Prompting: dapatan `semak-ci4` untuk K2/K5/K7 dibandingkan dengan tanda anda; setiap perbezaan ditolak dengan bukti atau direkod sebagai `BUG-00N`.
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
@@ -907,11 +964,28 @@ Tulis **skrip demo 1 halaman** (ikut format README §4.1) dan pastikan anda bole
 
 **6. Serah repo.** Hantar pautan repo / arkib zip (tanpa `vendor/`, tanpa `.env`, tanpa `writable/uploads/`) kepada jurulatih.
 
+**7. Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal (serahan, berdasarkan AI-18):
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+Semak @README.md dan @CLAUDE.md projek ini secara kritis sebagai pembangun baharu yang mewarisi repo esok.
+1. README: bolehkah saya clone, composer install, migrate, seed, menjalankan composer test dan log masuk
+   dengan akaun sintetik hanya dengan membacanya? Langkah apa yang tiada?
+2. CLAUDE.md: arahan, konvensyen atau peraturan apa yang lapuk berbanding kod sekarang
+   (Pas, Laporan, Statistik, cache)?
+Maksimum 8 isu dalam jadual | Fail · bahagian | Isu | Kenapa penting | Cadangan |, paling penting dahulu.
+```
+
+Cari dalam jawapan: arahan yang tiada (cth `php spark db:seed`, akaun `@latihan.test`), dan bahagian `CLAUDE.md` yang belum menyebut modul Laporan/Statistik.
+
+Sahkan sendiri: pilih sekurang-kurangnya 2 isu, sahkan setiap satu dengan membuka fail, kemudian betulkan **sendiri** dalam `README.md`/`CLAUDE.md`. Commit `CHORE: kemas kini README & CLAUDE.md selepas capstone`, push, dan maklumkan jurulatih. Untuk projek seterusnya, mula dengan AI-15 (projek sedia ada) atau AI-16 → AI-18 → AI-17 (projek baharu).
+
 ### ✅ Checkpoint 10.4
 - [ ] Demo selesai dalam ≤ 8 minit; keempat-empat modul ditunjukkan.
 - [ ] Panel menandatangani helaian markah anda.
 - [ ] ≥ 3 kad retrospektif ditampal.
 - [ ] Repo diserahkan.
+- [ ] Prompting: sekurang-kurangnya 2 isu AI-18 pada `README.md`/`CLAUDE.md` dibetulkan sendiri dan di-commit.
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |

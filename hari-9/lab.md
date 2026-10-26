@@ -331,11 +331,29 @@ $selected = static fn ($current, $value): string => (string) $current === (strin
 
 **6. Commit.** `git add -A && git commit -m "RPT: laluan, controller rangka & borang penapis GET"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 
+**7. Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal:
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+Baca @docs/laporan-spec.md dan @app/Views/laporan/index.php.
+1. Untuk RPT-01..03: adakah setiap penapis dalam kad spesifikasi ada medan dalam borang, dan sebaliknya?
+2. Senaraikan setiap nilai input pengguna yang dicetak semula dalam view. Adakah ia melalui esc()
+   dengan konteks yang betul ('attr' dalam atribut)?
+3. Kenapa borang ini mesti method="get"? Beri satu kesan jika ia ditukar kepada POST.
+4. Guna tool ci4-spark routes: adakah ketiga-tiga route laporan ada filter permission:laporan.view?
+Jawab dalam jadual dengan fail:baris. Jangan tulis semula kod.
+```
+
+Cari dalam jawapan: `esc(..., 'attr')` pada setiap `value="…"`, `selected` dibanding sebagai string, dan alasan GET (URL boleh ditanda buku, pagination & eksport membawa penapis yang sama).
+
+Sahkan sendiri: buka `/laporan/tempahan?from=%22%3E%3Cb%3Ex` sebagai `penyemak@latihan.test`, kemudian *View Page Source* (`Ctrl+U`). Anda mesti nampak `&quot;&gt;&lt;b&gt;x` dalam atribut `value`, bukan tag `<b>` mentah. Bandingkan jawapan item 4 dengan `php spark routes` (Checkpoint 9.1 pertama). Rekod dalam `docs/nota-claude.md` (cipta fail jika belum ada).
+
 ### ✅ Checkpoint 9.1
 - [ ] `php spark routes | grep laporan` menunjukkan 3 route dengan filter `permission:laporan.view` (Kuiz S1).
 - [ ] Log masuk sebagai `pemohon1@latihan.test` → `/laporan/tempahan` **ditolak** (filter Shield redirect, tiada data dipapar). Sebagai `penyemak@latihan.test` → dibenarkan (Kuiz S1).
 - [ ] Pilih status + tarikh → klik **Tapis** → URL mengandungi `?from=...&status=...` dan dropdown **masih** menunjukkan pilihan tadi (Kuiz S1).
 - [ ] Kad spesifikasi lengkap untuk 3 laporan dan disemak jurulatih (Kuiz S1).
+- [ ] Prompting: semakan borang penapis mod *Plan* direkod; *View Page Source* menunjukkan `?from=` dilepaskan dalam atribut `value` (Kuiz S1).
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
@@ -1118,6 +1136,23 @@ Dalam `app/Views/laporan/index.php`, gantikan baris `<?php // JADUAL & PAGINATIO
 
 **10. Commit.** `git add app/ && git commit -m "RPT: ReportService (join, when, groupBy, selectCount) + pagination"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 
+**11. Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal (semakan binding Query Builder + tool MCP `db_table`):
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+1. Baca @app/Services/ReportService.php. Untuk setiap nilai dari $filters yang sampai ke query
+   (where, when, orderBy, limit), beri fail:baris dan kelaskan: di-bind/di-escape oleh Query Builder,
+   disemak whitelist, atau dicantum terus ke SQL.
+2. Adakah applySort() menolak lajur dan arah yang tiada dalam whitelist? Beri input contoh.
+3. Guna tool ci4-spark db_table untuk slot_bookings dan pass_applications. Senaraikan index sedia ada,
+   dan untuk setiap penapis RPT-01/RPT-02 nyatakan sama ada ada index yang boleh digunakan.
+Jadual sahaja. Jangan tulis semula kod.
+```
+
+Cari dalam jawapan: nilai `where()`/`when()` di-bind oleh Query Builder; `orderBy()` menerima nama lajur, jadi lajur **mesti** datang dari whitelist `applySort()`; tiada `$filters` dicantum terus ke string SQL.
+
+Sahkan sendiri: buka `/laporan/tempahan?sort=nonsense&dir=sideways`, kemudian Debug Toolbar → tab **Database**: `ORDER BY` menggunakan lajur lalai. Jalankan `php spark db:table slot_bookings --metadata` dan bandingkan senarai index dengan jawapan `db_table`. Simpan senarai index untuk Lab 9.4 (EXPLAIN). Rekod dalam `docs/nota-claude.md`.
+
 ### ✅ Checkpoint 9.2
 - [ ] `/laporan/tempahan?status=approved` → "Jumlah rekod" **sama** dengan hasil SQL (Kuiz S2):
   ```sql
@@ -1128,6 +1163,7 @@ Dalam `app/Views/laporan/index.php`, gantikan baris `<?php // JADUAL & PAGINATIO
 - [ ] `/laporan/tempahan?sort=nonsense` tidak ralat — jatuh ke susunan lalai (Kuiz S2).
 - [ ] `/laporan/penggunaan?year=2026&month=6` menunjukkan setiap zon (termasuk zon tanpa tempahan = 0.0 %) (Kuiz S2).
 - [ ] Controller nipis: setiap kaedah hanya baca filter → panggil `ReportService` → view/eksport (tiada query, join atau kiraan); tiada `$this->db` dalam controller (Kuiz S2).
+- [ ] Prompting: setiap nilai `$filters` dalam `ReportService` dikelaskan (bind/whitelist), dan senarai index `db_table` sama dengan `php spark db:table --metadata`; direkod dalam `docs/nota-claude.md` (Kuiz S2).
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
@@ -1647,6 +1683,32 @@ mysql -u kkm_dev -p -e "UPDATE users SET staff_no = '001234' WHERE username = 'p
 
 **7. Commit.** `git add app/ && git commit -m "RPT: eksport PDF (Dompdf) & Excel (PhpSpreadsheet)"`; PowerShell: jalankan `git add` dan `git commit` satu demi satu
 
+**8. Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal (semakan keselamatan eksport, gaya AI-06):
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+Semak keselamatan eksport dalam @app/Services/ExportService.php, @app/Views/laporan/pdf.php
+dan kaedah eksport dalam @app/Controllers/Laporan/ReportController.php.
+Laporkan dalam jadual | Risiko | Ada kawalan? (Ya/Tidak/Separa) | Bukti fail:baris | Cara saya uji |:
+1. Formula injection dalam Excel (teks bermula =, +, -, @)
+2. Output PDF tanpa esc() (HTML dalam nama)
+3. Eksport tanpa semakan kebenaran (buka ?export=xlsx terus)
+4. Had baris & memori: berapa baris maksimum, apa berlaku jika melebihi?
+5. Nama fail & header Content-Disposition
+6. Penapis eksport berbeza daripada penapis skrin
+JANGAN tulis semula kod. Terangkan sahaja.
+```
+
+Cari dalam jawapan: `setCellValueExplicit(..., DataType::TYPE_STRING)` untuk teks, `esc()` dalam `pdf.php`, had baris dalam `exportRows()`, dan builder yang sama untuk skrin dan eksport.
+
+Sahkan sendiri: catat `full_name` asal `pemohon2` (`SELECT full_name FROM users WHERE username = 'pemohon2';`), tukar kepada formula, eksport RPT-02 ke Excel, kemudian pulihkan:
+
+```bash
+mysql -u kkm_dev -p -e "UPDATE users SET full_name = '=1+1' WHERE username = 'pemohon2'" kkm_latihan
+```
+
+Sel nama mesti menunjukkan teks `=1+1`, bukan `2`. Selepas itu pulihkan `full_name` asal `pemohon2` dengan `UPDATE` yang sama. 🪟 Jika prompt kata laluan tidak muncul dalam Git Bash: `winpty mysql …` (seperti langkah 6). Rekod dapatan dalam `docs/nota-claude.md`.
+
 ### ✅ Checkpoint 9.3
 - [ ] Tapis RPT-01 `status=approved` → skrin: *N* rekod → PDF: "Jumlah rekod: *N*" → Excel: *N* baris data (baris 6 hingga 5+*N*). **Tiga nombor sama.** (Kuiz S3)
 - [ ] PDF: A4 **landskap**; pengepala berulang setiap muka; pengaki "Dijana pada … oleh *nama anda*"; "Muka 1 / 3" di bucu kanan bawah (Kuiz S3).
@@ -1654,6 +1716,7 @@ mysql -u kkm_dev -p -e "UPDATE users SET staff_no = '001234' WHERE username = 'p
 - [ ] Excel: baris pengepala **tebal**; lajur cukup lebar; skrol ke bawah → pengepala kekal (beku); No. Pekerja `001234` kekal dengan sifar di depan (Kuiz S3).
 - [ ] Nama fail: `laporan-tempahan-20260925-143012.pdf` (Kuiz S3).
 - [ ] Log masuk sebagai `pemohon1@latihan.test` dan buka terus `/laporan/pas?export=xlsx` → **ditolak** (Kuiz S3).
+- [ ] Prompting: semakan eksport mod *Plan* direkod, dan nama sintetik `=1+1` kekal sebagai teks dalam fail Excel (Kuiz S3).
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
@@ -2029,12 +2092,30 @@ git commit -m "RPT: ujian jumlah laporan = SQL + arahan laporan:explain"
 git push -u origin feat/laporan    # buka MR ke main → jurulatih/rakan sebelah komen; JANGAN merge lagi — Lab 9.1b–9.4b menambah commit ke MR ini
 ```
 
+**9. Prompting (Claude Code, mod Plan).** Dalam `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian tampal (AI-09 + tafsiran EXPLAIN):
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+1. Baca @tests/Services/ReportServiceTest.php dan @app/Services/ReportService.php.
+   Senaraikan cabang dalam normaliseFilters(), applySort() dan usageByZone() yang TIADA ujian.
+   Untuk 3 yang paling berisiko beri | Given | When | Then |. JANGAN tulis kod ujian.
+2. Ini output php spark laporan:explain saya:
+[tampal output langkah 6]
+Terangkan lajur type, key dan rows untuk jadual b dan p. Index apa yang sesuai untuk RPT-02
+dengan filter tarikh sahaja, dan apakah kosnya pada INSERT?
+```
+
+Cari dalam jawapan: cabang sebenar (julat terbalik, bulan di luar 1–12, lajur sort tidak sah) dan penerangan `type = ALL` yang sepadan dengan README §4.2.
+
+Sahkan sendiri: pilih satu cabang, tulis ujian itu sendiri, kemudian taip `!composer test -- tests/Services/ReportServiceTest.php` dalam Claude Code: hijau. Bandingkan tafsiran EXPLAIN dengan pemerhatian anda dalam `docs/laporan-spec.md` → "Prestasi". Index yang dicadangkan **tidak** ditambah hari ini; catat sebagai cadangan dalam `docs/nota-claude.md`.
+
 ### ✅ Checkpoint 9.4 — **M3 siap**
 - [ ] `composer test -- tests/Services/ReportServiceTest.php` → semua hijau (≥ 7 ujian) (Kuiz S4).
 - [ ] Mutasi di langkah 5 menyebabkan tepat **satu** ujian gagal; dipulihkan (Kuiz S4).
 - [ ] Output `laporan:explain tempahan approved` menunjukkan `key = status` (atau index lain) untuk jadual `b` — bukan `type = ALL` (Kuiz S4).
 - [ ] Anda boleh menerangkan kepada jurulatih: kenapa RPT-02 dengan filter tarikh sahaja menunjukkan `type = ALL` pada `p` (Kuiz S4).
 - [ ] DoD KOLABORASI §2 ditanda untuk M3 (Kuiz S4).
+- [ ] Prompting: satu cabang tanpa ujian (dari AI-09) kini diuji oleh anda dan hijau; tafsiran EXPLAIN Claude dibandingkan dengan README §4.2 (Kuiz S4).
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |

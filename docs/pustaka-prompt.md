@@ -54,6 +54,10 @@ flowchart LR
 | **AI-12** | Tukar lakaran kepada Mermaid | Reka | 1–3 |
 | **AI-13** | Boilerplate kecil yang dibenarkan | Bina | 4–10 |
 | **AI-14** | Kuiz saya | Faham | Recap harian |
+| **AI-15** | Onboarding projek sedia ada | Projek | 7 |
+| **AI-16** | Temu bual PRD | Projek | 7 |
+| **AI-17** | PRD → pelan *vertical slice* | Projek | 7 |
+| **AI-18** | Semak PRD | Projek | 7 |
 
 ---
 
@@ -349,6 +353,77 @@ model kereta biasa di Malaysia, warna). Tiada data sebenar. Format: array PHP.
 
 ---
 
+## F · Projek & PRD
+
+Tutorial penuh: [`tutorial-prompt-projek.md`](tutorial-prompt-projek.md). AI-15, AI-17 dan AI-18 dijalankan dalam mod *Plan*; untuk AI-16, keluar dari mod *Plan* hanya apabila Claude meminta kebenaran menulis `docs/prd.md`, dan baca draf dahulu. Claude mendraf pelan, PRD dan penerangan, anda yang menulis kod.
+
+### AI-15 — Onboarding projek sedia ada
+
+- **Bila guna:** Hari pertama dalam projek yang sudah ada kod (`kelas-ci-<nama>`, projek rakan, projek baharu di tempat kerja).
+- **Jangan:** Minta Claude "baiki apa yang salah" sebelum anda faham strukturnya.
+
+```prompt title="AI-15"
+Mod Plan. Jangan ubah sebarang fail.
+1. Terangkan struktur projek ini dalam 10 baris: folder utama dalam app/, peranan setiap satu, di mana ujian berada.
+2. Di mana logik <kelulusan tempahan TLK> berada? Senaraikan fail dan nama kaedah.
+3. Jejak satu request <POST /tlk/tempahan> dari route, filter, controller, service, model hingga redirect.
+Untuk setiap dakwaan, beri nama fail supaya saya boleh menyemaknya sendiri.
+```
+
+- **Selepas:** Buka sekurang-kurangnya satu fail bagi setiap jawapan dan sahkan. Rekod ringkasan dalam `docs/nota-claude.md`.
+
+### AI-16 — Temu bual PRD
+
+- **Bila guna:** Sebelum projek baharu, apabila anda hanya ada idea satu ayat.
+- **Jangan:** Minta Claude terus "tulis PRD lengkap" tanpa soalan; ia akan meneka peranan dan peraturan.
+
+```prompt title="AI-16"
+Saya mahu membina aplikasi web kecil: <Aduan Kerosakan Kemudahan: kakitangan melapor kerosakan, juruteknik mengemas kini status>.
+Temu bual saya untuk mendraf PRD. Tanya SATU soalan pada satu masa, maksimum 12 soalan, meliputi:
+masalah, pengguna & peranan, dalam/luar skop, keperluan fungsian, peraturan perniagaan,
+keselamatan & prestasi, data/entiti, kriteria penerimaan, milestone.
+Selepas temu bual, draf docs/prd.md dengan bahagian: Masalah, Pengguna & peranan, Skop,
+Keperluan fungsian (FR-01..), Peraturan perniagaan (BR-01..), NFR, Data/entiti,
+Kriteria penerimaan (AC-01.., format Diberi/Apabila/Maka), Milestone.
+Data sintetik sahaja. Jangan tulis kod.
+```
+
+- **Selepas:** Baca setiap FR dan BR. Padam apa yang anda tidak sebut dalam temu bual. Semak dengan AI-18.
+
+### AI-17 — PRD → pelan *vertical slice*
+
+- **Bila guna:** Selepas PRD disemak, sebelum `composer create-project` atau sebelum ciri besar.
+- **Jangan:** Terima pelan berlapis ("semua migration dahulu"); minta slice yang boleh diuji sendiri.
+
+```prompt title="AI-17"
+Mod Plan. Baca @docs/prd.md. Pecahkan kepada vertical slice (maksimum 6).
+Setiap slice: nama pendek, FR/BR/AC yang dipenuhi, fail CodeIgniter 4.7 yang terlibat,
+cara uji (composer test atau langkah pelayar), dan kebergantungan.
+Susun ikut kebergantungan. Tandakan FR yang tidak masuk mana-mana slice. Jangan tulis kod.
+```
+
+- **Selepas:** Setiap FR mesti ada dalam satu slice. Slice pertama mesti boleh didemo dalam satu hari.
+
+### AI-18 — Semak PRD
+
+- **Bila guna:** Selepas draf PRD (dari AI-16 atau tulisan anda sendiri), sebelum pelan.
+- **Jangan:** Minta Claude menulis semula PRD; minta senarai isu dan betulkan sendiri.
+
+```prompt title="AI-18"
+Mod Plan. Semak @docs/prd.md secara kritis sebagai penguji dan pemilik sistem. Jangan ubah fail.
+Senaraikan isu dalam jadual (bahagian · isu · kenapa penting · cadangan pembetulan) untuk:
+1. Peranan yang tiada (siapa meluluskan, siapa mentadbir data rujukan?)
+2. BR yang kabur atau tidak boleh dikuatkuasakan dalam kod
+3. AC yang tidak boleh diuji (tiada input/jangkaan yang jelas)
+4. FR tanpa AC, atau AC tanpa FR
+5. Skop yang melebar, dan data/entiti yang tiada pemilik
+Maksimum 8 isu, paling penting dahulu.
+```
+
+- **Selepas:** Pilih sekurang-kurangnya 2 isu dan betulkan **sendiri** dalam `docs/prd.md`. Commit `PRD: …`.
+
+---
+
 ## Anti-corak — prompt yang **tidak** dibenarkan
 
 | ❌ Prompt | Kenapa salah | ✅ Ganti dengan |
@@ -358,6 +433,7 @@ model kereta biasa di Malaysia, warna). Tiada data sebenar. Format: array PHP.
 | "Tulis semua ujian untuk projek saya." | Ujian yang tidak difahami = keyakinan palsu | AI-09 → tulis sendiri |
 | "Tukar kod ini supaya lulus ujian." | Boleh melemahkan ujian atau menyembunyikan pepijat | AI-10 + baiki sendiri |
 | Tampal `.env` / data pengguna sebenar | Kebocoran rahsia/data kerajaan | Tampal `env` contoh tanpa nilai |
+| "Bina aplikasi aduan lengkap daripada PRD ini." | PRD ialah input perancangan, bukan arahan menjana kod; anda tidak boleh menerangkan hasilnya | AI-17 (pelan slice) → bina slice demi slice |
 
 ---
 

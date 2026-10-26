@@ -562,6 +562,24 @@ $cards = [
 
 **9. Commit.** `git add -A && git commit -m "STAT: StatisticsService, dashboard KPI + 4 carta Chart.js"`; PowerShell: run `git add` and `git commit` one at a time
 
+**10. Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste (AI-04):
+
+```text
+Plan mode. Do not change any file.
+Review the LOGIC of the 4 KPIs and 4 chart datasets in @app/Services/StatisticsService.php against these definitions:
+[paste the KPI definition table from README §1.1]
+Table | Method | Definition met? | Unhandled edge case (example input) | file:line |, including:
+- months without data (must be 0, not missing)
+- which statuses are counted and which are not
+- date ranges (first/last day of the month, bookings that cover today)
+Then check @app/Views/statistik/dashboard.php: is any data put into the DOM with innerHTML?
+Do NOT rewrite the code.
+```
+
+Look for in the answer: `status IN ('pending','approved')` for active bookings, `TIMESTAMPDIFF(HOUR, …) / 24` for the average days, 12 months filled with 0, and `textContent` (not `innerHTML`) for the error message.
+
+Verify it yourself: for each issue, run the SQL yourself and compare it with the KPI card, e.g. `SELECT COUNT(*) FROM slot_bookings WHERE status IN ('pending','approved');`. A real issue → the AI-10 cycle (failing test first). Record it in `docs/nota-claude.md` (create the file if it does not exist).
+
 ### ✅ Checkpoint 10.1
 - [ ] `pelulus@latihan.test` and `admin@latihan.test` → `/statistik` shows 4 cards + 4 charts.
 - [ ] `penyemak@latihan.test` and `pemohon1@latihan.test` → `/statistik` **and** `/statistik/data` are blocked.
@@ -569,6 +587,7 @@ $cards = [
 - [ ] The bar chart shows 12 months (months without data = an empty bar, not missing).
 - [ ] The zone chart is a **horizontal** bar; the zone percentages = RPT-03 for the current month (`/laporan/penggunaan`).
 - [ ] The browser console (F12) has no errors.
+- [ ] Prompting: the AI-04 KPI review is recorded in `docs/nota-claude.md`; every issue is confirmed or rejected with SQL you ran yourself.
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -730,12 +749,35 @@ composer test                                                # ALL green — no 
 
 **10. Commit & merge.** `git add app/ tests/ && git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit status (TLK & PAS)"`; PowerShell: run `git add` and `git commit` one at a time, then `git push -u origin feat/statistik` → open an MR to `main` → merge (Lab 10.3 starts from `main`).
 
+**11. Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste (invalidation coverage + AI-09):
+
+```text
+Plan mode. Do not change any file.
+1. List every transCommit() in app/Services/. For each one: the method, the status transition,
+   and whether cache()->delete(StatisticsService::CACHE_KEY) happens AFTER the commit, BEFORE the commit, or not at all.
+2. Read @tests/Services/StatisticsCacheTest.php: which transitions are not tested?
+   Suggest 2 test cases (Given / When / Then), including pas:expire. Do NOT write code.
+```
+
+Look for in the answer: every `transCommit()` in `BookingService` and `PassWorkflowService` is followed by `cache()->delete(...)`; no `delete` before the commit or in a controller.
+
+Verify it yourself:
+
+```bash
+grep -n -e "transCommit" -e "CACHE_KEY" app/Services/*.php
+```
+
+🪟 PowerShell: `Select-String -Path app\Services\*.php -Pattern "transCommit|CACHE_KEY"`
+
+Claude's list must match this output. Write one suggested case yourself, then `!composer test -- tests/Services/StatisticsCacheTest.php` in Claude Code: green. Commit `STAT: ujian cache tambahan` on `main` before Lab 10.3.
+
 ### ✅ Checkpoint 10.2
 - [ ] Second reload of `/statistik` → 0 aggregate queries in the Debug Toolbar.
 - [ ] `StatisticsCacheTest` **was red** (step 5) and is now **green** (step 8) — show the trainer in the terminal history.
 - [ ] `grep -n "CACHE_KEY" app/Services/*.php` → at least 4 hits in `BookingService`/`PassWorkflowService` (2 each) and **no** typed `'stat_dashboard'` string outside `StatisticsService`.
 - [ ] Every `cache()->delete(...)` is **after** `transCommit()`.
 - [ ] You can explain 1 advantage & 1 disadvantage of "TTL + delete" compared with "TTL only".
+- [ ] Prompting: Claude's `transCommit()` list matches your own `grep`, and one extra cache test case is written by you and green.
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -858,12 +900,27 @@ git push origin main --tags
 
 Write a **1-page demo script** (following the format in README §4.1) and make sure you can explain any file.
 
+**7. Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste (the `semak-ci4` subagent + AI-08):
+
+```text
+Use the semak-ci4 subagent to re-check K2, K5 and K7 (README §3.4) across app/:
+- K2: every <?= $ in app/Views without esc()
+- K5: routes in app/Config/Routes.php without a session, group or permission filter
+- K7: every ->query( and whether it uses ? binding
+Give a table | K | File:line | Pass/Fail | Reason |. Do not change any file.
+```
+
+Look for: the `semak-ci4` line appears, then a table with file:line.
+
+Verify it yourself: compare it with your K2/K5/K7 marks in `docs/UAT-signoff.md` from your own commands in step 5. For each "Fail" your commands missed: open the file:line. If it is real, record it as `BUG-00N` in `docs/kes-ujian-akhir.md`; do not move the `v1.0-capstone` tag. Fix it after the demo with the AI-10 cycle, and before each `FIX:` commit run AI-08 on `!git diff --staged` in Claude Code.
+
 ### ✅ Checkpoint 10.3
 - [ ] `docs/UAT-signoff.md` §4: UAT-01..UAT-10 are all marked (✅/❌/⚠️) — no ⬜.
 - [ ] All **Critical** scenarios are ✅, or every ❌ has a Bug-ID and an action plan.
 - [ ] ≥ 1 bug closed with **red → green** test evidence.
 - [ ] K1–K10 ticked with command evidence.
 - [ ] Tag `v1.0-capstone` exists: `git tag -l`.
+- [ ] Prompting: the `semak-ci4` findings for K2/K5/K7 are compared with your marks; each difference is rejected with evidence or recorded as `BUG-00N`.
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |
@@ -907,11 +964,28 @@ Write a **1-page demo script** (following the format in README §4.1) and make s
 
 **6. Hand over the repo.** Send the repo link / zip archive (without `vendor/`, without `.env`, without `writable/uploads/`) to the trainer.
 
+**7. Prompting (Claude Code, Plan mode).** In `claude`, press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste (handover, based on AI-18):
+
+```text
+Plan mode. Do not change any file.
+Review this project's @README.md and @CLAUDE.md critically, as a new developer who inherits the repo tomorrow.
+1. README: can I clone, composer install, migrate, seed, run composer test and log in
+   with the synthetic accounts just by reading it? Which steps are missing?
+2. CLAUDE.md: which instructions, conventions or rules are out of date compared with the current code
+   (Pas, Laporan, Statistik, cache)?
+At most 8 issues in a table | File · section | Issue | Why it matters | Suggestion |, most important first.
+```
+
+Look for in the answer: missing commands (e.g. `php spark db:seed`, the `@latihan.test` accounts), and parts of `CLAUDE.md` that do not mention the Laporan/Statistik modules yet.
+
+Verify it yourself: pick at least 2 issues, confirm each one by opening the file, then fix them **yourself** in `README.md`/`CLAUDE.md`. Commit `CHORE: kemas kini README & CLAUDE.md selepas capstone`, push, and tell the trainer. For your next project, start with AI-15 (existing project) or AI-16 → AI-18 → AI-17 (new project).
+
 ### ✅ Checkpoint 10.4
 - [ ] Demo finished in ≤ 8 minutes; all four modules shown.
 - [ ] The panel signs your score sheet.
 - [ ] ≥ 3 retrospective cards posted.
 - [ ] Repo handed over.
+- [ ] Prompting: at least 2 AI-18 issues in `README.md`/`CLAUDE.md` are fixed by you and committed.
 
 ### 🧯 Troubleshooting
 | Symptom | Cause | Fix |

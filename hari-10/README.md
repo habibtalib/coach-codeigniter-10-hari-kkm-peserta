@@ -460,6 +460,19 @@ Peserta yang tidak memenuhi kriteria 2–5 tetapi hadir ≥ 80 % menerima **siji
 
 ---
 
+## 🤖 Prompting hari ini
+
+Guna Claude Code dalam mod *Plan* (`Shift+Tab` / `Alt+M`) untuk prompt di bawah: Claude menerang, menyemak dan merancang; anda menulis dan memahami setiap baris yang di-commit ([`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`. Selepas kursus: AI-15 untuk projek sedia ada; AI-16 → AI-18 → AI-17 untuk projek baharu.
+
+| Sesi | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
+|---|---|---|---|
+| S1 · Dashboard statistik | AI-04 pada 4 KPI & dataset carta lawan takrif §1.1; semak `innerHTML` dalam `dashboard.php` | SQL anda sendiri = kad KPI | 10.1 langkah 10 |
+| S2 · Cache | Senarai setiap `transCommit()` lawan `cache()->delete()`; AI-09 untuk `StatisticsCacheTest` | `grep` `transCommit`/`CACHE_KEY`; `!composer test` | 10.2 langkah 11 |
+| S3 · UAT & pepijat | Subagent `semak-ci4` pada K2/K5/K7; AI-10 (ujian merah dahulu); AI-08 ke atas `!git diff --staged` sebelum `FIX:` | Tanda K anda dalam `docs/UAT-signoff.md` | 10.3 langkah 7 |
+| S4 · Demo & serahan | AI-18 pada `@README.md` dan `@CLAUDE.md`; kemas kini `CLAUDE.md` projek | 2 isu dibetulkan sendiri dan di-commit | 10.4 langkah 7 |
+
+---
+
 ## 📦 Hasil Hari Ini
 
 - [ ] `app/Services/StatisticsService.php` — 4 KPI, 4 dataset, `remember()` 10 minit, pemalar `CACHE_KEY`
