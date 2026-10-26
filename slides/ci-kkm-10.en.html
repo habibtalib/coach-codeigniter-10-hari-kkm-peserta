@@ -2750,15 +2750,16 @@ git diff main...feat/pas-claude</pre></div>
 
 <section class="slide">
   <div class="eyebrow">Day 8 · Today's prompting</div>
-  <h2>🤖 Today's prompting: approval &amp; RBAC</h2>
+  <h2>🤖 Today's prompting: Pass slices 3–5</h2>
   <table class="t">
-    <tr><th>Session</th><th>Prompt</th><th>Claude Code feature</th></tr>
-    <tr><td><b>S1 Approval flow</b></td><td><b>AI-04</b> check the <code>PassWorkflowService</code> transition logic without rewriting</td><td>Plan mode · <code>@app/Services/PassWorkflowService.php</code></td></tr>
-    <tr><td><b>S2 Shield RBAC</b></td><td><b>AI-07</b> access control review (roles + ownership)</td><td><code>semak-ci4</code> subagent on <code>app/Config/Routes.php</code> &amp; filters · <code>ci4-spark</code> <code>filter_check GET /pas/permohonan</code></td></tr>
-    <tr><td><b>S3 Access tests</b></td><td><b>AI-09</b> suggest access test cases · <b>AI-10</b> failing test first for a bug</td><td><code>!composer test -- --no-coverage tests/feature/Pas</code></td></tr>
+    <tr><th style="width:150px">Session</th><th>Prompt</th><th>Claude Code feature</th></tr>
+    <tr><td><b>S9 · Slice 3</b><br><span class="small">Lab 8.10</span></td><td>Slice plan (Plan mode, no code) → <b>AI-19</b> "implement plan step 1 only" → <b>AI-20</b> for the <code>transition()</code> diff</td><td>Plan mode · Manual (Yes/No) · <code>semak-ci4</code> on <code>PassWorkflowService</code></td></tr>
+    <tr><td><b>S10 · Slice 4</b><br><span class="small">Lab 8.11</span></td><td><code>filter_check</code> before the plan · RBAC plan (SPEC §4) → <b>AI-19</b> → <b>AI-20</b></td><td><code>ci4-spark</code> <code>filter_check POST /pas/semakan/1/approve</code> · <code>semak-ci4</code> on <code>AuthGroups.php</code> &amp; routes</td></tr>
+    <tr><td><b>S11 · Slice 5</b><br><span class="small">Lab 8.12</span></td><td>Plan from your matrix → <b>AI-19</b> tests · <b>AI-09</b> matrix cells · <b>AI-10</b> an uncaught bug</td><td><code>!composer test -- tests/feature/Pas/PassAccessTest.php</code> · <code>semak-ci4</code> on the timeline</td></tr>
+    <tr><td><b>S12 · M2 demo</b><br><span class="small">Lab 8.13</span></td><td><code>semak-ci4</code> on the whole module → <b>AI-08</b> DoD (BR-PAS-01..06) · <b>AI-02</b> if a line can't be explained</td><td>Plan mode · <code>!git diff main...feat/pas-claude</code></td></tr>
   </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div>Verify each <code>semak-ci4</code> finding with <code>filter_check</code> or a test before fixing it.</div></div>
-  <aside class="notes"><p>Guna mod Plan untuk setiap semakan; peserta membetulkan kod sendiri. Minta setiap peserta menjalankan semak-ci4 pada filter Pas dan mengesahkan sekurang-kurangnya satu dapatan dengan filter_check atau ujian. (5 minit, sebelum wrap-up)</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Plan prompt + <b>AI-19</b> + <b>AI-20</b> repeat for every slice; the proof comes from your own commands, not Claude's answers.</div></div>
+  <aside class="notes"><p>Setiap slice ikut urutan yang sama: prompt pelan dalam mod Plan, AI-19 untuk laksana satu langkah dalam mod Manual, AI-20 jika ada diff yang belum difahami, kemudian semak-ci4. Bukti filter_check mesti sama dengan php spark filter:check yang peserta jalankan sendiri. (5 minit, sebelum wrap-up)</p></aside>
 </section>
 
 <section class="slide">
@@ -3016,15 +3017,16 @@ php spark laporan:explain</pre></div>
 
 <section class="slide">
   <div class="eyebrow">Day 9 · Today's prompting</div>
-  <h2>🤖 Today's prompting: reports &amp; export</h2>
+  <h2>🤖 Today's prompting: Reports L1–L4</h2>
   <table class="t">
-    <tr><th>Session</th><th>Prompt</th><th>Claude Code feature</th></tr>
-    <tr><td><b>S1–S2 Report queries</b></td><td><b>AI-04</b> check the <code>ReportService</code> aggregate logic; review Query Builder binding (no input concatenated into SQL)</td><td>Plan mode · <code>@app/Services/ReportService.php</code> · <code>semak-ci4</code> category 4</td></tr>
-    <tr><td><b>S2 Performance</b></td><td>"Does this query use an index? Suggest one, don't write a migration."</td><td><code>ci4-spark</code> <code>db_table</code> (schema &amp; indexes) · <code>migrate_status</code></td></tr>
-    <tr><td><b>S3 PDF/Excel export</b></td><td><b>AI-07</b> export within role scope · <b>AI-09</b> export test cases (empty, large, special characters)</td><td><code>!composer test</code> · <code>@app/Services/ExportService.php</code></td></tr>
+    <tr><th style="width:150px">Session</th><th>Prompt</th><th>Claude Code feature</th></tr>
+    <tr><td><b>S9 · L1</b><br><span class="small">Lab 9.10</span></td><td>Plan from the input → filter result table → <b>AI-19</b> → <b>AI-20</b> for <code>normaliseFilters()</code></td><td><code>filter_check GET /laporan/pas</code> · <code>semak-ci4</code> category 4 (<code>orderBy</code>, whitelist)</td></tr>
+    <tr><td><b>S10 · L2</b><br><span class="small">Lab 9.11</span></td><td>"One <code>$filters</code> source" plan → <b>AI-19</b> → <b>AI-20</b> for pager/export links</td><td><code>semak-ci4</code> category 1 (<code>esc()</code> attr/url context) · browser</td></tr>
+    <tr><td><b>S11 · L3</b><br><span class="small">Lab 9.12</span></td><td>Export plan → <b>AI-19</b> → <b>AI-06</b>-style export review (formulas, PDF <code>esc()</code>, row limit)</td><td><code>semak-ci4</code> on <code>ExportService</code> · Excel <code>=1+1</code></td></tr>
+    <tr><td><b>S12 · L4</b><br><span class="small">Lab 9.13</span></td><td>Test plan from hand-computed numbers → <b>AI-19</b> · <b>AI-09</b> · <b>AI-08</b> DoD before the MR</td><td><code>db_table</code> (indexes) · <code>migrate_status</code> (no new migration) · <code>!composer test</code></td></tr>
   </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div>Report filters come from the user: whitelist for <code>orderBy</code>, binding for <code>where</code>.</div></div>
-  <aside class="notes"><p>Tekankan dua risiko hari ini: input filter laporan yang dicantum ke SQL, dan eksport yang membocorkan data di luar skop peranan. db_table membantu menyemak indeks sebelum mengubah query; jangan jalankan migration tanpa semakan. (5 minit, sebelum wrap-up)</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Column names can't be bound: reject every diff that sends input into <code>orderBy()</code>.</div></div>
+  <aside class="notes"><p>Prompt pelan setiap slice merujuk jadual input → hasil penapis yang peserta tulis sendiri. Fokus semak-ci4 berbeza ikut slice: kategori 4 untuk L1, kategori 1 (esc konteks attr/url) untuk L2. db_table hanya membaca index; cadangan index direkod, bukan migration. (5 minit, sebelum wrap-up)</p></aside>
 </section>
 
 <section class="slide">
@@ -3246,15 +3248,16 @@ git ls-files | grep -E "settings\.local|CLAUDE\.local|(^|/)\.env$"</pre></div>
 
 <section class="slide">
   <div class="eyebrow">Day 10 · Today's prompting</div>
-  <h2>🤖 Today's prompting: statistics, capstone &amp; handover</h2>
+  <h2>🤖 Today's prompting: statistics &amp; capstone</h2>
   <table class="t">
-    <tr><th>Session</th><th>Prompt</th><th>Claude Code feature</th></tr>
-    <tr><td><b>S1–S2 Statistics &amp; cache</b></td><td><b>AI-09</b> test cases for <code>StatisticsService</code> (no data, cache expired)</td><td>Plan mode · <code>@app/Services/StatisticsService.php</code> · <code>ci4-spark</code> <code>routes</code> for <code>/statistik/data</code></td></tr>
-    <tr><td><b>S3 Final tests &amp; DoD</b></td><td><b>AI-08</b> pre-commit review (DoD) · <b>AI-10</b> for last bugs</td><td><code>!composer test</code> · <code>semak-ci4</code> on all of <code>app/</code></td></tr>
-    <tr><td><b>S4 Handover</b></td><td>Update <code>CLAUDE.md</code> (commands, rules) · <b>AI-18</b> review the handover README/PRD</td><td><code>/memory</code> · Plan mode · <code>@README.md</code></td></tr>
+    <tr><th style="width:150px">Session</th><th>Prompt</th><th>Claude Code feature</th></tr>
+    <tr><td><b>S5 · Slices 1–3</b><br><span class="small">Lab 10.10</span></td><td>4-slice plan (Plan mode) → <b>AI-19</b> "implement Slice N only" → <b>AI-20</b></td><td><code>routes</code> + <code>filter_check GET /statistik/data</code> · <code>semak-ci4</code> on the dashboard</td></tr>
+    <tr><td><b>S5 · Slice 4</b><br><span class="small">Lab 10.10</span></td><td><b>AI-10</b>: <code>StatisticsCacheTest</code> FIRST (red) → <b>AI-19</b> list every <code>transCommit()</code></td><td><code>!composer test -- tests/Services/StatisticsCacheTest.php</code> · <code>semak-ci4</code></td></tr>
+    <tr><td><b>S6 · Capstone</b><br><span class="small">Lab 10.11</span></td><td><code>semak-ci4</code> on the whole repo · <b>AI-08</b> on <code>!git diff --staged</code> · <b>AI-09</b>/<b>AI-10</b> test gaps · <b>AI-18</b> README/CLAUDE.md/PRD</td><td><code>filter_check</code> GET /statistik, /laporan/tempahan, /pas/semakan</td></tr>
+    <tr><td><b>S7 · Demo</b><br><span class="small">Lab 10.12</span></td><td><b>AI-14</b>: rehearse the explain-the-code segment; accept/reject reflection</td><td>Plan mode only; no new diffs</td></tr>
   </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div>Commit only code you can explain line by line during the demo.</div></div>
-  <aside class="notes"><p>Hari terakhir: Claude membantu menyemak, bukan menyiapkan capstone. Kemas kini CLAUDE.md supaya pasukan penyelenggara mewarisi arahan dan peraturan yang sama, dan guna AI-18 untuk menyemak README/PRD serahan. (5 minit, sebelum wrap-up)</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div>AI findings are hypotheses: verify every file:line with your own commands before <b>Accept</b>.</div></div>
+  <aside class="notes"><p>Pagi: empat slice Statistik dengan prompt pelan, AI-19 dan semak-ci4; StatisticsCacheTest mesti merah dahulu. Petang: semakan capstone dengan AI-08 pada diff staged, AI-09/AI-10 untuk jurang ujian dan AI-18 untuk dokumen serahan. AI-14 hanya untuk latihan menerangkan kod sebelum demo. (5 minit, sebelum wrap-up)</p></aside>
 </section>
 
 <section class="slide">
