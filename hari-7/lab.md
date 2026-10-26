@@ -8,8 +8,10 @@
 | 7.9 | S12 | 10:05–10:30 | `docs/nota-claude.md` (3 prompt onboarding); PRD latihan `~/latihan/prd-latihan/docs/prd.md` + pelan slice + 2 pembetulan |
 | 7.7 | S10 | 11:00–11:45 | Subagent `semak-ci4` + `docs/semakan-ci4-hari6.md`; skill `migration-ci4` |
 | 7.8 | S11 | 11:55–12:30 | Server MCP `ci4-spark` diuji & didaftar dalam `.mcp.json`; Context7; MySQL/GitLab pilihan |
-| 7.10 | S13 | 14:30–15:45 | Claude Code, Pas slice 1: enum, Entity, 2 Model (`ownedBy()`), senarai & butiran (404 bukan pemilik); `docs/pelan-pas.md`; pintu terang dalam `docs/nota-claude.md` |
-| 7.11 | S14 | 15:45–17:00 | Claude Code, Pas slice 2: borang `multipart` + CSRF, validasi fail, muat naik nama rawak di `writable/uploads/pas/`, transaksi + pembersihan, muat turun melalui controller |
+| 7.12 | S15 | 14:30–15:45 | Klon `espkpv2` ke `~/latihan/espkpv2`; 6 prompt onboarding mod Plan disahkan dengan `fail:baris`; demo 2 peranan; `~/latihan/espkpv2-kajian/nota-fahami.md` |
+| 7.13 | S16 | 15:45–17:00 | PRD eSPKP Pas + 3 dakwaan disahkan; jadual jurang vs SPEC; `docs/keperluan-pas.md` + `docs/pelan-pas.md` pada branch `docs/keperluan-pas` |
+| 7.10 | S13 | Hari 8 09:00–10:30 | Claude Code, Pas slice 1: enum, Entity, 2 Model (`ownedBy()`), senarai & butiran (404 bukan pemilik); `docs/pelan-pas.md`; pintu terang dalam `docs/nota-claude.md` |
+| 7.11 | S14 | Hari 8 10:45–12:30 | Claude Code, Pas slice 2: borang `multipart` + CSRF, validasi fail, muat naik nama rawak di `writable/uploads/pas/`, transaksi + pembersihan, muat turun melalui controller |
 | 7.0 | Awal S1 | 10 min | Branch Git + `php.ini` sedia untuk muat naik |
 | 7.1 | S1 | 09:10–10:00 | Enum, Entity, 2 Model |
 | 7.1b | S5 | 10:00–10:30 | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` diuji dalam `php spark shell` |
@@ -21,6 +23,8 @@
 | 7.4b | S8 | 16:35–17:00 | `PassSubmitTest` PHPUnit: 14 kes sempadan automatik + mutasi `>=` |
 
 > ℹ️ **Jadual Hari 7 (dikemas kini):** Lab 7.6, 7.9, 7.7 dan 7.8 (Claude Code) pada waktu pagi; Lab 7.10 (S13) dan 7.11 (S14) bermula 14:30: Modul Pas dibina dengan Claude Code melalui tujuh pintu semakan ([`kolaborasi.md`](../docs/kolaborasi.md) §3). Lab Pas manual 7.0–7.4 (dan 7.1b–7.4b) kini **kod rujukan** untuk langkah "Banding dengan kod rujukan", tidak wajib. Masa 7.0–7.4b dalam jadual di atas ialah jadual asal.
+>
+> ℹ️ **Dikemas kini lagi:** petang Hari 7 kini Lab 7.12 (S15) dan Lab 7.13 (S16): fahami projek contoh eSPKP, kemudian tulis `docs/keperluan-pas.md` dan `docs/pelan-pas.md`. Lab 7.10/7.11 dipindahkan ke pagi Hari 8 (09:00–10:30 dan 10:45–12:30).
 
 ---
 
@@ -705,6 +709,8 @@ Memasang server MCP `ci4-spark` (PHP, baca sahaja) daripada templat kursus, **me
 ## Lab 7.10 — Claude Code: Pas Slice 1 — Migration/Enum/Model, Senarai Skop Pemilik & Butiran (S13)
 
 > 🛡️ **Peraturan Lab 7.10–7.11.** Claude menulis kod, anda meluluskan setiap diff dalam mod **Manual** (lalai). Mod *accept edits*, *auto* dan *bypass permissions* **tidak dibenarkan**. Data sintetik sahaja; jangan beri isi `.env` kepada Claude. Aliran tujuh pintu: [`kolaborasi.md`](../docs/kolaborasi.md) §3 · prompt [AI-19, AI-20](../docs/pustaka-prompt.md#g--laksana-dengan-pintu-semakan).
+>
+> ℹ️ **Pagi Hari 8 (09:00–10:30).** Jika Lab 7.13 siap, merge branch `docs/keperluan-pas` ke `main` sebelum langkah 1, supaya `docs/keperluan-pas.md` dan `docs/pelan-pas.md` ada. Pada langkah 3, tambah `@docs/keperluan-pas.md` pada prompt, dan perincikan bahagian **Slice 1** dalam `docs/pelan-pas.md` sedia ada, bukan cipta fail baharu.
 
 ### 🎯 Objektif
 Menggunakan aliran kerja Claude Code tujuh pintu untuk membina slice pertama Modul Pas: enum `PassType`/`PassStatus`, Entity `PassApplication`, `PassApplicationModel` (dengan skop `ownedBy()`) dan `PassDocumentModel`, route `index`/`show`, `PassWorkflowService::canView()`, senarai "Permohonan Saya" dan butiran yang memulangkan **404** kepada bukan pemilik (BR-PAS-01, BR-PAS-04). Anda **membaca dan meluluskan** setiap diff, **mengesahkan** dengan `composer test` dan `ci4-spark`, dan **menerangkan** 3 baris utama dengan ayat sendiri.
@@ -1111,6 +1117,379 @@ Menggunakan aliran kerja tujuh pintu untuk membina slice kedua: borang `multipar
 
 ### ⭐ Cabaran tambahan
 - Minta Claude (mod *Plan*) membandingkan `PassCreateTest` dengan `PassSubmitTest` dalam [Lab 7.4b](#lab-74b--automasikan-kes-sempadan-dengan-phpunit-s8): kes sempadan BR-PAS-02 mana yang belum diuji? Tambah dua kes melalui pintu diff dan sahkan setiap satu gagal jika rule berkaitan dibuang.
+
+---
+
+## Lab 7.12 — Fahami Projek Contoh eSPKP dengan Claude Code (S15)
+
+> 🛡️ **Peraturan Lab 7.12–7.13.** eSPKP Contoh ialah aplikasi rujukan kursus dengan data **sintetik**, jadi Claude Code boleh membacanya. Ia **bukan** sistem eSPKP sebenar: jangan sambungkan Claude kepada kod, database atau pelayan KKM sebenar. Mod **Plan** sahaja dalam folder eSPKP; tiada kod diubah. Jangan cipta atau buka `.env` dalam klon eSPKP.
+
+### 🎯 Objektif
+Memahami projek CI4 yang siap dengan Claude Code dalam mod *Plan*: aliran request, di mana peraturan aliran kerja tinggal (`app/Config/Aliran.php`), peranan dan kebenaran, model data, cara ciri diuji, dan fail yang berubah untuk satu ciri baharu. Anda **mengesahkan** setiap jawapan dengan membuka `fail:baris`, **meneroka** satu aliran hujung ke hujung dalam demo langsung dengan 2 peranan, dan **merekod** dapatan dalam `~/latihan/espkpv2-kajian/nota-fahami.md`.
+
+### Prasyarat
+- Lab 7.6 siap: `claude --version` berfungsi dan anda log masuk.
+- Kod eSPKP Contoh (commit `01abad1`): akses *Reporter* ke repo peribadi GitLab KKM `aplikasi-baharu/espkpv2`, **atau** salinan zip jurulatih `espkpv2-01abad1.zip`.
+- Akaun demo dan kunci TOTP kongsi: [`contoh-espkp.md`](../docs/contoh-espkp.md). Pasang aplikasi pengesah (contoh Google Authenticator) pada telefon.
+- Tiada database diperlukan untuk membaca kod. `composer install` adalah pilihan; arahan penuh dalam README eSPKP bahagian *Mula (Windows · Laragon · Git Bash)*.
+- 🪟 **Windows:** terminal Git Bash dalam VS Code. Jika `Shift+Tab` tidak menukar mod, guna `Alt+M`.
+
+### Langkah
+
+1. **Dapatkan kod ke folder latihan berasingan (5 minit).** Bukan dalam `kelas-ci-<nama>`. Repo `aplikasi-baharu/espkpv2` di GitLab KKM adalah **peribadi**; versi rujukan lab ini ialah commit `01abad1`. Pilih satu cara:
+
+   **(a) Klon**, jika jurulatih sudah menambah anda sebagai *Reporter* pada `aplikasi-baharu/espkpv2`:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   mkdir -p ~/latihan/espkpv2-kajian
+   git clone https://<gitlab-kkm>/aplikasi-baharu/espkpv2.git ~/latihan/espkpv2
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force "$HOME\latihan\espkpv2-kajian" | Out-Null
+   git clone https://<gitlab-kkm>/aplikasi-baharu/espkpv2.git "$HOME\latihan\espkpv2"
+   ```
+
+   **(b) Zip**, jika anda tiada akses: ekstrak salinan jurulatih `espkpv2-01abad1.zip` (mengandungi folder `espkpv2/`) ke `~/latihan/`. Ini laluan biasa, bukan ralat.
+
+   ```bash tab="Git Bash / macOS / Linux"
+   mkdir -p ~/latihan/espkpv2-kajian
+   unzip ~/Downloads/espkpv2-01abad1.zip -d ~/latihan/
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force "$HOME\latihan\espkpv2-kajian" | Out-Null
+   Expand-Archive -Path "$HOME\Downloads\espkpv2-01abad1.zip" -DestinationPath "$HOME\latihan\"
+   ```
+
+   Semak kedua-dua cara: fail utama wujud.
+
+   ```bash tab="Git Bash / macOS / Linux"
+   cd ~/latihan/espkpv2
+   ls CLAUDE.md docs app/Config/Aliran.php
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\latihan\espkpv2
+   Get-ChildItem CLAUDE.md, docs, app\Config\Aliran.php
+   ```
+
+2. **Sediakan templat nota (3 minit).** Cipta `~/latihan/espkpv2-kajian/nota-fahami.md` dalam VS Code dan taip/tampal:
+
+   `~/latihan/espkpv2-kajian/nota-fahami.md`
+
+   ```markdown
+   # Nota fahami — eSPKP Contoh
+
+   ## CLAUDE.md eSPKP
+   - Satu perkara yang saya tiru dalam CLAUDE.md saya: ...
+
+   ## Jawapan onboarding (disahkan)
+   | # | Soalan | Jawapan ringkas (ayat saya) | Bukti fail:baris | Betul / dibetulkan |
+   |---|--------|-----------------------------|------------------|--------------------|
+   | P1 | Aliran request | ... | ... | ... |
+   | P2 | Peraturan aliran kerja & satu peralihan | ... | ... | ... |
+   | P3 | Peranan & kebenaran | ... | ... | ... |
+   | P4 | Model data | ... | ... | ... |
+   | P5 | Cara ciri diuji | ... | ... | ... |
+   | P6 | Fail yang berubah untuk ciri baharu | ... | ... | ... |
+
+   ## Demo langsung (2 peranan)
+   - Aliran yang dicuba: ...
+   - Status sebelum → selepas: ...
+   - Apa yang pengguna lain TIDAK nampak: ...
+
+   ## Soalan saya untuk pemilik sistem
+   - ...
+   ```
+
+3. **Buka Claude dalam mod Plan (2 minit).** Dalam `~/latihan/espkpv2`:
+
+   ```bash
+   claude
+   ```
+
+   Tekan `Shift+Tab` (atau `Alt+M`) sehingga baris bawah menunjukkan **plan mode**. Taip `/memory`: `CLAUDE.md` projek eSPKP disenaraikan, dimuatkan **tanpa** anda memintanya. Ini pelajaran pertama: CLAUDE.md yang baik memberi Claude konteks tepat sejak soalan pertama. Rekod satu perkara yang anda mahu tiru dalam nota.
+
+4. **Enam prompt onboarding (35 minit).** Hantar satu demi satu (gaya [AI-15](../docs/pustaka-prompt.md#ai-15--onboarding-projek-sedia-ada)). Selepas setiap jawapan, buka sekurang-kurangnya satu `fail:baris` dalam VS Code dan isi satu baris jadual nota.
+
+   **P1 — Aliran request.**
+
+   ```text
+   Mod Plan. Jangan ubah sebarang fail.
+   Jejak satu request GET untuk paparan butiran permohonan, dari route, filter global dan filter route, controller, policy, service, model hingga view.
+   Untuk setiap langkah, beri fail:baris supaya saya boleh menyemaknya sendiri.
+   ```
+
+   Titik utama jangkaan:
+   - filter global `session` (tolak secara lalai) dan `csrf` dalam `app/Config/Filters.php`; route eksplisit dengan placeholder `(:uuid)` dalam `app/Config/Routes.php`;
+   - controller nipis memanggil `BaseController::permohonanAtau404()` (`app/Controllers/BaseController.php`), yang memanggil `PermohonanPolicy::bolehLihat()` (`app/Libraries/PermohonanPolicy.php`);
+   - pengguna tanpa akses menerima **404, bukan 403**;
+   - UUID dalam URL dipetakan kembali ke `id` INT dalam controller; service kekal berasaskan INT.
+
+   **P2 — Peraturan aliran kerja.**
+
+   ```text
+   Mod Plan. Di mana peraturan "siapa boleh buat apa, bila" untuk aliran permohonan pas disimpan?
+   Terangkan medan setiap baris, kemudian jejak satu peralihan: Urus Setia menekan "Lengkap — hantar ke Penyelia". Apa yang berlaku dalam satu transaksi?
+   Beri fail:baris untuk setiap dakwaan.
+   ```
+
+   Titik utama jangkaan:
+   - **satu jadual:** `$peralihan` dalam `app/Config/Aliran.php`, dikunci ikut kumpulan `pas`, `hilang`, `tlk` (subjenis → kumpulan melalui `$kumpulan`);
+   - setiap baris: `peringkat`, `tindakan`, `dari`, `ke`, `catatan` (`wajib` = ≥ 10 aksara), `perlu`, `kesan`; baris "lengkap" kumpulan `pas` bergerak dari status 2 ke 4 dan `perlu` memilih `penyelia`;
+   - `AliranKerja::tersedia()` menyenaraikan tindakan; `AliranKerja::laksana()` mengunci baris (`FOR UPDATE`), menyemak semula status, menukar status dan menulis log `permohonan_tindakan` dalam satu transaksi;
+   - butang, semakan server dan *stepper* (`$langkah`) membaca jadual yang sama; `tests/unit/KonfigurasiAliranTest.php` menyemak konsistensinya.
+
+   **P3 — Peranan & kebenaran.**
+
+   ```text
+   Mod Plan. Senaraikan peranan dan kebenaran sistem ini dalam jadual (peranan · kebenaran · apa yang boleh dibuat).
+   Di mana peringkat aliran kerja dipetakan kepada kebenaran Shield? Siapa boleh melihat SEMUA permohonan, dan kenapa pentadbir tidak boleh?
+   Beri fail:baris.
+   ```
+
+   Titik utama jangkaan:
+   - `app/Config/AuthGroups.php`: 7 kumpulan (`pemohon`, `wakil`, `urusetia`, `penyelia`, `uks`, `pelulus`, `superadmin`) dan `$matrix`;
+   - `app/Enums/Peringkat.php` memetakan setiap peringkat kepada kebenaran (contoh `permohonan.semak`, `permohonan.sokong`, `permohonan.proses`, `permohonan.lulus`);
+   - `permohonan.lihat_semua` hanya untuk UKS dan Pelulus (keistimewaan minimum); `superadmin` tiada `pas.mohon` dan hanya melihat permohonan lulus (untuk dibatalkan) serta laporan agregat;
+   - pemilik tidak boleh bertindak atas permohonan sendiri kecuali sebagai Pemohon (pengasingan tugas).
+
+   **P4 — Model data.**
+
+   ```text
+   Mod Plan. Terangkan model data permohonan pas: jadual utama, hubungan, lajur status, lampiran dan nombor rujukan.
+   Migration mana yang mencipta setiap jadual? Kenapa ada lajur uuid dan lajur snap_*?
+   Beri fail:baris.
+   ```
+
+   Titik utama jangkaan:
+   - migration dalam `app/Database/Migrations/`, contoh `…_CreatePermohonan.php`, `…_CreatePas.php`, `…_CreateLampiran.php`; skema hanya daripada migration (tiada SQL manual);
+   - status sebagai kod 1–15 (`app/Enums/StatusPermohonan.php`), sepadan dengan `lt_status` lama;
+   - PK/FK INT kekal; `uuid` BINARY(16) UUIDv7 ditambah oleh migration `…_UuidAwam.php` untuk URL awam;
+   - `snap_*` menyalin nama, jawatan dan organisasi pemohon semasa hantar; nombor rujukan daripada jadual `kiraan_rujukan` secara atomik; rujukan penuh dalam `docs/pangkalan-data.md`.
+
+   **P5 — Cara ciri diuji.**
+
+   ```text
+   Mod Plan. Bagaimana sistem ini diuji? Terangkan tiga suite ujian, kelas asas ujian, dan kenapa SQLite tidak boleh digunakan.
+   Tunjukkan satu ujian yang membuktikan pengguna lain menerima 404, dan satu ujian untuk peralihan aliran kerja. Beri fail:baris.
+   ```
+
+   Titik utama jangkaan:
+   - `composer test` menjalankan suite Unit, Database, Feature (`tests/unit`, `tests/database`, `tests/feature`); `composer semak` = cs + analyse + test;
+   - `tests/_support/UjianPangkalanData` memigrasi semula untuk setiap ujian; `UjianCiri` untuk ujian HTTP;
+   - MySQL sebenar diperlukan kerana kod menggunakan `SELECT … FOR UPDATE` dan `ON DUPLICATE KEY`;
+   - contoh: ujian dalam `tests/feature/AksesTest.php` (akses dan 404) dan `tests/database/AliranKerjaTest.php` (peralihan).
+
+   **P6 — Fail yang berubah untuk ciri baharu.**
+
+   ```text
+   Mod Plan. Jangan ubah fail. Pemilik sistem mahu Penyelia boleh memulangkan permohonan pas HILANG untuk pindaan (sekarang hanya Urus Setia dan UKS boleh).
+   Senaraikan setiap fail yang perlu berubah dan kenapa, termasuk ujian dan dokumen. Nyatakan juga fail yang TIDAK perlu berubah.
+   ```
+
+   Titik utama jangkaan:
+   - satu baris baharu dalam `$peralihan['hilang']` di `app/Config/Aliran.php` (`peringkat` `penyelia`, `tindakan` `pindaan`, `ke` 3, `catatan` `wajib`);
+   - aliran `hilang` tidak melalui Penyelia sekarang (`$langkah['hilang']`), jadi Claude yang baik menyatakan perubahan ini juga memerlukan keputusan tentang peringkat Penyelia: satu soalan untuk pemilik sistem;
+   - ujian dalam `tests/database/AliranKerjaTest.php`; `KonfigurasiAliranTest` mesti terus lulus; kemas kini `docs/aliran-kerja.md`;
+   - controller dan view **tidak** berubah kerana butang dijana daripada jadual.
+
+5. **Demo langsung: satu aliran, 2 peranan (20 minit).** Buka <https://eskp.synctexts.com> (kata laluan dan kunci TOTP dalam [`contoh-espkp.md`](../docs/contoh-espkp.md)).
+   - Log masuk sebagai **Pemohon** `900101010001`: mohon pas baharu dengan data sintetik. Perhatikan *stepper* dan status **Semakan Urus Setia**. Salin URL butiran (perhatikan UUID, bukan nombor).
+   - Log masuk sebagai **Wakil syarikat** `900101010007` dan tampal URL itu: anda menerima **404** (BR-PAS-04 dalam versi eSPKP).
+   - Log masuk sebagai **Urus Setia** `900101010002` (masukkan kod TOTP): buka permohonan dalam baris gilir. Butang yang dipaparkan ialah baris `urusetia` dalam `$peralihan['pas']`. Tekan **Lengkap — hantar ke Penyelia** dan pilih penyelia.
+   - Rekod status sebelum → selepas, dan padankan dengan baris Aliran.php dalam nota anda.
+
+   Jika permohonan anda tiada dalam baris gilir Urus Setia, guna mana-mana permohonan demo sedia ada yang berstatus **Semakan Urus Setia** (data demo diset semula setiap hari).
+
+6. **Tutup sesi.** `/exit`. Semak `git status` dalam `~/latihan/espkpv2`: tiada fail berubah.
+
+   ```bash tab="Git Bash / macOS / Linux"
+   cd ~/latihan/espkpv2 && git status --short   # kosong
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\latihan\espkpv2; git status --short   # kosong
+   ```
+
+### ✅ Checkpoint
+- [ ] `~/latihan/espkpv2/CLAUDE.md` wujud (klon atau zip) dan `/memory` menunjukkan ia dimuatkan secara automatik; satu perkara untuk ditiru direkod (Kuiz S15).
+- [ ] `nota-fahami.md` mengandungi 6 jawapan onboarding dengan ayat sendiri dan bukti `fail:baris` yang anda buka sendiri (Kuiz S15).
+- [ ] Sekurang-kurangnya satu dakwaan Claude disemak dan direkod sebagai betul atau dibetulkan, termasuk di mana `$peralihan` tinggal (Kuiz S15).
+- [ ] Aliran demo dengan 2 peranan direkod: status sebelum → selepas dan 404 untuk pengguna lain (Kuiz S15).
+- [ ] Tiada fail berubah dalam klon eSPKP. 🪟 PowerShell: `git status --short` dalam `$HOME\latihan\espkpv2` (Kuiz S15).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `git clone` meminta kata laluan berulang, `403`, atau pelayar dialih ke `sign_in` | Repo peribadi: anda belum ditambah sebagai *Reporter*, atau token belum disediakan | Guna cara (b): zip `espkpv2-01abad1.zip` |
+| `Filename too long` semasa klon | Had laluan 260 aksara Windows | `git config --global core.longpaths true`, kemudian klon semula ke `~/latihan` (laluan pendek) |
+| `/memory` tidak menunjukkan CLAUDE.md eSPKP | `claude` dijalankan di luar `~/latihan/espkpv2` | `/exit`, `cd ~/latihan/espkpv2`, jalankan `claude` semula |
+| Claude meminta kebenaran mengedit fail | Mod Plan tidak aktif | Pilih **No**; `Shift+Tab` (atau `Alt+M`) hingga *plan mode* |
+| Claude menyebut fail yang tidak wujud | Jawapan berhalusinasi | Minta "tunjukkan fail:baris tepat"; rekod sebagai dibetulkan dalam nota |
+| Kod TOTP ditolak di demo | Jam telefon tidak segerak, atau kunci ditaip salah | Hidupkan masa automatik pada telefon; tambah semula kunci daripada `contoh-espkp.md` sebagai jenis berasaskan masa |
+| `composer install` gagal (`ext-intl` atau `ext-sodium`) | Extension PHP Laragon tidak dihidupkan | Langkau: `composer install` tidak diperlukan untuk membaca kod |
+
+### ⭐ Cabaran tambahan
+- Minta Claude (mod *Plan*) membandingkan `CLAUDE.md` eSPKP dengan `CLAUDE.md` dalam `kelas-ci-<nama>` anda (`claude --add-dir ~/latihan/kelas-ci-<nama>`). Pilih dua cadangan dan tulis sendiri dalam projek anda esok.
+
+---
+
+## Lab 7.13 — PRD daripada Projek Contoh, Banding SPEC & Pelan Slice Pas (S16)
+
+> 🛡️ Peraturan yang sama seperti [Lab 7.12](#lab-712--fahami-projek-contoh-espkp-dengan-claude-code-s15). Claude **mendraf**, anda **menyemak dan memutuskan**. SPEC kursus kekal kanun: nama jadual, medan, enum dan kelas tidak berubah kerana eSPKP berbeza.
+
+### 🎯 Objektif
+Mendraf PRD aliran Pas eSPKP daripada kod (*reverse engineering*) dengan Claude dalam mod *Plan*, **mengesahkan** 3 dakwaan terhadap kod dan demo langsung, **membandingkan** dengan SPEC Pas kursus dalam jadual jurang, **menulis** keperluan Pas anda sendiri dalam `docs/keperluan-pas.md` dan **menghasilkan** pelan *vertical slice* `docs/pelan-pas.md` (input Lab 7.10 esok pagi), di-commit pada branch `docs/keperluan-pas`.
+
+### Prasyarat
+- Lab 7.12 siap: `~/latihan/espkpv2` dan `nota-fahami.md` wujud.
+- Templat PRD: [`tutorial-prompt-projek.md`](../docs/tutorial-prompt-projek.md) §4.3. SPEC Pas: [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §2.2–§6.
+- Projek `kelas-ci-<nama>` dengan `git status` bersih.
+- 🪟 **Windows:** terminal Git Bash dalam VS Code.
+
+### Langkah
+
+1. **Draf PRD eSPKP Pas (15 minit).** Dalam `~/latihan/espkpv2`, mulakan `claude`, tukar ke **plan mode** dan hantar:
+
+   ```text
+   Mod Plan. Jangan ubah sebarang fail.
+   Draf PRD untuk aliran PAS KESELAMATAN sahaja (subjenis baharu, rosak, hilang; abaikan TLK, laporan dan 2FA) berdasarkan kod projek ini.
+   Ikut bahagian ini: 1 Masalah, 2 Pengguna & peranan, 3 Skop, 4 Keperluan fungsian (FR-01..), 5 Peraturan perniagaan (BR-01..), 6 Keperluan bukan fungsian, 7 Data/entiti, 8 Kriteria penerimaan (AC-01.., Diberi/Apabila/Maka), 9 Soalan terbuka.
+   Sumber utama: app/Config/Aliran.php, app/Config/AuthGroups.php, app/Enums, migration permohonan/pas/lampiran, docs/aliran-kerja.md.
+   Untuk NFR, sertakan: bukan pemilik menerima 404 bukan 403, lampiran disimpan di luar public/ dengan nama rawak, satu tindakan = satu transaksi.
+   Untuk setiap FR dan BR, beri fail:baris sumbernya dalam kurungan. Data sintetik sahaja.
+   ```
+
+   Salin jawapan Claude ke `~/latihan/espkpv2-kajian/prd-espkp-pas.md` (anda yang menampal; mod Plan tidak menulis fail).
+
+   PRD yang baik mengandungi:
+   - peranan daripada `AuthGroups.php` dan peringkat daripada `$peralihan['pas']` / `$peralihan['hilang']`;
+   - FR untuk mohon, semak kelengkapan, sokong, proses UKS, lulus/tidak lulus, pulang untuk pindaan, batal;
+   - BR seperti "catatan wajib ≥ 10 aksara untuk pindaan/tolak" dan "lampiran wajib ikut subjenis" (`$lampiranWajib`);
+   - NFR: 404 bukan 403, lampiran di luar `public/`, transaksi dengan kunci `FOR UPDATE`;
+   - bahagian Soalan terbuka (contoh caj ganti pas hilang `$cajCadangan` masih *placeholder*).
+
+2. **Sahkan 3 dakwaan (10 minit).** Pilih 3 FR/BR daripada PRD. Untuk setiap satu, buka `fail:baris` sumbernya **dan** cuba dalam demo langsung (akaun dalam [`contoh-espkp.md`](../docs/contoh-espkp.md)). Tambah bahagian ini di hujung `prd-espkp-pas.md`:
+
+   `~/latihan/espkpv2-kajian/prd-espkp-pas.md`
+
+   ```markdown
+   ## Pengesahan
+   | Dakwaan (ID) | Bukti kod fail:baris | Bukti demo (akaun · skrin) | Keputusan |
+   |--------------|----------------------|----------------------------|-----------|
+   | BR-?? | ... | ... | Betul / Dibetulkan: ... |
+   | FR-?? | ... | ... | ... |
+   | NFR 404 | ... | 07 membuka URL permohonan 01 → 404 | ... |
+   ```
+
+   Satu dakwaan yang salah? Betulkan PRD **sendiri**; jangan minta Claude menulis semula keseluruhannya.
+
+3. **Jadual jurang: eSPKP vs SPEC kursus (15 minit).** Buka [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §2.2 dan bina jadual dalam `~/latihan/espkpv2-kajian/jurang-pas.md`. Minimum 8 baris; keputusan **guna / laras / tidak** dengan sebab.
+
+   `~/latihan/espkpv2-kajian/jurang-pas.md`
+
+   ```markdown
+   # Jurang eSPKP Contoh vs SPEC kursus — Modul Pas
+
+   | Ciri | eSPKP | SPEC kursus | Keputusan: guna / laras / tidak | Sebab |
+   |------|-------|-------------|---------------------------------|-------|
+   | Peringkat kelulusan | Urus Setia → Penyelia → UKS → Pelulus | reviewer → approver | tidak | SPEC kanun; 2 peringkat |
+   | Status | 15 kod (StatusPermohonan) | PassStatus 5 nilai | laras | prinsip "satu sumber" melalui canTransitionTo() |
+   | Pulang untuk pindaan | status 3 | tiada | tidak | soalan terbuka untuk pemilik sistem |
+   | Catatan wajib | ≥ 10 aksara untuk tolak/pulang | BR-PAS-03 | guna | sama |
+   | Bukan pemilik | 404 | BR-PAS-04 | guna | sama |
+   | Lampiran | luar public/, nama rawak, sha256 | BR-PAS-02 writable/uploads/pas/ | guna / laras | ... |
+   | Log tindakan | permohonan_tindakan | BR-PAS-05 status_logs | ... | ... |
+   | Pengenal dalam URL | UUID | id INT (SPEC §6) | ... | ... |
+   ```
+
+4. **Keperluan Pas anda (15 minit).** Dalam `kelas-ci-<nama>`, buat branch dan buka Claude dengan akses baca ke folder kajian:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   cd ~/latihan/kelas-ci-<nama>
+   git switch main && git pull
+   git switch -c docs/keperluan-pas
+   claude --add-dir ~/latihan/espkpv2-kajian
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\latihan\kelas-ci-<nama>
+   git switch main
+   git pull
+   git switch -c docs/keperluan-pas
+   claude --add-dir $HOME\latihan\espkpv2-kajian
+   ```
+
+   Dalam **plan mode**, hantar:
+
+   ```text
+   Mod Plan. Jangan ubah fail.
+   Baca @CLAUDE.md, ~/latihan/espkpv2-kajian/jurang-pas.md dan ~/latihan/espkpv2-kajian/prd-espkp-pas.md.
+   Draf docs/keperluan-pas.md untuk modul Pas KURSUS ini, ikut templat PRD (Masalah, Peranan, Skop, FR-PAS-01.., BR, NFR, Data, AC-PAS-01.., Soalan terbuka).
+   Peraturan: guna ID BR-PAS-01..06 dan nama jadual/medan/enum/kelas tepat seperti SPEC kursus (pass_applications, PassStatus, PassWorkflowService, pas.apply/pas.review/pas.approve).
+   Masukkan hanya baris jurang berkeputusan "guna" atau "laras"; baris "tidak" pergi ke Luar skop atau Soalan terbuka.
+   ```
+
+   Tampal draf ke `docs/keperluan-pas.md` dan edit sendiri. Keperluan yang baik:
+   - peranan `applicant`, `reviewer`, `approver`, `admin` sahaja; aliran `submitted → under_review → approved/rejected`, `expired` oleh sistem;
+   - BR-PAS-01..06 dengan ayat SPEC; NFR "404 bukan 403" dan "fail di luar `public/`";
+   - sekurang-kurangnya 4 AC boleh diuji, contoh "Diberi `pemohon2`, apabila membuka butiran milik `pemohon1`, maka 404";
+   - Luar skop: Penyelia, UKS, UUID, pindaan; Soalan terbuka untuk pemilik sistem.
+
+5. **Pelan slice (10 minit).** Masih dalam **plan mode** ([AI-17](../docs/pustaka-prompt.md#ai-17--prd--pelan-vertical-slice)):
+
+   ```text
+   Mod Plan. Baca @docs/keperluan-pas.md. Pecahkan modul Pas kepada 5 vertical slice yang sepadan dengan lab:
+   Slice 1 enum, Entity, Model ownedBy(), senarai & butiran 404 (Lab 7.10); Slice 2 borang, validasi & muat naik selamat (Lab 7.11);
+   Slice 3 aliran kelulusan (Lab 8.10); Slice 4 RBAC Shield & skop akses (Lab 8.11); Slice 5 ujian akses & sejarah status (Lab 8.12).
+   Setiap slice: FR/BR/AC yang dipenuhi, fail CodeIgniter 4.7 yang terlibat, cara uji. Jadual Pas sudah wujud sejak Hari 4: tiada migration baharu.
+   Tandakan FR yang tidak masuk mana-mana slice. Jangan tulis kod.
+   ```
+
+   Tampal ke `docs/pelan-pas.md` dan edit sendiri: setiap FR dalam satu slice, tiada migration baharu, tiada fail di luar modul Pas. Esok, Lab 7.10 langkah 3 memperincikan bahagian **Slice 1** dalam fail yang sama.
+
+6. **Commit (5 minit).** `/exit`, kemudian:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   git status --short          # hanya docs/keperluan-pas.md dan docs/pelan-pas.md
+   git add docs/keperluan-pas.md docs/pelan-pas.md
+   git commit -m "DOCS: keperluan & pelan slice Pas daripada kajian eSPKP Contoh"
+   git push -u origin docs/keperluan-pas
+   ```
+
+   ```powershell tab="PowerShell"
+   git status --short          # hanya docs/keperluan-pas.md dan docs/pelan-pas.md
+   git add docs/keperluan-pas.md docs/pelan-pas.md
+   git commit -m "DOCS: keperluan & pelan slice Pas daripada kajian eSPKP Contoh"
+   git push -u origin docs/keperluan-pas
+   ```
+
+   Buka MR ke `main` dan merge sebelum Lab 7.10 esok, supaya `feat/pas-claude` bermula dengan kedua-dua fail ini.
+
+### ✅ Checkpoint
+- [ ] `prd-espkp-pas.md` mengandungi FR, BR dan NFR dengan sumber `fail:baris`, termasuk 404 bukan 403 dan lampiran di luar `public/` (Kuiz S16).
+- [ ] Bahagian Pengesahan merekod 3 dakwaan yang disemak terhadap kod **dan** demo langsung (Kuiz S16).
+- [ ] `jurang-pas.md` mempunyai sekurang-kurangnya 8 baris dengan keputusan guna / laras / tidak dan sebab (Kuiz S16).
+- [ ] `docs/keperluan-pas.md` menggunakan nama SPEC dan BR-PAS-01..06; ciri "tidak" berada dalam Luar skop atau Soalan terbuka (Kuiz S16).
+- [ ] `docs/pelan-pas.md` mempunyai 5 slice yang sepadan dengan Lab 7.10, 7.11, 8.10, 8.11, 8.12 dan tiada migration baharu (Kuiz S16).
+- [ ] Commit `DOCS: keperluan & pelan slice Pas …` ada pada branch `docs/keperluan-pas`. 🪟 PowerShell: `git log --oneline -3` (Kuiz S16).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| Claude tidak boleh membaca `~/latihan/espkpv2-kajian/...` | `claude` dimulakan tanpa `--add-dir` | `/exit`, jalankan semula dengan `--add-dir`, atau taip `/add-dir` dalam sesi |
+| `--add-dir ~/latihan/...` tidak dijumpai dalam PowerShell | `~` tidak dikembangkan dalam semua konteks | Guna `$HOME\latihan\espkpv2-kajian` |
+| PRD menyalin nama eSPKP (`permohonan`, `StatusPermohonan`) ke `keperluan-pas.md` | Prompt tidak menegaskan nama SPEC | Tolak; ulang peraturan "nama tepat seperti SPEC kursus" dan betulkan sendiri |
+| Pelan mencipta migration `CreatePassApplications` | Claude tidak tahu jadual Hari 4 sudah wujud | Buang baris itu; jika perlu, semak dengan `ci4-spark` `migrate_status` |
+| Teks tampalan rosak (aksara pelik, baris berganda) | Salin dari terminal mintty dengan pembalut baris | Salin dari terminal VS Code, atau minta Claude memaparkan dalam satu blok markdown |
+| `git push` ditolak | Branch belum wujud di remote atau token GitLab tamat | `git push -u origin docs/keperluan-pas`; semak token seperti Hari 2 |
+
+### ⭐ Cabaran tambahan
+- Jalankan [AI-18](../docs/pustaka-prompt.md#ai-18--semak-prd) pada `docs/keperluan-pas.md`. Pilih 2 isu dan betulkan sendiri dalam commit `DOCS: …` kedua.
 
 ---
 

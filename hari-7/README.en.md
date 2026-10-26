@@ -28,6 +28,8 @@ By the end of today, participants can:
 | O14 | **Write** onboarding and plan prompts in *Plan* mode for an existing project, and **draft** and **review** a practice PRD before any code | S12 | [Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12); `docs/nota-claude.md` + `~/latihan/prd-latihan/docs/prd.md` |
 | O15 | **Build** Pass slice 1 with Claude Code through the seven gates, **reject** diffs that break the owner scope, and **explain** 3 key lines in your own words | S13 | [Lab 7.10](./lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13); `pemohon2` → 404; `docs/nota-claude.md` |
 | O16 | **Build** Pass slice 2 (form, validation, secure upload) with Claude Code and **verify** the five upload gates with `ci4-spark` and the browser | S14 | [Lab 7.11](./lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14); randomly named files in `writable/uploads/pas/`, `filter_check` shows `permission:pas.apply` |
+| O17 | **Explain** the architecture of a finished CI4 project (request path, `Config/Aliran.php` workflow table, roles, data, tests) with Claude Code in *Plan* mode and **verify** every claim with `file:line` | S15 | [Lab 7.12](./lab.en.md#lab-712--understand-the-espkp-example-project-with-claude-code-s15); `~/latihan/espkpv2-kajian/nota-fahami.md` |
+| O18 | **Draft** a PRD from code, **compare** it with the SPEC in a gap table, and **write** your own Pass requirements and slice plan | S16 | [Lab 7.13](./lab.en.md#lab-713--prd-from-the-example-project-compare-with-the-spec--pass-slice-plan-s16); `docs/keperluan-pas.md` + `docs/pelan-pas.md` on the branch `docs/keperluan-pas` |
 
 ---
 
@@ -42,12 +44,14 @@ By the end of today, participants can:
 | 10:45–11:45 | S10 | Claude Code: subagents & skills | Read-only `semak-ci4` subagent on Day 6 code; `migration-ci4` skill ([Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10)) |
 | 11:45–12:30 | S11 | Claude Code: MCP for CodeIgniter | `ci4-spark` MCP server (PHP, read-only) tested & registered; Context7; MySQL/GitLab optional ([Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–15:45 | S13 | Claude Code: Pass Module (1) — model, list & detail | Build Pass slice 1 with the seven gates: enums, `ownedBy()` Model, list & detail with 404 for non-owners ([Lab 7.10](./lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13)) |
-| 15:45–17:00 | S14 | Claude Code: Pass Module (1) — form & secure upload | Build Pass slice 2: form + CSRF, file validation, random names outside `public/`, transaction + clean-up ([Lab 7.11](./lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14)) |
+| 14:30–15:45 | S15 | Claude Code: understand the eSPKP example project | Understand a finished project in Plan mode: request path, `Config/Aliran.php`, roles, data, tests; verify every claim with `file:line` and the live demo ([Lab 7.12](./lab.en.md#lab-712--understand-the-espkp-example-project-with-claude-code-s15)) |
+| 15:45–17:00 | S16 | Claude Code: plan & adjust requirements from the example project | PRD from the eSPKP code, gap table against the SPEC, `docs/keperluan-pas.md` and `docs/pelan-pas.md` ([Lab 7.13](./lab.en.md#lab-713--prd-from-the-example-project-compare-with-the-spec--pass-slice-plan-s16)) |
 
 > ℹ️ **Course decision:** from this afternoon until Day 10, the modules are built with Claude Code through seven review gates ([`kolaborasi.md`](../docs/kolaborasi.md) §3). The manual Pass Labs 7.0–7.4 (and 7.1b–7.4b) and sessions S1–S8 are now **reference code** for comparison, not required. Day 8 continues the Pass module with the same workflow.
 >
 > ℹ️ The times in the S1–S8 headings below are the original schedule; follow the schedule above.
+>
+> ℹ️ **Updated:** S13/S14 (Labs 7.10/7.11) move to Day 8 morning (09:00–10:30 and 10:45–12:30). This afternoon is S15/S16 (Labs 7.12/7.13): understand the eSPKP example project, then write the Pass requirements and slice plan that feed Lab 7.10 tomorrow.
 
 ---
 
@@ -352,6 +356,8 @@ Flow: `initialize` (protocol version negotiation) → `tools/list` (tool list + 
 
 ## S13 — Claude Code: Pass Module (1) — Model, List & Detail (14:30–15:45)
 
+> ℹ️ **Moved to Day 8 morning (09:00–10:30).** Day 7 afternoon: [S15](#s15--claude-code-understand-the-espkp-example-project-14301545).
+
 > ℹ️ Lab: [Lab 7.10](./lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13) · Prompts [AI-19, AI-20](../docs/pustaka-prompt.en.md#g--implement-with-review-gates) · Rules: [`kolaborasi.md`](../docs/kolaborasi.md) §3.
 
 ### 13.1 Claude Code workflow (applies until Day 10)
@@ -406,6 +412,8 @@ The owner scope lives in the **Model** (`ownedBy()`), not in the view. The query
 
 ## S14 — Claude Code: Pass Module (1) — Form & Secure Upload (15:45–17:00)
 
+> ℹ️ **Moved to Day 8 morning (10:45–12:30).** Day 7 afternoon: [S16](#s16--claude-code-plan--adjust-requirements-from-the-example-project-15451700).
+
 > ℹ️ Lab: [Lab 7.11](./lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14) · Concepts: [S3](#s3--form-validation--document-upload-14301600) and [note 07](../docs/nota-07-muat-naik-fail-selamat.md) · Workflow: [13.1](#131-claude-code-workflow-applies-until-day-10).
 
 ### 14.1 Slice 2: the five upload gates in a diff
@@ -445,6 +453,106 @@ After slice 2 passes its tests, open Lab 7.3 (the manual code) and compare three
    - [ ] Because CI4 deletes moved files automatically when a transaction fails
    - [ ] Because move() cannot be called while a MySQL transaction is open
    > A DB transaction does not cover the file system. A rollback restores the tables, but the files on disk stay until the code deletes them. A diff with no `unlink()` in the `catch` leaves personal documents with no owner record.
+
+---
+
+## S15 — Claude Code: Understand the eSPKP Example Project (14:30–15:45)
+
+> ℹ️ Lab: [Lab 7.12](./lab.en.md#lab-712--understand-the-espkp-example-project-with-claude-code-s15) · Prompt [AI-15](../docs/pustaka-prompt.en.md#ai-15--onboarding-an-existing-project) · Demo & accounts: [`contoh-espkp.md`](../docs/contoh-espkp.en.md).
+
+### 15.1 Why an example project, and why now
+
+This morning you set up the tools (CLAUDE.md, subagent, MCP). Before you build Pass tomorrow morning, you practise the skill you need most at work: **understanding someone else's project** quickly and correctly. eSPKP Contoh is a finished CI4 app (Security Pass and Special TLK, 6-role workflow) built with this course's practices. You read it in *Plan* mode only: not a single file changes.
+
+| Onboarding question | Where the answer is in eSPKP |
+|---------------------|------------------------------|
+| Request path | `CLAUDE.md` section *Architecture*: filters → thin controller → `PermohonanPolicy` → Services → Model |
+| Workflow rules | **One table:** `app/Config/Aliran.php` (`$peralihan`), read by `App\Services\AliranKerja` |
+| Roles & permissions | `app/Config/AuthGroups.php` (`$groups`, `$permissions`, `$matrix`) |
+| Statuses | `app/Enums/StatusPermohonan.php` (codes 1–15) and `app/Enums/Peringkat.php` |
+| Schema | `app/Database/Migrations/` and `docs/pangkalan-data.md` |
+| Tests | `tests/unit`, `tests/database`, `tests/feature`; real MySQL, not SQLite |
+
+### 15.2 A good CLAUDE.md works for you
+
+When you run `claude` in the eSPKP folder, that project's `CLAUDE.md` loads automatically. Notice what it does: exact commands (`composer test`, `composer semak`), the architecture in a few lines, **where** rules live ("workflow has one source"), and prohibitions ("do not write a second scope query"). Claude's first answer is already accurate because of this file. Compare it with the `CLAUDE.md` you wrote in Lab 7.6: what is one thing you should copy?
+
+### 15.3 Verify every claim
+
+Claude answers confidently even when it is wrong. Every onboarding answer must include a `file:line`, and you open that file yourself. One wrong claim in your notes becomes a wrong requirement in S16.
+
+### 🎯 Quiz S15
+
+> Answer after Lab 7.12. Passing this quiz marks the Lab 7.12 checkpoint.
+
+1. The eSPKP system owner wants the Penyelia (supervisor) to be able to return a lost-pass application for amendment. Where is the main change made in eSPKP Contoh?
+   - [ ] Add an if check in the Penyelia controller and a new button in the detail view
+   - [ ] Create a new migration for the permohonan table
+   - [x] Add one row to $peralihan in app/Config/Aliran.php; the buttons, server checks and stepper read the same table
+   - [ ] Add a new permission in AuthGroups.php only
+   > eSPKP's `CLAUDE.md` states the workflow has one source: `Config/Aliran.php`. `AliranKerja::tersedia()` and `laksana()` read that table, so controllers and views do not change. `tests/unit/KonfigurasiAliranTest.php` keeps the table consistent.
+
+2. In Lab 7.12, Claude writes: "The applicant can cancel a pass application at any status before the decision." You open Aliran.php and see the batal row for the pas group: 'dari' => [2, 3, 4, 5]. What is the right action?
+   - [x] Correct your notes: the applicant cannot cancel at status 8 (Menunggu Keputusan), and record the file:line as evidence
+   - [ ] Accept Claude's answer because it has read the whole project
+   - [ ] Ask Claude to edit Aliran.php to match its answer
+   - [ ] Ignore the difference because it is only a small detail
+   > Status 8 is not in the `dari` list, so `AliranKerja` does not offer the cancel action to the applicant at the Pelulus stage. The code is the evidence; Claude's summary is not. *Plan* mode does not change files, and the eSPKP code is not to be changed in this lab.
+
+---
+
+## S16 — Claude Code: Plan & Adjust Requirements from the Example Project (15:45–17:00)
+
+> ℹ️ Lab: [Lab 7.13](./lab.en.md#lab-713--prd-from-the-example-project-compare-with-the-spec--pass-slice-plan-s16) · Prompts [AI-16 to AI-18](../docs/pustaka-prompt.en.md#ai-17--prd--vertical-slice-plan) · PRD template: [`tutorial-prompt-projek.md`](../docs/tutorial-prompt-projek.md) §4.3 · Pass SPEC: [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §2.2.
+
+### 16.1 From code to PRD, from PRD to your requirements
+
+S12 this morning started from an idea and produced a PRD. This afternoon goes the other way: you **derive a PRD from code that already exists** (*reverse engineering*), then decide what fits your Pass module.
+
+```mermaid
+flowchart LR
+    A[eSPKP code<br/>Aliran.php · AuthGroups · Enums] -->|Claude, Plan mode| B[eSPKP Pass PRD<br/>prd-espkp-pas.md]
+    B -->|verify 3 claims<br/>code + demo| C[Gap table<br/>eSPKP vs SPEC]
+    C -->|use · adjust · no| D[docs/keperluan-pas.md]
+    D -->|AI-17| E[docs/pelan-pas.md<br/>input to Lab 7.10 tomorrow]
+```
+
+### 16.2 Code shows what was built, not what is needed
+
+A PRD drafted from code inherits three risks: Claude can misread the code, the code can have features nobody asked for, and another system has a different scope. So every derived PRD is checked against the **live demo** (does the screen really behave that way?) and against the **course SPEC** (is it in your module's scope?).
+
+| eSPKP Contoh | Course SPEC (canon) | Example decision |
+|--------------|---------------------|------------------|
+| 7 Shield groups, 6-stage flow | `applicant`, `reviewer`, `approver`, `admin`; reviewer → approver | No: keep the SPEC's 2 stages |
+| Statuses 1–15, including Pindaan | `PassStatus`: 5 values (BR-PAS-01) | No: record as an open question for the system owner |
+| Required remarks ≥ 10 characters to reject/return | BR-PAS-03 remarks min 10 characters | Use: same |
+| Non-owner → 404 | BR-PAS-04 | Use: same |
+| Attachments outside `public/`, random names | BR-PAS-02 `writable/uploads/pas/` | Use, with the SPEC folder name |
+| UUIDs in URLs | INT `id` in SPEC §6 routes | No: outside the course scope |
+
+The course SPEC stays canon: table, field, enum and class names do not change because eSPKP differs. An "adjust" decision means you apply eSPKP's **principle** with the SPEC's names (for example: status transitions in one place, which is `PassStatus::canTransitionTo()`).
+
+### 16.3 Requirements → slice plan
+
+`docs/keperluan-pas.md` is the small PRD for your Pass module: roles, FRs, BRs (SPEC IDs), NFRs and ACs. From it, AI-17 produces `docs/pelan-pas.md` with slices that match the labs: Slice 1 (Lab 7.10), Slice 2 (Lab 7.11), Slices 3–5 (Labs 8.10–8.12). Tomorrow morning, Lab 7.10 details Slice 1 in the same file.
+
+### 🎯 Quiz S16
+
+> Answer after Lab 7.13. Passing this quiz marks the Lab 7.13 checkpoint.
+
+1. Why must the PRD Claude drafted from the eSPKP code be checked against the live demo and the course SPEC before it becomes docs/keperluan-pas.md?
+   - [ ] Because Claude cannot read PHP files in Plan mode
+   - [x] Because code shows what was built, not what is needed: Claude can misread the code, and the course SPEC is the canon for your module's table names, enums, roles and scope
+   - [ ] Because the live demo is newer than the code on GitLab KKM
+   - [ ] Because a PRD cannot contain business rule IDs
+   > A derived PRD is a hypothesis. The demo proves the real behaviour, and the SPEC sets the scope: eSPKP has 15 statuses and 7 groups, while the course Pass module has 5 statuses and a reviewer → approver flow.
+
+2. In the gap table, eSPKP has a "Pulangkan untuk pindaan" (return for amendment) action (status 3, Pindaan). The course SPEC's PassStatus has no such status. What is the right decision for docs/keperluan-pas.md?
+   - [ ] Use: add a Pindaan case to PassStatus because eSPKP proves it is useful
+   - [ ] Adjust: store amendment as a string in the status column without changing the enum
+   - [ ] Let Claude decide while implementing Slice 3
+   - [x] No for this module: the SPEC is canon (BR-PAS-01), so record amendment as an open question for the system owner
+   > Adding a status changes the enum, the transition table and the tests that the SPEC locks. Scope decisions are made by the system owner, not by the developer or Claude. A recorded open question makes the decision visible.
 
 ---
 

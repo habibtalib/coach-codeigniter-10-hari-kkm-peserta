@@ -97,8 +97,10 @@
 | 10:00–10:30 | S12 | Claude Code: prompting, projek baharu & PRD | Menulis prompt onboarding & pelan dalam mod Plan; mendraf dan menyemak PRD latihan |
 | 10:45–11:45 | S10 | Claude Code: subagent & skill | Subagent baca sahaja `semak-ci4` pada kod Hari 6; skill `migration-ci4` |
 | 11:45–12:30 | S11 | Claude Code: MCP untuk CodeIgniter | Server MCP `ci4-spark` (PHP, baca sahaja); Context7; MySQL/GitLab pilihan |
-| 14:30–15:45 | S13 | Claude Code: Modul Pas (1) — model, senarai & butiran | Lab 7.10: slice Pas 1 dengan pintu semakan (pelan → diff → ujian → `semak-ci4` → terangkan → commit) |
-| 15:45–17:00 | S14 | Claude Code: Modul Pas (1) — borang & muat naik selamat | Lab 7.11: borang, validasi & muat naik dokumen selamat melalui Claude Code |
+| 14:30–15:45 | S15 | Claude Code: fahami projek contoh eSPKP | Lab 7.12: 6 prompt onboarding mod Plan pada eSPKP Contoh, disahkan dengan `fail:baris` dan demo 2 peranan |
+| 15:45–17:00 | S16 | Claude Code: rancang & laras keperluan daripada projek contoh | Lab 7.13: PRD daripada kod, jadual jurang vs SPEC, `docs/keperluan-pas.md` + `docs/pelan-pas.md` |
+
+> ℹ️ S13/S14 (Lab 7.10/7.11) dipindahkan ke pagi Hari 8.
 
 > ℹ️ Mulai petang Hari 7 hingga Hari 10, modul dibina dengan Claude Code ([`kolaborasi.md`](./docs/kolaborasi.md) §3). Lab manual Pas 7.0–7.4 (dan 7.1b–7.4b) kini kod rujukan untuk perbandingan, bukan wajib.
 
@@ -107,10 +109,13 @@
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 7 | — |
-| 09:00–10:30 | S9 | Claude Code: aliran kelulusan Pas (slice 3) | Membina `PassWorkflowService` dengan `PassStatus::canTransitionTo()` melalui gerbang pelan dan diff |
-| 10:45–12:30 | S10 | Claude Code: RBAC Shield & skop akses (slice 4) | Membuktikan filter `permission:`, `authorize()` dan `canView()` dengan `filter_check` dan serangan |
-| 14:30–16:00 | S11 | Claude Code: ujian akses & sejarah status (slice 5) | Garis masa `status_logs`; `PassAccessTest` positif & negatif + 2 mutasi |
-| 16:00–17:00 | S12 | Claude Code: demo M2 & semakan akhir | `semak-ci4` + AI-08, demo 3 peranan, gerbang terang rakan; **M2 siap** |
+| 09:00–10:30 | S13 (Hari 7) | Claude Code: Pas slice 1 — model, senarai & butiran | Lab 7.10: enum, Model `ownedBy()`, senarai & butiran 404 bukan pemilik, berpandukan `docs/keperluan-pas.md` dan `docs/pelan-pas.md` ([Lab 7.10](./hari-7/lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13)) |
+| 10:45–12:30 | S14 (Hari 7) | Claude Code: Pas slice 2 — borang & muat naik selamat | Lab 7.11: borang + CSRF, validasi fail, nama rawak di luar `public/`, transaksi + pembersihan ([Lab 7.11](./hari-7/lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14)) |
+| 14:30–15:30 | S9 | Claude Code: aliran kelulusan Pas (slice 3) | Lab 8.10: `PassWorkflowService` dengan `PassStatus::canTransitionTo()` melalui gerbang pelan dan diff |
+| 15:30–16:30 | S10 | Claude Code: RBAC Shield & skop akses (slice 4) | Lab 8.11: filter `permission:`, `authorize()` dan `canView()` dibuktikan dengan `filter_check` dan serangan |
+| 16:30–17:00 | S11 | Claude Code: ujian akses & sejarah status (slice 5) — teras | Lab 8.12 (teras): matriks peranan × tindakan dan `PassAccessTest` positif & negatif |
+
+> ℹ️ **Lab 8.12 dan 8.13:** Lab 8.12 disiapkan, dan Lab 8.13 (S12, demo M2 & merge) dijalankan, pada awal Hari 9 08:30–09:00 atau sebagai kerja rumah.
 
 > ℹ️ Modul dibina dengan Claude Code melalui 7 pintu semakan ([`kolaborasi.md`](./docs/kolaborasi.md) §3); lab manual hari ini ialah kod rujukan, tidak wajib.
 

@@ -31,17 +31,20 @@ Di akhir hari ini, peserta boleh:
 
 ## 📅 Jadual Hari Ini
 
-> ℹ️ **Jadual Hari 8 (dikemas kini):** mulai hari ini modul dibina **dengan Claude Code** (S9–S12, Lab 8.10–8.13). Mula dengan menyambung Pas slice 1–2 dari Hari 7 (Lab 7.10/7.11) jika belum siap. Lab manual (S1–S8, Lab 8.0–8.4b) dan Lab 7.3/7.4 ialah **kod rujukan, tidak wajib**: setiap lab baharu ada langkah *Banding dengan kod rujukan* yang menunjuk ke bahagian manual yang sepadan.
+> ℹ️ **Jadual Hari 8 (dikemas kini):** mulai hari ini modul dibina **dengan Claude Code**. Pagi: Pas slice 1–2 dari Hari 7 (Lab 7.10/7.11, dipindahkan dari petang Hari 7) berpandukan `docs/keperluan-pas.md` dan `docs/pelan-pas.md` dari Lab 7.13. Petang: S9–S11 (Lab 8.10–8.12). Lab manual (S1–S8, Lab 8.0–8.4b) dan Lab 7.3/7.4 ialah **kod rujukan, tidak wajib**: setiap lab baharu ada langkah *Banding dengan kod rujukan* yang menunjuk ke bahagian manual yang sepadan.
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 7 | — |
-| 09:00–10:30 | S9 | Claude Code: aliran kelulusan Pas (slice 3) | Membina `PassWorkflowService` dengan `PassStatus::canTransitionTo()` melalui gerbang pelan dan diff |
+| 09:00–10:30 | S13 (Hari 7) | Claude Code: Pas slice 1 — model, senarai & butiran | Lab 7.10: enum, Model `ownedBy()`, senarai & butiran 404 bukan pemilik, berpandukan `docs/keperluan-pas.md` dan `docs/pelan-pas.md` ([Lab 7.10](../hari-7/lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13)) |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | S10 | Claude Code: RBAC Shield & skop akses (slice 4) | Membuktikan filter `permission:`, `authorize()` dan `canView()` dengan `filter_check` dan serangan |
+| 10:45–12:30 | S14 (Hari 7) | Claude Code: Pas slice 2 — borang & muat naik selamat | Lab 7.11: borang + CSRF, validasi fail, nama rawak di luar `public/`, transaksi + pembersihan ([Lab 7.11](../hari-7/lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14)) |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–16:00 | S11 | Claude Code: ujian akses & sejarah status (slice 5) | Garis masa `status_logs`; `PassAccessTest` positif & negatif + 2 mutasi |
-| 16:00–17:00 | S12 | Claude Code: demo M2 & semakan akhir | `semak-ci4` + AI-08, demo 3 peranan, gerbang terang rakan; **M2 siap** |
+| 14:30–15:30 | S9 | Claude Code: aliran kelulusan Pas (slice 3) | Lab 8.10: `PassWorkflowService` dengan `PassStatus::canTransitionTo()` melalui gerbang pelan dan diff |
+| 15:30–16:30 | S10 | Claude Code: RBAC Shield & skop akses (slice 4) | Lab 8.11: filter `permission:`, `authorize()` dan `canView()` dibuktikan dengan `filter_check` dan serangan |
+| 16:30–17:00 | S11 | Claude Code: ujian akses & sejarah status (slice 5) — teras | Lab 8.12 (teras): matriks peranan × tindakan dan `PassAccessTest` positif & negatif |
+
+> ℹ️ **Lab 8.12 dan 8.13:** Lab 8.12 disiapkan, dan Lab 8.13 (S12, demo M2 & merge) dijalankan, pada awal Hari 9 08:30–09:00 atau sebagai kerja rumah.
 
 ---
 

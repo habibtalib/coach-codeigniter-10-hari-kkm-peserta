@@ -31,17 +31,20 @@ By the end of today, participants can:
 
 ## 📅 Today's Schedule
 
-> ℹ️ **Day 8 schedule (updated):** from today, modules are built **with Claude Code** (S9–S12, Labs 8.10–8.13). Start by continuing Pass slices 1–2 from Day 7 (Lab 7.10/7.11) if not finished. The manual labs (S1–S8, Labs 8.0–8.4b) and Labs 7.3/7.4 are **reference code, not required**: every new lab has a *Compare with the reference code* step that points to the matching manual section.
+> ℹ️ **Day 8 schedule (updated):** from today, modules are built **with Claude Code**. Morning: Pass slices 1–2 from Day 7 (Labs 7.10/7.11, moved from Day 7 afternoon) guided by `docs/keperluan-pas.md` and `docs/pelan-pas.md` from Lab 7.13. Afternoon: S9–S11 (Labs 8.10–8.12). The manual labs (S1–S8, Labs 8.0–8.4b) and Labs 7.3/7.4 are **reference code, not required**: every new lab has a *Compare with the reference code* step that points to the matching manual section.
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 7 recap | — |
-| 09:00–10:30 | S9 | Claude Code: Pass approval flow (slice 3) | Build `PassWorkflowService` with `PassStatus::canTransitionTo()` through the plan and diff gates |
+| 09:00–10:30 | S13 (Day 7) | Claude Code: Pass slice 1 — model, list & detail | Lab 7.10: enums, `ownedBy()` Model, list & detail with 404 for non-owners, guided by `docs/keperluan-pas.md` and `docs/pelan-pas.md` ([Lab 7.10](../hari-7/lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13)) |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–12:30 | S10 | Claude Code: Shield RBAC & access scope (slice 4) | Prove the `permission:` filter, `authorize()` and `canView()` with `filter_check` and an attack |
+| 10:45–12:30 | S14 (Day 7) | Claude Code: Pass slice 2 — form & secure upload | Lab 7.11: form + CSRF, file validation, random names outside `public/`, transaction + clean-up ([Lab 7.11](../hari-7/lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14)) |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–16:00 | S11 | Claude Code: access tests & status history (slice 5) | `status_logs` timeline; positive & negative `PassAccessTest` + 2 mutations |
-| 16:00–17:00 | S12 | Claude Code: M2 demo & final review | `semak-ci4` + AI-08, 3-role demo, neighbour explain gate; **M2 done** |
+| 14:30–15:30 | S9 | Claude Code: Pass approval flow (slice 3) | Lab 8.10: `PassWorkflowService` with `PassStatus::canTransitionTo()` through the plan and diff gates |
+| 15:30–16:30 | S10 | Claude Code: Shield RBAC & access scope (slice 4) | Lab 8.11: the `permission:` filter, `authorize()` and `canView()` proven with `filter_check` and an attack |
+| 16:30–17:00 | S11 | Claude Code: access tests & status history (slice 5) — essentials | Lab 8.12 (essentials): role × action matrix and positive & negative `PassAccessTest` |
+
+> ℹ️ **Labs 8.12 and 8.13:** Lab 8.12 is completed, and Lab 8.13 (S12, M2 demo & merge) runs, at the start of Day 9 08:30–09:00 or as homework.
 
 ---
 

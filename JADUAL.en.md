@@ -97,8 +97,10 @@
 | 10:00–10:30 | S12 | Claude Code: prompting, new projects & PRD | Write onboarding and plan prompts in Plan mode; draft and review a practice PRD |
 | 10:45–11:45 | S10 | Claude Code: subagents & skills | Read-only `semak-ci4` subagent on Day 6 code; `migration-ci4` skill |
 | 11:45–12:30 | S11 | Claude Code: MCP for CodeIgniter | `ci4-spark` MCP server (PHP, read-only); Context7; MySQL/GitLab optional |
-| 14:30–15:45 | S13 | Claude Code: Pass Module (1) — model, list & detail | Lab 7.10: Pass slice 1 with review gates (plan → diff → tests → `semak-ci4` → explain → commit) |
-| 15:45–17:00 | S14 | Claude Code: Pass Module (1) — form & secure upload | Lab 7.11: form, validation & secure document upload through Claude Code |
+| 14:30–15:45 | S15 | Claude Code: understand the eSPKP example project | Lab 7.12: 6 Plan-mode onboarding prompts on eSPKP Contoh, verified with `file:line` and a 2-role demo |
+| 15:45–17:00 | S16 | Claude Code: plan & adjust requirements from the example project | Lab 7.13: PRD from code, gap table vs SPEC, `docs/keperluan-pas.md` + `docs/pelan-pas.md` |
+
+> ℹ️ S13/S14 (Labs 7.10/7.11) move to Day 8 morning.
 
 > ℹ️ From Day 7 afternoon to Day 10, modules are built with Claude Code ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3). The manual Pass Labs 7.0–7.4 (and 7.1b–7.4b) are now reference code for comparison, not required.
 
@@ -107,10 +109,13 @@
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 7 recap | — |
-| 09:00–10:30 | S9 | Claude Code: Pass approval flow (slice 3) | Build `PassWorkflowService` with `PassStatus::canTransitionTo()` through the plan and diff gates |
-| 10:45–12:30 | S10 | Claude Code: Shield RBAC & access scope (slice 4) | Prove the `permission:` filter, `authorize()` and `canView()` with `filter_check` and an attack |
-| 14:30–16:00 | S11 | Claude Code: access tests & status history (slice 5) | `status_logs` timeline; positive & negative `PassAccessTest` + 2 mutations |
-| 16:00–17:00 | S12 | Claude Code: M2 demo & final review | `semak-ci4` + AI-08, 3-role demo, neighbour explain gate; **M2 done** |
+| 09:00–10:30 | S13 (Day 7) | Claude Code: Pass slice 1 — model, list & detail | Lab 7.10: enums, `ownedBy()` Model, list & detail with 404 for non-owners, guided by `docs/keperluan-pas.md` and `docs/pelan-pas.md` ([Lab 7.10](./hari-7/lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13)) |
+| 10:45–12:30 | S14 (Day 7) | Claude Code: Pass slice 2 — form & secure upload | Lab 7.11: form + CSRF, file validation, random names outside `public/`, transaction + clean-up ([Lab 7.11](./hari-7/lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14)) |
+| 14:30–15:30 | S9 | Claude Code: Pass approval flow (slice 3) | Lab 8.10: `PassWorkflowService` with `PassStatus::canTransitionTo()` through the plan and diff gates |
+| 15:30–16:30 | S10 | Claude Code: Shield RBAC & access scope (slice 4) | Lab 8.11: the `permission:` filter, `authorize()` and `canView()` proven with `filter_check` and an attack |
+| 16:30–17:00 | S11 | Claude Code: access tests & status history (slice 5) — essentials | Lab 8.12 (essentials): role × action matrix and positive & negative `PassAccessTest` |
+
+> ℹ️ **Labs 8.12 and 8.13:** Lab 8.12 is completed, and Lab 8.13 (S12, M2 demo & merge) runs, at the start of Day 9 08:30–09:00 or as homework.
 
 > ℹ️ Modules are built with Claude Code through the 7 review gates ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3); today's manual labs are reference code, not required.
 

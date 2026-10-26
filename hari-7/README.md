@@ -28,6 +28,8 @@ Di akhir hari ini, peserta boleh:
 | O14 | **Menulis** prompt onboarding dan pelan dalam mod *Plan* untuk projek sedia ada, serta **mendraf** dan **menyemak** PRD latihan sebelum sebarang kod | S12 | [Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12); `docs/nota-claude.md` + `~/latihan/prd-latihan/docs/prd.md` |
 | O15 | **Membina** Pas slice 1 dengan Claude Code melalui tujuh pintu, **menolak** diff yang melanggar skop pemilik, dan **menerangkan** 3 baris utama dengan ayat sendiri | S13 | [Lab 7.10](./lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13); `pemohon2` → 404; `docs/nota-claude.md` |
 | O16 | **Membina** Pas slice 2 (borang, validasi, muat naik selamat) dengan Claude Code dan **mengesahkan** lima pintu muat naik dengan `ci4-spark` dan pelayar | S14 | [Lab 7.11](./lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14); fail bernama rawak dalam `writable/uploads/pas/`, `filter_check` menunjukkan `permission:pas.apply` |
+| O17 | **Menerangkan** seni bina projek CI4 siap (aliran request, jadual aliran kerja `Config/Aliran.php`, peranan, data, ujian) dengan Claude Code dalam mod *Plan* dan **mengesahkan** setiap dakwaan dengan `fail:baris` | S15 | [Lab 7.12](./lab.md#lab-712--fahami-projek-contoh-espkp-dengan-claude-code-s15); `~/latihan/espkpv2-kajian/nota-fahami.md` |
+| O18 | **Mendraf** PRD daripada kod, **membandingkannya** dengan SPEC dalam jadual jurang, dan **menulis** keperluan serta pelan slice Pas sendiri | S16 | [Lab 7.13](./lab.md#lab-713--prd-daripada-projek-contoh-banding-spec--pelan-slice-pas-s16); `docs/keperluan-pas.md` + `docs/pelan-pas.md` pada branch `docs/keperluan-pas` |
 
 ---
 
@@ -42,12 +44,14 @@ Di akhir hari ini, peserta boleh:
 | 10:45–11:45 | S10 | Claude Code: subagent & skill | Subagent baca sahaja `semak-ci4` pada kod Hari 6; skill `migration-ci4` ([Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10)) |
 | 11:45–12:30 | S11 | Claude Code: MCP untuk CodeIgniter | Server MCP `ci4-spark` (PHP, baca sahaja) diuji & didaftar; Context7; MySQL/GitLab pilihan ([Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–15:45 | S13 | Claude Code: Modul Pas (1) — model, senarai & butiran | Membina Pas slice 1 dengan tujuh pintu: enum, Model `ownedBy()`, senarai & butiran 404 bukan pemilik ([Lab 7.10](./lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13)) |
-| 15:45–17:00 | S14 | Claude Code: Modul Pas (1) — borang & muat naik selamat | Membina Pas slice 2: borang + CSRF, validasi fail, nama rawak di luar `public/`, transaksi + pembersihan ([Lab 7.11](./lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14)) |
+| 14:30–15:45 | S15 | Claude Code: fahami projek contoh eSPKP | Memahami projek siap dalam mod Plan: aliran request, `Config/Aliran.php`, peranan, data, ujian; sahkan setiap dakwaan dengan `fail:baris` dan demo langsung ([Lab 7.12](./lab.md#lab-712--fahami-projek-contoh-espkp-dengan-claude-code-s15)) |
+| 15:45–17:00 | S16 | Claude Code: rancang & laras keperluan daripada projek contoh | PRD daripada kod eSPKP, jadual jurang dengan SPEC, `docs/keperluan-pas.md` dan `docs/pelan-pas.md` ([Lab 7.13](./lab.md#lab-713--prd-daripada-projek-contoh-banding-spec--pelan-slice-pas-s16)) |
 
 > ℹ️ **Keputusan kursus:** mulai petang ini hingga Hari 10, modul dibina dengan Claude Code melalui tujuh pintu semakan ([`kolaborasi.md`](../docs/kolaborasi.md) §3). Lab Pas manual 7.0–7.4 (dan 7.1b–7.4b) dan sesi S1–S8 kini **kod rujukan** untuk perbandingan, tidak wajib. Hari 8 menyambung Modul Pas dengan aliran kerja yang sama.
 >
 > ℹ️ Masa pada tajuk S1–S8 di bawah ialah jadual asal; ikut jadual di atas.
+>
+> ℹ️ **Dikemas kini:** S13/S14 (Lab 7.10/7.11) dipindahkan ke pagi Hari 8 (09:00–10:30 dan 10:45–12:30). Petang ini S15/S16 (Lab 7.12/7.13): fahami projek contoh eSPKP, kemudian tulis keperluan dan pelan slice Pas yang menjadi input Lab 7.10 esok.
 
 ---
 
@@ -352,6 +356,8 @@ Aliran: `initialize` (rundingan versi protokol) → `tools/list` (senarai tool +
 
 ## S13 — Claude Code: Modul Pas (1) — Model, Senarai & Butiran (14:30–15:45)
 
+> ℹ️ **Dipindahkan ke pagi Hari 8 (09:00–10:30).** Petang Hari 7: [S15](#s15--claude-code-fahami-projek-contoh-espkp-14301545).
+
 > ℹ️ Lab: [Lab 7.10](./lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13) · Prompt [AI-19, AI-20](../docs/pustaka-prompt.md#g--laksana-dengan-pintu-semakan) · Peraturan: [`kolaborasi.md`](../docs/kolaborasi.md) §3.
 
 ### 13.1 Aliran kerja Claude Code (berlaku hingga Hari 10)
@@ -406,6 +412,8 @@ Skop pemilik berada dalam **Model** (`ownedBy()`), bukan dalam view. Query itu s
 
 ## S14 — Claude Code: Modul Pas (1) — Borang & Muat Naik Selamat (15:45–17:00)
 
+> ℹ️ **Dipindahkan ke pagi Hari 8 (10:45–12:30).** Petang Hari 7: [S16](#s16--claude-code-rancang--laras-keperluan-daripada-projek-contoh-15451700).
+
 > ℹ️ Lab: [Lab 7.11](./lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14) · Konsep: [S3](#s3--borang-validasi--muat-naik-dokumen-14301600) dan [nota 07](../docs/nota-07-muat-naik-fail-selamat.md) · Aliran kerja: [13.1](#131-aliran-kerja-claude-code-berlaku-hingga-hari-10).
 
 ### 14.1 Slice 2: lima pintu muat naik dalam diff
@@ -445,6 +453,106 @@ Selepas slice 2 lulus ujian, buka Lab 7.3 (kod manual) dan bandingkan tiga perka
    - [ ] Kerana CI4 memadam fail yang dipindah secara automatik apabila transaksi gagal
    - [ ] Kerana move() tidak boleh dipanggil semasa transaksi MySQL dibuka
    > Transaksi DB tidak merangkumi sistem fail. Rollback memulihkan jadual, tetapi fail di cakera kekal sehingga kod memadamnya. Diff tanpa `unlink()` dalam `catch` meninggalkan dokumen peribadi tanpa rekod pemilik.
+
+---
+
+## S15 — Claude Code: Fahami Projek Contoh eSPKP (14:30–15:45)
+
+> ℹ️ Lab: [Lab 7.12](./lab.md#lab-712--fahami-projek-contoh-espkp-dengan-claude-code-s15) · Prompt [AI-15](../docs/pustaka-prompt.md#ai-15--onboarding-projek-sedia-ada) · Demo & akaun: [`contoh-espkp.md`](../docs/contoh-espkp.md).
+
+### 15.1 Kenapa projek contoh, dan kenapa sekarang
+
+Pagi tadi anda menyediakan alat (CLAUDE.md, subagent, MCP). Sebelum membina Pas esok pagi, anda berlatih kemahiran yang paling kerap diperlukan di tempat kerja: **memahami projek orang lain** dengan cepat dan betul. eSPKP Contoh ialah aplikasi CI4 siap (Pas Keselamatan dan TLK Khas, aliran 6 peranan) yang dibina dengan amalan kursus ini. Anda membacanya dalam mod *Plan* sahaja: tiada satu fail pun berubah.
+
+| Soalan onboarding | Di mana jawapannya dalam eSPKP |
+|-------------------|--------------------------------|
+| Aliran request | `CLAUDE.md` bahagian *Architecture*: filter → controller nipis → `PermohonanPolicy` → Service → Model |
+| Peraturan aliran kerja | **Satu jadual:** `app/Config/Aliran.php` (`$peralihan`), dibaca oleh `App\Services\AliranKerja` |
+| Peranan & kebenaran | `app/Config/AuthGroups.php` (`$groups`, `$permissions`, `$matrix`) |
+| Status | `app/Enums/StatusPermohonan.php` (kod 1–15) dan `app/Enums/Peringkat.php` |
+| Skema | `app/Database/Migrations/` dan `docs/pangkalan-data.md` |
+| Ujian | `tests/unit`, `tests/database`, `tests/feature`; MySQL sebenar, bukan SQLite |
+
+### 15.2 CLAUDE.md yang baik bekerja untuk anda
+
+Apabila anda menjalankan `claude` dalam folder eSPKP, `CLAUDE.md` projek itu dimuatkan secara automatik. Perhatikan apa yang ia lakukan: arahan tepat (`composer test`, `composer semak`), seni bina dalam beberapa baris, **di mana** peraturan tinggal ("workflow has one source"), dan larangan ("do not write a second scope query"). Jawapan Claude yang pertama sudah tepat kerana fail ini. Bandingkan dengan `CLAUDE.md` yang anda tulis dalam Lab 7.6: apa satu perkara yang patut anda tiru?
+
+### 15.3 Sahkan setiap dakwaan
+
+Claude menjawab dengan yakin walaupun tersilap. Setiap jawapan onboarding mesti ada `fail:baris`, dan anda membuka fail itu sendiri. Satu dakwaan yang salah dalam nota anda akan menjadi keperluan yang salah dalam S16.
+
+### 🎯 Kuiz S15
+
+> Jawab selepas Lab 7.12. Lulus kuiz ini menanda checkpoint Lab 7.12.
+
+1. Pemilik sistem eSPKP mahu Penyelia boleh memulangkan permohonan pas hilang untuk pindaan. Di mana perubahan utama dibuat dalam eSPKP Contoh?
+   - [ ] Tambah semakan if dalam controller Penyelia dan butang baharu dalam view butiran
+   - [ ] Cipta migration baharu untuk jadual permohonan
+   - [x] Tambah satu baris dalam $peralihan di app/Config/Aliran.php; butang, semakan server dan stepper membaca jadual yang sama
+   - [ ] Tambah kebenaran baharu dalam AuthGroups.php sahaja
+   > `CLAUDE.md` eSPKP menyatakan aliran kerja ada satu sumber: `Config/Aliran.php`. `AliranKerja::tersedia()` dan `laksana()` membaca jadual itu, jadi controller dan view tidak berubah. `tests/unit/KonfigurasiAliranTest.php` memastikan jadual kekal konsisten.
+
+2. Dalam Lab 7.12, Claude menulis: "Pemohon boleh membatalkan permohonan pas pada sebarang status sebelum keputusan." Anda membuka Aliran.php dan melihat baris batal untuk kumpulan pas: 'dari' => [2, 3, 4, 5]. Apakah tindakan yang betul?
+   - [x] Betulkan nota: pemohon tidak boleh membatalkan pada status 8 (Menunggu Keputusan), dan rekod fail:baris sebagai bukti
+   - [ ] Terima jawapan Claude kerana ia sudah membaca keseluruhan projek
+   - [ ] Minta Claude mengedit Aliran.php supaya sepadan dengan jawapannya
+   - [ ] Abaikan perbezaan itu kerana ia hanya butiran kecil
+   > Status 8 tiada dalam senarai `dari`, jadi `AliranKerja` tidak menawarkan tindakan batal kepada pemohon pada peringkat Pelulus. Kod ialah bukti; ringkasan Claude bukan bukti. Mod *Plan* tidak mengubah fail, dan kod eSPKP bukan untuk diubah dalam lab ini.
+
+---
+
+## S16 — Claude Code: Rancang & Laras Keperluan daripada Projek Contoh (15:45–17:00)
+
+> ℹ️ Lab: [Lab 7.13](./lab.md#lab-713--prd-daripada-projek-contoh-banding-spec--pelan-slice-pas-s16) · Prompt [AI-16 hingga AI-18](../docs/pustaka-prompt.md#ai-17--prd--pelan-vertical-slice) · Templat PRD: [`tutorial-prompt-projek.md`](../docs/tutorial-prompt-projek.md) §4.3 · SPEC Pas: [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §2.2.
+
+### 16.1 Dari kod ke PRD, dari PRD ke keperluan anda
+
+S12 pagi tadi bermula daripada idea dan menghasilkan PRD. Petang ini arahnya terbalik: anda **mendapatkan PRD daripada kod yang sudah wujud** (*reverse engineering*), kemudian memutuskan apa yang sesuai untuk modul Pas anda.
+
+```mermaid
+flowchart LR
+    A[Kod eSPKP<br/>Aliran.php · AuthGroups · Enums] -->|Claude, mod Plan| B[PRD eSPKP Pas<br/>prd-espkp-pas.md]
+    B -->|sahkan 3 dakwaan<br/>kod + demo| C[Jadual jurang<br/>eSPKP vs SPEC]
+    C -->|guna · laras · tidak| D[docs/keperluan-pas.md]
+    D -->|AI-17| E[docs/pelan-pas.md<br/>input Lab 7.10 esok]
+```
+
+### 16.2 Kod menunjukkan apa yang dibina, bukan apa yang diperlukan
+
+PRD yang didraf daripada kod mewarisi tiga risiko: Claude boleh tersalah baca kod, kod boleh mempunyai ciri yang tidak diminta, dan sistem lain mempunyai skop lain. Oleh itu setiap PRD terbitan disemak terhadap **demo langsung** (adakah skrin benar-benar berkelakuan begitu?) dan terhadap **SPEC kursus** (adakah ia dalam skop modul anda?).
+
+| eSPKP Contoh | SPEC kursus (kanun) | Contoh keputusan |
+|--------------|---------------------|------------------|
+| 7 kumpulan Shield, aliran 6 peringkat | `applicant`, `reviewer`, `approver`, `admin`; penyemak → pelulus | Tidak: kekal 2 peringkat SPEC |
+| Status 1–15, termasuk Pindaan | `PassStatus`: 5 nilai (BR-PAS-01) | Tidak: rekod sebagai soalan terbuka untuk pemilik sistem |
+| Catatan wajib ≥ 10 aksara untuk tolak/pulang | BR-PAS-03 remarks min 10 aksara | Guna: sama |
+| Bukan pemilik → 404 | BR-PAS-04 | Guna: sama |
+| Lampiran di luar `public/`, nama rawak | BR-PAS-02 `writable/uploads/pas/` | Guna, dengan nama folder SPEC |
+| UUID dalam URL | `id` INT dalam route SPEC §6 | Tidak: luar skop kursus |
+
+SPEC kursus kekal kanun: nama jadual, medan, enum dan kelas tidak berubah kerana eSPKP berbeza. Keputusan "laras" bermaksud anda menerapkan **prinsip** eSPKP dengan nama SPEC (contoh: peralihan status di satu tempat, iaitu `PassStatus::canTransitionTo()`).
+
+### 16.3 Keperluan → pelan slice
+
+`docs/keperluan-pas.md` ialah PRD kecil modul Pas anda: peranan, FR, BR (ID SPEC), NFR dan AC. Daripadanya, AI-17 menghasilkan `docs/pelan-pas.md` dengan slice yang sepadan dengan lab: Slice 1 (Lab 7.10), Slice 2 (Lab 7.11), Slice 3–5 (Lab 8.10–8.12). Esok pagi, Lab 7.10 memperincikan Slice 1 dalam fail yang sama.
+
+### 🎯 Kuiz S16
+
+> Jawab selepas Lab 7.13. Lulus kuiz ini menanda checkpoint Lab 7.13.
+
+1. Kenapa PRD yang Claude draf daripada kod eSPKP mesti disemak terhadap demo langsung dan SPEC kursus sebelum menjadi docs/keperluan-pas.md?
+   - [ ] Kerana Claude tidak boleh membaca fail PHP dalam mod Plan
+   - [x] Kerana kod menunjukkan apa yang dibina, bukan apa yang diperlukan: Claude boleh tersalah baca kod, dan SPEC kursus ialah kanun untuk nama jadual, enum, peranan dan skop modul anda
+   - [ ] Kerana demo langsung lebih baharu daripada kod di GitLab KKM
+   - [ ] Kerana PRD tidak boleh mengandungi ID peraturan perniagaan
+   > PRD terbitan adalah hipotesis. Demo membuktikan kelakuan sebenar, dan SPEC menentukan skop: eSPKP mempunyai 15 status dan 7 kumpulan, manakala modul Pas kursus mempunyai 5 status dan aliran penyemak → pelulus.
+
+2. Dalam jadual jurang, eSPKP mempunyai tindakan "Pulangkan untuk pindaan" (status 3, Pindaan). PassStatus dalam SPEC kursus tiada status itu. Apakah keputusan yang betul untuk docs/keperluan-pas.md?
+   - [ ] Guna: tambah kes Pindaan dalam PassStatus kerana eSPKP membuktikan ia berguna
+   - [ ] Laras: simpan pindaan sebagai rentetan dalam lajur status tanpa mengubah enum
+   - [ ] Biar Claude memutuskan semasa melaksanakan Slice 3
+   - [x] Tidak untuk modul ini: SPEC ialah kanun (BR-PAS-01), jadi rekod pindaan sebagai soalan terbuka untuk pemilik sistem
+   > Menambah status mengubah enum, jadual peralihan dan ujian yang dikunci oleh SPEC. Keputusan skop dibuat oleh pemilik sistem, bukan oleh pembangun atau Claude. Soalan terbuka yang direkod menjadikan keputusan itu kelihatan.
 
 ---
 
