@@ -2485,48 +2485,84 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 
 <section class="slide">
   <div class="eyebrow">Day 7 · Today's outputs</div>
-  <h2>Check before you go home</h2>
-  <ul class="checks done">
-    <li><span><code>PassApplication</code> &amp; <code>PassDocument</code> Model/Entity; <code>PassType</code> enum.</span></li>
-    <li><span><code>/pas/permohonan</code> list with owner scope + detail view.</span></li>
-    <li><span>First application <code>PAS-2026-0001</code> with status <span class="st submitted">submitted</span>.</span></li>
-    <li><span>Secure upload: type, size, ≤ 3 files, random name, outside <code>public/</code>.</span></li>
-    <li><span>Edge-case table tested and bugs recorded.</span></li>
+  <h2>Check before you leave</h2>
+  <ul class="checks done sm">
+    <li><span><code>.claude/settings.json</code> (4 <i>deny</i>) &amp; project <code>CLAUDE.md</code> committed; <code>CLAUDE.local.md</code> in <code>.gitignore</code> (7.6).</span></li>
+    <li><span>3 onboarding prompts verified; practice <code>docs/prd.md</code> with FR, BR &amp; AC (7.9).</span></li>
+    <li><span><code>semak-ci4</code> subagent, <code>migration-ci4</code> skill &amp; <code>docs/semakan-ci4-hari6.md</code> (7.7).</span></li>
+    <li><span><code>ci4-spark</code> MCP server in <code>.mcp.json</code>; Context7 <i>Connected</i> (7.8).</span></li>
+    <li><span>Pass slice 1: <code>ownedBy()</code>, list &amp; detail, 404 for non-owners (7.10).</span></li>
+    <li><span>Pass slice 2: secure upload, random names, transaction + clean-up; 3 explained lines per slice (7.11).</span></li>
   </ul>
-  <aside class="notes"><p>Checkpoint: buka folder writable/uploads/pas/ — nama fail mesti rawak. Cuba muat turun dokumen milik pemohon lain (pemohon2) — mesti 404.</p></aside>
+  <aside class="notes"><p>Checkpoint petang: commit slice 1 dan 2 ada dalam feat/pas-claude, docs/nota-claude.md mempunyai 3 baris terangan setiap slice, dan pemohon2 mendapat 404 pada butiran dan muat turun dokumen pemohon1. MR chore/claude-code mesti sudah di-merge.</p></aside>
 </section>
 
 <!-- ============================ DAY 8 ============================ -->
 
 <section class="slide dark divider" data-label="Day 8 · Pass (2)">
   <div class="eyebrow">Day 8 · Phase B — Set Up &amp; Build</div>
-  <h1>Pass Module — Part 2</h1>
+  <h1>Pass Module — Part 2 (Claude Code)</h1>
   <div><span class="chip m-pas">M2 · approval, RBAC &amp; audit</span></div>
   <div class="sessions">
-    <div><i>S1</i>Approval flow apply → review → approve/reject</div>
-    <div><i>S2</i>Role-based access control</div>
-    <div><i>S3</i>Status/history log &amp; functional tests</div>
-    <div><i>S4</i>Wrap-up — <b>M2 done</b></div>
+    <div><i>S9</i><span>Pass approval flow (slice 3)</span></div>
+    <div><i>S10</i><span>Shield RBAC &amp; access scope (slice 4)</span></div>
+    <div><i>S11</i><span>Access tests &amp; status history (slice 5)</span></div>
+    <div><i>S12</i><span>M2 demo &amp; final review — <b>M2 done</b></span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span></div>
   <div class="daynum">08</div>
-  <aside class="notes"><p>Hari keselamatan: aliran status yang ketat, kebenaran berasaskan peranan dan jejak audit. Hujung hari: demo aliran penuh tiga peranan.</p></aside>
+  <aside class="notes"><p>Hari 8 dibina bersama Claude Code: slice 3 hingga 5 modul Pas melalui tujuh gerbang yang sama seperti Hari 7 petang. Slaid S1–S4 manual kekal sebagai kod rujukan. Hujung hari: demo tiga peranan, gerbang terang rakan dan merge — M2 siap.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 8 · Today's objectives</div>
   <h2>By the end of today, you can…</h2>
-  <ul class="checks">
-    <li><span><em>S1</em>Implement <code>PassWorkflowService</code> with <code>PassStatus::canTransitionTo()</code>.</span></li>
-    <li><span><em>S2</em>Configure Shield groups/permissions + route filters + ownership checks.</span></li>
-    <li><span><em>S3</em>Show the <code>status_logs</code> timeline and write positive &amp; negative access tests.</span></li>
-    <li><span><em>S4</em>Demo the full three-role flow — <b>M2 done</b>.</span></li>
+  <ul class="checks sm">
+    <li><span><em>S9</em>Assess the <code>transition()</code> diff: <code>FOR UPDATE</code>, <code>canTransitionTo()</code>, <code>status_logs</code> in the transaction.</span></li>
+    <li><span><em>S10</em>Prove <code>permission:</code>, <code>authorize()</code> &amp; <code>canView()</code> with <code>filter_check</code> and attacks.</span></li>
+    <li><span><em>S11</em>Write the access matrix yourself; positive/negative <code>PassAccessTest</code> + 2 mutations.</span></li>
+    <li><span><em>S12</em>Run <code>semak-ci4</code> + AI-08, demo 3 roles, merge — <b>M2 done</b>.</span></li>
   </ul>
-  <aside class="notes"><p>Tiga lapisan kawalan yang akan kita bina: enum (peralihan sah), Shield (siapa boleh), pemilikan (rekod siapa).</p></aside>
+  <p class="small mt16">Labs 8.10–8.13 · Manual S1–S4 slides = <b>reference code</b>.</p>
+  <aside class="notes"><p>Setiap objektif diukur melalui Kuiz S9–S12 (checkpoint Lab 8.10–8.13). Tekankan: tugas peserta kini menilai diff Claude dan membuktikannya dengan alat yang bukan Claude (filter_check, serangan, ujian, mutasi).</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 8 · Today's slice plan</div>
+  <h2>Today's slice plan: Pass slices 3–5</h2>
+  <table class="t">
+    <tr><th>Slice</th><th>A good diff has</th><th>Reject if</th></tr>
+    <tr><td><b>Slice 3 · S9</b><br><span class="small">Approval flow · Lab 8.10</span></td><td><code>SELECT … FOR UPDATE</code> after <code>transBegin()</code>; <code>record()</code> before <code>transCommit()</code>; remarks ≥ 10 chars</td><td><code>status</code> from <code>getPost()</code>; check before the transaction; <code>approved_at</code> in <code>reject()</code></td></tr>
+    <tr><td><b>Slice 4 · S10</b><br><span class="small">RBAC &amp; scope · Lab 8.11</span></td><td><code>permission:pas.approve</code> per route; <code>$actor-&gt;can()</code>; <code>canView()</code> → 404</td><td><code>inGroup('approver')</code> instead of <code>can()</code>; 403 for non-owners; permissions outside SPEC §4</td></tr>
+    <tr><td><b>Slice 5 · S11</b><br><span class="small">Tests &amp; timeline · Lab 8.12</span></td><td>Negative tests check the response <b>and</b> the DB; <code>esc()</code> on <code>remarks</code></td><td><code>assertRedirect()</code> only; tests changed to go green</td></tr>
+    <tr><td><b>S12</b><br><span class="small">Demo &amp; merge · Lab 8.13</span></td><td><code>semak-ci4</code> + AI-08; 3 random lines explained without Claude</td><td>A line you can't explain = feature not done</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Branch <code>feat/pas-claude</code>; one small <code>PAS: …</code> commit per slice.</div></div>
+  <aside class="notes"><p>Baca jadual ini bersama sebelum Lab 8.10. Lajur kanan ialah senarai diff yang mesti ditolak dengan sebab. Ingatkan: permission yang tiada dalam SPEC §4 ditolak, dan bukan pemilik dapat 404, bukan 403. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 8 · Key verification</div>
+  <h2>Proof, not promises: your own commands</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">Git Bash · project root<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="c"># slices 3–5: access tests</span>
+composer test -- tests/feature/Pas/PassAccessTest.php
+
+<span class="c"># slice 4: per-route filters (+ MCP filter_check)</span>
+php spark filter:check POST /pas/semakan/1/approve
+
+<span class="c"># S12: peer explain gate</span>
+git diff main...feat/pas-claude</pre></div>
+    <div class="card top m-a"><span class="k">CHECKPOINT</span>
+      <ul><li>Application A <span class="st approved">approved</span>, 3 <code>status_logs</code> rows</li><li>Remarks <code>tak ok</code> rejected (BR-PAS-03); a second Approve click → BR-PAS-01 message</li><li><code>pemohon2</code> → 404 on <code>pemohon1</code>'s application</li><li>≥ 10 tests green; mutations (remove filter, <code>canView()</code> → <code>true</code>) fail a test</li><li>MR <code>feat/pas-claude</code> merged — <b>M2 done</b></li></ul>
+    </div>
+  </div>
+  <aside class="notes"><p>Semua bukti dijalankan oleh peserta sendiri, bukan diminta daripada Claude. Mutasi ialah langkah paling penting: jika kod dirosakkan dan tiada ujian gagal, ujian itu belum menguji. Pulihkan kod selepas mutasi dan pastikan git status bersih. (rujukan sepanjang hari)</p></aside>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 8 · S1 — Approval flow</div>
+  <div class="eyebrow">Day 8 · S1 — Approval flow · reference code</div>
   <h2><code style="font-size:.8em">PassStatus</code> state diagram (BR-PAS-01)</h2>
   <svg viewBox="0 0 900 250" width="900" height="250" role="img" aria-label="PassStatus transition diagram" style="max-width:100%;height:auto;align-self:center">
     <defs><marker id="ahP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#64748B"/></marker></defs>
@@ -2560,7 +2596,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 8 · S1 — PassWorkflowService</div>
+  <div class="eyebrow">Day 8 · S1 — PassWorkflowService · reference code</div>
   <h2>One gate for every status transition</h2>
   <div class="codewrap"><div class="codebar">app/Services/PassWorkflowService.php<span class="lang">php</span></div>
 <pre class="code sm" data-lang="php"><span class="k">public</span> <span class="k">function</span> <span class="f">transition</span>(<span class="k">int</span> <span class="v">$id</span>, <span class="t">PassStatus</span> <span class="v">$to</span>, <span class="k">int</span> <span class="v">$actorId</span>, ?<span class="k">string</span> <span class="v">$remarks</span> = <span class="k">null</span>): <span class="k">void</span>
@@ -2589,7 +2625,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 8 · S2 — Shield</div>
+  <div class="eyebrow">Day 8 · S2 — Shield · reference code</div>
   <h2 class="wide"><code style="font-size:.8em">AuthGroups</code> permission matrix</h2>
   <div class="split" style="grid-template-columns:1fr 480px">
     <table class="t center">
@@ -2619,7 +2655,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 8 · S2 — Filters &amp; ownership</div>
+  <div class="eyebrow">Day 8 · S2 — Filters &amp; ownership · reference code</div>
   <h2>Two layers on the server: route + record</h2>
   <div class="codewrap"><div class="codebar">app/Config/Routes.php<span class="lang">php</span></div>
 <pre class="code sm" data-lang="php"><span class="v">$routes</span>-&gt;<span class="f">group</span>(<span class="s">'tlk/keputusan'</span>, [<span class="s">'filter'</span> =&gt; <span class="s">'permission:tlk.decide'</span>], <span class="k">static</span> <span class="k">function</span> (<span class="v">$routes</span>) {
@@ -2648,7 +2684,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 8 · S3 — Audit trail</div>
+  <div class="eyebrow">Day 8 · S3 — Audit trail · reference code</div>
   <h2>One <code style="font-size:.8em">status_logs</code> for TLK &amp; PAS</h2>
   <div class="split r">
     <div class="stack" style="gap:10px">
@@ -2682,7 +2718,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 8 · S3 — Access tests</div>
+  <div class="eyebrow">Day 8 · S3 — Access tests · reference code</div>
   <h2>Positive &amp; negative tests for every role</h2>
   <div class="codewrap"><div class="codebar">tests/feature/PasAccessTest.php<span class="lang">php</span></div>
 <pre class="code sm" data-lang="php"><span class="k">use</span> <span class="t">CodeIgniter</span>\<span class="t">Shield</span>\<span class="t">Models</span>\<span class="t">UserModel</span>;
@@ -2743,33 +2779,69 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 
 <section class="slide dark divider" data-label="Day 9 · Reports">
   <div class="eyebrow">Day 9 · Phase C — Report &amp; Hand Over</div>
-  <h1>Reports Module</h1>
+  <h1>Report Module (Claude Code)</h1>
   <div><span class="chip m-rpt">M3 · RPT-01 · RPT-02 · RPT-03</span></div>
   <div class="sessions">
-    <div><i>S1</i>Report design: types &amp; filter criteria</div>
-    <div><i>S2</i>Aggregate queries &amp; data search</div>
-    <div><i>S3</i>PDF / Excel export</div>
-    <div><i>S4</i>Reports module testing — <b>M3 done</b></div>
+    <div><i>S9</i><span><code>ReportService</code> &amp; whitelist filters (L1)</span></div>
+    <div><i>S10</i><span>List views &amp; RPT-03 (L2)</span></div>
+    <div><i>S11</i><span>Safe PDF &amp; Excel export (L3)</span></div>
+    <div><i>S12</i><span>Report tests &amp; performance — <b>M3 done</b></span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span></div>
   <div class="daynum">09</div>
-  <aside class="notes"><p>Laporan membaca data TLK dan Pas. Prinsip utama: satu set penapis, tiga output (HTML, PDF, Excel) — semua mesti menunjukkan jumlah yang sama.</p></aside>
+  <aside class="notes"><p>Modul Laporan dibina bersama Claude Code dalam empat slice L1–L4. Prinsip utama kekal: penapis ialah input pengguna, dan skrin, PDF dan Excel mesti datang daripada builder yang sama. Slaid S1–S4 manual kekal sebagai kod rujukan.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 9 · Today's objectives</div>
   <h2>By the end of today, you can…</h2>
-  <ul class="checks">
-    <li><span><em>S1</em>Specify RPT-01..03 and the GET filter form.</span></li>
-    <li><span><em>S2</em>Write a <code>ReportService</code> with joins, <code>groupBy</code>, <code>selectCount</code> &amp; dynamic filters.</span></li>
-    <li><span><em>S3</em>Generate PDF (Dompdf) &amp; <code>.xlsx</code> (PhpSpreadsheet) from the same filters.</span></li>
-    <li><span><em>S4</em>Confirm report totals = DB totals — <b>M3 done</b>.</span></li>
+  <ul class="checks sm">
+    <li><span><em>S9</em>Assess <code>normaliseFilters()</code>: enum <code>tryFrom()</code>, <code>SORTABLE</code>, half-open date ranges.</span></li>
+    <li><span><em>S10</em>Build the list &amp; RPT-03 from one <code>$filters</code> source, with context-aware <code>esc()</code>.</span></li>
+    <li><span><em>S11</em>Export PDF/Excel from the same builder; <code>=1+1</code> stays text.</span></li>
+    <li><span><em>S12</em>Test with hand-computed numbers + a mutation, and check indexes with <code>EXPLAIN</code> — <b>M3 done</b>.</span></li>
   </ul>
-  <aside class="notes"><p>Pasang pakej di awal S3: <code>composer require dompdf/dompdf phpoffice/phpspreadsheet</code>. Lakukan semasa rehat pagi jika rangkaian perlahan.</p></aside>
+  <p class="small mt16">Labs 9.10–9.13 · Manual S1–S4 slides = <b>reference code</b>.</p>
+  <aside class="notes"><p>Objektif diukur melalui Kuiz S9–S12 (checkpoint Lab 9.10–9.13). Pasang dompdf dan phpspreadsheet semasa rehat pagi jika rangkaian perlahan, supaya slice L3 tidak tertangguh.</p></aside>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 9 · S1 — Specification</div>
+  <div class="eyebrow">Day 9 · Today's slice plan</div>
+  <h2>Today's slice plan: Reports L1–L4</h2>
+  <table class="t">
+    <tr><th>Slice</th><th>A good diff has</th><th>Reject if</th></tr>
+    <tr><td><b>L1 · S9</b><br><span class="small">Whitelist filters · Lab 9.10</span></td><td><code>tryFrom()</code> drops <code>status=bogus</code>; <code>sort</code> defaults from <code>SORTABLE</code>; <code>created_at &lt; day+1</code></td><td>Input into <code>orderBy()</code>; <code>&lt;= '2026-09-30'</code>; raw SQL</td></tr>
+    <tr><td><b>L2 · S10</b><br><span class="small">List &amp; RPT-03 · Lab 9.11</span></td><td>Form, pager &amp; export links from <code>toQuery($filters)</code>; <code>esc($v, 'attr')</code></td><td><code>$_GET</code> straight into the view; a hidden menu as access control</td></tr>
+    <tr><td><b>L3 · S11</b><br><span class="small">Safe export · Lab 9.12</span></td><td><code>exportRows()</code> uses the same <code>builder()</code>; <code>setCellValueExplicit(…, TYPE_STRING)</code>; limit before reading</td><td>Export query rewritten; <code>fromArray()</code> for text; <code>isRemoteEnabled</code> <code>true</code></td></tr>
+    <tr><td><b>L4 · S12</b><br><span class="small">Tests &amp; performance · Lab 9.13</span></td><td>Expected values computed by hand; index proposal in <code>docs/log-keputusan.md</code></td><td>Tests call <code>ReportService</code> for the expected value; an old migration edited</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Branch <code>feat/laporan-claude</code>; one small <code>RPT: …</code> commit per slice.</div></div>
+  <aside class="notes"><p>Peserta menulis jadual input → hasil penapis sendiri sebelum pelan; jadual itulah yang menilai kod Claude. Nama lajur tidak boleh di-bind, jadi hanya whitelist SORTABLE yang melindungi orderBy(). (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · Key verification</div>
+  <h2>Proof: same totals, safe input, measured queries</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">Git Bash · project root<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="c"># L1: permission filter on 3 routes</span>
+php spark routes
+
+<span class="c"># L4: hand-computed tests</span>
+composer test -- --filter ReportServiceTest
+
+<span class="c"># L4: indexes (+ MCP db_table)</span>
+php spark db:table pass_applications --metadata
+php spark laporan:explain</pre></div>
+    <div class="card top m-a"><span class="k">CHECKPOINT</span>
+      <ul><li><code>permission:laporan.view</code> on all three report routes</li><li><code>?from=%22%3E%3Cb%3Ex</code> gives no raw HTML; filters persist on page 2</li><li>Screen = PDF = Excel for RPT-01 <code>status=approved</code></li><li><code>=1+1</code> stays text; <code>pemohon1</code> rejected for <code>?export=xlsx</code></li><li>Mutation <code>&lt;</code> → <code>&lt;=</code> fails a test; MR merged — <b>M3 done</b></li></ul>
+    </div>
+  </div>
+  <aside class="notes"><p>Nilai dijangka dalam ujian mesti dikira dengan tangan sebelum Claude menulis ujian. Index baharu hanya direkod sebagai cadangan dalam docs/log-keputusan.md; jangan sunting migration lama. Uji =1+1 dengan nama sintetik dan pulihkan full_name selepas itu. (rujukan sepanjang hari)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · S1 — Specification · reference code</div>
   <h2 class="wide">Three reports, one pattern</h2>
   <table class="t">
     <tr><th style="width:110px">Code</th><th>Report</th><th>Filters</th><th style="width:210px">Route</th></tr>
@@ -2788,7 +2860,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 9 · S1–S2 — Dynamic filters</div>
+  <div class="eyebrow">Day 9 · S1–S2 — Dynamic filters · reference code</div>
   <h2>GET form → conditional query builder</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">app/Views/laporan/tempahan.php<span class="lang">php</span></div>
@@ -2834,7 +2906,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 9 · S2 — Aggregate</div>
+  <div class="eyebrow">Day 9 · S2 — Aggregate · reference code</div>
   <h2>RPT-03: slot usage by zone</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">ReportService::usageByZone()<span class="lang">php</span></div>
@@ -2874,7 +2946,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 9 · S3 — Export</div>
+  <div class="eyebrow">Day 9 · S3 — Export · reference code</div>
   <h2>Same filters, two file formats</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">ExportService::pdf()<span class="lang">php</span></div>
@@ -2916,7 +2988,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 9 · S4 — Verification</div>
+  <div class="eyebrow">Day 9 · S4 — Verification · reference code</div>
   <h2>Report totals must match DB totals</h2>
   <div class="split l">
     <div class="codewrap"><div class="codebar">tests/unit/ReportTotalsTest.php<span class="lang">php</span></div>
@@ -2972,33 +3044,69 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 
 <section class="slide dark divider" data-label="Day 10 · Statistics &amp; Capstone">
   <div class="eyebrow">Day 10 · Phase C — Report &amp; Hand Over</div>
-  <h1>Statistics Module &amp; Capstone</h1>
+  <h1>Statistics Module &amp; Capstone (Claude Code)</h1>
   <div><span class="chip m-stat">M4 · Dashboard + demo</span></div>
   <div class="sessions">
-    <div><i>S1</i>Statistics dashboard: charts &amp; summaries</div>
-    <div><i>S2</i>Aggregate queries &amp; basic caching</div>
-    <div><i>S3</i>Final system testing &amp; bug fixing</div>
-    <div><i>S4</i>Capstone demo to the system owner &amp; closing</div>
+    <div><i>S5</i><span>Statistics slices 1–4 with Claude Code</span></div>
+    <div><i>S3</i><span>Manual UAT across 4 modules</span></div>
+    <div><i>S6</i><span>Capstone prep: <code>semak-ci4</code>, AI-08/09/18, tag</span></div>
+    <div><i>S7</i><span>Capstone demo &amp; Claude Code reflection</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span></div>
   <div class="daynum">10</div>
-  <aside class="notes"><p>Hari terakhir. Pagi: bina dashboard. Petang: UAT dan demo. Jaga masa dengan ketat — S4 tidak boleh ditolak.</p></aside>
+  <aside class="notes"><p>Hari terakhir. Pagi: modul Statistik empat slice dengan Claude Code, kemudian UAT manual. Petang: persediaan capstone dengan semak-ci4 dan AI-08/09/18, tag v1.0-capstone, demo dan refleksi. Jaga masa — demo tidak boleh ditolak.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 10 · Today's objectives</div>
   <h2>By the end of today, you can…</h2>
-  <ul class="checks">
-    <li><span><em>S1</em>Build KPI cards + 4 Chart.js charts from a JSON endpoint.</span></li>
-    <li><span><em>S2</em>Use <code>cache()-&gt;remember()</code> and invalidate it when a status changes.</span></li>
-    <li><span><em>S3</em>Run the UAT script: reproduce → failing test → fix.</span></li>
-    <li><span><em>S4</em>Demo the end-to-end flow and run a retrospective.</span></li>
+  <ul class="checks sm">
+    <li><span><em>S5</em>Build KPIs, datasets, the Chart.js dashboard &amp; cache through 4 slices and 7 gates.</span></li>
+    <li><span><em>S3</em>Run the UAT script as a user across 4 modules.</span></li>
+    <li><span><em>S6</em>Review the repo (<code>semak-ci4</code>, AI-08, AI-09, AI-18), fix red → green and tag <code>v1.0-capstone</code>.</span></li>
+    <li><span><em>S7</em>Demo the system and explain the lines the panel picks, including Claude's.</span></li>
   </ul>
-  <aside class="notes"><p>Chart.js disimpan sebagai fail tempatan dalam public/ supaya dashboard berfungsi tanpa internet — sama seperti slaid ini.</p></aside>
+  <p class="small mt16">Labs 10.10–10.12 · Manual S1–S2 slides = <b>reference code</b>.</p>
+  <aside class="notes"><p>Objektif diukur melalui Kuiz S5–S7 (checkpoint Lab 10.10–10.12) dan UAT S3. Ingatkan bahawa dalam demo, panel boleh memilih baris yang ditulis Claude; jawapan "Claude yang tulis" tidak diterima.</p></aside>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 10 · S1 — Dashboard <code>/statistik</code></div>
+  <div class="eyebrow">Day 10 · Today's slice plan</div>
+  <h2>Today's slice plan: Statistics 1–4 &amp; capstone</h2>
+  <table class="t">
+    <tr><th>Slice</th><th>A good diff has</th><th>Reject if</th></tr>
+    <tr><td><b>Slices 1–2 · S5</b><br><span class="small">KPIs &amp; datasets · Lab 10.10</span></td><td><code>StatisticsService::build()</code> with <code>$this-&gt;now</code>; 12 months (empty = 0); <code>permission:statistik.view</code></td><td><code>date('Y-m-d')</code> in the service; <code>TIMESTAMPDIFF</code>; concatenated SQL</td></tr>
+    <tr><td><b>Slice 3 · S5</b><br><span class="small">Chart.js dashboard</span></td><td>KPI cards on the server; <code>fetch()</code> + <code>res.ok</code>; <code>esc()</code></td><td><code>innerHTML</code> for server data; a new package</td></tr>
+    <tr><td><b>Slice 4 · S5</b><br><span class="small">Cache &amp; invalidation</span></td><td><code>cache()-&gt;delete(CACHE_KEY)</code> <b>after</b> every <code>transCommit()</code>; test red first</td><td><code>delete</code> before commit; <code>cache()-&gt;clean()</code>; <code>markTestSkipped()</code></td></tr>
+    <tr><td><b>S6–S7</b><br><span class="small">Capstone · Labs 10.11–10.12</span></td><td>AI findings verified with your own commands; fixes via red → green tests</td><td>Tests changed to go green; tag moved after the demo</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Branch <code>feat/statistik</code>; one <code>STAT:</code> commit per slice, then capstone <code>FIX:</code>/<code>CHORE:</code>.</div></div>
+  <aside class="notes"><p>Paling kerap salah: cache()->delete() sebelum transCommit(), dan date() dalam service yang menjadikan ujian bergantung pada tarikh hari ini. StatisticsCacheTest mesti dilihat merah dahulu. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 10 · Key verification</div>
+  <h2>Final proof before the demo</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">Git Bash · project root<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="c"># S5: including StatisticsCacheTest (red first)</span>
+composer test
+
+<span class="c"># slice 4: delete after every transCommit()</span>
+grep -n "transCommit\|CACHE_KEY" app/Services/*.php
+
+<span class="c"># S6–S7: tag &amp; no secrets handed over</span>
+git tag -l
+git ls-files | grep -E "settings\.local|CLAUDE\.local|(^|/)\.env$"</pre></div>
+    <div class="card top m-a"><span class="k">CHECKPOINT</span>
+      <ul><li><code>pelulus</code> sees 4 cards + 4 charts; <code>pemohon1</code> blocked</li><li>“Pending passes” KPI changes right after an approval</li><li>12 explained lines in <code>docs/nota-claude.md</code>; ≥ 1 rejected diff</li><li><code>docs/semakan-capstone.md</code>: every finding Accept/Reject with evidence</li><li><code>v1.0-capstone</code> on <code>main</code>; the last <code>grep</code> prints nothing</li></ul>
+    </div>
+  </div>
+  <aside class="notes"><p>Tag hanya selepas semua pembaikan di-merge dan composer test hijau pada main. Semakan git ls-files memastikan tiada .env, settings.local.json atau CLAUDE.local.md diserahkan. Dapatan selepas tag direkod sebagai BUG-00N, jangan alih tag. (rujukan)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 10 · S1 — Dashboard <code>/statistik</code> · reference code</div>
   <h2 class="wide">Four KPIs, four charts, one endpoint</h2>
   <div class="grid c4">
     <div class="kpi" style="--c:var(--teal)"><i>Active bookings</i><b>42</b><span>TLK pending + approved</span></div>
@@ -3017,7 +3125,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 10 · S1 — JSON endpoint + Chart.js</div>
+  <div class="eyebrow">Day 10 · S1 — JSON endpoint + Chart.js · reference code</div>
   <h2>The server calculates, the browser draws</h2>
   <div class="split r">
     <div class="codewrap"><div class="codebar">Statistik/DashboardController.php<span class="lang">php</span></div>
@@ -3060,7 +3168,7 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 10 · S2 — Caching</div>
+  <div class="eyebrow">Day 10 · S2 — Caching · reference code</div>
   <h2>Cache for 10 minutes, clear it when a status changes</h2>
   <div class="split l">
     <div class="codewrap"><div class="codebar">app/Services/StatisticsService.php<span class="lang">php</span></div>

@@ -2486,47 +2486,83 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 <section class="slide">
   <div class="eyebrow">Hari 7 · Hasil hari ini</div>
   <h2>Semak sebelum pulang</h2>
-  <ul class="checks done">
-    <li><span>Model/Entity <code>PassApplication</code> &amp; <code>PassDocument</code>; enum <code>PassType</code>.</span></li>
-    <li><span>Senarai <code>/pas/permohonan</code> dengan skop pemilik + paparan butiran.</span></li>
-    <li><span>Permohonan pertama <code>PAS-2026-0001</code> berstatus <span class="st submitted">submitted</span>.</span></li>
-    <li><span>Muat naik selamat: jenis, saiz, ≤ 3 fail, nama rawak, luar <code>public/</code>.</span></li>
-    <li><span>Jadual kes sempadan diuji dan pepijat direkod.</span></li>
+  <ul class="checks done sm">
+    <li><span><code>.claude/settings.json</code> (4 <i>deny</i>) &amp; <code>CLAUDE.md</code> projek di-commit; <code>CLAUDE.local.md</code> dalam <code>.gitignore</code> (7.6).</span></li>
+    <li><span>3 prompt onboarding disahkan; <code>docs/prd.md</code> latihan dengan FR, BR &amp; AC (7.9).</span></li>
+    <li><span>Subagent <code>semak-ci4</code>, skill <code>migration-ci4</code> &amp; <code>docs/semakan-ci4-hari6.md</code> (7.7).</span></li>
+    <li><span>Server MCP <code>ci4-spark</code> dalam <code>.mcp.json</code>; Context7 <i>Connected</i> (7.8).</span></li>
+    <li><span>Pas slice 1: <code>ownedBy()</code>, senarai &amp; butiran, 404 bukan pemilik (7.10).</span></li>
+    <li><span>Pas slice 2: muat naik selamat, nama rawak, transaksi + pembersihan; 3 baris terangan setiap slice (7.11).</span></li>
   </ul>
-  <aside class="notes"><p>Checkpoint: buka folder writable/uploads/pas/ — nama fail mesti rawak. Cuba muat turun dokumen milik pemohon lain (pemohon2) — mesti 404.</p></aside>
+  <aside class="notes"><p>Checkpoint petang: commit slice 1 dan 2 ada dalam feat/pas-claude, docs/nota-claude.md mempunyai 3 baris terangan setiap slice, dan pemohon2 mendapat 404 pada butiran dan muat turun dokumen pemohon1. MR chore/claude-code mesti sudah di-merge.</p></aside>
 </section>
 
 <!-- ============================ HARI 8 ============================ -->
 
 <section class="slide dark divider" data-label="Hari 8 · Pas (2)">
   <div class="eyebrow">Hari 8 · Fasa B — Sedia &amp; Bina</div>
-  <h1>Modul Pas — Bahagian 2</h1>
+  <h1>Modul Pas — Bahagian 2 (Claude Code)</h1>
   <div><span class="chip m-pas">M2 · kelulusan, RBAC &amp; audit</span></div>
   <div class="sessions">
-    <div><i>S1</i>Aliran kelulusan mohon → semak → lulus/tolak</div>
-    <div><i>S2</i>Kawalan akses ikut peranan</div>
-    <div><i>S3</i>Log status/sejarah &amp; ujian fungsian</div>
-    <div><i>S4</i>Wrap-up — <b>M2 siap</b></div>
+    <div><i>S9</i><span>Aliran kelulusan Pas (slice 3)</span></div>
+    <div><i>S10</i><span>RBAC Shield &amp; skop akses (slice 4)</span></div>
+    <div><i>S11</i><span>Ujian akses &amp; sejarah status (slice 5)</span></div>
+    <div><i>S12</i><span>Demo M2 &amp; semakan akhir — <b>M2 siap</b></span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span></div>
   <div class="daynum">08</div>
-  <aside class="notes"><p>Hari keselamatan: aliran status yang ketat, kebenaran berasaskan peranan dan jejak audit. Hujung hari: demo aliran penuh tiga peranan.</p></aside>
+  <aside class="notes"><p>Hari 8 dibina bersama Claude Code: slice 3 hingga 5 modul Pas melalui tujuh gerbang yang sama seperti Hari 7 petang. Slaid S1–S4 manual kekal sebagai kod rujukan. Hujung hari: demo tiga peranan, gerbang terang rakan dan merge — M2 siap.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 8 · Objektif hari ini</div>
   <h2>Pada akhir hari ini, anda boleh…</h2>
-  <ul class="checks">
-    <li><span><em>S1</em>Melaksanakan <code>PassWorkflowService</code> dengan <code>PassStatus::canTransitionTo()</code>.</span></li>
-    <li><span><em>S2</em>Mengkonfigur Shield groups/permissions + filter route + semakan pemilikan.</span></li>
-    <li><span><em>S3</em>Memaparkan garis masa <code>status_logs</code> dan menulis ujian akses positif &amp; negatif.</span></li>
-    <li><span><em>S4</em>Mendemokan aliran penuh tiga peranan — <b>M2 siap</b>.</span></li>
+  <ul class="checks sm">
+    <li><span><em>S9</em>Menilai diff <code>transition()</code>: <code>FOR UPDATE</code>, <code>canTransitionTo()</code>, <code>status_logs</code> dalam transaksi.</span></li>
+    <li><span><em>S10</em>Membuktikan <code>permission:</code>, <code>authorize()</code> &amp; <code>canView()</code> dengan <code>filter_check</code> dan serangan.</span></li>
+    <li><span><em>S11</em>Menulis matriks akses sendiri; <code>PassAccessTest</code> positif/negatif + 2 mutasi.</span></li>
+    <li><span><em>S12</em>Menjalankan <code>semak-ci4</code> + AI-08, demo 3 peranan, merge — <b>M2 siap</b>.</span></li>
   </ul>
-  <aside class="notes"><p>Tiga lapisan kawalan yang akan kita bina: enum (peralihan sah), Shield (siapa boleh), pemilikan (rekod siapa).</p></aside>
+  <p class="small mt16">Lab 8.10–8.13 · Slaid S1–S4 manual = <b>kod rujukan</b>.</p>
+  <aside class="notes"><p>Setiap objektif diukur melalui Kuiz S9–S12 (checkpoint Lab 8.10–8.13). Tekankan: tugas peserta kini menilai diff Claude dan membuktikannya dengan alat yang bukan Claude (filter_check, serangan, ujian, mutasi).</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 8 · Slice plan hari ini</div>
+  <h2>Slice plan hari ini: Pas slice 3–5</h2>
+  <table class="t">
+    <tr><th>Slice</th><th>Diff yang baik</th><th>Tolak jika</th></tr>
+    <tr><td><b>Slice 3 · S9</b><br><span class="small">Aliran kelulusan · Lab 8.10</span></td><td><code>SELECT … FOR UPDATE</code> selepas <code>transBegin()</code>; <code>record()</code> sebelum <code>transCommit()</code>; catatan ≥ 10 aksara</td><td><code>status</code> dari <code>getPost()</code>; semakan sebelum transaksi; <code>approved_at</code> dalam <code>reject()</code></td></tr>
+    <tr><td><b>Slice 4 · S10</b><br><span class="small">RBAC &amp; skop · Lab 8.11</span></td><td><code>permission:pas.approve</code> per route; <code>$actor-&gt;can()</code>; <code>canView()</code> → 404</td><td><code>inGroup('approver')</code> ganti <code>can()</code>; 403 untuk bukan pemilik; permission di luar SPEC §4</td></tr>
+    <tr><td><b>Slice 5 · S11</b><br><span class="small">Ujian &amp; garis masa · Lab 8.12</span></td><td>Ujian negatif semak respons <b>dan</b> DB; <code>esc()</code> pada <code>remarks</code></td><td><code>assertRedirect()</code> sahaja; ujian diubah supaya hijau</td></tr>
+    <tr><td><b>S12</b><br><span class="small">Demo &amp; merge · Lab 8.13</span></td><td><code>semak-ci4</code> + AI-08; 3 baris rawak diterangkan tanpa Claude</td><td>Baris yang anda tidak boleh terangkan = ciri belum siap</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Branch <code>feat/pas-claude</code>; satu commit kecil <code>PAS: …</code> setiap slice.</div></div>
+  <aside class="notes"><p>Baca jadual ini bersama sebelum Lab 8.10. Lajur kanan ialah senarai diff yang mesti ditolak dengan sebab. Ingatkan: permission yang tiada dalam SPEC §4 ditolak, dan bukan pemilik dapat 404, bukan 403. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 8 · Pengesahan utama</div>
+  <h2>Bukti, bukan janji: arahan anda sendiri</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">Git Bash · akar projek<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="c"># slice 3–5: ujian akses</span>
+composer test -- tests/feature/Pas/PassAccessTest.php
+
+<span class="c"># slice 4: filter per route (+ MCP filter_check)</span>
+php spark filter:check POST /pas/semakan/1/approve
+
+<span class="c"># S12: gerbang terang rakan</span>
+git diff main...feat/pas-claude</pre></div>
+    <div class="card top m-a"><span class="k">CHECKPOINT</span>
+      <ul><li>Permohonan A <span class="st approved">approved</span>, 3 baris <code>status_logs</code></li><li>Catatan <code>tak ok</code> ditolak (BR-PAS-03); klik Lulus kali kedua → mesej BR-PAS-01</li><li><code>pemohon2</code> → 404 pada permohonan <code>pemohon1</code></li><li>≥ 10 ujian hijau; mutasi (buang filter, <code>canView()</code> → <code>true</code>) menggagalkan ujian</li><li>MR <code>feat/pas-claude</code> di-merge — <b>M2 siap</b></li></ul>
+    </div>
+  </div>
+  <aside class="notes"><p>Semua bukti dijalankan oleh peserta sendiri, bukan diminta daripada Claude. Mutasi ialah langkah paling penting: jika kod dirosakkan dan tiada ujian gagal, ujian itu belum menguji. Pulihkan kod selepas mutasi dan pastikan git status bersih. (rujukan sepanjang hari)</p></aside>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 8 · S1 — Aliran kelulusan</div>
+  <div class="eyebrow">Hari 8 · S1 — Aliran kelulusan · kod rujukan</div>
   <h2>Rajah keadaan <code style="font-size:.8em">PassStatus</code> (BR-PAS-01)</h2>
   <svg viewBox="0 0 900 250" width="900" height="250" role="img" aria-label="Rajah peralihan PassStatus" style="max-width:100%;height:auto;align-self:center">
     <defs><marker id="ahP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#64748B"/></marker></defs>
@@ -2560,7 +2596,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 8 · S1 — PassWorkflowService</div>
+  <div class="eyebrow">Hari 8 · S1 — PassWorkflowService · kod rujukan</div>
   <h2>Satu pintu untuk setiap peralihan status</h2>
   <div class="codewrap"><div class="codebar">app/Services/PassWorkflowService.php<span class="lang">php</span></div>
 <pre class="code sm" data-lang="php"><span class="k">public</span> <span class="k">function</span> <span class="f">transition</span>(<span class="k">int</span> <span class="v">$id</span>, <span class="t">PassStatus</span> <span class="v">$to</span>, <span class="k">int</span> <span class="v">$actorId</span>, ?<span class="k">string</span> <span class="v">$remarks</span> = <span class="k">null</span>): <span class="k">void</span>
@@ -2589,7 +2625,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Hari 8 · S2 — Shield</div>
+  <div class="eyebrow">Hari 8 · S2 — Shield · kod rujukan</div>
   <h2 class="wide">Matriks kebenaran <code style="font-size:.8em">AuthGroups</code></h2>
   <div class="split" style="grid-template-columns:1fr 480px">
     <table class="t center">
@@ -2619,7 +2655,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 8 · S2 — Filter &amp; pemilikan</div>
+  <div class="eyebrow">Hari 8 · S2 — Filter &amp; pemilikan · kod rujukan</div>
   <h2>Dua lapisan di server: route + rekod</h2>
   <div class="codewrap"><div class="codebar">app/Config/Routes.php<span class="lang">php</span></div>
 <pre class="code sm" data-lang="php"><span class="v">$routes</span>-&gt;<span class="f">group</span>(<span class="s">'tlk/keputusan'</span>, [<span class="s">'filter'</span> =&gt; <span class="s">'permission:tlk.decide'</span>], <span class="k">static</span> <span class="k">function</span> (<span class="v">$routes</span>) {
@@ -2648,7 +2684,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 8 · S3 — Jejak audit</div>
+  <div class="eyebrow">Hari 8 · S3 — Jejak audit · kod rujukan</div>
   <h2>Satu <code style="font-size:.8em">status_logs</code> untuk TLK &amp; PAS</h2>
   <div class="split r">
     <div class="stack" style="gap:10px">
@@ -2682,7 +2718,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 8 · S3 — Ujian akses</div>
+  <div class="eyebrow">Hari 8 · S3 — Ujian akses · kod rujukan</div>
   <h2>Ujian positif &amp; negatif untuk setiap peranan</h2>
   <div class="codewrap"><div class="codebar">tests/feature/PasAccessTest.php<span class="lang">php</span></div>
 <pre class="code sm" data-lang="php"><span class="k">use</span> <span class="t">CodeIgniter</span>\<span class="t">Shield</span>\<span class="t">Models</span>\<span class="t">UserModel</span>;
@@ -2743,33 +2779,69 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 
 <section class="slide dark divider" data-label="Hari 9 · Laporan">
   <div class="eyebrow">Hari 9 · Fasa C — Lapor &amp; Serah</div>
-  <h1>Modul Laporan</h1>
+  <h1>Modul Laporan (Claude Code)</h1>
   <div><span class="chip m-rpt">M3 · RPT-01 · RPT-02 · RPT-03</span></div>
   <div class="sessions">
-    <div><i>S1</i>Reka bentuk laporan: jenis &amp; kriteria filter</div>
-    <div><i>S2</i>Query aggregate &amp; carian data</div>
-    <div><i>S3</i>Eksport PDF / Excel</div>
-    <div><i>S4</i>Ujian modul laporan — <b>M3 siap</b></div>
+    <div><i>S9</i><span><code>ReportService</code> &amp; penapis whitelist (L1)</span></div>
+    <div><i>S10</i><span>Paparan senarai &amp; RPT-03 (L2)</span></div>
+    <div><i>S11</i><span>Eksport PDF &amp; Excel selamat (L3)</span></div>
+    <div><i>S12</i><span>Ujian laporan &amp; prestasi — <b>M3 siap</b></span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span></div>
   <div class="daynum">09</div>
-  <aside class="notes"><p>Laporan membaca data TLK dan Pas. Prinsip utama: satu set filter, tiga output (HTML, PDF, Excel) — semua mesti menunjukkan jumlah yang sama.</p></aside>
+  <aside class="notes"><p>Modul Laporan dibina bersama Claude Code dalam empat slice L1–L4. Prinsip utama kekal: penapis ialah input pengguna, dan skrin, PDF dan Excel mesti datang daripada builder yang sama. Slaid S1–S4 manual kekal sebagai kod rujukan.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 9 · Objektif hari ini</div>
   <h2>Pada akhir hari ini, anda boleh…</h2>
-  <ul class="checks">
-    <li><span><em>S1</em>Menentukan spesifikasi RPT-01..03 dan borang filter GET.</span></li>
-    <li><span><em>S2</em>Menulis <code>ReportService</code> dengan join, <code>groupBy</code>, <code>selectCount</code> &amp; filter dinamik.</span></li>
-    <li><span><em>S3</em>Menjana PDF (Dompdf) &amp; <code>.xlsx</code> (PhpSpreadsheet) daripada filter yang sama.</span></li>
-    <li><span><em>S4</em>Mengesahkan jumlah laporan = jumlah DB — <b>M3 siap</b>.</span></li>
+  <ul class="checks sm">
+    <li><span><em>S9</em>Menilai <code>normaliseFilters()</code>: enum <code>tryFrom()</code>, <code>SORTABLE</code>, julat tarikh separuh terbuka.</span></li>
+    <li><span><em>S10</em>Membina senarai &amp; RPT-03 daripada satu sumber <code>$filters</code>, dengan <code>esc()</code> ikut konteks.</span></li>
+    <li><span><em>S11</em>Mengeksport PDF/Excel daripada builder yang sama; <code>=1+1</code> kekal teks.</span></li>
+    <li><span><em>S12</em>Menguji dengan nombor tangan + mutasi, dan menyemak index dengan <code>EXPLAIN</code> — <b>M3 siap</b>.</span></li>
   </ul>
-  <aside class="notes"><p>Pasang package di awal S3: <code>composer require dompdf/dompdf phpoffice/phpspreadsheet</code>. Lakukan semasa rehat pagi jika rangkaian perlahan.</p></aside>
+  <p class="small mt16">Lab 9.10–9.13 · Slaid S1–S4 manual = <b>kod rujukan</b>.</p>
+  <aside class="notes"><p>Objektif diukur melalui Kuiz S9–S12 (checkpoint Lab 9.10–9.13). Pasang dompdf dan phpspreadsheet semasa rehat pagi jika rangkaian perlahan, supaya slice L3 tidak tertangguh.</p></aside>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Hari 9 · S1 — Spesifikasi</div>
+  <div class="eyebrow">Hari 9 · Slice plan hari ini</div>
+  <h2>Slice plan hari ini: Laporan L1–L4</h2>
+  <table class="t">
+    <tr><th>Slice</th><th>Diff yang baik</th><th>Tolak jika</th></tr>
+    <tr><td><b>L1 · S9</b><br><span class="small">Penapis whitelist · Lab 9.10</span></td><td><code>tryFrom()</code> buang <code>status=bogus</code>; <code>sort</code> lalai dari <code>SORTABLE</code>; <code>created_at &lt; hari+1</code></td><td>Input ke <code>orderBy()</code>; <code>&lt;= '2026-09-30'</code>; SQL mentah</td></tr>
+    <tr><td><b>L2 · S10</b><br><span class="small">Senarai &amp; RPT-03 · Lab 9.11</span></td><td>Borang, pager &amp; pautan eksport daripada <code>toQuery($filters)</code>; <code>esc($v, 'attr')</code></td><td><code>$_GET</code> terus ke view; menu tersembunyi sebagai kawalan akses</td></tr>
+    <tr><td><b>L3 · S11</b><br><span class="small">Eksport selamat · Lab 9.12</span></td><td><code>exportRows()</code> guna <code>builder()</code> sama; <code>setCellValueExplicit(…, TYPE_STRING)</code>; had sebelum baca</td><td>Query eksport ditulis semula; <code>fromArray()</code> untuk teks; <code>isRemoteEnabled</code> <code>true</code></td></tr>
+    <tr><td><b>L4 · S12</b><br><span class="small">Ujian &amp; prestasi · Lab 9.13</span></td><td>Jangkaan dikira dengan tangan; cadangan index dalam <code>docs/log-keputusan.md</code></td><td>Ujian memanggil <code>ReportService</code> untuk jangkaan; migration lama disunting</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Branch <code>feat/laporan-claude</code>; satu commit kecil <code>RPT: …</code> setiap slice.</div></div>
+  <aside class="notes"><p>Peserta menulis jadual input → hasil penapis sendiri sebelum pelan; jadual itulah yang menilai kod Claude. Nama lajur tidak boleh di-bind, jadi hanya whitelist SORTABLE yang melindungi orderBy(). (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · Pengesahan utama</div>
+  <h2>Bukti: jumlah sama, input selamat, query diukur</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">Git Bash · akar projek<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="c"># L1: filter permission pada 3 route</span>
+php spark routes
+
+<span class="c"># L4: ujian nombor tangan</span>
+composer test -- --filter ReportServiceTest
+
+<span class="c"># L4: index (+ MCP db_table)</span>
+php spark db:table pass_applications --metadata
+php spark laporan:explain</pre></div>
+    <div class="card top m-a"><span class="k">CHECKPOINT</span>
+      <ul><li><code>permission:laporan.view</code> pada ketiga-tiga route laporan</li><li><code>?from=%22%3E%3Cb%3Ex</code> tiada HTML mentah; penapis kekal di halaman 2</li><li>Skrin = PDF = Excel untuk RPT-01 <code>status=approved</code></li><li><code>=1+1</code> kekal teks; <code>pemohon1</code> ditolak untuk <code>?export=xlsx</code></li><li>Mutasi <code>&lt;</code> → <code>&lt;=</code> menggagalkan ujian; MR di-merge — <b>M3 siap</b></li></ul>
+    </div>
+  </div>
+  <aside class="notes"><p>Nilai dijangka dalam ujian mesti dikira dengan tangan sebelum Claude menulis ujian. Index baharu hanya direkod sebagai cadangan dalam docs/log-keputusan.md; jangan sunting migration lama. Uji =1+1 dengan nama sintetik dan pulihkan full_name selepas itu. (rujukan sepanjang hari)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · S1 — Spesifikasi · kod rujukan</div>
   <h2 class="wide">Tiga laporan, satu corak</h2>
   <table class="t">
     <tr><th style="width:110px">Kod</th><th>Laporan</th><th>Filter</th><th style="width:210px">Route</th></tr>
@@ -2788,7 +2860,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 9 · S1–S2 — Filter dinamik</div>
+  <div class="eyebrow">Hari 9 · S1–S2 — Filter dinamik · kod rujukan</div>
   <h2>Borang GET → query builder bersyarat</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">app/Views/laporan/tempahan.php<span class="lang">php</span></div>
@@ -2834,7 +2906,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 9 · S2 — Aggregate</div>
+  <div class="eyebrow">Hari 9 · S2 — Aggregate · kod rujukan</div>
   <h2>RPT-03: penggunaan slot mengikut zon</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">ReportService::usageByZone()<span class="lang">php</span></div>
@@ -2874,7 +2946,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 9 · S3 — Eksport</div>
+  <div class="eyebrow">Hari 9 · S3 — Eksport · kod rujukan</div>
   <h2>Filter sama, dua format fail</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">ExportService::pdf()<span class="lang">php</span></div>
@@ -2916,7 +2988,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 9 · S4 — Pengesahan</div>
+  <div class="eyebrow">Hari 9 · S4 — Pengesahan · kod rujukan</div>
   <h2>Jumlah laporan mesti sama dengan jumlah DB</h2>
   <div class="split l">
     <div class="codewrap"><div class="codebar">tests/unit/ReportTotalsTest.php<span class="lang">php</span></div>
@@ -2972,33 +3044,69 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 
 <section class="slide dark divider" data-label="Hari 10 · Statistik &amp; Capstone">
   <div class="eyebrow">Hari 10 · Fasa C — Lapor &amp; Serah</div>
-  <h1>Modul Statistik &amp; Capstone</h1>
+  <h1>Modul Statistik &amp; Capstone (Claude Code)</h1>
   <div><span class="chip m-stat">M4 · Dashboard + demo</span></div>
   <div class="sessions">
-    <div><i>S1</i>Dashboard statistik: carta &amp; ringkasan</div>
-    <div><i>S2</i>Aggregate query &amp; caching asas</div>
-    <div><i>S3</i>Ujian akhir sistem &amp; pembetulan pepijat</div>
-    <div><i>S4</i>Demo capstone kepada pemilik sistem &amp; penutup</div>
+    <div><i>S5</i><span>Statistik slice 1–4 dengan Claude Code</span></div>
+    <div><i>S3</i><span>UAT manual merentas 4 modul</span></div>
+    <div><i>S6</i><span>Persediaan capstone: <code>semak-ci4</code>, AI-08/09/18, tag</span></div>
+    <div><i>S7</i><span>Demo capstone &amp; refleksi Claude Code</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span></div>
   <div class="daynum">10</div>
-  <aside class="notes"><p>Hari terakhir. Pagi: bina dashboard. Petang: UAT dan demo. Jaga masa dengan ketat — S4 tidak boleh ditolak.</p></aside>
+  <aside class="notes"><p>Hari terakhir. Pagi: modul Statistik empat slice dengan Claude Code, kemudian UAT manual. Petang: persediaan capstone dengan semak-ci4 dan AI-08/09/18, tag v1.0-capstone, demo dan refleksi. Jaga masa — demo tidak boleh ditolak.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 10 · Objektif hari ini</div>
   <h2>Pada akhir hari ini, anda boleh…</h2>
-  <ul class="checks">
-    <li><span><em>S1</em>Membina kad KPI + 4 carta Chart.js daripada endpoint JSON.</span></li>
-    <li><span><em>S2</em>Menggunakan <code>cache()-&gt;remember()</code> dan invalidasi apabila status berubah.</span></li>
-    <li><span><em>S3</em>Menjalankan skrip UAT: reproduce → ujian gagal → baiki.</span></li>
-    <li><span><em>S4</em>Mendemokan aliran hujung-ke-hujung dan menjalankan retrospektif.</span></li>
+  <ul class="checks sm">
+    <li><span><em>S5</em>Membina KPI, dataset, dashboard Chart.js &amp; cache melalui 4 slice dan 7 gerbang.</span></li>
+    <li><span><em>S3</em>Menjalankan skrip UAT sebagai pengguna merentas 4 modul.</span></li>
+    <li><span><em>S6</em>Menyemak repo (<code>semak-ci4</code>, AI-08, AI-09, AI-18), membaiki merah → hijau dan tag <code>v1.0-capstone</code>.</span></li>
+    <li><span><em>S7</em>Mendemokan sistem dan menerangkan baris pilihan panel, termasuk baris Claude.</span></li>
   </ul>
-  <aside class="notes"><p>Chart.js disimpan sebagai fail tempatan dalam public/ supaya dashboard berfungsi tanpa internet — sama seperti slaid ini.</p></aside>
+  <p class="small mt16">Lab 10.10–10.12 · Slaid S1–S2 manual = <b>kod rujukan</b>.</p>
+  <aside class="notes"><p>Objektif diukur melalui Kuiz S5–S7 (checkpoint Lab 10.10–10.12) dan UAT S3. Ingatkan bahawa dalam demo, panel boleh memilih baris yang ditulis Claude; jawapan "Claude yang tulis" tidak diterima.</p></aside>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Hari 10 · S1 — Dashboard <code>/statistik</code></div>
+  <div class="eyebrow">Hari 10 · Slice plan hari ini</div>
+  <h2>Slice plan hari ini: Statistik 1–4 &amp; capstone</h2>
+  <table class="t">
+    <tr><th>Slice</th><th>Diff yang baik</th><th>Tolak jika</th></tr>
+    <tr><td><b>Slice 1–2 · S5</b><br><span class="small">KPI &amp; dataset · Lab 10.10</span></td><td><code>StatisticsService::build()</code> dengan <code>$this-&gt;now</code>; 12 bulan (kosong = 0); <code>permission:statistik.view</code></td><td><code>date('Y-m-d')</code> dalam service; <code>TIMESTAMPDIFF</code>; SQL dicantum</td></tr>
+    <tr><td><b>Slice 3 · S5</b><br><span class="small">Dashboard Chart.js</span></td><td>Kad KPI di server; <code>fetch()</code> + <code>res.ok</code>; <code>esc()</code></td><td><code>innerHTML</code> untuk data server; package baharu</td></tr>
+    <tr><td><b>Slice 4 · S5</b><br><span class="small">Cache &amp; invalidasi</span></td><td><code>cache()-&gt;delete(CACHE_KEY)</code> <b>selepas</b> setiap <code>transCommit()</code>; ujian merah dahulu</td><td><code>delete</code> sebelum commit; <code>cache()-&gt;clean()</code>; <code>markTestSkipped()</code></td></tr>
+    <tr><td><b>S6–S7</b><br><span class="small">Capstone · Lab 10.11–10.12</span></td><td>Dapatan AI disahkan dengan arahan sendiri; pembaikan melalui ujian merah → hijau</td><td>Ujian diubah supaya hijau; tag dialih selepas demo</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Branch <code>feat/statistik</code>; satu commit <code>STAT:</code> setiap slice, kemudian <code>FIX:</code>/<code>CHORE:</code> capstone.</div></div>
+  <aside class="notes"><p>Paling kerap salah: cache()->delete() sebelum transCommit(), dan date() dalam service yang menjadikan ujian bergantung pada tarikh hari ini. StatisticsCacheTest mesti dilihat merah dahulu. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 10 · Pengesahan utama</div>
+  <h2>Bukti akhir sebelum demo</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">Git Bash · akar projek<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="c"># S5: termasuk StatisticsCacheTest (merah dahulu)</span>
+composer test
+
+<span class="c"># slice 4: delete selepas setiap transCommit()</span>
+grep -n "transCommit\|CACHE_KEY" app/Services/*.php
+
+<span class="c"># S6–S7: tag &amp; tiada rahsia diserahkan</span>
+git tag -l
+git ls-files | grep -E "settings\.local|CLAUDE\.local|(^|/)\.env$"</pre></div>
+    <div class="card top m-a"><span class="k">CHECKPOINT</span>
+      <ul><li><code>pelulus</code> melihat 4 kad + 4 carta; <code>pemohon1</code> disekat</li><li>KPI “Pas menunggu” berubah serta-merta selepas kelulusan</li><li>12 baris terangan dalam <code>docs/nota-claude.md</code>; ≥ 1 diff ditolak</li><li><code>docs/semakan-capstone.md</code>: setiap dapatan Terima/Tolak dengan bukti</li><li><code>v1.0-capstone</code> pada <code>main</code>; <code>grep</code> terakhir tiada output</li></ul>
+    </div>
+  </div>
+  <aside class="notes"><p>Tag hanya selepas semua pembaikan di-merge dan composer test hijau pada main. Semakan git ls-files memastikan tiada .env, settings.local.json atau CLAUDE.local.md diserahkan. Dapatan selepas tag direkod sebagai BUG-00N, jangan alih tag. (rujukan)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 10 · S1 — Dashboard <code>/statistik</code> · kod rujukan</div>
   <h2 class="wide">Empat KPI, empat carta, satu endpoint</h2>
   <div class="grid c4">
     <div class="kpi" style="--c:var(--teal)"><i>Tempahan aktif</i><b>42</b><span>TLK pending + approved</span></div>
@@ -3017,7 +3125,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 10 · S1 — Endpoint JSON + Chart.js</div>
+  <div class="eyebrow">Hari 10 · S1 — Endpoint JSON + Chart.js · kod rujukan</div>
   <h2>Server mengira, pelayar melukis</h2>
   <div class="split r">
     <div class="codewrap"><div class="codebar">Statistik/DashboardController.php<span class="lang">php</span></div>
@@ -3060,7 +3168,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris sebelum fail seterusnya.</pr
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Hari 10 · S2 — Caching</div>
+  <div class="eyebrow">Hari 10 · S2 — Caching · kod rujukan</div>
   <h2>Cache 10 minit, kosongkan apabila status berubah</h2>
   <div class="split l">
     <div class="codewrap"><div class="codebar">app/Services/StatisticsService.php<span class="lang">php</span></div>
