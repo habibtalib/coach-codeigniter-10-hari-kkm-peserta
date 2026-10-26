@@ -1917,8 +1917,8 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div><i>S12</i><span>Prompting, projek baharu &amp; PRD</span></div>
     <div><i>S10</i><span>Subagent &amp; skill untuk projek CI4</span></div>
     <div><i>S11</i><span>MCP: <code>ci4-spark</code>, MySQL, Context7</span></div>
-    <div><i>S13</i><span>Petang: Pas slice 1 dengan Claude Code — model, senarai &amp; butiran</span></div>
-    <div><i>S14</i><span>Petang: Pas slice 2 — borang &amp; muat naik selamat</span></div>
+    <div><i>S15</i><span>Petang: fahami projek contoh eSPKP dengan Claude Code</span></div>
+    <div><i>S16</i><span>Petang: PRD → jurang → keperluan → pelan slice Pas</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span><span></span></div>
   <div class="daynum">07</div>
@@ -1933,8 +1933,8 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span><em>S12</em>Menulis prompt berstruktur dan mendraf PRD untuk projek baharu.</span></li>
     <li><span><em>S10</em>Mencipta subagent <code>semak-ci4</code> &amp; skill <code>migration-ci4</code>, dan mengesahkan dapatan AI.</span></li>
     <li><span><em>S11</em>Memasang &amp; menguji server MCP <code>ci4-spark</code> dan mendaftar Context7.</span></li>
-    <li><span><em>S13</em>Membina Pas slice 1 dengan Claude Code melalui 7 pintu: enum, Model <code>ownedBy()</code>, senarai &amp; butiran 404 bukan pemilik.</span></li>
-    <li><span><em>S14</em>Membina Pas slice 2: borang + CSRF, validasi fail, nama rawak di luar <code>public/</code>, transaksi + pembersihan.</span></li>
+    <li><span><em>S15</em>Menerangkan seni bina projek contoh eSPKP dengan Claude Code dan mengesahkan setiap jawapan pada <code>fail:baris</code>.</span></li>
+    <li><span><em>S16</em>Mendraf PRD daripada projek contoh, membanding dengan SPEC, dan menulis <code>docs/keperluan-pas.md</code> + <code>docs/pelan-pas.md</code>.</span></li>
   </ul>
   <p class="small mt16">Lab Pas manual 7.0–7.4 kekal sebagai <b>kod rujukan</b> untuk perbandingan.</p>
   <aside class="notes"><p>Empat objektif pagi diukur melalui Kuiz S9–S12; dua objektif petang melalui Kuiz S13 dan S14 (checkpoint Lab 7.10 dan 7.11). Tekankan: Claude kini boleh menulis kod, tetapi peserta mesti boleh menerangkan setiap diff yang diterima.</p></aside>
@@ -1966,8 +1966,8 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <tr><td>10:30–10:45</td><td>—</td><td>Rehat pagi</td><td>—</td></tr>
     <tr><td>10:45–11:45</td><td><b>S10</b></td><td>Subagent <code>semak-ci4</code> &amp; skill <code>migration-ci4</code></td><td>7.7</td></tr>
     <tr><td>11:45–12:30</td><td><b>S11</b></td><td>MCP: <code>ci4-spark</code>, MySQL, Context7, GitLab</td><td>7.8</td></tr>
-    <tr><td>14:30–15:45</td><td><b>S13</b></td><td>Pas slice 1 dengan Claude Code: enum, model, senarai &amp; butiran</td><td>7.10</td></tr>
-    <tr><td>15:45–17:00</td><td><b>S14</b></td><td>Pas slice 2: borang, validasi &amp; muat naik selamat</td><td>7.11</td></tr>
+    <tr><td>14:30–15:45</td><td><b>S15</b></td><td>Fahami projek contoh eSPKP dengan Claude Code (mod Plan)</td><td>7.12</td></tr>
+    <tr><td>15:45–17:00</td><td><b>S16</b></td><td>PRD daripada projek contoh → jurang vs SPEC → keperluan &amp; pelan slice</td><td>7.13</td></tr>
   </table>
   <div class="callout tip mt16"><span class="i">💡</span><div>Petang: Claude menulis kod melalui <b>7 pintu semakan</b>. Lab manual 7.0–7.4 = kod rujukan.</div></div>
   <aside class="notes"><p>Tunjukkan perubahan jadual: S9 hanya sejam, jadi pemasangan mesti siap dalam 20 minit pertama. S12 ialah sesi baharu tentang prompt dan PRD. Petang ialah S13 dan S14: Pas dibina dengan Claude Code melalui tujuh pintu; lab manual 7.0–7.4 menjadi kod rujukan.</p></aside>
@@ -2278,6 +2278,33 @@ down() mengundur up() · JANGAN jalankan migrate</span></pre></div>
 <!-- ---------------------------- HARI 7 · PETANG: PAS DENGAN CLAUDE CODE ---------------------------- -->
 
 <section class="slide">
+  <div class="eyebrow">Hari 7 · S15 — Lab 7.12 (14:30–15:45)</div>
+  <h2>S15 · Fahami projek contoh eSPKP dengan Claude Code</h2>
+  <div class="grid c3">
+    <div class="card top m-a"><span class="num-badge">1</span><h3>Dapatkan kod</h3><p>Klon <code>aplikasi-baharu/espkpv2</code> (akses Reporter) atau zip <code>espkpv2-01abad1.zip</code> → <code>~/latihan/espkpv2</code>. Bukan dalam <code>kelas-ci</code>.</p></div>
+    <div class="card top m-a"><span class="num-badge">2</span><h3>Mod Plan</h3><p><code>claude</code> dalam folder itu: <code>CLAUDE.md</code> projek dimuat sendiri. Tiada perubahan kod.</p></div>
+    <div class="card top m-a"><span class="num-badge">3</span><h3>6 soalan onboarding</h3><p>Seni bina · aturan aliran kerja (<code>Aliran.php</code>) · peranan · data · ujian · fail mana berubah untuk ciri baharu.</p></div>
+    <div class="card top m-a"><span class="num-badge">4</span><h3>Sahkan</h3><p>Buka <code>fail:baris</code> bagi setiap jawapan. Jawapan tanpa bukti = belum diterima.</p></div>
+    <div class="card top m-a"><span class="num-badge">5</span><h3>Demo langsung</h3><p><code>eskp.synctexts.com</code>: satu aliran hujung-ke-hujung dengan 2 peranan.</p></div>
+    <div class="card top m-stat tint"><span class="k">HASIL</span><h3>nota-fahami.md</h3><p>Dalam <code>~/latihan/espkpv2-kajian/</code>.</p></div>
+  </div>
+  <aside class="notes"><p>Tujuan S15: belajar memahami projek yang bukan tulisan sendiri dengan Claude Code. Tunjukkan bahawa CLAUDE.md eSPKP dimuat secara automatik — itulah contoh CLAUDE.md yang baik. Setiap jawapan Claude mesti disahkan pada fail:baris sebelum dicatat. Repo peribadi: guna akses Reporter atau zip daripada jurulatih.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 7 · S16 — Lab 7.13 (15:45–17:00)</div>
+  <h2>S16 · PRD → jurang → keperluan → pelan slice</h2>
+  <div class="grid c4">
+    <div class="card top m-a"><span class="num-badge">1</span><h3>PRD daripada kod</h3><p>Mod Plan: peranan, aliran/status, BR, data, NFR (404 bukan 403, fail di luar <code>public/</code>) → <code>prd-espkp-pas.md</code>.</p></div>
+    <div class="card top m-a"><span class="num-badge">2</span><h3>Sahkan 3 dakwaan</h3><p>Pada kod <b>dan</b> demo langsung. Kod menunjukkan apa yang dibina, bukan apa yang diperlukan.</p></div>
+    <div class="card top m-a"><span class="num-badge">3</span><h3>Jadual jurang</h3><p>Ciri · eSPKP · SPEC kursus · <b>guna / laras / tidak</b>. SPEC kekal kanun; ragu → soalan kepada pemilik sistem.</p></div>
+    <div class="card top m-a"><span class="num-badge">4</span><h3>Keperluan &amp; pelan</h3><p><code>docs/keperluan-pas.md</code> + <code>docs/pelan-pas.md</code> (5 slice) dalam <code>kelas-ci</code>, branch <code>docs/keperluan-pas</code>.</p></div>
+  </div>
+  <p class="mt16">Esok pagi: Lab 7.10/7.11 melaksana slice ini dengan 7 pintu semakan.</p>
+  <aside class="notes"><p>S16 menukar pemahaman kepada keperluan. Tekankan: PRD yang diterbitkan daripada kod mesti disemak dengan demo dan SPEC kerana kod mungkin mengandungi keputusan yang tidak sesuai untuk projek peserta. Hasilnya, keperluan-pas.md dan pelan-pas.md, menjadi input Lab 7.10 pagi Hari 8.</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Hari 7 · S13 — Aliran kerja hingga Hari 10</div>
   <h2>7 pintu semakan: Claude menulis, anda meluluskan</h2>
   <div class="grid c4">
@@ -2294,7 +2321,7 @@ down() mengundur up() · JANGAN jalankan migrate</span></pre></div>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Hari 7 · S13 — Lab 7.10 (14:30–15:45)</div>
+  <div class="eyebrow">Hari 8 pagi · S13 — Lab 7.10 (09:00–10:30)</div>
   <h2>S13 · Slice Pas 1 dengan Claude Code</h2>
   <div class="codewrap"><div class="codebar">AI-19 · selepas pelan slice disemak (mod Manual)<span class="lang">prompt</span></div>
 <pre class="code sm" data-lang="text">Laksana HANYA Slice 1 daripada pelan dalam @docs/pelan-pas.md, satu fail pada satu masa.
@@ -2314,7 +2341,7 @@ Selepas setiap fail, berhenti dan terangkan 3 baris: apa berubah dan BR mana dip
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Hari 7 · S14 — Lab 7.11 (15:45–17:00)</div>
+  <div class="eyebrow">Hari 8 pagi · S14 — Lab 7.11 (10:45–12:30)</div>
   <h2>S14 · Slice Pas 2: muat naik selamat</h2>
   <div class="codewrap"><div class="codebar">AI-19 · Slice 2 (borang, validasi, submit, download)<span class="lang">prompt</span></div>
 <pre class="code sm" data-lang="text">Laksana HANYA Slice 2 daripada @docs/pelan-pas.md: borang, validasi fail, submit() dan download().
