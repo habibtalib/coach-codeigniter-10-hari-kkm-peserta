@@ -1,12 +1,305 @@
-# Hari 8 — Modul Pas (Bahagian 2): Aliran Kelulusan, RBAC Shield & Ujian Akses
+# Hari 8 — Kerja Pasukan dengan Claude Code: PM, QA & Dev dalam Satu Repo
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 8](./lab.md)
+[📅 Jadual](../JADUAL.md) · [👥 Peranan pasukan](../docs/peranan-pasukan.md) · [🤝 Kolaborasi](../docs/kolaborasi.md) · [🧪 Lab Hari 8](./lab.md)
 
-> **Hari ini Modul Pas menjadi lengkap (M2 siap).** Semalam pemohon boleh menghantar permohonan. Hari ini **dua pegawai** mengambil alih: penyemak memulakan semakan, pelulus membuat keputusan — dan sistem **memastikan** setiap orang hanya boleh menekan butang yang menjadi haknya, setiap perubahan direkod, dan semua ini dibuktikan dengan ujian automatik.
+> **Hari ini 12 orang bekerja dalam satu repo.** Mulai hari ini hingga Hari 10, kelas menjadi satu pasukan pembangunan dalam repo sebenar **eSPKP Contoh** (`aplikasi-baharu/espkpv2` di GitLab KKM): 3 skuad × 4 orang, setiap skuad ada **PM**, **QA** dan **2 Dev**, dan setiap peranan dibantu Claude Code. Isu GitLab → branch → MR → semakan QA → merge. Peranan bertukar selepas makan tengah hari.
 
 ---
 
 ## 🎯 Objektif Pembelajaran
+
+Di akhir hari ini, peserta boleh:
+
+| # | Objektif (boleh diukur) | Sesi | Bukti |
+|---|------------------------|------|-------|
+| O15 | **Menyediakan** espkpv2 pada Laragon (clone, `.env`, migrate + seed, `composer test`) dan **membuktikan** Claude Code memuatkan agent, skill dan MCP yang dikongsi | S15 | `/agents` menunjukkan `semak-espkp`; `/isu-baharu` dalam menu `/`; `claude mcp list` → `ci4-spark` ✔ |
+| O16 | **Menulis** isu GitLab dengan cerita pengguna dan kriteria penerimaan Diberi/Apabila/Maka yang boleh diuji, dibantu skill `/isu-baharu` (peranan PM) | S16 | Isu skuad `status::sedia` dengan ≥ 3 AC termasuk AC akses 404 |
+| O17 | **Melaksanakan** satu isu sebagai slice di branch `feat/<isu>-…` dengan mod *Plan* dan `/ciri-baharu`, dan **membuka** MR dengan `Closes #N` (peranan Dev) | S16–S17 | MR draf dengan commit `Rujuk #N`, `composer semak` hijau |
+| O18 | **Menyemak** MR terhadap AC dengan `/semak-mr` dan `penguji-espkp`, dan **menulis** komen semakan berasaskan bukti `fail:baris` (peranan QA) | S17 | Komen semakan dalam MR: jadual AC + keputusan |
+| O19 | **Menyelesaikan** konflik merge pada fail dikongsi tanpa membuang kerja skuad lain, dan **mendemokan** hasil sprint | S18 | MR di-merge ke `main`, isu ditutup, demo 2 minit |
+
+> ℹ️ Objektif O1–O14 (Modul Pas individu) kekal sebagai rujukan dalam [Lampiran](#lampiran--kerja-individu-modul-pas-rujukan).
+
+---
+
+## 📅 Jadual Hari Ini
+
+| Masa | Sesi | Aktiviti | Objektif sesi |
+|------|------|----------|---------------|
+| 08:30–09:00 | — | Recap Hari 7, pembentukan skuad & kad peranan | — |
+| 09:00–10:30 | S15 | Persediaan pasukan: espkpv2 pada Laragon, Claude Code dikongsi, papan isu | O15 · [Lab 8.20](./lab.md#lab-820--persediaan-pasukan-espkpv2-claude-code--papan-isu-s15) |
+| 10:30–10:45 | — | Rehat pagi | — |
+| 10:45–12:30 | S16 | Sprint 1 (pagi): PM tulis isu, QA rancang ujian, Dev rancang & mula slice | O16, O17 · [Lab 8.21](./lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16) |
+| 12:30–14:30 | — | Makan tengah hari · **tukar peranan** | — |
+| 14:30–16:00 | S17 | Sprint 1 (petang): Dev siapkan MR, QA semak MR, PM urus papan | O17, O18 · [Lab 8.22](./lab.md#lab-822--sprint-1-petang-mr-semakan-qa--papan-s17) |
+| 16:00–17:00 | S18 | Merge, latihan konflik, demo skuad & retro | O19 · [Lab 8.23](./lab.md#lab-823--merge-konflik-demo--retro-s18) |
+
+**Skuad dan isu Sprint 1** (milestone *Sprint 1 (Hari 8)*, papan *Papan pasukan*):
+
+| Skuad | Kawasan & hotspot | Isu Sprint 1 |
+|---|---|---|
+| A — Aliran | `Config/Aliran.php`, `AliranKerja`, `DemoSeeder` | #1 Satu permohonan terbuka bagi setiap orang |
+| B — Akaun & Keselamatan | `Config/Auth*`, `Security`, `Filters` | #10 CSRF `tokenRandomize`, #12 Bersihkan konfigurasi Auth |
+| C — Laporan & Statistik | `Config/Laporan.php`, `Services/Laporan/*` | #16 RPT-10 Kadar keputusan ikut jenis & fasiliti |
+
+> ℹ️ **Jurulatih = pemilik sistem.** Soalan terbuka dalam isu (cth "status 14 dikira Tidak Lulus?") dijawab jurulatih sebagai komen isu — bukan diteka oleh PM atau Claude.
+
+---
+
+## 🧭 Kenapa hari ini penting
+
+Di KKM, sistem tidak dibina oleh seorang. Pasukan eSPKP sebenar ada pemilik produk, penguji dan beberapa pembangun yang menyentuh repo yang sama setiap hari. Masalahnya jarang pada sintaks; masalahnya pada **koordinasi**: keperluan kabur, dua orang mengubah fail yang sama, ujian ditulis selepas pepijat sampai ke pengguna, MR diluluskan tanpa dibaca.
+
+Claude Code membantu setiap peranan — tetapi juga boleh mempercepat kekacauan: 12 orang × AI yang menulis kod pantas = 12 kali ganda diff untuk disemak. Hari ini anda belajar membahagikan kerja supaya AI mempercepat **peranan**, bukan memintasnya:
+
+```mermaid
+flowchart LR
+    PM["PM + /isu-baharu<br/>isu + AC"] --> S{status::sedia}
+    S --> D["Dev + /ciri-baharu<br/>branch → slice → MR"]
+    S --> Q1["QA + penguji-espkp<br/>pelan ujian dari AC"]
+    D --> Q2["QA + /semak-mr<br/>AC ↔ kod ↔ ujian"]
+    Q1 --> Q2
+    Q2 -->|minta perubahan| D
+    Q2 -->|lulus| M["PM merge ke main<br/>isu ditutup"]
+```
+
+Tiga peraturan pasukan ([`peranan-pasukan.md`](../docs/peranan-pasukan.md)):
+
+1. **Satu isu → satu branch → satu MR**, dan tiada siapa meluluskan MR sendiri.
+2. **Hotspot ada pemilik.** Hanya skuad pemilik mengubah `Aliran.php`, `Auth*.php` atau `Laporan.php`; fail dikongsi (`Routes.php`, `Menu.php`) diubah dalam blok kawasan sendiri sahaja.
+3. **AI mendraf, manusia memutuskan.** PM memutuskan skop, QA memutuskan lulus, Dev memutuskan setiap baris yang di-commit.
+
+---
+
+## S15 — Persediaan Pasukan: espkpv2, Claude Code Dikongsi & Papan Isu (09:00–10:30)
+
+Repo pasukan ialah **espkpv2** — aplikasi eSPKP Contoh lengkap yang anda kaji pada Hari 7 (Lab 7.12). Ia sudah membawa konfigurasi Claude Code yang dikongsi, jadi setiap ahli pasukan mendapat agent, skill, hook dan MCP yang **sama** sebaik sahaja clone:
+
+| Fail | Apa | Peranan utama |
+|---|---|---|
+| `CLAUDE.md` | Peraturan repo: seni bina, UUID, 404 bukan 403, CSP, kolaborasi | Semua |
+| `.claude/skills/isu-baharu` | Idea / isu stub → isu dengan AC dan hotspot | PM |
+| `.claude/skills/ciri-baharu` | Pelan slice ikut lapisan repo | Dev |
+| `.claude/skills/aliran-kerja`, `migration-espkp` | Ubah `Aliran.php` / migration dengan selamat | Dev |
+| `.claude/skills/semak-mr` | MR ↔ AC ↔ ujian, draf komen semakan | QA |
+| `.claude/agents/semak-espkp` | Penyemak kod baca sahaja | Dev, QA |
+| `.claude/agents/penguji-espkp` | Pencari jurang ujian | QA, Dev |
+| `.claude/settings.json` + hooks | Sekat `.env`, `php -l` selepas edit, mod auto/bypass dimatikan | Semua |
+| `.mcp.json` → `ci4-spark` | `routes`, `filter_check`, `db_table`, `migrate_status` (baca sahaja) | Dev, QA |
+
+Konfigurasi dikongsi bermaksud **peraturan yang sama untuk semua**: jika skill `semak-mr` diperbaiki, ia diperbaiki melalui MR seperti kod lain.
+
+### Kad peranan
+
+| | PM | QA | Dev |
+|---|---|---|---|
+| Hasil | Isu `status::sedia` dengan AC | Pelan ujian + komen semakan MR | Branch, slice, ujian, MR |
+| Claude Code | `/isu-baharu`, `glab issue view` | `/semak-mr`, `penguji-espkp` | Mod *Plan*, `/ciri-baharu`, `semak-espkp` |
+| Tidak boleh | Tulis kod | Approve tanpa bukti | Push ke `main`, mod auto, satu prompt untuk seluruh ciri |
+
+Dua Dev dalam satu isu bekerja **berpasangan**: seorang *pemandu* (memegang Claude Code dan papan kekunci), seorang *navigator* (membaca setiap diff, menjalankan ujian). Tukar selepas setiap slice. Satu branch, satu terminal Claude, tiada konflik.
+
+### ✅ Checkpoint S15
+- `composer test` hijau pada mesin anda (database ujian `espkp_contoh_test`).
+- Log masuk demo tempatan sebagai `900101010006`; papan pemuka dipaparkan.
+- Claude Code: `semak-espkp` dalam `/agents`, `/isu-baharu` dan `/semak-mr` dalam menu `/`, `ci4-spark` ✔.
+- Anda tahu skuad, nombor tempat dan peranan pagi anda.
+
+---
+
+## S16 — Sprint 1 (Pagi): Isu, Pelan Ujian & Slice Pertama (10:45–12:30)
+
+Tiga peranan bermula **serentak** pada isu yang sama:
+
+| Minit | PM | QA | Dev (pasangan) |
+|---|---|---|---|
+| 0–20 | `/isu-baharu <no>` → semak AC → kemas kini isu → `status::sedia` | Baca isu; senaraikan kes ujian daripada setiap AC | Mod *Plan*: fahami kod yang disentuh isu (`fail:baris`), tanya soalan dalam komen isu |
+| 20–60 | Jawab soalan Dev; bawa soalan pemilik sistem kepada jurulatih; label `status::disekat` jika perlu | `penguji-espkp`: ujian sedia ada vs AC; tulis **ujian gagal** dahulu untuk 1–2 AC | `/ciri-baharu <no>` → edit pelan → branch `feat/<no>-<ringkas>` → slice 1 |
+| 60–105 | Pantau papan; selaras hotspot dengan PM skuad lain | Kongsi ujian kepada Dev (commit dalam branch yang sama, slice berasingan) | Slice 1 → `composer semak` → `semak-espkp` → commit `Rujuk #N` |
+
+**Isu bersaiz L** (cth #1 mempunyai 6 AC): PM memecahkannya. Sprint 1 mesti menyiapkan sekurang-kurangnya AC teras (cth #1 AC-1 + AC-3) dengan ujian; selebihnya menjadi isu susulan untuk Sprint 2.
+
+**Mengapa QA menulis ujian dahulu?** AC ialah kontrak. Jika QA menulis ujian daripada AC **sebelum** melihat kod Dev, ujian menguji keperluan — bukan menyalin apa yang kod kebetulan buat. Claude yang membantu Dev dan Claude yang membantu QA tidak berkongsi konteks: dua pandangan bebas.
+
+### ✅ Checkpoint S16
+- Isu skuad `status::sedia`, AC boleh diuji, hotspot dinyatakan.
+- Branch `feat/<no>-…` wujud di GitLab KKM dengan sekurang-kurangnya 1 commit `Rujuk #N`.
+- QA mempunyai senarai kes ujian dalam komen isu, dan sekurang-kurangnya 1 ujian yang gagal dengan sebab yang betul.
+
+---
+
+## S17 — Sprint 1 (Petang): MR, Semakan QA & Papan (14:30–16:00)
+
+**Tukar peranan dahulu** (jadual putaran dalam [`peranan-pasukan.md`](../docs/peranan-pasukan.md)): PM pagi → QA, QA pagi → Dev, dan seterusnya. Penyerahan berlaku **dalam isu**: PM pagi menulis komen "Serah tugas" (apa siap, apa seterusnya, soalan terbuka) sebelum makan tengah hari.
+
+Aliran MR:
+
+1. **Dev:** slice seterusnya → `composer semak` → `semak-espkp` → push → MR draf (`glab mr create --draft`, templat *Default*, `Closes #N`) → isi senarai semak dan "Tiga baris utama" → *Mark as ready* → `status::semakan`.
+2. **QA:** `/semak-mr <no-MR>` → buka setiap `fail:baris` yang dirujuk → cuba 3 langkah ujian manual di pelayar → komen semakan → **approve** atau **minta perubahan** (`status::dalam-kerja`).
+3. **PM:** pastikan setiap isu dalam lajur yang betul, selesaikan `status::disekat`, tetapkan susunan merge bersama PM lain.
+
+Komen QA yang baik adalah khusus dan boleh disahkan:
+
+| Lemah | Baik |
+|---|---|
+| "Nampak ok 👍" | "AC-3 dipenuhi: `PermohonanService.php:88` + `SatuPermohonanTest::testPindaanDikiraTerbuka`. AC-4 tiada ujian serentak — minta perubahan." |
+| "Kod ini salah" | "`LaporanRpt10.php:41` `GROUP BY j.nama` tanpa `j.kod` — gagal `ONLY_FULL_GROUP_BY` di CI. Cadangan: tambah `j.kod` dalam `GROUP BY`." |
+
+### ✅ Checkpoint S17
+- Setiap skuad mempunyai MR `Ready` dengan `Closes #N` dan senarai semak diisi.
+- Setiap MR mempunyai komen semakan QA dengan jadual AC.
+- Papan: tiada isu skuad tanpa label `status::`.
+
+---
+
+## S18 — Merge, Latihan Konflik, Demo & Retro (16:00–17:00)
+
+**Susunan merge** ditetapkan PM: MR yang menyentuh lebih sedikit fail dikongsi di-merge dahulu. Selepas setiap merge, MR lain **rebase**:
+
+```bash
+git fetch origin
+git rebase origin/main
+composer semak
+git push --force-with-lease
+```
+
+**Latihan konflik (10 minit):** dua skuad menambah route dalam `app/Config/Routes.php` pada tempat yang berdekatan. Selepas skuad pertama merge, skuad kedua mendapat konflik semasa rebase. Selesaikan dengan:
+
+1. `git status` → fail berkonflik.
+2. Minta Claude: `Terangkan konflik dalam app/Config/Routes.php: apa yang ditambah setiap pihak? Jangan selesaikan.`
+3. **Dev memilih**: simpan kedua-dua blok (kawasan masing-masing), buang penanda `<<<<<<<`/`=======`/`>>>>>>>`.
+4. `php spark routes` (atau tool `ci4-spark` `routes`) → kedua-dua route wujud → `composer semak` → `git rebase --continue`.
+
+**Demo skuad (2 minit setiap skuad):** PM menunjukkan isu dan AC, Dev menunjukkan ciri dalam pelayar, QA menunjukkan ujian yang membuktikan AC. **Retro (10 minit):** satu perkara yang berjalan baik, satu yang perlu diubah esok, satu peraturan prompt yang skuad akan gunakan esok — tulis dalam isu retro skuad.
+
+### ✅ Checkpoint S18
+- Sekurang-kurangnya satu MR setiap skuad di-merge ke `main`; isu berkaitan ditutup automatik oleh `Closes #N`.
+- `main` boleh di-clone dan `composer test` hijau.
+- Isu retro skuad dengan 3 perkara.
+
+---
+## 🤖 Prompting hari ini
+
+Setiap peranan mempunyai prompt sendiri. Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) §H. Peraturan sama untuk semua: mod *Plan* dahulu, mod *Manual* untuk perubahan, baca setiap diff, data sintetik sahaja.
+
+| Peranan | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
+|---|---|---|---|
+| Semua · persediaan | `Terangkan .claude/settings.json, .mcp.json dan senarai skill repo ini: apa yang dibenarkan, apa yang disekat, dan kenapa.` (mod *Plan*) | Cuba `Read .env` → disekat oleh hook | 8.20 |
+| PM · tulis isu | `/isu-baharu 16` → semak jadual kualiti → `Pecahkan isu ini kepada isu bersaiz ≤ M, setiap satu dengan AC sendiri.` (jika L) | Setiap AC boleh dicuba dengan akaun `9001010100NN`; soalan pemilik → jurulatih | 8.21 |
+| QA · pelan ujian | `Guna subagent penguji-espkp: untuk setiap AC isu #N, ujian sedia ada yang meliputinya (fail:baris) dan kes yang tiada.` → `Tulis ujian PHPUnit gagal untuk AC-1 sahaja, ikut UjianCiri dan BinaPermohonan.` | Ujian gagal dengan mesej yang betul, bukan ralat sintaks | 8.21 |
+| Dev · rancang | Mod *Plan*: `/ciri-baharu 1 satu permohonan terbuka` → `Laksana slice 1 pelan ini sahaja. Berhenti selepas slice 1.` | Baca setiap diff; `composer semak`; `Guna subagent semak-espkp pada diff slice ini` | 8.21–8.22 |
+| QA · semak MR | `/semak-mr 3` → `Untuk dapatan 2, tunjukkan baris kod dan ujian yang membuktikannya.` | Buka setiap `fail:baris`; cuba langkah ujian manual di pelayar | 8.22 |
+| PM · papan | `glab issue list --milestone "Sprint 1 (Hari 8)" --label skuad::a` → `Ringkaskan status isu skuad dan apa yang menyekat, satu baris setiap isu.` | Bandingkan dengan papan di GitLab KKM | 8.22 |
+| Dev · konflik | `Terangkan konflik dalam app/Config/Routes.php: apa yang ditambah setiap pihak? Jangan selesaikan.` | Dev memilih baris; `php spark routes` | 8.23 |
+
+---
+
+## 📦 Hasil Hari Ini
+
+**Kerja pasukan (hari ini):**
+
+- [ ] espkpv2 berjalan pada Laragon; `composer test` hijau; Claude Code memuatkan `semak-espkp`, `/isu-baharu`, `/semak-mr` dan `ci4-spark`
+- [ ] Isu Sprint 1 skuad `status::sedia` dengan AC Diberi/Apabila/Maka (termasuk AC akses 404)
+- [ ] Branch `feat/<no>-…` dengan commit `Rujuk #N` dan MR `Closes #N` dengan senarai semak diisi
+- [ ] Komen semakan QA (jadual AC ↔ kod ↔ ujian) pada setiap MR skuad
+- [ ] Sekurang-kurangnya satu MR skuad di-merge ke `main` espkpv2; isu ditutup
+- [ ] Isu retro skuad
+
+**Kerja individu Modul Pas (rujukan, tidak wajib — [Lampiran](#lampiran--kerja-individu-modul-pas-rujukan)):**
+
+- [ ] `PassWorkflowService`: `startReview`, `approve`, `reject`, `expire`, `history`, `transition`, `authorize`
+- [ ] `app/Controllers/Pas/ReviewController.php` (`index`, `review`, `approve`, `reject`)
+- [ ] `app/Config/AuthGroups.php` tepat SPEC §4
+- [ ] Route `pas/semakan` + `permission:` per tindakan; `permission:pas.apply` untuk mohon
+- [ ] `app/Views/pas/semakan/index.php`, `app/Views/errors/forbidden.php`, `app/Views/partials/status_timeline.php`; `pas/show.php` dengan panel tindakan + garis masa
+- [ ] `tests/feature/Pas/PassAccessTest.php` — 13 ujian hijau
+- [ ] Demo 3 peranan lulus; branch `feat/pas-kelulusan` digabung ke `main` — **M2 siap**
+- [ ] ⭐ `app/Commands/ExpirePassesCommand.php`
+- [ ] `ReviewController::reviewBatch()` + route `pas/semakan/pukal/review` dengan `permission:pas.review`; view baris gilir dengan checkbox (Lab 8.1b–8.2b)
+- [ ] `docs/ujian-manual-pas.md` — UT-PAS-27..30 + jadual mutasi (Lab 8.2b–8.3b)
+- [ ] `tests/feature/Pas/PassBatchReviewTest.php` — 5 ujian hijau (Lab 8.3b)
+- [ ] `docs/demo-m2.md` — babak `admin` + dapatan pemisahan tugas, digabung ke `main` (Lab 8.4b)
+
+Rujukan penuh jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — `PassWorkflowService`, `ReviewController`, `AuthGroups`, `Routes-pas`, `status-timeline-view`, `PassAccessTest`, `ExpirePassesCommand`. Nota topikal: [06 Shield auth & RBAC](../docs/nota-06-shield-auth-dan-rbac.md) · [05 Service & transaksi](../docs/nota-05-service-layer-dan-transaksi.md) · [10 Ujian PHPUnit](../docs/nota-10-ujian-phpunit-ci4.md).
+
+---
+
+## 🧠 Semakan Kendiri
+
+1. Route `/pas/semakan` sudah ada `group:reviewer,approver,admin`. Kenapa `/pas/semakan/{id}/approve` masih memerlukan `permission:pas.approve`, **dan** `authorize()` dalam Service?
+
+<details><summary>Jawapan</summary>
+
+Filter group membenarkan `reviewer` masuk — tanpa filter permission, penyemak boleh POST ke `/approve`. `permission:pas.approve` menutup lubang itu di Lapisan 1. `authorize()` dalam Service ialah Lapisan 2: jika suatu hari route baharu (API, Spark command, controller lain) memanggil `approve()` tanpa filter yang betul, Service tetap menolak. Pertahanan berlapis bermaksud satu kesilapan konfigurasi tidak terus menjadi pelanggaran.
+</details>
+
+2. Pelulus A dan B menekan **Lulus** serentak pada permohonan yang sama. Terangkan apa yang berlaku dalam `transition()` langkah demi langkah.
+
+<details><summary>Jawapan</summary>
+
+A memperoleh kunci baris melalui `SELECT … FOR UPDATE`; B menunggu. A membaca `under_review`, `canTransitionTo(Approved)` benar, kemas kini + `status_logs`, commit — kunci dilepas. B kini membaca `approved`; `Approved->canTransitionTo(Approved)` palsu → `DomainException` → `transRollback()` → B melihat "Peralihan status … tidak dibenarkan." Hanya **satu** entri kelulusan dalam `status_logs`.
+</details>
+
+3. Kenapa kod kita menyemak `$user->can('pas.approve')` dan bukan `$user->inGroup('approver')`? Bilakah `inGroup()` masih sesuai?
+
+<details><summary>Jawapan</summary>
+
+Permission memisahkan **keupayaan** daripada **peranan**. Admin (melalui `pas.*`) boleh meluluskan tanpa kod tambahan; jika pemilik sistem mengubah siapa boleh meluluskan, hanya `$matrix` berubah. `inGroup()` sesuai apabila peraturan itu sendiri ditakrifkan dalam bentuk group — cth BR-PAS-04 "`reviewer`/`approver`/`admin` lihat semua" dalam `canView()`, atau filter `group:` SPEC §6.
+</details>
+
+4. `testPenyemakTidakBolehLuluskan` hanya menyemak `assertRedirect()`. Apakah pepijat yang mungkin terlepas, dan bagaimana membaikinya?
+
+<details><summary>Jawapan</summary>
+
+Jika controller/Service telah **mengubah status** sebelum redirect (cth `update()` dipanggil dahulu, kebenaran disemak kemudian), respons tetap redirect dan ujian lulus — padahal data sudah rosak. Tambah `assertStatusIs($id, PassStatus::UnderReview)` (`seeInDatabase`) dan `dontSeeInDatabase('status_logs', [... 'to_status' => 'approved'])`.
+</details>
+
+5. Kenapa `pas:expire` memanggil `PassWorkflowService::expire()` dan bukan terus `UPDATE pass_applications SET status='expired' WHERE …`?
+
+<details><summary>Jawapan</summary>
+
+Satu `UPDATE` pukal akan memintas BR-PAS-01 (boleh menukar `rejected` kepada `expired` jika `WHERE` tersilap) dan BR-PAS-05 (tiada entri `status_logs`). Melalui Service, setiap pas melalui `transition()`: dikunci, disemak `canTransitionTo()`, dikemas kini, dan direkod dengan actor — konsisten dengan setiap peralihan lain.
+</details>
+
+6. Dev menggunakan Claude Code untuk menulis kod, QA juga menggunakan Claude Code untuk menyemak. Kenapa ini masih lebih baik daripada Dev meminta Claude menyemak kodnya sendiri?
+
+<details><summary>Jawapan</summary>
+
+Sesi QA tidak berkongsi konteks dengan sesi Dev: ia bermula daripada **AC isu**, bukan daripada niat Dev, jadi ia mencari jurang antara keperluan dan kod. Sesi yang menulis kod cenderung mengesahkan andaiannya sendiri. Lebih penting, keputusan lulus dibuat oleh **manusia QA** berdasarkan bukti `fail:baris` dan ujian — Claude hanya mengumpul bukti.
+</details>
+
+7. Skuad B perlu menambah satu kebenaran baharu dalam `app/Config/AuthGroups.php`, tetapi isu mereka juga memerlukan satu baris dalam `app/Config/Aliran.php` (hotspot skuad A). Apa yang patut mereka lakukan?
+
+<details><summary>Jawapan</summary>
+
+Jangan ubah `Aliran.php` sendiri. PM skuad B membuka isu (atau komen pada isu berkaitan) kepada PM skuad A dengan perubahan yang diperlukan dan sebabnya; skuad A melaksanakannya dalam MR mereka, atau kedua-dua PM bersetuju satu MR dengan penyemak daripada skuad A. Ini mengelakkan dua MR mengubah baris yang sama dan memastikan pemilik `Aliran.php` memahami setiap peralihan.
+</details>
+
+8. Selepas rebase, `composer semak` hijau di mesin anda tetapi pipeline MR merah pada `ujian`. Sebutkan dua punca yang mungkin dalam repo ini.
+
+<details><summary>Jawapan</summary>
+
+(1) CI menggunakan MySQL 8.4 dengan `sql_mode` ketat (`ONLY_FULL_GROUP_BY`) — query laporan yang lulus di MySQL/MariaDB tempatan yang longgar boleh gagal di CI. (2) Migration atau seeder bergantung pada data dalam database tempatan anda (cth anda pernah menjalankan `db:seed`), sedangkan `UjianPangkalanData` membina skema baharu untuk setiap ujian. Punca lain: versi migration bertembung dengan migration skuad lain selepas rebase.
+</details>
+
+---
+
+## ➡️ Persediaan untuk esok
+
+Hari 9 — **Sprint 2**: isu skuad seterusnya (milestone *Sprint 2 (Hari 9)*), dengan peranan bertukar sekali lagi (tempat 3 menjadi PM pagi).
+
+- Tarik `main` terkini: `git switch main && git pull`, kemudian `composer install` dan `php spark migrate --all` jika ada migration baharu.
+- PM esok: baca isu Sprint 2 skuad anda (`glab issue list --milestone "Sprint 2 (Hari 9)" --label skuad::<x>`) dan senaraikan soalan untuk pemilik sistem.
+- Isu susulan daripada Sprint 1 (AC yang belum siap) mesti ada dalam backlog dengan label `skuad::` dan milestone Sprint 2.
+- Soalan untuk difikirkan: *Isu Sprint 2 skuad anda menyentuh fail dikongsi yang mana — dan dengan skuad mana anda perlu berbincang sebelum bermula?*
+
+---
+
+## Lampiran — Kerja individu Modul Pas (rujukan)
+
+> ℹ️ Bahagian di bawah ialah bahan Hari 8 sebelum mod pasukan: Modul Pas dibina secara individu dalam `kelas-ci-<nama>` (sesi Claude Code S9–S12 dan sesi manual S1–S8). Ia kekal sebagai **rujukan, tidak wajib** — corak `transition()`, RBAC berlapis dan ujian akses yang sama digunakan dalam espkpv2.
+
+### Objektif rujukan (O1–O14)
 
 Di akhir hari ini, peserta boleh:
 
@@ -27,28 +320,7 @@ Di akhir hari ini, peserta boleh:
 | O13 | **Menulis** matriks peranan × tindakan sendiri dan **menguji** `PassAccessTest` yang dijana Claude dengan 2 mutasi | S11 | [Lab 8.12](./lab.md#lab-812--claude-code-ujian-akses--sejarah-status-s11); setiap mutasi menggagalkan ujian |
 | O14 | **Mendemokan** M2 dan **menerangkan** 3 baris rawak dari diff tanpa Claude sebelum merge | S12 | [Lab 8.13](./lab.md#lab-813--claude-code-demo-m2--semakan-akhir-s12); MR `feat/pas-claude` di-merge |
 
----
-
-## 📅 Jadual Hari Ini
-
-> ℹ️ **Jadual Hari 8 (dikemas kini):** mulai hari ini modul dibina **dengan Claude Code**. Pagi: Pas slice 1–2 dari Hari 7 (Lab 7.10/7.11, dipindahkan dari petang Hari 7) berpandukan `docs/keperluan-pas.md` dan `docs/pelan-pas.md` dari Lab 7.13. Petang: S9–S11 (Lab 8.10–8.12). Lab manual (S1–S8, Lab 8.0–8.4b) dan Lab 7.3/7.4 ialah **kod rujukan, tidak wajib**: setiap lab baharu ada langkah *Banding dengan kod rujukan* yang menunjuk ke bahagian manual yang sepadan.
-
-| Masa | Sesi | Aktiviti | Objektif sesi |
-|------|------|----------|---------------|
-| 08:30–09:00 | — | Recap Hari 7 | — |
-| 09:00–10:30 | S13 (Hari 7) | Claude Code: Pas slice 1 — model, senarai & butiran | Lab 7.10: enum, Model `ownedBy()`, senarai & butiran 404 bukan pemilik, berpandukan `docs/keperluan-pas.md` dan `docs/pelan-pas.md` ([Lab 7.10](../hari-7/lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13)) |
-| 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | S14 (Hari 7) | Claude Code: Pas slice 2 — borang & muat naik selamat | Lab 7.11: borang + CSRF, validasi fail, nama rawak di luar `public/`, transaksi + pembersihan ([Lab 7.11](../hari-7/lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14)) |
-| 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–15:30 | S9 | Claude Code: aliran kelulusan Pas (slice 3) | Lab 8.10: `PassWorkflowService` dengan `PassStatus::canTransitionTo()` melalui gerbang pelan dan diff |
-| 15:30–16:30 | S10 | Claude Code: RBAC Shield & skop akses (slice 4) | Lab 8.11: filter `permission:`, `authorize()` dan `canView()` dibuktikan dengan `filter_check` dan serangan |
-| 16:30–17:00 | S11 | Claude Code: ujian akses & sejarah status (slice 5) — teras | Lab 8.12 (teras): matriks peranan × tindakan dan `PassAccessTest` positif & negatif |
-
-> ℹ️ **Lab 8.12 dan 8.13:** Lab 8.12 disiapkan, dan Lab 8.13 (S12, demo M2 & merge) dijalankan, pada awal Hari 9 08:30–09:00 atau sebagai kerja rumah.
-
----
-
-## 🧭 Kenapa hari ini penting
+### Kenapa Modul Pas penting (rujukan)
 
 Sistem kelulusan kerajaan hidup atau mati pada tiga soalan audit:
 
@@ -72,6 +344,22 @@ flowchart LR
     U((Pengguna)) --> L1 --> L2 --> DB[(MySQL)]
     U -. GET butiran/dokumen .-> L3
 ```
+
+### Prompting rujukan (kerja individu)
+
+Setiap slice: rancang dalam mod *Plan* (`Shift+Tab` / `Alt+M`), kemudian Claude Code melaksana dalam mod *Manual* — anda membaca dan meluluskan setiap diff, menjalankan ujian, `semak-ci4`, dan mesti boleh menerangkan setiap baris yang di-commit (7 pintu semakan, [`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`.
+
+| Sesi | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
+|---|---|---|---|
+| S9 · Slice 3: aliran kelulusan | Pelan slice (mod *Plan*, tiada kod) → AI-19 (laksana langkah 1 pelan sahaja, mod Manual) → AI-20 untuk diff `transition()` → subagent `semak-ci4` pada `PassWorkflowService` | Permohonan A `approved` dengan 3 baris `status_logs`; `!composer test` | 8.10 |
+| S10 · Slice 4: RBAC & skop | Tool MCP `ci4-spark` `filter_check` sebelum pelan → pelan RBAC (SPEC §4) → AI-19 → AI-20 → `semak-ci4` pada `AuthGroups.php` dan `Routes.php` | `php spark filter:check POST /pas/semakan/1/approve`; `pemohon2` → 404 | 8.11 |
+| S11 · Slice 5: ujian akses | Pelan daripada matriks anda → AI-19 untuk ujian; AI-09 untuk sel matriks; AI-10 untuk pepijat yang tidak ditangkap; `semak-ci4` pada garis masa | `!composer test -- tests/feature/Pas/PassAccessTest.php`; 2 mutasi menggagalkan ujian | 8.12 |
+| S12 · Demo M2 | `semak-ci4` pada modul penuh → AI-08 (DoD, BR-PAS-01..06); AI-02 jika satu baris tidak dapat diterangkan | `git diff main...feat/pas-claude`: 3 baris rawak diterangkan tanpa Claude | 8.13 |
+| S1 · Aliran kelulusan (kod rujukan) | AI-05 (BR-PAS-01/03/05) dengan `@app/Services/PassWorkflowService.php`; tanya di mana `FOR UPDATE` dan `status_logs` | Buka fail:baris; ulang ujian sesi kedua `pelulus` | 8.1 langkah 10 |
+| S2 · RBAC Shield (kod rujukan) | AI-07 + tool MCP `ci4-spark` `routes` dan `filter_check` pada 3 route POST semakan | `php spark filter:check POST /pas/semakan/1/approve` | 8.2 langkah 10 |
+| S3 · Ujian akses (kod rujukan) | AI-09: matriks peranan × tindakan dari `@tests/feature/Pas/PassAccessTest.php`; AI-10 untuk pepijat | `!composer test -- tests/feature/Pas` | 8.3 langkah 8 |
+| S4 · Demo & M2 (kod rujukan) | Subagent `semak-ci4` pada modul Pas (`esc()`, CSRF, filter, pemilikan) | Buka setiap fail:baris; dapatan sahih → `FIX:` | 8.4 langkah 5 |
+| S5–S8 · Lanjutan (kod rujukan) | AI-07 + `filter_check POST /pas/semakan/pukal/review`; AI-09 untuk `PassBatchReviewTest` | `!composer test -- tests/feature/Pas` | — |
 
 ---
 
@@ -786,88 +1074,3 @@ Lab: [Lab 8.4b](./lab.md#lab-84b--demo-peranan-keempat-admin--dapatan-pemisahan-
    > Admin melakukan ketiga-tiga peralihan (`NULL → submitted`, `submitted → under_review`, `under_review → approved`). Cubaan `pelulus` di-rollback, jadi tiada entri. Inilah bukti dapatan pemisahan tugas.
 
 ---
-
-## 🤖 Prompting hari ini
-
-Setiap slice: rancang dalam mod *Plan* (`Shift+Tab` / `Alt+M`), kemudian Claude Code melaksana dalam mod *Manual* — anda membaca dan meluluskan setiap diff, menjalankan ujian, `semak-ci4`, dan mesti boleh menerangkan setiap baris yang di-commit (7 pintu semakan, [`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`.
-
-| Sesi | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
-|---|---|---|---|
-| S9 · Slice 3: aliran kelulusan | Pelan slice (mod *Plan*, tiada kod) → AI-19 (laksana langkah 1 pelan sahaja, mod Manual) → AI-20 untuk diff `transition()` → subagent `semak-ci4` pada `PassWorkflowService` | Permohonan A `approved` dengan 3 baris `status_logs`; `!composer test` | 8.10 |
-| S10 · Slice 4: RBAC & skop | Tool MCP `ci4-spark` `filter_check` sebelum pelan → pelan RBAC (SPEC §4) → AI-19 → AI-20 → `semak-ci4` pada `AuthGroups.php` dan `Routes.php` | `php spark filter:check POST /pas/semakan/1/approve`; `pemohon2` → 404 | 8.11 |
-| S11 · Slice 5: ujian akses | Pelan daripada matriks anda → AI-19 untuk ujian; AI-09 untuk sel matriks; AI-10 untuk pepijat yang tidak ditangkap; `semak-ci4` pada garis masa | `!composer test -- tests/feature/Pas/PassAccessTest.php`; 2 mutasi menggagalkan ujian | 8.12 |
-| S12 · Demo M2 | `semak-ci4` pada modul penuh → AI-08 (DoD, BR-PAS-01..06); AI-02 jika satu baris tidak dapat diterangkan | `git diff main...feat/pas-claude`: 3 baris rawak diterangkan tanpa Claude | 8.13 |
-| S1 · Aliran kelulusan (kod rujukan) | AI-05 (BR-PAS-01/03/05) dengan `@app/Services/PassWorkflowService.php`; tanya di mana `FOR UPDATE` dan `status_logs` | Buka fail:baris; ulang ujian sesi kedua `pelulus` | 8.1 langkah 10 |
-| S2 · RBAC Shield (kod rujukan) | AI-07 + tool MCP `ci4-spark` `routes` dan `filter_check` pada 3 route POST semakan | `php spark filter:check POST /pas/semakan/1/approve` | 8.2 langkah 10 |
-| S3 · Ujian akses (kod rujukan) | AI-09: matriks peranan × tindakan dari `@tests/feature/Pas/PassAccessTest.php`; AI-10 untuk pepijat | `!composer test -- tests/feature/Pas` | 8.3 langkah 8 |
-| S4 · Demo & M2 (kod rujukan) | Subagent `semak-ci4` pada modul Pas (`esc()`, CSRF, filter, pemilikan) | Buka setiap fail:baris; dapatan sahih → `FIX:` | 8.4 langkah 5 |
-| S5–S8 · Lanjutan (kod rujukan) | AI-07 + `filter_check POST /pas/semakan/pukal/review`; AI-09 untuk `PassBatchReviewTest` | `!composer test -- tests/feature/Pas` | — |
-
----
-
-## 📦 Hasil Hari Ini
-
-- [ ] `PassWorkflowService`: `startReview`, `approve`, `reject`, `expire`, `history`, `transition`, `authorize`
-- [ ] `app/Controllers/Pas/ReviewController.php` (`index`, `review`, `approve`, `reject`)
-- [ ] `app/Config/AuthGroups.php` tepat SPEC §4
-- [ ] Route `pas/semakan` + `permission:` per tindakan; `permission:pas.apply` untuk mohon
-- [ ] `app/Views/pas/semakan/index.php`, `app/Views/errors/forbidden.php`, `app/Views/partials/status_timeline.php`; `pas/show.php` dengan panel tindakan + garis masa
-- [ ] `tests/feature/Pas/PassAccessTest.php` — 13 ujian hijau
-- [ ] Demo 3 peranan lulus; branch `feat/pas-kelulusan` digabung ke `main` — **M2 siap**
-- [ ] ⭐ `app/Commands/ExpirePassesCommand.php`
-- [ ] `ReviewController::reviewBatch()` + route `pas/semakan/pukal/review` dengan `permission:pas.review`; view baris gilir dengan checkbox (Lab 8.1b–8.2b)
-- [ ] `docs/ujian-manual-pas.md` — UT-PAS-27..30 + jadual mutasi (Lab 8.2b–8.3b)
-- [ ] `tests/feature/Pas/PassBatchReviewTest.php` — 5 ujian hijau (Lab 8.3b)
-- [ ] `docs/demo-m2.md` — babak `admin` + dapatan pemisahan tugas, digabung ke `main` (Lab 8.4b)
-
-Rujukan penuh jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — `PassWorkflowService`, `ReviewController`, `AuthGroups`, `Routes-pas`, `status-timeline-view`, `PassAccessTest`, `ExpirePassesCommand`. Nota topikal: [06 Shield auth & RBAC](../docs/nota-06-shield-auth-dan-rbac.md) · [05 Service & transaksi](../docs/nota-05-service-layer-dan-transaksi.md) · [10 Ujian PHPUnit](../docs/nota-10-ujian-phpunit-ci4.md).
-
----
-
-## 🧠 Semakan Kendiri
-
-1. Route `/pas/semakan` sudah ada `group:reviewer,approver,admin`. Kenapa `/pas/semakan/{id}/approve` masih memerlukan `permission:pas.approve`, **dan** `authorize()` dalam Service?
-
-<details><summary>Jawapan</summary>
-
-Filter group membenarkan `reviewer` masuk — tanpa filter permission, penyemak boleh POST ke `/approve`. `permission:pas.approve` menutup lubang itu di Lapisan 1. `authorize()` dalam Service ialah Lapisan 2: jika suatu hari route baharu (API, Spark command, controller lain) memanggil `approve()` tanpa filter yang betul, Service tetap menolak. Pertahanan berlapis bermaksud satu kesilapan konfigurasi tidak terus menjadi pelanggaran.
-</details>
-
-2. Pelulus A dan B menekan **Lulus** serentak pada permohonan yang sama. Terangkan apa yang berlaku dalam `transition()` langkah demi langkah.
-
-<details><summary>Jawapan</summary>
-
-A memperoleh kunci baris melalui `SELECT … FOR UPDATE`; B menunggu. A membaca `under_review`, `canTransitionTo(Approved)` benar, kemas kini + `status_logs`, commit — kunci dilepas. B kini membaca `approved`; `Approved->canTransitionTo(Approved)` palsu → `DomainException` → `transRollback()` → B melihat "Peralihan status … tidak dibenarkan." Hanya **satu** entri kelulusan dalam `status_logs`.
-</details>
-
-3. Kenapa kod kita menyemak `$user->can('pas.approve')` dan bukan `$user->inGroup('approver')`? Bilakah `inGroup()` masih sesuai?
-
-<details><summary>Jawapan</summary>
-
-Permission memisahkan **keupayaan** daripada **peranan**. Admin (melalui `pas.*`) boleh meluluskan tanpa kod tambahan; jika pemilik sistem mengubah siapa boleh meluluskan, hanya `$matrix` berubah. `inGroup()` sesuai apabila peraturan itu sendiri ditakrifkan dalam bentuk group — cth BR-PAS-04 "`reviewer`/`approver`/`admin` lihat semua" dalam `canView()`, atau filter `group:` SPEC §6.
-</details>
-
-4. `testPenyemakTidakBolehLuluskan` hanya menyemak `assertRedirect()`. Apakah pepijat yang mungkin terlepas, dan bagaimana membaikinya?
-
-<details><summary>Jawapan</summary>
-
-Jika controller/Service telah **mengubah status** sebelum redirect (cth `update()` dipanggil dahulu, kebenaran disemak kemudian), respons tetap redirect dan ujian lulus — padahal data sudah rosak. Tambah `assertStatusIs($id, PassStatus::UnderReview)` (`seeInDatabase`) dan `dontSeeInDatabase('status_logs', [... 'to_status' => 'approved'])`.
-</details>
-
-5. Kenapa `pas:expire` memanggil `PassWorkflowService::expire()` dan bukan terus `UPDATE pass_applications SET status='expired' WHERE …`?
-
-<details><summary>Jawapan</summary>
-
-Satu `UPDATE` pukal akan memintas BR-PAS-01 (boleh menukar `rejected` kepada `expired` jika `WHERE` tersilap) dan BR-PAS-05 (tiada entri `status_logs`). Melalui Service, setiap pas melalui `transition()`: dikunci, disemak `canTransitionTo()`, dikemas kini, dan direkod dengan actor — konsisten dengan setiap peralihan lain.
-</details>
-
----
-
-## ➡️ Persediaan untuk esok
-
-Hari 9 — **Modul Laporan (M3)**: RPT-01 (tempahan TLK) dan **RPT-02 (permohonan Pas)** dengan filter, aggregate dan eksport PDF/Excel.
-
-- Pastikan `main` mengandungi M1 **dan** M2 (merge `feat/pas-kelulusan`).
-- Cipta sekurang-kurangnya **8 permohonan Pas** dengan status berbeza (`submitted`, `under_review`, `approved`, `rejected`) dan tarikh berlainan — laporan esok perlu data untuk ditapis. Sertakan sekurang-kurangnya satu daripada setiap `pass_type`.
-- Semak `composer show dompdf/dompdf phpoffice/phpspreadsheet` — jika belum dipasang, lihat [`docs/persediaan.md`](../docs/persediaan.md).
-- Soalan untuk difikirkan: *Siapa yang patut boleh melihat RPT-02 — dan filter route apa yang akan anda gunakan?* (Petunjuk: SPEC §6.)

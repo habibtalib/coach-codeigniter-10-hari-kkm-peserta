@@ -102,49 +102,45 @@
 | 15:30–16:15 | S15 | Claude Code: fahami projek contoh eSPKP | Lab 7.12: 6 prompt onboarding mod Plan pada eSPKP Contoh, disahkan dengan `fail:baris` dan demo 2 peranan |
 | 16:15–17:00 | S16 | Claude Code: rancang & laras keperluan daripada projek contoh | Lab 7.13: PRD daripada kod, jadual jurang vs SPEC, `docs/keperluan-pas.md` + `docs/pelan-pas.md` |
 
-> ℹ️ Hari 7 fokus kepada Claude Code. S13/S14 (Lab 7.10/7.11) dibuat pada pagi Hari 8; sesi Pas S1–S8 dan lab manual 7.0–7.4 (dan 7.1b–7.4b) berada dalam Lampiran Hari 7 sebagai kod rujukan.
+> ℹ️ Hari 7 fokus kepada Claude Code. S13/S14 (Lab 7.10/7.11), sesi Pas S1–S8 dan lab manual 7.0–7.4 (dan 7.1b–7.4b) berada dalam Lampiran Hari 7 sebagai rujukan.
 
-> ℹ️ Mulai Hari 8 hingga Hari 10, modul dibina dengan Claude Code ([`kolaborasi.md`](./docs/kolaborasi.md) §3).
+> ℹ️ Mulai Hari 8 hingga Hari 10, kelas bekerja sebagai **satu pasukan** dalam repo espkpv2 (GitLab KKM `aplikasi-baharu/espkpv2`): 3 skuad × 4 dengan peranan PM, QA dan Dev, setiap peranan dibantu Claude Code ([`peranan-pasukan.md`](./docs/peranan-pasukan.md), [`kolaborasi.md`](./docs/kolaborasi.md) §6).
 
-## Hari 8 — Modul Pas (Bahagian 2) · [nota](./hari-8/README.md)
-
-| Masa | Sesi | Aktiviti | Objektif sesi |
-|------|------|----------|---------------|
-| 08:30–09:00 | — | Recap Hari 7 | — |
-| 09:00–10:30 | S13 (Hari 7) | Claude Code: Pas slice 1 — model, senarai & butiran | Lab 7.10: enum, Model `ownedBy()`, senarai & butiran 404 bukan pemilik, berpandukan `docs/keperluan-pas.md` dan `docs/pelan-pas.md` ([Lab 7.10](./hari-7/lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13)) |
-| 10:45–12:30 | S14 (Hari 7) | Claude Code: Pas slice 2 — borang & muat naik selamat | Lab 7.11: borang + CSRF, validasi fail, nama rawak di luar `public/`, transaksi + pembersihan ([Lab 7.11](./hari-7/lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14)) |
-| 14:30–15:30 | S9 | Claude Code: aliran kelulusan Pas (slice 3) | Lab 8.10: `PassWorkflowService` dengan `PassStatus::canTransitionTo()` melalui gerbang pelan dan diff |
-| 15:30–16:30 | S10 | Claude Code: RBAC Shield & skop akses (slice 4) | Lab 8.11: filter `permission:`, `authorize()` dan `canView()` dibuktikan dengan `filter_check` dan serangan |
-| 16:30–17:00 | S11 | Claude Code: ujian akses & sejarah status (slice 5) — teras | Lab 8.12 (teras): matriks peranan × tindakan dan `PassAccessTest` positif & negatif |
-
-> ℹ️ **Lab 8.12 dan 8.13:** Lab 8.12 disiapkan, dan Lab 8.13 (S12, demo M2 & merge) dijalankan, pada awal Hari 9 08:30–09:00 atau sebagai kerja rumah.
-
-> ℹ️ Modul dibina dengan Claude Code melalui 7 pintu semakan ([`kolaborasi.md`](./docs/kolaborasi.md) §3); lab manual hari ini ialah kod rujukan, tidak wajib.
-
-## Hari 9 — Modul Laporan · [nota](./hari-9/README.md)
+## Hari 8 — Kerja Pasukan dengan Claude Code: Sprint 1 · [nota](./hari-8/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Recap Hari 8 (aliran Pas + RBAC) | — |
-| 09:00–10:30 | **S9** | Claude Code: `ReportService` & penapis whitelist (slice L1) | O11 |
-| 10:45–12:30 | **S10** | Claude Code: paparan senarai & RPT-03 (slice L2) | O12 |
-| 14:30–16:00 | **S11** | Claude Code: eksport PDF & Excel selamat (slice L3) | O13 |
-| 16:00–17:00 | **S12** | Claude Code: ujian laporan & prestasi — **M3 siap** | O14 |
+| 08:30–09:00 | — | Recap Hari 7, pembentukan skuad & kad peranan | — |
+| 09:00–10:30 | S15 | Persediaan pasukan: espkpv2 pada Laragon, Claude Code dikongsi, papan isu | Lab 8.20: clone dengan token, `composer test` hijau, `/isu-baharu` + `/semak-mr` + `ci4-spark` dimuatkan, `glab` |
+| 10:45–12:30 | S16 | Sprint 1 pagi: PM tulis isu, QA rancang ujian, Dev rancang & slice 1 | Lab 8.21: isu `status::sedia` dengan AC, ujian gagal dari AC, branch `feat/<no>-…` + commit `Rujuk #N` |
+| 14:30–16:00 | S17 | Sprint 1 petang (peranan bertukar): MR, semakan QA, papan | Lab 8.22: MR `Closes #N`, komen `/semak-mr` dengan jadual AC, papan tepat |
+| 16:00–17:00 | S18 | Merge, latihan konflik, demo skuad & retro | Lab 8.23: MR di-merge, konflik `Routes.php` diselesaikan, demo 2 minit, isu retro |
 
-> ℹ️ Modul dibina dengan Claude Code melalui 7 pintu semakan ([`kolaborasi.md`](./docs/kolaborasi.md) §3); lab manual hari ini ialah kod rujukan, tidak wajib.
+> ℹ️ Sesi Modul Pas individu Hari 8 (S1–S12, Lab 8.0–8.13) berada dalam Lampiran Hari 8 sebagai rujukan.
 
-## Hari 10 — Modul Statistik & Capstone · [nota](./hari-10/README.md)
+## Hari 9 — Kerja Pasukan: Sprint 2 · [nota](./hari-9/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Recap Hari 9 (laporan & eksport) | — |
-| 09:00–10:30 | **S5** | Claude Code: modul Statistik slice 1–2 (KPI, dataset carta, `/statistik/data`) — Lab 10.10 | O1, O7 |
-| 10:45–11:45 | **S5** | Claude Code: modul Statistik slice 3–4 (Chart.js, cache + invalidasi selepas commit) | O2, O3, O7 |
-| 11:45–12:30 | **S3** | UAT manual merentas 4 modul + K1–K10 (Lab 10.3 langkah 1–3 dan 5) | O4 |
-| 14:30–16:00 | **S6** | Claude Code: persediaan capstone (`semak-ci4`, AI-08, AI-09, AI-18, tag) — Lab 10.11 | O5, O8 |
-| 16:00–17:00 | **S7** | Demo capstone (format S4) & refleksi Claude Code — Lab 10.12 | O6, O9 |
+| 08:30–09:00 | — | Stand-up skuad, tukar peranan (tempat 3 = PM) | — |
+| 09:00–10:30 | S13 | Perancangan Sprint 2, sync PM, pelan ujian & slice 1 | Lab 9.20: isu Sprint 2 `status::sedia`, nota sync PM, ujian gagal dari AC, branch Sprint 2 |
+| 10:45–12:30 | S14 | Bina Sprint 2: A #13 peringatan Pindaan · B #9/#8 kata laluan & CI MariaDB · C #17 carta & eksport RPT-10 | Lab 9.21: slice demi slice dengan ujian; semakan risiko skuad (idempoten, akaun latihan, CSP, had eksport) |
+| 14:30–16:00 | S15 | MR, semakan QA & ujian eksploratori merentas skuad | Lab 9.22: MR `Ready` + `/semak-mr`; ≥ 1 isu Pepijat merentas skuad |
+| 16:00–17:00 | S16 | Merge, `main` hijau (PHPUnit + E2E), demo sprint, retro, skop v1.1.0 | Lab 9.23: semua MR di-merge, `composer test` + `npm run e2e` hijau |
 
-> ℹ️ Modul dibina dengan Claude Code melalui 7 pintu semakan ([`kolaborasi.md`](./docs/kolaborasi.md) §3); lab manual hari ini ialah kod rujukan, tidak wajib.
+> ℹ️ Sesi Modul Laporan individu (S1–S12, Lab 9.1–9.13) berada dalam Lampiran Hari 9 sebagai rujukan.
+
+## Hari 10 — Kerja Pasukan: Sprint 3, Keluaran v1.1.0 & Capstone · [nota](./hari-10/README.md)
+
+| Masa | Sesi | Aktiviti | Objektif sesi |
+|------|------|----------|---------------|
+| 08:30–09:00 | — | Stand-up skuad, pilih peranan Hari 10 | — |
+| 09:00–12:30 | S8 | Sprint 3: A #14 · B #15 · C #18 + pepijat kritikal · **pembekuan ciri 12:30** | Lab 10.20: isu ditutup atau dialih dengan sebab; `main` hijau |
+| 14:30–15:15 | S9 | Keluaran v1.1.0 | Lab 10.21: CHANGELOG melalui MR, nota keluaran, tag `v1.1.0` + Release |
+| 15:15–16:30 | S10 | Demo capstone pasukan (15 minit setiap skuad) | Lab 10.22: PM · Dev · QA · soalan baris kod setiap ahli ([rubrik](./docs/rubrik-capstone.md) §8) |
+| 16:30–17:00 | S11 | Retro pasukan & refleksi Claude Code, penutup | Lab 10.22: komen retro akhir setiap ahli |
+
+> ℹ️ Sesi Statistik & capstone individu (S1–S7, Lab 10.1–10.12) berada dalam Lampiran Hari 10 sebagai rujukan.
 
 ---
 

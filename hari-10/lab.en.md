@@ -1,22 +1,144 @@
-# Day 10 Lab — Statistics (M4) & Capstone
+# Day 10 Lab — Team Work: Sprint 3, Release v1.1.0 & Team Capstone
 
-[⬅️ README](./README.md) · [Schedule](../JADUAL.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · 🧩 Code templates (**Templat & Rujukan** module) · [Capstone Rubric](../docs/rubrik-capstone.md) · [⚡ spark commands](../docs/arahan-spark.md)
+[← README](./README.en.md) · [Schedule](../JADUAL.en.md) · [👥 Team roles](../docs/peranan-pasukan.en.md) · [📋 Capstone Rubric](../docs/rubrik-capstone.en.md)
 
-**Working branch:** `git switch main && git pull && git switch -c feat/statistik` (PowerShell: run them one at a time) · **Commit prefix:** `STAT:` (dashboard/cache), `FIX:` (UAT bug fixes) · **Reference code:** `StatisticsService.php.txt`, `DashboardController.php.txt`, `dashboard-view.php.txt`, `Routes-laporan-statistik.php.txt` (**Templat & Rujukan** module)
+| Lab | Session | Time | Output |
+|-----|---------|------|--------|
+| 10.20 | S8 | 09:00–12:30 | Sprint 3 issues closed or moved; `main` green at the feature freeze |
+| 10.21 | S9 | 14:30–15:15 | CHANGELOG 1.1.0 MR, release notes, tag `v1.1.0` + Release |
+| 10.22 | S10–S11 | 15:15–17:00 | Squad capstone demo, code-line questions, final retro |
 
-| Lab | Session | Duration | Outcome |
-|-----|------|--------|-------|
-| 10.10 | S5 | 150 min | Claude Code: 4 Statistics slices (KPIs · JSON · Chart.js · cache) · 12 explain gate lines · 4 `STAT:` commits |
-| 10.11 | S6 | 90 min | `docs/semakan-capstone.md` · red → green fixes · 2 AI-09 tests · README/CLAUDE.md · tag `v1.0-capstone` |
-| 10.12 | S7 | 60 min | 8-minute demo · accept/reject reflection in `docs/nota-claude.md` |
-| 10.1 | S1 | 75 min | `StatisticsService` (no cache) · `/statistik` + `/statistik/data` · 4 KPIs · 4 charts — *reference code* |
-| 10.2 | S2 | 90 min | `remember()` · invalidation in `BookingService` & `PassWorkflowService` · `StatisticsCacheTest` — *reference code* |
-| 10.3 | S3 | 85 min | UAT filled in · ≥ 1 bug fixed through a failing test · security checklist · tag `v1.0-capstone` — steps 1–3 and 5 at 11:45–12:30 |
-| 10.4 | S4 | 60 min | 8-minute demo · retrospective — demo format for Lab 10.12 |
-
-> ℹ️ **Labs 10.10–10.12 first.** The Statistics module and capstone preparation are built with Claude Code (Labs 10.10–10.12, below). Labs 10.1–10.2 are **reference code** for the "Compare with the reference code" step; do not retype them. Lab 10.3 steps 1–3 and 5 (manual UAT + K1–K10) run at 11:45–12:30; Lab 10.4 is the demo format for Lab 10.12.
+> ℹ️ Repo: `aplikasi-baharu/espkpv2`. The issue → MR → merge mechanics are as in [Labs 8.21–8.23](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16). The individual Statistics & capstone labs (10.1–10.12) are in the [Appendix](#appendix--individual-statistics--capstone-labs-reference).
 
 ---
+
+## Lab 10.20 — Sprint 3: Final Features & Freeze (S8)
+
+### 🎯 Objective
+Finish the squad's Sprint 3 issues and critical bugs through MRs reviewed by QA before the **12:30 feature freeze**, and make a clear scope decision for unfinished issues.
+
+### Prerequisites
+- The latest `main` is green (`git pull`, `composer install`, `php spark migrate --all`, `composer test`).
+- Day 10 roles chosen by the squad and recorded in a comment on the squad's Sprint 3 issue.
+
+### Steps
+
+1. **Stand-up and scope (08:30–09:30).** PM:
+
+   ```text
+   Run glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" --label skuad::<x>. For each issue: size, who, the risk of not finishing before 12:30. Propose a work order: keutamaan::1-kritikal bugs first.
+   ```
+
+   The PM decides and updates the *Assignee* and `status::`.
+
+2. **Critical bugs first (Dev + QA).** Each bug: a failing test that shows the bug → fix → green test → MR `fix/<no>-…` with `Closes #<no>`.
+
+   ```text
+   This test/E2E fails: <output>. Reproduce first: write one PHPUnit test that fails because of this bug. Do not change code in app/ yet.
+   ```
+
+3. **Sprint 3 feature (09:30–11:30).** The rhythm of Labs 8.21–8.22: `/ciri-baharu <no>` → slice (*Manual* mode) → `composer semak` → `semak-espkp` → commit `Rujuk #<no>`.
+
+4. **MR and merge (11:30–12:15).** `/semak-mr <no>` by QA → approve → the PM merges in order.
+
+5. **Freeze (12:30).** Feature MRs not yet merged: switch to draft, comment *"Moved to the backlog after the v1.1.0 freeze: <status, what is left>"*, remove the milestone. After 12:30, only `fix/…` branches can be merged.
+
+### ✅ Checkpoint
+- [ ] Every squad Sprint 3 issue is closed or moved with a comment; `composer test` is green on `main` after the last merge.
+
+---
+
+## Lab 10.21 — Release v1.1.0 (S9)
+
+### 🎯 Objective
+Prepare the v1.1.0 release from a green `main`: a CHANGELOG where every line links to a real MR, release notes, an annotated tag and a GitLab Release.
+
+### Steps
+
+1. **Stabilise (each squad's QA, 15 minutes).** On the latest `main`: `composer test` and E2E (the repo README's *Ujian hujung ke hujung (E2E)* section). Failures → a small `fix/…` or a known issue in the release notes.
+
+2. **Draft the CHANGELOG (release PM, 15 minutes).** *Plan* mode:
+
+   ```text
+   Run glab mr list --merged for the milestones "Sprint 1 (Hari 8)", "Sprint 2 (Hari 9)" and "Sprint 3 + v1.1 (Hari 10)". Draft CHANGELOG.md with the heading "# Changelog" and a "## [1.1.0] - 2026-10-30" section (Keep a Changelog format: Added, Changed, Fixed, Security). One line per MR with the !no and #issue. Do not write files.
+   ```
+
+   The other PMs check their squad's lines against the real MRs. A line without an MR → remove it.
+
+3. **CHANGELOG MR.** Branch `docs/changelog-v1.1.0`, paste the checked CHANGELOG, an MR with any squad's QA as reviewer, the release PM merges.
+
+4. **Tag and Release (the trainer, in front of the class).** `v*` tags are protected (Maintainer). The release PM reads the release notes; the trainer runs:
+
+   ```bash
+   git switch main && git pull --ff-only
+   git tag -a v1.1.0 -m "v1.1.0: satu permohonan terbuka, peringatan Pindaan, RPT-10, sejarah log masuk, dasar kata laluan"
+   git push origin v1.1.0
+   glab release create v1.1.0 --notes-file nota-v1.1.0.md
+   ```
+
+### ✅ Checkpoint
+- [ ] `glab release view v1.1.0` shows the release notes; `CHANGELOG.md` is on `main`.
+
+---
+
+## Lab 10.22 — Team Capstone Demo & Reflection (S10–S11)
+
+### 🎯 Objective
+Demo the squad's result on `v1.1.0` with evidence from every role, **explain** your own line of code without Claude, and reflect on using Claude Code in a team.
+
+### Steps
+
+1. **Preparation (10 minutes, before your turn).** `git switch --detach v1.1.0`, `php spark migrate --all`, `php spark serve`. Every member picks one line they committed themselves:
+
+   ```bash
+   git log --author="<your name>" --oneline v1.1.0
+   ```
+
+   Practise (Claude must not give the answers):
+
+   ```text
+   Ask me 3 questions about the line <file:line> I committed, like the capstone panel. Do not give the answers.
+   ```
+
+2. **Squad demo (15 minutes per squad).** PM 3 minutes (issues, AC, scope decisions), Dev 5 minutes (the feature in the browser with ≥ 2 accounts, including one that gets a 404), QA 3 minutes (the tests that prove the AC, one bug caught before merge), panel 4 minutes (code-line questions for every member).
+
+3. **Final retro (S11, 20 minutes).** In the issue `Retro akhir — Pasukan CI-KKM-10`, everyone adds one comment: the role that taught the most, one time Claude sped things up (which prompt) and one time Claude slowed things down or misled (which gate caught it), one rule to take back to the department.
+
+### ✅ Checkpoint
+- [ ] The squad score sheet ([`rubrik-capstone.en.md`](../docs/rubrik-capstone.en.md) §8) is filled in by the panel.
+- [ ] A retro comment from every member.
+
+---
+
+## Self-check — end of day
+
+**Team work (today):** `glab release view v1.1.0 -R aplikasi-baharu/espkpv2`, `glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" -R aplikasi-baharu/espkpv2`.
+
+- [ ] My squad's Sprint 3 issues are closed or moved to the backlog with a reason before the freeze (Lab 10.20).
+- [ ] `CHANGELOG.md` 1.1.0 is merged and every line matches a real MR; tag `v1.1.0` exists (Lab 10.21).
+- [ ] I explained one line I committed without Claude during the squad demo (Lab 10.22).
+- [ ] My final retro comment is added in the team retro issue (Lab 10.22).
+
+**Individual Statistics & capstone (reference, optional):**
+
+```bash
+composer test         # all green (including StatisticsCacheTest)
+git log --oneline -8  # today's STAT: and FIX: commits
+git tag -l            # v1.0-capstone
+git status --short    # no output
+```
+
+- [ ] `pelulus@latihan.test` → `/statistik` shows 4 KPI cards + 4 charts; `/statistik/data` returns JSON with 12 values in `charts.bookings_by_month.data`.
+- [ ] `penyemak@latihan.test` → `/statistik` and `/statistik/data` are blocked.
+- [ ] `composer test` is green, including `tests/Services/StatisticsCacheTest.php`.
+- [ ] `docs/UAT-signoff.md` §4: UAT-01..UAT-10 has no ⬜; `git log --oneline` shows ≥ 1 `FIX:` commit.
+- [ ] `git tag -l` shows `v1.0-capstone` and `git status --short` is empty.
+
+---
+
+## Appendix — Individual Statistics & capstone labs (reference)
+
+> ℹ️ The labs below are the Day 10 labs from before team mode: the Statistics module and the individual capstone in `kelas-ci-<nama>` with Claude Code (Labs 10.10–10.12) or manually (Labs 10.1–10.4). They remain as **reference, optional**.
 
 ## Lab 10.10 — Claude Code: Statistics slice by slice (S5)
 
@@ -1678,18 +1800,3 @@ Verify it yourself: pick at least 2 issues, confirm each one by opening the file
 - Record a 3-minute demo (screen capture + voice) as handover material for your supervisor.
 
 ---
-
-## Self-check — end of day
-
-```bash
-composer test         # all green (including StatisticsCacheTest)
-git log --oneline -8  # today's STAT: and FIX: commits
-git tag -l            # v1.0-capstone
-git status --short    # no output
-```
-
-- [ ] `pelulus@latihan.test` → `/statistik` shows 4 KPI cards + 4 charts; `/statistik/data` returns JSON with 12 values in `charts.bookings_by_month.data`.
-- [ ] `penyemak@latihan.test` → `/statistik` and `/statistik/data` are blocked.
-- [ ] `composer test` is green, including `tests/Services/StatisticsCacheTest.php`.
-- [ ] `docs/UAT-signoff.md` §4: UAT-01..UAT-10 has no ⬜; `git log --oneline` shows ≥ 1 `FIX:` commit.
-- [ ] `git tag -l` shows `v1.0-capstone` and `git status --short` is empty.

@@ -60,6 +60,18 @@ flowchart LR
 | **AI-18** | Review a PRD | Project | 7 |
 | **AI-19** | Implement one slice from the plan (Manual mode) | Implement | 7–10 |
 | **AI-20** | Explain this diff before I accept it | Implement | 7–10 |
+| **AI-21** | PM: idea to an issue with AC | Team | 8–10 |
+| **AI-22** | PM: split a large issue | Team | 8–10 |
+| **AI-23** | PM: board status and merge order | Team | 8–10 |
+| **AI-24** | PM: handover | Team | 8–10 |
+| **AI-25** | QA: test plan from the AC | Team | 8–10 |
+| **AI-26** | QA: failing test first | Team | 8–10 |
+| **AI-27** | QA: review an MR against the AC | Team | 8–10 |
+| **AI-28** | QA: bug report | Team | 8–10 |
+| **AI-29** | Dev: understand the issue before planning | Team | 8–10 |
+| **AI-30** | Dev: slice from the /ciri-baharu plan | Team | 8–10 |
+| **AI-31** | Dev: answer QA comments | Team | 8–10 |
+| **AI-32** | Everyone: merge conflict | Team | 8–10 |
 
 ---
 
@@ -457,6 +469,109 @@ Answer in Malay; technical terms in English.
 ```
 
 - **After:** Rewrite the explanation in your own words in `docs/nota-claude.md` (`fail:baris`). If you still cannot explain it, reject the diff.
+
+---
+
+## H · Team work: PM, QA & Dev
+
+From Day 8, each squad in the espkpv2 repo has a PM, a QA and Devs ([`peranan-pasukan.en.md`](peranan-pasukan.en.md)). Each role uses its own Claude Code session; the three sessions do not share context. The §G gates still apply to every Dev slice.
+
+### AI-21 — PM: idea to an issue with AC
+
+- **When to use:** A stub issue (`status::baharu`) or an idea from the system owner.
+- **Don't:** Let Claude guess policy decisions; create an issue without reading the draft.
+
+```prompt title="AI-21"
+/isu-baharu <16>
+After the draft: mark every AC that cannot be tried with a 9001010100NN account, and everything that needs a decision from the system owner.
+```
+
+- **After:** Run the printed `glab issue update` command yourself; owner questions → issue comment, `status::disekat`.
+
+### AI-22 — PM: split a large issue
+
+```prompt title="AI-22"
+Issue #<1> is size L. Propose a split into issues of size ≤ M: one for this sprint (core AC <AC-1, AC-3>) and the rest for the next sprint.
+Each issue: title, its own AC (Given/When/Then), the hotspots it touches, dependencies. Do not create issues.
+```
+
+### AI-23 — PM: board status and merge order
+
+```prompt title="AI-23"
+Run glab issue list --milestone "<Sprint 1 (Hari 8)>" --label skuad::<a> and glab mr list.
+Summarise one line per issue: status, who, what is blocking.
+Propose a merge order for the squad's MRs based on the shared files they touch (glab mr diff), with reasons.
+```
+
+### AI-24 — PM: handover
+
+```prompt title="AI-24"
+Draft a "Handover" comment for issue #<N> from the issue history and the commits on branch feat/<N>-…: Done, Next, Open questions. Maximum 8 lines. Do not post it.
+```
+
+### AI-25 — QA: test plan from the AC
+
+- **When to use:** As soon as the issue is `status::sedia`, **before** looking at the Dev's code.
+
+```prompt title="AI-25"
+Use the penguji-espkp subagent. For each AC of issue #<N> below, list the existing tests that cover it (file:line) and the missing test cases, with type (Database/Feature/E2E/manual) and training account.
+<paste AC>
+```
+
+### AI-26 — QA: failing test first
+
+```prompt title="AI-26"
+Write ONE PHPUnit test for <AC-1> of issue #<N> only, following the UjianCiri / UjianPangkalanData pattern and the BinaPermohonan trait. Do not change files in app/.
+The test must fail now with a message that describes the AC, not a missing-class error. Stop after one test.
+```
+
+### AI-27 — QA: review an MR against the AC
+
+```prompt title="AI-27"
+/semak-mr <3>
+For every AC you marked as met, show the code line and the test name that prove it. For every blocking finding, give manual test steps that show it in the browser.
+```
+
+- **After:** Open every `file:line` yourself. No evidence = not met. You press *Approve*, not Claude.
+
+### AI-28 — QA: bug report
+
+```prompt title="AI-28"
+I found a bug while testing MR !<3>: <what I did, what I expected, what happened>.
+Draft a Bug issue following .gitlab/issue_templates/Pepijat.md: reproduction steps with a 9001010100NN account, expected, actual, the file:line that may be the cause. Synthetic data only. Do not create the issue.
+```
+
+### AI-29 — Dev: understand the issue before planning
+
+```prompt title="AI-29"
+Plan mode. Read issue #<N> (below). Show the file:line locations that need to change, the closest existing pattern, and any other squad's hotspots that might be touched. List questions for the PM. Do not write code.
+<paste issue>
+```
+
+### AI-30 — Dev: slice from the `/ciri-baharu` plan
+
+```prompt title="AI-30"
+Implement slice <1> of the /ciri-baharu plan above only, in Manual mode, one file at a time.
+Do not touch other squads' hotspots (docs/pasukan.md). Do not run migrate, db:seed or git push.
+Stop after slice <1>: list the files that changed and the AC that are now met.
+```
+
+- **After:** `composer semak` → `Use the semak-espkp subagent on git diff` → commit `<area>: … Rujuk #<N>`.
+
+### AI-31 — Dev: answer QA comments
+
+```prompt title="AI-31"
+QA requested changes on MR !<3> (comment below). For each finding: agree or not (with file:line evidence), and the smallest fix plan. Do not change files yet.
+<paste QA comment>
+```
+
+### AI-32 — Everyone: merge conflict
+
+```prompt title="AI-32"
+My rebase stopped with a conflict in <app/Config/Routes.php>. Explain what main added and what my branch added, and whether both can be kept. Do not resolve the conflict and do not run git.
+```
+
+- **After:** The Dev chooses the lines; `php spark routes` and `composer semak` before `git rebase --continue`.
 
 ---
 

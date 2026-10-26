@@ -158,3 +158,32 @@ Kriteria sijil tamat kursus (Hari 10 README §4.3) menggunakan rubrik ini sepert
 - Beri markah **berdasarkan apa yang ditunjukkan**, bukan apa yang didakwa. "Ia berfungsi di laptop saya semalam" = tidak ditunjukkan.
 - Pemilik sistem memberi pandangan utama untuk **A** (kefungsian ikut spesifikasi BR-*); jurulatih untuk **B**, **C**, **D**; **E** dipersetujui bersama.
 - Selisih > 1 tahap antara ahli panel → bincang 1 minit; jika masih berbeza, ambil tahap yang lebih rendah dan catat sebabnya.
+
+## 8. Capstone pasukan (mod pasukan, Hari 8–10)
+
+> Untuk kohort yang bekerja sebagai pasukan dalam espkpv2 ([`peranan-pasukan.md`](peranan-pasukan.md)). Demo dibuat oleh **skuad** (15 minit, Hari 10 S10) pada tag `v1.1.0`; markah diberi kepada skuad (§8.1) dan kepada setiap ahli (§8.2).
+
+### 8.1 Markah skuad (40)
+
+| Kriteria | Tahap 1 (0–4) | Tahap 2 (5–7) | Tahap 3 (8–10) |
+|---|---|---|---|
+| **P · Isu & AC** (PM) | AC kabur atau tiada; skop berubah tanpa rekod | AC boleh diuji; keputusan skop dalam isu | AC Diberi/Apabila/Maka termasuk akses 404 dan kes sempadan; soalan pemilik direkod dan dijawab |
+| **Q · Bukti semakan** (QA) | MR di-merge tanpa komen semakan | Komen semakan dengan jadual AC | Setiap AC ada `fail:baris` + ujian; ≥ 1 pepijat ditangkap sebelum merge; ujian merentas skuad |
+| **D · MR & ujian** (Dev) | MR besar, tiada `Closes #N`, ujian tiada | MR kecil dengan `Rujuk #N` / `Closes #N`, ujian hijau | Slice kecil, senarai semak dengan bukti, ujian negatif (404/peranan), `main` hijau selepas merge |
+| **K · Kerjasama** | Hotspot skuad lain diubah tanpa izin; konflik merosakkan kerja lain | Sync PM direkod; konflik diselesaikan | Susunan merge dipatuhi; serah tugas dalam isu; retro dengan tindakan konkrit |
+
+### 8.2 Markah individu (setiap ahli)
+
+| Kriteria | Lulus apabila |
+|---|---|
+| **Terangkan baris sendiri** | Menerangkan satu baris yang di-commit atas namanya (`git log --author`) tanpa Claude: apa, kenapa, apa rosak jika dibuang |
+| **Peranan** | Menunjukkan satu hasil daripada setiap peranan yang dipegang (isu, komen semakan, commit) |
+| **Disiplin AI** | Tiada commit dalam mod auto/bypass; tiada rahsia atau data sebenar dalam isu, MR atau prompt |
+
+### 8.3 Pemetaan kriteria sijil (mod pasukan)
+
+| Kriteria sijil | Sumber (mod pasukan) |
+|---|---|
+| #2 Modul didemo | M1 TLK individu (Hari 5–6) + ciri skuad dalam `v1.1.0` didemo (§8.1 D ≥ Tahap 2) |
+| #3 Markah ≥ 60 dan tiada gate gagal | §8.1 dinormalkan kepada 100 (× 2.5) ≥ 60; gate kritikal §2 terpakai pada `v1.1.0` |
+| #4 Menerangkan satu baris kod | §8.2 *Terangkan baris sendiri* lulus |

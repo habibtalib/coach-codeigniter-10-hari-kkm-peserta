@@ -1,29 +1,203 @@
-# Lab Day 9 — Report Module (M3)
+# Day 9 Lab — Team Work: Sprint 2
 
-[⬅️ README](./README.md) · [Schedule](../JADUAL.md) · [SPEC canon](../docs/spesifikasi-sistem.md) · [⚡ spark commands](../docs/arahan-spark.md)
+[← README](./README.en.md) · [Schedule](../JADUAL.en.md) · [👥 Team roles](../docs/peranan-pasukan.en.md) · [💬 Prompt library §H](../docs/pustaka-prompt.en.md)
 
-**Working branch:** `git switch main && git pull && git switch -c feat/laporan` (PowerShell: run them one at a time) · **Commit prefix:** `RPT:`
+| Lab | Session | Time | Output |
+|-----|---------|------|--------|
+| 9.20 | S13 | 09:00–10:30 | Sprint 2 issue `status::sedia`, PM sync note, failing test from the AC, slice 1 |
+| 9.21 | S14 | 10:45–12:30 | The squad's Sprint 2 feature slice by slice with green tests |
+| 9.22 | S15 | 14:30–16:00 | `Ready` MR + QA review; ≥ 1 cross-squad Bug issue |
+| 9.23 | S16 | 16:00–17:00 | All MRs merged, `main` green (PHPUnit + E2E), sprint demo, retro |
 
-| Lab | Session | Time | Outcome |
-|-----|---------|------|---------|
-| 9.10 | S9 | 09:00–10:30 | Claude Code slice L1: `permission:laporan.view` routes · `ReportService` whitelisted filters + bound builder |
-| 9.11 | S10 | 10:45–12:30 | Claude Code slice L2: GET form · paginated table · export links from clean filters · RPT-03 |
-| 9.12 | S11 | 14:30–16:00 | Claude Code slice L3: `ExportService` PDF & Excel · limited `exportRows()` · `TYPE_STRING` text |
-| 9.13 | S12 | 16:00–17:00 | `ReportServiceTest` + mutation · `db_table` + `laporan:explain` · index proposal · **M3 done** |
-| 9.1 | S1 | 09:00–10:00 | Spec cards RPT-01..03 · routes · skeleton controller · GET filter form |
-| 9.1b | S5 | 10:00–10:30 | Quick periods (This month/Last month/This year) · active filter chips |
-| 9.2 | S2 | 10:45–12:00 | Full `ReportService` · paginated table for 3 reports |
-| 9.2b | S6 | 12:00–12:30 | `statusSummary()` (subquery + `groupBy`) · status summary buttons · RPT-03 JUMLAH row |
-| 9.3 | S3 | 14:30–15:30 | `ExportService` · working PDF & Excel export buttons |
-| 9.3b | S7 | 15:30–16:00 | Excel *Ringkasan* sheet (`=SUM()`) · PDF summary table |
-| 9.4 | S4 | 16:00–16:35 | `ReportServiceTest` green · EXPLAIN · **M3 done** |
-| 9.4b | S8 | 16:35–17:00 | 5 summary/JUMLAH/Excel tests · 2 mutations · push to the MR |
-
-> ℹ️ **Labs 9.10–9.13 are today's labs** (Claude Code, branch `feat/laporan-claude`). Labs 9.1–9.4b (manual) are **reference code, not required** — open them only at the *Compare with the reference code* step. Lab 9.5 eSPKP at the end of the file is a separate add-on lab.
->
-> **Workflow for every Claude Code lab:** (1) SPEC & RPT IDs → (2) slice plan in Plan mode, no code, you edit it → (3) implement in **Manual** mode, you read and approve every diff (*accept edits*, *auto* and *bypass permissions* are forbidden) → (4) verify with `composer test`, the browser and the `ci4-spark` MCP tools `routes`/`filter_check`/`db_table` → (5) `semak-ci4` subagent review, fixes through the same gates → (6) explain gate: 3 key lines in your own words in `docs/nota-claude.md` → (7) small commit on the `feat/laporan-claude` branch.
+> ℹ️ Repo: `aplikasi-baharu/espkpv2`. The issue → branch → MR → merge mechanics are the same as [Labs 8.21–8.23](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16); today's labs add the PM sync, cross-squad testing and a green `main`. The individual Reports module labs (9.1–9.13) are in the [Appendix](#appendix--individual-reports-module-labs-reference).
 
 ---
+
+## Lab 9.20 — Sprint 2 Planning, PM Sync & Slice 1 (S13)
+
+### 🎯 Objective
+Plan the squad's Sprint 2 (new issues + Sprint 1 follow-ups), **coordinate** shared files and merge order with the other PMs, and start the first slice with a failing test from the AC.
+
+### Prerequisites
+- `git switch main && git pull && composer install && php spark migrate --all` — `composer test` green.
+- Morning role: slot *Day 9 morning* in [`peranan-pasukan.en.md`](../docs/peranan-pasukan.en.md) §3 (seat 3 = PM, 4 = QA, 1 & 2 = Dev).
+
+### Steps
+
+1. **Stand-up (08:30, everyone).** 2 minutes each: done · next · blocked. The PM records blockers as comments on the related issues.
+
+2. **PM — Sprint 2 issue (20 minutes).**
+
+   ```bash
+   glab issue list --milestone "Sprint 2 (Hari 9)" --label skuad::<x>
+   ```
+
+   ```text
+   /isu-baharu <13>
+   ```
+
+   Include the Sprint 1 follow-up issues (AC not yet done). Capacity: one size-M issue per Dev pair per half day. Too many issues → move them to the backlog with a comment giving the reason.
+
+3. **PM — sync (09:00, 15 minutes, the three PMs + the trainer).** Each PM answers in a comment on the squad's main issue:
+
+   ```markdown
+   **PM sync — Sprint 2**
+   - Shared files we will touch: …
+   - Depends on other squads: …
+   - Agreed merge order: …
+   ```
+
+4. **QA — test plan and failing test (60 minutes).** The rhythm of [Lab 8.21 — QA](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16): AC → test case table in an issue comment, AI-25 (`penguji-espkp`), AI-26 (one failing test). Squad A (#13), before writing tests:
+
+   ```text
+   Plan mode. How do the existing tests control time (service('jam')) and email (service('notifikasi')) so the reminder command can be tested without waiting 7 days? Show example file:line locations in tests/.
+   ```
+
+5. **Dev — slice 1 (60 minutes).** The rhythm of [Lab 8.21 — Dev](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16): AI-29 → `/ciri-baharu <no>` → branch `feat/<no>-<short>` → slice 1 (*Manual* mode) → `composer semak` → `semak-espkp` → commit `Rujuk #<no>` → push.
+
+### ✅ Checkpoint
+- [ ] Sprint 2 issue `status::sedia` with an *Assignee*.
+- [ ] All three squads recorded the **same** merge order.
+- [ ] The test fails because the feature is missing, with a message that names the AC.
+- [ ] Sprint 2 branch with a first commit; label `status::dalam-kerja`.
+
+---
+
+## Lab 9.21 — Build Sprint 2: Squad Features (S14)
+
+### 🎯 Objective
+Implement the squad's Sprint 2 feature slice by slice, paying special attention to the squad's technical risks (idempotency, training-account compatibility, CSP and export limits).
+
+### Steps
+
+1. **Continue the slices** (the driver changes every slice). Each slice: *Manual* mode → the navigator reads the diff → `composer semak` → `semak-espkp` → commit `Rujuk #<no>`.
+
+2. **Squad risk check** — before the last slice, ask Claude (*Plan* mode) and verify yourself:
+
+   | Squad | Prompt | Verify |
+   |---|---|---|
+   | A — #13 | `Is the Pindaan reminder command idempotent? Show the line that prevents a second email and the test that proves it.` | Run `php spark espkp:peringatan` twice on dev data; no second email (log / on-screen TAC) |
+   | B — #9 | `Do the 9001010100NN training accounts with Latihan@2026 still pass the new policy? Show the test.` | Log in as `900101010001` in the browser |
+   | B — #8 | `Draft a mariadb CI job in .gitlab-ci.yml that runs migrate --all and the Database suite on mariadb:10.6, without changing the existing ujian job.` | `composer validate`; read the YAML; new job only |
+   | C — #17 | `Does the RPT-10 chart use laporan/_carta and data-carta with no inline <script>? Does the export go through EksportService with limits and auditing?` | DevTools → no CSP errors; download the XLSX, totals = table |
+
+3. **QA** adds the tests for the other AC into the branch (coordinating with the Devs), and runs `vendor/bin/phpunit --filter <Class>` after every Dev commit.
+
+### ✅ Checkpoint
+- [ ] ≥ 2 slices committed; QA tests for the core AC **pass**.
+
+---
+
+## Lab 9.22 — MR, Review & Cross-Squad Testing (S15)
+
+### 🎯 Objective
+After rotating roles, take Sprint 2 to an MR reviewed by QA, and **test exploratorily** the other squads' features that are already merged.
+
+### Steps
+
+1. **Rotate roles** (slot *Day 9 afternoon*: seat 4 = PM, 1 = QA, 2 & 3 = Dev). Read the *Handover* comment in the issue.
+
+2. **Dev — MR** as in [Lab 8.22 — Dev](../hari-8/lab.en.md#lab-822--sprint-1-afternoon-mr-qa-review--board-s17): draft MR → checklist → *Three key lines* → *Ready* → `status::semakan`.
+
+3. **QA — review your own squad's MR** with `/semak-mr <MR-no>` (AI-27), open every `file:line`, approve or request changes.
+
+4. **QA — cross-squad exploratory testing (30 minutes).** Squad A's QA tests squad B's feature, B → C, C → A, on the latest `main`. Use at least three training accounts (e.g. 01 applicant, 07 company representative, 05 approver) and a 360px width (DevTools → *Toggle device*). For each observation:
+
+   ```text
+   Draft a Bug issue following .gitlab/issue_templates/Pepijat.md from this observation: <steps, expected, actual, account>. Synthetic data only. Do not create the issue.
+   ```
+
+   Repeat the steps yourself, then create the issue with the label of the squad that **owns** the feature:
+
+   ```bash
+   glab issue create --title "<short>" --label "jenis::pepijat,skuad::<owner>,status::baharu" --description "$(cat pepijat.md)"
+   ```
+
+5. **PM** — the board, blockers, and re-confirm the S16 merge order with the other PMs.
+
+### ✅ Checkpoint
+- [ ] ≥ 1 Bug issue that the owning squad managed to reproduce.
+
+---
+
+## Lab 9.23 — Merge, Green `main`, Sprint Demo & Retro (S16)
+
+### 🎯 Objective
+Merge Sprint 2 in the sync order, **prove** that `main` is green with PHPUnit and E2E, and plan the v1.1.0 scope.
+
+### Steps
+
+1. **Merge** in order (Lab 8.23 steps 1–4: QA approves → PM merges → the other MRs rebase → `composer semak` → `--force-with-lease`).
+
+2. **Green `main` (one Dev per squad).**
+
+   ```bash
+   git switch main && git pull
+   composer install
+   php spark migrate --all
+   composer test
+   ```
+
+3. **E2E (each squad's QA, once).** Follow the *Ujian hujung ke hujung (E2E)* section of the espkpv2 README: a separate `espkp_contoh_e2e` database, an env file outside the repo, the `php -S localhost:8095` server, then:
+
+   ```bash
+   npm install && npx playwright install chromium
+   npm run e2e:sedia
+   npm run e2e
+   ```
+
+   Red → ask Claude: `This E2E spec fails on main after merging !<a> and !<b>: <output>. Which commit is the likely cause? Do not fix it yet.` The squad at fault opens a Bug issue `keutamaan::1-kritikal`.
+
+4. **Sprint demo (3 minutes per squad)** and **retro** (issue `Retro Sprint 2 — Skuad <X>`: went well, change, one prompt rule).
+
+5. **v1.1.0 scope (PM).** In the milestone *Sprint 3 + v1.1 (Hari 10)*: Sprint 3 issues, critical bugs, and issues that will **not** be in v1.1.0 moved to the backlog.
+
+### ✅ Checkpoint
+- [ ] `composer test` green; E2E green or every failure has a critical Bug issue.
+- [ ] The Sprint 3 milestone contains the v1.1.0 scope agreed by all three PMs.
+
+### Common mistakes
+| Symptom | Cause | Fix |
+|---|---|---|
+| E2E wipes your dev data | E2E run on `espkp_contoh_dev` | An E2E env file with `database_default_database=espkp_contoh_e2e`; dev `migrate --all` + `db:seed` again |
+| `composer test` green locally, CI red on RPT-10 | `ONLY_FULL_GROUP_BY` on CI's MySQL 8.4 | Add the column to the `GROUP BY` or use an aggregate; test on a local MySQL 8 |
+| Two squads' migrations clash | Same version | Squad prefix (`…-1xxxxx_` A, `2…` B, `3…` C) |
+
+---
+
+## Self-check — end of day
+
+**Team work (today):** `glab mr list --merged -R aplikasi-baharu/espkpv2`, `glab issue list --label jenis::pepijat -R aplikasi-baharu/espkpv2`.
+
+- [ ] My squad's Sprint 2 issue is planned and the PM sync note is recorded in the issue (Lab 9.20).
+- [ ] My squad's Sprint 2 feature is merged through an MR with a QA review and green tests (Labs 9.21–9.23).
+- [ ] I tested another squad's feature and at least one cross-squad Bug issue was created (Lab 9.22).
+- [ ] `composer test` and E2E are green on `main` after all merges, or every failure has a critical issue (Lab 9.23).
+
+**Individual Reports module (reference, optional):**
+
+```bash
+composer test                                                     # all green (including ReportServiceTest)
+php spark laporan:explain tempahan approved 2026-06-01 2026-06-30 # EXPLAIN plan printed without errors
+git status --short                                                # no output
+git log --oneline -10                                             # today's RPT: commits
+```
+
+- [ ] `/laporan/tempahan`, `/laporan/pas` and `/laporan/penggunaan` load with GET filters; the RPT-01 "Jumlah rekod" (total records) for `status=approved` = the SQL `COUNT(*)` (Quiz S2).
+- [ ] `?export=pdf` and `?export=xlsx` download files that open, for all three reports; `pemohon1@latihan.test` is refused (Quiz S3).
+- [ ] `composer test` is green, including `tests/Services/ReportServiceTest.php` (≥ 7 tests) (Quiz S4).
+- [ ] `php spark laporan:explain tempahan approved 2026-06-01 2026-06-30` shows a `key` that is not `NULL` for table `b` (Quiz S4).
+- [ ] `git status --short` is empty and the `feat/laporan` branch has been pushed (MR to `main` opened) (Quiz S4).
+- [ ] The **Bulan ini / Bulan lepas / Tahun ini** buttons and the active filter chips work on all three reports (Lab 9.1b) (Quiz S5).
+- [ ] The RPT-01/RPT-02 status summary buttons add up to "Jumlah rekod", and the RPT-03 JUMLAH row is a weighted average (Lab 9.2b) (Quiz S6).
+- [ ] The RPT-01/RPT-02 Excel files have a *Ringkasan* tab with an `=SUM()` formula, and the PDF has a summary table (Lab 9.3b) (Quiz S7).
+- [ ] `ReportServiceTest` is green with ≥ 12 tests, and the Lab 9.4b commit is pushed to the `feat/laporan` MR (Lab 9.4b) (Quiz S8).
+
+---
+
+## Appendix — Individual Reports module labs (reference)
+
+> ℹ️ The labs below are the Day 9 labs from before team mode: the Reports module built individually in `kelas-ci-<nama>` with Claude Code (Labs 9.10–9.13) or manually (Labs 9.1–9.4b). They remain as **reference, optional**.
 
 ## Lab 9.10 — Claude Code: `ReportService` & Whitelisted Filters (S9)
 
@@ -3317,22 +3491,3 @@ After the trainer/neighbour approves the review, **merge** the `feat/laporan` MR
 - Add a test that `statusSummary('penggunaan', …)` returns `[]` and that the RPT-03 Excel export has only **one** sheet.
 
 ---
-
-## Self-check — end of day
-
-```bash
-composer test                                                     # all green (including ReportServiceTest)
-php spark laporan:explain tempahan approved 2026-06-01 2026-06-30 # EXPLAIN plan printed without errors
-git status --short                                                # no output
-git log --oneline -10                                             # today's RPT: commits
-```
-
-- [ ] `/laporan/tempahan`, `/laporan/pas` and `/laporan/penggunaan` load with GET filters; the RPT-01 "Jumlah rekod" (total records) for `status=approved` = the SQL `COUNT(*)` (Quiz S2).
-- [ ] `?export=pdf` and `?export=xlsx` download files that open, for all three reports; `pemohon1@latihan.test` is refused (Quiz S3).
-- [ ] `composer test` is green, including `tests/Services/ReportServiceTest.php` (≥ 7 tests) (Quiz S4).
-- [ ] `php spark laporan:explain tempahan approved 2026-06-01 2026-06-30` shows a `key` that is not `NULL` for table `b` (Quiz S4).
-- [ ] `git status --short` is empty and the `feat/laporan` branch has been pushed (MR to `main` opened) (Quiz S4).
-- [ ] The **Bulan ini / Bulan lepas / Tahun ini** buttons and the active filter chips work on all three reports (Lab 9.1b) (Quiz S5).
-- [ ] The RPT-01/RPT-02 status summary buttons add up to "Jumlah rekod", and the RPT-03 JUMLAH row is a weighted average (Lab 9.2b) (Quiz S6).
-- [ ] The RPT-01/RPT-02 Excel files have a *Ringkasan* tab with an `=SUM()` formula, and the PDF has a summary table (Lab 9.3b) (Quiz S7).
-- [ ] `ReportServiceTest` is green with ≥ 12 tests, and the Lab 9.4b commit is pushed to the `feat/laporan` MR (Lab 9.4b) (Quiz S8).

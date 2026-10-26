@@ -158,3 +158,32 @@ The course completion certificate criteria (Day 10 README §4.3) use this rubric
 - Give marks **based on what is shown**, not what is claimed. "It worked on my laptop yesterday" = not shown.
 - The system owner gives the main view on **A** (functionality against the BR-* rules in the spec); the trainer on **B**, **C**, **D**; **E** is agreed together.
 - A difference of > 1 level between panel members → discuss for 1 minute; if it still differs, take the lower level and record the reason.
+
+## 8. Team capstone (team mode, Days 8–10)
+
+> For cohorts that work as a team in espkpv2 ([`peranan-pasukan.en.md`](peranan-pasukan.en.md)). The demo is given by the **squad** (15 minutes, Day 10 S10) on the `v1.1.0` tag; marks go to the squad (§8.1) and to every member (§8.2).
+
+### 8.1 Squad marks (40)
+
+| Criterion | Level 1 (0–4) | Level 2 (5–7) | Level 3 (8–10) |
+|---|---|---|---|
+| **P · Issues & AC** (PM) | AC vague or missing; scope changed without a record | Testable AC; scope decisions in the issue | Given/When/Then AC including a 404 access case and edge cases; owner questions recorded and answered |
+| **Q · Review evidence** (QA) | MR merged without a review comment | Review comment with an AC table | Every AC has `file:line` + a test; ≥ 1 bug caught before merge; cross-squad testing |
+| **D · MRs & tests** (Dev) | Large MR, no `Closes #N`, no tests | Small MR with `Rujuk #N` / `Closes #N`, green tests | Small slices, checklist with evidence, negative tests (404/role), `main` green after merge |
+| **K · Collaboration** | Another squad's hotspot changed without permission; a conflict broke other work | PM sync recorded; conflicts resolved | Merge order followed; handovers in issues; retro with concrete actions |
+
+### 8.2 Individual marks (every member)
+
+| Criterion | Passes when |
+|---|---|
+| **Explain your own line** | Explains one line committed under their name (`git log --author`) without Claude: what, why, what breaks if it is removed |
+| **Roles** | Shows one output from every role held (issue, review comment, commit) |
+| **AI discipline** | No commits in auto/bypass mode; no secrets or real data in issues, MRs or prompts |
+
+### 8.3 Certificate criteria mapping (team mode)
+
+| Certificate criterion | Source (team mode) |
+|---|---|
+| #2 Modules demoed | Individual M1 TLK (Days 5–6) + the squad's feature in `v1.1.0` demoed (§8.1 D ≥ Level 2) |
+| #3 Score ≥ 60 and no failed gate | §8.1 normalised to 100 (× 2.5) ≥ 60; the critical gates of §2 apply to `v1.1.0` |
+| #4 Explains one line of code | §8.2 *Explain your own line* passed |

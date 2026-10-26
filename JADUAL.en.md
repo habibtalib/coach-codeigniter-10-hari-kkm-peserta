@@ -102,49 +102,45 @@
 | 15:30–16:15 | S15 | Claude Code: understand the eSPKP example project | Lab 7.12: 6 Plan-mode onboarding prompts on eSPKP Contoh, verified with `file:line` and a 2-role demo |
 | 16:15–17:00 | S16 | Claude Code: plan & adjust requirements from the example project | Lab 7.13: PRD from code, gap table vs SPEC, `docs/keperluan-pas.md` + `docs/pelan-pas.md` |
 
-> ℹ️ Day 7 focuses on Claude Code. S13/S14 (Labs 7.10/7.11) are done on Day 8 morning; the Pass sessions S1–S8 and the manual Labs 7.0–7.4 (and 7.1b–7.4b) are in the Day 7 Appendix as reference code.
+> ℹ️ Day 7 focuses on Claude Code. S13/S14 (Labs 7.10/7.11), the Pass sessions S1–S8 and the manual Labs 7.0–7.4 (and 7.1b–7.4b) are in the Day 7 Appendix as reference.
 
-> ℹ️ From Day 8 to Day 10, modules are built with Claude Code ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3).
+> ℹ️ From Day 8 to Day 10, the class works as **one team** in the espkpv2 repo (GitLab KKM `aplikasi-baharu/espkpv2`): 3 squads × 4 with PM, QA and Dev roles, every role assisted by Claude Code ([`peranan-pasukan.en.md`](./docs/peranan-pasukan.en.md), [`kolaborasi.en.md`](./docs/kolaborasi.en.md) §6).
 
-## Day 8 — Pass Module (Part 2) · [notes](./hari-8/README.md)
-
-| Time | Session | Activity | Session objective |
-|------|------|----------|---------------|
-| 08:30–09:00 | — | Day 7 recap | — |
-| 09:00–10:30 | S13 (Day 7) | Claude Code: Pass slice 1 — model, list & detail | Lab 7.10: enums, `ownedBy()` Model, list & detail with 404 for non-owners, guided by `docs/keperluan-pas.md` and `docs/pelan-pas.md` ([Lab 7.10](./hari-7/lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13)) |
-| 10:45–12:30 | S14 (Day 7) | Claude Code: Pass slice 2 — form & secure upload | Lab 7.11: form + CSRF, file validation, random names outside `public/`, transaction + clean-up ([Lab 7.11](./hari-7/lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14)) |
-| 14:30–15:30 | S9 | Claude Code: Pass approval flow (slice 3) | Lab 8.10: `PassWorkflowService` with `PassStatus::canTransitionTo()` through the plan and diff gates |
-| 15:30–16:30 | S10 | Claude Code: Shield RBAC & access scope (slice 4) | Lab 8.11: the `permission:` filter, `authorize()` and `canView()` proven with `filter_check` and an attack |
-| 16:30–17:00 | S11 | Claude Code: access tests & status history (slice 5) — essentials | Lab 8.12 (essentials): role × action matrix and positive & negative `PassAccessTest` |
-
-> ℹ️ **Labs 8.12 and 8.13:** Lab 8.12 is completed, and Lab 8.13 (S12, M2 demo & merge) runs, at the start of Day 9 08:30–09:00 or as homework.
-
-> ℹ️ Modules are built with Claude Code through the 7 review gates ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3); today's manual labs are reference code, not required.
-
-## Day 9 — Report Module · [notes](./hari-9/README.md)
+## Day 8 — Team Work with Claude Code: Sprint 1 · [notes](./hari-8/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Day 8 recap (Pass flow + RBAC) | — |
-| 09:00–10:30 | **S9** | Claude Code: `ReportService` & whitelisted filters (slice L1) | O11 |
-| 10:45–12:30 | **S10** | Claude Code: list views & RPT-03 (slice L2) | O12 |
-| 14:30–16:00 | **S11** | Claude Code: safe PDF & Excel export (slice L3) | O13 |
-| 16:00–17:00 | **S12** | Claude Code: report tests & performance — **M3 done** | O14 |
+| 08:30–09:00 | — | Day 7 recap, squad formation & role cards | — |
+| 09:00–10:30 | S15 | Team setup: espkpv2 on Laragon, shared Claude Code, issue board | Lab 8.20: clone with a token, `composer test` green, `/isu-baharu` + `/semak-mr` + `ci4-spark` loaded, `glab` |
+| 10:45–12:30 | S16 | Sprint 1 morning: PM writes the issue, QA plans tests, Dev plans & slice 1 | Lab 8.21: issue `status::sedia` with AC, failing tests from the AC, branch `feat/<no>-…` + `Rujuk #N` commit |
+| 14:30–16:00 | S17 | Sprint 1 afternoon (roles rotate): MR, QA review, board | Lab 8.22: MR `Closes #N`, `/semak-mr` comment with an AC table, accurate board |
+| 16:00–17:00 | S18 | Merge, conflict drill, squad demo & retro | Lab 8.23: MRs merged, `Routes.php` conflict resolved, 2-minute demo, retro issue |
 
-> ℹ️ Modules are built with Claude Code through the 7 review gates ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3); today's manual labs are reference code, not required.
+> ℹ️ The individual Day 8 Pass module sessions (S1–S12, Labs 8.0–8.13) are in the Day 8 Appendix as reference.
 
-## Day 10 — Statistics Module & Capstone · [notes](./hari-10/README.md)
+## Day 9 — Team Work: Sprint 2 · [notes](./hari-9/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Day 9 recap (reports & export) | — |
-| 09:00–10:30 | **S5** | Claude Code: Statistics module slices 1–2 (KPIs, chart datasets, `/statistik/data`) — Lab 10.10 | O1, O7 |
-| 10:45–11:45 | **S5** | Claude Code: Statistics module slices 3–4 (Chart.js, cache + invalidation after commit) | O2, O3, O7 |
-| 11:45–12:30 | **S3** | Manual UAT across the 4 modules + K1–K10 (Lab 10.3 steps 1–3 and 5) | O4 |
-| 14:30–16:00 | **S6** | Claude Code: capstone preparation (`semak-ci4`, AI-08, AI-09, AI-18, tag) — Lab 10.11 | O5, O8 |
-| 16:00–17:00 | **S7** | Capstone demo (S4 format) & Claude Code reflection — Lab 10.12 | O6, O9 |
+| 08:30–09:00 | — | Squad stand-up, role rotation (seat 3 = PM) | — |
+| 09:00–10:30 | S13 | Sprint 2 planning, PM sync, test plan & slice 1 | Lab 9.20: Sprint 2 issue `status::sedia`, PM sync note, failing test from the AC, Sprint 2 branch |
+| 10:45–12:30 | S14 | Build Sprint 2: A #13 Pindaan reminder · B #9/#8 passwords & MariaDB CI · C #17 RPT-10 chart & export | Lab 9.21: slice by slice with tests; squad risk check (idempotency, training accounts, CSP, export limits) |
+| 14:30–16:00 | S15 | MR, QA review & cross-squad exploratory testing | Lab 9.22: `Ready` MR + `/semak-mr`; ≥ 1 cross-squad Bug issue |
+| 16:00–17:00 | S16 | Merge, green `main` (PHPUnit + E2E), sprint demo, retro, v1.1.0 scope | Lab 9.23: all MRs merged, `composer test` + `npm run e2e` green |
 
-> ℹ️ Modules are built with Claude Code through the 7 review gates ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3); today's manual labs are reference code, not required.
+> ℹ️ The individual Reports module sessions (S1–S12, Labs 9.1–9.13) are in the Day 9 Appendix as reference.
+
+## Day 10 — Team Work: Sprint 3, Release v1.1.0 & Capstone · [notes](./hari-10/README.md)
+
+| Time | Session | Activity | Session objective |
+|------|------|----------|---------------|
+| 08:30–09:00 | — | Squad stand-up, choose Day 10 roles | — |
+| 09:00–12:30 | S8 | Sprint 3: A #14 · B #15 · C #18 + critical bugs · **feature freeze 12:30** | Lab 10.20: issues closed or moved with a reason; `main` green |
+| 14:30–15:15 | S9 | Release v1.1.0 | Lab 10.21: CHANGELOG through an MR, release notes, tag `v1.1.0` + Release |
+| 15:15–16:30 | S10 | Team capstone demo (15 minutes per squad) | Lab 10.22: PM · Dev · QA · code-line questions for every member ([rubric](./docs/rubrik-capstone.en.md) §8) |
+| 16:30–17:00 | S11 | Team retro & Claude Code reflection, closing | Lab 10.22: every member's final retro comment |
+
+> ℹ️ The individual Statistics & capstone sessions (S1–S7, Labs 10.1–10.12) are in the Day 10 Appendix as reference.
 
 ---
 

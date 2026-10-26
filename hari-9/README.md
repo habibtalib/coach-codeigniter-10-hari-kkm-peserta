@@ -1,12 +1,240 @@
-# Hari 9 — Modul Laporan (M3)
+# Hari 9 — Kerja Pasukan: Sprint 2 (Laporan, Keselamatan & Aliran)
 
-[← Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 9](./lab.md) · [Hari 10 →](../hari-10/README.md)
+[← Jadual](../JADUAL.md) · [👥 Peranan pasukan](../docs/peranan-pasukan.md) · [🧪 Lab Hari 9](./lab.md) · [Hari 10 →](../hari-10/README.md)
 
-> **Fasa C — Lapor & Serah.** M1 (TLK) dan M2 (Pas) sudah menjana data. Hari ini kita mengubah data itu menjadi **maklumat yang boleh dipercayai**: senarai bertapis, ringkasan aggregate, dan fail PDF/Excel yang boleh dihantar kepada pengurusan.
+> **Sprint 2.** Semalam setiap skuad menyiapkan satu kitaran isu → MR → merge. Hari ini kitaran yang sama berjalan lebih pantas dan lebih sukar: isu Sprint 2 bergantung pada kerja semalam, QA mula menguji **merentas skuad**, dan pipeline perlu membuktikan setiap MR. Peranan bertukar lagi: tempat 3 menjadi PM pagi.
 
 ---
 
 ## 🎯 Objektif Pembelajaran
+
+Di akhir hari ini, peserta boleh:
+
+| # | Objektif (boleh diukur) | Sesi | Bukti |
+|---|------------------------|------|-------|
+| O15 | **Merancang** Sprint 2 skuad daripada backlog dan isu susulan Sprint 1, dan **menyelaras** kebergantungan dengan skuad lain | S13 | Isu Sprint 2 `status::sedia` dengan *Assignee*; nota sync PM dalam isu |
+| O16 | **Melaksanakan** ciri Sprint 2 skuad (A: perintah peringatan; B: dasar kata laluan / CI MariaDB; C: carta + eksport RPT-10) slice demi slice dengan ujian | S14 | Commit `Rujuk #N` dengan ujian hijau setiap slice |
+| O17 | **Menguji** ciri skuad lain secara eksploratori dan **melaporkan** pepijat sebagai isu Pepijat yang boleh diulang | S15 | ≥ 1 isu Pepijat merentas skuad dengan langkah ulang |
+| O18 | **Me-merge** MR Sprint 2 dan **membuktikan** `main` kekal hijau (PHPUnit + E2E) selepas semua merge | S16 | `composer test` + `npm run e2e` pada `main`; demo sprint |
+
+> ℹ️ Objektif O1–O14 (Modul Laporan individu) kekal sebagai rujukan dalam [Lampiran](#lampiran--kerja-individu-modul-laporan-rujukan).
+
+---
+
+## 📅 Jadual Hari Ini
+
+| Masa | Sesi | Aktiviti | Objektif sesi |
+|------|------|----------|---------------|
+| 08:30–09:00 | — | Stand-up skuad (siap · seterusnya · tersekat), tukar peranan | — |
+| 09:00–10:30 | S13 | Perancangan Sprint 2 & sync PM, pelan ujian, slice 1 | O15 · [Lab 9.20](./lab.md#lab-920--perancangan-sprint-2-sync-pm--slice-1-s13) |
+| 10:30–10:45 | — | Rehat pagi | — |
+| 10:45–12:30 | S14 | Bina Sprint 2: ciri skuad slice demi slice | O16 · [Lab 9.21](./lab.md#lab-921--bina-sprint-2-ciri-skuad-s14) |
+| 12:30–14:30 | — | Makan tengah hari · **tukar peranan** | — |
+| 14:30–16:00 | S15 | MR, semakan QA & ujian eksploratori merentas skuad | O17 · [Lab 9.22](./lab.md#lab-922--mr-semakan--ujian-merentas-skuad-s15) |
+| 16:00–17:00 | S16 | Merge, `main` hijau (PHPUnit + E2E), demo sprint & retro | O18 · [Lab 9.23](./lab.md#lab-923--merge-main-hijau-demo-sprint--retro-s16) |
+
+**Isu Sprint 2** (milestone *Sprint 2 (Hari 9)*) + isu susulan Sprint 1:
+
+| Skuad | Isu Sprint 2 | Tema teknikal |
+|---|---|---|
+| A — Aliran | #13 Peringatan pemohon: Pindaan lebih 7 hari | Perintah spark + jadual `peringatan_dihantar` (idempoten) + emel |
+| B — Akaun & Keselamatan | #9 Dasar kata laluan, #8 Migration UUID pada MariaDB 10.6 | Validator Shield, ujian, job CI MariaDB |
+| C — Laporan & Statistik | #17 RPT-10: carta & eksport PDF/Excel | Chart.js melalui `laporan/_carta`, `EksportService`, jumlah laporan = jumlah SQL |
+
+---
+
+## 🧭 Kenapa hari ini penting
+
+Sprint pertama mengajar aliran; sprint kedua mendedahkan **kos koordinasi**. Isu #13 skuad A memerlukan status Pindaan yang #1 baru ubah; RPT-10 skuad C membaca status yang sama; dasar kata laluan skuad B mengubah borang yang semua orang gunakan untuk log masuk demo. Tanpa sync, tiga MR yang betul secara berasingan boleh menghasilkan `main` yang rosak.
+
+Dua amalan hari ini:
+
+1. **Sync PM (15 minit, 09:00).** Setiap PM menyebut fail dikongsi yang akan disentuh dan apa yang bergantung pada skuad lain. Keputusan dicatat dalam isu, bukan diingat.
+2. **QA merentas skuad.** QA skuad A menguji ciri skuad B yang di-merge semalam, dan seterusnya. Mata baharu menemui pepijat yang pengarang (dan Claude pengarang) tidak nampak.
+
+---
+
+## S13 — Perancangan Sprint 2, Sync PM & Slice 1 (09:00–10:30)
+
+**Stand-up (08:30, 2 minit setiap orang):** apa yang saya siapkan semalam, apa yang saya buat hari ini, apa yang menyekat saya. PM mencatat penyekat dalam isu.
+
+**Perancangan (PM, 20 minit):** `/isu-baharu <no>` untuk isu Sprint 2 skuad, kemudian semak isu susulan Sprint 1 (AC yang belum siap). Kapasiti realistik: satu isu bersaiz M setiap pasangan Dev setiap separuh hari.
+
+**Sync PM (15 minit, tiga PM + jurulatih):**
+
+| Soalan | Contoh jawapan |
+|---|---|
+| Fail dikongsi yang akan disentuh? | A: `Routes.php` (route peringatan tiada — perintah sahaja), `Config/Email` tidak |
+| Bergantung pada skuad lain? | C: RPT-10 perlu tahu status Pindaan kini dikira "terbuka" (#1 skuad A) |
+| Susunan merge petang? | B (#9, borang) → A (#13) → C (#17) |
+
+**QA dan Dev** mengulang ritma Lab 8.21: pelan ujian daripada AC dan ujian gagal dahulu (QA), `/ciri-baharu` → branch → slice 1 (Dev).
+
+### ✅ Checkpoint S13
+- Isu Sprint 2 skuad `status::sedia`, *Assignee* ditetapkan; nota sync PM dalam isu skuad.
+- Branch Sprint 2 dengan commit pertama `Rujuk #N`.
+
+---
+
+## S14 — Bina Sprint 2: Ciri Skuad (10:45–12:30)
+
+Setiap skuad mempunyai tema teknikal yang berbeza; Claude Code membantu dengan skill yang sesuai:
+
+| Skuad | Skill / agent | Perhatian khusus |
+|---|---|---|
+| A — #13 | `/ciri-baharu`, `migration-espkp` (jika jadual baharu) | Idempoten: perintah dijalankan dua kali tidak menghantar dua emel (`peringatan_dihantar`). Uji dengan `service('jam')` palsu, bukan menunggu 7 hari |
+| B — #9 / #8 | `/ciri-baharu`; untuk #8 `migration-espkp` | Akaun latihan `Latihan@2026` mesti kekal sah; #8: job CI baharu, bukan mengubah job `ujian` sedia ada |
+| C — #17 | `/ciri-baharu` | Chart.js melalui partial `laporan/_carta` dan `data-carta` (CSP: tiada JS sebaris); eksport melalui `EksportService` (had PDF 2000 / XLSX 10000, diaudit) |
+
+Peraturan slice kekal: satu slice → `composer semak` → `semak-espkp` → commit. Navigator menyemak diff; tukar pemandu setiap slice.
+
+### ✅ Checkpoint S14
+- Sekurang-kurangnya 2 slice di-commit pada branch Sprint 2 dengan ujian hijau.
+- Ujian QA untuk AC teras wujud dalam branch dan kini **lulus**.
+
+---
+
+## S15 — MR, Semakan & Ujian Merentas Skuad (14:30–16:00)
+
+Selepas tukar peranan (slot *Hari 9 petang*), aliran MR sama seperti Lab 8.22. Tambahan hari ini:
+
+**Ujian eksploratori merentas skuad (QA, 30 minit).** Setiap QA menguji ciri skuad lain yang sudah di-merge ke `main` (A → B, B → C, C → A), selama 30 minit, dengan sekurang-kurangnya tiga akaun latihan berbeza. Cari: mesej yang mengelirukan, akses yang sepatutnya 404, paparan 360px yang pecah, eksport yang jumlahnya tidak sepadan.
+
+Pepijat → isu Pepijat (templat *Pepijat*, label skuad **pemilik** ciri) dengan langkah ulang. Claude membantu mendraf (prompt AI-28), QA mengesahkan setiap langkah sendiri.
+
+### ✅ Checkpoint S15
+- MR Sprint 2 setiap skuad `Ready` dengan komen semakan QA.
+- ≥ 1 isu Pepijat merentas skuad, boleh diulang oleh skuad pemilik.
+
+---
+
+## S16 — Merge, `main` Hijau, Demo Sprint & Retro (16:00–17:00)
+
+Merge mengikut susunan sync pagi (Lab 8.23: rebase, konflik, `--force-with-lease`). Selepas merge terakhir, satu orang dari setiap skuad menjalankan pada `main` terkini:
+
+```bash
+git switch main && git pull
+composer install
+php spark migrate --all
+composer test
+```
+
+**E2E** dijalankan oleh QA setiap skuad mengikut bahagian *Ujian hujung ke hujung (E2E)* dalam README repo: database berasingan `espkp_contoh_e2e`, server `php -S localhost:8095`, kemudian `npm run e2e:sedia` dan `npm run e2e`. Jangan jalankan E2E pada database dev anda — data diset semula.
+
+Merah → skuad yang MR terakhirnya menyebabkan kegagalan membuka isu Pepijat `keutamaan::1-kritikal` dan membaikinya **sebelum** Sprint 3. **Demo sprint** (3 minit setiap skuad) dan **retro** (isu `Retro Sprint 2 — Skuad <X>`), kemudian PM menyenaraikan isu Sprint 3 dan skop keluaran **v1.1.0**.
+
+### ✅ Checkpoint S16
+- Semua MR Sprint 2 yang lulus QA di-merge; `composer test` dan `npm run e2e` hijau pada `main`.
+- Isu retro Sprint 2 dan senarai skop v1.1.0 dalam milestone *Sprint 3 + v1.1 (Hari 10)*.
+
+---
+## 🤖 Prompting hari ini
+
+Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) §H (AI-21..AI-32). Mod *Plan* dahulu, mod *Manual* untuk perubahan, data sintetik sahaja.
+
+| Peranan | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
+|---|---|---|---|
+| PM · sync | AI-23: `Ringkaskan isu Sprint 2 skuad dan fail dikongsi yang setiap isu akan sentuh; tandakan kebergantungan pada skuad lain.` | Bandingkan dengan nota sync PM lain | 9.20 |
+| QA · pelan ujian | AI-25 dengan `penguji-espkp`; untuk #13: `Bagaimana menguji perintah peringatan tanpa menunggu 7 hari? Tunjukkan corak service('jam') dalam ujian sedia ada.` | Ujian gagal kerana ciri tiada, bukan kerana masa | 9.20 |
+| Dev · bina | AI-29 → `/ciri-baharu <no>` → AI-30 setiap slice; skuad C: `Ikut corak laporan/_carta dan data-carta; tiada <script> sebaris.` | `composer semak`; `semak-espkp`; pelayar 360px | 9.21 |
+| QA · eksploratori | AI-28: `Draf isu Pepijat daripada pemerhatian saya: <langkah, jangkaan, sebenar>. Data sintetik sahaja.` | Ulang langkah sendiri sebelum cipta isu | 9.22 |
+| QA · semak MR | AI-27: `/semak-mr <no>` | Buka setiap `fail:baris` | 9.22 |
+| Semua · `main` merah | `Ujian ini gagal pada main selepas merge !<a> dan !<b>: <output>. Commit mana yang mungkin punca? Jangan baiki lagi.` | `git log`, `git bisect` jika perlu | 9.23 |
+
+---
+
+## 📦 Hasil Hari Ini
+
+**Kerja pasukan (hari ini):**
+
+- [ ] Isu Sprint 2 skuad `status::sedia` dengan *Assignee*; nota sync PM dalam isu
+- [ ] Ciri Sprint 2 skuad di-merge melalui MR dengan semakan QA dan ujian hijau
+- [ ] ≥ 1 isu Pepijat merentas skuad dengan langkah ulang
+- [ ] `composer test` dan `npm run e2e` hijau pada `main` selepas semua merge
+- [ ] Isu retro Sprint 2 dan skop v1.1.0 dalam milestone Sprint 3
+
+**Kerja individu Modul Laporan (rujukan, tidak wajib — [Lampiran](#lampiran--kerja-individu-modul-laporan-rujukan)):**
+
+- [ ] `app/Services/ReportService.php` — filter whitelist, 2 builder (RPT-01/02), aggregate RPT-03, pagination, `exportRows()` berhad
+- [ ] `app/Services/ExportService.php` — `pdf()` (A4 landskap, header/footer, nombor muka) & `xlsx()` (tebal, autosize, beku, autofilter)
+- [ ] `service('reportService')` & `service('exportService')` didaftar dalam `app/Config/Services.php`
+- [ ] `app/Controllers/Laporan/ReportController.php` — nipis; `bookings()`, `passes()`, `usage()`
+- [ ] `app/Views/laporan/index.php` (borang GET + jadual + eksport) & `app/Views/laporan/pdf.php`
+- [ ] Route `/laporan/{tempahan|pas|penggunaan}` dengan `permission:laporan.view`
+- [ ] `tests/Services/ReportServiceTest.php` — hijau
+- [ ] Nota EXPLAIN (1 perenggan) dalam README projek
+- [ ] Commit `RPT: ...` dalam branch `feat/laporan` → **M3 siap** ✅
+- [ ] Lab 9.1b: butang tempoh pantas + cip filter aktif dalam `app/Views/laporan/index.php`; baris baharu dalam `docs/laporan-spec.md`
+- [ ] Lab 9.2b: `ReportService::statusSummary()` & `usageTotals()`; butang *Ringkasan status* dan baris JUMLAH RPT-03
+- [ ] Lab 9.3b: lembaran Excel *Ringkasan* (`addSummarySheet()`, formula `=SUM()`) dan jadual ringkasan PDF
+- [ ] Lab 9.4b: 5 ujian baharu dalam `ReportServiceTest` (≥ 12 hijau) di-push ke MR `feat/laporan`
+
+---
+
+## 🧠 Semakan Kendiri
+
+**1. Kenapa borang filter laporan menggunakan `method="get"`, dan adakah ia perlu token CSRF?**
+<details><summary>Jawapan</summary>
+
+GET menjadikan filter sebahagian daripada URL — boleh ditanda buku, dikongsi, butang *Back* berfungsi, dan pagination/eksport hanya perlu menambah parameter. GET tidak mengubah data, jadi **tidak** perlu CSRF. CSRF melindungi permintaan yang **mengubah keadaan** (POST/PUT/DELETE).
+</details>
+
+**2. Pengguna menapis `to=2026-09-30` pada RPT-02, tetapi permohonan yang dihantar 30/09 jam 14:00 tidak muncul. Apakah puncanya dan pembetulannya?**
+<details><summary>Jawapan</summary>
+
+`created_at` ialah DATETIME. `where('created_at <=', '2026-09-30')` dibanding sebagai `2026-09-30 00:00:00`, jadi semua rekod selepas tengah malam 30/09 tercicir. Guna julat separuh-terbuka: `created_at < '2026-10-01 00:00:00'` (to + 1 hari).
+</details>
+
+**3. Kenapa `orderBy($this->request->getGet('sort'))` berbahaya walaupun kita guna Query Builder?**
+<details><summary>Jawapan</summary>
+
+Query Builder meng-escape **nilai** (binding), tetapi argumen `orderBy()` ialah **pengecam/ungkapan** SQL. Input pengguna boleh menyuntik ungkapan (cth subquery) atau menyebabkan ralat yang membocorkan struktur. Penyelesaian: peta whitelist `['ref_no' => 'b.ref_no', ...]` dan guna nilai lalai jika kunci tiada.
+</details>
+
+**4. Dalam RPT-03, kenapa `selectCount('s.id', ...)` dan bukan `COUNT(*)` selepas LEFT JOIN?**
+<details><summary>Jawapan</summary>
+
+Zon tanpa slot aktif tetap menghasilkan satu baris dengan `s.id = NULL` (sifat LEFT JOIN). `COUNT(*)` mengira baris itu (1), manakala `COUNT(s.id)` mengabaikan NULL (0) — jawapan yang betul.
+</details>
+
+**5. Eksport Excel 50,000 baris gagal dengan "Allowed memory size exhausted". Beri dua tindakan yang betul dan satu yang salah.**
+<details><summary>Jawapan</summary>
+
+Betul: (a) kuatkuasa had rekod dengan mesej "kecilkan julat filter" (`EXPORT_LIMIT`); (b) untuk keperluan data besar, tawarkan CSV berstrim atau kerja latar belakang yang menjana fail dan memaklumkan pengguna. Juga baik: penstriman baris dengan Generator, `disconnectWorksheets()`.
+Salah: `ini_set('memory_limit', '-1')` — menangguhkan masalah sehingga server jatuh.
+</details>
+
+6. Perintah peringatan skuad A dijalankan oleh cron setiap hari. QA menjalankannya dua kali berturut-turut dan pemohon menerima dua emel. Apakah AC yang hilang, dan bagaimana ujian membuktikan pembetulannya?
+
+<details><summary>Jawapan</summary>
+
+AC idempoten: "Diberi peringatan Pindaan sudah dihantar untuk permohonan X, apabila perintah dijalankan semula, maka tiada emel kedua." Pembetulan merekod setiap penghantaran dalam `peringatan_dihantar` (kunci unik permohonan + jenis) dan menyemaknya sebelum menghantar. Ujian menjalankan perintah dua kali dan menegaskan bilangan emel = 1 dan satu baris dalam jadual.
+</details>
+
+7. Kenapa QA menguji ciri skuad **lain**, bukan hanya ciri skuad sendiri?
+
+<details><summary>Jawapan</summary>
+
+QA skuad sendiri sudah membaca isu, pelan dan perbincangan — dia berkongsi andaian yang sama dengan Dev. QA dari skuad lain datang tanpa andaian itu, seperti pengguna sebenar, dan lebih mungkin menemui mesej yang mengelirukan, akses yang bocor atau kes sempadan yang terlepas. Isu Pepijat ditujukan kepada skuad pemilik supaya hotspot kekal dimiliki satu skuad.
+</details>
+
+---
+
+## ➡️ Persediaan untuk esok
+
+Hari 10 — **Sprint 3, keluaran v1.1.0 dan demo capstone pasukan**. Peranan Hari 10 dipilih oleh skuad sendiri.
+
+- `main` hijau (`composer test`, `npm run e2e`) — pepijat kritikal Sprint 2 dibaiki dahulu.
+- PM: isu Sprint 3 skuad (#14, #15, #18) dan isu susulan dalam milestone *Sprint 3 + v1.1 (Hari 10)*; tiada isu baharu selepas 12:30 esok.
+- Setiap ahli: sediakan satu baris kod yang anda commit minggu ini dan boleh terangkan tanpa Claude — panel capstone akan bertanya.
+
+---
+
+## Lampiran — Kerja individu Modul Laporan (rujukan)
+
+> ℹ️ Bahagian di bawah ialah bahan Hari 9 sebelum mod pasukan: Modul Laporan dibina secara individu dalam `kelas-ci-<nama>` (sesi Claude Code S9–S12 dan sesi manual S1–S8). Ia kekal sebagai **rujukan, tidak wajib** — corak filter whitelist, aggregate dan eksport yang sama digunakan oleh espkpv2 (`Services/Laporan`, `EksportService`).
+
+### Objektif rujukan
 
 Di akhir hari ini, peserta boleh:
 
@@ -27,25 +255,7 @@ Di akhir hari ini, peserta boleh:
 | O13 | **Membuktikan** eksport PDF/Excel yang dijana Claude: skrin = PDF = Excel, dan teks `=1+1` kekal teks (formula injection). | S11 |
 | O14 | **Menguji** `ReportService` dengan nilai yang dikira dengan tangan + mutasi, dan **menganalisis** index (`db_table`) dan `EXPLAIN` untuk cadangan index yang direkod. | S12 |
 
----
-
-## 📅 Jadual Hari Ini
-
-> ℹ️ **Jadual Hari 9 (dikemas kini):** Modul Laporan dibina **dengan Claude Code** (S9–S12, Lab 9.10–9.13) di branch `feat/laporan-claude`. Lab manual (S1–S8, Lab 9.1–9.4b) ialah **kod rujukan, tidak wajib**: setiap lab baharu ada langkah *Banding dengan kod rujukan* yang menunjuk ke bahagian manual yang sepadan. Nota konsep S1–S4 kekal sebagai bacaan untuk menilai diff.
-
-| Masa | Sesi | Aktiviti | Objektif |
-|------|------|----------|----------|
-| 08:30–09:00 | — | Recap Hari 8 (aliran Pas + RBAC) | — |
-| 09:00–10:30 | **S9** | Claude Code: `ReportService` & penapis whitelist (slice L1) | O11 |
-| 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | **S10** | Claude Code: paparan senarai & RPT-03 (slice L2) | O12 |
-| 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–16:00 | **S11** | Claude Code: eksport PDF & Excel selamat (slice L3) | O13 |
-| 16:00–17:00 | **S12** | Claude Code: ujian laporan & prestasi — **M3 siap** | O14 |
-
----
-
-## 🧭 Kenapa hari ini penting
+### Kenapa (rujukan)
 
 Pemilik sistem jarang membuka skrin "cipta tempahan". Yang mereka buka setiap minggu ialah **laporan** — dan yang mereka bawa ke mesyuarat ialah **PDF/Excel**. Jika laporan menunjukkan 47 tempahan diluluskan tetapi database sebenarnya ada 52, kepercayaan terhadap *seluruh* sistem runtuh, walaupun modul TLK dan Pas berfungsi sempurna.
 
@@ -65,6 +275,22 @@ flowchart LR
     B -->|?export=pdf| P[exportRows → ExportService::pdf → Dompdf]
     B -->|?export=xlsx| X[exportRows → ExportService::xlsx → PhpSpreadsheet]
 ```
+
+### Prompting rujukan (kerja individu)
+
+Setiap slice: rancang dalam mod *Plan* (`Shift+Tab` / `Alt+M`), kemudian Claude Code melaksana dalam mod *Manual* — anda membaca dan meluluskan setiap diff, menjalankan ujian, `semak-ci4`, dan mesti boleh menerangkan setiap baris yang di-commit (7 pintu semakan, [`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`.
+
+| Sesi | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
+|---|---|---|---|
+| S9 · L1: penapis whitelist | Pelan daripada jadual input → hasil penapis → AI-19 → AI-20 untuk `normaliseFilters()` → `semak-ci4` kategori 4 (`orderBy`, whitelist) | Tool MCP `filter_check` untuk `GET /laporan/pas`; `php spark routes` | 9.10 |
+| S10 · L2: senarai & RPT-03 | Pelan "satu sumber `$filters`" → AI-19 → AI-20 untuk pautan pager/eksport → `semak-ci4` kategori 1 (`esc()` konteks attr/url) | *View Page Source* dengan `?from=%22%3E%3Cb%3Ex`; penapis kekal di halaman 2 | 9.11 |
+| S11 · L3: eksport selamat | Pelan eksport → AI-19 → `semak-ci4` pada `ExportService` → semakan eksport gaya AI-06 (formula, `esc()` PDF, had baris) | Nama sintetik `=1+1` kekal teks dalam Excel; skrin = PDF = Excel | 9.12 |
+| S12 · L4: ujian & prestasi | Pelan ujian daripada nombor tangan → AI-19; AI-09; AI-08 (DoD) sebelum MR; tool MCP `db_table` (index) dan `migrate_status` (tiada migration baharu) | `!composer test -- tests/Services/ReportServiceTest.php`; mutasi `<` → `<=` gagal | 9.13 |
+| S1 · Reka bentuk laporan (kod rujukan) | Semak `@docs/laporan-spec.md` lawan borang penapis; `esc(…, 'attr')`; tool MCP `routes` untuk `permission:laporan.view` | *View Page Source* dengan `?from=%22%3E%3Cb%3Ex` | 9.1 langkah 7 |
+| S2 · Query aggregate (kod rujukan) | Semakan binding Query Builder & whitelist `applySort()` (gaya AI-04); tool MCP `db_table` untuk index | Debug Toolbar → Database; `php spark db:table slot_bookings --metadata` | 9.2 langkah 11 |
+| S3 · Eksport PDF/Excel (kod rujukan) | Semakan keselamatan eksport gaya AI-06: formula injection, `esc()` PDF, kebenaran, had baris | Nama sintetik `=1+1` kekal teks dalam Excel | 9.3 langkah 8 |
+| S4 · Ujian & prestasi (kod rujukan) | AI-09 untuk cabang tanpa ujian; terangkan output `laporan:explain` (AI-03) | `!composer test -- tests/Services/ReportServiceTest.php` | 9.4 langkah 9 |
+| S5–S8 · Lanjutan (kod rujukan) | AI-04 pada kaedah ringkasan status & baris JUMLAH; AI-09 untuk ujian ringkasan | Jumlah ringkasan = `GROUP BY` SQL anda | — |
 
 ---
 
@@ -745,84 +971,3 @@ Lab: [Lab 9.4b](./lab.md#lab-94b--ujian-ringkasan-jumlah--lembaran-excel-s8)
    > PHPUnit menyebut nilai **sebenar** dahulu: (25.0 + 0.0) ÷ 2 = 12.5. Nilai dijangka 16.7 = 15 ÷ 90 × 100, kerana Zon A ada 2 slot aktif dan Zon B 1.
 
 ---
-
-## 🤖 Prompting hari ini
-
-Setiap slice: rancang dalam mod *Plan* (`Shift+Tab` / `Alt+M`), kemudian Claude Code melaksana dalam mod *Manual* — anda membaca dan meluluskan setiap diff, menjalankan ujian, `semak-ci4`, dan mesti boleh menerangkan setiap baris yang di-commit (7 pintu semakan, [`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`.
-
-| Sesi | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
-|---|---|---|---|
-| S9 · L1: penapis whitelist | Pelan daripada jadual input → hasil penapis → AI-19 → AI-20 untuk `normaliseFilters()` → `semak-ci4` kategori 4 (`orderBy`, whitelist) | Tool MCP `filter_check` untuk `GET /laporan/pas`; `php spark routes` | 9.10 |
-| S10 · L2: senarai & RPT-03 | Pelan "satu sumber `$filters`" → AI-19 → AI-20 untuk pautan pager/eksport → `semak-ci4` kategori 1 (`esc()` konteks attr/url) | *View Page Source* dengan `?from=%22%3E%3Cb%3Ex`; penapis kekal di halaman 2 | 9.11 |
-| S11 · L3: eksport selamat | Pelan eksport → AI-19 → `semak-ci4` pada `ExportService` → semakan eksport gaya AI-06 (formula, `esc()` PDF, had baris) | Nama sintetik `=1+1` kekal teks dalam Excel; skrin = PDF = Excel | 9.12 |
-| S12 · L4: ujian & prestasi | Pelan ujian daripada nombor tangan → AI-19; AI-09; AI-08 (DoD) sebelum MR; tool MCP `db_table` (index) dan `migrate_status` (tiada migration baharu) | `!composer test -- tests/Services/ReportServiceTest.php`; mutasi `<` → `<=` gagal | 9.13 |
-| S1 · Reka bentuk laporan (kod rujukan) | Semak `@docs/laporan-spec.md` lawan borang penapis; `esc(…, 'attr')`; tool MCP `routes` untuk `permission:laporan.view` | *View Page Source* dengan `?from=%22%3E%3Cb%3Ex` | 9.1 langkah 7 |
-| S2 · Query aggregate (kod rujukan) | Semakan binding Query Builder & whitelist `applySort()` (gaya AI-04); tool MCP `db_table` untuk index | Debug Toolbar → Database; `php spark db:table slot_bookings --metadata` | 9.2 langkah 11 |
-| S3 · Eksport PDF/Excel (kod rujukan) | Semakan keselamatan eksport gaya AI-06: formula injection, `esc()` PDF, kebenaran, had baris | Nama sintetik `=1+1` kekal teks dalam Excel | 9.3 langkah 8 |
-| S4 · Ujian & prestasi (kod rujukan) | AI-09 untuk cabang tanpa ujian; terangkan output `laporan:explain` (AI-03) | `!composer test -- tests/Services/ReportServiceTest.php` | 9.4 langkah 9 |
-| S5–S8 · Lanjutan (kod rujukan) | AI-04 pada kaedah ringkasan status & baris JUMLAH; AI-09 untuk ujian ringkasan | Jumlah ringkasan = `GROUP BY` SQL anda | — |
-
----
-
-## 📦 Hasil Hari Ini
-
-- [ ] `app/Services/ReportService.php` — filter whitelist, 2 builder (RPT-01/02), aggregate RPT-03, pagination, `exportRows()` berhad
-- [ ] `app/Services/ExportService.php` — `pdf()` (A4 landskap, header/footer, nombor muka) & `xlsx()` (tebal, autosize, beku, autofilter)
-- [ ] `service('reportService')` & `service('exportService')` didaftar dalam `app/Config/Services.php`
-- [ ] `app/Controllers/Laporan/ReportController.php` — nipis; `bookings()`, `passes()`, `usage()`
-- [ ] `app/Views/laporan/index.php` (borang GET + jadual + eksport) & `app/Views/laporan/pdf.php`
-- [ ] Route `/laporan/{tempahan|pas|penggunaan}` dengan `permission:laporan.view`
-- [ ] `tests/Services/ReportServiceTest.php` — hijau
-- [ ] Nota EXPLAIN (1 perenggan) dalam README projek
-- [ ] Commit `RPT: ...` dalam branch `feat/laporan` → **M3 siap** ✅
-- [ ] Lab 9.1b: butang tempoh pantas + cip filter aktif dalam `app/Views/laporan/index.php`; baris baharu dalam `docs/laporan-spec.md`
-- [ ] Lab 9.2b: `ReportService::statusSummary()` & `usageTotals()`; butang *Ringkasan status* dan baris JUMLAH RPT-03
-- [ ] Lab 9.3b: lembaran Excel *Ringkasan* (`addSummarySheet()`, formula `=SUM()`) dan jadual ringkasan PDF
-- [ ] Lab 9.4b: 5 ujian baharu dalam `ReportServiceTest` (≥ 12 hijau) di-push ke MR `feat/laporan`
-
----
-
-## 🧠 Semakan Kendiri
-
-**1. Kenapa borang filter laporan menggunakan `method="get"`, dan adakah ia perlu token CSRF?**
-<details><summary>Jawapan</summary>
-
-GET menjadikan filter sebahagian daripada URL — boleh ditanda buku, dikongsi, butang *Back* berfungsi, dan pagination/eksport hanya perlu menambah parameter. GET tidak mengubah data, jadi **tidak** perlu CSRF. CSRF melindungi permintaan yang **mengubah keadaan** (POST/PUT/DELETE).
-</details>
-
-**2. Pengguna menapis `to=2026-09-30` pada RPT-02, tetapi permohonan yang dihantar 30/09 jam 14:00 tidak muncul. Apakah puncanya dan pembetulannya?**
-<details><summary>Jawapan</summary>
-
-`created_at` ialah DATETIME. `where('created_at <=', '2026-09-30')` dibanding sebagai `2026-09-30 00:00:00`, jadi semua rekod selepas tengah malam 30/09 tercicir. Guna julat separuh-terbuka: `created_at < '2026-10-01 00:00:00'` (to + 1 hari).
-</details>
-
-**3. Kenapa `orderBy($this->request->getGet('sort'))` berbahaya walaupun kita guna Query Builder?**
-<details><summary>Jawapan</summary>
-
-Query Builder meng-escape **nilai** (binding), tetapi argumen `orderBy()` ialah **pengecam/ungkapan** SQL. Input pengguna boleh menyuntik ungkapan (cth subquery) atau menyebabkan ralat yang membocorkan struktur. Penyelesaian: peta whitelist `['ref_no' => 'b.ref_no', ...]` dan guna nilai lalai jika kunci tiada.
-</details>
-
-**4. Dalam RPT-03, kenapa `selectCount('s.id', ...)` dan bukan `COUNT(*)` selepas LEFT JOIN?**
-<details><summary>Jawapan</summary>
-
-Zon tanpa slot aktif tetap menghasilkan satu baris dengan `s.id = NULL` (sifat LEFT JOIN). `COUNT(*)` mengira baris itu (1), manakala `COUNT(s.id)` mengabaikan NULL (0) — jawapan yang betul.
-</details>
-
-**5. Eksport Excel 50,000 baris gagal dengan "Allowed memory size exhausted". Beri dua tindakan yang betul dan satu yang salah.**
-<details><summary>Jawapan</summary>
-
-Betul: (a) kuatkuasa had rekod dengan mesej "kecilkan julat filter" (`EXPORT_LIMIT`); (b) untuk keperluan data besar, tawarkan CSV berstrim atau kerja latar belakang yang menjana fail dan memaklumkan pengguna. Juga baik: penstriman baris dengan Generator, `disconnectWorksheets()`.
-Salah: `ini_set('memory_limit', '-1')` — menangguhkan masalah sehingga server jatuh.
-</details>
-
----
-
-## ➡️ Persediaan untuk esok
-
-Hari 10 ialah hari terakhir: **Statistik + Capstone**.
-
-1. Pastikan **M1, M2, M3** sudah di-merge ke `main` dan `composer test` hijau.
-2. Jalankan `php spark db:seed DatabaseSeeder` semula supaya ada data sintetik yang cukup (sekurang-kurangnya 2 zon, 20 tempahan, 15 permohonan pas pelbagai status) — carta kosong tidak meyakinkan semasa demo.
-3. Baca sekali imbas dokumentasi Chart.js 4 *Getting Started*: <https://www.chartjs.org/docs/latest/getting-started/>.
-4. Setiap peserta: senaraikan **3 perkara** yang paling anda banggakan dan **1 pepijat** yang masih diketahui — ia bahan untuk demo & retrospektif esok.
-5. Semak templat UAT: `templates/dokumen/uat-signoff-templat.md` (modul **Templat & Rujukan**) dan `templates/dokumen/kes-ujian-templat.md` (modul **Templat & Rujukan**).

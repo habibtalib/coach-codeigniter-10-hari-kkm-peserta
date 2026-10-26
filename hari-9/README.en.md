@@ -1,12 +1,240 @@
-# Day 9 — Reports Module (M3)
+# Day 9 — Team Work: Sprint 2 (Reports, Security & Workflow)
 
-[← Schedule](../JADUAL.md) · [SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 9 Lab](./lab.md) · [Day 10 →](../hari-10/README.md)
+[← Schedule](../JADUAL.en.md) · [👥 Team roles](../docs/peranan-pasukan.en.md) · [🧪 Day 9 Lab](./lab.en.md) · [Day 10 →](../hari-10/README.en.md)
 
-> **Phase C — Report & Hand Over.** M1 (TLK, Special Vehicle Parking) and M2 (Pass) already generate data. Today we turn that data into **information people can trust**: filtered lists, aggregate summaries, and PDF/Excel files that can be sent to management.
+> **Sprint 2.** Yesterday every squad finished one issue → MR → merge cycle. Today the same cycle runs faster and harder: Sprint 2 issues depend on yesterday's work, QA starts testing **across squads**, and the pipeline has to prove every MR. Roles rotate again: seat 3 becomes the morning PM.
 
 ---
 
 ## 🎯 Learning Objectives
+
+By the end of today, participants can:
+
+| # | Objective (measurable) | Session | Evidence |
+|---|------------------------|---------|----------|
+| O15 | **Plan** the squad's Sprint 2 from the backlog and the Sprint 1 follow-up issues, and **coordinate** dependencies with the other squads | S13 | Sprint 2 issue `status::sedia` with an *Assignee*; PM sync note in the issue |
+| O16 | **Implement** the squad's Sprint 2 feature (A: reminder command; B: password policy / MariaDB CI; C: RPT-10 chart + export) slice by slice with tests | S14 | `Rujuk #N` commits with green tests for every slice |
+| O17 | **Test** another squad's feature exploratorily and **report** bugs as reproducible Bug issues | S15 | ≥ 1 cross-squad Bug issue with reproduction steps |
+| O18 | **Merge** the Sprint 2 MRs and **prove** `main` stays green (PHPUnit + E2E) after all merges | S16 | `composer test` + `npm run e2e` on `main`; sprint demo |
+
+> ℹ️ Objectives O1–O14 (individual Reports module) remain as reference in the [Appendix](#appendix--individual-reports-module-work-reference).
+
+---
+
+## 📅 Today's Schedule
+
+| Time | Session | Activity | Session objective |
+|------|---------|----------|-------------------|
+| 08:30–09:00 | — | Squad stand-up (done · next · blocked), role rotation | — |
+| 09:00–10:30 | S13 | Sprint 2 planning & PM sync, test plan, slice 1 | O15 · [Lab 9.20](./lab.en.md#lab-920--sprint-2-planning-pm-sync--slice-1-s13) |
+| 10:30–10:45 | — | Morning break | — |
+| 10:45–12:30 | S14 | Build Sprint 2: the squad's feature slice by slice | O16 · [Lab 9.21](./lab.en.md#lab-921--build-sprint-2-squad-features-s14) |
+| 12:30–14:30 | — | Lunch · **roles rotate** | — |
+| 14:30–16:00 | S15 | MR, QA review & cross-squad exploratory testing | O17 · [Lab 9.22](./lab.en.md#lab-922--mr-review--cross-squad-testing-s15) |
+| 16:00–17:00 | S16 | Merge, green `main` (PHPUnit + E2E), sprint demo & retro | O18 · [Lab 9.23](./lab.en.md#lab-923--merge-green-main-sprint-demo--retro-s16) |
+
+**Sprint 2 issues** (milestone *Sprint 2 (Hari 9)*) + Sprint 1 follow-up issues:
+
+| Squad | Sprint 2 issue | Technical theme |
+|---|---|---|
+| A — Workflow | #13 Applicant reminder: Pindaan for more than 7 days | spark command + `peringatan_dihantar` table (idempotent) + email |
+| B — Accounts & Security | #9 Password policy, #8 UUID migration on MariaDB 10.6 | Shield validators, tests, MariaDB CI job |
+| C — Reports & Statistics | #17 RPT-10: chart & PDF/Excel export | Chart.js through `laporan/_carta`, `EksportService`, report total = SQL total |
+
+---
+
+## 🧭 Why today matters
+
+The first sprint teaches the flow; the second sprint exposes the **cost of coordination**. Squad A's #13 needs the Pindaan status that #1 has just changed; squad C's RPT-10 reads the same statuses; squad B's password policy changes the form everyone uses to log in to the demo. Without a sync, three MRs that are each correct can produce a broken `main`.
+
+Two practices today:
+
+1. **PM sync (15 minutes, 09:00).** Each PM names the shared files they will touch and what depends on other squads. Decisions are recorded in the issue, not remembered.
+2. **Cross-squad QA.** Squad A's QA tests squad B's feature merged yesterday, and so on. Fresh eyes find bugs the author (and the author's Claude) do not see.
+
+---
+
+## S13 — Sprint 2 Planning, PM Sync & Slice 1 (09:00–10:30)
+
+**Stand-up (08:30, 2 minutes per person):** what I finished yesterday, what I am doing today, what is blocking me. The PM records blockers in the issue.
+
+**Planning (PM, 20 minutes):** `/isu-baharu <no>` for the squad's Sprint 2 issue, then check the Sprint 1 follow-up issues (AC not yet done). Realistic capacity: one size-M issue per Dev pair per half day.
+
+**PM sync (15 minutes, the three PMs + the trainer):**
+
+| Question | Example answer |
+|---|---|
+| Shared files we will touch? | A: `Routes.php` (no reminder route — command only), not `Config/Email` |
+| Depends on other squads? | C: RPT-10 needs to know that the Pindaan status now counts as "open" (#1, squad A) |
+| Afternoon merge order? | B (#9, form) → A (#13) → C (#17) |
+
+**QA and Dev** repeat the rhythm of Lab 8.21: a test plan from the AC and failing tests first (QA), `/ciri-baharu` → branch → slice 1 (Dev).
+
+### ✅ Checkpoint S13
+- The squad's Sprint 2 issue is `status::sedia`, *Assignee* set; PM sync note in the squad issue.
+- A Sprint 2 branch with a first `Rujuk #N` commit.
+
+---
+
+## S14 — Build Sprint 2: Squad Features (10:45–12:30)
+
+Each squad has a different technical theme; Claude Code helps with the matching skill:
+
+| Squad | Skill / agent | Special attention |
+|---|---|---|
+| A — #13 | `/ciri-baharu`, `migration-espkp` (if a new table) | Idempotent: running the command twice does not send two emails (`peringatan_dihantar`). Test with a fake `service('jam')`, not by waiting 7 days |
+| B — #9 / #8 | `/ciri-baharu`; for #8 `migration-espkp` | The `Latihan@2026` training accounts must stay valid; #8: a new CI job, not a change to the existing `ujian` job |
+| C — #17 | `/ciri-baharu` | Chart.js through the `laporan/_carta` partial and `data-carta` (CSP: no inline JS); export through `EksportService` (PDF 2000 / XLSX 10000 limits, audited) |
+
+The slice rule stays: one slice → `composer semak` → `semak-espkp` → commit. The navigator reviews the diff; swap drivers every slice.
+
+### ✅ Checkpoint S14
+- At least 2 slices committed on the Sprint 2 branch with green tests.
+- QA tests for the core AC exist in the branch and now **pass**.
+
+---
+
+## S15 — MR, Review & Cross-Squad Testing (14:30–16:00)
+
+After the role rotation (slot *Day 9 afternoon*), the MR flow is the same as Lab 8.22. Added today:
+
+**Cross-squad exploratory testing (QA, 30 minutes).** Each QA tests another squad's feature already merged into `main` (A → B, B → C, C → A), for 30 minutes, with at least three different training accounts. Look for: confusing messages, access that should be 404, a broken 360px view, exports whose totals don't match.
+
+Bugs → a Bug issue (*Pepijat* template, label of the squad that **owns** the feature) with reproduction steps. Claude helps draft it (prompt AI-28), QA verifies every step themselves.
+
+### ✅ Checkpoint S15
+- Every squad's Sprint 2 MR is `Ready` with a QA review comment.
+- ≥ 1 cross-squad Bug issue, reproducible by the owning squad.
+
+---
+
+## S16 — Merge, Green `main`, Sprint Demo & Retro (16:00–17:00)
+
+Merge in the morning sync order (Lab 8.23: rebase, conflicts, `--force-with-lease`). After the last merge, one person from each squad runs on the latest `main`:
+
+```bash
+git switch main && git pull
+composer install
+php spark migrate --all
+composer test
+```
+
+**E2E** is run by each squad's QA following the *Ujian hujung ke hujung (E2E)* section of the repo README: a separate `espkp_contoh_e2e` database, the `php -S localhost:8095` server, then `npm run e2e:sedia` and `npm run e2e`. Do not run E2E on your dev database — the data is reset.
+
+Red → the squad whose last MR caused the failure opens a Bug issue `keutamaan::1-kritikal` and fixes it **before** Sprint 3. **Sprint demo** (3 minutes per squad) and **retro** (issue `Retro Sprint 2 — Skuad <X>`), then the PMs list the Sprint 3 issues and the **v1.1.0** release scope.
+
+### ✅ Checkpoint S16
+- All Sprint 2 MRs approved by QA are merged; `composer test` and `npm run e2e` are green on `main`.
+- A Sprint 2 retro issue and the v1.1.0 scope list in the milestone *Sprint 3 + v1.1 (Hari 10)*.
+
+---
+## 🤖 Today's prompting
+
+Full prompts: [`pustaka-prompt.en.md`](../docs/pustaka-prompt.en.md) §H (AI-21..AI-32). *Plan* mode first, *Manual* mode for changes, synthetic data only.
+
+| Role | Prompt & Claude Code feature | Verify yourself | Lab |
+|---|---|---|---|
+| PM · sync | AI-23: `Summarise the squad's Sprint 2 issues and the shared files each issue will touch; flag dependencies on other squads.` | Compare with the other PMs' sync notes | 9.20 |
+| QA · test plan | AI-25 with `penguji-espkp`; for #13: `How do I test the reminder command without waiting 7 days? Show the service('jam') pattern in the existing tests.` | The test fails because the feature is missing, not because of time | 9.20 |
+| Dev · build | AI-29 → `/ciri-baharu <no>` → AI-30 for every slice; squad C: `Follow the laporan/_carta and data-carta pattern; no inline <script>.` | `composer semak`; `semak-espkp`; 360px browser | 9.21 |
+| QA · exploratory | AI-28: `Draft a Bug issue from my observation: <steps, expected, actual>. Synthetic data only.` | Repeat the steps yourself before creating the issue | 9.22 |
+| QA · review the MR | AI-27: `/semak-mr <no>` | Open every `file:line` | 9.22 |
+| Everyone · red `main` | `This test fails on main after merging !<a> and !<b>: <output>. Which commit is the likely cause? Do not fix it yet.` | `git log`, `git bisect` if needed | 9.23 |
+
+---
+
+## 📦 Deliverables — Today's Output
+
+**Team work (today):**
+
+- [ ] The squad's Sprint 2 issue `status::sedia` with an *Assignee*; PM sync note in the issue
+- [ ] The squad's Sprint 2 feature merged through an MR with a QA review and green tests
+- [ ] ≥ 1 cross-squad Bug issue with reproduction steps
+- [ ] `composer test` and `npm run e2e` green on `main` after all merges
+- [ ] Sprint 2 retro issue and the v1.1.0 scope in the Sprint 3 milestone
+
+**Individual Reports module work (reference, optional — [Appendix](#appendix--individual-reports-module-work-reference)):**
+
+- [ ] `app/Services/ReportService.php` — whitelisted filters, 2 builders (RPT-01/02), RPT-03 aggregate, pagination, limited `exportRows()`
+- [ ] `app/Services/ExportService.php` — `pdf()` (A4 landscape, header/footer, page numbers) & `xlsx()` (bold, autosize, frozen rows, autofilter)
+- [ ] `service('reportService')` & `service('exportService')` registered in `app/Config/Services.php`
+- [ ] `app/Controllers/Laporan/ReportController.php` — thin; `bookings()`, `passes()`, `usage()`
+- [ ] `app/Views/laporan/index.php` (GET form + table + export) & `app/Views/laporan/pdf.php`
+- [ ] Routes `/laporan/{tempahan|pas|penggunaan}` with `permission:laporan.view`
+- [ ] `tests/Services/ReportServiceTest.php` — green
+- [ ] EXPLAIN note (1 paragraph) in the project README
+- [ ] Commit `RPT: ...` on the `feat/laporan` branch → **M3 done** ✅
+- [ ] Lab 9.1b: quick-period buttons + active filter chips in `app/Views/laporan/index.php`; new rows in `docs/laporan-spec.md`
+- [ ] Lab 9.2b: `ReportService::statusSummary()` & `usageTotals()`; *Ringkasan status* buttons and the RPT-03 JUMLAH row
+- [ ] Lab 9.3b: Excel *Ringkasan* sheet (`addSummarySheet()`, `=SUM()` formula) and the PDF summary table
+- [ ] Lab 9.4b: 5 new tests in `ReportServiceTest` (≥ 12 green) pushed to the `feat/laporan` MR
+
+---
+
+## 🧠 Self-check
+
+**1. Why does the report filter form use `method="get"`, and does it need a CSRF token?**
+<details><summary>Answer</summary>
+
+GET makes the filters part of the URL — it can be bookmarked and shared, the *Back* button works, and pagination/export only need to add a parameter. GET does not change data, so it does **not** need CSRF. CSRF protects requests that **change state** (POST/PUT/DELETE).
+</details>
+
+**2. A user filters `to=2026-09-30` on RPT-02, but an application submitted on 30/09 at 14:00 does not appear. What is the cause and the fix?**
+<details><summary>Answer</summary>
+
+`created_at` is a DATETIME. `where('created_at <=', '2026-09-30')` is compared as `2026-09-30 00:00:00`, so every record after midnight on 30/09 is missed. Use a half-open range: `created_at < '2026-10-01 00:00:00'` (to + 1 day).
+</details>
+
+**3. Why is `orderBy($this->request->getGet('sort'))` dangerous even though we use the Query Builder?**
+<details><summary>Answer</summary>
+
+The Query Builder escapes **values** (bindings), but the argument of `orderBy()` is an SQL **identifier/expression**. User input can inject an expression (e.g. a subquery) or cause an error that leaks the structure. Fix: a whitelist map `['ref_no' => 'b.ref_no', ...]` and use the default value if the key is missing.
+</details>
+
+**4. In RPT-03, why `selectCount('s.id', ...)` and not `COUNT(*)` after a LEFT JOIN?**
+<details><summary>Answer</summary>
+
+A zone without active slots still produces one row with `s.id = NULL` (a property of LEFT JOIN). `COUNT(*)` counts that row (1), while `COUNT(s.id)` ignores NULL (0) — the correct answer.
+</details>
+
+**5. An Excel export of 50,000 rows fails with "Allowed memory size exhausted". Give two correct actions and one wrong one.**
+<details><summary>Answer</summary>
+
+Correct: (a) enforce a record limit with a "narrow the filter range" message (`EXPORT_LIMIT`); (b) for large-data needs, offer a streamed CSV or a background job that generates the file and notifies the user. Also good: streaming rows with a Generator, `disconnectWorksheets()`.
+Wrong: `ini_set('memory_limit', '-1')` — postpones the problem until the server goes down.
+</details>
+
+6. Squad A's reminder command is run by cron every day. QA runs it twice in a row and the applicant receives two emails. Which AC is missing, and how does a test prove the fix?
+
+<details><summary>Answer</summary>
+
+The idempotency AC: "Given a Pindaan reminder has already been sent for application X, when the command runs again, then no second email is sent." The fix records each send in `peringatan_dihantar` (unique key application + type) and checks it before sending. The test runs the command twice and asserts the email count = 1 and one row in the table.
+</details>
+
+7. Why does QA test **another** squad's feature, not only their own squad's?
+
+<details><summary>Answer</summary>
+
+The squad's own QA has already read the issue, the plan and the discussion — they share the same assumptions as the Dev. A QA from another squad comes without those assumptions, like a real user, and is more likely to find confusing messages, leaking access or missed edge cases. The Bug issue goes to the owning squad so each hotspot stays owned by one squad.
+</details>
+
+---
+
+## ➡️ Preparation for tomorrow
+
+Day 10 — **Sprint 3, the v1.1.0 release and the team capstone demo**. Day 10 roles are chosen by each squad.
+
+- `main` green (`composer test`, `npm run e2e`) — Sprint 2 critical bugs fixed first.
+- PM: the squad's Sprint 3 issues (#14, #15, #18) and follow-up issues in the milestone *Sprint 3 + v1.1 (Hari 10)*; no new issues after 12:30 tomorrow.
+- Every member: prepare one line of code you committed this week and can explain without Claude — the capstone panel will ask.
+
+---
+
+## Appendix — Individual Reports module work (reference)
+
+> ℹ️ The sections below are the Day 9 material from before team mode: the Reports module built individually in `kelas-ci-<nama>` (Claude Code sessions S9–S12 and manual sessions S1–S8). They remain as **reference, optional** — the same whitelisted-filter, aggregate and export patterns are used by espkpv2 (`Services/Laporan`, `EksportService`).
+
+### Reference objectives
 
 By the end of today, participants can:
 
@@ -27,25 +255,7 @@ By the end of today, participants can:
 | O13 | **Prove** the PDF/Excel export generated by Claude: screen = PDF = Excel, and the text `=1+1` stays text (formula injection). | S11 |
 | O14 | **Test** `ReportService` with hand-calculated values + a mutation, and **analyse** indexes (`db_table`) and `EXPLAIN` for a recorded index proposal. | S12 |
 
----
-
-## 📅 Today's Schedule
-
-> ℹ️ **Day 9 schedule (updated):** the Report Module is built **with Claude Code** (S9–S12, Lab 9.10–9.13) on the `feat/laporan-claude` branch. The manual labs (S1–S8, Lab 9.1–9.4b) are **reference code, not required**: every new lab has a *Compare with the reference code* step that points to the matching manual section. The S1–S4 concept notes stay as reading for judging diffs.
-
-| Time | Session | Activity | Objectives |
-|------|------|----------|----------|
-| 08:30–09:00 | — | Day 8 recap (Pass flow + RBAC) | — |
-| 09:00–10:30 | **S9** | Claude Code: `ReportService` & whitelisted filters (slice L1) | O11 |
-| 10:30–10:45 | — | Morning break | — |
-| 10:45–12:30 | **S10** | Claude Code: list views & RPT-03 (slice L2) | O12 |
-| 12:30–14:30 | — | Lunch | — |
-| 14:30–16:00 | **S11** | Claude Code: safe PDF & Excel export (slice L3) | O13 |
-| 16:00–17:00 | **S12** | Claude Code: report tests & performance — **M3 done** | O14 |
-
----
-
-## 🧭 Why today matters
+### Why (reference)
 
 System owners rarely open the "create booking" screen. What they open every week is the **report** — and what they bring to meetings is the **PDF/Excel**. If a report shows 47 approved bookings but the database actually has 52, trust in the *whole* system collapses, even if the TLK and Pass modules work perfectly.
 
@@ -65,6 +275,22 @@ flowchart LR
     B -->|?export=pdf| P[exportRows → ExportService::pdf → Dompdf]
     B -->|?export=xlsx| X[exportRows → ExportService::xlsx → PhpSpreadsheet]
 ```
+
+### Reference prompting (individual work)
+
+Every slice: plan in *Plan* mode (`Shift+Tab` / `Alt+M`), then Claude Code implements in *Manual* mode — you read and approve each diff, run the tests and `semak-ci4`, and must be able to explain every committed line (7 review gates, [`kolaborasi.md`](../docs/kolaborasi.en.md) §3). Full prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md). Record the answers you verified in `docs/nota-claude.md`.
+
+| Session | Prompt & Claude Code feature | Verify it yourself | Lab |
+|---|---|---|---|
+| S9 · L1: whitelist filters | Plan from the input → filter result table → AI-19 → AI-20 for `normaliseFilters()` → `semak-ci4` category 4 (`orderBy`, whitelist) | The `filter_check` MCP tool for `GET /laporan/pas`; `php spark routes` | 9.10 |
+| S10 · L2: list & RPT-03 | "One `$filters` source" plan → AI-19 → AI-20 for the pager/export links → `semak-ci4` category 1 (`esc()` attr/url context) | *View Page Source* with `?from=%22%3E%3Cb%3Ex`; filters persist on page 2 | 9.11 |
+| S11 · L3: safe export | Export plan → AI-19 → `semak-ci4` on `ExportService` → AI-06-style export review (formulas, PDF `esc()`, row limit) | The synthetic name `=1+1` stays text in Excel; screen = PDF = Excel | 9.12 |
+| S12 · L4: tests & performance | Test plan from hand-computed numbers → AI-19; AI-09; AI-08 (DoD) before the MR; the `db_table` (indexes) and `migrate_status` (no new migration) MCP tools | `!composer test -- tests/Services/ReportServiceTest.php`; the `<` → `<=` mutation fails | 9.13 |
+| S1 · Report design (reference code) | Check `@docs/laporan-spec.md` against the filter form; `esc(…, 'attr')`; the `routes` MCP tool for `permission:laporan.view` | *View Page Source* with `?from=%22%3E%3Cb%3Ex` | 9.1 step 7 |
+| S2 · Aggregate queries (reference code) | Query Builder binding & `applySort()` whitelist review (AI-04 style); the `db_table` MCP tool for indexes | Debug Toolbar → Database; `php spark db:table slot_bookings --metadata` | 9.2 step 11 |
+| S3 · PDF/Excel export (reference code) | Export security review, AI-06 style: formula injection, PDF `esc()`, permission, row limit | The synthetic name `=1+1` stays text in Excel | 9.3 step 8 |
+| S4 · Tests & performance (reference code) | AI-09 for untested branches; explain the `laporan:explain` output (AI-03) | `!composer test -- tests/Services/ReportServiceTest.php` | 9.4 step 9 |
+| S5–S8 · Extensions (reference code) | AI-04 on the status summary methods & the JUMLAH row; AI-09 for the summary tests | Summary totals = your SQL `GROUP BY` | — |
 
 ---
 
@@ -745,84 +971,3 @@ Lab: [Lab 9.4b](./lab.en.md#lab-94b--testing-the-summary-jumlah--excel-sheet-s8)
    > PHPUnit names the **actual** value first: (25.0 + 0.0) ÷ 2 = 12.5. The expected value 16.7 = 15 ÷ 90 × 100, because Zone A has 2 active slots and Zone B has 1.
 
 ---
-
-## 🤖 Today's prompting
-
-Every slice: plan in *Plan* mode (`Shift+Tab` / `Alt+M`), then Claude Code implements in *Manual* mode — you read and approve each diff, run the tests and `semak-ci4`, and must be able to explain every committed line (7 review gates, [`kolaborasi.md`](../docs/kolaborasi.en.md) §3). Full prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md). Record the answers you verified in `docs/nota-claude.md`.
-
-| Session | Prompt & Claude Code feature | Verify it yourself | Lab |
-|---|---|---|---|
-| S9 · L1: whitelist filters | Plan from the input → filter result table → AI-19 → AI-20 for `normaliseFilters()` → `semak-ci4` category 4 (`orderBy`, whitelist) | The `filter_check` MCP tool for `GET /laporan/pas`; `php spark routes` | 9.10 |
-| S10 · L2: list & RPT-03 | "One `$filters` source" plan → AI-19 → AI-20 for the pager/export links → `semak-ci4` category 1 (`esc()` attr/url context) | *View Page Source* with `?from=%22%3E%3Cb%3Ex`; filters persist on page 2 | 9.11 |
-| S11 · L3: safe export | Export plan → AI-19 → `semak-ci4` on `ExportService` → AI-06-style export review (formulas, PDF `esc()`, row limit) | The synthetic name `=1+1` stays text in Excel; screen = PDF = Excel | 9.12 |
-| S12 · L4: tests & performance | Test plan from hand-computed numbers → AI-19; AI-09; AI-08 (DoD) before the MR; the `db_table` (indexes) and `migrate_status` (no new migration) MCP tools | `!composer test -- tests/Services/ReportServiceTest.php`; the `<` → `<=` mutation fails | 9.13 |
-| S1 · Report design (reference code) | Check `@docs/laporan-spec.md` against the filter form; `esc(…, 'attr')`; the `routes` MCP tool for `permission:laporan.view` | *View Page Source* with `?from=%22%3E%3Cb%3Ex` | 9.1 step 7 |
-| S2 · Aggregate queries (reference code) | Query Builder binding & `applySort()` whitelist review (AI-04 style); the `db_table` MCP tool for indexes | Debug Toolbar → Database; `php spark db:table slot_bookings --metadata` | 9.2 step 11 |
-| S3 · PDF/Excel export (reference code) | Export security review, AI-06 style: formula injection, PDF `esc()`, permission, row limit | The synthetic name `=1+1` stays text in Excel | 9.3 step 8 |
-| S4 · Tests & performance (reference code) | AI-09 for untested branches; explain the `laporan:explain` output (AI-03) | `!composer test -- tests/Services/ReportServiceTest.php` | 9.4 step 9 |
-| S5–S8 · Extensions (reference code) | AI-04 on the status summary methods & the JUMLAH row; AI-09 for the summary tests | Summary totals = your SQL `GROUP BY` | — |
-
----
-
-## 📦 Deliverables — Today's Output
-
-- [ ] `app/Services/ReportService.php` — whitelisted filters, 2 builders (RPT-01/02), RPT-03 aggregate, pagination, limited `exportRows()`
-- [ ] `app/Services/ExportService.php` — `pdf()` (A4 landscape, header/footer, page numbers) & `xlsx()` (bold, autosize, frozen rows, autofilter)
-- [ ] `service('reportService')` & `service('exportService')` registered in `app/Config/Services.php`
-- [ ] `app/Controllers/Laporan/ReportController.php` — thin; `bookings()`, `passes()`, `usage()`
-- [ ] `app/Views/laporan/index.php` (GET form + table + export) & `app/Views/laporan/pdf.php`
-- [ ] Routes `/laporan/{tempahan|pas|penggunaan}` with `permission:laporan.view`
-- [ ] `tests/Services/ReportServiceTest.php` — green
-- [ ] EXPLAIN note (1 paragraph) in the project README
-- [ ] Commit `RPT: ...` on the `feat/laporan` branch → **M3 done** ✅
-- [ ] Lab 9.1b: quick-period buttons + active filter chips in `app/Views/laporan/index.php`; new rows in `docs/laporan-spec.md`
-- [ ] Lab 9.2b: `ReportService::statusSummary()` & `usageTotals()`; *Ringkasan status* buttons and the RPT-03 JUMLAH row
-- [ ] Lab 9.3b: Excel *Ringkasan* sheet (`addSummarySheet()`, `=SUM()` formula) and the PDF summary table
-- [ ] Lab 9.4b: 5 new tests in `ReportServiceTest` (≥ 12 green) pushed to the `feat/laporan` MR
-
----
-
-## 🧠 Self-check
-
-**1. Why does the report filter form use `method="get"`, and does it need a CSRF token?**
-<details><summary>Answer</summary>
-
-GET makes the filters part of the URL — it can be bookmarked and shared, the *Back* button works, and pagination/export only need to add a parameter. GET does not change data, so it does **not** need CSRF. CSRF protects requests that **change state** (POST/PUT/DELETE).
-</details>
-
-**2. A user filters `to=2026-09-30` on RPT-02, but an application submitted on 30/09 at 14:00 does not appear. What is the cause and the fix?**
-<details><summary>Answer</summary>
-
-`created_at` is a DATETIME. `where('created_at <=', '2026-09-30')` is compared as `2026-09-30 00:00:00`, so every record after midnight on 30/09 is missed. Use a half-open range: `created_at < '2026-10-01 00:00:00'` (to + 1 day).
-</details>
-
-**3. Why is `orderBy($this->request->getGet('sort'))` dangerous even though we use the Query Builder?**
-<details><summary>Answer</summary>
-
-The Query Builder escapes **values** (bindings), but the argument of `orderBy()` is an SQL **identifier/expression**. User input can inject an expression (e.g. a subquery) or cause an error that leaks the structure. Fix: a whitelist map `['ref_no' => 'b.ref_no', ...]` and use the default value if the key is missing.
-</details>
-
-**4. In RPT-03, why `selectCount('s.id', ...)` and not `COUNT(*)` after a LEFT JOIN?**
-<details><summary>Answer</summary>
-
-A zone without active slots still produces one row with `s.id = NULL` (a property of LEFT JOIN). `COUNT(*)` counts that row (1), while `COUNT(s.id)` ignores NULL (0) — the correct answer.
-</details>
-
-**5. An Excel export of 50,000 rows fails with "Allowed memory size exhausted". Give two correct actions and one wrong one.**
-<details><summary>Answer</summary>
-
-Correct: (a) enforce a record limit with a "narrow the filter range" message (`EXPORT_LIMIT`); (b) for large-data needs, offer a streamed CSV or a background job that generates the file and notifies the user. Also good: streaming rows with a Generator, `disconnectWorksheets()`.
-Wrong: `ini_set('memory_limit', '-1')` — postpones the problem until the server goes down.
-</details>
-
----
-
-## ➡️ Preparation for tomorrow
-
-Day 10 is the last day: **Statistics + Capstone**.
-
-1. Make sure **M1, M2, M3** are merged into `main` and `composer test` is green.
-2. Run `php spark db:seed DatabaseSeeder` again so there is enough synthetic data (at least 2 zones, 20 bookings, 15 pass applications with various statuses) — empty charts are not convincing during the demo.
-3. Skim the Chart.js 4 *Getting Started* documentation: <https://www.chartjs.org/docs/latest/getting-started/>.
-4. Each participant: list the **3 things** you are proudest of and **1 bug** that is still known — material for tomorrow's demo & retrospective.
-5. Review the UAT templates: `templates/dokumen/uat-signoff-templat.md` (**Templat & Rujukan** module) and `templates/dokumen/kes-ujian-templat.md` (**Templat & Rujukan** module).

@@ -60,6 +60,18 @@ flowchart LR
 | **AI-18** | Semak PRD | Projek | 7 |
 | **AI-19** | Laksana satu slice daripada pelan (mod Manual) | Laksana | 7–10 |
 | **AI-20** | Terangkan diff ini sebelum saya terima | Laksana | 7–10 |
+| **AI-21** | PM: idea kepada isu dengan AC | Pasukan | 8–10 |
+| **AI-22** | PM: pecahkan isu besar | Pasukan | 8–10 |
+| **AI-23** | PM: status papan dan susunan merge | Pasukan | 8–10 |
+| **AI-24** | PM: serah tugas | Pasukan | 8–10 |
+| **AI-25** | QA: pelan ujian daripada AC | Pasukan | 8–10 |
+| **AI-26** | QA: ujian gagal dahulu | Pasukan | 8–10 |
+| **AI-27** | QA: semak MR terhadap AC | Pasukan | 8–10 |
+| **AI-28** | QA: laporan pepijat | Pasukan | 8–10 |
+| **AI-29** | Dev: fahami isu sebelum merancang | Pasukan | 8–10 |
+| **AI-30** | Dev: slice daripada pelan /ciri-baharu | Pasukan | 8–10 |
+| **AI-31** | Dev: jawab komen QA | Pasukan | 8–10 |
+| **AI-32** | Semua: konflik merge | Pasukan | 8–10 |
 
 ---
 
@@ -457,6 +469,109 @@ Jawab dalam Bahasa Melayu; istilah teknikal dalam English.
 ```
 
 - **Selepas:** Tulis semula penerangan itu dengan ayat sendiri dalam `docs/nota-claude.md` (`fail:baris`). Jika anda masih tidak boleh menerangkannya, tolak diff itu.
+
+---
+
+## H · Kerja pasukan: PM, QA & Dev
+
+Mulai Hari 8, setiap skuad dalam repo espkpv2 mempunyai PM, QA dan Dev ([`peranan-pasukan.md`](peranan-pasukan.md)). Setiap peranan menggunakan sesi Claude Code sendiri; tiga sesi itu tidak berkongsi konteks. Pintu §G kekal untuk setiap slice Dev.
+
+### AI-21 — PM: idea kepada isu dengan AC
+
+- **Bila guna:** Isu stub (`status::baharu`) atau idea daripada pemilik sistem.
+- **Jangan:** Biarkan Claude meneka keputusan dasar; cipta isu tanpa membaca drafnya.
+
+```prompt title="AI-21"
+/isu-baharu <16>
+Selepas draf: tandakan setiap AC yang tidak boleh dicuba dengan akaun 9001010100NN, dan setiap perkara yang memerlukan keputusan pemilik sistem.
+```
+
+- **Selepas:** Jalankan sendiri arahan `glab issue update` yang dicetak; soalan pemilik → komen isu, `status::disekat`.
+
+### AI-22 — PM: pecahkan isu besar
+
+```prompt title="AI-22"
+Isu #<1> bersaiz L. Cadangkan pecahan kepada isu bersaiz ≤ M: satu untuk sprint ini (AC teras <AC-1, AC-3>) dan selebihnya untuk sprint seterusnya.
+Setiap isu: tajuk, AC sendiri (Diberi/Apabila/Maka), hotspot yang disentuh, kebergantungan. Jangan cipta isu.
+```
+
+### AI-23 — PM: status papan dan susunan merge
+
+```prompt title="AI-23"
+Jalankan glab issue list --milestone "<Sprint 1 (Hari 8)>" --label skuad::<a> dan glab mr list.
+Ringkaskan satu baris setiap isu: status, siapa, apa yang menyekat.
+Cadangkan susunan merge MR skuad berdasarkan fail dikongsi yang disentuh (glab mr diff), dengan sebab.
+```
+
+### AI-24 — PM: serah tugas
+
+```prompt title="AI-24"
+Draf komen "Serah tugas" untuk isu #<N> daripada sejarah isu dan commit branch feat/<N>-…: Siap, Seterusnya, Soalan terbuka. Maksimum 8 baris. Jangan siarkan.
+```
+
+### AI-25 — QA: pelan ujian daripada AC
+
+- **Bila guna:** Sebaik isu `status::sedia`, **sebelum** melihat kod Dev.
+
+```prompt title="AI-25"
+Guna subagent penguji-espkp. Untuk setiap AC isu #<N> di bawah, senaraikan ujian sedia ada yang meliputinya (fail:baris) dan kes ujian yang tiada, dengan jenis (Database/Feature/E2E/manual) dan akaun latihan.
+<tampal AC>
+```
+
+### AI-26 — QA: ujian gagal dahulu
+
+```prompt title="AI-26"
+Tulis SATU ujian PHPUnit untuk <AC-1> isu #<N> sahaja, ikut corak UjianCiri / UjianPangkalanData dan trait BinaPermohonan. Jangan ubah fail dalam app/.
+Ujian mesti gagal sekarang dengan mesej yang menerangkan AC, bukan ralat kelas tiada. Berhenti selepas satu ujian.
+```
+
+### AI-27 — QA: semak MR terhadap AC
+
+```prompt title="AI-27"
+/semak-mr <3>
+Untuk setiap AC yang anda tandakan Dipenuhi, tunjukkan baris kod dan nama ujian yang membuktikannya. Untuk setiap dapatan Sekat, beri langkah ujian manual yang menunjukkannya di pelayar.
+```
+
+- **Selepas:** Buka setiap `fail:baris` sendiri. Tiada bukti = tidak dipenuhi. Anda yang menekan *Approve*, bukan Claude.
+
+### AI-28 — QA: laporan pepijat
+
+```prompt title="AI-28"
+Saya menemui pepijat semasa menguji MR !<3>: <apa yang saya buat, apa yang saya jangka, apa yang berlaku>.
+Draf isu Pepijat ikut templat .gitlab/issue_templates/Pepijat.md: langkah ulang dengan akaun 9001010100NN, jangkaan, sebenar, fail:baris yang mungkin menjadi punca. Data sintetik sahaja. Jangan cipta isu.
+```
+
+### AI-29 — Dev: fahami isu sebelum merancang
+
+```prompt title="AI-29"
+Mod Plan. Baca isu #<N> (di bawah). Tunjukkan fail:baris yang perlu berubah, corak sedia ada yang paling hampir, dan hotspot skuad lain yang mungkin tersentuh. Senaraikan soalan untuk PM. Jangan tulis kod.
+<tampal isu>
+```
+
+### AI-30 — Dev: slice daripada pelan `/ciri-baharu`
+
+```prompt title="AI-30"
+Laksana slice <1> pelan /ciri-baharu di atas sahaja, dalam mod Manual, satu fail pada satu masa.
+Jangan sentuh hotspot skuad lain (docs/pasukan.md). Jangan jalankan migrate, db:seed atau git push.
+Berhenti selepas slice <1>: senaraikan fail yang berubah dan AC yang kini dipenuhi.
+```
+
+- **Selepas:** `composer semak` → `Guna subagent semak-espkp pada git diff` → commit `<area>: … Rujuk #<N>`.
+
+### AI-31 — Dev: jawab komen QA
+
+```prompt title="AI-31"
+QA meminta perubahan pada MR !<3> (komen di bawah). Untuk setiap dapatan: setuju atau tidak (dengan bukti fail:baris), dan pelan pembetulan terkecil. Jangan ubah fail lagi.
+<tampal komen QA>
+```
+
+### AI-32 — Semua: konflik merge
+
+```prompt title="AI-32"
+Rebase saya berhenti dengan konflik dalam <app/Config/Routes.php>. Terangkan apa yang ditambah oleh main dan apa yang ditambah oleh branch saya, dan sama ada kedua-duanya boleh disimpan. Jangan selesaikan konflik itu dan jangan jalankan git.
+```
+
+- **Selepas:** Dev memilih baris; `php spark routes` dan `composer semak` sebelum `git rebase --continue`.
 
 ---
 

@@ -57,3 +57,13 @@ Setiap peserta bekerja **sendiri** dalam projek private `kelas-ci-<nama>` dan me
 - Muat naik di `writable/uploads/` — bukan `public/`.
 - Query Builder / binding sahaja — tiada SQL mentah bercantum input.
 - Output view dilepaskan dengan `esc()`.
+
+## 6. Kerja pasukan dalam espkpv2 (Hari 8–10)
+
+Mulai Hari 8, kelas bekerja dalam **satu** repo: `<gitlab-kkm>/aplikasi-baharu/espkpv2`, sebagai 3 skuad × 4 (PM, QA, 2 Dev). Butiran peranan dan putaran: [`peranan-pasukan.md`](peranan-pasukan.md); peraturan teknikal repo: `docs/pasukan.md` dan `CONTRIBUTING.md` dalam espkpv2.
+
+- **Satu isu → satu branch (`feat/<no>-<ringkas>`) → satu MR** ke `main` yang dilindungi; commit `Rujuk #N`, MR `Closes #N`.
+- **Tujuh pintu §3 kekal** untuk setiap slice Dev. Pintu 5 (semak) kini dua lapis: subagent `semak-espkp` oleh Dev, kemudian semakan MR oleh **QA skuad** dengan `/semak-mr` terhadap AC isu.
+- **Tiada siapa meluluskan MR sendiri.** QA approve; PM merge mengikut susunan yang dipersetujui antara PM.
+- **Hotspot ada pemilik** (skuad A `Aliran.php`, B `Auth*.php`, C `Laporan.php`); fail dikongsi diubah dalam blok kawasan sendiri sahaja.
+- §4 (kerja individu dalam `kelas-ci-<nama>`) terpakai untuk Hari 1–7 dan lab rujukan dalam Lampiran Hari 8–10.

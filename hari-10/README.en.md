@@ -1,12 +1,249 @@
-# Day 10 — Statistics Module (M4) & Capstone
+# Day 10 — Team Work: Sprint 3, Release v1.1.0 & Team Capstone
 
-[← Schedule](../JADUAL.md) · [SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 10 Lab](./lab.md) · [📋 Capstone Rubric](../docs/rubrik-capstone.md) · [← Day 9](../hari-9/README.md)
+[← Schedule](../JADUAL.en.md) · [👥 Team roles](../docs/peranan-pasukan.en.md) · [🧪 Day 10 Lab](./lab.en.md) · [📋 Capstone Rubric](../docs/rubrik-capstone.en.md) · [← Day 9](../hari-9/README.en.md)
 
-> **The last day.** Morning: we build a dashboard that summarises M1 & M2 and learn one performance concept that is often misused — **cache**. Afternoon: we stop building and start **proving** — UAT, disciplined bug fixing, a security review, and a demo to the system owner.
+> **The last day.** Morning: Sprint 3 — final features and critical bugs, with a **feature freeze** at 12:30. Afternoon: the team stabilises `main`, prepares the **v1.1.0 release** (CHANGELOG, release notes, tag), and every squad demos its work to the system owner. Every member must be able to explain the code committed under their name — without Claude.
 
 ---
 
 ## 🎯 Learning Objectives
+
+By the end of today, participants can:
+
+| # | Objective (measurable) | Session | Evidence |
+|---|------------------------|---------|----------|
+| O10 | **Finish** the squad's Sprint 3 issues and critical bugs before the feature freeze, through MRs with QA review | S8 | Sprint 3 issues closed or moved to the backlog with a reason; `main` green |
+| O11 | **Prepare** the v1.1.0 release: a CHANGELOG from the merged MRs, release notes, and an annotated tag on a green `main` | S9 | CHANGELOG MR merged; tag `v1.1.0` + GitLab Release |
+| O12 | **Demo** the squad's result to the system owner with role evidence: issues & AC (PM), the running feature (Dev), the tests that prove the AC (QA) | S10 | 15-minute squad demo; squad score sheet |
+| O13 | **Explain** one line of code you committed yourself without Claude, and **evaluate** when AI help sped up or slowed down the team | S10–S11 | Panel question answered; reflection in the final retro issue |
+
+> ℹ️ Objectives O1–O9 (individual Statistics & capstone) remain as reference in the [Appendix](#appendix--individual-statistics--capstone-work-reference).
+
+---
+
+## 📅 Today's Schedule
+
+| Time | Session | Activity | Session objective |
+|------|---------|----------|-------------------|
+| 08:30–09:00 | — | Squad stand-up, choose Day 10 roles | — |
+| 09:00–12:30 | S8 | Sprint 3: final features & critical bugs · **feature freeze 12:30** | O10 · [Lab 10.20](./lab.en.md#lab-1020--sprint-3-final-features--freeze-s8) |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–15:15 | S9 | Release v1.1.0: stabilise, CHANGELOG, release notes, tag | O11 · [Lab 10.21](./lab.en.md#lab-1021--release-v110-s9) |
+| 15:15–16:30 | S10 | Team capstone demo to the system owner | O12, O13 · [Lab 10.22](./lab.en.md#lab-1022--team-capstone-demo--reflection-s10s11) |
+| 16:30–17:00 | S11 | Team retro & Claude Code reflection, closing | O13 · [Lab 10.22](./lab.en.md#lab-1022--team-capstone-demo--reflection-s10s11) |
+
+**Sprint 3 issues** (milestone *Sprint 3 + v1.1 (Hari 10)*): A — #14 workflow E2E & documentation; B — #15 Login history in the profile; C — #18 Approval-rate KPI card; plus the critical bugs and follow-up issues the PMs put in the v1.1.0 scope yesterday.
+
+---
+
+## 🧭 Why today matters
+
+A government system is not judged on the day its code is finished, but on the day it is **released**: an identifiable version, recorded changes, and a team that can explain what changed. Today closes the full cycle: issue → code → review → merge → **release** → demo to the owner.
+
+The 12:30 feature freeze is real discipline: after it, only bug fixes go into `main`. Teams that keep adding features until the last minute usually demo a red `main`.
+
+Today's capstone is assessed as a **team and as individuals** ([`rubrik-capstone.en.md`](../docs/rubrik-capstone.en.md) §8): issue quality, review evidence, MR hygiene, tests, and everyone's ability to explain their work.
+
+---
+
+## S8 — Sprint 3: Final Features & Freeze (09:00–12:30)
+
+Stand-up at 08:30, then each squad chooses its own roles for today (suggestion: people who have not yet been PM or QA take those roles). The same rhythm as Sprints 1–2 ([Labs 8.21–8.23](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16)), compressed:
+
+| Time | Focus |
+|---|---|
+| 09:00–09:30 | PM: Sprint 3 issue `status::sedia`; QA: test plan; Dev: `/ciri-baharu` |
+| 09:30–11:30 | Slice by slice; critical bugs first |
+| 11:30–12:15 | MR, `/semak-mr`, merge in the PM's order |
+| **12:30** | **Feature freeze.** Feature MRs not yet merged → the issue stays open, moved to the backlog with a comment. After this only `fix/…` |
+
+### ✅ Checkpoint S8
+- Every squad Sprint 3 issue is closed **or** moved to the backlog with a reason.
+- `main` after the last merge: `composer test` green.
+
+---
+
+## S9 — Release v1.1.0 (14:30–15:15)
+
+One **release PM** (chosen by the trainer) leads these steps with help from the other PMs:
+
+1. **Stabilise.** `main` green: `composer test` and E2E (QA). Bugs found → `fix/…` with a small MR, or documented as a known issue.
+2. **CHANGELOG.** Claude drafts it from the merged MRs; the release PM checks every line against the real MRs:
+
+   ```text
+   Run glab mr list --merged --milestone "Sprint 1 (Hari 8)", "Sprint 2 (Hari 9)" and "Sprint 3 + v1.1 (Hari 10)". Draft a "## [1.1.0] - 2026-10-30" section for CHANGELOG.md (Keep a Changelog format: Added, Changed, Fixed, Security), one line per MR with the !no and #issue. Do not write files.
+   ```
+
+   The CHANGELOG goes in through a `docs/changelog-v1.1.0` MR like any other change.
+3. **Tag and Release.** `v*` tags are protected (Maintainers only): the release PM reads the release notes to the class, then the trainer creates the annotated tag and the GitLab Release on the green `main`.
+
+### ✅ Checkpoint S9
+- `CHANGELOG.md` with a 1.1.0 section on `main`; every line matches a real MR.
+- Tag `v1.1.0` and a GitLab Release exist.
+
+---
+
+## S10 — Team Capstone Demo (15:15–16:30)
+
+Each squad has **15 minutes** with the system owner (the trainer) and the panel:
+
+| Minutes | Who | What |
+|---|---|---|
+| 0–3 | PM | The squad's issues across 3 sprints: AC, owner decisions, what did not make v1.1.0 and why |
+| 3–8 | Dev | The feature running on `v1.1.0` in the browser, with different training accounts (including one account that must get a 404) |
+| 8–11 | QA | The tests that prove the AC (`vendor/bin/phpunit --filter …`), one bug caught before merge, the E2E result |
+| 11–15 | Panel | Every member explains one line committed under their name (`git log --author`), **without Claude** |
+
+### ✅ Checkpoint S10
+- The squad score sheet is filled in ([`rubrik-capstone.en.md`](../docs/rubrik-capstone.en.md) §8).
+- Every member answers the question on their own line of code.
+
+---
+
+## S11 — Team Retro & Claude Code Reflection (16:30–17:00)
+
+Issue `Retro akhir — Pasukan CI-KKM-10` (one for the whole class). Everyone adds a comment with three parts:
+
+1. The **role** that taught me the most, and why.
+2. **Claude Code**: one time AI sped the team up (which prompt), one time AI slowed it down or misled it (and how the review gates caught it).
+3. **One rule** I will take back to my team at my department.
+
+### ✅ Checkpoint S11
+- A retro comment from every member in the final retro issue.
+
+---
+## 🤖 Today's prompting
+
+Full prompts: [`pustaka-prompt.en.md`](../docs/pustaka-prompt.en.md) §H. After the freeze, Dev prompts are for bug fixes only.
+
+| Role | Prompt & Claude Code feature | Verify yourself | Lab |
+|---|---|---|---|
+| PM · scope | AI-23 + `List the Sprint 3 milestone issues at risk of not finishing before 12:30, with reasons from the MR status.` | The decision to move to the backlog is made by the PM and recorded in the issue | 10.20 |
+| Dev · bug | `This test fails: <output>. Reproduce first: write a failing test that shows the bug, do not fix it yet.` → AI-30 for the fix | Red test → fix → green | 10.20 |
+| QA · review | AI-27 `/semak-mr <no>`; after the freeze: `Does this MR only fix bug #<N>, with no new feature?` | The diff only touches the bug's files | 10.20 |
+| Release PM · CHANGELOG | The CHANGELOG prompt in S9 (from `glab mr list --merged`) | Every line matches a real MR | 10.21 |
+| Everyone · demo | `Ask me 3 questions about the line <file:line> I committed, like the capstone panel. Do not give the answers.` | Answer without looking at Claude | 10.22 |
+
+---
+
+## 📦 Deliverables — Today's Output
+
+**Team work (today):**
+
+- [ ] The squad's Sprint 3 issues closed or moved to the backlog with a reason before the 12:30 freeze
+- [ ] `CHANGELOG.md` 1.1.0 section merged through an MR; tag `v1.1.0` and a GitLab Release on a green `main`
+- [ ] 15-minute squad capstone demo; squad score sheet filled in
+- [ ] Every member explains one line they committed themselves without Claude
+- [ ] Every member's comment in the final retro
+
+**Individual Statistics & capstone work (reference, optional — [Appendix](#appendix--individual-statistics--capstone-work-reference)):**
+
+- [ ] `app/Services/StatisticsService.php` — 4 KPIs, 4 datasets, 10-minute `remember()`, `CACHE_KEY` constant
+- [ ] `service('statisticsService')` registered in `app/Config/Services.php`
+- [ ] `app/Controllers/Statistik/DashboardController.php` — `index()` + `data()` (JSON)
+- [ ] `app/Views/statistik/dashboard.php` — KPI cards + 4 Chart.js 4 charts
+- [ ] `cache()->delete(StatisticsService::CACHE_KEY)` after `transCommit()` in `BookingService` & `PassWorkflowService`
+- [ ] `tests/Services/StatisticsCacheTest.php` — green (and **was** red without invalidation)
+- [ ] `docs/UAT-signoff.md` filled in; bug log with ≥ 1 bug closed through the failing-test cycle
+- [ ] Security checklist K1–K10 ticked
+- [ ] Tag `v1.0-capstone`; 8-minute demo; mark sheet signed → **M4 done** · **System complete** 🎓
+- [ ] Labs 10.10–10.12 (Claude Code): `docs/nota-claude.md` with 12 explain gate lines + an accept/reject reflection; `docs/semakan-capstone.md` with every finding marked Accept/Reject
+
+---
+
+## 🧠 Self-check
+
+**1. Why does the dashboard separate the KPI cards (server-rendered) from the charts (JSON endpoint)?**
+<details><summary>Answer</summary>
+
+The KPI cards appear immediately and work without JavaScript, and they are easy to test with `FeatureTestTrait`. The charts need JavaScript; the JSON endpoint separates data from presentation and can be reused. Both call `StatisticsService::dashboard()`, so the numbers come from the same cache.
+</details>
+
+**2. `bookings_by_month` returns `[3, 5, 2]` for Jan, Feb, Jun. What is wrong with the chart and how do you fix it?**
+<details><summary>Answer</summary>
+
+`GROUP BY` does not return months without records, so Chart.js draws those 3 values as Jan, Feb, **Mar**. Fix it by mapping the results by month number (`array_column($rows, 'total', 'm')`) and filling the 12 months with `?? 0`.
+</details>
+
+**3. Explain why `cache()->delete('stat_dashboard')` must be placed after `transCommit()`, not before.**
+<details><summary>Answer</summary>
+
+If it is cleared before the commit, another request can rebuild the cache in the gap before the commit and only see the old data (the transaction is not visible yet) — that old data then stays until the TTL expires (10 minutes). After the commit, any rebuild is sure to see the new data. If the transaction rolls back, nothing changed, so no invalidation is needed.
+</details>
+
+**4. Give one advantage and one disadvantage of the "TTL + delete on write" strategy compared with "TTL only".**
+<details><summary>Answer</summary>
+
+Advantage: the dashboard is fresh immediately after a status change (no "I approved it but nothing changed" confusion). Disadvantage: developers must remember every write path — missing one (e.g. the create method) causes silently stale data until the TTL expires. Mitigation: one door for status changes (`transition()`), the `CACHE_KEY` constant, and automated tests.
+</details>
+
+**5. During UAT you find a bug. List the 5 steps of the fixing cycle and explain why step 2 cannot be skipped.**
+<details><summary>Answer</summary>
+
+(1) Reproduce with exact steps & data; (2) write a **failing** test; (3) fix with a minimal change; (4) that test and all other tests pass; (5) commit `FIX:` and update the bug log. Step 2 proves the test really detects the bug — a test that has never been seen failing may not test anything, and it becomes a regression guard forever.
+</details>
+
+6. At 12:20, squad C's Dev has almost finished the #18 KPI card but QA has not reviewed it. The PM suggests merging first and reviewing later, so it makes v1.1.0. What is the right decision?
+
+<details><summary>Answer</summary>
+
+Do not merge without a review. The feature freeze and the QA review exist so the released `main` can be trusted. #18 moves to the backlog (the next release, e.g. v1.2.0) with a status comment; the demo can show it from the branch as "coming next", not as part of v1.1.0.
+</details>
+
+7. Claude drafts the CHANGELOG with the line "Fixed: login attempt limit". No MR in the three milestones touches `HadCubaan`. What happened, and what does the release PM do?
+
+<details><summary>Answer</summary>
+
+Claude invented (or inferred from other context) a change that never happened. The release PM removes the line: every CHANGELOG line must link to a real MR (`!no`) and issue (`#no`). That is why the prompt asks for the `!no` and `#issue` on every line — a line without a link is easy to spot.
+</details>
+
+---
+
+## ➡️ Next steps after the course
+
+Congratulations — you have built a 4-module system from requirements to demo. This system is for **training**: don't put real data into it until it has gone through your department's official process.
+
+### A. To a *staging* environment (not production)
+
+| # | Step | Command / note |
+|---|---------|---------------|
+| 1 | A PHP 8.2+ server with `intl`, `mbstring`, `mysqlnd`, `gd`, `zip`, `xml`, `curl` | `php -m` |
+| 2 | *Document root* points to **`public/`** only | Not the project root — otherwise `.env` & `writable/` can be reached from the web |
+| 3 | Install dependencies without dev packages | `composer install --no-dev --optimize-autoloader` |
+| 4 | Staging `.env` (not in Git) | `CI_ENVIRONMENT = production` · `app.baseURL` · `database.default.*` · `php spark key:generate` |
+| 5 | Migrations | `php spark migrate --all` |
+| 6 | Reference data only | Seed departments/zones/slots; **don't** run the synthetic `UserSeeder` (`Latihan@2026`) on staging — create real accounts through the official process |
+| 7 | Folder permissions | `writable/` writable by the web server user; `public/` read-only |
+| 8 | Optimise | `php spark optimize` (CI 4.5+: caches config & file locations) |
+| 9 | HTTPS | `app.forceGlobalSecureRequests = true`; TLS certificate from the infrastructure team |
+| 10 | Scheduled tasks | daily cron: `php spark pas:expire` (Windows server: Task Scheduler / `schtasks /sc daily`) |
+| 11 | Cache | Single server: `file` is enough. Multiple servers: switch to Redis/Memcached so `cache()->delete()` takes effect on every server |
+| 12 | Logs & backups | Rotate `writable/logs/`; daily DB backup + restore test |
+| 13 | Security review | Rerun K1–K10; `composer audit`; follow the department's ICT security assessment procedure before production |
+
+### B. Further learning
+
+- **CodeIgniter 4 User Guide** — the *Testing*, *Caching*, *Events* chapters (challenge: replace the `cache()->delete()` calls with `Events::trigger('status_changed')`) — <https://codeigniter.com/user_guide/>
+- **CodeIgniter Shield** — *Authorization*, *Magic Link*, password policies — <https://shield.codeigniter.com/>
+- **OWASP Top 10** — compare each risk with checklist K1–K10 — <https://owasp.org/Top10/>
+- **Chart.js 4** — accessibility & the *datalabels* plugin — <https://www.chartjs.org/docs/latest/>
+- Full references: [`docs/pautan-rujukan.md`](../docs/pautan-rujukan.md)
+
+### C. Practices to take home
+
+1. **Rules (BR-*) → AC → tests** before code.
+2. **One door** for status changes (service + enum + `status_logs`).
+3. The **server** enforces access — not hidden buttons.
+4. **Failing test first** for every bug.
+5. **Understand first, accept later** — including AI suggestions.
+
+---
+
+## Appendix — Individual Statistics & capstone work (reference)
+
+> ℹ️ The sections below are the Day 10 material from before team mode: the Statistics module and the individual capstone in `kelas-ci-<nama>` (Claude Code sessions S5–S7 and manual sessions S1–S4). They remain as **reference, optional**; the individual capstone can be used by participants who want to finish the 4-module system on their own after the course.
+
+### Reference objectives
 
 By the end of today, participants can:
 
@@ -22,28 +259,7 @@ By the end of today, participants can:
 | O8 | **Evaluate** the capstone repo with the `semak-ci4` subagent, AI-08 (DoD), AI-09 (test gaps) and AI-18 (`README.md`/`CLAUDE.md`), and **fix** the confirmed findings through the same loop. | S6 |
 | O9 | **Demo** the system and **argue**, with evidence from `docs/nota-claude.md`, when Claude's suggestions were accepted or rejected. | S7 |
 
----
-
-## 📅 Today's Schedule
-
-| Time | Session | Activity | Objectives |
-|------|------|----------|----------|
-| 08:30–09:00 | — | Day 9 recap (reports & export) | — |
-| 09:00–10:30 | **S5** | Claude Code: Statistics module slices 1–2 (KPIs, chart datasets, `/statistik/data`) — [Lab 10.10](./lab.md#lab-1010--claude-code-statistics-slice-by-slice-s5) | O1, O7 |
-| 10:30–10:45 | — | Morning break | — |
-| 10:45–11:45 | **S5** | Claude Code: Statistics module slices 3–4 (Chart.js, cache + invalidation after commit) | O2, O3, O7 |
-| 11:45–12:30 | **S3** | Manual UAT across the 4 modules + K1–K10 (Lab 10.3 steps 1–3 and 5) | O4 |
-| 12:30–14:30 | — | Lunch | — |
-| 14:30–16:00 | **S6** | Claude Code: capstone preparation (`semak-ci4`, AI-08, AI-09, AI-18, tag) — [Lab 10.11](./lab.md#lab-1011--claude-code-capstone-preparation-s6) | O5, O8 |
-| 16:00–17:00 | **S7** | Capstone demo (S4 format) & Claude Code reflection — [Lab 10.12](./lab.md#lab-1012--capstone-demo--claude-code-reflection-s7) | O6, O9 |
-
-> ℹ️ **Reference code.** For the rest of the course, modules are built with Claude Code through the 7-step loop (§5.1). S1, S2 and Labs 10.1–10.2 are **reference code**: read them to understand the concepts and for the "Compare with the reference code" step; do not retype them. UAT in S3 stays manual. The S4 demo format (§4.1) and certificate criteria (§4.3) are used in S7.
->
-> ℹ️ The times in the S1–S4 headings below are the original schedule; follow the schedule above.
-
----
-
-## 🧭 Why today matters
+### Why (reference)
 
 Reports (Day 9) answer "*what are the records?*". A dashboard answers "*how do things stand right now?*" — in 5 seconds, without filtering anything. A director who opens `/statistik` on Monday morning wants to know: how many active bookings there are, whether the slots are full, how many passes are outstanding, and how long applicants wait.
 
@@ -61,6 +277,21 @@ flowchart LR
     end
     B --> C
 ```
+
+### Reference prompting (individual work)
+
+Every slice: plan in *Plan* mode (`Shift+Tab` / `Alt+M`), then Claude Code implements in *Manual* mode — you read and approve each diff, run the tests and `semak-ci4`, and must be able to explain every committed line (7 review gates, [`kolaborasi.md`](../docs/kolaborasi.en.md) §3). Full prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md). Record the answers you verified in `docs/nota-claude.md`. After the course: AI-15 for an existing project; AI-16 → AI-18 → AI-17 for a new project.
+
+| Session | Prompt & Claude Code feature | Verify it yourself | Lab |
+|---|---|---|---|
+| S1 · Statistics dashboard (reference code) | AI-04 on the 4 KPIs & chart datasets against the §1.1 definitions; check `innerHTML` in `dashboard.php` | Your own SQL = the KPI card | 10.1 step 10 |
+| S2 · Cache (reference code) | List every `transCommit()` against `cache()->delete()`; AI-09 for `StatisticsCacheTest` | `grep` `transCommit`/`CACHE_KEY`; `!composer test` | 10.2 step 11 |
+| S3 · UAT & bugs | The `semak-ci4` subagent on K2/K5/K7; AI-10 (red test first); AI-08 on `!git diff --staged` before `FIX:` | Your K marks in `docs/UAT-signoff.md` | 10.3 step 7 |
+| S4 · Demo & handover (reference code) | AI-18 on `@README.md` and `@CLAUDE.md`; update the project `CLAUDE.md` | 2 issues fixed by you and committed | 10.4 step 7 |
+| S5 · Statistics slices 1–3 | 4-slice plan (*Plan* mode) → AI-19 (implement Slice N only, Manual mode) → AI-20 → `semak-ci4` → `ci4-spark` `routes`/`filter_check` tools | `!composer test`; the browser; 3 lines per slice in `docs/nota-claude.md` | 10.10 |
+| S5 · Statistics slice 4 (cache) | AI-10: `StatisticsCacheTest` first (red) → AI-19 list every `transCommit()` → `semak-ci4` on the services | `!composer test -- tests/Services/StatisticsCacheTest.php` red, then green | 10.10 |
+| S6 · Capstone preparation | `semak-ci4` on the whole repo; AI-08 (DoD); AI-09 (test gaps); AI-10; AI-18 (README/CLAUDE.md/PRD) | Every finding Accept/Reject with evidence; tests red when the rule is broken | 10.11 |
+| S7 · Demo & reflection | AI-14 (practise the explain-the-code segment) | Accept/reject reflection with commit/test evidence | 10.12 |
 
 ---
 
@@ -612,107 +843,3 @@ Participants who do not meet criteria 2–5 but attend ≥ 80 % receive a **cert
    > The course completion certificate requires **all** criteria to be met. A high mark does not replace the ≥ 80 % attendance requirement.
 
 ---
-
-## 🤖 Today's prompting
-
-Every slice: plan in *Plan* mode (`Shift+Tab` / `Alt+M`), then Claude Code implements in *Manual* mode — you read and approve each diff, run the tests and `semak-ci4`, and must be able to explain every committed line (7 review gates, [`kolaborasi.md`](../docs/kolaborasi.en.md) §3). Full prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md). Record the answers you verified in `docs/nota-claude.md`. After the course: AI-15 for an existing project; AI-16 → AI-18 → AI-17 for a new project.
-
-| Session | Prompt & Claude Code feature | Verify it yourself | Lab |
-|---|---|---|---|
-| S1 · Statistics dashboard (reference code) | AI-04 on the 4 KPIs & chart datasets against the §1.1 definitions; check `innerHTML` in `dashboard.php` | Your own SQL = the KPI card | 10.1 step 10 |
-| S2 · Cache (reference code) | List every `transCommit()` against `cache()->delete()`; AI-09 for `StatisticsCacheTest` | `grep` `transCommit`/`CACHE_KEY`; `!composer test` | 10.2 step 11 |
-| S3 · UAT & bugs | The `semak-ci4` subagent on K2/K5/K7; AI-10 (red test first); AI-08 on `!git diff --staged` before `FIX:` | Your K marks in `docs/UAT-signoff.md` | 10.3 step 7 |
-| S4 · Demo & handover (reference code) | AI-18 on `@README.md` and `@CLAUDE.md`; update the project `CLAUDE.md` | 2 issues fixed by you and committed | 10.4 step 7 |
-| S5 · Statistics slices 1–3 | 4-slice plan (*Plan* mode) → AI-19 (implement Slice N only, Manual mode) → AI-20 → `semak-ci4` → `ci4-spark` `routes`/`filter_check` tools | `!composer test`; the browser; 3 lines per slice in `docs/nota-claude.md` | 10.10 |
-| S5 · Statistics slice 4 (cache) | AI-10: `StatisticsCacheTest` first (red) → AI-19 list every `transCommit()` → `semak-ci4` on the services | `!composer test -- tests/Services/StatisticsCacheTest.php` red, then green | 10.10 |
-| S6 · Capstone preparation | `semak-ci4` on the whole repo; AI-08 (DoD); AI-09 (test gaps); AI-10; AI-18 (README/CLAUDE.md/PRD) | Every finding Accept/Reject with evidence; tests red when the rule is broken | 10.11 |
-| S7 · Demo & reflection | AI-14 (practise the explain-the-code segment) | Accept/reject reflection with commit/test evidence | 10.12 |
-
----
-
-## 📦 Deliverables — Today's Output
-
-- [ ] `app/Services/StatisticsService.php` — 4 KPIs, 4 datasets, 10-minute `remember()`, `CACHE_KEY` constant
-- [ ] `service('statisticsService')` registered in `app/Config/Services.php`
-- [ ] `app/Controllers/Statistik/DashboardController.php` — `index()` + `data()` (JSON)
-- [ ] `app/Views/statistik/dashboard.php` — KPI cards + 4 Chart.js 4 charts
-- [ ] `cache()->delete(StatisticsService::CACHE_KEY)` after `transCommit()` in `BookingService` & `PassWorkflowService`
-- [ ] `tests/Services/StatisticsCacheTest.php` — green (and **was** red without invalidation)
-- [ ] `docs/UAT-signoff.md` filled in; bug log with ≥ 1 bug closed through the failing-test cycle
-- [ ] Security checklist K1–K10 ticked
-- [ ] Tag `v1.0-capstone`; 8-minute demo; mark sheet signed → **M4 done** · **System complete** 🎓
-- [ ] Labs 10.10–10.12 (Claude Code): `docs/nota-claude.md` with 12 explain gate lines + an accept/reject reflection; `docs/semakan-capstone.md` with every finding marked Accept/Reject
-
----
-
-## 🧠 Self-check
-
-**1. Why does the dashboard separate the KPI cards (server-rendered) from the charts (JSON endpoint)?**
-<details><summary>Answer</summary>
-
-The KPI cards appear immediately and work without JavaScript, and they are easy to test with `FeatureTestTrait`. The charts need JavaScript; the JSON endpoint separates data from presentation and can be reused. Both call `StatisticsService::dashboard()`, so the numbers come from the same cache.
-</details>
-
-**2. `bookings_by_month` returns `[3, 5, 2]` for Jan, Feb, Jun. What is wrong with the chart and how do you fix it?**
-<details><summary>Answer</summary>
-
-`GROUP BY` does not return months without records, so Chart.js draws those 3 values as Jan, Feb, **Mar**. Fix it by mapping the results by month number (`array_column($rows, 'total', 'm')`) and filling the 12 months with `?? 0`.
-</details>
-
-**3. Explain why `cache()->delete('stat_dashboard')` must be placed after `transCommit()`, not before.**
-<details><summary>Answer</summary>
-
-If it is cleared before the commit, another request can rebuild the cache in the gap before the commit and only see the old data (the transaction is not visible yet) — that old data then stays until the TTL expires (10 minutes). After the commit, any rebuild is sure to see the new data. If the transaction rolls back, nothing changed, so no invalidation is needed.
-</details>
-
-**4. Give one advantage and one disadvantage of the "TTL + delete on write" strategy compared with "TTL only".**
-<details><summary>Answer</summary>
-
-Advantage: the dashboard is fresh immediately after a status change (no "I approved it but nothing changed" confusion). Disadvantage: developers must remember every write path — missing one (e.g. the create method) causes silently stale data until the TTL expires. Mitigation: one door for status changes (`transition()`), the `CACHE_KEY` constant, and automated tests.
-</details>
-
-**5. During UAT you find a bug. List the 5 steps of the fixing cycle and explain why step 2 cannot be skipped.**
-<details><summary>Answer</summary>
-
-(1) Reproduce with exact steps & data; (2) write a **failing** test; (3) fix with a minimal change; (4) that test and all other tests pass; (5) commit `FIX:` and update the bug log. Step 2 proves the test really detects the bug — a test that has never been seen failing may not test anything, and it becomes a regression guard forever.
-</details>
-
----
-
-## ➡️ Next steps after the course
-
-Congratulations — you have built a 4-module system from requirements to demo. This system is for **training**: don't put real data into it until it has gone through your department's official process.
-
-### A. To a *staging* environment (not production)
-
-| # | Step | Command / note |
-|---|---------|---------------|
-| 1 | A PHP 8.2+ server with `intl`, `mbstring`, `mysqlnd`, `gd`, `zip`, `xml`, `curl` | `php -m` |
-| 2 | *Document root* points to **`public/`** only | Not the project root — otherwise `.env` & `writable/` can be reached from the web |
-| 3 | Install dependencies without dev packages | `composer install --no-dev --optimize-autoloader` |
-| 4 | Staging `.env` (not in Git) | `CI_ENVIRONMENT = production` · `app.baseURL` · `database.default.*` · `php spark key:generate` |
-| 5 | Migrations | `php spark migrate --all` |
-| 6 | Reference data only | Seed departments/zones/slots; **don't** run the synthetic `UserSeeder` (`Latihan@2026`) on staging — create real accounts through the official process |
-| 7 | Folder permissions | `writable/` writable by the web server user; `public/` read-only |
-| 8 | Optimise | `php spark optimize` (CI 4.5+: caches config & file locations) |
-| 9 | HTTPS | `app.forceGlobalSecureRequests = true`; TLS certificate from the infrastructure team |
-| 10 | Scheduled tasks | daily cron: `php spark pas:expire` (Windows server: Task Scheduler / `schtasks /sc daily`) |
-| 11 | Cache | Single server: `file` is enough. Multiple servers: switch to Redis/Memcached so `cache()->delete()` takes effect on every server |
-| 12 | Logs & backups | Rotate `writable/logs/`; daily DB backup + restore test |
-| 13 | Security review | Rerun K1–K10; `composer audit`; follow the department's ICT security assessment procedure before production |
-
-### B. Further learning
-
-- **CodeIgniter 4 User Guide** — the *Testing*, *Caching*, *Events* chapters (challenge: replace the `cache()->delete()` calls with `Events::trigger('status_changed')`) — <https://codeigniter.com/user_guide/>
-- **CodeIgniter Shield** — *Authorization*, *Magic Link*, password policies — <https://shield.codeigniter.com/>
-- **OWASP Top 10** — compare each risk with checklist K1–K10 — <https://owasp.org/Top10/>
-- **Chart.js 4** — accessibility & the *datalabels* plugin — <https://www.chartjs.org/docs/latest/>
-- Full references: [`docs/pautan-rujukan.md`](../docs/pautan-rujukan.md)
-
-### C. Practices to take home
-
-1. **Rules (BR-*) → AC → tests** before code.
-2. **One door** for status changes (service + enum + `status_logs`).
-3. The **server** enforces access — not hidden buttons.
-4. **Failing test first** for every bug.
-5. **Understand first, accept later** — including AI suggestions.

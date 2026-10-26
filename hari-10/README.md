@@ -1,12 +1,249 @@
-# Hari 10 — Modul Statistik (M4) & Capstone
+# Hari 10 — Kerja Pasukan: Sprint 3, Keluaran v1.1.0 & Capstone Pasukan
 
-[← Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 10](./lab.md) · [📋 Rubrik Capstone](../docs/rubrik-capstone.md) · [← Hari 9](../hari-9/README.md)
+[← Jadual](../JADUAL.md) · [👥 Peranan pasukan](../docs/peranan-pasukan.md) · [🧪 Lab Hari 10](./lab.md) · [📋 Rubrik Capstone](../docs/rubrik-capstone.md) · [← Hari 9](../hari-9/README.md)
 
-> **Hari terakhir.** Pagi: kita membina dashboard yang merangkum M1 & M2 dan belajar satu konsep prestasi yang sering disalah guna — **cache**. Petang: kita berhenti membina dan mula **membuktikan** — UAT, pembetulan pepijat berdisiplin, semakan keselamatan, dan demo kepada pemilik sistem.
+> **Hari terakhir.** Pagi: Sprint 3 — ciri terakhir dan pepijat kritikal, dengan **pembekuan ciri** pada 12:30. Petang: pasukan menstabilkan `main`, menyediakan **keluaran v1.1.0** (CHANGELOG, nota keluaran, tag), dan setiap skuad mendemokan kerjanya kepada pemilik sistem. Setiap ahli mesti boleh menerangkan kod yang di-commit atas namanya — tanpa Claude.
 
 ---
 
 ## 🎯 Objektif Pembelajaran
+
+Di akhir hari ini, peserta boleh:
+
+| # | Objektif (boleh diukur) | Sesi | Bukti |
+|---|------------------------|------|-------|
+| O10 | **Menyiapkan** isu Sprint 3 skuad dan pepijat kritikal sebelum pembekuan ciri, melalui MR dengan semakan QA | S8 | Isu Sprint 3 ditutup atau dialih ke backlog dengan sebab; `main` hijau |
+| O11 | **Menyediakan** keluaran v1.1.0: CHANGELOG daripada MR yang di-merge, nota keluaran, dan tag beranotasi pada `main` yang hijau | S9 | MR CHANGELOG di-merge; tag `v1.1.0` + Release GitLab |
+| O12 | **Mendemokan** hasil skuad kepada pemilik sistem dengan bukti peranan: isu & AC (PM), ciri berjalan (Dev), ujian yang membuktikan AC (QA) | S10 | Demo skuad 15 minit; helaian markah skuad |
+| O13 | **Menerangkan** satu baris kod yang di-commit sendiri tanpa Claude, dan **menilai** bila bantuan AI mempercepat atau melambatkan pasukan | S10–S11 | Soalan panel dijawab; refleksi dalam isu retro akhir |
+
+> ℹ️ Objektif O1–O9 (Statistik & capstone individu) kekal sebagai rujukan dalam [Lampiran](#lampiran--kerja-individu-statistik--capstone-rujukan).
+
+---
+
+## 📅 Jadual Hari Ini
+
+| Masa | Sesi | Aktiviti | Objektif sesi |
+|------|------|----------|---------------|
+| 08:30–09:00 | — | Stand-up skuad, pilih peranan Hari 10 | — |
+| 09:00–12:30 | S8 | Sprint 3: ciri terakhir & pepijat kritikal · **pembekuan ciri 12:30** | O10 · [Lab 10.20](./lab.md#lab-1020--sprint-3-ciri-terakhir--pembekuan-s8) |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–15:15 | S9 | Keluaran v1.1.0: stabil, CHANGELOG, nota keluaran, tag | O11 · [Lab 10.21](./lab.md#lab-1021--keluaran-v110-s9) |
+| 15:15–16:30 | S10 | Demo capstone pasukan kepada pemilik sistem | O12, O13 · [Lab 10.22](./lab.md#lab-1022--demo-capstone-pasukan--refleksi-s10s11) |
+| 16:30–17:00 | S11 | Retro pasukan & refleksi Claude Code, penutup | O13 · [Lab 10.22](./lab.md#lab-1022--demo-capstone-pasukan--refleksi-s10s11) |
+
+**Isu Sprint 3** (milestone *Sprint 3 + v1.1 (Hari 10)*): A — #14 E2E & dokumentasi aliran; B — #15 Sejarah log masuk dalam profil; C — #18 Kad KPI kadar kelulusan; ditambah pepijat kritikal dan isu susulan yang PM masukkan dalam skop v1.1.0 semalam.
+
+---
+
+## 🧭 Kenapa hari ini penting
+
+Sistem kerajaan tidak dinilai pada hari ia siap ditulis, tetapi pada hari ia **dikeluarkan**: versi yang boleh dikenal pasti, perubahan yang direkod, dan pasukan yang boleh menerangkan apa yang berubah. Hari ini menutup kitaran penuh: isu → kod → semakan → merge → **keluaran** → demo kepada pemilik.
+
+Pembekuan ciri pada 12:30 ialah disiplin sebenar: selepas itu hanya pembetulan pepijat masuk ke `main`. Pasukan yang terus menambah ciri hingga minit terakhir biasanya mendemokan `main` yang merah.
+
+Capstone hari ini dinilai sebagai **pasukan dan individu** ([`rubrik-capstone.md`](../docs/rubrik-capstone.md) §8): kualiti isu, bukti semakan, kebersihan MR, ujian, dan keupayaan setiap orang menerangkan kerjanya.
+
+---
+
+## S8 — Sprint 3: Ciri Terakhir & Pembekuan (09:00–12:30)
+
+Stand-up 08:30, kemudian skuad memilih peranan sendiri untuk hari ini (cadangan: orang yang belum pernah menjadi PM atau QA mengambilnya). Ritma sama seperti Sprint 1–2 ([Lab 8.21–8.23](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16)), dipadatkan:
+
+| Masa | Fokus |
+|---|---|
+| 09:00–09:30 | PM: isu Sprint 3 `status::sedia`; QA: pelan ujian; Dev: `/ciri-baharu` |
+| 09:30–11:30 | Slice demi slice; pepijat kritikal didahulukan |
+| 11:30–12:15 | MR, `/semak-mr`, merge mengikut susunan PM |
+| **12:30** | **Pembekuan ciri.** MR ciri yang belum di-merge → isu kekal terbuka, alih ke backlog dengan komen. Selepas ini hanya `fix/…` |
+
+### ✅ Checkpoint S8
+- Setiap isu Sprint 3 skuad ditutup **atau** dialih ke backlog dengan sebab.
+- `main` selepas merge terakhir: `composer test` hijau.
+
+---
+
+## S9 — Keluaran v1.1.0 (14:30–15:15)
+
+Satu **PM keluaran** (dipilih jurulatih) memandu langkah ini dengan bantuan PM lain:
+
+1. **Stabil.** `main` hijau: `composer test` dan E2E (QA). Pepijat yang ditemui → `fix/…` dengan MR kecil, atau didokumen sebagai isu yang diketahui.
+2. **CHANGELOG.** Claude mendraf daripada MR yang di-merge; PM keluaran menyemak setiap baris terhadap MR sebenar:
+
+   ```text
+   Jalankan glab mr list --merged --milestone "Sprint 1 (Hari 8)", "Sprint 2 (Hari 9)" dan "Sprint 3 + v1.1 (Hari 10)". Draf bahagian "## [1.1.0] - 2026-10-30" untuk CHANGELOG.md (format Keep a Changelog: Ditambah, Diubah, Dibaiki, Keselamatan), satu baris setiap MR dengan !no dan #isu. Jangan tulis fail.
+   ```
+
+   CHANGELOG masuk melalui MR `docs/changelog-v1.1.0` seperti perubahan lain.
+3. **Tag dan Release.** Tag `v*` dilindungi (Maintainer sahaja): PM keluaran membaca nota keluaran kepada kelas, kemudian jurulatih mencipta tag beranotasi dan Release GitLab pada `main` yang hijau.
+
+### ✅ Checkpoint S9
+- `CHANGELOG.md` dengan bahagian 1.1.0 di `main`; setiap baris sepadan dengan MR sebenar.
+- Tag `v1.1.0` dan Release GitLab wujud.
+
+---
+
+## S10 — Demo Capstone Pasukan (15:15–16:30)
+
+Setiap skuad **15 minit** kepada pemilik sistem (jurulatih) dan panel:
+
+| Minit | Siapa | Apa |
+|---|---|---|
+| 0–3 | PM | Isu skuad merentas 3 sprint: AC, keputusan pemilik, apa yang tidak masuk v1.1.0 dan kenapa |
+| 3–8 | Dev | Ciri berjalan pada `v1.1.0` di pelayar, dengan akaun latihan yang berbeza (termasuk satu akaun yang mesti menerima 404) |
+| 8–11 | QA | Ujian yang membuktikan AC (`vendor/bin/phpunit --filter …`), satu pepijat yang ditangkap sebelum merge, hasil E2E |
+| 11–15 | Panel | Setiap ahli menerangkan satu baris yang di-commit atas namanya (`git log --author`), **tanpa Claude** |
+
+### ✅ Checkpoint S10
+- Helaian markah skuad diisi ([`rubrik-capstone.md`](../docs/rubrik-capstone.md) §8).
+- Setiap ahli menjawab soalan baris kod sendiri.
+
+---
+
+## S11 — Retro Pasukan & Refleksi Claude Code (16:30–17:00)
+
+Isu `Retro akhir — Pasukan CI-KKM-10` (satu untuk seluruh kelas). Setiap orang menambah komen dengan tiga bahagian:
+
+1. **Peranan** yang paling banyak mengajar saya, dan kenapa.
+2. **Claude Code**: satu kali AI mempercepat pasukan (prompt mana), satu kali AI melambatkan atau menyesatkan (dan bagaimana pintu semakan menangkapnya).
+3. **Satu peraturan** yang saya akan bawa ke pasukan saya di jabatan.
+
+### ✅ Checkpoint S11
+- Komen retro setiap ahli dalam isu retro akhir.
+
+---
+## 🤖 Prompting hari ini
+
+Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) §H. Selepas pembekuan, prompt Dev hanya untuk pembetulan pepijat.
+
+| Peranan | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
+|---|---|---|---|
+| PM · skop | AI-23 + `Senaraikan isu milestone Sprint 3 yang berisiko tidak siap sebelum 12:30, dengan sebab daripada status MR.` | Keputusan alih ke backlog dibuat PM, dicatat dalam isu | 10.20 |
+| Dev · pepijat | `Ujian ini gagal: <output>. Reproduce dahulu: tulis ujian gagal yang menunjukkan pepijat, jangan baiki lagi.` → AI-30 untuk pembetulan | Ujian merah → pembetulan → hijau | 10.20 |
+| QA · semak | AI-27 `/semak-mr <no>`; selepas pembekuan: `Adakah MR ini hanya membaiki pepijat #<N>, tanpa ciri baharu?` | Diff hanya menyentuh fail pepijat | 10.20 |
+| PM keluaran · CHANGELOG | Prompt CHANGELOG dalam S9 (daripada `glab mr list --merged`) | Setiap baris sepadan dengan MR sebenar | 10.21 |
+| Semua · demo | `Tanya saya 3 soalan tentang baris <fail:baris> yang saya commit, seperti panel capstone. Jangan beri jawapan.` | Jawab tanpa melihat Claude | 10.22 |
+
+---
+
+## 📦 Hasil Hari Ini
+
+**Kerja pasukan (hari ini):**
+
+- [ ] Isu Sprint 3 skuad ditutup atau dialih ke backlog dengan sebab sebelum pembekuan 12:30
+- [ ] `CHANGELOG.md` bahagian 1.1.0 di-merge melalui MR; tag `v1.1.0` dan Release GitLab pada `main` yang hijau
+- [ ] Demo capstone skuad 15 minit; helaian markah skuad diisi
+- [ ] Setiap ahli menerangkan satu baris yang di-commit sendiri tanpa Claude
+- [ ] Komen retro akhir setiap ahli
+
+**Kerja individu Statistik & capstone (rujukan, tidak wajib — [Lampiran](#lampiran--kerja-individu-statistik--capstone-rujukan)):**
+
+- [ ] `app/Services/StatisticsService.php` — 4 KPI, 4 dataset, `remember()` 10 minit, pemalar `CACHE_KEY`
+- [ ] `service('statisticsService')` didaftar dalam `app/Config/Services.php`
+- [ ] `app/Controllers/Statistik/DashboardController.php` — `index()` + `data()` (JSON)
+- [ ] `app/Views/statistik/dashboard.php` — kad KPI + 4 carta Chart.js 4
+- [ ] `cache()->delete(StatisticsService::CACHE_KEY)` selepas `transCommit()` dalam `BookingService` & `PassWorkflowService`
+- [ ] `tests/Services/StatisticsCacheTest.php` — hijau (dan **pernah** merah tanpa invalidasi)
+- [ ] `docs/UAT-signoff.md` diisi; log pepijat dengan ≥ 1 pepijat ditutup melalui kitaran ujian-gagal
+- [ ] Senarai semak keselamatan K1–K10 ditanda
+- [ ] Tag `v1.0-capstone`; demo 8 minit; helaian markah ditandatangani → **M4 siap** · **Sistem lengkap** 🎓
+- [ ] Lab 10.10–10.12 (Claude Code): `docs/nota-claude.md` dengan 12 baris gerbang terangkan + refleksi terima/tolak; `docs/semakan-capstone.md` dengan setiap dapatan bertanda Terima/Tolak
+
+---
+
+## 🧠 Semakan Kendiri
+
+**1. Kenapa dashboard memisahkan kad KPI (render di server) dan carta (endpoint JSON)?**
+<details><summary>Jawapan</summary>
+
+Kad KPI muncul serta-merta dan berfungsi tanpa JavaScript, serta mudah diuji dengan `FeatureTestTrait`. Carta memerlukan JavaScript; endpoint JSON memisahkan data daripada persembahan dan boleh digunakan semula. Kedua-duanya memanggil `StatisticsService::dashboard()` jadi nombor datang dari cache yang sama.
+</details>
+
+**2. `bookings_by_month` memulangkan `[3, 5, 2]` untuk Jan, Feb, Jun. Apa yang salah pada carta dan bagaimana membaikinya?**
+<details><summary>Jawapan</summary>
+
+`GROUP BY` tidak memulangkan bulan tanpa rekod, jadi Chart.js melukis 3 nilai itu sebagai Jan, Feb, **Mac**. Baiki dengan memetakan hasil ikut nombor bulan (`array_column($rows, 'total', 'm')`) dan mengisi 12 bulan dengan `?? 0`.
+</details>
+
+**3. Terangkan kenapa `cache()->delete('stat_dashboard')` mesti diletakkan selepas `transCommit()`, bukan sebelum.**
+<details><summary>Jawapan</summary>
+
+Jika dikosongkan sebelum commit, permintaan lain boleh membina semula cache dalam jurang sebelum commit dan hanya melihat data lama (transaksi belum kelihatan) — data lama itu kemudian kekal sehingga TTL tamat (10 minit). Selepas commit, sebarang binaan semula pasti melihat data baharu. Jika transaksi rollback, tiada perubahan, jadi tiada invalidasi diperlukan.
+</details>
+
+**4. Berikan satu kelebihan dan satu kelemahan strategi "TTL + delete semasa tulis" berbanding "TTL sahaja".**
+<details><summary>Jawapan</summary>
+
+Kelebihan: dashboard segar serta-merta selepas perubahan status (tiada kekeliruan "saya dah lulus tapi tak berubah"). Kelemahan: pembangun mesti ingat setiap path tulis — terlepas satu (cth kaedah cipta) menyebabkan data basi senyap sehingga TTL tamat. Mitigasi: satu pintu perubahan status (`transition()`), pemalar `CACHE_KEY`, dan ujian automatik.
+</details>
+
+**5. Semasa UAT, anda jumpa pepijat. Senaraikan 5 langkah kitaran pembetulan dan terangkan kenapa langkah 2 tidak boleh dilangkau.**
+<details><summary>Jawapan</summary>
+
+(1) Reproduce dengan langkah & data tepat; (2) tulis ujian yang **gagal**; (3) baiki dengan perubahan minimum; (4) ujian itu dan semua ujian lain lulus; (5) commit `FIX:` dan kemas kini log pepijat. Langkah 2 membuktikan ujian benar-benar mengesan pepijat — ujian yang tidak pernah dilihat gagal mungkin tidak menguji apa-apa, dan ia menjadi pengawal regresi selama-lamanya.
+</details>
+
+6. Pada 12:20, Dev skuad C hampir siap kad KPI #18 tetapi QA belum menyemak. PM mencadangkan merge dahulu, semak kemudian, supaya ia masuk v1.1.0. Apa keputusan yang betul?
+
+<details><summary>Jawapan</summary>
+
+Jangan merge tanpa semakan. Pembekuan ciri dan semakan QA wujud supaya `main` yang dikeluarkan boleh dipercayai. #18 dialih ke backlog (keluaran seterusnya, cth v1.2.0) dengan komen status; demo boleh menunjukkannya dari branch sebagai "akan datang", bukan sebagai sebahagian v1.1.0.
+</details>
+
+7. Claude mendraf CHANGELOG dengan baris "Dibaiki: had cubaan log masuk". Tiada MR dalam tiga milestone yang menyentuh `HadCubaan`. Apa yang berlaku, dan apa tindakan PM keluaran?
+
+<details><summary>Jawapan</summary>
+
+Claude mereka (atau menyimpulkan daripada konteks lain) satu perubahan yang tidak berlaku. PM keluaran membuang baris itu: setiap baris CHANGELOG mesti boleh dipautkan kepada MR (`!no`) dan isu (`#no`) sebenar. Inilah sebab prompt meminta `!no` dan `#isu` untuk setiap baris — baris tanpa pautan mudah dikesan.
+</details>
+
+---
+
+## ➡️ Langkah seterusnya selepas kursus
+
+Tahniah — anda telah membina sistem 4 modul dari keperluan hingga demo. Sistem ini **latihan**: jangan masukkan data sebenar sehingga ia melalui proses rasmi jabatan anda.
+
+### A. Ke persekitaran *staging* (bukan pengeluaran)
+
+| # | Langkah | Arahan / nota |
+|---|---------|---------------|
+| 1 | Server PHP 8.2+ dengan `intl`, `mbstring`, `mysqlnd`, `gd`, `zip`, `xml`, `curl` | `php -m` |
+| 2 | Document root menghala ke **`public/`** sahaja | Bukan akar projek — jika tidak, `.env` & `writable/` boleh dicapai dari web |
+| 3 | Pasang dependency tanpa package dev | `composer install --no-dev --optimize-autoloader` |
+| 4 | `.env` staging (tidak dalam Git) | `CI_ENVIRONMENT = production` · `app.baseURL` · `database.default.*` · `php spark key:generate` |
+| 5 | Migration | `php spark migrate --all` |
+| 6 | Data rujukan sahaja | Seed jabatan/zon/slot; **jangan** jalankan `UserSeeder` sintetik (`Latihan@2026`) di staging — cipta akaun sebenar melalui proses rasmi |
+| 7 | Kebenaran folder | `writable/` boleh ditulis oleh pengguna web server; `public/` baca sahaja |
+| 8 | Optimumkan | `php spark optimize` (CI 4.5+: cache konfigurasi & lokasi fail) |
+| 9 | HTTPS | `app.forceGlobalSecureRequests = true`; sijil TLS daripada pasukan infrastruktur |
+| 10 | Tugasan berjadual | cron harian: `php spark pas:expire` (server Windows: Task Scheduler / `schtasks /sc daily`) |
+| 11 | Cache | Server tunggal: `file` memadai. Berbilang server: tukar ke Redis/Memcached supaya `cache()->delete()` berkuat kuasa di semua server |
+| 12 | Log & sandaran | Putaran `writable/logs/`; sandaran DB harian + ujian pemulihan |
+| 13 | Semakan keselamatan | Jalankan semula K1–K10; `composer audit`; ikut prosedur penilaian keselamatan ICT jabatan sebelum pengeluaran |
+
+### B. Pembelajaran lanjut
+
+- **CodeIgniter 4 User Guide** — bab *Testing*, *Caching*, *Events* (cabaran: gantikan panggilan `cache()->delete()` dengan `Events::trigger('status_changed')`) — <https://codeigniter.com/user_guide/>
+- **CodeIgniter Shield** — *Authorization*, *Magic Link*, polisi kata laluan — <https://shield.codeigniter.com/>
+- **OWASP Top 10** — bandingkan setiap risiko dengan senarai semak K1–K10 — <https://owasp.org/Top10/>
+- **Chart.js 4** — aksesibiliti & plugin *datalabels* — <https://www.chartjs.org/docs/latest/>
+- Rujukan penuh: [`docs/pautan-rujukan.md`](../docs/pautan-rujukan.md)
+
+### C. Amalan yang dibawa pulang
+
+1. **Peraturan (BR-*) → AC → ujian** sebelum kod.
+2. **Satu pintu** untuk perubahan status (service + enum + `status_logs`).
+3. **Server** yang menguatkuasa akses — bukan butang yang disembunyikan.
+4. **Ujian gagal dahulu** untuk setiap pepijat.
+5. **Faham dahulu, terima kemudian** — termasuk cadangan AI.
+
+---
+
+## Lampiran — Kerja individu Statistik & capstone (rujukan)
+
+> ℹ️ Bahagian di bawah ialah bahan Hari 10 sebelum mod pasukan: Modul Statistik dan capstone individu dalam `kelas-ci-<nama>` (sesi Claude Code S5–S7 dan sesi manual S1–S4). Ia kekal sebagai **rujukan, tidak wajib**; capstone individu boleh digunakan oleh peserta yang mahu menyiapkan sistem 4 modul sendiri selepas kursus.
+
+### Objektif rujukan
 
 Di akhir hari ini, peserta boleh:
 
@@ -22,28 +259,7 @@ Di akhir hari ini, peserta boleh:
 | O8 | **Menilai** repo capstone dengan subagent `semak-ci4`, AI-08 (DoD), AI-09 (jurang ujian) dan AI-18 (`README.md`/`CLAUDE.md`), serta **membaiki** dapatan yang disahkan melalui gelung yang sama. | S6 |
 | O9 | **Mendemokan** sistem dan **menghujahkan**, dengan bukti dari `docs/nota-claude.md`, bila cadangan Claude diterima atau ditolak. | S7 |
 
----
-
-## 📅 Jadual Hari Ini
-
-| Masa | Sesi | Aktiviti | Objektif |
-|------|------|----------|----------|
-| 08:30–09:00 | — | Recap Hari 9 (laporan & eksport) | — |
-| 09:00–10:30 | **S5** | Claude Code: modul Statistik slice 1–2 (KPI, dataset carta, `/statistik/data`) — [Lab 10.10](./lab.md#lab-1010--claude-code-statistik-slice-demi-slice-s5) | O1, O7 |
-| 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–11:45 | **S5** | Claude Code: modul Statistik slice 3–4 (Chart.js, cache + invalidasi selepas commit) | O2, O3, O7 |
-| 11:45–12:30 | **S3** | UAT manual merentas 4 modul + K1–K10 (Lab 10.3 langkah 1–3 dan 5) | O4 |
-| 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–16:00 | **S6** | Claude Code: persediaan capstone (`semak-ci4`, AI-08, AI-09, AI-18, tag) — [Lab 10.11](./lab.md#lab-1011--claude-code-persediaan-capstone-s6) | O5, O8 |
-| 16:00–17:00 | **S7** | Demo capstone (format S4) & refleksi Claude Code — [Lab 10.12](./lab.md#lab-1012--demo-capstone--refleksi-claude-code-s7) | O6, O9 |
-
-> ℹ️ **Kod rujukan.** Untuk baki kursus, modul dibina dengan Claude Code melalui gelung 7 langkah (§5.1). S1, S2 dan Lab 10.1–10.2 ialah **kod rujukan**: baca untuk memahami konsep dan untuk langkah "Banding dengan kod rujukan"; jangan taip semula. UAT dalam S3 kekal manual. Format demo S4 (§4.1) dan kriteria sijil (§4.3) digunakan dalam S7.
->
-> ℹ️ Masa pada tajuk S1–S4 di bawah ialah jadual asal; ikut jadual di atas.
-
----
-
-## 🧭 Kenapa hari ini penting
+### Kenapa (rujukan)
 
 Laporan (Hari 9) menjawab "*apa rekodnya?*". Dashboard menjawab "*bagaimana keadaan sekarang?*" — dalam 5 saat, tanpa menapis apa-apa. Pengarah yang membuka `/statistik` pada pagi Isnin mahu tahu: berapa tempahan aktif, adakah slot penuh, berapa pas tertunggak, berapa lama pemohon menunggu.
 
@@ -61,6 +277,21 @@ flowchart LR
     end
     B --> C
 ```
+
+### Prompting rujukan (kerja individu)
+
+Setiap slice: rancang dalam mod *Plan* (`Shift+Tab` / `Alt+M`), kemudian Claude Code melaksana dalam mod *Manual* — anda membaca dan meluluskan setiap diff, menjalankan ujian, `semak-ci4`, dan mesti boleh menerangkan setiap baris yang di-commit (7 pintu semakan, [`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`. Selepas kursus: AI-15 untuk projek sedia ada; AI-16 → AI-18 → AI-17 untuk projek baharu.
+
+| Sesi | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
+|---|---|---|---|
+| S1 · Dashboard statistik (kod rujukan) | AI-04 pada 4 KPI & dataset carta lawan takrif §1.1; semak `innerHTML` dalam `dashboard.php` | SQL anda sendiri = kad KPI | 10.1 langkah 10 |
+| S2 · Cache (kod rujukan) | Senarai setiap `transCommit()` lawan `cache()->delete()`; AI-09 untuk `StatisticsCacheTest` | `grep` `transCommit`/`CACHE_KEY`; `!composer test` | 10.2 langkah 11 |
+| S3 · UAT & pepijat | Subagent `semak-ci4` pada K2/K5/K7; AI-10 (ujian merah dahulu); AI-08 ke atas `!git diff --staged` sebelum `FIX:` | Tanda K anda dalam `docs/UAT-signoff.md` | 10.3 langkah 7 |
+| S4 · Demo & serahan (kod rujukan) | AI-18 pada `@README.md` dan `@CLAUDE.md`; kemas kini `CLAUDE.md` projek | 2 isu dibetulkan sendiri dan di-commit | 10.4 langkah 7 |
+| S5 · Statistik slice 1–3 | Pelan 4 slice (mod *Plan*) → AI-19 (laksanakan Slice N sahaja, mod Manual) → AI-20 → `semak-ci4` → tool `ci4-spark` `routes`/`filter_check` | `!composer test`; pelayar; 3 baris setiap slice dalam `docs/nota-claude.md` | 10.10 |
+| S5 · Statistik slice 4 (cache) | AI-10: `StatisticsCacheTest` dahulu (merah) → AI-19 senaraikan setiap `transCommit()` → `semak-ci4` pada service | `!composer test -- tests/Services/StatisticsCacheTest.php` merah, kemudian hijau | 10.10 |
+| S6 · Persediaan capstone | `semak-ci4` seluruh repo; AI-08 (DoD); AI-09 (jurang ujian); AI-10; AI-18 (README/CLAUDE.md/PRD) | Setiap dapatan Terima/Tolak dengan bukti; ujian merah apabila peraturan dilanggar | 10.11 |
+| S7 · Demo & refleksi | AI-14 (latih segmen terangkan kod) | Refleksi terima/tolak dengan bukti commit/ujian | 10.12 |
 
 ---
 
@@ -612,107 +843,3 @@ Peserta yang tidak memenuhi kriteria 2–5 tetapi hadir ≥ 80 % menerima **siji
    > Sijil tamat kursus memerlukan **semua** kriteria dipenuhi. Markah tinggi tidak menggantikan syarat kehadiran ≥ 80 %.
 
 ---
-
-## 🤖 Prompting hari ini
-
-Setiap slice: rancang dalam mod *Plan* (`Shift+Tab` / `Alt+M`), kemudian Claude Code melaksana dalam mod *Manual* — anda membaca dan meluluskan setiap diff, menjalankan ujian, `semak-ci4`, dan mesti boleh menerangkan setiap baris yang di-commit (7 pintu semakan, [`kolaborasi.md`](../docs/kolaborasi.md) §3). Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md). Rekod jawapan yang anda sahkan dalam `docs/nota-claude.md`. Selepas kursus: AI-15 untuk projek sedia ada; AI-16 → AI-18 → AI-17 untuk projek baharu.
-
-| Sesi | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
-|---|---|---|---|
-| S1 · Dashboard statistik (kod rujukan) | AI-04 pada 4 KPI & dataset carta lawan takrif §1.1; semak `innerHTML` dalam `dashboard.php` | SQL anda sendiri = kad KPI | 10.1 langkah 10 |
-| S2 · Cache (kod rujukan) | Senarai setiap `transCommit()` lawan `cache()->delete()`; AI-09 untuk `StatisticsCacheTest` | `grep` `transCommit`/`CACHE_KEY`; `!composer test` | 10.2 langkah 11 |
-| S3 · UAT & pepijat | Subagent `semak-ci4` pada K2/K5/K7; AI-10 (ujian merah dahulu); AI-08 ke atas `!git diff --staged` sebelum `FIX:` | Tanda K anda dalam `docs/UAT-signoff.md` | 10.3 langkah 7 |
-| S4 · Demo & serahan (kod rujukan) | AI-18 pada `@README.md` dan `@CLAUDE.md`; kemas kini `CLAUDE.md` projek | 2 isu dibetulkan sendiri dan di-commit | 10.4 langkah 7 |
-| S5 · Statistik slice 1–3 | Pelan 4 slice (mod *Plan*) → AI-19 (laksanakan Slice N sahaja, mod Manual) → AI-20 → `semak-ci4` → tool `ci4-spark` `routes`/`filter_check` | `!composer test`; pelayar; 3 baris setiap slice dalam `docs/nota-claude.md` | 10.10 |
-| S5 · Statistik slice 4 (cache) | AI-10: `StatisticsCacheTest` dahulu (merah) → AI-19 senaraikan setiap `transCommit()` → `semak-ci4` pada service | `!composer test -- tests/Services/StatisticsCacheTest.php` merah, kemudian hijau | 10.10 |
-| S6 · Persediaan capstone | `semak-ci4` seluruh repo; AI-08 (DoD); AI-09 (jurang ujian); AI-10; AI-18 (README/CLAUDE.md/PRD) | Setiap dapatan Terima/Tolak dengan bukti; ujian merah apabila peraturan dilanggar | 10.11 |
-| S7 · Demo & refleksi | AI-14 (latih segmen terangkan kod) | Refleksi terima/tolak dengan bukti commit/ujian | 10.12 |
-
----
-
-## 📦 Hasil Hari Ini
-
-- [ ] `app/Services/StatisticsService.php` — 4 KPI, 4 dataset, `remember()` 10 minit, pemalar `CACHE_KEY`
-- [ ] `service('statisticsService')` didaftar dalam `app/Config/Services.php`
-- [ ] `app/Controllers/Statistik/DashboardController.php` — `index()` + `data()` (JSON)
-- [ ] `app/Views/statistik/dashboard.php` — kad KPI + 4 carta Chart.js 4
-- [ ] `cache()->delete(StatisticsService::CACHE_KEY)` selepas `transCommit()` dalam `BookingService` & `PassWorkflowService`
-- [ ] `tests/Services/StatisticsCacheTest.php` — hijau (dan **pernah** merah tanpa invalidasi)
-- [ ] `docs/UAT-signoff.md` diisi; log pepijat dengan ≥ 1 pepijat ditutup melalui kitaran ujian-gagal
-- [ ] Senarai semak keselamatan K1–K10 ditanda
-- [ ] Tag `v1.0-capstone`; demo 8 minit; helaian markah ditandatangani → **M4 siap** · **Sistem lengkap** 🎓
-- [ ] Lab 10.10–10.12 (Claude Code): `docs/nota-claude.md` dengan 12 baris gerbang terangkan + refleksi terima/tolak; `docs/semakan-capstone.md` dengan setiap dapatan bertanda Terima/Tolak
-
----
-
-## 🧠 Semakan Kendiri
-
-**1. Kenapa dashboard memisahkan kad KPI (render di server) dan carta (endpoint JSON)?**
-<details><summary>Jawapan</summary>
-
-Kad KPI muncul serta-merta dan berfungsi tanpa JavaScript, serta mudah diuji dengan `FeatureTestTrait`. Carta memerlukan JavaScript; endpoint JSON memisahkan data daripada persembahan dan boleh digunakan semula. Kedua-duanya memanggil `StatisticsService::dashboard()` jadi nombor datang dari cache yang sama.
-</details>
-
-**2. `bookings_by_month` memulangkan `[3, 5, 2]` untuk Jan, Feb, Jun. Apa yang salah pada carta dan bagaimana membaikinya?**
-<details><summary>Jawapan</summary>
-
-`GROUP BY` tidak memulangkan bulan tanpa rekod, jadi Chart.js melukis 3 nilai itu sebagai Jan, Feb, **Mac**. Baiki dengan memetakan hasil ikut nombor bulan (`array_column($rows, 'total', 'm')`) dan mengisi 12 bulan dengan `?? 0`.
-</details>
-
-**3. Terangkan kenapa `cache()->delete('stat_dashboard')` mesti diletakkan selepas `transCommit()`, bukan sebelum.**
-<details><summary>Jawapan</summary>
-
-Jika dikosongkan sebelum commit, permintaan lain boleh membina semula cache dalam jurang sebelum commit dan hanya melihat data lama (transaksi belum kelihatan) — data lama itu kemudian kekal sehingga TTL tamat (10 minit). Selepas commit, sebarang binaan semula pasti melihat data baharu. Jika transaksi rollback, tiada perubahan, jadi tiada invalidasi diperlukan.
-</details>
-
-**4. Berikan satu kelebihan dan satu kelemahan strategi "TTL + delete semasa tulis" berbanding "TTL sahaja".**
-<details><summary>Jawapan</summary>
-
-Kelebihan: dashboard segar serta-merta selepas perubahan status (tiada kekeliruan "saya dah lulus tapi tak berubah"). Kelemahan: pembangun mesti ingat setiap path tulis — terlepas satu (cth kaedah cipta) menyebabkan data basi senyap sehingga TTL tamat. Mitigasi: satu pintu perubahan status (`transition()`), pemalar `CACHE_KEY`, dan ujian automatik.
-</details>
-
-**5. Semasa UAT, anda jumpa pepijat. Senaraikan 5 langkah kitaran pembetulan dan terangkan kenapa langkah 2 tidak boleh dilangkau.**
-<details><summary>Jawapan</summary>
-
-(1) Reproduce dengan langkah & data tepat; (2) tulis ujian yang **gagal**; (3) baiki dengan perubahan minimum; (4) ujian itu dan semua ujian lain lulus; (5) commit `FIX:` dan kemas kini log pepijat. Langkah 2 membuktikan ujian benar-benar mengesan pepijat — ujian yang tidak pernah dilihat gagal mungkin tidak menguji apa-apa, dan ia menjadi pengawal regresi selama-lamanya.
-</details>
-
----
-
-## ➡️ Langkah seterusnya selepas kursus
-
-Tahniah — anda telah membina sistem 4 modul dari keperluan hingga demo. Sistem ini **latihan**: jangan masukkan data sebenar sehingga ia melalui proses rasmi jabatan anda.
-
-### A. Ke persekitaran *staging* (bukan pengeluaran)
-
-| # | Langkah | Arahan / nota |
-|---|---------|---------------|
-| 1 | Server PHP 8.2+ dengan `intl`, `mbstring`, `mysqlnd`, `gd`, `zip`, `xml`, `curl` | `php -m` |
-| 2 | Document root menghala ke **`public/`** sahaja | Bukan akar projek — jika tidak, `.env` & `writable/` boleh dicapai dari web |
-| 3 | Pasang dependency tanpa package dev | `composer install --no-dev --optimize-autoloader` |
-| 4 | `.env` staging (tidak dalam Git) | `CI_ENVIRONMENT = production` · `app.baseURL` · `database.default.*` · `php spark key:generate` |
-| 5 | Migration | `php spark migrate --all` |
-| 6 | Data rujukan sahaja | Seed jabatan/zon/slot; **jangan** jalankan `UserSeeder` sintetik (`Latihan@2026`) di staging — cipta akaun sebenar melalui proses rasmi |
-| 7 | Kebenaran folder | `writable/` boleh ditulis oleh pengguna web server; `public/` baca sahaja |
-| 8 | Optimumkan | `php spark optimize` (CI 4.5+: cache konfigurasi & lokasi fail) |
-| 9 | HTTPS | `app.forceGlobalSecureRequests = true`; sijil TLS daripada pasukan infrastruktur |
-| 10 | Tugasan berjadual | cron harian: `php spark pas:expire` (server Windows: Task Scheduler / `schtasks /sc daily`) |
-| 11 | Cache | Server tunggal: `file` memadai. Berbilang server: tukar ke Redis/Memcached supaya `cache()->delete()` berkuat kuasa di semua server |
-| 12 | Log & sandaran | Putaran `writable/logs/`; sandaran DB harian + ujian pemulihan |
-| 13 | Semakan keselamatan | Jalankan semula K1–K10; `composer audit`; ikut prosedur penilaian keselamatan ICT jabatan sebelum pengeluaran |
-
-### B. Pembelajaran lanjut
-
-- **CodeIgniter 4 User Guide** — bab *Testing*, *Caching*, *Events* (cabaran: gantikan panggilan `cache()->delete()` dengan `Events::trigger('status_changed')`) — <https://codeigniter.com/user_guide/>
-- **CodeIgniter Shield** — *Authorization*, *Magic Link*, polisi kata laluan — <https://shield.codeigniter.com/>
-- **OWASP Top 10** — bandingkan setiap risiko dengan senarai semak K1–K10 — <https://owasp.org/Top10/>
-- **Chart.js 4** — aksesibiliti & plugin *datalabels* — <https://www.chartjs.org/docs/latest/>
-- Rujukan penuh: [`docs/pautan-rujukan.md`](../docs/pautan-rujukan.md)
-
-### C. Amalan yang dibawa pulang
-
-1. **Peraturan (BR-*) → AC → ujian** sebelum kod.
-2. **Satu pintu** untuk perubahan status (service + enum + `status_logs`).
-3. **Server** yang menguatkuasa akses — bukan butang yang disembunyikan.
-4. **Ujian gagal dahulu** untuk setiap pepijat.
-5. **Faham dahulu, terima kemudian** — termasuk cadangan AI.

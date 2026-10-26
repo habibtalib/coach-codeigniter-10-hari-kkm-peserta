@@ -57,3 +57,13 @@ Every participant works **alone** in the private project `kelas-ci-<nama>` and b
 - Uploads go in `writable/uploads/` — not `public/`.
 - Query Builder / bindings only — no raw SQL concatenated with input.
 - View output is escaped with `esc()`.
+
+## 6. Team work in espkpv2 (Days 8–10)
+
+From Day 8, the class works in **one** repo: `<gitlab-kkm>/aplikasi-baharu/espkpv2`, as 3 squads × 4 (PM, QA, 2 Devs). Role details and rotation: [`peranan-pasukan.en.md`](peranan-pasukan.en.md); the repo's technical rules: `docs/pasukan.md` and `CONTRIBUTING.md` in espkpv2.
+
+- **One issue → one branch (`feat/<no>-<short>`) → one MR** into the protected `main`; commits `Rujuk #N`, MR `Closes #N`.
+- **The seven gates of §3 still apply** to every Dev slice. Gate 5 (review) now has two layers: the `semak-espkp` subagent by the Dev, then an MR review by the **squad's QA** with `/semak-mr` against the issue's AC.
+- **Nobody approves their own MR.** QA approves; the PM merges in the order agreed between the PMs.
+- **Hotspots have an owner** (squad A `Aliran.php`, B `Auth*.php`, C `Laporan.php`); shared files are changed only inside your own area's block.
+- §4 (individual work in `kelas-ci-<nama>`) applies to Days 1–7 and to the reference labs in the Day 8–10 Appendices.

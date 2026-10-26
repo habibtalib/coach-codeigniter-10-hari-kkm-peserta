@@ -1,28 +1,377 @@
-# Lab Hari 8 — Modul Pas (2): Aliran Kelulusan, RBAC & Ujian Akses
+# Lab Hari 8 — Kerja Pasukan dengan Claude Code: PM, QA & Dev dalam Satu Repo
 
-[⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · 🧩 Template kod (modul **Templat & Rujukan**) · [⚡ Arahan spark](../docs/arahan-spark.md)
+[⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [👥 Peranan pasukan](../docs/peranan-pasukan.md) · [💬 Pustaka prompt §H](../docs/pustaka-prompt.md)
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
-| 8.10 | S9 | 09:00–10:30 | Claude Code slice 3: `transition()` + `canTransitionTo()` + `ReviewController` + route `pas/semakan` |
-| 8.11 | S10 | 10:45–12:30 | Claude Code slice 4: `AuthGroups`, `permission:` per route, `authorize()`, 404 bukan pemilik |
-| 8.12 | S11 | 14:30–16:00 | Claude Code slice 5: garis masa `status_logs` + `PassAccessTest` + 2 mutasi |
-| 8.13 | S12 | 16:00–17:00 | `semak-ci4` + AI-08, demo 3 peranan, gerbang terang rakan, merge — **M2 siap** |
-| 8.0 | Awal S1 | 10 min | Branch + data demo + 3 akaun peranan disahkan |
-| 8.1 | S1 | 09:10–10:00 | Service peralihan + `ReviewController` + baris gilir + panel tindakan |
-| 8.1b | S5 | 10:00–10:30 | Mula semakan pukal dari baris gilir melalui `startReview()` |
-| 8.2 | S2 | 10:45–12:00 | `AuthGroups`, filter `permission:`, `authorize()`, 403 |
-| 8.2b | S6 | 12:00–12:30 | `permission:pas.review` pada route pukal + matriks 4 peranan |
-| 8.3 | S3 | 14:30–15:30 | Garis masa `status_logs` + `PassAccessTest` hijau |
-| 8.3b | S7 | 15:30–16:00 | `PassBatchReviewTest` (5 ujian) + 2 mutasi |
-| 8.4 | S4 | 16:00–16:35 | Demo 3 peranan, DoD, merge ke `main` · ⭐ `pas:expire` |
-| 8.4b | S8 | 16:35–17:00 | Demo peranan `admin` + dapatan pemisahan tugas (`docs/demo-m2.md`) |
+| 8.20 | S15 | 09:00–10:30 | espkpv2 berjalan pada Laragon, `composer test` hijau, Claude Code dikongsi disahkan, `glab` log masuk |
+| 8.21 | S16 | 10:45–12:30 | Isu `status::sedia` (PM), ujian gagal dari AC (QA), branch + slice 1 (Dev) |
+| 8.22 | S17 | 14:30–16:00 | MR `Ready` dengan `Closes #N`, komen semakan QA, papan terkini |
+| 8.23 | S18 | 16:00–17:00 | MR di-merge, latihan konflik, demo skuad, isu retro |
 
-> ℹ️ **Lab 8.10–8.13 ialah lab hari ini** (Claude Code). Lab 8.0–8.4b (manual) ialah **kod rujukan, tidak wajib** — buka hanya pada langkah *Banding dengan kod rujukan*. Lab 8.5 eSPKP di hujung fail ialah lab tambahan yang berasingan.
+> ℹ️ **Repo hari ini:** `https://<gitlab-kkm>/aplikasi-baharu/espkpv2` (satu repo untuk seluruh kelas). Lab individu Modul Pas (8.0–8.13) dipindahkan ke [Lampiran](#lampiran--lab-individu-modul-pas-rujukan) sebagai rujukan.
 >
-> **Aliran kerja setiap lab Claude Code:** (1) SPEC & ID BR → (2) pelan slice dalam mod Plan, tiada kod, anda menyunting → (3) laksana dalam mod **Manual**, anda membaca dan meluluskan setiap diff (*accept edits*, *auto* dan *bypass permissions* dilarang) → (4) sahkan dengan `composer test`, pelayar dan tool MCP `ci4-spark` `routes`/`filter_check`/`db_table` → (5) semakan subagent `semak-ci4`, pembaikan melalui gerbang yang sama → (6) gerbang terang: 3 baris utama dengan ayat sendiri dalam `docs/nota-claude.md` → (7) commit kecil di branch `feat/pas-claude`.
+> **Peraturan pasukan:** satu isu → satu branch → satu MR; tiada push ke `main`; tiada siapa meluluskan MR sendiri; hotspot skuad lain tidak disentuh ([`docs/pasukan.md`](https://<gitlab-kkm>/aplikasi-baharu/espkpv2/-/blob/main/docs/pasukan.md) dalam repo). Claude Code dalam mod *Plan* atau *Manual* sahaja; data sintetik sahaja.
 
 ---
+
+## Lab 8.20 — Persediaan Pasukan: espkpv2, Claude Code & Papan Isu (S15)
+
+### 🎯 Objektif
+Menyediakan espkpv2 pada Laragon sebagai ahli pasukan (clone dengan akses tulis, database dev + ujian, `composer test` hijau), **membuktikan** Claude Code memuatkan konfigurasi yang dikongsi, dan **mengenal** skuad, peranan serta isu Sprint 1 anda di papan.
+
+### Prasyarat
+- Akaun GitLab KKM anda telah ditambah ke projek `aplikasi-baharu/espkpv2` sebagai **Developer** (jurulatih). Semak: buka URL repo dalam pelayar — anda nampak fail, bukan 404.
+- Laragon (PHP 8.2+, MySQL), Composer, Git Bash dan Claude Code dari Hari 7.
+- 🪟 **Windows:** semua arahan dalam Git Bash (terminal VS Code).
+
+### Langkah
+
+1. **Token GitLab KKM (5 minit).** Di GitLab KKM: avatar → *Edit profile* → *Access Tokens*. Cipta token bernama `kelas-ci` dengan skop `api`, `read_repository`, `write_repository`, tamat 30 hari. Salin sekali sahaja ke pengurus kata laluan anda — **jangan** tampal dalam fail repo, isu, chat kelas atau prompt Claude.
+
+2. **Clone repo pasukan (10 minit).**
+
+   ```bash
+   mkdir -p ~/latihan/pasukan && cd ~/latihan/pasukan
+   git clone https://<gitlab-kkm>/aplikasi-baharu/espkpv2.git
+   cd espkpv2
+   git log --oneline -3
+   ```
+
+   Apabila diminta, nama pengguna = username GitLab KKM, kata laluan = **token** dari langkah 1. Folder `~/latihan/espkpv2` dari Hari 7 (zip, tanpa `.git`) tidak digunakan lagi.
+
+3. **Pasang dan sediakan database (25 minit).** Ikut bahagian *Mula (Windows · Laragon · Git Bash)* dalam `README.md` repo, dalam folder `espkpv2`:
+
+   ```bash
+   composer check-platform-reqs --no-dev
+   composer install
+   cp .env.example .env
+   php spark key:generate
+   mysql -uroot -e "CREATE DATABASE IF NOT EXISTS espkp_contoh_dev CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; CREATE DATABASE IF NOT EXISTS espkp_contoh_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+   php spark migrate --all
+   php spark db:seed DatabaseSeeder
+   composer test
+   ```
+
+   Ralat `spark`, `Boot.php` atau extension PHP → jadual *Ralat* dalam README repo.
+
+4. **Sahkan Claude Code dikongsi (15 minit).** Dalam folder `espkpv2`, jalankan `claude`. Kali pertama, luluskan server MCP `ci4-spark` daripada `.mcp.json`. Kemudian:
+
+   - Taip `/agents` → `semak-espkp` dan `penguji-espkp` disenaraikan (*Project*).
+   - Taip `/` → `isu-baharu`, `semak-mr`, `ciri-baharu`, `aliran-kerja`, `migration-espkp` ada dalam menu.
+   - `/mcp` → `ci4-spark` ✔ connected.
+   - Mod *Plan*, hantar:
+
+     ```text
+     Mod Plan. Terangkan .claude/settings.json, .mcp.json dan senarai skill serta agent repo ini dalam satu jadual: apa yang dibenarkan, apa yang disekat, dan kenapa. Rujuk fail:baris.
+     ```
+
+   - Uji pagar: minta `Baca fail .env dan ringkaskan isinya.` → Claude **disekat** oleh hook `sekat-env.php` atau peraturan `deny`.
+
+5. **`glab` dan papan isu (15 minit).**
+
+   ```bash
+   winget install GLab.GLab
+   ```
+
+   Buka Git Bash baharu, kemudian:
+
+   ```bash
+   glab auth login --hostname <gitlab-kkm>
+   glab issue list -R aplikasi-baharu/espkpv2 --milestone "Sprint 1 (Hari 8)"
+   ```
+
+   Pilih *Token* dan tampal token dari langkah 1. Buka **Plan → Issue boards → Papan pasukan** dalam pelayar.
+
+6. **Skuad, tempat dan peranan (10 minit).** Jurulatih mengumumkan skuad (A/B/C) dan nombor tempat (1–4). Cari peranan pagi anda dalam jadual putaran [`peranan-pasukan.md`](../docs/peranan-pasukan.md) dan baca kad peranan anda. PM skuad: tugaskan (`/assign @username`) isu Sprint 1 skuad kepada pasangan Dev dalam komen isu.
+
+### ✅ Checkpoint
+- [ ] `git remote -v` menunjukkan `<gitlab-kkm>/aplikasi-baharu/espkpv2.git`.
+- [ ] `composer test` → `OK (… tests …)`. `php spark serve` → log masuk `http://localhost:8080` sebagai `900101010006` / `Latihan@2026` → papan pemuka pentadbir.
+- [ ] Tangkapan skrin: menu `/` dengan `isu-baharu` + mesej sekatan `.env`.
+- [ ] `glab issue list` menyenaraikan isu Sprint 1; anda nampak lajur `status::sedia`, `dalam-kerja`, `semakan`, `disekat`.
+- [ ] Isu Sprint 1 skuad anda mempunyai *Assignee* dan anda boleh menyebut tugas peranan anda dalam satu ayat.
+
+### Kesilapan lazim
+| Gejala | Punca | Penyelesaian |
+|---|---|---|
+| `git clone` → `HTTP Basic: Access denied` | Kata laluan akaun digunakan, bukan token; atau token tanpa `read_repository` | Guna token; Windows: *Credential Manager* → buang kelayakan `<gitlab-kkm>` lama, clone semula |
+| `git clone` → 404 / `not found` | Belum ditambah ke projek | Beritahu jurulatih username GitLab KKM anda |
+| `composer test` gagal `Unknown database 'espkp_contoh_test'` | Database ujian belum dicipta | Arahan `CREATE DATABASE` dalam langkah 3 |
+| `/isu-baharu` tiada dalam menu | `claude` dimulakan di luar folder `espkpv2` | `cd ~/latihan/pasukan/espkpv2`, mulakan `claude` semula |
+| `ci4-spark` ✘ | `php` tiada dalam PATH sesi | `php -v` dalam Git Bash; Laragon → Tools → Path → *Add Laragon to Path* |
+| `winget` tiada | Windows lama | Muat turun pemasang `glab` Windows dari halaman *releases* GitLab CLI, atau guna pelayar sahaja untuk isu |
+
+---
+
+## Lab 8.21 — Sprint 1 Pagi: Isu, Pelan Ujian & Slice Pertama (S16)
+
+### 🎯 Objektif
+Bekerja serentak dalam peranan pagi anda pada isu Sprint 1 skuad: **PM** menghasilkan isu `status::sedia` dengan AC yang boleh diuji; **QA** menghasilkan pelan ujian dan sekurang-kurangnya satu ujian yang gagal dari AC; **Dev** menghasilkan pelan slice dan commit slice pertama pada branch isu.
+
+### Prasyarat
+- Lab 8.20 siap; `git switch main && git pull` dalam `espkpv2`.
+- Isu skuad: A → #1, B → #10 dan #12, C → #16.
+
+### Langkah — PM
+
+1. **Draf isu (20 minit).** Dalam `claude` (mod *Plan*):
+
+   ```text
+   /isu-baharu 16
+   ```
+
+   Baca jadual *Semakan kualiti*. Setiap AC mesti boleh dicuba dengan akaun `9001010100NN`; mesti ada AC akses (peranan lain → 404). Untuk skuad A (#1 bersaiz L), minta:
+
+   ```text
+   Isu #1 bersaiz L. Cadangkan pecahan kepada isu ≤ M untuk Sprint 1 (AC teras: AC-1 dan AC-3) dan Sprint 2 (selebihnya). Jangan cipta isu; beri badan setiap isu.
+   ```
+
+2. **Kemas kini isu.** Simpan badan sebagai `isu.md` **di luar** repo (cth `~/latihan/pasukan/isu.md`), kemudian jalankan arahan `glab issue update …` yang dicetak Claude. Soalan untuk pemilik sistem → komen isu `@jurulatih`, label `status::disekat` sehingga dijawab.
+
+3. **Selaras (sepanjang sesi).** Dengan PM skuad lain: siapa menyentuh `app/Config/Routes.php`, `Menu.php` atau `DemoSeeder.php` hari ini? Tulis jawapan dalam komen isu skuad.
+
+### Langkah — QA
+
+1. **Kes ujian daripada AC (20 minit).** Baca isu (bukan kod Dev). Dalam komen isu, tulis jadual:
+
+   ```markdown
+   | AC | Kes ujian | Jenis (Database/Feature/E2E/manual) | Akaun |
+   |----|-----------|-------------------------------------|-------|
+   | AC-1 | Pemohon 01 ada permohonan terbuka → hantar baharu ditolak, mesej sebut no. rujukan | Database | 01 |
+   ```
+
+2. **Ujian sedia ada vs AC (15 minit).** Mod *Plan*:
+
+   ```text
+   Guna subagent penguji-espkp: untuk setiap AC dalam isu #<no> (saya tampal di bawah), senaraikan ujian sedia ada yang meliputinya (fail:baris) dan kes yang tiada.
+   <tampal AC>
+   ```
+
+3. **Ujian gagal dahulu (40 minit).** Tunggu Dev mencipta branch (`git fetch && git switch feat/<no>-…`). Mod *Manual*:
+
+   ```text
+   Tulis SATU ujian PHPUnit untuk AC-1 isu #<no> sahaja, ikut corak tests/_support/UjianCiri atau UjianPangkalanData dan trait BinaPermohonan. Jangan ubah kod app/. Ujian mesti gagal sekarang kerana ciri belum wujud.
+   ```
+
+   Baca diff, jalankan `vendor/bin/phpunit --filter <namaUjian>`.
+
+### Langkah — Dev (berpasangan)
+
+1. **Fahami (15 minit).** Pemandu memegang Claude; navigator membaca. Mod *Plan*:
+
+   ```text
+   Baca isu #<no> (saya tampal di bawah). Tunjukkan fail:baris yang perlu berubah dan corak sedia ada yang paling hampir. Jangan tulis kod.
+   ```
+
+   Soalan → komen isu kepada PM, bukan tekaan.
+
+2. **Pelan slice (15 minit).**
+
+   ```text
+   /ciri-baharu <no> <ringkasan isu>
+   ```
+
+   Edit pelan: buang slice di luar skop Sprint 1. Pelan ditampal sebagai komen isu.
+
+3. **Branch dan slice 1 (60 minit).**
+
+   ```bash
+   git switch main && git pull
+   git switch -c feat/<no>-<ringkas>
+   ```
+
+   Mod *Manual* (`Shift+Tab` hingga baris bawah tidak menunjukkan *plan* / *auto*):
+
+   ```text
+   Laksana slice 1 pelan ini sahaja. Berhenti selepas slice 1 dan senaraikan fail yang berubah.
+   ```
+
+   Navigator membaca setiap diff sebelum *Yes*. Kemudian:
+
+   ```bash
+   composer semak
+   ```
+
+   ```text
+   Guna subagent semak-espkp pada diff slice ini (git diff).
+   ```
+
+   Commit dan push:
+
+   ```bash
+   git add -A && git commit -m "<area>: <ringkasan> Rujuk #<no>"
+   git push -u origin feat/<no>-<ringkas>
+   ```
+
+### ✅ Checkpoint
+- [ ] **PM:** Isu skuad `status::sedia`; ≥ 3 AC Diberi/Apabila/Maka; hotspot dinyatakan.
+- [ ] **QA:** Ujian **gagal dengan mesej yang betul** (bukan ralat sintaks atau kelas tiada). Commit `ujian: AC-1 … Rujuk #<no>` dalam branch isu (selaras dengan Dev supaya tidak bertembung).
+- [ ] **Dev:** Branch wujud di GitLab KKM dengan 1 commit `Rujuk #<no>`; label isu `status::dalam-kerja`. **Tukar pemandu** untuk slice seterusnya.
+
+### Kesilapan lazim
+| Gejala | Punca | Penyelesaian |
+|---|---|---|
+| Claude menulis kod semasa PM/QA meminta draf | Bukan mod *Plan* | Tolak (*No*), `Shift+Tab` ke *plan mode* |
+| `git push` → `You are not allowed to push code to protected branches` | Push ke `main` | Anda di branch yang salah: `git switch -c feat/<no>-…`, push branch |
+| Dev dan QA mengubah fail ujian yang sama | Tiada penyelarasan | QA memiliki fail ujian AC; Dev menambah ujian dalam fail lain atau selepas QA commit |
+| `composer semak` gagal pada `cs` | Gaya kod | `composer cs-fix`, baca diff, commit |
+
+---
+
+## Lab 8.22 — Sprint 1 Petang: MR, Semakan QA & Papan (S17)
+
+### 🎯 Objektif
+Selepas **tukar peranan**, menyiapkan isu Sprint 1 hingga MR `Ready` (**Dev**), menyemak MR terhadap AC dengan bukti dan memutuskan *approve* atau *minta perubahan* (**QA**), dan memastikan papan mencerminkan keadaan sebenar (**PM**).
+
+### Prasyarat
+- Lab 8.21: PM pagi telah menulis komen **"Serah tugas"** dalam isu (siap / seterusnya / soalan terbuka).
+- Peranan petang anda: jadual putaran, slot *Sprint 1 petang*.
+
+### Langkah — Dev
+
+1. `git fetch && git switch feat/<no>-…` → baca komen serah tugas → slice seterusnya melalui gerbang yang sama (mod *Manual* → `composer semak` → `semak-espkp` → commit `Rujuk #<no>`).
+2. **MR draf** selepas slice terakhir Sprint 1:
+
+   ```bash
+   git push
+   glab mr create --draft --fill --target-branch main --description "$(cat .gitlab/merge_request_templates/Default.md)"
+   ```
+
+   Isi dalam pelayar: *Ringkasan*, `Closes #<no>`, senarai semak, **Tiga baris utama** (ayat anda sendiri, tanpa Claude), jadual dapatan `semak-espkp`. Pipeline: jika runner kongsi offline, tulis "pipeline: runner offline; `composer semak` hijau setempat" dan sertakan output ringkas.
+3. *Mark as ready* → label `status::semakan`.
+
+### Langkah — QA
+
+1. Dalam `claude` (mod *Plan*):
+
+   ```text
+   /semak-mr <no-MR>
+   ```
+
+2. Buka **setiap** `fail:baris` dalam jadual AC. Satu yang tidak sepadan → betulkan jadual sendiri.
+3. Cuba 3 langkah ujian manual yang dicadangkan di pelayar (`git switch` ke branch MR, `php spark serve`).
+4. Siarkan komen semakan (`glab mr note <no-MR> --message "$(cat semakan.md)"`), kemudian **approve** (`glab mr approve <no-MR>`) atau **minta perubahan** (label `status::dalam-kerja` + komen apa yang perlu).
+
+### Langkah — PM
+
+1. Setiap 20 minit:
+
+   ```bash
+   glab issue list --milestone "Sprint 1 (Hari 8)" --label skuad::<x>
+   ```
+
+   ```text
+   Ringkaskan status isu skuad ini dan apa yang menyekat, satu baris setiap isu. Cadangkan susunan merge berdasarkan fail dikongsi yang disentuh setiap MR (glab mr diff).
+   ```
+
+2. Selesaikan `status::disekat` (dapatkan jawapan pemilik sistem), pastikan setiap isu dalam lajur papan yang betul.
+3. Bersetuju **susunan merge** dengan PM lain untuk S18; tulis dalam komen isu skuad.
+
+### ✅ Checkpoint
+- [ ] **Dev:** MR `Ready`, `Closes #<no>`, senarai semak diisi, tiada kotak ditanda tanpa bukti.
+- [ ] **QA:** Komen QA dengan jadual AC ↔ kod ↔ ujian dan keputusan bersebab.
+- [ ] **PM:** Papan skuad tepat; susunan merge dipersetujui.
+
+### Kesilapan lazim
+| Gejala | Punca | Penyelesaian |
+|---|---|---|
+| QA meluluskan berdasarkan ringkasan Claude sahaja | Bukti tidak dibuka | Buka setiap `fail:baris`; tiada bukti = tidak dipenuhi |
+| Pengarang MR menekan *Approve* | Lupa peraturan | Tarik balik (*Revoke approval*); hanya QA skuad |
+| MR berisi perubahan di luar isu | Claude "membaiki" fail lain | Buang daripada branch (`git restore -s main <fail>`); buka isu baharu |
+
+---
+
+## Lab 8.23 — Merge, Konflik, Demo & Retro (S18)
+
+### 🎯 Objektif
+Me-merge MR skuad mengikut susunan yang dipersetujui, **menyelesaikan** konflik rebase pada fail dikongsi tanpa membuang kerja skuad lain, dan **mendemokan** hasil Sprint 1.
+
+### Langkah
+
+1. **Merge pertama (PM, 10 minit).** MR pertama dalam susunan: QA telah approve → PM menekan **Merge** (pilih *Delete source branch*). Umum dalam saluran kelas: "!<no> di-merge".
+
+2. **Rebase MR lain (Dev, 15 minit).**
+
+   ```bash
+   git fetch origin
+   git rebase origin/main
+   ```
+
+   Tiada konflik → `composer semak` → `git push --force-with-lease` → teruskan ke langkah 4.
+
+3. **Konflik (Dev, 15 minit).** Jika `git rebase` berhenti dengan `CONFLICT`:
+
+   ```bash
+   git status
+   ```
+
+   ```text
+   Terangkan konflik dalam <fail>: apa yang ditambah oleh main dan apa yang ditambah oleh branch saya? Jangan selesaikan konflik itu.
+   ```
+
+   Pilih sendiri: simpan kedua-dua blok kawasan masing-masing, buang penanda `<<<<<<<`, `=======`, `>>>>>>>`. Konflik dalam hotspot skuad lain → **berhenti**, panggil PM pemilik. Konflik migration → namakan semula migration anda dengan versi selepas yang terkini.
+
+   ```bash
+   php spark routes
+   composer semak
+   git add <fail>
+   git rebase --continue
+   git push --force-with-lease
+   ```
+
+4. **Merge seterusnya** mengikut susunan; QA mengesahkan semula ringkas selepas rebase (ujian hijau, diff tidak berubah di luar konflik).
+
+5. **Demo skuad (2 minit setiap skuad).** PM: isu + AC. Dev: ciri di pelayar pada `main` terkini. QA: ujian yang membuktikan AC (`vendor/bin/phpunit --filter …`).
+
+6. **Retro (10 minit).** PM membuka isu `Retro Sprint 1 — Skuad <X>` (templat *Tugas*, label `skuad::<x>`) dengan tiga bahagian: *Berjalan baik*, *Ubah esok*, *Peraturan prompt untuk esok* (satu prompt yang terbukti berguna hari ini).
+
+### ✅ Checkpoint
+- [ ] Isu berkaitan ditutup automatik oleh `Closes #<no>`.
+- [ ] Kedua-dua perubahan wujud selepas rebase (`php spark routes`, ujian kedua-dua skuad hijau).
+- [ ] Isu retro wujud; `git switch main && git pull && composer test` hijau pada mesin anda.
+
+### Kesilapan lazim
+| Gejala | Punca | Penyelesaian |
+|---|---|---|
+| `git push` selepas rebase ditolak (`non-fast-forward`) | Sejarah berubah selepas rebase | `git push --force-with-lease` (bukan `--force`) pada branch anda sahaja |
+| Selepas selesai konflik, route skuad lain hilang | Blok mereka dibuang | `git rebase --abort` atau `git reflog` → ulang; simpan kedua-dua blok |
+| Dua migration dengan versi sama | Dua skuad memilih masa yang sama | Awalan skuad dalam versi (`…-1xxxxx_` A, `2…` B, `3…` C) |
+
+---
+
+## Semakan kendiri — akhir hari
+
+**Kerja pasukan (hari ini):** 🪟 PowerShell / Git Bash sama: `glab mr list --merged -R aplikasi-baharu/espkpv2`, `glab issue list --milestone "Sprint 1 (Hari 8)" -R aplikasi-baharu/espkpv2`.
+
+- [ ] espkpv2 berjalan pada Laragon dan `composer test` hijau pada `main` terkini (Lab 8.20).
+- [ ] Claude Code memuatkan `semak-espkp`, `/isu-baharu`, `/semak-mr` dan `ci4-spark`; bacaan `.env` disekat (Lab 8.20).
+- [ ] Isu Sprint 1 skuad saya `status::sedia` dengan AC Diberi/Apabila/Maka termasuk AC akses 404 (Lab 8.21).
+- [ ] MR skuad saya mempunyai `Closes #N`, senarai semak diisi dan komen semakan QA dengan jadual AC (Lab 8.22).
+- [ ] Sekurang-kurangnya satu MR skuad saya di-merge ke `main` dan isunya ditutup; isu retro wujud (Lab 8.23).
+
+**Modul Pas individu (rujukan, tidak wajib):**
+
+```bash
+git log --oneline -8
+php spark routes | grep pas/              # 11 laluan Pas; semakan dengan permission:
+composer test -- --testdox | tail -20   # semua hijau
+```
+
+🪟 PowerShell: `php spark routes | Select-String pas/`, `composer test '--' --testdox | Select-Object -Last 20`.
+
+- [ ] Satu permohonan bergerak `submitted → under_review → approved` dengan 3 baris `status_logs` (Kuiz S1).
+- [ ] Penyemak tidak boleh meluluskan melalui DevTools/curl; `pelulus` tidak boleh memulakan semakan pukal — kedua-duanya redirect, status kekal (Kuiz S6).
+- [ ] `composer test -- tests/feature/Pas` hijau, termasuk `PassAccessTest` dan `PassBatchReviewTest` (Kuiz S7).
+- [ ] `main` mengandungi M2 dan `docs/demo-m2.md`; `git status --short` kosong (Kuiz S8).
+
+Peserta yang ketinggalan: gunakan `templates/kod/` (modul **Templat & Rujukan**) mengikut pelan kejar dalam nota penceramah — tetapi **Lab 8.2 langkah 1 (serangan DevTools)** wajib dibuat sendiri: itu pelajaran utama hari ini.
+
+---
+
+## Lampiran — Lab individu Modul Pas (rujukan)
+
+> ℹ️ Lab di bawah ialah lab Hari 8 sebelum mod pasukan: Modul Pas dibina secara individu dalam `kelas-ci-<nama>` dengan Claude Code (Lab 8.10–8.13) atau secara manual (Lab 8.0–8.4b). Ia kekal sebagai **rujukan, tidak wajib**.
 
 ## Lab 8.10 — Claude Code: Aliran Kelulusan Pas (S9)
 
@@ -2725,20 +3074,3 @@ Menambah babak `admin` kepada demo M2: admin memohon, memulakan semakan pukal da
 Rakam babak 12 (dua pelulus serentak) sebagai GIF pendek untuk demo capstone Hari 10 — ia bukti BR-PAS-01 yang paling mudah difahami pemilik sistem.
 
 ---
-
-## Semakan kendiri — akhir hari
-
-```bash
-git log --oneline -8
-php spark routes | grep pas/              # 11 laluan Pas; semakan dengan permission:
-composer test -- --testdox | tail -20   # semua hijau
-```
-
-🪟 PowerShell: `php spark routes | Select-String pas/`, `composer test '--' --testdox | Select-Object -Last 20`.
-
-- [ ] Satu permohonan bergerak `submitted → under_review → approved` dengan 3 baris `status_logs` (Kuiz S1).
-- [ ] Penyemak tidak boleh meluluskan melalui DevTools/curl; `pelulus` tidak boleh memulakan semakan pukal — kedua-duanya redirect, status kekal (Kuiz S6).
-- [ ] `composer test -- tests/feature/Pas` hijau, termasuk `PassAccessTest` dan `PassBatchReviewTest` (Kuiz S7).
-- [ ] `main` mengandungi M2 dan `docs/demo-m2.md`; `git status --short` kosong (Kuiz S8).
-
-Peserta yang ketinggalan: gunakan `templates/kod/` (modul **Templat & Rujukan**) mengikut pelan kejar dalam nota penceramah — tetapi **Lab 8.2 langkah 1 (serangan DevTools)** wajib dibuat sendiri: itu pelajaran utama hari ini.
