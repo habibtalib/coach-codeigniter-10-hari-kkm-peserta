@@ -25,37 +25,80 @@ Everything you type, and every file Claude Code reads, is sent to Anthropic's se
 
 ## 1. Prerequisites
 
-- Windows 10 1809+ or Windows 11; Git for Windows (Git Bash) and VS Code already installed ([`persediaan.en.md`](./persediaan.en.md)).
+- Windows 10 1809+ or Windows 11, **64-bit**; Git for Windows (Git Bash) and VS Code already installed ([`persediaan.en.md`](./persediaan.en.md)).
 - **A Claude account provided for the course** (Pro, Max, Team, Enterprise or Console). The free claude.ai plan does **not** include Claude Code. Ask the trainer if you have not received an invitation.
 - Internet access to the domains in [§7](#7-kkm-network-proxy--domains).
 
+**Pre-check (1 minute), in Windows PowerShell:**
+
+```powershell
+[Environment]::Is64BitOperatingSystem
+curl.exe -sI https://downloads.claude.ai/claude-code-releases/latest
+```
+
+- The first line must be `True`. `False` = 32-bit Windows, Claude Code cannot be installed; use another computer or follow the trainer's demo.
+- The first line of the `curl.exe` output must be `HTTP/1.1 200 OK`. `403`, no output or *Could not resolve host* = the network blocks `downloads.claude.ai`: see [§7](#7-kkm-network-proxy--domains) before installing.
+- Use `curl.exe`, not `curl`: in PowerShell, `curl` is an alias for `Invoke-WebRequest`.
+
 ## 2. Install
 
-Claude Code is installed from **PowerShell** (not Git Bash). No administrator window is needed.
+Pick **one** method. An administrator window (*Run as administrator*) is **not** needed.
 
-1. Press **Start**, type `PowerShell`, open **Windows PowerShell**.
-2. Run:
+**A. Windows PowerShell (recommended).** Press **Start**, type `PowerShell`, open **Windows PowerShell**. Do **not** pick *Windows PowerShell (x86)*: it is a 32-bit process and the installer rejects it. The prompt starts with `PS C:\`.
 
-   ```powershell
-   irm https://claude.ai/install.ps1 | iex
-   ```
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
 
-   The installer downloads `claude.exe` to `%USERPROFILE%\.local\bin` and keeps it updated automatically in the background.
+**B. Command Prompt (CMD).** If PowerShell is blocked by the ICT unit. Prompt `C:\` without `PS`:
 
-3. Close **all** VS Code and terminal windows, then reopen them (so the new `PATH` is read).
+```bat
+curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+```
 
-Common error: `'irm' is not recognized` → you are in Command Prompt, not PowerShell.
+**C. WinGet.** If the installer script is blocked but Microsoft Store/WinGet is allowed:
+
+```powershell
+winget install Anthropic.ClaudeCode
+```
+
+WinGet does **not** update automatically: run `winget upgrade Anthropic.ClaudeCode` now and then.
+
+After installing:
+
+1. The installer shows **no** progress while it downloads. Wait until the prompt returns (1–3 minutes).
+2. Methods A and B install `claude.exe` to `%USERPROFILE%\.local\bin` and keep it updated automatically in the background.
+3. Close **all** VS Code and terminal windows, then reopen them so the new `PATH` is read. The terminal inside VS Code inherits its `PATH` from VS Code, so VS Code itself must be closed.
+
+> ⚠️ **Common mistake:** running the Mac/Linux command `curl -fsSL https://claude.ai/install.sh | bash` on Windows. The error is `A parameter cannot be found that matches parameter name 'fsSL'` or `'bash' is not recognized`. Use method A, B or C above.
+
+**Option without a terminal:** the **Claude Desktop** app for Windows (<https://claude.com/download>) has a *Code* tab that runs Claude Code. The course labs use the terminal, so use Desktop only if the terminal install fails and the trainer agrees.
 
 ## 3. Verify
 
 In the VS Code **Git Bash** terminal:
 
 ```bash
-claude --version     # cth 2.1.x (Claude Code)
-claude doctor        # semakan pemasangan & tetapan; ikut cadangan jika ada amaran
+claude --version     # e.g. 2.1.x (Claude Code)
+claude doctor        # install & settings check; follow its suggestions if it warns
 ```
 
-Claude Code uses Git Bash for shell commands. If `claude doctor` reports that Git Bash was not found, add this to `%USERPROFILE%\.claude\settings.json`:
+**`claude` not found?** The install succeeded but the folder `%USERPROFILE%\.local\bin` is not in `PATH` yet. In Windows PowerShell:
+
+```powershell
+Test-Path "$env:USERPROFILE\.local\bin\claude.exe"
+```
+
+`False` = not installed: repeat §2. `True` = the file is there, add the folder to your user `PATH` (once, permanent):
+
+```powershell
+$p = [Environment]::GetEnvironmentVariable('PATH', 'User')
+[Environment]::SetEnvironmentVariable('PATH', "$p;$env:USERPROFILE\.local\bin", 'User')
+```
+
+Close all VS Code and terminal windows, reopen, run `claude --version` again.
+
+**The shell Claude Code uses.** With Git for Windows, Claude Code runs commands through **Git Bash**; without it, it uses PowerShell. This course uses Git Bash. If `claude doctor` reports Git Bash not found (Git installed outside `C:\Program Files\Git`), find it with `where.exe git` in PowerShell, then add to `%USERPROFILE%\.claude\settings.json` (the file must be named `bash.exe`, not `git-bash.exe`):
 
 ```json
 {
@@ -81,6 +124,9 @@ claude
 | `/login` | Log in or switch accounts |
 | `/logout` | Log out |
 | `/status` | Version, model, account, connectivity |
+
+
+Login fails for no clear reason? `/logout`, close Claude Code, run `claude` again and log in once more. The error `OAuth error: Invalid code` means the code expired or was cut off when copied: press `Enter` and complete the login quickly.
 
 ## 5. Project settings: block `.env`
 
@@ -140,6 +186,8 @@ If `claude` hangs or login fails on the office network, ask IT to allow these do
 | `platform.claude.com` | Console login & tokens |
 | `downloads.claude.ai` | Installer & automatic updates |
 | `code.claude.com` | Built-in documentation |
+| `sso.claude.com` | Login for organisations that use SSO |
+| `registry.npmjs.org` | MCP servers launched with `npx` (Lab 7.8) |
 
 Does the network use a proxy? Add this to `%USERPROFILE%\.claude\settings.json` (address from IT), then reopen `claude`:
 
@@ -152,6 +200,8 @@ Does the network use a proxy? Add this to `%USERPROFILE%\.claude\settings.json` 
 ```
 
 Check with `/status` (the *Proxy* row). SOCKS proxies are not supported.
+
+**Proxy with TLS inspection** (errors `unable to get local issuer certificate` or `SELF_SIGNED_CERT_IN_CHAIN`): Claude Code installed with method A/B trusts the Windows certificate store by default, so ask IT to install the proxy's CA certificate in the Windows store. If IT gives you a `.pem` certificate file, add it to the `env` of the same file: `"NODE_EXTRA_CA_CERTS": "C:\\path\\corporate-ca.pem"`.
 
 ## 8. VS Code extension (optional)
 
@@ -168,6 +218,16 @@ Check with `/status` (the *Proxy* row). SOCKS proxies are not supported.
 | `/status` → `Login: Expired` | Login session expired | `/login` |
 | Hangs on *Connecting…* | Office proxy/firewall | §7 — domains & `HTTPS_PROXY` |
 | Claude Code reads `.env` | `.claude/settings.json` missing or invalid JSON | `claude doctor` reports settings errors; fix the §5 file |
+| `claude` not found although the install succeeded | `%USERPROFILE%\.local\bin` not in `PATH` | §3 — `Test-Path`, then add it to the user `PATH` |
+| `Claude Code does not support 32-bit Windows` | *Windows PowerShell (x86)* was opened | Open *Windows PowerShell* without (x86); check `[Environment]::Is64BitOperatingSystem` |
+| `A parameter cannot be found that matches parameter name 'fsSL'` | Mac/Linux command run in PowerShell | §2 method A |
+| `The token '&&' is not a valid statement separator` | CMD command run in PowerShell | §2 method A, or open Command Prompt for method B |
+| `Could not create SSL/TLS secure channel` | Windows PowerShell 5.1 without TLS 1.2 | Run `[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12`, then the §2 A command in the same window |
+| `CRYPT_E_NO_REVOCATION_CHECK` or `CRYPT_E_REVOCATION_OFFLINE` (method B) | Firewall blocks the certificate revocation check | Add `--ssl-revoke-best-effort` to the method B `curl`, or use method A |
+| Error containing HTML, `403` or `System.Xml.XmlDocument` during install | Network/proxy returns a block page | §1 `curl.exe` check; §7; or method C (WinGet) |
+| `The process cannot access the file … being used by another process` | A previous install is still running | Close all `claude` windows, retry |
+| `API Error: 403` after login | Subscription inactive or proxy | Check the account at <https://claude.ai/settings>; §7 |
+| `claude doctor`: Git Bash not found | Git in a non-default location | §3 — `CLAUDE_CODE_GIT_BASH_PATH` |
 
 ## ✅ Checklist
 
