@@ -1657,6 +1657,20 @@ Draft a PRD of eSPKP's Pass flow from the code (*reverse engineering*) with Clau
 
 ## Self-check — end of day
 
+**Claude Code (today):**
+
+```bash
+claude --version && claude mcp list              # ci4-spark & context7: ✔ Connected
+ls .claude/agents .claude/skills .claude/hooks   # semak-ci4.md · migration-ci4/ · sekat-env.php semak-sintaks.php
+git log --oneline -8                             # CHORE: CLAUDE.md, agent & skill, MCP, prompt art, settings & hooks
+grep "^## " docs/nota-claude.md                  # onboarding, Seni Prompt, Amalan Claude Code sections
+git status                                       # clean; .claude/settings.local.json not tracked
+```
+
+🪟 PowerShell: `Get-ChildItem .claude/agents, .claude/skills, .claude/hooks -Name`, `Select-String "^## " docs/nota-claude.md`.
+
+**Pass module (Day 8 reference — for participants who did the manual Pass labs):**
+
 ```bash
 git log --oneline -9                    # 8 "PAS:" commits today (4 core labs + 4 follow-up labs)
 php spark routes | grep pas/permohonan  # 6 routes (5 + Lab 7.3b), session filter

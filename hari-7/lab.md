@@ -1657,6 +1657,20 @@ Mendraf PRD aliran Pas eSPKP daripada kod (*reverse engineering*) dengan Claude 
 
 ## Semakan kendiri — akhir hari
 
+**Claude Code (hari ini):**
+
+```bash
+claude --version && claude mcp list              # ci4-spark & context7: ✔ Connected
+ls .claude/agents .claude/skills .claude/hooks   # semak-ci4.md · migration-ci4/ · sekat-env.php semak-sintaks.php
+git log --oneline -8                             # CHORE: CLAUDE.md, agent & skill, MCP, seni prompt, tetapan & hook
+grep "^## " docs/nota-claude.md                  # bahagian onboarding, Seni Prompt, Amalan Claude Code
+git status                                       # bersih; .claude/settings.local.json tidak dijejak
+```
+
+🪟 PowerShell: `Get-ChildItem .claude/agents, .claude/skills, .claude/hooks -Name`, `Select-String "^## " docs/nota-claude.md`.
+
+**Modul Pas (rujukan Hari 8 — bagi peserta yang membuat lab manual Pas):**
+
 ```bash
 git log --oneline -9                    # 8 commit PAS: hari ini (4 lab teras + 4 lab lanjutan)
 php spark routes | grep pas/permohonan  # 6 laluan (5 + Lab 7.3b), filter session
