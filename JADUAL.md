@@ -93,14 +93,14 @@
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 6 | — |
-| 09:00–10:00 | S1 | Migration & Model permohonan pas | Menulis Model/Entity `PassApplication` & `PassDocument` |
-| 10:00–10:30 | S5 | Lanjutan S1: kaedah enum & Entity tambahan | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` diuji dalam `php spark shell` |
-| 10:45–12:00 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran |
-| 12:00–12:30 | S6 | Lanjutan S2: penapis jenis & carian | Penapis `?pass_type=` + carian `?q=` dalam skop pemilik; bukti kebocoran `orLike()` tanpa kurungan |
-| 14:30–15:30 | S3 | Borang, validasi & muat naik dokumen | Muat naik fail selamat (jenis/saiz/nama rawak/luar `public`) |
-| 15:30–16:00 | S7 | Lanjutan S3: tambah dokumen susulan | Had 3 dokumen setiap permohonan, semakan sebelum `move()` dan di bawah kunci `FOR UPDATE` |
-| 16:00–16:35 | S4 | Ujian manual & semakan | Menguji kes sempadan muat naik & validasi |
-| 16:35–17:00 | S8 | Lanjutan S4: kes sempadan automatik; wrap-up | `PassSubmitTest` PHPUnit + mutasi `>=` |
+| 09:00–10:30 | S9 | Claude Code: pasang, `CLAUDE.md` & mod Plan | Menulis `CLAUDE.md` projek ikut standard kursus; memori pengguna/projek/tempatan |
+| 10:45–11:45 | S10 | Claude Code: subagent & skill | Subagent baca sahaja `semak-ci4` pada kod Hari 6; skill `migration-ci4` |
+| 11:45–12:30 | S11 | Claude Code: MCP untuk CodeIgniter | Server MCP `ci4-spark` (PHP, baca sahaja); Context7; MySQL/GitLab pilihan |
+| 14:30–15:30 | S1 | Migration & Model permohonan pas | Menulis Model/Entity `PassApplication` & `PassDocument` |
+| 15:30–16:45 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran |
+| 16:45–17:00 | S5, S6 | Lanjutan jika sempat; wrap-up | Lab 7.1b / 7.2b |
+
+> ℹ️ Lab 7.3, 7.4 (dan 7.3b/7.4b) disambung pada pagi Hari 8.
 
 ## Hari 8 — Modul Pas (Bahagian 2) · [nota](./hari-8/README.md)
 

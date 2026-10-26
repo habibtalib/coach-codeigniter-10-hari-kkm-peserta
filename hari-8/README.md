@@ -27,6 +27,8 @@ Di akhir hari ini, peserta boleh:
 
 ## 📅 Jadual Hari Ini
 
+> ℹ️ Hari 8 bermula dengan menyiapkan Lab 7.3 dan 7.4 (dan 7.3b/7.4b) dari Hari 7 (disambung dari pagi Hari 7 yang digunakan untuk Claude Code); kemudian teruskan jadual di bawah.
+
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 7 | — |

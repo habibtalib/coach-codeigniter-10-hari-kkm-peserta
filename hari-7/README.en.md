@@ -22,6 +22,9 @@ By the end of today, participants can:
 | O8 | **Build** a type filter and a search inside the owner scope with `groupStart()`/`groupEnd()`, and **prove** the BR-PAS-04 leak when the brackets are missing | S6 | [Lab 7.2b](./lab.en.md#lab-72b--type-filter--search-on-my-applications-s6); `pemohon2` at `?q=sintetik` → 1 application |
 | O9 | **Build** follow-up document upload for the owner with a 3-documents-per-application limit, checked before `move()` and under a `FOR UPDATE` lock | S7 | [Lab 7.3b](./lab.en.md#lab-73b--adding-follow-up-documents-to-an-application-s7); a 4th document is rejected with no orphan file |
 | O10 | **Automate** the Lab 7.4 boundary cases with PHPUnit (`FakeUploadedFile`, `#[DataProvider]`) and **show** the tests catch a `>` → `>=` mutation | S8 | [Lab 7.4b](./lab.en.md#lab-74b--automating-the-boundary-cases-with-phpunit-s8); `OK (14 tests, …)` |
+| O11 | **Write** a project `CLAUDE.md` to the course standard and **tell apart** user memory, project memory and `CLAUDE.local.md` | S9 | [Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9); `CLAUDE.md` committed, `CLAUDE.local.md` in `.gitignore` |
+| O12 | **Create** the read-only `semak-ci4` subagent and the `migration-ci4` skill, and **verify** AI findings against the real code | S10 | [Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10); `docs/semakan-ci4-hari6.md` |
+| O13 | **Install** and **test** the `ci4-spark` MCP server (JSON-RPC over stdio, read-only) and **register** Context7 | S11 | [Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11); `.mcp.json` + 5 JSON-RPC replies |
 
 ---
 
@@ -30,16 +33,18 @@ By the end of today, participants can:
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 6 recap | — |
-| 09:00–10:00 | S1 | Pass application migration & Model | Write the `PassApplication` & `PassDocument` Model/Entity |
-| 10:00–10:30 | S5 | S1 follow-up: extra enum & Entity methods | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` tested in `php spark shell` |
+| 09:00–10:30 | S9 | Claude Code: install, `CLAUDE.md` & Plan mode | Write the project `CLAUDE.md` to the course standard; tell user/project/local memory apart ([Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9)) |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–12:00 | S2 | Basic CRUD Controller & View | Build the list (owner scope) & detail view |
-| 12:00–12:30 | S6 | S2 follow-up: type filter & search | `?pass_type=` filter + `?q=` search inside the owner scope; proof of the `orLike()` leak without brackets |
+| 10:45–11:45 | S10 | Claude Code: subagents & skills | Read-only `semak-ci4` subagent on Day 6 code; `migration-ci4` skill ([Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10)) |
+| 11:45–12:30 | S11 | Claude Code: MCP for CodeIgniter | `ci4-spark` MCP server (PHP, read-only) tested & registered; Context7; MySQL/GitLab optional ([Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–15:30 | S3 | Form, validation & document upload | Secure file upload (type/size/random name/outside `public`) |
-| 15:30–16:00 | S7 | S3 follow-up: follow-up documents | 3 documents per application, checked before `move()` and under a `FOR UPDATE` lock |
-| 16:00–16:35 | S4 | Manual testing & review | Test upload & validation boundary cases |
-| 16:35–17:00 | S8 | S4 follow-up: automated boundary cases; wrap-up | PHPUnit `PassSubmitTest` + `>=` mutation |
+| 14:30–15:30 | S1 | Pass application migration & Model | Write the `PassApplication` & `PassDocument` Model/Entity (Lab 7.0, 7.1) |
+| 15:30–16:45 | S2 | Basic CRUD Controller & View | Build the list (owner scope) & detail view (Lab 7.2) |
+| 16:45–17:00 | S5, S6 | Follow-ups if time allows; wrap-up | Lab 7.1b / 7.2b (the rest continued on your own) |
+
+> ℹ️ Lab 7.3, 7.4 (and 7.3b/7.4b) continue on Day 8 morning.
+>
+> ℹ️ The times in the S1–S8 headings below are the original schedule; follow the schedule above.
 
 ---
 
@@ -63,6 +68,237 @@ flowchart LR
     E -- error --> F[rollback + delete files]
     E -- commit --> G[Redirect to details<br/>PAS-2026-0001]
 ```
+
+---
+
+## S9 — Claude Code: Install, CLAUDE.md & Plan Mode (09:00–10:30)
+
+> ℹ️ **Day 7 morning = Claude Code.** S9–S11 replace S1/S5/S2/S6 in the morning. The Pass Module (S1, S2) starts at 14:30. Labs: [Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9) · [Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10) · [Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11).
+
+### 9.1 From Lab 6.3c to today
+
+In [Lab 6.3c](../hari-6/lab.md#lab-63c--claude-code-suggest-tests-check-by-running-s7) you installed Claude Code, blocked `.env` and asked for test suggestions in *Plan* mode. Today we set up the **four layers** that decide how Claude Code works in your `kelas-ci-<nama>` project:
+
+| Layer | File | Loaded by | Purpose |
+|-------|------|-----------|---------|
+| Instructions | `CLAUDE.md` | Every session, automatically | Project context: stack, commands, conventions, rules |
+| Blocks | `.claude/settings.json` | Claude Code (not the model) | **Enforced** `deny` rules: `.env` cannot be read |
+| Expertise | `.claude/agents/`, `.claude/skills/` | When needed | Reviewer subagent, conventions skill (S10) |
+| External tools | `.mcp.json` | When Claude calls a tool | MCP servers: `php spark`, MySQL, documentation (S11) |
+
+Claude Code's role does not change: **explainer and reviewer, not module generator** ([`kolaborasi.md`](../docs/kolaborasi.md) §3).
+
+### 9.2 Memory hierarchy: three CLAUDE.md files
+
+Claude Code reads all these files when a session starts and **combines** them (it does not overwrite). The file closest to the working folder is read last.
+
+| Scope | Location (Windows) | For | Committed? |
+|-------|--------------------|-----|-----------|
+| User | `%USERPROFILE%\.claude\CLAUDE.md` (Git Bash: `~/.claude/CLAUDE.md`) | Personal style for all projects ("explain in Malay") | No |
+| Project | `./CLAUDE.md` (or `./.claude/CLAUDE.md`) | Stack, commands, conventions of this project | **Yes** |
+| Local | `./CLAUDE.local.md` | Your Laragon URL, personal notes for this project | No — add it to `.gitignore` |
+
+- `/memory` lists these files and opens them in the editor. It also turns **auto memory** on or off (notes Claude writes itself in `~/.claude/projects/<project>/memory/`).
+- `/context` shows which memory files were actually loaded.
+- To add a rule to `CLAUDE.md`, ask directly: *"add to CLAUDE.md: …"*, or edit the file through `/memory`. (The old `#` shortcut is no longer in the current documentation.)
+- Target: **under 200 lines**. A long `CLAUDE.md` uses up context and is followed less well. Other files can be imported with `@docs/spesifikasi.md`.
+
+### 9.3 A good CLAUDE.md for a CI4 project
+
+`/init` generates a draft by reading the project. That draft is only a start: add what Claude **cannot guess** from the code.
+
+| Include | Do not include |
+|---------|----------------|
+| Exact commands: `php spark serve`, `composer test`, `php spark migrate --all` | Things obvious from the code ("this is a PHP project") |
+| Course conventions: thin controllers, logic in Services, enum = source of status | Long CI4 tutorials |
+| Rules: synthetic data, do not read `.env`, explain before commit | Passwords, tokens, `.env` contents |
+| Table/class names from the SPEC | A list of every file |
+
+Full template: [Lab 7.6 step 4](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9).
+
+### 9.4 Instructions ≠ blocks
+
+`CLAUDE.md` is **context**: the model usually follows it, but there is no guarantee. Rules in `.claude/settings.json` are enforced by Claude Code itself before a tool runs:
+
+```json
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./writable/uploads/**)"
+    ]
+  }
+}
+```
+
+The full file (4 `deny` rules) is in [tutorial §5](../docs/tutorial-claude-code.md#5-project-settings-block-env). Write important rules in **both** places: `CLAUDE.md` explains *why*, `settings.json` blocks.
+
+### 9.5 Plan mode
+
+Press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**. Claude reads, searches and suggests — **no files are changed, no shell commands that change the system**. Use *Plan* mode to:
+
+- understand a colleague's code or your own Day 6 code;
+- ask for a plan before a new feature (you write the code);
+- review security (S10).
+
+Leave *Plan* mode only when you understand the plan and want Claude to make small changes that you approve one by one.
+
+### 🎯 Quiz S9
+
+> Answer after Lab 7.6. Passing this quiz marks the Lab 7.6 checkpoint.
+
+1. Ali writes "Never read the .env file" in the project `CLAUDE.md` but does not create `.claude/settings.json`. What is the status of `.env` now?
+   - [ ] Safe: Claude Code rejects every command that conflicts with `CLAUDE.md`
+   - [ ] Safe: `/init` adds a `deny` rule automatically when it sees the word `.env`
+   - [x] Not blocked: `CLAUDE.md` is only context that is usually followed; only the `deny` rule `Read(./.env)` in `.claude/settings.json` blocks it
+   - [ ] Not blocked, but adding `.env` to `.gitignore` is enough
+   > `CLAUDE.md` influences the model; `settings.json` is enforced by Claude Code before the `Read` tool runs. `.gitignore` only stops `git add`, not reading the file.
+
+2. You want Claude to know your personal Laragon URL (`http://kelas-ci-ali.test`) for this project only, without that URL going into the GitLab repo. Where do you write it?
+   - [ ] `CLAUDE.md` in the project root
+   - [x] `CLAUDE.local.md` in the project root, listed in `.gitignore`
+   - [ ] `.claude/settings.json`
+   - [ ] `%USERPROFILE%\.claude\CLAUDE.md`
+   > The project `CLAUDE.md` is committed and shared. `~/.claude/CLAUDE.md` applies to **all** your projects. `CLAUDE.local.md` is loaded together with the project `CLAUDE.md`, but stays on your laptop if it is in `.gitignore`.
+
+---
+
+## S10 — Claude Code: Subagents & Skills (10:45–11:45)
+
+### 10.1 Subagents: helpers with their own context
+
+A subagent is a specialised helper that Claude Code launches for one task. It starts with a **fresh context window**, can only use the tools you allow, and returns only a **summary** to the main conversation. Good for reviews: 20 files read by a subagent do not fill up your conversation.
+
+File: `.claude/agents/<name>.md` (project, committed) or `~/.claude/agents/<name>.md` (personal).
+
+```markdown
+---
+name: semak-ci4
+description: CodeIgniter 4 security reviewer (read-only). Use after writing a controller, view, model or route.
+tools: Read, Grep, Glob
+model: sonnet
+---
+
+You are a CodeIgniter 4 security reviewer. ...
+```
+
+| Field | Required | Meaning |
+|-------|----------|---------|
+| `name` | Yes | Unique identifier (course: lowercase and `-`) |
+| `description` | Yes | **When** Claude should hand the task to this subagent |
+| `tools` | No | Allowed tools. No field = inherits all tools. `Read, Grep, Glob` = read-only |
+| `model` | No | `sonnet`, `opus`, `haiku`, `fable`, a full model ID, or `inherit` |
+
+Call a subagent in plain words (*"use the semak-ci4 subagent to review app/Controllers/Tlk"*) or with `@agent-semak-ci4`. Claude Code detects new or changed files within a few seconds; restart `claude` only if the `.claude/agents/` folder was just created in that session. `/agents` shows a reminder of these file locations (older versions open a wizard).
+
+### 10.2 Skills: knowledge loaded when needed
+
+A skill is a folder with a `SKILL.md`: instructions, conventions or work steps. At the start Claude reads only the `description`; the full content is loaded when your request **matches** the `description`, or when you type `/<skill-name>`.
+
+File: `.claude/skills/<name>/SKILL.md` (project) or `~/.claude/skills/<name>/SKILL.md` (personal).
+
+```markdown
+---
+name: migration-ci4
+description: CI-KKM-10 course migration & seeder conventions. Use when writing or reviewing migrations, seeders or schema changes.
+---
+
+Steps and rules ...
+```
+
+- `name` becomes the command `/migration-ci4`. `description` is recommended: without it Claude does not know when to use the skill.
+- **Slash commands are now part of skills.** An old file `.claude/commands/semak.md` still works and creates `/semak`, the same as `.claude/skills/semak/SKILL.md`.
+- `$ARGUMENTS` in `SKILL.md` is replaced with the text after the command: `/migration-ci4 vehicles`.
+- New skills are detected without a restart; if the `.claude/skills/` folder was just created in the session, run `/reload-skills`.
+
+### 10.3 CLAUDE.md, skill or subagent?
+
+| | `CLAUDE.md` | Skill | Subagent |
+|---|-------------|-------|----------|
+| Loaded | Every session, in full | `description` only; content when it matches or on `/name` | When a task is handed over |
+| Context | Main conversation | Main conversation | Its own context window; returns a summary |
+| Tool limits | None | None (optional `allowed-tools` grants permission, it does not block) | The `tools` field blocks |
+| Course example | Stack, `spark` commands, data rules | `migration-ci4`: migration & seeder conventions | `semak-ci4`: read-only security reviewer |
+| Question to choose | "Needed **every time**?" | "Needed **sometimes**, for one kind of work?" | "A separate task that reads many files?" |
+
+### 🎯 Quiz S10
+
+> Answer after Lab 7.7. Passing this quiz marks the Lab 7.7 checkpoint.
+
+1. Lab 7.7 step 4: you ask the `semak-ci4` subagent (`tools: Read, Grep, Glob`) to fix the `esc()` finding it found by itself. What happens?
+   - [ ] It changes the view because you asked
+   - [ ] It asks for `Edit` permission and changes the view after you approve
+   - [ ] It calls `php spark` to fix the file
+   - [x] It cannot change files because it has no `Edit`, `Write` or `Bash` tool; it only reports suggestions
+   > The `tools` field is an allow-list: the subagent only has the listed tools. A read-only reviewer cannot "overshoot" and fix code. You make the fix and understand it.
+
+2. When does Claude load the **full content** of `.claude/skills/migration-ci4/SKILL.md`?
+   - [x] When your request matches that skill's `description`, or when you type `/migration-ci4`
+   - [ ] At the start of every session, like `CLAUDE.md`
+   - [ ] Only after `claude` is restarted
+   - [ ] When you open a file in `app/Database/Migrations/` in VS Code
+   > At the start, Claude only sees the `name` and `description` of each skill. The full content is loaded when needed, so a skill does not use context for the whole session like `CLAUDE.md`.
+
+---
+
+## S11 — Claude Code: MCP for CodeIgniter (11:45–12:30)
+
+### 11.1 What MCP is
+
+The **Model Context Protocol (MCP)** is an open protocol that lets Claude Code call **tools** from other programs, called MCP *servers*. Messages are JSON-RPC 2.0, over:
+
+- **stdio**: Claude Code runs a local program (e.g. `php tools/ci4-spark-mcp.php`) and talks through stdin/stdout, one JSON message per line;
+- **HTTP**: a remote server at a URL (e.g. Context7, GitLab).
+
+```mermaid
+flowchart LR
+    C[Claude Code] -- "tools/list · tools/call<br/>JSON-RPC (stdio)" --> S[ci4-spark-mcp.php]
+    S -- "proc_open: php spark routes" --> P[CI4 project]
+    C -- "HTTPS" --> X[Context7 / GitLab]
+```
+
+Flow: `initialize` (protocol version negotiation) → `tools/list` (tool list + input schema) → `tools/call` (Claude calls a tool; the result comes back as text `content`, `isError: true` if it failed). Claude Code asks for your permission before each MCP tool call, the same as for `Edit` or `Bash`.
+
+### 11.2 Registration scopes
+
+| Scope | Command | Stored in | For |
+|-------|---------|-----------|-----|
+| `local` (default) | `claude mcp add name …` | `~/.claude.json`, for this project only | Servers with personal credentials (MySQL) |
+| `project` | `claude mcp add --scope project name …` | `.mcp.json` in the project root (committed) | Shared servers without secrets (`ci4-spark`) |
+| `user` | `claude mcp add --scope user name …` | `~/.claude.json`, all projects | Context7 |
+
+- `.mcp.json` supports `${VAR}` and `${VAR:-default}` in `command`, `args`, `env`, `url` and `headers`, so secrets stay in *environment variables*, not in a committed file.
+- Servers from `.mcp.json` must be **approved** once in an interactive session.
+- `/mcp` shows the status of each server, handles OAuth login and turns servers off/on. From the terminal: `claude mcp list`, `claude mcp get <name>`, `claude mcp remove <name>`.
+
+### 11.3 Four servers for this course
+
+| Server | Type | What Claude gets | Safety limits |
+|--------|------|------------------|---------------|
+| `ci4-spark` (course template) | stdio, PHP | `routes`, `migrate_status`, `db_table`, `filter_check` | **Read-only**; input checked with regex; no `migrate`/`db:seed`/shell |
+| MySQL `@benborla29/mcp-server-mysql` | stdio, Node | `SELECT` queries on your `kkm_latihan` DB | Writes off by default + a `SELECT`-only MySQL user |
+| Context7 | HTTP | Current CodeIgniter 4 / Shield documentation | Your question is sent to Context7; do not paste secrets |
+| GitLab (GitLab KKM) | HTTP / stdio | Issues, MRs, pipelines of your project | OAuth or read-only PAT; if GitLab KKM supports it & the network allows |
+
+> ⚠️ **Never** point an MCP server (MySQL or any other) at a real KKM/eSPKP database or system. Only the `kkm_latihan` training DB in your Laragon.
+
+### 🎯 Quiz S11
+
+> Answer after Lab 7.8. Passing this quiz marks the Lab 7.8 checkpoint.
+
+1. Lab 7.8 step 4: the test file sends a `tools/call` `db_table` with `{"table": "users; DROP TABLE users"}` to `ci4-spark`. What does the server reply?
+   - [ ] The `users` table is dropped because `php spark` runs that SQL
+   - [ ] MySQL rejects the query with an SQL syntax error
+   - [x] A result with `isError: true` and the message `Invalid table name`; `php spark` does not run at all
+   - [ ] A JSON-RPC error `-32601 Method not found`
+   > The table name is checked with `^[A-Za-z0-9_]+$` before anything runs, and `php spark` is called through `proc_open()` with an array (no shell). Input errors come back as a tool result with `isError: true` so Claude can correct its call; `-32601` is only for a *method* that does not exist.
+
+2. Why is the password of the MySQL user `claude_ro` **not** written directly in `.mcp.json`?
+   - [ ] `.mcp.json` does not support an `env` block
+   - [x] `.mcp.json` is committed and shared; use the `local` scope or `${MYSQL_PASS}` so the value comes from each participant's laptop
+   - [ ] Claude Code rejects a `.mcp.json` that contains a password
+   - [ ] stdio servers cannot receive *environment variables*
+   > `.mcp.json` is a project file that goes into GitLab. The `local` scope stores the configuration in your `~/.claude.json`; `${VAR}` in `.mcp.json` is expanded from the *environment* when Claude Code starts.
 
 ---
 

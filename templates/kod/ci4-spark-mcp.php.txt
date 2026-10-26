@@ -1,0 +1,306 @@
+<?php
+
+/**
+ * ci4-spark MCP server: read-only `php spark` tools for Claude Code.
+ *
+ * CI-KKM-10, Lab 7.C. Copy to `tools/ci4-spark-mcp.php` in your project (kelas-ci-<nama>).
+ *
+ * Transport: MCP stdio (JSON-RPC 2.0, one JSON message per line).
+ * Protocol:  initialize handshake (MCP 2024-11-05 … 2025-11-25).
+ * Tools:     routes, migrate_status, db_table, filter_check. READ-ONLY.
+ *            Never add migrate, migrate:rollback, db:seed, db:create, shell or any write command.
+ *
+ * Register:  claude mcp add ci4-spark -- php tools/ci4-spark-mcp.php
+ * Test:      echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | php tools/ci4-spark-mcp.php
+ *
+ * Rules:     stdout carries MCP messages only. Logs go to stderr.
+ */
+
+declare(strict_types=1);
+
+const SERVER_NAME    = 'ci4-spark';
+const SERVER_VERSION = '1.0.0';
+const MAX_OUTPUT     = 60000;   // bytes of spark output returned to Claude
+const TIMEOUT_SEC    = 30;
+
+// Newest first. If the client asks for a version not in this list, we answer with the newest.
+const PROTOCOL_VERSIONS = ['2025-11-25', '2025-06-18', '2025-03-26', '2024-11-05'];
+
+const HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'];
+
+/** Project root: CI4_PROJECT_ROOT, else the parent of tools/, else the current folder. */
+function projectRoot(): string
+{
+    $env = getenv('CI4_PROJECT_ROOT');
+    if (is_string($env) && $env !== '' && is_file($env . DIRECTORY_SEPARATOR . 'spark')) {
+        return $env;
+    }
+    $parent = dirname(__DIR__);
+    if (is_file($parent . DIRECTORY_SEPARATOR . 'spark')) {
+        return $parent;
+    }
+
+    return (string) getcwd();
+}
+
+function logErr(string $msg): void
+{
+    fwrite(STDERR, '[' . SERVER_NAME . '] ' . $msg . PHP_EOL);
+}
+
+function send(array $message): void
+{
+    // One line per message: JSON_UNESCAPED_* never adds a raw newline.
+    fwrite(STDOUT, json_encode($message, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE) . "\n");
+    fflush(STDOUT);
+}
+
+function result(int|string $id, array $result): void
+{
+    send(['jsonrpc' => '2.0', 'id' => $id, 'result' => $result]);
+}
+
+function error(int|string|null $id, int $code, string $message): void
+{
+    send(['jsonrpc' => '2.0', 'id' => $id, 'error' => ['code' => $code, 'message' => $message]]);
+}
+
+function toolText(string $text, bool $isError = false): array
+{
+    return ['content' => [['type' => 'text', 'text' => $text]], 'isError' => $isError];
+}
+
+/** Tool list. Every tool is read-only: annotations tell the client so. */
+function tools(): array
+{
+    $readOnly = ['readOnlyHint' => true, 'destructiveHint' => false, 'idempotentHint' => true, 'openWorldHint' => false];
+
+    return [
+        [
+            'name'        => 'routes',
+            'title'       => 'php spark routes',
+            'description' => 'List every route of the CodeIgniter 4 app: method, route, handler, before/after filters.',
+            'inputSchema' => ['type' => 'object', 'properties' => new stdClass(), 'additionalProperties' => false],
+            'annotations' => $readOnly,
+        ],
+        [
+            'name'        => 'migrate_status',
+            'title'       => 'php spark migrate:status',
+            'description' => 'Show which migrations have run (namespace, version, batch). Does not run migrations.',
+            'inputSchema' => ['type' => 'object', 'properties' => new stdClass(), 'additionalProperties' => false],
+            'annotations' => $readOnly,
+        ],
+        [
+            'name'        => 'db_table',
+            'title'       => 'php spark db:table',
+            'description' => 'Without "table": list all tables with row and field counts. With "table": show the field metadata '
+                . '(type, length, null, default, keys) of that table. Never returns row data.',
+            'inputSchema' => [
+                'type'                 => 'object',
+                'properties'           => [
+                    'table' => ['type' => 'string', 'pattern' => '^[A-Za-z0-9_]+$', 'description' => 'Table name, e.g. pass_applications'],
+                ],
+                'additionalProperties' => false,
+            ],
+            'annotations' => $readOnly,
+        ],
+        [
+            'name'        => 'filter_check',
+            'title'       => 'php spark filter:check',
+            'description' => 'Show the before/after filters that run for one HTTP method + route, e.g. GET /pas/permohonan.',
+            'inputSchema' => [
+                'type'                 => 'object',
+                'properties'           => [
+                    'method' => ['type' => 'string', 'enum' => HTTP_METHODS],
+                    'path'   => ['type' => 'string', 'pattern' => '^/[A-Za-z0-9/_.\-]*$', 'description' => 'Route path starting with /'],
+                ],
+                'required'             => ['method', 'path'],
+                'additionalProperties' => false,
+            ],
+            'annotations' => $readOnly,
+        ],
+    ];
+}
+
+/**
+ * Run `php spark <args>` in the project root WITHOUT a shell (proc_open with an array),
+ * so arguments can never be read as extra commands.
+ *
+ * @param list<string> $args
+ * @param list<int>    $okCodes exit codes that count as success
+ */
+function spark(array $args, array $okCodes = [0]): array
+{
+    $root = projectRoot();
+    if (! is_file($root . DIRECTORY_SEPARATOR . 'spark')) {
+        return toolText("File 'spark' not found in {$root}. Set CI4_PROJECT_ROOT or run Claude Code in the project root.", true);
+    }
+
+    $cmd  = array_merge([PHP_BINARY, 'spark'], $args);
+    $env  = getenv();
+    $env['NO_COLOR'] = '1';   // CI4 CLI follows https://no-color.org/
+    $proc = proc_open($cmd, [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, $root, $env);
+    if (! is_resource($proc)) {
+        return toolText('Could not start php spark.', true);
+    }
+    fclose($pipes[0]);
+    stream_set_blocking($pipes[1], false);
+    stream_set_blocking($pipes[2], false);
+
+    $out      = '';
+    $deadline = microtime(true) + TIMEOUT_SEC;
+    while (true) {
+        $out .= stream_get_contents($pipes[1]) . stream_get_contents($pipes[2]);
+        $status = proc_get_status($proc);
+        if (! $status['running']) {
+            $out .= stream_get_contents($pipes[1]) . stream_get_contents($pipes[2]);
+            break;
+        }
+        if (microtime(true) > $deadline) {
+            proc_terminate($proc);
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+            proc_close($proc);
+
+            return toolText('php spark ' . implode(' ', $args) . ' timed out after ' . TIMEOUT_SEC . ' s.', true);
+        }
+        usleep(20000);
+    }
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+    proc_close($proc);
+    $code = $status['exitcode'];
+
+    $out = preg_replace('/\e\[[0-9;]*[A-Za-z]/', '', $out) ?? $out;   // strip ANSI colours
+    $out = trim($out);
+    if (strlen($out) > MAX_OUTPUT) {
+        $out = substr($out, 0, MAX_OUTPUT) . "\n… (output truncated)";
+    }
+
+    return toolText("$ php spark " . implode(' ', $args) . "\n\n" . $out, ! in_array($code, $okCodes, true));
+}
+
+/** Validate arguments, then map the tool to ONE fixed spark command. */
+function callTool(string $name, array $args): array
+{
+    switch ($name) {
+        case 'routes':
+            return spark(['routes']);
+
+        case 'migrate_status':
+            return spark(['migrate:status']);
+
+        case 'db_table':
+            $table = $args['table'] ?? null;
+            if ($table === null || $table === '') {
+                return spark(['db:table', '--show'], [0, 1]);   // CI4 4.7 exits 1 after --show
+            }
+            if (! is_string($table) || preg_match('/^[A-Za-z0-9_]+$/', $table) !== 1) {
+                return toolText('Invalid table name. Allowed: letters, digits, underscore.', true);
+            }
+
+            // db:table asks interactively when the table does not exist: check the list first.
+            $list = spark(['db:table', '--show'], [0, 1]);
+            if (preg_match('/\|\s*' . $table . '\s*\|/', $list['content'][0]['text']) !== 1) {
+                return toolText("Table '{$table}' not found. Call db_table without \"table\" to list the tables.", true);
+            }
+
+            return spark(['db:table', $table, '--metadata']);
+
+        case 'filter_check':
+            $method = strtoupper((string) ($args['method'] ?? ''));
+            $path   = (string) ($args['path'] ?? '');
+            if (! in_array($method, HTTP_METHODS, true)) {
+                return toolText('Invalid method. Allowed: ' . implode(', ', HTTP_METHODS) . '.', true);
+            }
+            if (preg_match('#^/[A-Za-z0-9/_.\-]*$#', $path) !== 1) {
+                return toolText('Invalid path. It must start with / and use only letters, digits, / _ . -', true);
+            }
+
+            return spark(['filter:check', $method, $path]);
+    }
+
+    throw new InvalidArgumentException("Unknown tool: {$name}");
+}
+
+function handle(array $msg): void
+{
+    $id     = $msg['id'] ?? null;
+    $method = $msg['method'] ?? null;
+    $params = is_array($msg['params'] ?? null) ? $msg['params'] : [];
+
+    if (! is_string($method)) {
+        if ($id !== null) {
+            error($id, -32600, 'Invalid Request');
+        }
+
+        return;
+    }
+
+    // Notifications (no id) never get a reply.
+    if ($id === null) {
+        return;   // notifications/initialized, notifications/cancelled, …
+    }
+
+    switch ($method) {
+        case 'initialize':
+            $asked   = $params['protocolVersion'] ?? '';
+            $version = in_array($asked, PROTOCOL_VERSIONS, true) ? $asked : PROTOCOL_VERSIONS[0];
+            result($id, [
+                'protocolVersion' => $version,
+                'capabilities'    => ['tools' => ['listChanged' => false]],
+                'serverInfo'      => ['name' => SERVER_NAME, 'version' => SERVER_VERSION],
+                'instructions'    => 'Read-only CodeIgniter 4 spark tools. Use them to check routes, filters, migrations and table schemas.',
+            ]);
+
+            return;
+
+        case 'ping':
+            send(['jsonrpc' => '2.0', 'id' => $id, 'result' => new stdClass()]);
+
+            return;
+
+        case 'tools/list':
+            result($id, ['tools' => tools()]);
+
+            return;
+
+        case 'tools/call':
+            $name = $params['name'] ?? null;
+            $args = is_array($params['arguments'] ?? null) ? $params['arguments'] : [];
+            if (! is_string($name)) {
+                error($id, -32602, 'Missing tool name');
+
+                return;
+            }
+
+            try {
+                result($id, callTool($name, $args));
+            } catch (InvalidArgumentException $e) {
+                error($id, -32602, $e->getMessage());   // unknown tool = protocol error
+            } catch (Throwable $e) {
+                logErr($e->getMessage());
+                result($id, toolText('Server error: ' . $e->getMessage(), true));
+            }
+
+            return;
+    }
+
+    error($id, -32601, "Method not found: {$method}");
+}
+
+logErr('started, project root: ' . projectRoot());
+
+while (($line = fgets(STDIN)) !== false) {
+    $line = trim($line);
+    if ($line === '') {
+        continue;
+    }
+    $msg = json_decode($line, true);
+    if (! is_array($msg)) {
+        error(null, -32700, 'Parse error');
+
+        continue;
+    }
+    handle($msg);
+}

@@ -22,6 +22,9 @@ Di akhir hari ini, peserta boleh:
 | O8 | **Membina** filter jenis dan carian dalam skop pemilik dengan `groupStart()`/`groupEnd()`, dan **membuktikan** kebocoran BR-PAS-04 jika kurungan tiada | S6 | [Lab 7.2b](./lab.md#lab-72b--penapis-jenis--carian-pada-permohonan-saya-s6); `pemohon2` di `?q=sintetik` → 1 permohonan |
 | O9 | **Membina** tambah dokumen susulan untuk pemilik dengan had 3 dokumen setiap permohonan, disemak sebelum `move()` dan di bawah kunci `FOR UPDATE` | S7 | [Lab 7.3b](./lab.md#lab-73b--tambah-dokumen-susulan-pada-permohonan-s7); dokumen ke-4 ditolak tanpa fail yatim |
 | O10 | **Mengautomasikan** kes sempadan Lab 7.4 dengan PHPUnit (`FakeUploadedFile`, `#[DataProvider]`) dan **menunjukkan** ujian menangkap mutasi `>` → `>=` | S8 | [Lab 7.4b](./lab.md#lab-74b--automasikan-kes-sempadan-dengan-phpunit-s8); `OK (14 tests, …)` |
+| O11 | **Menulis** `CLAUDE.md` projek mengikut standard kursus dan **membezakan** memori pengguna, projek dan `CLAUDE.local.md` | S9 | [Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9); `CLAUDE.md` di-commit, `CLAUDE.local.md` dalam `.gitignore` |
+| O12 | **Mencipta** subagent baca sahaja `semak-ci4` dan skill `migration-ci4`, dan **mengesahkan** dapatan AI terhadap kod sebenar | S10 | [Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10); `docs/semakan-ci4-hari6.md` |
+| O13 | **Memasang** dan **menguji** server MCP `ci4-spark` (JSON-RPC stdio, baca sahaja) serta **mendaftarkan** Context7 | S11 | [Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11); `.mcp.json` + 5 balasan JSON-RPC |
 
 ---
 
@@ -30,16 +33,18 @@ Di akhir hari ini, peserta boleh:
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 6 | — |
-| 09:00–10:00 | S1 | Migration & Model permohonan pas | Menulis Model/Entity `PassApplication` & `PassDocument` |
-| 10:00–10:30 | S5 | Lanjutan S1: kaedah enum & Entity tambahan | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` diuji dalam `php spark shell` |
+| 09:00–10:30 | S9 | Claude Code: pasang, `CLAUDE.md` & mod Plan | Menulis `CLAUDE.md` projek ikut standard kursus; membezakan memori pengguna/projek/tempatan ([Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9)) |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:00 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran |
-| 12:00–12:30 | S6 | Lanjutan S2: filter jenis & carian | Filter `?pass_type=` + carian `?q=` dalam skop pemilik; bukti kebocoran `orLike()` tanpa kurungan |
+| 10:45–11:45 | S10 | Claude Code: subagent & skill | Subagent baca sahaja `semak-ci4` pada kod Hari 6; skill `migration-ci4` ([Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10)) |
+| 11:45–12:30 | S11 | Claude Code: MCP untuk CodeIgniter | Server MCP `ci4-spark` (PHP, baca sahaja) diuji & didaftar; Context7; MySQL/GitLab pilihan ([Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–15:30 | S3 | Borang, validasi & muat naik dokumen | Muat naik fail selamat (jenis/saiz/nama rawak/luar `public`) |
-| 15:30–16:00 | S7 | Lanjutan S3: tambah dokumen susulan | Had 3 dokumen setiap permohonan, semakan sebelum `move()` dan di bawah kunci `FOR UPDATE` |
-| 16:00–16:35 | S4 | Ujian manual & semakan | Menguji kes sempadan muat naik & validasi |
-| 16:35–17:00 | S8 | Lanjutan S4: kes sempadan automatik; wrap-up | `PassSubmitTest` PHPUnit + mutasi `>=` |
+| 14:30–15:30 | S1 | Migration & Model permohonan pas | Menulis Model/Entity `PassApplication` & `PassDocument` (Lab 7.0, 7.1) |
+| 15:30–16:45 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran (Lab 7.2) |
+| 16:45–17:00 | S5, S6 | Lanjutan jika sempat; wrap-up | Lab 7.1b / 7.2b (selebihnya disambung sendiri) |
+
+> ℹ️ Lab 7.3, 7.4 (dan 7.3b/7.4b) disambung pada pagi Hari 8.
+>
+> ℹ️ Masa pada tajuk S1–S8 di bawah ialah jadual asal; ikut jadual di atas.
 
 ---
 
@@ -63,6 +68,237 @@ flowchart LR
     E -- ralat --> F[rollback + padam fail]
     E -- commit --> G[Redirect ke butiran<br/>PAS-2026-0001]
 ```
+
+---
+
+## S9 — Claude Code: Pasang, CLAUDE.md & Mod Plan (09:00–10:30)
+
+> ℹ️ **Pagi Hari 7 = Claude Code.** S9–S11 menggantikan S1/S5/S2/S6 pada waktu pagi. Modul Pas (S1, S2) bermula 14:30. Lab: [Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9) · [Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10) · [Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11).
+
+### 9.1 Dari Lab 6.3c ke hari ini
+
+Dalam [Lab 6.3c](../hari-6/lab.md#lab-63c--claude-code-cadang-ujian-semak-dengan-larian-s7) anda sudah memasang Claude Code, menyekat `.env` dan meminta cadangan ujian dalam mod *Plan*. Hari ini kita susun **empat lapisan** yang menentukan cara Claude Code bekerja dalam projek `kelas-ci-<nama>`:
+
+| Lapisan | Fail | Siapa memuatkan | Fungsi |
+|---------|------|-----------------|--------|
+| Arahan | `CLAUDE.md` | Setiap sesi, automatik | Konteks projek: stack, arahan, konvensyen, peraturan |
+| Sekatan | `.claude/settings.json` | Claude Code (bukan model) | Peraturan `deny` yang **dikuatkuasa**: `.env` tidak boleh dibaca |
+| Kepakaran | `.claude/agents/`, `.claude/skills/` | Bila diperlukan | Subagent penyemak, skill konvensyen (S10) |
+| Alat luar | `.mcp.json` | Bila Claude memanggil tool | Server MCP: `php spark`, MySQL, dokumentasi (S11) |
+
+Peranan Claude Code tidak berubah: **penjelas dan penyemak, bukan penjana modul** ([`kolaborasi.md`](../docs/kolaborasi.md) §3).
+
+### 9.2 Hierarki memori: tiga fail CLAUDE.md
+
+Claude Code membaca semua fail ini pada permulaan sesi dan **menggabungkannya** (bukan menulis ganti). Fail yang lebih dekat dengan folder kerja dibaca terakhir.
+
+| Skop | Lokasi (Windows) | Untuk | Di-commit? |
+|------|------------------|-------|-----------|
+| Pengguna | `%USERPROFILE%\.claude\CLAUDE.md` (Git Bash: `~/.claude/CLAUDE.md`) | Gaya peribadi untuk semua projek ("terangkan dalam Bahasa Melayu") | Tidak |
+| Projek | `./CLAUDE.md` (atau `./.claude/CLAUDE.md`) | Stack, arahan, konvensyen projek ini | **Ya** |
+| Tempatan | `./CLAUDE.local.md` | URL Laragon anda, nota peribadi projek ini | Tidak — tambah ke `.gitignore` |
+
+- `/memory` menyenaraikan fail-fail ini dan membukanya dalam editor. Ia juga menghidupkan/mematikan **auto memory** (nota yang Claude tulis sendiri dalam `~/.claude/projects/<projek>/memory/`).
+- `/context` menunjukkan fail memori yang benar-benar dimuatkan.
+- Untuk menambah peraturan ke `CLAUDE.md`, minta terus: *"tambah ke CLAUDE.md: …"*, atau edit fail melalui `/memory`. (Pintasan `#` versi lama tiada lagi dalam dokumentasi semasa.)
+- Sasaran: **kurang 200 baris**. `CLAUDE.md` yang panjang memakan konteks dan kurang dipatuhi. Fail lain boleh diimport dengan `@docs/spesifikasi.md`.
+
+### 9.3 CLAUDE.md projek CI4 yang baik
+
+`/init` menjana draf dengan membaca projek. Draf itu permulaan sahaja: tambah apa yang Claude **tidak boleh teka** daripada kod.
+
+| Masukkan | Jangan masukkan |
+|----------|-----------------|
+| Arahan tepat: `php spark serve`, `composer test`, `php spark migrate --all` | Perkara yang jelas daripada kod ("ini projek PHP") |
+| Konvensyen kursus: controller nipis, logik dalam Service, enum = sumber status | Tutorial CI4 panjang |
+| Peraturan: data sintetik, jangan baca `.env`, terang sebelum commit | Kata laluan, token, isi `.env` |
+| Nama jadual/kelas daripada SPEC | Senarai setiap fail |
+
+Templat penuh: [Lab 7.6 langkah 4](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9).
+
+### 9.4 Arahan ≠ sekatan
+
+`CLAUDE.md` ialah **konteks**: model biasanya mematuhinya, tetapi tiada jaminan. Peraturan dalam `.claude/settings.json` dikuatkuasa oleh Claude Code sendiri sebelum tool berjalan:
+
+```json
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./writable/uploads/**)"
+    ]
+  }
+}
+```
+
+Fail lengkap (4 peraturan `deny`) ada dalam [tutorial §5](../docs/tutorial-claude-code.md#5-tetapan-projek-sekat-env). Tulis peraturan penting di **kedua-dua** tempat: `CLAUDE.md` menerangkan *kenapa*, `settings.json` menyekat.
+
+### 9.5 Mod Plan
+
+`Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**. Claude membaca, mencari dan mencadang — **tiada fail diubah, tiada arahan shell yang mengubah sistem**. Gunakan mod *Plan* untuk:
+
+- memahami kod rakan atau kod Hari 6 anda sendiri;
+- meminta pelan sebelum ciri baharu (anda menulis kodnya);
+- menyemak keselamatan (S10).
+
+Keluar dari mod *Plan* hanya apabila anda faham pelannya dan mahu Claude membuat perubahan kecil yang anda luluskan satu demi satu.
+
+### 🎯 Kuiz S9
+
+> Jawab selepas Lab 7.6. Lulus kuiz ini menanda checkpoint Lab 7.6.
+
+1. Ali menulis "Jangan sekali-kali baca fail .env" dalam `CLAUDE.md` projek tetapi tidak mencipta `.claude/settings.json`. Apakah status `.env` sekarang?
+   - [ ] Selamat: Claude Code menolak setiap arahan yang bercanggah dengan `CLAUDE.md`
+   - [ ] Selamat: `/init` menambah peraturan `deny` secara automatik apabila ia melihat perkataan `.env`
+   - [x] Belum disekat: `CLAUDE.md` hanya konteks yang biasanya dipatuhi; hanya peraturan `deny` `Read(./.env)` dalam `.claude/settings.json` yang menyekat
+   - [ ] Belum disekat, tetapi cukup jika `.env` ditambah ke `.gitignore`
+   > `CLAUDE.md` mempengaruhi model; `settings.json` dikuatkuasa oleh Claude Code sebelum tool `Read` berjalan. `.gitignore` hanya menghalang `git add`, bukan bacaan fail.
+
+2. Anda mahu Claude tahu URL Laragon peribadi anda (`http://kelas-ci-ali.test`) untuk projek ini sahaja, tanpa URL itu masuk ke repo GitLab. Di mana anda menulisnya?
+   - [ ] `CLAUDE.md` dalam akar projek
+   - [x] `CLAUDE.local.md` dalam akar projek, yang disenaraikan dalam `.gitignore`
+   - [ ] `.claude/settings.json`
+   - [ ] `%USERPROFILE%\.claude\CLAUDE.md`
+   > `CLAUDE.md` projek di-commit dan dikongsi. `~/.claude/CLAUDE.md` terpakai pada **semua** projek anda. `CLAUDE.local.md` dimuatkan bersama `CLAUDE.md` projek, tetapi kekal dalam laptop anda jika ia dalam `.gitignore`.
+
+---
+
+## S10 — Claude Code: Subagent & Skill (10:45–11:45)
+
+### 10.1 Subagent: pembantu dengan konteks sendiri
+
+Subagent ialah pembantu khusus yang Claude Code lancarkan untuk satu tugas. Ia bermula dengan **tetingkap konteks baharu**, hanya boleh menggunakan tool yang anda benarkan, dan memulangkan **ringkasan** sahaja kepada perbualan utama. Sesuai untuk semakan: 20 fail dibaca oleh subagent tidak memenuhkan perbualan anda.
+
+Fail: `.claude/agents/<nama>.md` (projek, di-commit) atau `~/.claude/agents/<nama>.md` (peribadi).
+
+```markdown
+---
+name: semak-ci4
+description: Penyemak keselamatan CodeIgniter 4 (baca sahaja). Guna selepas menulis controller, view, model atau route.
+tools: Read, Grep, Glob
+model: sonnet
+---
+
+Anda penyemak keselamatan CodeIgniter 4. ...
+```
+
+| Medan | Wajib | Makna |
+|-------|-------|-------|
+| `name` | Ya | Pengecam unik (kursus: huruf kecil dan `-`) |
+| `description` | Ya | **Bila** Claude patut menyerahkan tugas kepada subagent ini |
+| `tools` | Tidak | Senarai tool dibenarkan. Tiada medan = mewarisi semua tool. `Read, Grep, Glob` = baca sahaja |
+| `model` | Tidak | `sonnet`, `opus`, `haiku`, `fable`, ID model penuh, atau `inherit` |
+
+Panggil subagent dengan ayat biasa (*"guna subagent semak-ci4 untuk menyemak app/Controllers/Tlk"*) atau `@agent-semak-ci4`. Claude Code mengesan fail baharu atau yang diubah dalam beberapa saat; mulakan semula `claude` hanya jika folder `.claude/agents/` baru dicipta dalam sesi itu. `/agents` memaparkan peringatan lokasi fail ini (versi lama membuka wizard).
+
+### 10.2 Skill: pengetahuan yang dimuatkan bila perlu
+
+Skill ialah folder dengan `SKILL.md`: arahan, konvensyen atau langkah kerja. Claude hanya membaca `description` pada permulaan; isi penuh dimuatkan apabila permintaan anda **sepadan** dengan `description`, atau apabila anda menaip `/<nama-skill>`.
+
+Fail: `.claude/skills/<nama>/SKILL.md` (projek) atau `~/.claude/skills/<nama>/SKILL.md` (peribadi).
+
+```markdown
+---
+name: migration-ci4
+description: Konvensyen migration & seeder kursus CI-KKM-10. Guna apabila menulis atau menyemak migration, seeder atau perubahan skema.
+---
+
+Langkah dan peraturan ...
+```
+
+- `name` menjadi arahan `/migration-ci4`. `description` disyorkan: tanpanya Claude tidak tahu bila menggunakan skill.
+- **Slash command kini sebahagian daripada skill.** Fail lama `.claude/commands/semak.md` masih berfungsi dan mencipta `/semak`, sama seperti `.claude/skills/semak/SKILL.md`.
+- `$ARGUMENTS` dalam `SKILL.md` digantikan dengan teks selepas arahan: `/migration-ci4 vehicles`.
+- Skill baharu dikesan tanpa mula semula; jika folder `.claude/skills/` baru dicipta dalam sesi, jalankan `/reload-skills`.
+
+### 10.3 CLAUDE.md, skill atau subagent?
+
+| | `CLAUDE.md` | Skill | Subagent |
+|---|-------------|-------|----------|
+| Dimuatkan | Setiap sesi, penuh | `description` sahaja; isi bila sepadan atau `/nama` | Bila tugas diserahkan |
+| Konteks | Perbualan utama | Perbualan utama | Tetingkap konteks sendiri; pulang ringkasan |
+| Had tool | Tiada | Tiada (pilihan `allowed-tools` memberi kebenaran, bukan sekatan) | Medan `tools` menyekat |
+| Contoh kursus | Stack, arahan `spark`, peraturan data | `migration-ci4`: konvensyen migration & seeder | `semak-ci4`: penyemak keselamatan baca sahaja |
+| Soalan untuk memilih | "Perlu diketahui **setiap kali**?" | "Perlu **kadang-kadang**, untuk satu jenis kerja?" | "Tugas berasingan yang membaca banyak fail?" |
+
+### 🎯 Kuiz S10
+
+> Jawab selepas Lab 7.7. Lulus kuiz ini menanda checkpoint Lab 7.7.
+
+1. Lab 7.7 langkah 4: anda meminta subagent `semak-ci4` (`tools: Read, Grep, Glob`) membetulkan sendiri dapatan `esc()` yang ia jumpa. Apakah yang berlaku?
+   - [ ] Ia mengubah view kerana anda yang meminta
+   - [ ] Ia meminta kebenaran `Edit` dan mengubah view selepas anda luluskan
+   - [ ] Ia memanggil `php spark` untuk membetulkan fail
+   - [x] Ia tidak boleh mengubah fail kerana tiada tool `Edit`, `Write` atau `Bash`; ia hanya melaporkan cadangan
+   > Medan `tools` ialah senarai benar: subagent hanya ada tool yang disenaraikan. Penyemak baca sahaja tidak boleh "terlajak" membetulkan kod. Anda yang membuat pembetulan dan memahaminya.
+
+2. Bilakah Claude memuatkan **isi penuh** `.claude/skills/migration-ci4/SKILL.md`?
+   - [x] Apabila permintaan anda sepadan dengan `description` skill itu, atau apabila anda menaip `/migration-ci4`
+   - [ ] Pada permulaan setiap sesi, sama seperti `CLAUDE.md`
+   - [ ] Hanya selepas `claude` dimulakan semula
+   - [ ] Apabila anda membuka fail dalam `app/Database/Migrations/` di VS Code
+   > Pada permulaan, Claude hanya melihat `name` dan `description` setiap skill. Isi penuh dimuatkan bila perlu, jadi skill tidak memakan konteks sepanjang sesi seperti `CLAUDE.md`.
+
+---
+
+## S11 — Claude Code: MCP untuk CodeIgniter (11:45–12:30)
+
+### 11.1 Apa itu MCP
+
+**Model Context Protocol (MCP)** ialah protokol terbuka yang membolehkan Claude Code memanggil **tool** daripada program lain, dipanggil *server* MCP. Mesej ialah JSON-RPC 2.0, melalui:
+
+- **stdio**: Claude Code menjalankan program tempatan (cth `php tools/ci4-spark-mcp.php`) dan bercakap melalui stdin/stdout, satu mesej JSON setiap baris;
+- **HTTP**: server jauh di URL (cth Context7, GitLab).
+
+```mermaid
+flowchart LR
+    C[Claude Code] -- "tools/list · tools/call<br/>JSON-RPC (stdio)" --> S[ci4-spark-mcp.php]
+    S -- "proc_open: php spark routes" --> P[Projek CI4]
+    C -- "HTTPS" --> X[Context7 / GitLab]
+```
+
+Aliran: `initialize` (rundingan versi protokol) → `tools/list` (senarai tool + skema input) → `tools/call` (Claude memanggil tool; hasil sebagai `content` teks, `isError: true` jika gagal). Claude Code meminta kebenaran anda sebelum setiap panggilan tool MCP, sama seperti `Edit` atau `Bash`.
+
+### 11.2 Skop pendaftaran
+
+| Skop | Arahan | Disimpan di | Untuk |
+|------|--------|-------------|-------|
+| `local` (lalai) | `claude mcp add nama …` | `~/.claude.json`, untuk projek ini sahaja | Server dengan kelayakan peribadi (MySQL) |
+| `project` | `claude mcp add --scope project nama …` | `.mcp.json` dalam akar projek (di-commit) | Server dikongsi tanpa rahsia (`ci4-spark`) |
+| `user` | `claude mcp add --scope user nama …` | `~/.claude.json`, semua projek | Context7 |
+
+- `.mcp.json` menyokong `${VAR}` dan `${VAR:-lalai}` dalam `command`, `args`, `env`, `url` dan `headers`, jadi rahsia kekal dalam *environment variable*, bukan dalam fail yang di-commit.
+- Server dari `.mcp.json` perlu **diluluskan** sekali dalam sesi interaktif.
+- `/mcp` memaparkan status setiap server, log masuk OAuth dan matikan/hidupkan server. `claude mcp list`, `claude mcp get <nama>`, `claude mcp remove <nama>` dari terminal.
+
+### 11.3 Empat server untuk kursus ini
+
+| Server | Jenis | Apa yang Claude dapat | Had keselamatan |
+|--------|-------|-----------------------|-----------------|
+| `ci4-spark` (templat kursus) | stdio, PHP | `routes`, `migrate_status`, `db_table`, `filter_check` | **Baca sahaja**; input disemak dengan regex; tiada `migrate`/`db:seed`/shell |
+| MySQL `@benborla29/mcp-server-mysql` | stdio, Node | Query `SELECT` pada DB `kkm_latihan` anda | Tulis dimatikan secara lalai + pengguna MySQL `SELECT` sahaja |
+| Context7 | HTTP | Dokumentasi semasa CodeIgniter 4 / Shield | Soalan anda dihantar ke Context7; jangan tampal rahsia |
+| GitLab (GitLab KKM) | HTTP / stdio | Issue, MR, pipeline projek anda | OAuth atau PAT baca sahaja; jika GitLab KKM menyokong & rangkaian membenarkan |
+
+> ⚠️ **Jangan sekali-kali** halakan server MCP (MySQL atau lain-lain) kepada database atau sistem KKM/eSPKP sebenar. Hanya DB latihan `kkm_latihan` dalam Laragon anda.
+
+### 🎯 Kuiz S11
+
+> Jawab selepas Lab 7.8. Lulus kuiz ini menanda checkpoint Lab 7.8.
+
+1. Lab 7.8 langkah 4: fail ujian menghantar `tools/call` `db_table` dengan `{"table": "users; DROP TABLE users"}` kepada `ci4-spark`. Apakah balasan server?
+   - [ ] Jadual `users` dipadam kerana `php spark` menjalankan SQL itu
+   - [ ] MySQL menolak query itu dengan ralat sintaks SQL
+   - [x] Hasil dengan `isError: true` dan mesej `Invalid table name`; `php spark` tidak dijalankan langsung
+   - [ ] Ralat JSON-RPC `-32601 Method not found`
+   > Nama jadual disemak dengan `^[A-Za-z0-9_]+$` sebelum apa-apa dijalankan, dan `php spark` dipanggil melalui `proc_open()` dengan array (tanpa shell). Ralat input dipulangkan sebagai hasil tool `isError: true` supaya Claude boleh membetulkan panggilannya; `-32601` hanya untuk *method* yang tidak wujud.
+
+2. Kenapa kata laluan pengguna MySQL `claude_ro` **tidak** ditulis terus dalam `.mcp.json`?
+   - [ ] `.mcp.json` tidak menyokong blok `env`
+   - [x] `.mcp.json` di-commit dan dikongsi; gunakan skop `local` atau `${MYSQL_PASS}` supaya nilai datang dari laptop setiap peserta
+   - [ ] Claude Code menolak `.mcp.json` yang mengandungi kata laluan
+   - [ ] Server stdio tidak boleh menerima *environment variable*
+   > `.mcp.json` ialah fail projek yang masuk ke GitLab. Skop `local` menyimpan konfigurasi dalam `~/.claude.json` anda; `${VAR}` dalam `.mcp.json` dikembangkan daripada *environment* semasa Claude Code dimulakan.
 
 ---
 

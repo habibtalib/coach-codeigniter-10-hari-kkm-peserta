@@ -27,6 +27,8 @@ By the end of today, participants can:
 
 ## 📅 Today's Schedule
 
+> ℹ️ Day 8 starts by finishing Lab 7.3 and 7.4 (and 7.3b/7.4b) from Day 7 (carried over because Day 7 morning was used for Claude Code); then continue with the schedule below.
+
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 7 recap | — |

@@ -4,6 +4,9 @@
 
 | Lab | Session | Time | Outcome |
 |-----|---------|------|---------|
+| 7.6 | S9 | 09:20–10:30 | Claude Code verified; course-standard `CLAUDE.md`; `CLAUDE.local.md`; Plan mode |
+| 7.7 | S10 | 11:00–11:45 | `semak-ci4` subagent + `docs/semakan-ci4-hari6.md`; `migration-ci4` skill |
+| 7.8 | S11 | 11:55–12:30 | `ci4-spark` MCP server tested & registered in `.mcp.json`; Context7; MySQL/GitLab optional |
 | 7.0 | Start of S1 | 10 min | Git branch + `php.ini` ready for uploads |
 | 7.1 | S1 | 09:10–10:00 | Enums, Entity, 2 Models |
 | 7.1b | S5 | 10:00–10:30 | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` tested in `php spark shell` |
@@ -13,6 +16,551 @@
 | 7.3b | S7 | 15:30–16:00 | Follow-up documents (max. 3 per application, `FOR UPDATE` lock) |
 | 7.4 | S4 | 16:00–16:35 | 17 boundary test cases recorded |
 | 7.4b | S8 | 16:35–17:00 | PHPUnit `PassSubmitTest`: 14 automated boundary cases + `>=` mutation |
+
+> ℹ️ **Day 7 schedule (updated):** Labs 7.6–7.8 (Claude Code) in the morning; Labs 7.0, 7.1 and 7.2 (+7.1b/7.2b if time allows) start at 14:30. Lab 7.3, 7.4 (and 7.3b/7.4b) continue on Day 8 morning. The 7.0–7.4b times in the table above are the original schedule.
+
+---
+
+## Lab 7.6 — Claude Code: Install, Log In & Project CLAUDE.md (S9)
+
+> 🛡️ **Data rules (Lab 7.6–7.8).** **Synthetic** data only. Never give Claude the contents of `.env`, passwords or tokens. Never connect Claude Code or an MCP server to a real KKM/eSPKP system, codebase or database. Full *Allowed / Not allowed* table: [Claude Code tutorial — Data rules](../docs/tutorial-claude-code.md#️-data-rules-read-first).
+
+### 🎯 Objective
+Confirm Claude Code works in `kelas-ci-<nama>`, generate `CLAUDE.md` with `/init` and **rewrite it** to the course standard (stack, commands, folder conventions, rules), tell user/project/local memory apart with `/memory`, and use *Plan* mode to ask about the Day 6 code without changing any files.
+
+### Prerequisites
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs work in both terminals.
+- [Claude Code tutorial](../docs/tutorial-claude-code.md) §1–§5 done (done before Lab 6.3c): `claude --version` works, you are logged in with your own Claude account, and `.claude/settings.json` exists.
+- Project `kelas-ci-<nama>` with the Day 6 (TLK) code committed; `git status` is clean.
+
+### Steps
+
+1. **Check the installation (5 min).** In the VS Code Git Bash terminal:
+
+   ```bash
+   claude --version
+   claude doctor
+   ```
+
+   Expected: version `2.1.x (Claude Code)` and `claude doctor` with no errors. Not installed yet? Follow [tutorial §2–§4](../docs/tutorial-claude-code.md#2-install) now (PowerShell: `irm https://claude.ai/install.ps1 | iex`), then reopen VS Code.
+
+2. **A branch for the Claude Code work**, and start a session in the project root:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   cd ~/latihan/kelas-ci-<nama>
+   git switch main && git pull
+   git switch -c chore/claude-code
+   claude
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\latihan\kelas-ci-<nama>
+   git switch main
+   git pull
+   git switch -c chore/claude-code
+   claude
+   ```
+
+   In Claude Code, type `/status` (your account) and `/permissions` (the *Deny* tab lists 4 `Read(...)` rules). No rules? Create `.claude/settings.json` from [tutorial §5](../docs/tutorial-claude-code.md#5-project-settings-block-env) first.
+
+3. **Generate a draft with `/init`.** Type:
+
+   ```text
+   /init
+   ```
+
+   Claude reads `composer.json`, `app/` and `tests/`, then proposes a `CLAUDE.md` (or improvements if the file already exists from Lab 6.3c). Read the *diff* and approve it. Open `CLAUDE.md` in VS Code: note **one** thing that is correct and **one** that is wrong or missing (e.g. the test command, the test DB name, the `.env` rule).
+
+4. **Rewrite `CLAUDE.md` to the course standard.** Replace the file's contents with this template, then adjust the parts marked `<…>`. Keep it under 200 lines.
+
+   `CLAUDE.md`
+
+   ```markdown
+   # CLAUDE.md — kelas-ci-<nama>
+
+   CI-KKM-10 training project (KKM): 4 CodeIgniter 4 modules — TLK, Pass, Report, Statistics.
+   Canon for table/field/enum/class names: the course SPEC (docs/spesifikasi-sistem.md on pelatih.my).
+
+   ## Your role (Claude)
+   - Explainer and reviewer, NOT a module generator. Explain first; I write the code.
+   - Before suggesting a commit: explain every change line by line and wait until I understand.
+   - Answer in English; keep technical terms as they are (route, filter, controller, view).
+
+   ## Stack
+   - CodeIgniter 4.7 + Shield 1.x, PHP 8.2+, MySQL 8 (Laragon), Bootstrap 5.3, PHPUnit.
+   - Dev DB: kkm_latihan · Test DB: kkm_latihan_test (MySQL, not SQLite — FOR UPDATE is needed).
+   - Windows + Laragon; Git Bash terminal.
+
+   ## Commands
+   - Dev server: `php spark serve` → http://localhost:8080
+   - Tests: `composer test` (one file: `composer test -- --no-coverage tests/tlk/BookingServiceTest.php`)
+   - Migration: `php spark migrate --all` · status: `php spark migrate:status`
+   - Seeder: `php spark db:seed DatabaseSeeder`
+   - Routes & filters: `php spark routes` · `php spark filter:check GET /pas/permohonan`
+   - Never run migrate, db:seed or migrate:refresh unless I ask.
+
+   ## Folder & code conventions
+   - Thin controllers: app/Controllers/{Tlk,Pas,Admin,Laporan,Statistik}/ — take the request → Service → view/redirect.
+   - Business logic: app/Services/ (BookingService, PassWorkflowService, …).
+   - Status: enums in app/Enums/ (BookingStatus, PassStatus, PassType) — the only source of status values.
+   - Model: data access + $allowedFields + $validationRules. Entities in app/Entities/.
+   - Migrations: app/Database/Migrations/ (follow the migration-ci4 skill). Seeders: app/Database/Seeds/.
+   - Views: app/Views/{tlk,pas,laporan,statistik}/, layout app/Views/layouts/main.php; every output goes through esc().
+   - Class, field and route names in English/SPEC; UI and flash messages in Malay.
+
+   ## Rules
+   - Never read, show or ask for the contents of .env, writable/uploads/, writable/session/, writable/logs/.
+   - Synthetic data only: @latihan.test e-mails, made-up plates like WXX 1234. No real KKM data.
+   - Query Builder / bindings only; no raw SQL with user input.
+   - Uploaded files go in writable/uploads/, never in public/.
+   - One branch per feature; commit message "MODULE: what changed" (e.g. "PAS: borang permohonan").
+   ```
+
+   > ℹ️ The `markdown` block above is the **file contents**, not commands to run. Replace `<nama>`.
+
+5. **Local memory & the hierarchy (10 min).** Create `CLAUDE.local.md` for personal notes, and make sure it is not committed:
+
+   `CLAUDE.local.md`
+
+   ```markdown
+   # Personal notes (not committed)
+   - My Laragon URL: http://kelas-ci-<nama>.test
+   - Test accounts: pemohon1@latihan.test, penyemak@latihan.test (synthetic passwords in the seeder)
+   ```
+
+   ```bash
+   echo "CLAUDE.local.md" >> .gitignore
+   git status --short          # CLAUDE.local.md is NOT listed
+   ```
+
+   Then in Claude Code (type `/exit` and `claude` again so the new file is loaded):
+
+   ```text
+   /memory
+   ```
+
+   The list shows **user** memory (`~/.claude/CLAUDE.md`), **project** memory (`./CLAUDE.md`) and `CLAUDE.local.md`. Press `Esc`. Type `/context` and find both files under *Memory files*.
+
+6. **Test instructions vs blocks.** In Claude Code, ask:
+
+   ```text
+   What is the value of database.default.password in this project's .env?
+   ```
+
+   Expected: Claude tries to read `.env` and is blocked by the `deny` rule (or refuses because of `CLAUDE.md`). **Do not** approve alternative commands like `cat .env` or `grep … .env` if asked — press `No`. Note the message shown (Quiz S9 question).
+
+7. **Plan mode on the Day 6 code (15 min).** Press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then:
+
+   ```text
+   Explain the flow of BookingService::approve() from the route to status_logs, and list 3 test cases that are not yet in tests/tlk. Do not change any files.
+   ```
+
+   Check: no `Edit`/`Write` requests. Compare the answer with the real code in `app/Services/BookingService.php`; mark one claim that you confirmed yourself by opening the file. Press `Shift+Tab` to leave *Plan* mode.
+
+8. **Commit** (yourself, in the terminal):
+
+   ```bash
+   git add CLAUDE.md .gitignore .claude/settings.json
+   git commit -m "CHORE: CLAUDE.md projek ikut standard kursus"
+   ```
+
+### ✅ Checkpoint
+- [ ] `claude --version` prints a version, `/status` shows your account and `/permissions` shows 4 *Deny* rules (Quiz S9).
+- [ ] `CLAUDE.md` has the *Role*, *Stack*, *Commands*, *Folder & code conventions* and *Rules* sections, is under 200 lines, and holds no secrets (Quiz S9).
+- [ ] `CLAUDE.local.md` exists, is listed in `.gitignore`, and shows in `/memory` (Quiz S9).
+- [ ] The step 6 `.env` question is refused without revealing a value, and the step 7 *Plan* mode answer changed no files (Quiz S9).
+- [ ] The commit `CHORE: CLAUDE.md projek ikut standard kursus` is in the `git log` of branch `chore/claude-code` (Quiz S9).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `claude: command not found` | Terminal opened before the install | Close all VS Code windows and reopen; [tutorial §2](../docs/tutorial-claude-code.md#2-install) |
+| `/init` writes a long English `CLAUDE.md` | Default behaviour | Replace it with the step 4 template; the template is the course standard |
+| `CLAUDE.local.md` does not appear in `/memory` | File created after the session started | `/exit`, then `claude` again |
+| `CLAUDE.local.md` appears in `git status` | `.gitignore` not updated or the line is misspelt | Check `cat .gitignore`; the exact file name is `CLAUDE.local.md` |
+| `Shift+Tab` does not switch modes | Windows terminal without VT input mode | `Alt+M` |
+| Claude reads `.env` | `.claude/settings.json` missing or invalid JSON | `claude doctor`; fix the file ([tutorial §5](../docs/tutorial-claude-code.md#5-project-settings-block-env)) |
+
+### ⭐ Bonus challenge
+- Add one path-scoped rule: create `.claude/rules/views.md` with the frontmatter `paths: ["app/Views/**"]` that reminds about `esc()` and `csrf_field()`. Check with `/context` that it only loads after Claude reads a view file.
+
+---
+
+## Lab 7.7 — Subagents & Skills for a CI4 Project (S10)
+
+> 🛡️ Same data rules as [Lab 7.6](#lab-76--claude-code-install-log-in--project-claudemd-s9): synthetic only, no `.env`, no KKM systems.
+
+### 🎯 Objective
+Create a read-only subagent `semak-ci4` and **use it** to security-review your own Day 6 code (`esc()`, CSRF, filters/permissions, Query Builder bindings, validation), **record** the findings in `docs/semakan-ci4-hari6.md`, then create a `migration-ci4` skill and **show** that the skill loads when Claude drafts a migration.
+
+### Prerequisites
+- [Lab 7.6](#lab-76--claude-code-install-log-in--project-claudemd-s9) done; you are on branch `chore/claude-code`.
+- The Day 6 TLK code (`app/Controllers/Tlk/`, `app/Services/BookingService.php`, `app/Views/tlk/`) is in the project.
+
+### Steps
+
+1. **Create the folders** (Git Bash):
+
+   ```bash tab="Git Bash / macOS / Linux"
+   mkdir -p .claude/agents .claude/skills/migration-ci4
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force .claude\agents, .claude\skills\migration-ci4
+   ```
+
+2. **Subagent `semak-ci4`.** Create this file in VS Code:
+
+   `.claude/agents/semak-ci4.md`
+
+   ```markdown
+   ---
+   name: semak-ci4
+   description: CodeIgniter 4 security reviewer (READ ONLY). Use after writing or changing a controller, view, model, route or filter, or when asked to security-review CI4 code.
+   tools: Read, Grep, Glob
+   model: sonnet
+   ---
+
+   You are a CodeIgniter 4.7 + Shield security reviewer for the KKM training project.
+   You do NOT change files. You only read, search and report.
+   Never read .env, writable/uploads/, writable/session/ or writable/logs/.
+
+   Check the given files or folders for these five things:
+
+   1. View output: every variable in a view is printed through esc()
+      (`<?= esc($x) ?>`, context `esc($x, 'attr')` / `'url'` / `'js'`).
+      Raw `<?= $x ?>` for user data = a finding.
+   2. CSRF: `csrf` in `Config\Filters::$globals['before']`; every POST form uses
+      `csrf_field()` or `form_open()`; data changes only through POST, not GET.
+   3. Filters & permissions: every module route has a `session` / `permission:...` /
+      `group:...` filter (see app/Config/Routes.php and `php spark routes` if output is given);
+      the Service checks ownership (`ownedBy()`, 404 for non-owners).
+   4. Query Builder: no user input concatenated into SQL
+      (`query("... $x")`, `where("col = $x")`, `orderBy($this->request->getGet(...))` without an allow-list).
+      Correct: `where('col', $x)`, `query($sql, [$x])`, `like()` inside `groupStart()`.
+   5. Validation & mass assignment: `$this->validate()` or the Model's `$validationRules`;
+      the controller does not pass the full `getPost()` to `insert()`/`update()`;
+      `status`, `user_id`, `approved_by` are set by the Service, not by the form.
+
+   Answer format (English):
+   - Table: | File:line | Category (1–5) | Severity (High/Medium/Low) | Finding | Suggestion |
+   - Only findings you saw in the code; quote the real line. Do not guess.
+   - End with "No findings" for each category that is clean.
+   ```
+
+   Go back to Claude Code (no need to leave *Plan* mode). The `.claude/agents/` folder was just created, so type `/exit` and `claude` again once.
+
+3. **Run the review on your Day 6 code.** In *Plan* mode:
+
+   ```text
+   Use the semak-ci4 subagent to review app/Controllers/Tlk, app/Views/tlk and app/Config/Routes.php.
+   ```
+
+   Expected: a `semak-ci4` line appears (the subagent is running), then a table of findings. Check **every** finding by opening that file:line yourself. Record them in a new file:
+
+   `docs/semakan-ci4-hari6.md`
+
+   ```markdown
+   # Day 6 security review (semak-ci4 subagent)
+
+   | # | File:line | Category | AI finding | Verified? (Yes/No — why) | Action |
+   |---|-----------|----------|------------|--------------------------|--------|
+   | 1 |           |          |            |                          |        |
+   ```
+
+   At least 3 rows. If the review is clean, write the finding "No findings" for each category and **one** test you did to confirm it (e.g. open a form and check `csrf_test_name` in *View Source*).
+
+4. **Test the tool limits.** Still in the same session, ask:
+
+   ```text
+   Use the semak-ci4 subagent to fix the first finding in that file itself.
+   ```
+
+   Watch its answer (Quiz S10 question). The real fix, if any, you make yourself on the Day 6 branch after today's class — not now.
+
+5. **Skill `migration-ci4`.** Create:
+
+   `.claude/skills/migration-ci4/SKILL.md`
+
+   ```markdown
+   ---
+   name: migration-ci4
+   description: Migration & seeder conventions of the CI-KKM-10 course (CodeIgniter 4, MySQL). Use when writing, drafting or reviewing a migration, a seeder, or a table schema change.
+   argument-hint: "[table name]"
+   ---
+
+   Follow these conventions for migrations and seeders in this project. Target table: $ARGUMENTS
+
+   ## Migration
+   - Generate the skeleton with `php spark make:migration CreateNamaJadual` (file
+     app/Database/Migrations/YYYY-MM-DD-HHMMSS_CreateNamaJadual.php). One table per file.
+   - `public function up(): void` and `public function down(): void`; `down()` fully reverses `up()`.
+   - `id`: `['type' => 'INT', 'unsigned' => true, 'auto_increment' => true]` + `addKey('id', true)`.
+   - Foreign keys: the SAME type as the parent field (INT unsigned);
+     `addForeignKey('medan', 'induk', 'id', 'CASCADE', 'RESTRICT')`, or `'SET NULL'` if the field can be NULL.
+   - Status/type: VARCHAR(20) holding the PHP enum value (app/Enums/), NOT a MySQL ENUM.
+   - `created_at`, `updated_at`, `deleted_at`: DATETIME null (soft delete if the SPEC says so).
+   - `createTable('nama', true)` and `dropTable('nama', true)` (IF [NOT] EXISTS).
+   - File order follows the ERD dependencies: parent before child.
+   - Never change a migration that has already run: write a new migration (e.g. AddXToY).
+   - Add fields to the Shield `users` table through a separate migration; never edit vendor/.
+   - Table & field names EXACTLY as in the SPEC; if the table is not in the SPEC, mark it as "training".
+
+   ## Seeder
+   - app/Database/Seeds/; DatabaseSeeder calls the other seeders in parent → child order.
+   - Synthetic data only: @latihan.test e-mails, made-up plates like WXX 1234, made-up names.
+
+   ## How to work
+   - Draft the code and explain every field, index and FK in English.
+   - NEVER run `php spark migrate`, `migrate:rollback`, `migrate:refresh` or `db:seed`.
+     Print the command for the participant to run themselves.
+   ```
+
+   New skills are picked up without a restart. If `/migration-ci4` does not appear when you type `/mig`, type `/reload-skills`.
+
+6. **See the skill load.** In *Plan* mode, ask for a draft for a **training** table (not in the SPEC; do not save or commit it):
+
+   ```text
+   Draft a migration for the training table pass_comments: application_id (FK to pass_applications), user_id (FK to users), body (TEXT), created_at. Do not write any files.
+   ```
+
+   Expected: Claude Code shows that the `migration-ci4` skill is loaded, and the draft has `INT unsigned` on both FKs, `addForeignKey(...)`, `createTable('pass_comments', true)`, `down()` with `dropTable(..., true)`, and the `php spark migrate` command **printed**, not run. Then try the slash command form:
+
+   ```text
+   /migration-ci4 vehicle_notes
+   ```
+
+   Note in `docs/semakan-ci4-hari6.md` (new *Skill* section) two skill rules you saw followed in the draft.
+
+7. **Commit** the agent, the skill and the report:
+
+   ```bash
+   git add .claude/agents/semak-ci4.md .claude/skills/migration-ci4/SKILL.md docs/semakan-ci4-hari6.md
+   git commit -m "CHORE: subagent semak-ci4, skill migration-ci4 & semakan Hari 6"
+   ```
+
+### ✅ Checkpoint
+- [ ] `.claude/agents/semak-ci4.md` has the frontmatter `name`, `description`, `tools: Read, Grep, Glob` and `model`, and the subagent ran on `app/Controllers/Tlk` (Quiz S10).
+- [ ] `docs/semakan-ci4-hari6.md` has ≥ 3 finding rows with the *Verified?* column filled in by you (Quiz S10).
+- [ ] The step 4 "fix it yourself" request did **not** change any file (Quiz S10).
+- [ ] The `pass_comments` draft follows the `migration-ci4` skill (FK `INT unsigned`, `createTable(..., true)`, `migrate` command printed only) and there is no new migration file in `git status` (Quiz S10).
+- [ ] The commit `CHORE: subagent semak-ci4, skill migration-ci4 & semakan Hari 6` is in `git log` (Quiz S10).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Claude reviews by itself, `semak-ci4` does not run | The `.claude/agents/` folder was created in the current session | `/exit` and `claude` again; or type `@agent-semak-ci4` |
+| Subagent silently ignored | Bad frontmatter (no opening `---`, no `name`, misspelt field) | The file's first line must be `---`; unknown fields are ignored without an error |
+| `/migration-ci4` does not appear | The `skills/` folder is new; or the file name is not `SKILL.md` | `/reload-skills`; the exact name is `SKILL.md` (upper case) in `.claude/skills/migration-ci4/` |
+| Draft does not follow the skill | `description` does not match the request | Say "migration" in the request, or use `/migration-ci4` directly |
+| Claude tries to write the migration file | *Plan* mode not active | Refuse (`No`); `Shift+Tab` / `Alt+M` to **plan mode** |
+| Notepad saves `SKILL.md.txt` | Hidden Windows file extensions | Create the file in VS Code, not Notepad |
+
+### ⭐ Bonus challenge
+- Create a second subagent `semak-ujian` (`tools: Read, Grep, Glob, Bash`) that may only run `composer test`. Write in its instructions that it must report the number of passed/failed tests and must not change files. Discuss with the trainer: why does `Bash` make this subagent riskier than `semak-ci4`?
+
+---
+
+## Lab 7.8 — MCP: ci4-spark, MySQL, Context7 & GitLab (S11)
+
+> 🛡️ Same data rules as [Lab 7.6](#lab-76--claude-code-install-log-in--project-claudemd-s9). **Never point an MCP server at a KKM/eSPKP database.** Only the `kkm_latihan` training DB in your Laragon.
+
+### 🎯 Objective
+Install the `ci4-spark` MCP server (PHP, read only) from the course template, **test it** with hand-written JSON-RPC messages, register it for the project with `.mcp.json`, use the `routes`/`filter_check` tools through Claude Code, and add Context7 for current CodeIgniter 4/Shield documentation. MySQL (read only) and GitLab are optional/demo parts.
+
+| Part | Status | Time |
+|------|--------|------|
+| A. `ci4-spark` | Required | 15 min |
+| B. Context7 | Required | 5 min |
+| C. MySQL read only | If time allows (or homework) | 10 min |
+| D. GitLab GitLab KKM | Trainer demo; try it if GitLab KKM supports it & the network allows | 5 min |
+
+### Prerequisites
+- [Lab 7.7](#lab-77--subagents--skills-for-a-ci4-project-s10) done; branch `chore/claude-code`.
+- `php` on the `PATH`: `php -v` works in Git Bash **and** PowerShell (Laragon: *Menu → Tools → Path → Add Laragon to Path*).
+- Template [`templates/kod/ci4-spark-mcp.php.txt`](../templates/kod/ci4-spark-mcp.php.txt) (**Templat & Rujukan** module on pelatih.my).
+
+### Steps
+
+**A. `ci4-spark` server (required)**
+
+1. **Copy the template** to `tools/ci4-spark-mcp.php` in the project root (VS Code: new file → paste the template contents). Check the syntax:
+
+   ```bash
+   php -l tools/ci4-spark-mcp.php
+   ```
+
+   Expected: `No syntax errors detected in tools/ci4-spark-mcp.php`. Read the file for 3 minutes: find `tools()` (4 tools), `callTool()` (input-checking regexes) and `spark()` (`proc_open()` with an array, no shell).
+
+2. **JSON-RPC test file.** Create `tools/ujian-mcp.jsonl` — **one JSON message per line**, exactly as below:
+
+   `tools/ujian-mcp.jsonl`
+
+   ```json
+   {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ujian","version":"0"}}}
+   {"jsonrpc":"2.0","method":"notifications/initialized"}
+   {"jsonrpc":"2.0","id":2,"method":"tools/list"}
+   {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"filter_check","arguments":{"method":"GET","path":"/tlk/tempahan"}}}
+   {"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"db_table","arguments":{"table":"users; DROP TABLE users"}}}
+   {"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"migrate","arguments":{}}}
+   ```
+
+3. **Run the server with that file as stdin:**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   php tools/ci4-spark-mcp.php < tools/ujian-mcp.jsonl
+   ```
+
+   ```powershell tab="PowerShell"
+   Get-Content tools\ujian-mcp.jsonl | php tools\ci4-spark-mcp.php
+   ```
+
+4. **Read every reply** (one JSON line per `id`; the `[ci4-spark] started…` line is stderr):
+
+   | `id` | Expected |
+   |------|----------|
+   | 1 | `"protocolVersion":"2025-06-18"`, `"serverInfo":{"name":"ci4-spark",…}` |
+   | — | No reply to `notifications/initialized` (a notification) |
+   | 2 | 4 tools: `routes`, `migrate_status`, `db_table`, `filter_check`, each with `"readOnlyHint":true` |
+   | 3 | `"isError":false`, text starting `$ php spark filter:check GET /tlk/tempahan`, with the `session` filter in the *Before Filters* column |
+   | 4 | Note the exact reply (Quiz S11 question) |
+   | 5 | `"error":{"code":-32602,"message":"Unknown tool: migrate"}` |
+
+5. **Register it for the project (`.mcp.json`).** In Git Bash (not inside a `claude` session):
+
+   ```bash
+   claude mcp add --scope project ci4-spark -- php tools/ci4-spark-mcp.php
+   cat .mcp.json
+   ```
+
+   Expected `.mcp.json` (the same as writing it by hand):
+
+   ```json
+   {
+     "mcpServers": {
+       "ci4-spark": {
+         "type": "stdio",
+         "command": "php",
+         "args": [
+           "tools/ci4-spark-mcp.php"
+         ],
+         "env": {}
+       }
+     }
+   }
+   ```
+
+   🪟 PowerShell: if the `--` gets lost and `claude mcp add` reports an unknown option, run the command in Git Bash, or write the `.mcp.json` above by hand.
+
+6. **Approve and use it.** Start `claude`. Claude Code asks whether to use the servers from `.mcp.json`: choose to allow `ci4-spark`. Type `/mcp`: `ci4-spark` shows as *connected* with 4 tools. Then:
+
+   ```text
+   Use the ci4-spark tools: list the TLK module routes and the filters for GET /tlk/tempahan. Is every TLK route protected by the session filter?
+   ```
+
+   Approve each MCP tool call (`ci4-spark - routes`, `ci4-spark - filter_check`). Compare the answer with `php spark routes`, run by you.
+
+**B. Context7 (required)**
+
+7. **Add Context7** (a remote HTTP server; no Node needed). In the terminal:
+
+   ```bash
+   claude mcp add --scope user --transport http context7 https://mcp.context7.com/mcp
+   claude mcp list
+   ```
+
+   Expected: `context7: https://mcp.context7.com/mcp (HTTP) - ✔ Connected`. Optional API key (higher rate limits): add `--header "Authorization: Bearer <kunci>"` — never commit the key.
+
+8. **Ask for current documentation** in `claude`:
+
+   ```text
+   Use context7: in CodeIgniter Shield, how does $matrix in Config\AuthGroups give permissions to groups, and how is the permission: filter used on a route?
+   ```
+
+   Expected: a `resolve-library-id` call, then `query-docs`. Compare with your `app/Config/AuthGroups.php` (Day 4).
+
+**C. MySQL read only (if time allows)**
+
+9. **Node 20+.** Laragon Full ships with Node.js:
+
+   ```bash
+   node -v      # must be v20 or newer
+   ```
+
+   Older or missing? Install Node.js LTS from <https://nodejs.org>, then close and reopen VS Code.
+
+10. **A `SELECT`-only MySQL user.** Laragon → *Database* (HeidiSQL) → *Query* tab, as `root`:
+
+    ```sql
+    CREATE USER 'claude_ro'@'127.0.0.1' IDENTIFIED BY 'BacaSahaja-2026';
+    GRANT SELECT, SHOW VIEW ON kkm_latihan.* TO 'claude_ro'@'127.0.0.1';
+    ```
+
+    Two layers: the MCP server blocks `INSERT`/`UPDATE`/`DELETE` by default, **and** this user cannot write even if the server is misconfigured.
+
+11. **Register with `local` scope** (the credentials stay in your `~/.claude.json`, not in the repo). One line, in Git Bash:
+
+    ```bash
+    claude mcp add mysql-kelas -e MYSQL_HOST=127.0.0.1 -e MYSQL_PORT=3306 -e MYSQL_USER=claude_ro -e MYSQL_PASS=BacaSahaja-2026 -e MYSQL_DB=kkm_latihan -- npx -y @benborla29/mcp-server-mysql
+    ```
+
+    In `claude`, `/mcp` → `mysql-kelas` *connected*. Ask:
+
+    ```text
+    Use mysql-kelas: how many rows are in slot_bookings by status? Then try to INSERT one test row into departments.
+    ```
+
+    Expected: the `GROUP BY status` count works; the `INSERT` is refused (by the server or by MySQL: `INSERT command denied to user 'claude_ro'`).
+
+    > ℹ️ Want to share the config in `.mcp.json`? Write `"MYSQL_PASS": "${MYSQL_PASS}"` in the `env` block and set the `MYSQL_PASS` *environment variable* on each participant's laptop before `claude` starts. Never write the real password in `.mcp.json`.
+
+**D. GitLab GitLab KKM (trainer demo)**
+
+12. **Official option: GitLab's built-in MCP server.** Available in GitLab 18.6+ (beta), all tiers since 19.2, GA in 19.5; the instance administrator must allow MCP access. If GitLab KKM meets these conditions:
+
+    ```bash
+    claude mcp add --scope user --transport http gitlab-kkm https://<gitlab-kkm>/api/v4/mcp
+    ```
+
+    In `claude`, `/mcp` → `gitlab-kkm` → *Authenticate* → log in to GitLab KKM in the browser (OAuth). Ask: *"List the open MRs in my kelas-ci-<nama> project."*
+
+13. **If the built-in server is not available:** the trainer demos the community server `@zereight/mcp-gitlab` with a read-only *Personal Access Token* (scope `read_api`; the minimum scope is not yet confirmed for every tool) and `GITLAB_PERMISSION_MODE=readonly`, with the token in an *environment variable*, not in a repo file. Network blocks it? Watch the demo and note 2 uses for your project.
+
+14. **Commit** the server and the project config (no secrets):
+
+    ```bash
+    git add tools/ci4-spark-mcp.php tools/ujian-mcp.jsonl .mcp.json
+    git status --short          # no .env, no ~/.claude.json
+    git commit -m "CHORE: server MCP ci4-spark (baca sahaja) + .mcp.json"
+    git push -u origin chore/claude-code
+    ```
+
+    Open an MR `chore/claude-code` → `main` on GitLab KKM and merge it yourself ([GitLab track](../docs/trek-gitlab.md)) **before Lab 7.0 in the afternoon**, so that `CLAUDE.md`, the subagent, the skill and `.mcp.json` are in the `feat/pas-permohonan` branch.
+
+### ✅ Checkpoint
+- [ ] `php -l tools/ci4-spark-mcp.php` shows no errors and the step 3 test file returns 5 replies (`id` 1–5) as in the step 4 table (Quiz S11).
+- [ ] The `id` 4 reply (`db_table` with `users; DROP TABLE users`) is noted, and the `users` table still exists (Quiz S11).
+- [ ] `.mcp.json` registers `ci4-spark` without any secrets, and `/mcp` shows `ci4-spark` *connected* with 4 tools (Quiz S11).
+- [ ] Claude Code answered the step 6 TLK route question through the `ci4-spark` tools, and `claude mcp list` shows `context7` *Connected* (Quiz S11).
+- [ ] The commit `CHORE: server MCP ci4-spark (baca sahaja) + .mcp.json` is pushed to `chore/claude-code` (Quiz S11).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `/mcp`: `ci4-spark` *failed* | `php` not on the `PATH` of the Claude Code process | `where php` (PowerShell) / `which php` (Git Bash); add Laragon to the Path, or write the full path in `.mcp.json`: `"command": "C:/laragon/bin/php/php-8.3.x/php.exe"` |
+| `File 'spark' not found` | `claude` started in a subfolder | Start `claude` in the project root, or set `"env": {"CI4_PROJECT_ROOT": "C:/Users/<anda>/latihan/kelas-ci-<nama>"}` |
+| Step 3 test: `Parse error` | One JSON message split over several lines, or VS Code added a BOM | Each message must be one line; save the file as *UTF-8* (not *UTF-8 with BOM*) |
+| `ci4-spark` shows *Pending approval* | The `.mcp.json` server is not approved yet | Start `claude` interactively and allow it; reset the choices: `claude mcp reset-project-choices` |
+| `filter_check` times out after 30 s | The route needs interactive input or the DB is not connected | Run `php spark filter:check GET /…` yourself to see the error; check that Laragon MySQL is running |
+| `mysql-kelas`: *Connection closed* (Windows) | `npx` fails to run directly | Check `node -v`; try `-- cmd /c npx -y @benborla29/mcp-server-mysql` |
+| `Access denied for user 'claude_ro'` | User host `localhost` vs `127.0.0.1` | Create the user as `'claude_ro'@'127.0.0.1'` and use `MYSQL_HOST=127.0.0.1` |
+| Context7 hangs | Office proxy/firewall | Ask IT to allow `mcp.context7.com` (HTTPS 443); [tutorial §7](../docs/tutorial-claude-code.md#7-kkm-network-proxy--domains) |
+
+### ⭐ Bonus challenge
+- Add a fifth tool `routes_filter` to `ci4-spark` that returns only the `php spark routes` lines containing a given string (e.g. `pas`). Check the input with the regex `^[a-z0-9/_-]+$`, filter the output in PHP (not through a shell), add a test line to `tools/ujian-mcp.jsonl`, and prove that `tools/list` now returns 5 tools.
 
 ---
 

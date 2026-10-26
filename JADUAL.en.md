@@ -93,14 +93,14 @@
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 6 recap | — |
-| 09:00–10:00 | S1 | Pass application migration & Model | Write the `PassApplication` & `PassDocument` Model/Entity |
-| 10:00–10:30 | S5 | S1 follow-up: extra enum & Entity methods | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` tested in `php spark shell` |
-| 10:45–12:00 | S2 | Basic CRUD Controller & View | Build the list (owner scope) & detail view |
-| 12:00–12:30 | S6 | S2 follow-up: type filter & search | `?pass_type=` filter + `?q=` search inside the owner scope; proof of the `orLike()` leak without brackets |
-| 14:30–15:30 | S3 | Form, validation & document upload | Secure file upload (type/size/random name/outside `public`) |
-| 15:30–16:00 | S7 | S3 follow-up: follow-up documents | 3 documents per application, checked before `move()` and under a `FOR UPDATE` lock |
-| 16:00–16:35 | S4 | Manual testing & review | Test upload & validation boundary cases |
-| 16:35–17:00 | S8 | S4 follow-up: automated boundary cases; wrap-up | PHPUnit `PassSubmitTest` + `>=` mutation |
+| 09:00–10:30 | S9 | Claude Code: install, `CLAUDE.md` & Plan mode | Write the project `CLAUDE.md` to the course standard; user/project/local memory |
+| 10:45–11:45 | S10 | Claude Code: subagents & skills | Read-only `semak-ci4` subagent on Day 6 code; `migration-ci4` skill |
+| 11:45–12:30 | S11 | Claude Code: MCP for CodeIgniter | `ci4-spark` MCP server (PHP, read-only); Context7; MySQL/GitLab optional |
+| 14:30–15:30 | S1 | Pass application migration & Model | Write the `PassApplication` & `PassDocument` Model/Entity |
+| 15:30–16:45 | S2 | Basic CRUD Controller & View | Build the list (owner scope) & detail view |
+| 16:45–17:00 | S5, S6 | Follow-ups if time allows; wrap-up | Lab 7.1b / 7.2b |
+
+> ℹ️ Lab 7.3, 7.4 (and 7.3b/7.4b) continue on Day 8 morning.
 
 ## Day 8 — Pass Module (Part 2) · [notes](./hari-8/README.md)
 

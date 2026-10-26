@@ -4,6 +4,9 @@
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
+| 7.6 | S9 | 09:20–10:30 | Claude Code disahkan; `CLAUDE.md` standard kursus; `CLAUDE.local.md`; mod Plan |
+| 7.7 | S10 | 11:00–11:45 | Subagent `semak-ci4` + `docs/semakan-ci4-hari6.md`; skill `migration-ci4` |
+| 7.8 | S11 | 11:55–12:30 | Server MCP `ci4-spark` diuji & didaftar dalam `.mcp.json`; Context7; MySQL/GitLab pilihan |
 | 7.0 | Awal S1 | 10 min | Branch Git + `php.ini` sedia untuk muat naik |
 | 7.1 | S1 | 09:10–10:00 | Enum, Entity, 2 Model |
 | 7.1b | S5 | 10:00–10:30 | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` diuji dalam `php spark shell` |
@@ -13,6 +16,551 @@
 | 7.3b | S7 | 15:30–16:00 | Tambah dokumen susulan (maks. 3 setiap permohonan, kunci `FOR UPDATE`) |
 | 7.4 | S4 | 16:00–16:35 | 17 kes ujian sempadan direkod |
 | 7.4b | S8 | 16:35–17:00 | `PassSubmitTest` PHPUnit: 14 kes sempadan automatik + mutasi `>=` |
+
+> ℹ️ **Jadual Hari 7 (dikemas kini):** Lab 7.6–7.8 (Claude Code) pada waktu pagi; Lab 7.0, 7.1 dan 7.2 (+7.1b/7.2b jika sempat) bermula 14:30. Lab 7.3, 7.4 (dan 7.3b/7.4b) disambung pada pagi Hari 8. Masa 7.0–7.4b dalam jadual di atas ialah jadual asal.
+
+---
+
+## Lab 7.6 — Claude Code: Pasang, Log Masuk & CLAUDE.md Projek (S9)
+
+> 🛡️ **Peraturan data (Lab 7.6–7.8).** Data **sintetik** sahaja. Jangan beri isi `.env`, kata laluan atau token kepada Claude. Jangan sambungkan Claude Code atau server MCP kepada sistem, kod atau database KKM/eSPKP sebenar. Jadual penuh *Boleh / Tidak boleh*: [tutorial Claude Code — Peraturan data](../docs/tutorial-claude-code.md#️-peraturan-data-baca-dahulu).
+
+### 🎯 Objektif
+Mengesahkan Claude Code berfungsi dalam `kelas-ci-<nama>`, menjana `CLAUDE.md` dengan `/init` dan **menulisnya semula** mengikut standard kursus (stack, arahan, konvensyen folder, peraturan), membezakan memori pengguna/projek/tempatan dengan `/memory`, dan menggunakan mod *Plan* untuk soalan tentang kod Hari 6 tanpa mengubah fail.
+
+### Prasyarat
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
+- [Tutorial Claude Code](../docs/tutorial-claude-code.md) §1–§5 siap (dibuat sebelum Lab 6.3c): `claude --version` berfungsi, anda log masuk dengan akaun Claude anda sendiri, dan `.claude/settings.json` wujud.
+- Projek `kelas-ci-<nama>` dengan kod Hari 6 (TLK) di-commit; `git status` bersih.
+
+### Langkah
+
+1. **Semak pemasangan (5 minit).** Dalam terminal Git Bash VS Code:
+
+   ```bash
+   claude --version
+   claude doctor
+   ```
+
+   Jangkaan: versi `2.1.x (Claude Code)` dan `claude doctor` tanpa ralat. Belum dipasang? Ikut [tutorial §2–§4](../docs/tutorial-claude-code.md#2-pasang) sekarang (PowerShell: `irm https://claude.ai/install.ps1 | iex`), kemudian buka semula VS Code.
+
+2. **Branch untuk kerja Claude Code** dan mulakan sesi dalam akar projek:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   cd ~/latihan/kelas-ci-<nama>
+   git switch main && git pull
+   git switch -c chore/claude-code
+   claude
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\latihan\kelas-ci-<nama>
+   git switch main
+   git pull
+   git switch -c chore/claude-code
+   claude
+   ```
+
+   Dalam Claude Code, taip `/status` (akaun anda) dan `/permissions` (tab *Deny* menyenaraikan 4 peraturan `Read(...)`). Tiada peraturan? Cipta `.claude/settings.json` daripada [tutorial §5](../docs/tutorial-claude-code.md#5-tetapan-projek-sekat-env) dahulu.
+
+3. **Jana draf dengan `/init`.** Taip:
+
+   ```text
+   /init
+   ```
+
+   Claude membaca `composer.json`, `app/` dan `tests/`, kemudian mencadangkan `CLAUDE.md` (atau penambahbaikan jika fail itu sudah wujud dari Lab 6.3c). Baca *diff* dan luluskan. Buka `CLAUDE.md` dalam VS Code: catat **satu** perkara yang betul dan **satu** yang salah atau tiada (cth arahan ujian, nama DB ujian, peraturan `.env`).
+
+4. **Tulis semula `CLAUDE.md` ke standard kursus.** Gantikan isi fail dengan templat ini, kemudian sesuaikan bahagian bertanda `<…>`. Simpan di bawah 200 baris.
+
+   `CLAUDE.md`
+
+   ```markdown
+   # CLAUDE.md — kelas-ci-<nama>
+
+   Projek latihan CI-KKM-10 (KKM): 4 modul CodeIgniter 4 — TLK, Pas, Laporan, Statistik.
+   Kanun nama jadual/medan/enum/kelas: SPEC kursus (docs/spesifikasi-sistem.md di pelatih.my).
+
+   ## Peranan anda (Claude)
+   - Penjelas dan penyemak, BUKAN penjana modul. Terangkan dahulu; saya yang menulis kod.
+   - Sebelum mencadangkan commit: terangkan setiap perubahan baris demi baris dan tunggu saya faham.
+   - Jawab dalam Bahasa Melayu; istilah teknikal dalam English (route, filter, controller, view).
+
+   ## Stack
+   - CodeIgniter 4.7 + Shield 1.x, PHP 8.2+, MySQL 8 (Laragon), Bootstrap 5.3, PHPUnit.
+   - DB dev: kkm_latihan · DB ujian: kkm_latihan_test (MySQL, bukan SQLite — FOR UPDATE perlu).
+   - Windows + Laragon; terminal Git Bash.
+
+   ## Arahan
+   - Server dev: `php spark serve` → http://localhost:8080
+   - Ujian: `composer test` (satu fail: `composer test -- --no-coverage tests/tlk/BookingServiceTest.php`)
+   - Migration: `php spark migrate --all` · status: `php spark migrate:status`
+   - Seeder: `php spark db:seed DatabaseSeeder`
+   - Route & filter: `php spark routes` · `php spark filter:check GET /pas/permohonan`
+   - Jangan jalankan migrate, db:seed atau migrate:refresh tanpa saya minta.
+
+   ## Konvensyen folder & kod
+   - Controller nipis: app/Controllers/{Tlk,Pas,Admin,Laporan,Statistik}/ — terima request → Service → view/redirect.
+   - Logik perniagaan: app/Services/ (BookingService, PassWorkflowService, …).
+   - Status: enum dalam app/Enums/ (BookingStatus, PassStatus, PassType) — satu-satunya sumber nilai status.
+   - Model: akses data + $allowedFields + $validationRules. Entity dalam app/Entities/.
+   - Migration: app/Database/Migrations/ (ikut skill migration-ci4). Seeder: app/Database/Seeds/.
+   - View: app/Views/{tlk,pas,laporan,statistik}/, layout app/Views/layouts/main.php; setiap output melalui esc().
+   - Nama kelas, medan, route dalam English/SPEC; mesej UI dan flash dalam Bahasa Melayu.
+
+   ## Peraturan
+   - Jangan baca, papar atau minta isi .env, writable/uploads/, writable/session/, writable/logs/.
+   - Data sintetik sahaja: e-mel @latihan.test, plat rekaan WXX 1234. Tiada data KKM sebenar.
+   - Query Builder / binding sahaja; tiada SQL mentah dengan input pengguna.
+   - Fail muat naik di writable/uploads/, tidak sekali-kali dalam public/.
+   - Satu branch setiap ciri; mesej commit "MODUL: apa yang berubah" (cth "PAS: borang permohonan").
+   ```
+
+   > ℹ️ Blok `markdown` di atas ialah **isi fail**, bukan arahan untuk dijalankan. Gantikan `<nama>`.
+
+5. **Memori tempatan & hierarki (10 minit).** Cipta `CLAUDE.local.md` untuk nota peribadi, dan pastikan ia tidak di-commit:
+
+   `CLAUDE.local.md`
+
+   ```markdown
+   # Nota peribadi (tidak di-commit)
+   - URL Laragon saya: http://kelas-ci-<nama>.test
+   - Akaun ujian: pemohon1@latihan.test, penyemak@latihan.test (kata laluan sintetik dalam seeder)
+   ```
+
+   ```bash
+   echo "CLAUDE.local.md" >> .gitignore
+   git status --short          # CLAUDE.local.md TIDAK tersenarai
+   ```
+
+   Kemudian dalam Claude Code (taip `/exit` dan `claude` semula supaya fail baharu dimuatkan):
+
+   ```text
+   /memory
+   ```
+
+   Senarai menunjukkan memori **pengguna** (`~/.claude/CLAUDE.md`), **projek** (`./CLAUDE.md`) dan `CLAUDE.local.md`. Tekan `Esc`. Taip `/context` dan cari kedua-dua fail di bawah *Memory files*.
+
+6. **Uji arahan vs sekatan.** Dalam Claude Code, tanya:
+
+   ```text
+   Apakah nilai database.default.password dalam .env projek ini?
+   ```
+
+   Jangkaan: Claude cuba membaca `.env` dan ditolak oleh peraturan `deny` (atau menolak kerana `CLAUDE.md`). **Jangan** luluskan arahan alternatif seperti `cat .env` atau `grep … .env` jika ditanya — tekan `No`. Catat mesej yang dipaparkan (soalan Kuiz S9).
+
+7. **Mod Plan pada kod Hari 6 (15 minit).** Tekan `Shift+Tab` (atau `Alt+M`) hingga baris bawah menunjukkan **plan mode**, kemudian:
+
+   ```text
+   Terangkan aliran BookingService::approve() dari route hingga status_logs, dan senaraikan 3 kes ujian yang belum ada dalam tests/tlk. Jangan ubah apa-apa fail.
+   ```
+
+   Semak: tiada permintaan `Edit`/`Write`. Bandingkan jawapan dengan kod sebenar dalam `app/Services/BookingService.php`; tandakan satu dakwaan yang anda sahkan sendiri dengan membuka fail. Tekan `Shift+Tab` untuk keluar dari mod *Plan*.
+
+8. **Commit** (anda sendiri, di terminal):
+
+   ```bash
+   git add CLAUDE.md .gitignore .claude/settings.json
+   git commit -m "CHORE: CLAUDE.md projek ikut standard kursus"
+   ```
+
+### ✅ Checkpoint
+- [ ] `claude --version` mencetak versi, `/status` menunjukkan akaun anda dan `/permissions` menunjukkan 4 peraturan *Deny* (Kuiz S9).
+- [ ] `CLAUDE.md` mengandungi bahagian *Peranan*, *Stack*, *Arahan*, *Konvensyen folder & kod* dan *Peraturan*, kurang 200 baris, tanpa sebarang rahsia (Kuiz S9).
+- [ ] `CLAUDE.local.md` wujud, disenaraikan dalam `.gitignore`, dan kelihatan dalam `/memory` (Kuiz S9).
+- [ ] Soalan `.env` langkah 6 ditolak tanpa nilai didedahkan, dan jawapan mod *Plan* langkah 7 tidak mengubah sebarang fail (Kuiz S9).
+- [ ] Commit `CHORE: CLAUDE.md projek ikut standard kursus` ada dalam `git log` branch `chore/claude-code` (Kuiz S9).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `claude: command not found` | Terminal dibuka sebelum pemasangan | Tutup semua tetingkap VS Code dan buka semula; [tutorial §2](../docs/tutorial-claude-code.md#2-pasang) |
+| `/init` menulis `CLAUDE.md` dalam English yang panjang | Tingkah laku lalai | Gantikan dengan templat langkah 4; templat ialah standard kursus |
+| `CLAUDE.local.md` tidak muncul dalam `/memory` | Fail dicipta selepas sesi bermula | `/exit`, kemudian `claude` semula |
+| `CLAUDE.local.md` muncul dalam `git status` | `.gitignore` tidak dikemas kini atau baris tersalah eja | Semak `cat .gitignore`; nama fail tepat `CLAUDE.local.md` |
+| `Shift+Tab` tidak menukar mod | Terminal Windows tanpa mod input VT | `Alt+M` |
+| Claude membaca `.env` | `.claude/settings.json` tiada atau JSON tidak sah | `claude doctor`; betulkan fail [tutorial §5](../docs/tutorial-claude-code.md#5-tetapan-projek-sekat-env) |
+
+### ⭐ Cabaran tambahan
+- Tambah satu peraturan bersyarat laluan: cipta `.claude/rules/views.md` dengan frontmatter `paths: ["app/Views/**"]` yang mengingatkan `esc()` dan `csrf_field()`. Semak dengan `/context` bahawa ia hanya dimuatkan selepas Claude membaca fail view.
+
+---
+
+## Lab 7.7 — Subagent & Skill untuk Projek CI4 (S10)
+
+> 🛡️ Peraturan data yang sama seperti [Lab 7.6](#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9): sintetik sahaja, tiada `.env`, tiada sistem KKM.
+
+### 🎯 Objektif
+Mencipta subagent baca sahaja `semak-ci4` dan **menggunakannya** untuk menyemak keselamatan kod Hari 6 anda sendiri (`esc()`, CSRF, filter/permission, binding Query Builder, validasi), **merekod** dapatan dalam `docs/semakan-ci4-hari6.md`, kemudian mencipta skill `migration-ci4` dan **menunjukkan** skill itu dimuatkan apabila Claude mendraf migration.
+
+### Prasyarat
+- [Lab 7.6](#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9) selesai; anda dalam branch `chore/claude-code`.
+- Kod TLK Hari 6 (`app/Controllers/Tlk/`, `app/Services/BookingService.php`, `app/Views/tlk/`) ada dalam projek.
+
+### Langkah
+
+1. **Cipta folder** (Git Bash):
+
+   ```bash tab="Git Bash / macOS / Linux"
+   mkdir -p .claude/agents .claude/skills/migration-ci4
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force .claude\agents, .claude\skills\migration-ci4
+   ```
+
+2. **Subagent `semak-ci4`.** Cipta fail ini dalam VS Code:
+
+   `.claude/agents/semak-ci4.md`
+
+   ```markdown
+   ---
+   name: semak-ci4
+   description: Penyemak keselamatan CodeIgniter 4 (BACA SAHAJA). Guna selepas menulis atau mengubah controller, view, model, route atau filter, atau apabila diminta menyemak keselamatan kod CI4.
+   tools: Read, Grep, Glob
+   model: sonnet
+   ---
+
+   Anda penyemak keselamatan CodeIgniter 4.7 + Shield untuk projek latihan KKM.
+   Anda TIDAK mengubah fail. Anda membaca, mencari dan melaporkan sahaja.
+   Jangan baca .env, writable/uploads/, writable/session/ atau writable/logs/.
+
+   Semak fail atau folder yang diberi untuk lima perkara ini:
+
+   1. Output view: setiap pemboleh ubah dalam view dicetak melalui esc()
+      (`<?= esc($x) ?>`, konteks `esc($x, 'attr')` / `'url'` / `'js'`).
+      `<?= $x ?>` mentah untuk data pengguna = dapatan.
+   2. CSRF: `csrf` dalam `Config\Filters::$globals['before']`; setiap borang POST guna
+      `csrf_field()` atau `form_open()`; perubahan data hanya melalui POST, bukan GET.
+   3. Filter & kebenaran: setiap route modul ada filter `session` / `permission:...` /
+      `group:...` (rujuk app/Config/Routes.php dan `php spark routes` jika diberi output);
+      Service menyemak pemilikan (`ownedBy()`, 404 kepada bukan pemilik).
+   4. Query Builder: tiada input pengguna dicantum ke dalam SQL
+      (`query("... $x")`, `where("col = $x")`, `orderBy($this->request->getGet(...))` tanpa senarai putih).
+      Betul: `where('col', $x)`, `query($sql, [$x])`, `like()` di dalam `groupStart()`.
+   5. Validasi & mass assignment: `$this->validate()` atau `$validationRules` Model;
+      controller tidak menghantar `getPost()` penuh ke `insert()`/`update()`;
+      `status`, `user_id`, `approved_by` ditetapkan oleh Service, bukan borang.
+
+   Format jawapan (Bahasa Melayu, istilah teknikal English):
+   - Jadual: | Fail:baris | Kategori (1–5) | Keterukan (Tinggi/Sederhana/Rendah) | Dapatan | Cadangan |
+   - Hanya dapatan yang anda lihat dalam kod; petik baris sebenar. Jangan meneka.
+   - Akhiri dengan "Tiada dapatan" bagi kategori yang bersih.
+   ```
+
+   Kembali ke Claude Code (keluar dari mod *Plan* tidak perlu). Folder `.claude/agents/` baru dicipta, jadi taip `/exit` dan `claude` semula sekali.
+
+3. **Jalankan semakan pada kod Hari 6 anda.** Dalam mod *Plan*:
+
+   ```text
+   Guna subagent semak-ci4 untuk menyemak app/Controllers/Tlk, app/Views/tlk dan app/Config/Routes.php.
+   ```
+
+   Jangkaan: baris `semak-ci4` muncul (subagent berjalan), kemudian jadual dapatan. Semak **setiap** dapatan dengan membuka fail:baris itu sendiri. Rekod dalam fail baharu:
+
+   `docs/semakan-ci4-hari6.md`
+
+   ```markdown
+   # Semakan keselamatan Hari 6 (subagent semak-ci4)
+
+   | # | Fail:baris | Kategori | Dapatan AI | Disahkan? (Ya/Tidak — kenapa) | Tindakan |
+   |---|------------|----------|------------|-------------------------------|----------|
+   | 1 |            |          |            |                               |          |
+   ```
+
+   Sekurang-kurangnya 3 baris. Jika semakan bersih, tulis dapatan "Tiada dapatan" bagi setiap kategori dan **satu** ujian yang anda buat untuk mengesahkannya (cth buka borang dan semak `csrf_test_name` dalam *View Source*).
+
+4. **Uji had tool.** Masih dalam sesi yang sama, minta:
+
+   ```text
+   Guna subagent semak-ci4 untuk membetulkan sendiri dapatan pertama dalam fail itu.
+   ```
+
+   Perhatikan jawapannya (soalan Kuiz S10). Pembetulan sebenar, jika ada, anda buat sendiri dalam branch Hari 6 selepas kursus hari ini — bukan sekarang.
+
+5. **Skill `migration-ci4`.** Cipta:
+
+   `.claude/skills/migration-ci4/SKILL.md`
+
+   ```markdown
+   ---
+   name: migration-ci4
+   description: Konvensyen migration & seeder kursus CI-KKM-10 (CodeIgniter 4, MySQL). Guna apabila menulis, mendraf atau menyemak migration, seeder, atau perubahan skema jadual.
+   argument-hint: "[nama jadual]"
+   ---
+
+   Ikut konvensyen ini untuk migration dan seeder dalam projek ini. Jadual sasaran: $ARGUMENTS
+
+   ## Migration
+   - Jana rangka dengan `php spark make:migration CreateNamaJadual` (fail
+     app/Database/Migrations/YYYY-MM-DD-HHMMSS_CreateNamaJadual.php). Satu jadual setiap fail.
+   - `public function up(): void` dan `public function down(): void`; `down()` mengundur `up()` sepenuhnya.
+   - `id`: `['type' => 'INT', 'unsigned' => true, 'auto_increment' => true]` + `addKey('id', true)`.
+   - Kunci asing: jenis SAMA dengan medan induk (INT unsigned);
+     `addForeignKey('medan', 'induk', 'id', 'CASCADE', 'RESTRICT')`, atau `'SET NULL'` jika medan boleh NULL.
+   - Status/jenis: VARCHAR(20) yang memegang nilai enum PHP (app/Enums/), BUKAN ENUM MySQL.
+   - `created_at`, `updated_at`, `deleted_at`: DATETIME null (soft delete jika SPEC menyatakan).
+   - `createTable('nama', true)` dan `dropTable('nama', true)` (IF [NOT] EXISTS).
+   - Susunan fail ikut dependency ERD: induk sebelum anak.
+   - Jangan ubah migration yang sudah dijalankan: tulis migration baharu (cth AddXToY).
+   - Tambah medan pada `users` Shield melalui migration berasingan; jangan sunting vendor/.
+   - Nama jadual & medan TEPAT seperti SPEC; jika jadual tiada dalam SPEC, tandakan sebagai "latihan".
+
+   ## Seeder
+   - app/Database/Seeds/; DatabaseSeeder memanggil seeder lain ikut susunan induk → anak.
+   - Data sintetik sahaja: e-mel @latihan.test, plat rekaan seperti WXX 1234, nama rekaan.
+
+   ## Cara bekerja
+   - Draf kod dan terangkan setiap medan, indeks dan FK dalam Bahasa Melayu.
+   - JANGAN jalankan `php spark migrate`, `migrate:rollback`, `migrate:refresh` atau `db:seed`.
+     Cetak arahan itu untuk peserta jalankan sendiri.
+   ```
+
+   Skill baharu dikesan tanpa mula semula. Jika `/migration-ci4` tidak muncul apabila anda menaip `/mig`, taip `/reload-skills`.
+
+6. **Lihat skill dimuatkan.** Dalam mod *Plan*, minta draf untuk jadual **latihan** (bukan SPEC; jangan simpan atau commit):
+
+   ```text
+   Draf migration untuk jadual latihan pass_comments: application_id (FK ke pass_applications), user_id (FK ke users), body (TEXT), created_at. Jangan tulis fail.
+   ```
+
+   Jangkaan: Claude Code memaparkan bahawa skill `migration-ci4` dimuatkan, dan draf mempunyai `INT unsigned` pada kedua-dua FK, `addForeignKey(...)`, `createTable('pass_comments', true)`, `down()` dengan `dropTable(..., true)`, serta arahan `php spark migrate` **dicetak**, bukan dijalankan. Kemudian cuba bentuk slash command:
+
+   ```text
+   /migration-ci4 vehicle_notes
+   ```
+
+   Catat dalam `docs/semakan-ci4-hari6.md` (bahagian baharu *Skill*) dua peraturan skill yang anda nampak dipatuhi dalam draf.
+
+7. **Commit** agent, skill dan laporan:
+
+   ```bash
+   git add .claude/agents/semak-ci4.md .claude/skills/migration-ci4/SKILL.md docs/semakan-ci4-hari6.md
+   git commit -m "CHORE: subagent semak-ci4, skill migration-ci4 & semakan Hari 6"
+   ```
+
+### ✅ Checkpoint
+- [ ] `.claude/agents/semak-ci4.md` mempunyai frontmatter `name`, `description`, `tools: Read, Grep, Glob` dan `model`, dan subagent itu berjalan pada `app/Controllers/Tlk` (Kuiz S10).
+- [ ] `docs/semakan-ci4-hari6.md` mengandungi ≥ 3 baris dapatan dengan lajur *Disahkan?* diisi oleh anda (Kuiz S10).
+- [ ] Permintaan "betulkan sendiri" langkah 4 **tidak** mengubah sebarang fail (Kuiz S10).
+- [ ] Draf `pass_comments` mengikut skill `migration-ci4` (FK `INT unsigned`, `createTable(..., true)`, arahan `migrate` dicetak sahaja) dan tiada fail migration baharu dalam `git status` (Kuiz S10).
+- [ ] Commit `CHORE: subagent semak-ci4, skill migration-ci4 & semakan Hari 6` ada dalam `git log` (Kuiz S10).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| Claude menyemak sendiri, `semak-ci4` tidak berjalan | Folder `.claude/agents/` dicipta dalam sesi semasa | `/exit` dan `claude` semula; atau taip `@agent-semak-ci4` |
+| Subagent diabaikan secara senyap | Frontmatter salah (tiada `---` pembuka, `name` tiada, salah eja medan) | Baris pertama fail mesti `---`; medan yang tidak dikenali diabaikan tanpa ralat |
+| `/migration-ci4` tidak muncul | Folder `skills/` baru; atau nama fail bukan `SKILL.md` | `/reload-skills`; nama tepat `SKILL.md` (huruf besar) dalam `.claude/skills/migration-ci4/` |
+| Draf tidak ikut skill | `description` tidak sepadan dengan permintaan | Sebut "migration" dalam permintaan, atau guna `/migration-ci4` terus |
+| Claude cuba menulis fail migration | Mod *Plan* tidak aktif | Tolak (`No`); `Shift+Tab` / `Alt+M` ke **plan mode** |
+| Notepad menyimpan `SKILL.md.txt` | Sambungan tersembunyi Windows | Cipta fail dalam VS Code, bukan Notepad |
+
+### ⭐ Cabaran tambahan
+- Cipta subagent kedua `semak-ujian` (`tools: Read, Grep, Glob, Bash`) yang hanya boleh menjalankan `composer test`. Tulis dalam arahannya bahawa ia mesti melaporkan bilangan ujian lulus/gagal dan tidak mengubah fail. Bincang dengan jurulatih: kenapa `Bash` menjadikan subagent ini lebih berisiko daripada `semak-ci4`?
+
+---
+
+## Lab 7.8 — MCP: ci4-spark, MySQL, Context7 & GitLab (S11)
+
+> 🛡️ Peraturan data yang sama seperti [Lab 7.6](#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9). **Jangan sekali-kali halakan server MCP kepada database KKM/eSPKP.** Hanya DB latihan `kkm_latihan` dalam Laragon anda.
+
+### 🎯 Objektif
+Memasang server MCP `ci4-spark` (PHP, baca sahaja) daripada templat kursus, **mengujinya** dengan mesej JSON-RPC tulisan tangan, mendaftarkannya untuk projek dengan `.mcp.json`, menggunakan tool `routes`/`filter_check` melalui Claude Code, dan menambah Context7 untuk dokumentasi CodeIgniter 4/Shield semasa. MySQL (baca sahaja) dan GitLab ialah bahagian pilihan/demo.
+
+| Bahagian | Status | Masa |
+|----------|--------|------|
+| A. `ci4-spark` | Wajib | 15 min |
+| B. Context7 | Wajib | 5 min |
+| C. MySQL baca sahaja | Jika masa (atau kerja rumah) | 10 min |
+| D. GitLab GitLab KKM | Demo jurulatih; cuba jika GitLab KKM menyokong & rangkaian membenarkan | 5 min |
+
+### Prasyarat
+- [Lab 7.7](#lab-77--subagent--skill-untuk-projek-ci4-s10) selesai; branch `chore/claude-code`.
+- `php` dalam `PATH`: `php -v` berfungsi dalam Git Bash **dan** PowerShell (Laragon: *Menu → Tools → Path → Add Laragon to Path*).
+- Templat [`templates/kod/ci4-spark-mcp.php.txt`](../templates/kod/ci4-spark-mcp.php.txt) (modul **Templat & Rujukan** di pelatih.my).
+
+### Langkah
+
+**A. Server `ci4-spark` (wajib)**
+
+1. **Salin templat** ke `tools/ci4-spark-mcp.php` dalam akar projek (VS Code: fail baharu → tampal isi templat). Semak sintaks:
+
+   ```bash
+   php -l tools/ci4-spark-mcp.php
+   ```
+
+   Jangkaan: `No syntax errors detected in tools/ci4-spark-mcp.php`. Baca fail itu 3 minit: cari `tools()` (4 tool), `callTool()` (regex semakan input) dan `spark()` (`proc_open()` dengan array, tanpa shell).
+
+2. **Fail ujian JSON-RPC.** Cipta `tools/ujian-mcp.jsonl` — **satu mesej JSON setiap baris**, tepat seperti di bawah:
+
+   `tools/ujian-mcp.jsonl`
+
+   ```json
+   {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ujian","version":"0"}}}
+   {"jsonrpc":"2.0","method":"notifications/initialized"}
+   {"jsonrpc":"2.0","id":2,"method":"tools/list"}
+   {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"filter_check","arguments":{"method":"GET","path":"/tlk/tempahan"}}}
+   {"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"db_table","arguments":{"table":"users; DROP TABLE users"}}}
+   {"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"migrate","arguments":{}}}
+   ```
+
+3. **Jalankan server dengan fail itu sebagai stdin:**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   php tools/ci4-spark-mcp.php < tools/ujian-mcp.jsonl
+   ```
+
+   ```powershell tab="PowerShell"
+   Get-Content tools\ujian-mcp.jsonl | php tools\ci4-spark-mcp.php
+   ```
+
+4. **Baca setiap balasan** (satu baris JSON setiap `id`; baris `[ci4-spark] started…` ialah stderr):
+
+   | `id` | Jangkaan |
+   |------|----------|
+   | 1 | `"protocolVersion":"2025-06-18"`, `"serverInfo":{"name":"ci4-spark",…}` |
+   | — | Tiada balasan untuk `notifications/initialized` (notifikasi) |
+   | 2 | 4 tool: `routes`, `migrate_status`, `db_table`, `filter_check`, setiap satu `"readOnlyHint":true` |
+   | 3 | `"isError":false`, teks bermula `$ php spark filter:check GET /tlk/tempahan`, dengan filter `session` dalam lajur *Before Filters* |
+   | 4 | Catat balasan tepat (soalan Kuiz S11) |
+   | 5 | `"error":{"code":-32602,"message":"Unknown tool: migrate"}` |
+
+5. **Daftar untuk projek (`.mcp.json`).** Dalam Git Bash (bukan dalam sesi `claude`):
+
+   ```bash
+   claude mcp add --scope project ci4-spark -- php tools/ci4-spark-mcp.php
+   cat .mcp.json
+   ```
+
+   Jangkaan `.mcp.json` (sama seperti menulisnya dengan tangan):
+
+   ```json
+   {
+     "mcpServers": {
+       "ci4-spark": {
+         "type": "stdio",
+         "command": "php",
+         "args": [
+           "tools/ci4-spark-mcp.php"
+         ],
+         "env": {}
+       }
+     }
+   }
+   ```
+
+   🪟 PowerShell: jika `--` hilang dan `claude mcp add` melaporkan pilihan tidak dikenali, jalankan arahan dalam Git Bash, atau tulis `.mcp.json` di atas dengan tangan.
+
+6. **Luluskan dan guna.** Mulakan `claude`. Claude Code bertanya sama ada mahu menggunakan server dari `.mcp.json`: pilih untuk membenarkan `ci4-spark`. Taip `/mcp`: `ci4-spark` berstatus *connected* dengan 4 tool. Kemudian:
+
+   ```text
+   Guna tool ci4-spark: senaraikan route modul TLK dan filter bagi GET /tlk/tempahan. Adakah setiap route TLK dilindungi filter session?
+   ```
+
+   Luluskan setiap panggilan tool MCP (`ci4-spark - routes`, `ci4-spark - filter_check`). Bandingkan jawapan dengan `php spark routes` yang anda jalankan sendiri.
+
+**B. Context7 (wajib)**
+
+7. **Tambah Context7** (server HTTP jauh; tiada Node diperlukan). Di terminal:
+
+   ```bash
+   claude mcp add --scope user --transport http context7 https://mcp.context7.com/mcp
+   claude mcp list
+   ```
+
+   Jangkaan: `context7: https://mcp.context7.com/mcp (HTTP) - ✔ Connected`. Kunci API pilihan (had kadar lebih tinggi): tambah `--header "Authorization: Bearer <kunci>"` — jangan commit kunci.
+
+8. **Tanya dokumentasi semasa** dalam `claude`:
+
+   ```text
+   Guna context7: dalam CodeIgniter Shield, bagaimana $matrix dalam Config\AuthGroups memberi permission kepada group, dan bagaimana filter permission: digunakan pada route?
+   ```
+
+   Jangkaan: panggilan `resolve-library-id` kemudian `query-docs`. Bandingkan dengan `app/Config/AuthGroups.php` anda (Hari 4).
+
+**C. MySQL baca sahaja (jika masa)**
+
+9. **Node 20+.** Laragon Full membawa Node.js:
+
+   ```bash
+   node -v      # mesti v20 atau lebih baharu
+   ```
+
+   Lebih lama atau tiada? Pasang Node.js LTS dari <https://nodejs.org>, kemudian tutup dan buka semula VS Code.
+
+10. **Pengguna MySQL `SELECT` sahaja.** Laragon → *Database* (HeidiSQL) → tab *Query*, sebagai `root`:
+
+    ```sql
+    CREATE USER 'claude_ro'@'127.0.0.1' IDENTIFIED BY 'BacaSahaja-2026';
+    GRANT SELECT, SHOW VIEW ON kkm_latihan.* TO 'claude_ro'@'127.0.0.1';
+    ```
+
+    Dua lapisan: server MCP menutup `INSERT`/`UPDATE`/`DELETE` secara lalai, **dan** pengguna ini tidak boleh menulis walaupun server tersilap konfigurasi.
+
+11. **Daftar dengan skop `local`** (kelayakan kekal dalam `~/.claude.json` anda, bukan dalam repo). Satu baris, dalam Git Bash:
+
+    ```bash
+    claude mcp add mysql-kelas -e MYSQL_HOST=127.0.0.1 -e MYSQL_PORT=3306 -e MYSQL_USER=claude_ro -e MYSQL_PASS=BacaSahaja-2026 -e MYSQL_DB=kkm_latihan -- npx -y @benborla29/mcp-server-mysql
+    ```
+
+    Dalam `claude`, `/mcp` → `mysql-kelas` *connected*. Tanya:
+
+    ```text
+    Guna mysql-kelas: berapa baris dalam slot_bookings ikut status? Kemudian cuba INSERT satu baris ujian ke departments.
+    ```
+
+    Jangkaan: kiraan `GROUP BY status` berjaya; `INSERT` ditolak (oleh server atau oleh MySQL: `INSERT command denied to user 'claude_ro'`).
+
+    > ℹ️ Mahu berkongsi konfigurasi dalam `.mcp.json`? Tulis `"MYSQL_PASS": "${MYSQL_PASS}"` dalam blok `env` dan tetapkan *environment variable* `MYSQL_PASS` dalam laptop setiap peserta sebelum `claude` dimulakan. Jangan sekali-kali tulis kata laluan sebenar dalam `.mcp.json`.
+
+**D. GitLab GitLab KKM (demo jurulatih)**
+
+12. **Pilihan rasmi: server MCP terbina GitLab.** Tersedia dalam GitLab 18.6+ (beta), semua tier sejak 19.2, GA dalam 19.5; pentadbir instance mesti membenarkan akses MCP. Jika GitLab KKM memenuhi syarat:
+
+    ```bash
+    claude mcp add --scope user --transport http gitlab-kkm https://<gitlab-kkm>/api/v4/mcp
+    ```
+
+    Dalam `claude`, `/mcp` → `gitlab-kkm` → *Authenticate* → log masuk GitLab KKM dalam pelayar (OAuth). Tanya: *"Senaraikan MR terbuka dalam projek kelas-ci-<nama> saya."*
+
+13. **Jika server terbina tidak tersedia:** jurulatih mendemo pelayan komuniti `@zereight/mcp-gitlab` dengan *Personal Access Token* baca sahaja (skop `read_api`; skop minimum belum disahkan untuk setiap tool) dan `GITLAB_PERMISSION_MODE=readonly`, token dalam *environment variable*, bukan dalam fail repo. Rangkaian menyekat? Tonton demo dan catat 2 kegunaan untuk projek anda.
+
+14. **Commit** server dan konfigurasi projek (tanpa rahsia):
+
+    ```bash
+    git add tools/ci4-spark-mcp.php tools/ujian-mcp.jsonl .mcp.json
+    git status --short          # tiada .env, tiada ~/.claude.json
+    git commit -m "CHORE: server MCP ci4-spark (baca sahaja) + .mcp.json"
+    git push -u origin chore/claude-code
+    ```
+
+    Buka MR `chore/claude-code` → `main` di GitLab KKM dan merge sendiri ([trek GitLab](../docs/trek-gitlab.md)) **sebelum Lab 7.0 petang**, supaya `CLAUDE.md`, subagent, skill dan `.mcp.json` ada dalam branch `feat/pas-permohonan`.
+
+### ✅ Checkpoint
+- [ ] `php -l tools/ci4-spark-mcp.php` tiada ralat dan fail ujian langkah 3 memulangkan 5 balasan (`id` 1–5) seperti jadual langkah 4 (Kuiz S11).
+- [ ] Balasan `id` 4 (`db_table` dengan `users; DROP TABLE users`) dicatat, dan jadual `users` masih wujud (Kuiz S11).
+- [ ] `.mcp.json` mendaftarkan `ci4-spark` tanpa sebarang rahsia, dan `/mcp` menunjukkan `ci4-spark` *connected* dengan 4 tool (Kuiz S11).
+- [ ] Claude Code menjawab soalan route TLK langkah 6 melalui tool `ci4-spark`, dan `claude mcp list` menunjukkan `context7` *Connected* (Kuiz S11).
+- [ ] Commit `CHORE: server MCP ci4-spark (baca sahaja) + .mcp.json` di-push ke `chore/claude-code` (Kuiz S11).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `/mcp`: `ci4-spark` *failed* | `php` tiada dalam `PATH` proses Claude Code | `where php` (PowerShell) / `which php` (Git Bash); tambah Laragon ke Path, atau tulis laluan penuh dalam `.mcp.json`: `"command": "C:/laragon/bin/php/php-8.3.x/php.exe"` |
+| `File 'spark' not found` | `claude` dimulakan dalam subfolder | Mulakan `claude` dalam akar projek, atau tetapkan `"env": {"CI4_PROJECT_ROOT": "C:/Users/<anda>/latihan/kelas-ci-<nama>"}` |
+| Ujian langkah 3: `Parse error` | Satu mesej JSON dipecah kepada beberapa baris, atau VS Code menambah BOM | Setiap mesej mesti satu baris; simpan fail sebagai *UTF-8* (bukan *UTF-8 with BOM*) |
+| `ci4-spark` berstatus *Pending approval* | Server `.mcp.json` belum diluluskan | Mulakan `claude` secara interaktif dan benarkan; set semula pilihan: `claude mcp reset-project-choices` |
+| `filter_check` tamat masa 30 s | Route memerlukan input interaktif atau DB tidak bersambung | Jalankan `php spark filter:check GET /…` sendiri untuk melihat ralat; semak Laragon MySQL hidup |
+| `mysql-kelas`: *Connection closed* (Windows) | `npx` gagal dijalankan terus | Semak `node -v`; cuba `-- cmd /c npx -y @benborla29/mcp-server-mysql` |
+| `Access denied for user 'claude_ro'` | Host pengguna `localhost` vs `127.0.0.1` | Cipta pengguna dengan `'claude_ro'@'127.0.0.1'` dan `MYSQL_HOST=127.0.0.1` |
+| Context7 tergantung | Proxy/firewall pejabat | Minta IT membenarkan `mcp.context7.com` (HTTPS 443); [tutorial §7](../docs/tutorial-claude-code.md#7-rangkaian-kkm-proxy--domain) |
+
+### ⭐ Cabaran tambahan
+- Tambah tool kelima `routes_filter` pada `ci4-spark` yang memulangkan hanya baris `php spark routes` yang mengandungi rentetan tertentu (cth `pas`). Semak input dengan regex `^[a-z0-9/_-]+$`, tapis output dalam PHP (bukan melalui shell), tambah baris ujian ke `tools/ujian-mcp.jsonl`, dan buktikan `tools/list` kini memulangkan 5 tool.
 
 ---
 
