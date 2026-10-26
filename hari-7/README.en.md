@@ -481,6 +481,18 @@ When you run `claude` in the eSPKP folder, that project's `CLAUDE.md` loads auto
 
 Claude answers confidently even when it is wrong. Every onboarding answer must include a `file:line`, and you open that file yourself. One wrong claim in your notes becomes a wrong requirement in S16.
 
+### 15.4 Explore, MCP and subagents for understanding
+
+Plan mode and `CLAUDE.md` give you answers; three tools from this morning help you **check** those answers without changing eSPKP (Lab 7.12 steps 7–9):
+
+| Tool | Type | In Lab 7.12 | Why |
+|------|------|-------------|-----|
+| **Explore** | Built-in subagent (read-only) | Two parallel tasks: map the structure, trace the detail GET | The files it reads stay in the subagent's context; you receive a summary |
+| `ci4-spark` | stdio MCP, `local` scope | `filter_check` on 3 routes | Real `php spark` output confirms or corrects claims about filters |
+| `semak-ci4` | Your subagent (Lab 7.7) | Review `ButiranController` and the detail view | Reviewed code: no High findings, a few Medium/Low ones for you to verify |
+
+Other built-in subagents: **Plan** (read-only, used by itself during *plan mode*) and **general-purpose** (all tools). Reference: <https://code.claude.com/docs/en/sub-agents>. `local` scope stores the MCP registration in your `~/.claude.json`, so the eSPKP repo does not get a `.mcp.json`.
+
 ### 🎯 Quiz S15
 
 > Answer after Lab 7.12. Passing this quiz marks the Lab 7.12 checkpoint.
@@ -535,6 +547,19 @@ The course SPEC stays canon: table, field, enum and class names do not change be
 ### 16.3 Requirements → slice plan
 
 `docs/keperluan-pas.md` is the small PRD for your Pass module: roles, FRs, BRs (SPEC IDs), NFRs and ACs. From it, AI-17 produces `docs/pelan-pas.md` with slices that match the labs: Slice 1 (Lab 7.10), Slice 2 (Lab 7.11), Slices 3–5 (Labs 8.10–8.12). Tomorrow morning, Lab 7.10 details Slice 1 in the same file.
+
+### 16.4 What to use when planning
+
+| Tool | When to use it while planning | Example this afternoon | Not for |
+|------|-------------------------------|------------------------|---------|
+| **Plan mode** | Every planning step: Claude reads and drafts, no file changes | eSPKP PRD, requirements, slice plan (Lab 7.13 steps 1–5) | Writing files; you paste |
+| `CLAUDE.md` | Facts needed in **every** session | "SPEC is canon", table names, `spark` commands | Long templates you rarely use |
+| **Skill** | A repeatable way of working for **one kind** of task | `perancangan-ci4`: PRD, gap table, requirements, slice plan with BRs, tests and "Reject if the diff…" | Facts needed in every session |
+| **Built-in subagent** (Explore, Plan, general-purpose) | Exploring many files without filling the conversation | Two parallel Explore tasks map eSPKP | Scope decisions: that is your job |
+| **Your subagent** | Repeated reviews with limited tools | `semak-ci4` (read-only) | Fixing code |
+| **MCP** | Outside facts from the real system or current documentation | `ci4-spark` (routes & filters), Context7 (Shield syntax), GitLab (one issue per slice) | Real KKM databases or systems |
+
+Short rule: Plan mode to **think**, `CLAUDE.md` for **fixed facts**, a skill for **a way of working**, a subagent to **read a lot**, MCP for **outside evidence**. The use / adjust / no decision stays with you and the system owner.
 
 ### 🎯 Quiz S16
 

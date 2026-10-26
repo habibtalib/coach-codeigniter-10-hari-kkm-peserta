@@ -1313,12 +1313,93 @@ Memahami projek CI4 yang siap dengan Claude Code dalam mod *Plan*: aliran reques
    cd $HOME\latihan\espkpv2; git status --short   # kosong
    ```
 
+7. **Subagent terbina Explore: peta projek secara selari (10 minit).** Claude Code membawa subagent terbina tanpa sebarang fail `.claude/agents/`: **Explore** (baca sahaja, mencari dan memetakan kod), **Plan** (baca sahaja, digunakan sendiri semasa *plan mode*) dan **general-purpose** (semua tool, untuk tugas berbilang langkah). Rujukan: <https://code.claude.com/docs/en/sub-agents>. Tambah bahagian ini di hujung `nota-fahami.md`:
+
+   ```markdown
+   ## Alat (Explore · MCP · subagent)
+   | Alat | Soalan | Dapatan | Bukti fail:baris / output tool |
+   |------|--------|---------|--------------------------------|
+   | Explore 1 | Struktur & di mana peraturan tinggal | ... | ... |
+   | Explore 2 | Jejak GET butiran | ... | ... |
+   | ci4-spark | ... | ... | ... |
+   | semak-ci4 | ... | ... | ... |
+   ```
+
+   Dalam `~/latihan/espkpv2`, mulakan `claude` semula dalam **plan mode** dan hantar:
+
+   ```text
+   Mod Plan. Jangan ubah fail. Jalankan DUA subagent Explore secara selari:
+   (1) petakan struktur folder app/ dan di mana peraturan aliran kerja tinggal;
+   (2) jejak request GET butiran permohonan dari route hingga view.
+   Gabungkan hasilnya dalam 10 baris, setiap baris dengan fail:baris.
+   ```
+
+   Jangkaan: dua baris `Explore(...)` berjalan serentak, kemudian satu ringkasan. Ujian jurulatih (commit `01abad1`) memulangkan antara lain `app/Config/Aliran.php` (`$peralihan`), `App\Services\AliranKerja` (`tersedia()`, `laksana()`), `BaseController::permohonanAtau404()` → `PermohonanPolicy::bolehLihat()` dan view `app/Views/permohonan/butiran.php`. Nombor baris anda mungkin berbeza sedikit; buka satu `fail:baris` dan isi dua baris Explore dalam jadual. Kenapa subagent? Puluhan fail yang dibaca kekal dalam konteks subagent; perbualan anda hanya menerima ringkasan. Untuk memaksa subagent tertentu, taip `@` dan pilih subagent itu daripada senarai.
+
+8. **MCP `ci4-spark`: sahkan jawapan dengan output `spark` sebenar (10 minit).** Server dari Lab 7.8 diletak dalam folder **kajian**, bukan dalam eSPKP, dan didaftarkan dengan skop `local` (disimpan dalam `~/.claude.json` anda, bukan `.mcp.json` dalam repo), jadi klon eSPKP tidak berubah. `php spark` memerlukan `vendor/`: jalankan `composer install` sekali (jika gagal kerana `ext-intl`/`ext-sodium`, lihat Masalah lazim dan tonton demo jurulatih). `/exit` dahulu, kemudian:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   mkdir -p ~/latihan/espkpv2-kajian/tools
+   cp ~/latihan/kelas-ci-<nama>/tools/ci4-spark-mcp.php ~/latihan/espkpv2-kajian/tools/
+   cd ~/latihan/espkpv2
+   composer install
+   claude mcp add --scope local ci4-spark -- php ~/latihan/espkpv2-kajian/tools/ci4-spark-mcp.php
+   claude mcp get ci4-spark
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force "$HOME\latihan\espkpv2-kajian\tools" | Out-Null
+   Copy-Item "$HOME\latihan\kelas-ci-<nama>\tools\ci4-spark-mcp.php" "$HOME\latihan\espkpv2-kajian\tools\"
+   cd $HOME\latihan\espkpv2
+   composer install
+   claude mcp add --scope local ci4-spark -- php "$HOME\latihan\espkpv2-kajian\tools\ci4-spark-mcp.php"
+   claude mcp get ci4-spark
+   ```
+
+   Jangkaan: `Scope: Local config (private to you in this project)` dan `Status: ✔ Connected`. Server mencari `spark` di folder induk `tools/` dahulu; di sini ia tiada, jadi server menggunakan folder semasa (`~/latihan/espkpv2`). Mulakan `claude` (plan mode) dan hantar:
+
+   ```text
+   Guna tool ci4-spark sahaja. (1) filter_check GET /permohonan/0192a3b4-c5d6-7e8f-9a0b-1c2d3e4f5a6b, GET /semua dan GET /barisan/pelulus: filter permission mana yang ada pada setiap satu?
+   (2) Jika sesuatu route tiada filter permission, di mana akses disemak? Beri fail:baris.
+   ```
+
+   Luluskan setiap panggilan `ci4-spark - filter_check`. Output sebenar pada commit `01abad1`:
+
+   | Route | *Before Filters* (ringkas) | Maksud |
+   |-------|----------------------------|--------|
+   | `GET /permohonan/<uuid>` | `… session sesiSah force-reset wajib2fa` (tiada `permission:`) | Akses disemak dalam kod: `PermohonanPolicy::bolehLihat()` → 404 (jawapan P1 anda) |
+   | `GET /semua` | `… wajib2fa permission:permohonan.lihat_semua,permohonan.batal` | Filter route sebenar (jawapan P3: hanya UKS & Pelulus melihat semua) |
+   | `GET /barisan/pelulus` | `… session sesiSah force-reset wajib2fa` (tiada `permission:`) | Disemak dalam `BarisanController::index()` dengan `can($p->kebenaran())`, 404 jika gagal |
+
+   Perhatikan juga: tool `routes` memaparkan `<unknown>` dalam lajur filter untuk route ber-placeholder `(:uuid)`. Sebab itu `filter_check` dengan laluan sebenar lebih tepat. Jika Claude berkata "route Pelulus dilindungi filter `permission:`", output tool membuktikan itu **salah**: rekod sebagai *dibetulkan*. Jangan guna `migrate_status` atau `db_table` di sini: kedua-duanya memerlukan database dan `.env`, dan kita tidak mencipta `.env` dalam eSPKP.
+
+9. **Subagent `semak-ci4` pada kod yang sudah disemak (10 minit).** Subagent anda dari Lab 7.7 tinggal dalam `kelas-ci-<nama>/.claude/agents/`. Jalankan Claude dari projek anda dan beri akses baca kepada eSPKP, supaya tiada fail ditambah dalam klon eSPKP. `/exit`, kemudian:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   cd ~/latihan/kelas-ci-<nama>
+   claude --add-dir ~/latihan/espkpv2
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\latihan\kelas-ci-<nama>
+   claude --add-dir $HOME\latihan\espkpv2
+   ```
+
+   Dalam **plan mode**:
+
+   ```text
+   Guna subagent semak-ci4 untuk menyemak ~/latihan/espkpv2/app/Controllers/Permohonan/ButiranController.php dan ~/latihan/espkpv2/app/Views/permohonan/butiran.php. Ringkaskan dapatan dalam jadual.
+   ```
+
+   Jangkaan: baris `semak-ci4` berjalan dan memulangkan jadual. Ujian jurulatih (commit `01abad1`): **tiada** dapatan Tinggi; kategori utama disahkan betul (`esc()` dalam view, `csrf_field()` dan POST, `permohonanAtau404()` → `PermohonanPolicy`, Query Builder dengan binding, `getPost([...])` bermedan); beberapa dapatan Sederhana/Rendah, contohnya nombor ajaib `$p->status === 3` dalam `ButiranController` dan controller yang tidak nipis. Dapatan subagent ialah hipotesis: pilih satu dan sahkan atau tolak sendiri dengan membuka `fail:baris`. Isi baris `semak-ci4` dalam jadual nota, kemudian ulang semakan langkah 6: `git status --short` dalam `~/latihan/espkpv2` masih kosong.
+
 ### ✅ Checkpoint
 - [ ] `~/latihan/espkpv2/CLAUDE.md` wujud (klon atau zip) dan `/memory` menunjukkan ia dimuatkan secara automatik; satu perkara untuk ditiru direkod (Kuiz S15).
 - [ ] `nota-fahami.md` mengandungi 6 jawapan onboarding dengan ayat sendiri dan bukti `fail:baris` yang anda buka sendiri (Kuiz S15).
 - [ ] Sekurang-kurangnya satu dakwaan Claude disemak dan direkod sebagai betul atau dibetulkan, termasuk di mana `$peralihan` tinggal (Kuiz S15).
 - [ ] Aliran demo dengan 2 peranan direkod: status sebelum → selepas dan 404 untuk pengguna lain (Kuiz S15).
 - [ ] Tiada fail berubah dalam klon eSPKP. 🪟 PowerShell: `git status --short` dalam `$HOME\latihan\espkpv2` (Kuiz S15).
+- [ ] Bahagian *Alat* dalam `nota-fahami.md` direkod: 2 tugas Explore selari, output `ci4-spark` `filter_check` yang mengesahkan atau membetulkan satu jawapan onboarding, dan satu dapatan `semak-ci4` yang anda semak sendiri (Kuiz S15).
 
 ### 🧯 Masalah lazim
 
@@ -1331,6 +1412,8 @@ Memahami projek CI4 yang siap dengan Claude Code dalam mod *Plan*: aliran reques
 | Claude menyebut fail yang tidak wujud | Jawapan berhalusinasi | Minta "tunjukkan fail:baris tepat"; rekod sebagai dibetulkan dalam nota |
 | Kod TOTP ditolak di demo | Jam telefon tidak segerak, atau kunci ditaip salah | Hidupkan masa automatik pada telefon; tambah semula kunci daripada `contoh-espkp.md` sebagai jenis berasaskan masa |
 | `composer install` gagal (`ext-intl` atau `ext-sodium`) | Extension PHP Laragon tidak dihidupkan | Langkau: `composer install` tidak diperlukan untuk membaca kod |
+| `claude mcp get ci4-spark`: `No MCP server found` | `claude mcp add --scope local` dijalankan di luar `~/latihan/espkpv2` (skop `local` terikat pada folder) | `cd ~/latihan/espkpv2`, kemudian jalankan semula `claude mcp add …` |
+| Output `ci4-spark`: `Failed to open stream` … `vendor/codeigniter4/framework/system/Boot.php` | `composer install` belum dijalankan dalam eSPKP | `composer install`; jika extension PHP tiada, tonton demo jurulatih |
 
 ### ⭐ Cabaran tambahan
 - Minta Claude (mod *Plan*) membandingkan `CLAUDE.md` eSPKP dengan `CLAUDE.md` dalam `kelas-ci-<nama>` anda (`claude --add-dir ~/latihan/kelas-ci-<nama>`). Pilih dua cadangan dan tulis sendiri dalam projek anda esok.
@@ -1469,6 +1552,50 @@ Mendraf PRD aliran Pas eSPKP daripada kod (*reverse engineering*) dengan Claude 
 
    Buka MR ke `main` dan merge sebelum Lab 7.10 esok, supaya `feat/pas-claude` bermula dengan kedua-dua fail ini.
 
+7. **Skill `perancangan-ci4`: kerja merancang yang boleh diulang (10 minit).** Langkah 1–5 menulis prompt panjang dengan tangan. Skill menyimpan peraturan itu sekali (templat PRD, jadual jurang, keperluan, pelan slice dengan pemetaan BR, ujian setiap slice dan "Tolak jika diff…"), dan Claude memuatkannya apabila anda merancang. Dalam `kelas-ci-<nama>` (branch `docs/keperluan-pas`):
+
+   ```bash tab="Git Bash / macOS / Linux"
+   mkdir -p .claude/skills/perancangan-ci4
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force .claude\skills\perancangan-ci4
+   ```
+
+   Salin isi templat [`templates/kod/skill-perancangan-ci4.md.txt`](../templates/kod/skill-perancangan-ci4.md.txt) (modul **Templat & Rujukan** di pelatih.my) ke `.claude/skills/perancangan-ci4/SKILL.md` dalam VS Code. Semak frontmatter: `name: perancangan-ci4` dan `description` yang menyebut PRD, jadual jurang, keperluan dan pelan slice. Mulakan `claude` (plan mode; jika `/perancangan-ci4` tidak muncul apabila menaip `/per`, taip `/reload-skills`) dan hantar:
+
+   ```text
+   /perancangan-ci4 pas
+   Semak @docs/pelan-pas.md terhadap skill ini. Senaraikan sahaja: BR-PAS yang tiada slice atau ujian, slice tanpa lajur "Tolak jika diff…", dan nama yang bukan SPEC. Jangan tulis semula fail.
+   ```
+
+   Jangkaan: Claude Code menunjukkan skill `perancangan-ci4` dimuatkan, dan jawapan mengikut jadual skill (`Slice | Lab | FR/BR/AC dipenuhi | Fail CI4 terlibat | Ujian | Tolak jika diff…`). Cuba juga tanpa slash command, contoh *"Draf jadual jurang modul Pas"*: skill dimuatkan kerana permintaan sepadan dengan `description`. Tambah lajur **Tolak jika diff…** pada `docs/pelan-pas.md` sendiri (sekurang-kurangnya satu perkara bagi setiap slice).
+
+8. **MCP Context7: semak pendekatan terhadap dokumentasi semasa (5 minit).** Pelan anda bergantung pada sintaks CI4/Shield. Sahkan satu sebelum menulis kod esok:
+
+   ```text
+   Guna context7. Dalam CodeIgniter Shield, apakah sintaks filter permission: pada route, dan apakah maksud beberapa permission dipisah koma? Dalam CodeIgniter 4, apakah yang dipulangkan oleh UploadedFile::getRandomName()? Beri pautan dokumen.
+   ```
+
+   Jangkaan: panggilan `resolve-library-id` kemudian `query-docs`; contoh `'filter' => 'permission:users.manage'` (Shield *Authorization*, bahagian *Authorizing via Routes*) dan nama rawak berbentuk `<timestamp>_<20 hex>.<ext>` daripada `getRandomName()`. Jika jawapan tentang koma tidak jelas, semak sumber (selepas `composer install`): `vendor/codeigniter4/shield/src/Filters/PermissionFilter.php` menggelung setiap permission dengan `can()`, jadi **satu** permission sudah mencukupi. Bandingkan dengan output `ci4-spark` Lab 7.12 langkah 8 (`permission:permohonan.lihat_semua,permohonan.batal`). Tambah bahagian ini di hujung `docs/pelan-pas.md`:
+
+   ```markdown
+   ## Rujukan disemak (Context7)
+   | Pendekatan dalam pelan | Dokumen (pautan) | Sepadan? |
+   |------------------------|------------------|----------|
+   | Filter `permission:` pada route Pas | ... | Ya / Laras: ... |
+   ```
+
+9. **Pilihan, demo jurulatih: GitLab MCP menjadikan slice sebagai issue (5 minit).** Hanya jika `gitlab-kkm` (Lab 7.8 langkah 12) *connected* dan anda mempunyai akses tulis pada `kelas-ci-<nama>`. Jurulatih meminta: *"Untuk setiap slice dalam @docs/pelan-pas.md, cipta satu issue dalam projek kelas-ci-<nama> dengan tajuk 'Slice N: …' dan senarai AC sebagai tugasan."* Claude Code meminta kebenaran bagi setiap panggilan tool GitLab: semak tajuk dan isi sebelum meluluskan. Tiada akses atau rangkaian menyekat? Tonton sahaja.
+
+10. **Bila guna apa semasa merancang, dan commit (5 minit).** Baca jadual [16.4](./README.md#164-bila-guna-apa-semasa-merancang) dan tulis satu baris bagi setiap alat yang anda gunakan petang ini dalam `docs/pelan-pas.md` (bahagian `## Alat perancangan`). `/exit`, kemudian:
+
+    ```bash
+    git add .claude/skills/perancangan-ci4/SKILL.md docs/pelan-pas.md
+    git commit -m "CHORE: skill perancangan-ci4 & semakan pelan Pas (Context7)"
+    git push
+    ```
+
 ### ✅ Checkpoint
 - [ ] `prd-espkp-pas.md` mengandungi FR, BR dan NFR dengan sumber `fail:baris`, termasuk 404 bukan 403 dan lampiran di luar `public/` (Kuiz S16).
 - [ ] Bahagian Pengesahan merekod 3 dakwaan yang disemak terhadap kod **dan** demo langsung (Kuiz S16).
@@ -1476,6 +1603,7 @@ Mendraf PRD aliran Pas eSPKP daripada kod (*reverse engineering*) dengan Claude 
 - [ ] `docs/keperluan-pas.md` menggunakan nama SPEC dan BR-PAS-01..06; ciri "tidak" berada dalam Luar skop atau Soalan terbuka (Kuiz S16).
 - [ ] `docs/pelan-pas.md` mempunyai 5 slice yang sepadan dengan Lab 7.10, 7.11, 8.10, 8.11, 8.12 dan tiada migration baharu (Kuiz S16).
 - [ ] Commit `DOCS: keperluan & pelan slice Pas …` ada pada branch `docs/keperluan-pas`. 🪟 PowerShell: `git log --oneline -3` (Kuiz S16).
+- [ ] Skill `.claude/skills/perancangan-ci4/SKILL.md` di-commit dan dimuatkan semasa menyemak `docs/pelan-pas.md`; pelan mempunyai lajur *Tolak jika diff…* dan satu pendekatan disemak dengan Context7 berserta pautan dokumen (Kuiz S16).
 
 ### 🧯 Masalah lazim
 
@@ -1487,6 +1615,7 @@ Mendraf PRD aliran Pas eSPKP daripada kod (*reverse engineering*) dengan Claude 
 | Pelan mencipta migration `CreatePassApplications` | Claude tidak tahu jadual Hari 4 sudah wujud | Buang baris itu; jika perlu, semak dengan `ci4-spark` `migrate_status` |
 | Teks tampalan rosak (aksara pelik, baris berganda) | Salin dari terminal mintty dengan pembalut baris | Salin dari terminal VS Code, atau minta Claude memaparkan dalam satu blok markdown |
 | `git push` ditolak | Branch belum wujud di remote atau token GitLab tamat | `git push -u origin docs/keperluan-pas`; semak token seperti Hari 2 |
+| `/perancangan-ci4` tidak muncul | Fail bukan `SKILL.md` dalam `.claude/skills/perancangan-ci4/`, atau baris pertama bukan `---` | Betulkan nama dan lokasi fail; taip `/reload-skills` |
 
 ### ⭐ Cabaran tambahan
 - Jalankan [AI-18](../docs/pustaka-prompt.md#ai-18--semak-prd) pada `docs/keperluan-pas.md`. Pilih 2 isu dan betulkan sendiri dalam commit `DOCS: …` kedua.

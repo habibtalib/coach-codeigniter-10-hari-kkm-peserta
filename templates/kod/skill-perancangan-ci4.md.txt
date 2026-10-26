@@ -1,0 +1,55 @@
+---
+name: perancangan-ci4
+description: Merancang modul CodeIgniter 4 kursus CI-KKM-10 daripada projek contoh atau PRD. Guna apabila mendraf atau menyemak PRD, jadual jurang (projek contoh vs SPEC), docs/keperluan-*.md atau pelan vertical slice docs/pelan-*.md.
+argument-hint: "[modul, cth pas]"
+---
+
+<!--
+CI-KKM-10, Lab 7.13. Salin ke .claude/skills/perancangan-ci4/SKILL.md dalam kelas-ci-<nama>.
+Skill ini MERANCANG sahaja: tiada kod, tiada migration, tiada perubahan fail tanpa diminta.
+-->
+
+Anda membantu merancang modul **$ARGUMENTS** untuk projek kursus ini. Saya (peserta) yang
+memutuskan; anda mendraf, menunjukkan bukti dan menandakan perkara yang perlu saya putuskan.
+
+## Sumber kebenaran (ikut susunan)
+1. docs/spesifikasi-sistem.md (SPEC kursus) = KANUN: nama jadual, medan, enum, kelas, permission
+   dan ID BR-PAS-01..06 kekal tepat. Projek contoh (eSPKP) TIDAK mengubah SPEC.
+2. docs/keperluan-<modul>.md, jika sudah wujud.
+3. Kod projek contoh: rujukan sahaja; setiap dakwaan tentangnya mesti ada fail:baris.
+Ragu → tulis sebagai Soalan terbuka. Jangan teka.
+
+## Hasil 1: PRD (daripada kod atau idea)
+Bahagian tetap: 1 Masalah · 2 Pengguna & peranan · 3 Skop (dalam/luar) · 4 Keperluan fungsian
+(FR-01..) · 5 Peraturan perniagaan (BR-01..) · 6 Keperluan bukan fungsian · 7 Data/entiti ·
+8 Kriteria penerimaan (AC-01.., Diberi/Apabila/Maka) · 9 Soalan terbuka.
+- PRD terbitan kod: setiap FR/BR ada (fail:baris) sumbernya.
+- NFR wajib: bukan pemilik menerima 404 bukan 403; fail muat naik di luar public/ dengan nama
+  rawak; satu tindakan aliran kerja = satu transaksi.
+
+## Hasil 2: jadual jurang
+| Ciri | Projek contoh | SPEC kursus | Keputusan: guna / laras / tidak | Sebab |
+- guna = sama seperti SPEC; laras = prinsip contoh, nama SPEC; tidak = luar skop atau Soalan terbuka.
+- Minimum 8 baris. Jangan ubah keputusan yang sudah saya tulis; cadangkan dalam lajur Sebab.
+
+## Hasil 3: docs/keperluan-<modul>.md
+- Templat PRD di atas, dengan ID FR-PAS-01.., BR-PAS-01..06 (ayat SPEC), AC-PAS-01...
+- Hanya baris jurang "guna" atau "laras". Baris "tidak" → Luar skop atau Soalan terbuka.
+- Sekurang-kurangnya 4 AC boleh diuji dengan nama pengguna demo (pemohon1, pemohon2, ...).
+
+## Hasil 4: docs/pelan-<modul>.md (vertical slice)
+Satu bahagian bagi setiap slice, dengan jadual ini:
+| Slice | Lab | FR/BR/AC dipenuhi | Fail CI4 terlibat | Ujian (composer test / langkah pelayar) | Tolak jika diff… |
+- Slice ikut lab: 1 = Lab 7.10, 2 = Lab 7.11, 3 = Lab 8.10, 4 = Lab 8.11, 5 = Lab 8.12.
+- Setiap BR-PAS-01..06 dipetakan kepada sekurang-kurangnya satu slice dan satu ujian.
+- "Tolak jika diff…": perkara yang saya TOLAK semasa membaca diff, contohnya migration baharu
+  (jadual Pas wujud sejak Hari 4), nama bukan SPEC, `<?= $x ?>` tanpa esc(), query tanpa
+  ownedBy(), fail di bawah public/, perubahan status di luar PassWorkflowService.
+- Akhiri dengan: FR yang tidak masuk mana-mana slice, dan Soalan terbuka.
+
+## Cara bekerja
+- Mod Plan: jangan tulis atau ubah fail; paparkan draf dalam satu blok markdown untuk saya tampal.
+- Jangan tulis kod PHP. Sebut nama fail dan kelas sahaja.
+- Untuk sintaks CI4/Shield yang tidak pasti (cth filter `permission:`, `getRandomName()`),
+  cadangkan semakan dengan Context7 dan nyatakan pautan dokumen.
+- Bahasa Melayu; istilah teknikal English (route, filter, controller, migration).

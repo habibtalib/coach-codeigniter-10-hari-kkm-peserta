@@ -481,6 +481,18 @@ Apabila anda menjalankan `claude` dalam folder eSPKP, `CLAUDE.md` projek itu dim
 
 Claude menjawab dengan yakin walaupun tersilap. Setiap jawapan onboarding mesti ada `fail:baris`, dan anda membuka fail itu sendiri. Satu dakwaan yang salah dalam nota anda akan menjadi keperluan yang salah dalam S16.
 
+### 15.4 Explore, MCP dan subagent untuk memahami
+
+Mod *Plan* dan `CLAUDE.md` memberi jawapan; tiga alat dari pagi tadi membantu anda **menyemak** jawapan itu tanpa mengubah eSPKP (Lab 7.12 langkah 7–9):
+
+| Alat | Jenis | Dalam Lab 7.12 | Kenapa |
+|------|-------|----------------|--------|
+| **Explore** | Subagent terbina (baca sahaja) | Dua tugas selari: peta struktur, jejak GET butiran | Fail yang dibaca kekal dalam konteks subagent; anda menerima ringkasan |
+| `ci4-spark` | MCP stdio, skop `local` | `filter_check` pada 3 route | Output `php spark` sebenar mengesahkan atau membetulkan dakwaan tentang filter |
+| `semak-ci4` | Subagent anda (Lab 7.7) | Semak `ButiranController` dan view butiran | Kod yang sudah disemak: tiada dapatan Tinggi, beberapa Sederhana/Rendah untuk anda sahkan |
+
+Subagent terbina lain: **Plan** (baca sahaja, digunakan sendiri semasa *plan mode*) dan **general-purpose** (semua tool). Rujukan: <https://code.claude.com/docs/en/sub-agents>. Skop `local` menyimpan pendaftaran MCP dalam `~/.claude.json` anda, jadi repo eSPKP tidak mendapat `.mcp.json`.
+
 ### 🎯 Kuiz S15
 
 > Jawab selepas Lab 7.12. Lulus kuiz ini menanda checkpoint Lab 7.12.
@@ -535,6 +547,19 @@ SPEC kursus kekal kanun: nama jadual, medan, enum dan kelas tidak berubah kerana
 ### 16.3 Keperluan → pelan slice
 
 `docs/keperluan-pas.md` ialah PRD kecil modul Pas anda: peranan, FR, BR (ID SPEC), NFR dan AC. Daripadanya, AI-17 menghasilkan `docs/pelan-pas.md` dengan slice yang sepadan dengan lab: Slice 1 (Lab 7.10), Slice 2 (Lab 7.11), Slice 3–5 (Lab 8.10–8.12). Esok pagi, Lab 7.10 memperincikan Slice 1 dalam fail yang sama.
+
+### 16.4 Bila guna apa semasa merancang
+
+| Alat | Bila digunakan semasa merancang | Contoh petang ini | Bukan untuk |
+|------|---------------------------------|-------------------|-------------|
+| **Plan mode** | Setiap langkah merancang: Claude membaca dan mendraf, tiada fail berubah | PRD eSPKP, keperluan, pelan slice (Lab 7.13 langkah 1–5) | Menulis fail; anda yang menampal |
+| `CLAUDE.md` | Fakta yang perlu **setiap** sesi | "SPEC kanun", nama jadual, arahan `spark` | Templat panjang yang jarang digunakan |
+| **Skill** | Cara kerja berulang untuk **satu jenis** tugas | `perancangan-ci4`: PRD, jadual jurang, keperluan, pelan slice dengan BR, ujian dan "Tolak jika diff…" | Fakta yang perlu setiap sesi |
+| **Subagent terbina** (Explore, Plan, general-purpose) | Meneroka banyak fail tanpa memenuhkan perbualan | Dua Explore selari memetakan eSPKP | Keputusan skop: itu kerja anda |
+| **Subagent anda** | Semakan berulang dengan had tool | `semak-ci4` (baca sahaja) | Membetulkan kod |
+| **MCP** | Fakta luar daripada sistem sebenar atau dokumentasi semasa | `ci4-spark` (route & filter), Context7 (sintaks Shield), GitLab (issue setiap slice) | Database atau sistem KKM sebenar |
+
+Peraturan ringkas: Plan mode untuk **berfikir**, `CLAUDE.md` untuk **fakta tetap**, skill untuk **cara kerja**, subagent untuk **membaca banyak**, MCP untuk **bukti dari luar**. Keputusan guna / laras / tidak kekal milik anda dan pemilik sistem.
 
 ### 🎯 Kuiz S16
 

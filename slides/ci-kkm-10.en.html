@@ -2305,6 +2305,22 @@ down() reverses up() · NEVER run migrate</span></pre></div>
 </section>
 
 <section class="slide">
+  <div class="eyebrow">Day 7 · S15/S16 — Lab 7.12 steps 7–9 · Lab 7.13 steps 7–10</div>
+  <h2>Planning with subagents, MCP &amp; skills</h2>
+  <div class="grid c4">
+    <div class="card top m-a"><span class="num-badge">1</span><h3>Explore (built-in)</h3><p>Two <b>parallel</b> tasks: map <code>app/</code> &amp; trace the detail GET. The conversation only gets the summary.</p></div>
+    <div class="card top m-a"><span class="num-badge">2</span><h3><code>ci4-spark</code> local scope</h3><p><code>filter_check</code>: <code>/semua</code> has <code>permission:</code>; detail &amp; <code>/barisan/pelulus</code> are checked in code.</p></div>
+    <div class="card top m-a"><span class="num-badge">3</span><h3><code>semak-ci4</code></h3><p>From <code>kelas-ci</code> with <code>--add-dir</code>. Findings = hypotheses; verify at <code>file:line</code>.</p></div>
+    <div class="card top m-a"><span class="num-badge">4</span><h3>Skill <code>perancangan-ci4</code></h3><p>PRD, gaps, requirements, slice plan: BRs, tests &amp; <b>Reject if the diff…</b></p></div>
+    <div class="card top m-a"><span class="num-badge">5</span><h3>Context7</h3><p>Check Shield <code>permission:</code> syntax &amp; <code>getRandomName()</code>; record the link in the plan.</p></div>
+    <div class="card top m-a"><span class="num-badge">6</span><h3>GitLab (optional)</h3><p>Trainer demo: one issue per slice, if GitLab KKM allows it.</p></div>
+    <div class="card top m-a"><span class="num-badge">7</span><h3>Plan mode</h3><p>Every planning step: Claude drafts, you paste &amp; decide.</p></div>
+    <div class="card top m-stat tint"><span class="k">WHAT TO USE WHEN</span><h3>README §16.4</h3><p>CLAUDE.md = fixed facts · skill = way of working · subagent = read a lot · MCP = outside evidence.</p></div>
+  </div>
+  <aside class="notes"><p>Slaid ini menutup Lab 7.12 langkah 7–9 dan Lab 7.13 langkah 7–10. Tunjukkan dua Explore berjalan serentak dan terangkan bahawa hanya ringkasan masuk ke perbualan. Untuk ci4-spark, tekankan skop local: daftar dalam ~/.claude.json, server dalam folder kajian, jadi git status eSPKP kekal kosong. Output filter_check menunjukkan /semua ada permission:, tetapi butiran permohonan dan /barisan/pelulus disemak dalam kod (PermohonanPolicy, BarisanController) — contoh dakwaan Claude yang dibetulkan oleh tool. semak-ci4 pada eSPKP: tiada dapatan Tinggi, dapatan Sederhana/Rendah ialah hipotesis untuk disahkan. Skill perancangan-ci4 menyimpan cara kerja merancang; Context7 menyemak sintaks Shield; GitLab hanya demo jika GitLab KKM membenarkan. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Day 7 · S13 — Workflow until Day 10</div>
   <h2>7 review gates: Claude writes, you approve</h2>
   <div class="grid c4">

@@ -1313,12 +1313,93 @@ Understand a finished CI4 project with Claude Code in *Plan* mode: the request p
    cd $HOME\latihan\espkpv2; git status --short   # empty
    ```
 
+7. **Built-in Explore subagent: map the project in parallel (10 minutes).** Claude Code ships built-in subagents without any `.claude/agents/` file: **Explore** (read-only, finds and maps code), **Plan** (read-only, used by itself during *plan mode*) and **general-purpose** (all tools, for multi-step tasks). Reference: <https://code.claude.com/docs/en/sub-agents>. Add this section at the end of `nota-fahami.md`:
+
+   ```markdown
+   ## Alat (Explore · MCP · subagent)
+   | Alat | Soalan | Dapatan | Bukti fail:baris / output tool |
+   |------|--------|---------|--------------------------------|
+   | Explore 1 | Struktur & di mana peraturan tinggal | ... | ... |
+   | Explore 2 | Jejak GET butiran | ... | ... |
+   | ci4-spark | ... | ... | ... |
+   | semak-ci4 | ... | ... | ... |
+   ```
+
+   In `~/latihan/espkpv2`, start `claude` again in **plan mode** and send:
+
+   ```text
+   Mod Plan. Jangan ubah fail. Jalankan DUA subagent Explore secara selari:
+   (1) petakan struktur folder app/ dan di mana peraturan aliran kerja tinggal;
+   (2) jejak request GET butiran permohonan dari route hingga view.
+   Gabungkan hasilnya dalam 10 baris, setiap baris dengan fail:baris.
+   ```
+
+   Expected: two `Explore(...)` lines run at the same time, then one summary. The trainer's test (commit `01abad1`) returned, among others, `app/Config/Aliran.php` (`$peralihan`), `App\Services\AliranKerja` (`tersedia()`, `laksana()`), `BaseController::permohonanAtau404()` → `PermohonanPolicy::bolehLihat()` and the view `app/Views/permohonan/butiran.php`. Your line numbers may differ slightly; open one `file:line` and fill in the two Explore rows of the table. Why a subagent? The dozens of files it reads stay in the subagent's context; your conversation only receives the summary. To force a specific subagent, type `@` and pick that subagent from the list.
+
+8. **`ci4-spark` MCP: verify answers with real `spark` output (10 minutes).** The server from Lab 7.8 goes in the **study** folder, not in eSPKP, and is registered with `local` scope (stored in your `~/.claude.json`, not in a `.mcp.json` in the repo), so the eSPKP clone does not change. `php spark` needs `vendor/`: run `composer install` once (if it fails on `ext-intl`/`ext-sodium`, see Troubleshooting and watch the trainer's demo). `/exit` first, then:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   mkdir -p ~/latihan/espkpv2-kajian/tools
+   cp ~/latihan/kelas-ci-<nama>/tools/ci4-spark-mcp.php ~/latihan/espkpv2-kajian/tools/
+   cd ~/latihan/espkpv2
+   composer install
+   claude mcp add --scope local ci4-spark -- php ~/latihan/espkpv2-kajian/tools/ci4-spark-mcp.php
+   claude mcp get ci4-spark
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force "$HOME\latihan\espkpv2-kajian\tools" | Out-Null
+   Copy-Item "$HOME\latihan\kelas-ci-<nama>\tools\ci4-spark-mcp.php" "$HOME\latihan\espkpv2-kajian\tools\"
+   cd $HOME\latihan\espkpv2
+   composer install
+   claude mcp add --scope local ci4-spark -- php "$HOME\latihan\espkpv2-kajian\tools\ci4-spark-mcp.php"
+   claude mcp get ci4-spark
+   ```
+
+   Expected: `Scope: Local config (private to you in this project)` and `Status: ✔ Connected`. The server looks for `spark` in the parent of `tools/` first; it is not there, so the server uses the current folder (`~/latihan/espkpv2`). Start `claude` (plan mode) and send:
+
+   ```text
+   Guna tool ci4-spark sahaja. (1) filter_check GET /permohonan/0192a3b4-c5d6-7e8f-9a0b-1c2d3e4f5a6b, GET /semua dan GET /barisan/pelulus: filter permission mana yang ada pada setiap satu?
+   (2) Jika sesuatu route tiada filter permission, di mana akses disemak? Beri fail:baris.
+   ```
+
+   Approve each `ci4-spark - filter_check` call. Real output at commit `01abad1`:
+
+   | Route | *Before Filters* (short) | Meaning |
+   |-------|--------------------------|---------|
+   | `GET /permohonan/<uuid>` | `… session sesiSah force-reset wajib2fa` (no `permission:`) | Access is checked in code: `PermohonanPolicy::bolehLihat()` → 404 (your P1 answer) |
+   | `GET /semua` | `… wajib2fa permission:permohonan.lihat_semua,permohonan.batal` | A real route filter (P3 answer: only UKS & Pelulus see everything) |
+   | `GET /barisan/pelulus` | `… session sesiSah force-reset wajib2fa` (no `permission:`) | Checked in `BarisanController::index()` with `can($p->kebenaran())`, 404 on failure |
+
+   Notice also: the `routes` tool shows `<unknown>` in the filter columns for routes with a `(:uuid)` placeholder. That is why `filter_check` with a real path is more accurate. If Claude says "the Pelulus route is protected by a `permission:` filter", the tool output proves that **wrong**: record it as *corrected*. Do not use `migrate_status` or `db_table` here: both need a database and a `.env`, and we do not create a `.env` in eSPKP.
+
+9. **`semak-ci4` subagent on code that has already been reviewed (10 minutes).** Your subagent from Lab 7.7 lives in `kelas-ci-<nama>/.claude/agents/`. Run Claude from your project and give it read access to eSPKP, so no file is added to the eSPKP clone. `/exit`, then:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   cd ~/latihan/kelas-ci-<nama>
+   claude --add-dir ~/latihan/espkpv2
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\latihan\kelas-ci-<nama>
+   claude --add-dir $HOME\latihan\espkpv2
+   ```
+
+   In **plan mode**:
+
+   ```text
+   Guna subagent semak-ci4 untuk menyemak ~/latihan/espkpv2/app/Controllers/Permohonan/ButiranController.php dan ~/latihan/espkpv2/app/Views/permohonan/butiran.php. Ringkaskan dapatan dalam jadual.
+   ```
+
+   Expected: a `semak-ci4` line runs and returns a table. The trainer's test (commit `01abad1`): **no** High findings; the main categories are confirmed correct (`esc()` in the view, `csrf_field()` and POST, `permohonanAtau404()` → `PermohonanPolicy`, Query Builder with bindings, `getPost([...])` with named fields); a few Medium/Low findings, for example the magic number `$p->status === 3` in `ButiranController` and a controller that is not thin. Subagent findings are hypotheses: pick one and confirm or reject it yourself by opening the `file:line`. Fill in the `semak-ci4` row of the notes table, then repeat the step 6 check: `git status --short` in `~/latihan/espkpv2` is still empty.
+
 ### ✅ Checkpoint
 - [ ] `~/latihan/espkpv2/CLAUDE.md` exists (clone or zip) and `/memory` shows it loads automatically; one thing to copy is recorded (Quiz S15).
 - [ ] `nota-fahami.md` holds 6 onboarding answers in your own words with `file:line` evidence you opened yourself (Quiz S15).
 - [ ] At least one Claude claim was checked and recorded as correct or corrected, including where `$peralihan` lives (Quiz S15).
 - [ ] The 2-role demo flow is recorded: status before → after and 404 for the other user (Quiz S15).
 - [ ] No files changed in the eSPKP clone. 🪟 PowerShell: `git status --short` in `$HOME\latihan\espkpv2` (Quiz S15).
+- [ ] The *Alat* section in `nota-fahami.md` is recorded: 2 parallel Explore tasks, `ci4-spark` `filter_check` output that confirms or corrects one onboarding answer, and one `semak-ci4` finding you checked yourself (Quiz S15).
 
 ### 🧯 Troubleshooting
 
@@ -1331,6 +1412,8 @@ Understand a finished CI4 project with Claude Code in *Plan* mode: the request p
 | Claude names a file that does not exist | Hallucinated answer | Ask "show the exact file:line"; record it as corrected in your notes |
 | TOTP code rejected on the demo | Phone clock out of sync, or key typed wrongly | Turn on automatic time on the phone; re-add the key from `contoh-espkp.md` as time-based |
 | `composer install` fails (`ext-intl` or `ext-sodium`) | Laragon PHP extension not enabled | Skip it: `composer install` is not needed to read the code |
+| `claude mcp get ci4-spark`: `No MCP server found` | `claude mcp add --scope local` was run outside `~/latihan/espkpv2` (`local` scope is tied to the folder) | `cd ~/latihan/espkpv2`, then run `claude mcp add …` again |
+| `ci4-spark` output: `Failed to open stream` … `vendor/codeigniter4/framework/system/Boot.php` | `composer install` has not been run in eSPKP | `composer install`; if a PHP extension is missing, watch the trainer's demo |
 
 ### ⭐ Bonus challenge
 - Ask Claude (*Plan* mode) to compare the eSPKP `CLAUDE.md` with the `CLAUDE.md` in your `kelas-ci-<nama>` (`claude --add-dir ~/latihan/kelas-ci-<nama>`). Pick two suggestions and write them yourself in your project tomorrow.
@@ -1469,6 +1552,50 @@ Draft a PRD of eSPKP's Pass flow from the code (*reverse engineering*) with Clau
 
    Open an MR to `main` and merge it before Lab 7.10 tomorrow, so `feat/pas-claude` starts with both files.
 
+7. **`perancangan-ci4` skill: planning work you can repeat (10 minutes).** Steps 1–5 wrote long prompts by hand. A skill stores those rules once (PRD template, gap table, requirements, slice plan with BR mapping, tests per slice and "Reject if the diff…"), and Claude loads it when you plan. In `kelas-ci-<nama>` (branch `docs/keperluan-pas`):
+
+   ```bash tab="Git Bash / macOS / Linux"
+   mkdir -p .claude/skills/perancangan-ci4
+   ```
+
+   ```powershell tab="PowerShell"
+   New-Item -ItemType Directory -Force .claude\skills\perancangan-ci4
+   ```
+
+   Copy the contents of the template [`templates/kod/skill-perancangan-ci4.md.txt`](../templates/kod/skill-perancangan-ci4.md.txt) (**Templates & Reference** module on pelatih.my) to `.claude/skills/perancangan-ci4/SKILL.md` in VS Code. Check the frontmatter: `name: perancangan-ci4` and a `description` that mentions the PRD, gap table, requirements and slice plan. Start `claude` (plan mode; if `/perancangan-ci4` does not appear when you type `/per`, type `/reload-skills`) and send:
+
+   ```text
+   /perancangan-ci4 pas
+   Semak @docs/pelan-pas.md terhadap skill ini. Senaraikan sahaja: BR-PAS yang tiada slice atau ujian, slice tanpa lajur "Tolak jika diff…", dan nama yang bukan SPEC. Jangan tulis semula fail.
+   ```
+
+   Expected: Claude Code shows that the `perancangan-ci4` skill is loaded, and the answer follows the skill's table (`Slice | Lab | FR/BR/AC dipenuhi | Fail CI4 terlibat | Ujian | Tolak jika diff…`). Also try without the slash command, for example *"Draf jadual jurang modul Pas"*: the skill loads because the request matches its `description`. Add a **Tolak jika diff…** (reject if the diff…) column to `docs/pelan-pas.md` yourself (at least one item per slice).
+
+8. **Context7 MCP: check an approach against current documentation (5 minutes).** Your plan depends on CI4/Shield syntax. Verify one before you write code tomorrow:
+
+   ```text
+   Guna context7. Dalam CodeIgniter Shield, apakah sintaks filter permission: pada route, dan apakah maksud beberapa permission dipisah koma? Dalam CodeIgniter 4, apakah yang dipulangkan oleh UploadedFile::getRandomName()? Beri pautan dokumen.
+   ```
+
+   Expected: a `resolve-library-id` call, then `query-docs`; for example `'filter' => 'permission:users.manage'` (Shield *Authorization*, section *Authorizing via Routes*) and a random name shaped `<timestamp>_<20 hex>.<ext>` from `getRandomName()`. If the answer about commas is unclear, check the source (after `composer install`): `vendor/codeigniter4/shield/src/Filters/PermissionFilter.php` loops over each permission with `can()`, so **one** permission is enough. Compare with the `ci4-spark` output from Lab 7.12 step 8 (`permission:permohonan.lihat_semua,permohonan.batal`). Add this section at the end of `docs/pelan-pas.md`:
+
+   ```markdown
+   ## Rujukan disemak (Context7)
+   | Pendekatan dalam pelan | Dokumen (pautan) | Sepadan? |
+   |------------------------|------------------|----------|
+   | Filter `permission:` pada route Pas | ... | Ya / Laras: ... |
+   ```
+
+9. **Optional, trainer demo: GitLab MCP turns slices into issues (5 minutes).** Only if `gitlab-kkm` (Lab 7.8 step 12) is *connected* and you have write access to `kelas-ci-<nama>`. The trainer asks: *"Untuk setiap slice dalam @docs/pelan-pas.md, cipta satu issue dalam projek kelas-ci-<nama> dengan tajuk 'Slice N: …' dan senarai AC sebagai tugasan."* Claude Code asks for permission for each GitLab tool call: check the title and body before you approve. No access, or the network blocks it? Just watch.
+
+10. **What to use when planning, and commit (5 minutes).** Read the table in [16.4](./README.md#164-what-to-use-when-planning) and write one line for each tool you used this afternoon in `docs/pelan-pas.md` (section `## Alat perancangan`). `/exit`, then:
+
+    ```bash
+    git add .claude/skills/perancangan-ci4/SKILL.md docs/pelan-pas.md
+    git commit -m "CHORE: skill perancangan-ci4 & semakan pelan Pas (Context7)"
+    git push
+    ```
+
 ### ✅ Checkpoint
 - [ ] `prd-espkp-pas.md` holds FRs, BRs and NFRs with `file:line` sources, including 404 not 403 and attachments outside `public/` (Quiz S16).
 - [ ] The Pengesahan section records 3 claims checked against the code **and** the live demo (Quiz S16).
@@ -1476,6 +1603,7 @@ Draft a PRD of eSPKP's Pass flow from the code (*reverse engineering*) with Clau
 - [ ] `docs/keperluan-pas.md` uses the SPEC names and BR-PAS-01..06; "no" features sit in Out of scope or Open questions (Quiz S16).
 - [ ] `docs/pelan-pas.md` has 5 slices matching Labs 7.10, 7.11, 8.10, 8.11, 8.12 and no new migration (Quiz S16).
 - [ ] The commit `DOCS: keperluan & pelan slice Pas …` is on the branch `docs/keperluan-pas`. 🪟 PowerShell: `git log --oneline -3` (Quiz S16).
+- [ ] The skill `.claude/skills/perancangan-ci4/SKILL.md` is committed and loads when you check `docs/pelan-pas.md`; the plan has a *Tolak jika diff…* column and one approach checked with Context7, with the document link (Quiz S16).
 
 ### 🧯 Troubleshooting
 
@@ -1487,6 +1615,7 @@ Draft a PRD of eSPKP's Pass flow from the code (*reverse engineering*) with Clau
 | The plan creates a `CreatePassApplications` migration | Claude does not know the Day 4 tables exist | Remove that row; if needed, check with `ci4-spark` `migrate_status` |
 | Pasted text is broken (odd characters, doubled lines) | Copied from the mintty terminal with line wrapping | Copy from the VS Code terminal, or ask Claude to show it in one markdown block |
 | `git push` rejected | Branch not on the remote yet, or GitLab token expired | `git push -u origin docs/keperluan-pas`; check the token as on Day 2 |
+| `/perancangan-ci4` does not appear | The file is not `SKILL.md` in `.claude/skills/perancangan-ci4/`, or the first line is not `---` | Fix the file name and location; type `/reload-skills` |
 
 ### ⭐ Bonus challenge
 - Run [AI-18](../docs/pustaka-prompt.en.md#ai-18--review-a-prd) on `docs/keperluan-pas.md`. Pick 2 issues and fix them yourself in a second `DOCS: …` commit.
