@@ -1,8 +1,8 @@
-# Hari 7 — Modul Pas (Bahagian 1): Model, CRUD & Muat Naik Dokumen Selamat
+# Hari 7 — Claude Code: Pelaksanaan & Amalan Terbaik
 
-[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 7](./lab.md)
+[📅 Jadual](../JADUAL.md) · [📘 Kanun SPEC](../docs/spesifikasi-sistem.md) · [🧪 Lab Hari 7](./lab.md) · [✍️ Seni Prompt](../docs/seni-prompt.md)
 
-> **Hari ini kita mula membina Modul Pas (M2).** Corak asas sama seperti TLK (Hari 5–6): enum → entity → model → controller nipis → service. Yang **baharu** dan paling berisiko ialah **muat naik fail**. Fail daripada pengguna ialah input yang paling berbahaya dalam aplikasi web: ia boleh menjadi skrip, boleh terlalu besar, boleh menulis ganti fail lain. Hari ini kita bina muat naik yang **selamat secara lalai** dan buktikannya dengan ujian sempadan.
+> **Hari ini sepenuhnya tentang Claude Code.** Anda menyediakan alat (`CLAUDE.md`, subagent, skill, MCP), belajar menulis prompt yang menghasilkan jawapan yang boleh disahkan, dan membina tabiat kerja yang selamat: konteks bersih, checkpoint, kebenaran, hook, Git dan semakan. Petang ini anda menggunakan semuanya untuk memahami projek siap dan merancang modul Pas. Modul Pas sendiri dibina mulai Hari 8 (Lab 7.10/7.11), dan bahan Pas manual kini dalam [Lampiran](#lampiran--modul-pas-dipindah-ke-hari-8--kod-rujukan) di hujung halaman ini.
 
 ---
 
@@ -12,24 +12,16 @@ Di akhir hari ini, peserta boleh:
 
 | # | Objektif (boleh diukur) | Sesi | Bukti |
 |---|------------------------|------|-------|
-| O1 | **Menulis** enum `PassType` & `PassStatus` (dengan `label()`, `badge()`, `canTransitionTo()`) dan Entity `PassApplication` yang memulangkan status sebagai enum | S1 | `php spark` REPL / ujian ringkas: `PassStatus::Submitted->canTransitionTo(PassStatus::Approved)` → `false` |
-| O2 | **Membina** `PassApplicationModel` & `PassDocumentModel` dengan `$allowedFields`, `$validationRules` dan skop `ownedBy()` | S1 | Model menolak `pass_type = 'vip'` dengan ralat validasi |
-| O3 | **Membina** senarai "Permohonan Saya" (skop pemilik + pagination + filter status) dan paparan butiran yang memulangkan **404** kepada bukan pemilik (BR-PAS-04) | S2 | `pemohon2` membuka `/pas/permohonan/{id milik pemohon1}` → 404 |
-| O4 | **Membina** borang `multipart/form-data` dengan validasi server `uploaded`, `max_size`, `ext_in`, `mime_in` untuk berbilang fail | S3 | Borang menolak fail 3 MB dengan mesej BM |
-| O5 | **Melaksanakan** muat naik selamat BR-PAS-02: nama `getRandomName()`, simpan di `writable/uploads/pas/`, hanya `stored_path` dalam DB, transaksi + pembersihan fail, muat turun melalui controller dengan semakan pemilikan | S3 | Fail di cakera bernama rawak; `public/` tiada fail; muat turun berjaya untuk pemilik sahaja |
-| O6 | **Menguji** sekurang-kurangnya 10 kes sempadan muat naik & validasi, dan **menerangkan** risiko OWASP yang setiap satu cegah | S4 | `docs/ujian-manual-pas.md` lengkap dengan keputusan Lulus/Gagal |
-| O7 | **Menulis** `PassType::icon()`, `PassStatus::pending()` dan kaedah Entity `validityDays()`/`daysRemaining()` yang boleh diuji dengan tarikh tetap | S5 | [Lab 7.1b](./lab.md#lab-71b--enum--entity-ikon-status-menunggu--tempoh-sah-s5); output `php spark shell` |
-| O8 | **Membina** filter jenis dan carian dalam skop pemilik dengan `groupStart()`/`groupEnd()`, dan **membuktikan** kebocoran BR-PAS-04 jika kurungan tiada | S6 | [Lab 7.2b](./lab.md#lab-72b--penapis-jenis--carian-pada-permohonan-saya-s6); `pemohon2` di `?q=sintetik` → 1 permohonan |
-| O9 | **Membina** tambah dokumen susulan untuk pemilik dengan had 3 dokumen setiap permohonan, disemak sebelum `move()` dan di bawah kunci `FOR UPDATE` | S7 | [Lab 7.3b](./lab.md#lab-73b--tambah-dokumen-susulan-pada-permohonan-s7); dokumen ke-4 ditolak tanpa fail yatim |
-| O10 | **Mengautomasikan** kes sempadan Lab 7.4 dengan PHPUnit (`FakeUploadedFile`, `#[DataProvider]`) dan **menunjukkan** ujian menangkap mutasi `>` → `>=` | S8 | [Lab 7.4b](./lab.md#lab-74b--automasikan-kes-sempadan-dengan-phpunit-s8); `OK (14 tests, …)` |
 | O11 | **Menulis** `CLAUDE.md` projek mengikut standard kursus dan **membezakan** memori pengguna, projek dan `CLAUDE.local.md` | S9 | [Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9); `CLAUDE.md` di-commit, `CLAUDE.local.md` dalam `.gitignore` |
+| O14 | **Menulis** prompt onboarding dan pelan dalam mod *Plan* untuk projek sedia ada, serta **mendraf** dan **menyemak** PRD latihan sebelum sebarang kod | S12 | [Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12); `docs/nota-claude.md` + `~/latihan/prd-latihan/docs/prd.md` |
+| O19 | **Menulis semula** 5 prompt lemah mengikut anatomi prompt, **menjalankan** 6 prompt katalog dalam mod *Plan* pada `kelas-ci-<nama>`, dan **menilai** setiap jawapan (betul? boleh disahkan? ada `fail:baris`?) | S17 | [Lab 7.14](./lab.md#lab-714--seni-prompt-daripada-prompt-lemah-kepada-prompt-berkesan-s17); bahagian *Seni Prompt* dalam `docs/nota-claude.md` |
 | O12 | **Mencipta** subagent baca sahaja `semak-ci4` dan skill `migration-ci4`, dan **mengesahkan** dapatan AI terhadap kod sebenar | S10 | [Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10); `docs/semakan-ci4-hari6.md` |
 | O13 | **Memasang** dan **menguji** server MCP `ci4-spark` (JSON-RPC stdio, baca sahaja) serta **mendaftarkan** Context7 | S11 | [Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11); `.mcp.json` + 5 balasan JSON-RPC |
-| O14 | **Menulis** prompt onboarding dan pelan dalam mod *Plan* untuk projek sedia ada, serta **mendraf** dan **menyemak** PRD latihan sebelum sebarang kod | S12 | [Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12); `docs/nota-claude.md` + `~/latihan/prd-latihan/docs/prd.md` |
-| O15 | **Membina** Pas slice 1 dengan Claude Code melalui tujuh pintu, **menolak** diff yang melanggar skop pemilik, dan **menerangkan** 3 baris utama dengan ayat sendiri | S13 | [Lab 7.10](./lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13); `pemohon2` → 404; `docs/nota-claude.md` |
-| O16 | **Membina** Pas slice 2 (borang, validasi, muat naik selamat) dengan Claude Code dan **mengesahkan** lima pintu muat naik dengan `ci4-spark` dan pelayar | S14 | [Lab 7.11](./lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14); fail bernama rawak dalam `writable/uploads/pas/`, `filter_check` menunjukkan `permission:pas.apply` |
+| O20 | **Mengkonfigurasi** peraturan kebenaran dan dua hook (sekat `.env`, `php -l` selepas edit) dalam `.claude/settings.json`, **membuktikan** kedua-duanya berfungsi, dan **menggunakan** `/context`, `/compact`, `/clear`, `/rewind` serta semakan `claude -p` sebelum commit | S18 | [Lab 7.15](./lab.md#lab-715--amalan-terbaik-claude-code-dalam-tindakan-s18); hook disekat + `php -l gagal` direkod dalam `docs/nota-claude.md`; commit `CHORE: tetapan & hook Claude Code` |
 | O17 | **Menerangkan** seni bina projek CI4 siap (aliran request, jadual aliran kerja `Config/Aliran.php`, peranan, data, ujian) dengan Claude Code dalam mod *Plan* dan **mengesahkan** setiap dakwaan dengan `fail:baris` | S15 | [Lab 7.12](./lab.md#lab-712--fahami-projek-contoh-espkp-dengan-claude-code-s15); `~/latihan/espkpv2-kajian/nota-fahami.md` |
 | O18 | **Mendraf** PRD daripada kod, **membandingkannya** dengan SPEC dalam jadual jurang, dan **menulis** keperluan serta pelan slice Pas sendiri | S16 | [Lab 7.13](./lab.md#lab-713--prd-daripada-projek-contoh-banding-spec--pelan-slice-pas-s16); `docs/keperluan-pas.md` + `docs/pelan-pas.md` pada branch `docs/keperluan-pas` |
+
+> ℹ️ Objektif Modul Pas (O1–O10 untuk S1–S8, O15–O16 untuk S13–S14) kini dicapai pada Hari 8. Sesi dan lab berkaitan berada dalam [Lampiran](#lampiran--modul-pas-dipindah-ke-hari-8--kod-rujukan).
 
 ---
 
@@ -38,49 +30,46 @@ Di akhir hari ini, peserta boleh:
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 6 | — |
-| 09:00–10:00 | S9 | Claude Code: pasang, `CLAUDE.md` & mod Plan | Menulis `CLAUDE.md` projek ikut standard kursus; membezakan memori pengguna/projek/tempatan ([Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9)) |
-| 10:00–10:30 | S12 | Claude Code: prompting, projek baharu & PRD | Menulis prompt onboarding & pelan dalam mod Plan; mendraf dan menyemak PRD latihan ([Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12)) |
+| 09:00–09:45 | S9 | Claude Code: pasang, `CLAUDE.md` & mod Plan | Menulis `CLAUDE.md` projek ikut standard kursus; membezakan memori pengguna/projek/tempatan ([Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9)) |
+| 09:45–10:30 | S12 | Claude Code: prompting, projek baharu & PRD | Menulis prompt onboarding & pelan dalam mod Plan; mendraf dan menyemak PRD latihan ([Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12)) |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–11:45 | S10 | Claude Code: subagent & skill | Subagent baca sahaja `semak-ci4` pada kod Hari 6; skill `migration-ci4` ([Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10)) |
-| 11:45–12:30 | S11 | Claude Code: MCP untuk CodeIgniter | Server MCP `ci4-spark` (PHP, baca sahaja) diuji & didaftar; Context7; MySQL/GitLab pilihan ([Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
+| 10:45–11:30 | S17 | Seni prompt: anatomi & katalog contoh | Menulis semula 5 prompt lemah; menjalankan 6 prompt katalog dalam mod Plan dan menilai jawapannya ([Lab 7.14](./lab.md#lab-714--seni-prompt-daripada-prompt-lemah-kepada-prompt-berkesan-s17)) |
+| 11:30–12:00 | S10 | Claude Code: subagent & skill | Subagent baca sahaja `semak-ci4` pada kod Hari 6; skill `migration-ci4` ([Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10)) |
+| 12:00–12:30 | S11 | Claude Code: MCP untuk CodeIgniter | Server MCP `ci4-spark` (PHP, baca sahaja) diuji & didaftar; Context7; MySQL/GitLab pilihan ([Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–15:45 | S15 | Claude Code: fahami projek contoh eSPKP | Memahami projek siap dalam mod Plan: aliran request, `Config/Aliran.php`, peranan, data, ujian; sahkan setiap dakwaan dengan `fail:baris` dan demo langsung ([Lab 7.12](./lab.md#lab-712--fahami-projek-contoh-espkp-dengan-claude-code-s15)) |
-| 15:45–17:00 | S16 | Claude Code: rancang & laras keperluan daripada projek contoh | PRD daripada kod eSPKP, jadual jurang dengan SPEC, `docs/keperluan-pas.md` dan `docs/pelan-pas.md` ([Lab 7.13](./lab.md#lab-713--prd-daripada-projek-contoh-banding-spec--pelan-slice-pas-s16)) |
+| 14:30–15:30 | S18 | Amalan terbaik Claude Code | Konteks, checkpoint, kebenaran, hook, Git, kos, `claude -p`, keselamatan, pengesahan ([Lab 7.15](./lab.md#lab-715--amalan-terbaik-claude-code-dalam-tindakan-s18)) |
+| 15:30–16:15 | S15 | Claude Code: fahami projek contoh eSPKP | Memahami projek siap dalam mod Plan; sahkan setiap dakwaan dengan `fail:baris` dan demo langsung ([Lab 7.12](./lab.md#lab-712--fahami-projek-contoh-espkp-dengan-claude-code-s15)) |
+| 16:15–17:00 | S16 | Claude Code: rancang & laras keperluan daripada projek contoh | PRD daripada kod eSPKP, jadual jurang dengan SPEC, `docs/keperluan-pas.md` dan `docs/pelan-pas.md` ([Lab 7.13](./lab.md#lab-713--prd-daripada-projek-contoh-banding-spec--pelan-slice-pas-s16)) |
 
-> ℹ️ **Keputusan kursus:** mulai petang ini hingga Hari 10, modul dibina dengan Claude Code melalui tujuh pintu semakan ([`kolaborasi.md`](../docs/kolaborasi.md) §3). Lab Pas manual 7.0–7.4 (dan 7.1b–7.4b) dan sesi S1–S8 kini **kod rujukan** untuk perbandingan, tidak wajib. Hari 8 menyambung Modul Pas dengan aliran kerja yang sama.
+> ℹ️ **Jadual di atas yang berkuat kuasa.** Masa dalam tajuk sesi di bawah ialah jadual lama dan tidak diubah supaya kemajuan anda kekal.
 >
-> ℹ️ Masa pada tajuk S1–S8 di bawah ialah jadual asal; ikut jadual di atas.
->
-> ℹ️ **Dikemas kini:** S13/S14 (Lab 7.10/7.11) dipindahkan ke pagi Hari 8 (09:00–10:30 dan 10:45–12:30). Petang ini S15/S16 (Lab 7.12/7.13): fahami projek contoh eSPKP, kemudian tulis keperluan dan pelan slice Pas yang menjadi input Lab 7.10 esok.
+> ℹ️ **Keputusan kursus:** Hari 7 kini fokus kepada **pelaksanaan dan amalan terbaik Claude Code**. Modul Pas dibina dengan Claude Code melalui tujuh pintu semakan ([`kolaborasi.md`](../docs/kolaborasi.md) §3) mulai pagi Hari 8 (Lab 7.10/7.11). Sesi S1–S8, S13–S14 dan lab Pas manual 7.0–7.4 (dan 7.1b–7.4b) berada dalam [Lampiran](#lampiran--modul-pas-dipindah-ke-hari-8--kod-rujukan) sebagai kod rujukan.
 
 ---
 
 ## 🧭 Kenapa hari ini penting
 
-Modul Pas nampak seperti "TLK tambah fail". Sebenarnya ia memperkenalkan dua risiko baharu yang tidak wujud dalam TLK:
+Claude Code boleh membaca seluruh projek, menjalankan arahan dan menulis kod dalam beberapa saat. Kelajuan itu hanya berguna jika hasilnya **betul** dan anda **faham** apa yang berubah. Hari ini membina tiga kemahiran yang menentukan perbezaan itu:
 
-1. **Fail daripada pengguna.** Borang TLK hanya menerima teks dan tarikh — CI4 validation menanganinya. Borang Pas menerima **bait mentah** yang disimpan pada cakera server. Jika disimpan di `public/` dengan nama asal, penyerang boleh memuat naik `surat.php` dan menjalankannya melalui URL. Ini salah satu cara paling biasa server kerajaan digodam.
-2. **Data peribadi dalam dokumen.** Salinan kad pengenalan, geran kenderaan dan surat lantikan ialah data peribadi (PDPA). Jika URL fail boleh diteka (`/uploads/1.pdf`, `/uploads/2.pdf`, …), sesiapa sahaja boleh memuat turun dokumen orang lain.
-
-Pada akhir hari ini, setiap fail yang masuk ke sistem anda akan melalui **lima pintu**: had saiz → senarai putih extension → semakan kandungan sebenar → nama rawak di luar `public/` → muat turun hanya melalui controller yang menyemak pemilikan.
+1. **Konteks.** Claude hanya tahu apa yang ada dalam tetingkap konteksnya: `CLAUDE.md`, fail yang dibaca, output arahan, perbualan. Konteks yang tepat (SPEC, ID `BR-*`, `@fail`) menghasilkan jawapan yang tepat; konteks yang penuh dan bercampur menghasilkan kesilapan.
+2. **Prompt.** Prompt yang baik menyatakan konteks, satu tugas, kekangan, cara mengesahkan dan format jawapan. Prompt yang lemah ("betulkan bug ini") memaksa Claude meneka.
+3. **Kawalan dan pengesahan.** `CLAUDE.md` hanya nasihat. Peraturan `deny`, hook, mod Manual, checkpoint, Git dan ujian ialah perkara yang benar-benar menghalang kesilapan dan membuktikan kerja. Prinsip kursus kekal: **faham dahulu, terima kemudian**.
 
 ```mermaid
 flowchart LR
-    A[Pelayar: documents&#91;&#93;] -->|multipart POST + CSRF| B{Validasi CI4<br/>uploaded · max_size<br/>ext_in · mime_in}
-    B -- gagal --> X[Kembali ke borang<br/>+ mesej BM]
-    B -- lulus --> C{Service:<br/>1–3 fail?<br/>kenderaan milik sendiri?}
-    C -- gagal --> X
-    C -- lulus --> D[move ke writable/uploads/pas/<br/>nama getRandomName]
-    D --> E[(Transaksi DB:<br/>pass_applications<br/>+ pass_documents<br/>+ status_logs)]
-    E -- ralat --> F[rollback + padam fail]
-    E -- commit --> G[Redirect ke butiran<br/>PAS-2026-0001]
+    A[Konteks<br/>CLAUDE.md · @fail · SPEC] --> B[Prompt<br/>tugas · kekangan · sahkan]
+    B --> C{Mod Plan:<br/>pelan bernombor}
+    C -- anda setuju --> D[Mod Manual:<br/>baca setiap diff]
+    D --> E[Sahkan:<br/>composer test · hook · claude -p]
+    E -- gagal --> B
+    E -- lulus --> F[Commit kecil<br/>+ terang dalam nota]
 ```
 
 ---
 
 ## S9 — Claude Code: Pasang, CLAUDE.md & Mod Plan (09:00–10:00)
 
-> ℹ️ **Pagi Hari 7 = Claude Code.** S9, S12, S10 dan S11 menggantikan S1/S5/S2/S6 pada waktu pagi. Modul Pas (S1, S2) bermula 14:30. Lab: [Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9) · [Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12) · [Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10) · [Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11).
+> ℹ️ **Hari 7 = Claude Code.** Urutan hari ini: S9 → S12 → S17 → S10 → S11 → S18 → S15 → S16 (lihat [jadual](#-jadual-hari-ini)). Lab pagi: [Lab 7.6](./lab.md#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9) · [Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12) · [Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10) · [Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11).
 
 ### 9.1 Dari Lab 6.3c ke hari ini
 
@@ -215,7 +204,79 @@ Prompt yang baik ada lima bahagian: **konteks** (`@fail`, ID `BR-*`, SPEC, `CLAU
 
 ---
 
+## S17 — Seni Prompt: Anatomi & Katalog Contoh (10:45–11:30)
+
+> ℹ️ Rujukan penuh: [`seni-prompt.md`](../docs/seni-prompt.md) (prinsip + katalog 65 prompt + 8 pasangan lemah → berkesan) · Prompt asas AI-01..AI-20: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) · Lab: [Lab 7.14](./lab.md#lab-714--seni-prompt-daripada-prompt-lemah-kepada-prompt-berkesan-s17).
+
+### 17.1 Anatomi prompt: lima bahagian, satu tugas
+
+S12 memperkenalkan lima bahagian. S17 melatihnya sehingga menjadi tabiat:
+
+| Bahagian | Soalan yang dijawab | Contoh CI4 |
+|----------|---------------------|-----------|
+| **Konteks** | Apa yang Claude perlu baca? | `@app/Controllers/Aduan.php`, `BR-ADU-02`, SPEC §3 |
+| **Tugas** | Apa **satu** perkara yang diminta? | "Terangkan aliran POST `/aduan`" |
+| **Kekangan** | Apa yang tidak boleh berubah? | "Jangan ubah fail. CI 4.6+, Query Builder, tiada SQL mentah" |
+| **Pengesahan** | Bagaimana kita tahu jawapan betul? | "Sertakan `fail:baris`", "`composer test` mesti hijau" |
+| **Format** | Bentuk jawapan? | "Jadual 3 lajur", "langkah bernombor, maksimum 8" |
+
+Tabiat yang menjadikan prompt berkesan:
+
+- **Satu tugas setiap prompt.** "Terangkan, kemudian betulkan, kemudian tulis ujian" ialah tiga prompt.
+- **Minta soalan dahulu** apabila keperluan kabur: *"Sebelum menjawab, tanya saya maksimum 3 soalan."*
+- **Mod Plan dahulu** (`Shift+Tab`, atau `/plan <tugas>`). Kod hanya selepas anda setuju dengan pelan.
+- **`@fail`** untuk merujuk fail (Claude membacanya dahulu), **`!arahan`** untuk menjalankan arahan shell dan memasukkan outputnya ke perbualan (cth `!php spark routes`).
+- **Tampal bukti**: mesej ralat penuh, log, tangkapan skrin (`Alt+V` di Windows, `Ctrl+V` di macOS/Linux).
+- **Minta pilihan, bukan kod**, apabila anda belum pasti: *"Beri 2 pendekatan dengan kelebihan dan risiko; jangan tulis kod."*
+- **Ulang dan perhalusi.** Jawapan pertama ialah draf. Jika anda membetulkan perkara yang sama dua kali, `/clear` dan tulis prompt yang lebih baik.
+- **`/clear` antara tugas** yang tidak berkaitan.
+- **Faham dahulu, terima kemudian.** Anda mesti boleh menerangkan setiap baris yang diterima ([`kolaborasi.md`](../docs/kolaborasi.md) §3).
+
+### 17.2 Daripada lemah kepada berkesan
+
+| Prompt lemah | Kenapa lemah | Prompt berkesan |
+|--------------|-------------|-----------------|
+| "Betulkan bug ini." | Tiada ralat, tiada fail, tiada definisi "betul" | "Mod Plan. Ralat: `[tampal ralat penuh]` semasa POST `/aduan`. Baca `@app/Controllers/Aduan.php`. Terangkan punca dengan `fail:baris`, cadang satu pembetulan dan satu ujian yang gagal sebelum pembetulan. Jangan ubah fail." |
+| "Buat CRUD aduan." | Terlalu besar; Claude meneka skema, peranan dan peraturan | "Mod Plan. Pecahkan CRUD aduan kepada slice kecil ikut `@docs/prd.md` (FR-01..FR-03). Setiap slice: fail, `BR-*`, cara uji. Jangan tulis kod." |
+| "Semak kod saya." | Tiada skop, tiada kriteria | "Semak `@app/Controllers/Aduan.php` untuk XSS, CSRF dan skop pemilik sahaja. Jadual: `fail:baris` · isu · keterukan · cadangan. Maksimum 6 dapatan. Jangan ubah fail." |
+
+Lapan pasangan penuh dan 65 prompt sedia guna (faham kod, rancang, laksana, semak, uji, nyahpepijat, refactor, dokumentasi, Git, keselamatan, prestasi, CodeIgniter 4, meta-prompting) ada dalam [`seni-prompt.md`](../docs/seni-prompt.md).
+
+### 17.3 Menilai jawapan Claude
+
+Prompt yang baik belum menjamin jawapan yang betul. Nilai setiap jawapan dengan tiga soalan, dan rekod markahnya:
+
+| Kriteria | 2 | 1 | 0 |
+|----------|---|---|---|
+| **Betul** | Semua dakwaan disahkan dalam kod | Sebahagian betul | Salah atau fail tidak wujud |
+| **Boleh disahkan** | Ada arahan atau ujian yang membuktikannya | Boleh disemak dengan membaca sahaja | Tiada cara menyemak |
+| **`fail:baris`** | Setiap dakwaan ada `fail:baris` | Ada nama fail sahaja | Tiada rujukan |
+
+Markah 5–6: terima selepas anda faham. Markah 3–4: minta bukti. Markah 0–2: tulis semula prompt. Meta-prompt ini membantu: *"Sebelum menjawab, apakah maklumat yang tiada dalam prompt saya yang anda perlukan?"*
+
+### 🎯 Kuiz S17
+
+> Jawab selepas Lab 7.14. Lulus kuiz ini menanda checkpoint Lab 7.14.
+
+1. Prompt: "Betulkan ralat dalam borang aduan." Apakah penulisan semula yang paling berkesan?
+   - [ ] "Betulkan semua ralat dalam projek ini dengan cepat dan pastikan tiada ralat lagi."
+   - [x] "Mod Plan. Ralat penuh: [tampal]. Ia berlaku semasa POST /aduan. Baca @app/Controllers/Aduan.php. Terangkan punca dengan fail:baris dan cadang satu pembetulan serta satu ujian yang gagal sebelum pembetulan. Jangan ubah fail."
+   - [ ] "Anda pakar CodeIgniter 4 terbaik di dunia. Betulkan borang aduan."
+   - [ ] "Tulis semula keseluruhan controller aduan supaya lebih baik."
+   > Prompt yang berkesan ada konteks (ralat penuh, route, fail), satu tugas (cari punca), kekangan (mod Plan, jangan ubah fail), pengesahan (fail:baris, ujian gagal dahulu) dan format yang jelas. Pujian kepada Claude atau arahan "betulkan semua" tidak menambah maklumat.
+
+2. Claude menjawab soalan onboarding dengan yakin, tetapi tiada `fail:baris`, dan satu fail yang disebut tidak wujud dalam projek anda. Apakah tindakan terbaik?
+   - [ ] Terima jawapan kerana Claude sudah membaca projek
+   - [ ] Minta Claude mencipta fail yang tiada itu supaya jawapan menjadi betul
+   - [ ] Tukar ke model lain dan tanya soalan yang sama tanpa mengubah prompt
+   - [x] Beri markah rendah, kemudian tulis semula prompt dengan @fail yang tepat dan syarat "setiap dakwaan mesti ada fail:baris; jika tidak pasti, katakan tidak pasti"
+   > Jawapan tanpa bukti dan dengan fail yang tidak wujud menunjukkan Claude meneka. Prompt yang lebih baik memberi konteks yang tepat dan meminta bukti yang boleh anda semak. Kod ialah bukti; ayat yakin bukan bukti.
+
+---
+
 ## S10 — Claude Code: Subagent & Skill (10:45–11:45)
+
+> 📘 Rujukan penuh: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md) (menyediakan subagent, skill & MCP di Windows).
 
 ### 10.1 Subagent: pembantu dengan konteks sendiri
 
@@ -295,6 +356,8 @@ Langkah dan peraturan ...
 
 ## S11 — Claude Code: MCP untuk CodeIgniter (11:45–12:30)
 
+> 📘 Rujukan penuh: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md) (menyediakan subagent, skill & MCP di Windows).
+
 ### 11.1 Apa itu MCP
 
 **Model Context Protocol (MCP)** ialah protokol terbuka yang membolehkan Claude Code memanggil **tool** daripada program lain, dipanggil *server* MCP. Mesej ialah JSON-RPC 2.0, melalui:
@@ -354,105 +417,144 @@ Aliran: `initialize` (rundingan versi protokol) → `tools/list` (senarai tool +
 
 ---
 
-## S13 — Claude Code: Modul Pas (1) — Model, Senarai & Butiran (14:30–15:45)
+## S18 — Amalan Terbaik Claude Code (14:30–15:30)
 
-> ℹ️ **Dipindahkan ke pagi Hari 8 (09:00–10:30).** Petang Hari 7: [S15](#s15--claude-code-fahami-projek-contoh-espkp-14301545).
+> ℹ️ Lab: [Lab 7.15](./lab.md#lab-715--amalan-terbaik-claude-code-dalam-tindakan-s18) · Dokumentasi rasmi: [best practices](https://code.claude.com/docs/en/best-practices), [settings](https://code.claude.com/docs/en/settings), [permissions](https://code.claude.com/docs/en/permissions), [hooks](https://code.claude.com/docs/en/hooks), [checkpointing](https://code.claude.com/docs/en/checkpointing), [headless](https://code.claude.com/docs/en/headless). Disemak terhadap Claude Code 2.1.310.
 
-> ℹ️ Lab: [Lab 7.10](./lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13) · Prompt [AI-19, AI-20](../docs/pustaka-prompt.md#g--laksana-dengan-pintu-semakan) · Peraturan: [`kolaborasi.md`](../docs/kolaborasi.md) §3.
+### 18.1 Urus konteks
 
-### 13.1 Aliran kerja Claude Code (berlaku hingga Hari 10)
+Tetingkap konteks ialah sumber paling penting: semakin penuh, semakin mudah Claude "terlupa" arahan awal dan tersilap.
 
-Mulai petang ini hingga Hari 10, anda membina modul yang sama (Pas, Laporan, Statistik) **dengan Claude Code**. Claude boleh menulis kod pelaksanaan, tetapi setiap slice melalui tujuh pintu:
+| Arahan | Fungsi | Bila guna |
+|--------|--------|-----------|
+| `/context` | Grid penggunaan konteks + cadangan | Sebelum tugas besar; selepas membaca banyak fail |
+| `/compact [arahan]` | Ringkaskan perbualan, teruskan sesi yang sama | Tugas panjang yang belum siap: `/compact Kekalkan senarai fail yang diubah dan arahan ujian` |
+| `/clear` | Perbualan baharu, konteks kosong | **Antara tugas yang tidak berkaitan**; selepas dua pembetulan gagal untuk isu yang sama |
+| `/btw <soalan>` | Soalan sampingan yang tidak masuk ke sejarah | Semak butiran kecil tanpa membesarkan konteks |
 
-1. **SPEC:** baca seksyen SPEC dan ID `BR-*`; `CLAUDE.md` menunjuk kepadanya.
-2. **Pelan (mod *Plan*):** fail, migration/model/service/controller/view/ujian dan pemetaan BR, tanpa kod. Anda menyemak dan mengedit pelan.
-3. **Laksana (mod *Manual*):** Claude mengedit; anda membaca setiap diff dan memilih **Yes** atau **No**. Mod *accept edits*, *auto* dan *bypass* tidak dibenarkan.
-4. **Sahkan:** `composer test`, pelayar, `ci4-spark` (`routes`, `filter_check`, `migrate_status`).
-5. **Semak:** subagent `semak-ci4`, kemudian Claude membaiki dapatan melalui pintu diff yang sama.
-6. **Terangkan:** 3 baris utama dengan ayat sendiri dalam `docs/nota-claude.md` (`fail:baris`).
-7. **Commit:** kecil, bermesej, dalam feature branch `feat/pas-claude`.
+Subagent (S10) juga menjimatkan konteks: fail yang dibaca oleh subagent kekal dalam konteks subagent itu.
 
-Lab Pas manual 7.0–7.4 kekal sebagai **kod rujukan**: selepas setiap slice, anda membandingkan kod Claude dengan lab manual yang sepadan dan merekod perbezaannya.
+### 18.2 Checkpoint & rewind
 
-### 13.2 Slice 1: apa yang dibina
+Setiap prompt yang memulakan giliran mencipta **checkpoint**. Tekan `Esc` dua kali (input kosong) atau `/rewind` untuk membuka menu: *Restore code and conversation*, *Restore conversation*, *Restore code*, *Summarize from here*, *Summarize up to here*.
 
-Enum `PassType`/`PassStatus`, Entity `PassApplication`, `PassApplicationModel` dan `PassDocumentModel`, route `index`/`show`, `PassWorkflowService::canView()`, senarai "Permohonan Saya" dan butiran. Jadual Pas sudah wujud sejak Hari 4, jadi pelan yang baik **tidak** mencipta migration baharu; `migrate_status` membuktikannya.
+- Checkpoint hanya menjejak edit oleh tool fail Claude. Fail yang **hanya** diubah oleh arahan Bash (cth `php spark make:migration`) tidak dipulihkan.
+- Checkpoint **bukan pengganti Git**. Commit kecil kekal sebagai titik selamat yang sebenar.
+- `Esc` sekali menghentikan Claude di tengah jalan supaya anda boleh mengubah arah; kerja yang sudah dibuat kekal.
 
-Skop pemilik berada dalam **Model** (`ownedBy()`), bukan dalam view. Query itu sendiri hanya memulangkan baris pemilik, jadi pagination, kiraan dan setiap controller yang memanggilnya selamat (BR-PAS-04). Butiran milik orang lain memulangkan **404**, bukan 403, supaya kewujudan rekod tidak bocor.
+### 18.3 Kebenaran: allow, ask, deny
 
-### 13.3 Membaca diff: terima atau tolak
+Peraturan dalam `.claude/settings.json` dinilai mengikut susunan **deny → ask → allow**; padanan pertama menang, dan `allow` tidak boleh membuat pengecualian kepada `deny`. Fail tetapan (keutamaan tertinggi dahulu): *managed* → `--settings` → `.claude/settings.local.json` (peribadi, tidak di-commit) → `.claude/settings.json` (projek, di-commit) → `~/.claude/settings.json` (pengguna).
 
-| Terima | Tolak |
-|--------|-------|
-| `where('user_id', …)` dalam `ownedBy()` | `if ($app->user_id == …)` dalam view atau gelung controller |
-| `canView()` → `PageNotFoundException` | `find($id)` terus ke view, atau 403 |
-| Enum `PassStatus` dan `canTransitionTo()` | Rentetan `'submitted'` bertaburan |
-| `esc()` pada setiap output | `<?= $x ?>` tanpa `esc()` |
-| Fail dalam senarai pelan sahaja | Migration Pas baharu, fail TLK, `Filters.php`, `php spark migrate` |
+```json
+{
+  "permissions": {
+    "defaultMode": "default",
+    "disableBypassPermissionsMode": "disable",
+    "allow": [
+      "Bash(composer test *)",
+      "Bash(php spark routes *)",
+      "Bash(git diff *)",
+      "Bash(git status *)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./writable/uploads/**)",
+      "Read(./writable/session/**)",
+      "Read(./writable/logs/**)",
+      "Bash(git push *)",
+      "Bash(php spark migrate:refresh *)",
+      "Bash(php spark db:seed *)"
+    ]
+  },
+  "disableAutoMode": "disable"
+}
+```
 
-### 🎯 Kuiz S13
+- `"defaultMode": "default"` = mod **Manual**: Claude bertanya sebelum setiap edit dan arahan. Sejak Claude Code 2.1.283, sesi interaktif boleh bermula dalam mod *auto* jika tiada tetapan; kursus ini mewajibkan Manual, jadi tetapkan nilai ini dan `"disableAutoMode": "disable"`.
+- `"disableBypassPermissionsMode": "disable"` menolak `--dangerously-skip-permissions`. **Jangan sekali-kali** memintas kebenaran dalam projek ini.
+- Ruang sebelum `*` penting: `Bash(git diff *)` sepadan dengan `git diff` dan `git diff --cached`, tetapi tidak dengan `git diff-index`.
+- Peraturan `allow` dalam fail projek hanya berkuat kuasa selepas folder itu **dipercayai** (dialog *trust* semasa `claude` interaktif pertama). Peraturan `deny` berkuat kuasa serta-merta.
+- `Read(./.env)` menyekat tool `Read` dan arahan seperti `cat .env`, tetapi **tidak** menyekat skrip yang membuka fail sendiri (cth `php -r "…file_get_contents('.env')…"`). Sebab itu kita tambah hook.
 
-> Jawab selepas Lab 7.10. Lulus kuiz ini menanda checkpoint Lab 7.10.
+### 18.4 Hook: tindakan yang pasti berlaku
 
-1. Dalam Lab 7.10, anda menolak diff yang menapis permohonan dengan `if ($app->user_id == auth()->id())` dalam `pas/index.php`, dan meminta skop `ownedBy()` dalam `PassApplicationModel`. Kenapa?
-   - [ ] View lebih perlahan daripada Model apabila menjalankan gelung foreach
-   - [ ] Claude Code tidak boleh mengedit fail view dalam mod Manual
-   - [x] Query sudah memulangkan baris pemilik sahaja, jadi pagination, kiraan dan setiap controller yang memanggil ownedBy() tidak boleh membocorkan permohonan orang lain (BR-PAS-04)
-   - [ ] SPEC melarang sebarang pernyataan if dalam view
-   > Penapis dalam view berlaku selepas data orang lain sudah dimuatkan: jumlah halaman dan kiraan masih bocor, dan controller lain yang lupa penapis itu memaparkan semua rekod. Skop dalam Model menjadikan query yang betul sebagai satu-satunya cara mendapatkan senarai.
+`CLAUDE.md` ialah nasihat; **hook** ialah arahan shell yang Claude Code jalankan pada titik tertentu, setiap kali, tanpa pengecualian. Hook menerima JSON melalui stdin (`tool_name`, `tool_input.file_path`, `tool_input.command`, …).
 
-2. Claude meminta kebenaran untuk diff yang mencipta migration baharu `CreatePassApplications`, walaupun `migrate_status` menunjukkan migration Hari 4 untuk jadual itu sudah dijalankan. Apakah tindakan yang betul?
-   - [x] Pilih No dan nyatakan bahawa jadual sudah wujud sejak Hari 4 dan pelan Slice 1 tidak mengandungi migration baharu
-   - [ ] Pilih Yes kerana migration baharu tidak berbahaya selagi belum dijalankan
-   - [ ] Pilih Yes, allow all edits supaya Claude menyelesaikan slice lebih cepat
-   - [ ] Pilih Yes, kemudian padam fail itu sebelum commit tanpa memberitahu Claude
-   > Diff di luar pelan ditolak dengan sebab supaya Claude membetulkan arah. Migration pendua akan gagal (`Table already exists`) atau, lebih teruk, mencipta skema yang tidak sepadan dengan SPEC. "Allow all edits" membuang pintu diff untuk seluruh sesi.
+| Hook kursus | Peristiwa | Matcher | Kesan |
+|-------------|-----------|---------|-------|
+| `sekat-env.php` | `PreToolUse` | `Read\|Edit\|Write\|Bash\|Grep\|Glob` | Jika input menyebut `.env` (kecuali `.env.example`): `exit 2` + mesej stderr → tool **disekat** |
+| `semak-sintaks.php` | `PostToolUse` | `Edit\|Write` | `php -l` pada fail `.php` yang baru diedit; jika gagal, JSON `{"decision":"block","reason":…}` → Claude membaca ralat dan membetulkannya |
 
----
+Kedua-dua skrip ditulis dalam PHP supaya berjalan sama di Windows dan macOS tanpa `jq`. Daftarnya dalam **bentuk exec** (`command` + `args`) supaya laluan `${CLAUDE_PROJECT_DIR}` tidak perlu dipetik:
 
-## S14 — Claude Code: Modul Pas (1) — Borang & Muat Naik Selamat (15:45–17:00)
+```json
+{
+  "type": "command",
+  "command": "php",
+  "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/sekat-env.php"]
+}
+```
 
-> ℹ️ **Dipindahkan ke pagi Hari 8 (10:45–12:30).** Petang Hari 7: [S16](#s16--claude-code-rancang--laras-keperluan-daripada-projek-contoh-15451700).
+`exit 1` **tidak** menyekat; hanya `exit 2` (atau JSON keputusan) yang menyekat. `/hooks` memaparkan hook yang dimuatkan. Kod penuh: [Lab 7.15 langkah 3–4](./lab.md#lab-715--amalan-terbaik-claude-code-dalam-tindakan-s18).
 
-> ℹ️ Lab: [Lab 7.11](./lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14) · Konsep: [S3](#s3--borang-validasi--muat-naik-dokumen-14301600) dan [nota 07](../docs/nota-07-muat-naik-fail-selamat.md) · Aliran kerja: [13.1](#131-aliran-kerja-claude-code-berlaku-hingga-hari-10).
+### 18.5 Tabiat Git dan sesi
 
-### 14.1 Slice 2: lima pintu muat naik dalam diff
+- **Satu branch setiap tugas** (`feat/…`, `fix/…`, `chore/…`), commit kecil yang bermesej.
+- **Baca diff sebelum commit**: `/diff` dalam Claude Code, atau `git diff` dalam VS Code. Anda yang menekan commit.
+- **Sambung kerja**: `claude --continue` (`-c`) membuka perbualan terakhir dalam folder ini; `claude --resume` (`-r`) memaparkan senarai sesi. Namakan sesi dengan `claude -n pas-slice-1` atau `/rename`.
+- **Kerja selari (pilihan)**: `claude --worktree nama` (`-w`) memulakan Claude dalam git worktree terasing di `.claude/worktrees/nama`, jadi dua tugas tidak berlanggar.
 
-Claude menulis borang, validasi, `submit()` dan `download()`. Tugas anda ialah memastikan setiap diff mengekalkan **lima pintu** dari bahagian "Kenapa hari ini penting": had saiz → senarai putih extension → semakan kandungan (`mime_in`, `getMimeType()`) → nama rawak di luar `public/` → muat turun hanya melalui controller yang menyemak pemilikan. Tambah dua lagi: CSRF (`form_open_multipart()`) dan `permission:pas.apply` pada `new`/`create`.
+### 18.6 Model dan kos
 
-| Tolak diff yang… | Pintu yang rosak |
-|------------------|------------------|
-| menyimpan dalam `public/` atau memaut `base_url('uploads/…')` | Di luar `public/`, muat turun melalui controller |
-| menggunakan `getName()`/`getClientName()` di cakera | Nama rawak (BR-PAS-02) |
-| mempunyai `ext_in` tanpa `mime_in`, atau `getClientMimeType()` | Semakan kandungan |
-| membuang `csrf_field()` atau menambah route ke `except` CSRF | CSRF |
-| `download()` tanpa `canView()`, atau path daripada request | Pemilikan (BR-PAS-04) |
+- `/model` menukar model (dan menyimpannya sebagai lalai); tekan `s` dalam pemilih untuk sesi ini sahaja. Model besar untuk merancang dan menyemak; model kecil untuk tugas mudah.
+- `/usage` (alias `/cost`, `/stats`) memaparkan kos sesi dan had pelan anda.
+- Konteks yang bersih (18.1) ialah cara paling murah untuk menjimatkan kos.
 
-### 14.2 Urutan simpan: fail dahulu, transaksi kemudian
+### 18.7 `claude -p`: semakan berskrip
 
-`move()` dipanggil **sebelum** transaksi: jika fail gagal dipindah, tiada baris DB ditulis. Transaksi kemudian menulis `pass_applications`, `pass_documents` dan `status_logs` (BR-PAS-05). Jika transaksi gagal, `catch` memanggil `transRollback()` **dan** memadam setiap fail yang sudah dipindah, supaya tiada fail yatim di `writable/uploads/pas/`.
+`claude -p "prompt"` berjalan tanpa antara muka, mencetak jawapan dan keluar. Paip diff ke dalamnya untuk semakan sebelum commit:
 
-### 14.3 Banding dengan kod rujukan
+```bash
+git diff --cached | claude -p "Anda penyemak kod CodeIgniter 4. Semak diff ini sahaja: ralat sintaks, rahsia, SQL mentah, output tanpa esc(). Baris pertama jawapan mestilah LULUS atau GAGAL. Kemudian maksimum 5 dapatan, setiap satu dengan fail:baris. Jangan ubah fail." --permission-mode plan --max-turns 2
+```
 
-Selepas slice 2 lulus ujian, buka Lab 7.3 (kod manual) dan bandingkan tiga perkara: urutan `move()` dan transaksi, rules fail dengan mesej BM, dan semakan pemilikan dalam `download()`. Rekod perbezaan dalam `docs/nota-claude.md`. Kod Claude tidak semestinya salah jika berbeza; anda mesti boleh menerangkan kenapa kedua-duanya selamat, atau kenapa satu tidak.
+- Arahan yang sama berfungsi dalam Git Bash dan PowerShell (paip `|` disokong kedua-duanya).
+- Dalam `-p`, tool yang memerlukan kebenaran **ditolak** melainkan dibenarkan oleh `--allowedTools` atau peraturan `allow`. `--output-format json` memberi `result`, `total_cost_usd` dan `permission_denials`.
+- `claude -p` menjalankan hook dan server MCP projek **walaupun folder belum dipercayai**. Jangan jalankan `claude -p` dalam repo yang anda tidak percayai.
 
-### 🎯 Kuiz S14
+### 18.8 Keselamatan
 
-> Jawab selepas Lab 7.11. Lulus kuiz ini menanda checkpoint Lab 7.11.
+| Risiko | Amalan |
+|--------|--------|
+| Rahsia | `.env`, token dan kata laluan tidak pernah masuk ke prompt; `deny` + hook menyekat bacaan |
+| *Prompt injection* | Teks dalam fail, halaman web, issue GitLab atau output MCP boleh mengandungi "arahan" untuk Claude. Ia **data**, bukan arahan anda. Baca setiap tindakan yang Claude minta kebenaran |
+| Repo tidak dipercayai | `.claude/settings.json`, hook dan `.mcp.json` dalam repo orang lain boleh menjalankan arahan. Baca fail itu dahulu sebelum menerima dialog *trust* |
+| Sistem sebenar | Tiada server MCP, DB atau token untuk sistem KKM/eSPKP sebenar |
 
-1. Diff Claude untuk `PassWorkflowService::submit()` mengandungi `$file->move(WRITEPATH . 'uploads/pas', $file->getClientName())`. Apakah tindakan yang betul?
-   - [ ] Terima kerana fail sudah berada di luar public/
-   - [ ] Terima kerana nama asal memudahkan pegawai mengenal pasti dokumen
-   - [ ] Terima jika mime_in ada dalam rules validasi
-   - [x] Tolak dan minta getRandomName(): nama asal boleh diteka dan boleh menulis ganti fail lain; nama asal disimpan dalam original_name sahaja (BR-PAS-02)
-   > BR-PAS-02 mewajibkan nama rawak. Dua pemohon yang memuat naik `surat.pdf` akan menulis ganti fail satu sama lain, dan nama yang boleh diteka memudahkan serangan. Nama asal hanya untuk paparan dan header muat turun.
+### 18.9 Sahkan, jangan percaya; jaga `CLAUDE.md`
 
-2. Dalam `submit()`, kenapa fail dipindah dengan `move()` sebelum transaksi dibuka, dan apakah yang mesti ada dalam `catch`?
-   - [ ] Supaya transaksi lebih pendek; catch hanya perlu menulis log_message()
-   - [x] Supaya kegagalan move() berlaku sebelum sebarang baris DB ditulis; jika transaksi gagal, catch memanggil transRollback() dan memadam setiap fail yang sudah dipindah supaya tiada fail yatim
-   - [ ] Kerana CI4 memadam fail yang dipindah secara automatik apabila transaksi gagal
-   - [ ] Kerana move() tidak boleh dipanggil semasa transaksi MySQL dibuka
-   > Transaksi DB tidak merangkumi sistem fail. Rollback memulihkan jadual, tetapi fail di cakera kekal sehingga kod memadamnya. Diff tanpa `unlink()` dalam `catch` meninggalkan dokumen peribadi tanpa rekod pemilik.
+- Setiap tugas berakhir dengan bukti: `composer test`, `php spark routes`, pelayar, `claude -p` semakan, `semak-ci4`. "Nampak betul" bukan bukti.
+- Minta Claude **menunjukkan** bukti (output ujian, arahan yang dijalankan), bukan sekadar berkata "sudah siap".
+- Kemas kini `CLAUDE.md` apabila Claude mengulangi kesilapan yang sama: tambah satu baris peraturan, buang baris yang tidak lagi perlu, kekal kurang 200 baris. Peraturan yang **mesti** berlaku setiap kali dijadikan hook atau `deny`.
+
+### 🎯 Kuiz S18
+
+> Jawab selepas Lab 7.15. Lulus kuiz ini menanda checkpoint Lab 7.15.
+
+1. Dalam Lab 7.15, `.claude/settings.json` mempunyai `deny` `Read(./.env)`. Claude mencadangkan arahan `php -r "echo file_get_contents('.env');"`. Apakah yang menyekat arahan itu?
+   - [ ] Peraturan deny Read(./.env), kerana ia menyekat semua proses yang membuka .env
+   - [ ] CLAUDE.md, kerana ia menyatakan "jangan baca .env"
+   - [x] Hook PreToolUse sekat-env.php, yang melihat ".env" dalam tool_input.command dan keluar dengan kod 2
+   - [ ] Tiada; arahan PHP tidak boleh disekat oleh Claude Code
+   > Peraturan `Read` meliputi tool fail Claude dan arahan fail yang dikenali seperti `cat`, tetapi tidak skrip yang membuka fail sendiri. Hook `PreToolUse` dijalankan sebelum setiap panggilan tool dan `exit 2` menyekatnya; `CLAUDE.md` hanya nasihat.
+
+2. Claude mengubah tiga fail dengan tool Edit, kemudian menjalankan `php spark make:migration AddRemarks` melalui Bash. Anda memilih *Restore code* dalam `/rewind` ke checkpoint sebelum semua itu. Apakah keadaan fail sekarang?
+   - [x] Tiga fail yang diedit dipulihkan; fail migration yang dicipta oleh Bash kekal dan perlu dibuang dengan Git atau secara manual
+   - [ ] Semua perubahan, termasuk migration, dipulihkan kerana rewind sama dengan git reset
+   - [ ] Tiada yang dipulihkan kerana arahan Bash membatalkan semua checkpoint
+   - [ ] Hanya fail migration dipulihkan
+   > Checkpoint menjejak edit oleh tool fail Claude. Fail yang hanya diubah oleh Bash tidak dijejak, jadi ia kekal. Sebab itu checkpoint bukan pengganti Git: `git status` menunjukkan fail baharu itu.
 
 ---
 
@@ -578,6 +680,199 @@ Peraturan ringkas: Plan mode untuk **berfikir**, `CLAUDE.md` untuk **fakta tetap
    - [ ] Biar Claude memutuskan semasa melaksanakan Slice 3
    - [x] Tidak untuk modul ini: SPEC ialah kanun (BR-PAS-01), jadi rekod pindaan sebagai soalan terbuka untuk pemilik sistem
    > Menambah status mengubah enum, jadual peralihan dan ujian yang dikunci oleh SPEC. Keputusan skop dibuat oleh pemilik sistem, bukan oleh pembangun atau Claude. Soalan terbuka yang direkod menjadikan keputusan itu kelihatan.
+
+---
+
+## 📦 Hasil Hari Ini
+
+**Claude Code (Hari 7):**
+
+- [ ] `CLAUDE.md` projek ikut standard kursus + `CLAUDE.local.md` dalam `.gitignore` (Lab 7.6)
+- [ ] `docs/nota-claude.md`: 3 prompt onboarding (Lab 7.9), bahagian *Seni Prompt* dengan 5 prompt ditulis semula dan 6 jawapan bermarkah (Lab 7.14), dan bukti hook (Lab 7.15)
+- [ ] PRD latihan `~/latihan/prd-latihan/docs/prd.md` (Lab 7.9)
+- [ ] `.claude/agents/semak-ci4.md`, `.claude/skills/migration-ci4/SKILL.md`, `docs/semakan-ci4-hari6.md` (Lab 7.7)
+- [ ] `.mcp.json` dengan `ci4-spark`; Context7 didaftar (Lab 7.8)
+- [ ] `.claude/settings.json` (allow/deny, mod Manual) + `.claude/hooks/sekat-env.php` + `.claude/hooks/semak-sintaks.php`, diuji (Lab 7.15)
+- [ ] `~/latihan/espkpv2-kajian/nota-fahami.md` (Lab 7.12)
+- [ ] `docs/keperluan-pas.md` + `docs/pelan-pas.md` pada branch `docs/keperluan-pas` (Lab 7.13)
+
+**Modul Pas (kod rujukan, dibina mulai Hari 8 — [Lampiran](#lampiran--modul-pas-dipindah-ke-hari-8--kod-rujukan)):**
+
+- [ ] `app/Enums/PassType.php`, `app/Enums/PassStatus.php`
+- [ ] `app/Entities/PassApplication.php`
+- [ ] `app/Models/PassApplicationModel.php`, `app/Models/PassDocumentModel.php`
+- [ ] `app/Services/PassWorkflowService.php` (`canView`, `submit`, `documentPath`) + `Config\Services::passWorkflowService()`
+- [ ] `app/Controllers/Pas/ApplicationController.php` (`index`, `new`, `create`, `show`, `download`)
+- [ ] `app/Views/pas/index.php`, `new.php`, `show.php`
+- [ ] Route `pas/permohonan` dalam `app/Config/Routes.php`
+- [ ] Permohonan `PAS-2026-0001` dengan 1–3 dokumen berjaya dihantar dan dimuat turun
+- [ ] `docs/ujian-manual-pas.md` — ≥ 10 kes, semua Lulus (atau pepijat direkod)
+- [ ] Commit pada branch `feat/pas-permohonan` dengan prefix `PAS:`
+- [ ] `PassType::icon()`, `PassStatus::pending()`/`isPending()`, `PassApplication::validityDays()`/`daysRemaining()` (Lab 7.1b)
+- [ ] Penapis `?pass_type=` + carian `?q=` berkurungan (`withType()`, `search()`) pada `/pas/permohonan` (Lab 7.2b)
+- [ ] Route `pas.dokumen.tambah` + `PassWorkflowService::addDocuments()` — maksimum 3 dokumen setiap permohonan (Lab 7.3b)
+- [ ] `tests/_support/FakeUploadedFile.php` + `tests/feature/Pas/PassSubmitTest.php` hijau; bahagian *Diautomasikan* dalam `docs/ujian-manual-pas.md` (Lab 7.4b)
+
+Rujukan penuh jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — `PassStatus`, `PassType`, `PassApplication-Entity`, `PassApplicationModel`, `PassWorkflowService`, `ApplicationController-upload`, `Routes-pas`. Nota topikal: [07 Muat naik fail selamat](../docs/nota-07-muat-naik-fail-selamat.md) · [03 Model, Entity & Enum](../docs/nota-03-model-entity-dan-enum.md) · [11 Keselamatan](../docs/nota-11-keselamatan-aplikasi-web.md).
+
+---
+
+## 🧠 Semakan Kendiri
+
+1. Penyerang menamakan semula `setup.exe` kepada `surat.pdf` dan memuat naiknya. Rule mana yang menolaknya dan **bagaimana** rule itu tahu?
+
+<details><summary>Jawapan</summary>
+
+`mime_in` — ia menggunakan `getMimeType()` yang membaca **kandungan** fail melalui extension `fileinfo` (bait awal `MZ` → `application/x-dosexec` atau serupa), bukan nama atau header pelayar. Dalam CI 4.6 `ext_in` (strict) juga gagal kerana `guessExtension()` dari kandungan ≠ `pdf`. Service kita pula menyemak `guessExtension()` sekali lagi.
+</details>
+
+2. Kenapa kita simpan `stored_path = 'uploads/pas/1727…_ab12.pdf'` dan bukan `C:\laragon\www\kkm\writable\uploads\pas\…`, dan kenapa bukan nama asal fail?
+
+<details><summary>Jawapan</summary>
+
+Path **relatif** kekal sah apabila aplikasi dipindah ke server/OS lain; kita gabung dengan `WRITEPATH` semasa baca. Nama asal tidak digunakan di cakera kerana ia input tidak dipercayai (path traversal `../`, aksara pelik, dan dua pengguna dengan `ic.pdf` akan menulis ganti antara satu sama lain). Nama asal disimpan dalam `original_name` untuk paparan dan `setFileName()` semasa muat turun sahaja.
+</details>
+
+3. INSERT ke `pass_documents` gagal selepas dua fail telah di-`move()`. Apakah yang berlaku dalam kod kita, langkah demi langkah?
+
+<details><summary>Jawapan</summary>
+
+`RuntimeException` dibaling → blok `catch` → `transRollback()` membatalkan INSERT `pass_applications` (dan nombor rujukan) → `deleteStoredFiles()` memadam kedua-dua fail dari `writable/uploads/pas/` → exception dibaling semula (pengguna melihat ralat). Hasil: tiada rekod separa dalam DB, tiada fail yatim di cakera.
+</details>
+
+4. `pemohon2` membuka `/pas/permohonan/dokumen/3` (dokumen milik `pemohon1`). Apakah respons, dan kod mana yang menghasilkannya?
+
+<details><summary>Jawapan</summary>
+
+404. `download()` mencari dokumen, kemudian `findVisibleOr404($document['application_id'])` memanggil `canView()` yang pulang `false` (bukan pemilik, bukan pegawai) → `PageNotFoundException`. Filter `session` sahaja tidak menghalang kerana `pemohon2` memang log masuk.
+</details>
+
+5. Seorang peserta menetapkan `upload_max_filesize = 2M` dalam `php.ini`. Ujian fail 3 MB memaparkan "Sila lampirkan sekurang-kurangnya satu dokumen…" dan bukan "tidak melebihi 2 MB". Kenapa?
+
+<details><summary>Jawapan</summary>
+
+PHP menolak fail **sebelum** CI4 melihatnya (`UPLOAD_ERR_INI_SIZE`). Fail itu tidak "berjaya dimuat naik", jadi rule pertama `uploaded` gagal dan validasi berhenti di situ — `max_size` tidak sempat dinilai. Naikkan `upload_max_filesize` (cth `8M`) supaya had aplikasi 2 MB yang berkuat kuasa dan mesejnya tepat.
+</details>
+
+---
+
+## ➡️ Persediaan untuk esok
+
+Hari 8 membina Modul Pas **dengan Claude Code**: pagi Lab 7.10 (slice 1) dan Lab 7.11 (slice 2) dari [Lampiran](#lampiran--modul-pas-dipindah-ke-hari-8--kod-rujukan), kemudian aliran **semak → lulus/tolak**, **RBAC Shield** dan ujian akses automatik.
+
+- Pastikan `docs/keperluan-pas.md` dan `docs/pelan-pas.md` (Lab 7.13) di-commit; ia input pertama Lab 7.10.
+- Pastikan `.claude/settings.json` dan dua hook (Lab 7.15) di-commit dan `/hooks` menyenaraikannya; hook itu menjaga anda sepanjang Hari 8–10.
+- Pilih 3 prompt dari [`seni-prompt.md`](../docs/seni-prompt.md) (bahagian *Laksana* dan *Semak*) yang akan anda guna untuk slice 1.
+- Log masuk sekali sebagai `penyemak@latihan.test` dan `pelulus@latihan.test` (kata laluan `Latihan@2026`) untuk memastikan akaun seeder berfungsi.
+- Soalan untuk difikirkan: *Jika `reviewer` boleh membuka `/pas/semakan`, apakah yang menghalangnya daripada POST ke `/pas/semakan/5/approve`?*
+
+---
+
+## Lampiran — Modul Pas (dipindah ke Hari 8 / kod rujukan)
+
+> ℹ️ **Bahagian ini bukan sebahagian daripada jadual Hari 7.** S13 dan S14 (Lab 7.10/7.11) ialah sesi pagi Hari 8: Pas slice 1 dan slice 2 dibina dengan Claude Code melalui tujuh pintu semakan, berpandukan `docs/keperluan-pas.md` dan `docs/pelan-pas.md` dari Lab 7.13. Sesi S1–S8 (Lab Pas manual 7.0–7.4 dan 7.1b–7.4b) kekal sebagai **kod rujukan** untuk langkah "Banding dengan kod rujukan": migration, enum, Model dengan skop `ownedBy()`, senarai dan butiran 404 bukan pemilik, dan muat naik melalui lima pintu (had saiz → senarai putih extension → semakan kandungan sebenar → nama rawak di luar `public/` → muat turun hanya melalui controller yang menyemak pemilikan). Kandungan di bawah tidak diubah; masa dalam tajuk ialah jadual asal.
+
+---
+
+## S13 — Claude Code: Modul Pas (1) — Model, Senarai & Butiran (14:30–15:45)
+
+> ℹ️ **Dipindahkan ke pagi Hari 8 (09:00–10:30).** Petang Hari 7: [S15](#s15--claude-code-fahami-projek-contoh-espkp-14301545).
+
+> ℹ️ Lab: [Lab 7.10](./lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13) · Prompt [AI-19, AI-20](../docs/pustaka-prompt.md#g--laksana-dengan-pintu-semakan) · Peraturan: [`kolaborasi.md`](../docs/kolaborasi.md) §3.
+
+### 13.1 Aliran kerja Claude Code (berlaku hingga Hari 10)
+
+Mulai petang ini hingga Hari 10, anda membina modul yang sama (Pas, Laporan, Statistik) **dengan Claude Code**. Claude boleh menulis kod pelaksanaan, tetapi setiap slice melalui tujuh pintu:
+
+1. **SPEC:** baca seksyen SPEC dan ID `BR-*`; `CLAUDE.md` menunjuk kepadanya.
+2. **Pelan (mod *Plan*):** fail, migration/model/service/controller/view/ujian dan pemetaan BR, tanpa kod. Anda menyemak dan mengedit pelan.
+3. **Laksana (mod *Manual*):** Claude mengedit; anda membaca setiap diff dan memilih **Yes** atau **No**. Mod *accept edits*, *auto* dan *bypass* tidak dibenarkan.
+4. **Sahkan:** `composer test`, pelayar, `ci4-spark` (`routes`, `filter_check`, `migrate_status`).
+5. **Semak:** subagent `semak-ci4`, kemudian Claude membaiki dapatan melalui pintu diff yang sama.
+6. **Terangkan:** 3 baris utama dengan ayat sendiri dalam `docs/nota-claude.md` (`fail:baris`).
+7. **Commit:** kecil, bermesej, dalam feature branch `feat/pas-claude`.
+
+Lab Pas manual 7.0–7.4 kekal sebagai **kod rujukan**: selepas setiap slice, anda membandingkan kod Claude dengan lab manual yang sepadan dan merekod perbezaannya.
+
+### 13.2 Slice 1: apa yang dibina
+
+Enum `PassType`/`PassStatus`, Entity `PassApplication`, `PassApplicationModel` dan `PassDocumentModel`, route `index`/`show`, `PassWorkflowService::canView()`, senarai "Permohonan Saya" dan butiran. Jadual Pas sudah wujud sejak Hari 4, jadi pelan yang baik **tidak** mencipta migration baharu; `migrate_status` membuktikannya.
+
+Skop pemilik berada dalam **Model** (`ownedBy()`), bukan dalam view. Query itu sendiri hanya memulangkan baris pemilik, jadi pagination, kiraan dan setiap controller yang memanggilnya selamat (BR-PAS-04). Butiran milik orang lain memulangkan **404**, bukan 403, supaya kewujudan rekod tidak bocor.
+
+### 13.3 Membaca diff: terima atau tolak
+
+| Terima | Tolak |
+|--------|-------|
+| `where('user_id', …)` dalam `ownedBy()` | `if ($app->user_id == …)` dalam view atau gelung controller |
+| `canView()` → `PageNotFoundException` | `find($id)` terus ke view, atau 403 |
+| Enum `PassStatus` dan `canTransitionTo()` | Rentetan `'submitted'` bertaburan |
+| `esc()` pada setiap output | `<?= $x ?>` tanpa `esc()` |
+| Fail dalam senarai pelan sahaja | Migration Pas baharu, fail TLK, `Filters.php`, `php spark migrate` |
+
+### 🎯 Kuiz S13
+
+> Jawab selepas Lab 7.10. Lulus kuiz ini menanda checkpoint Lab 7.10.
+
+1. Dalam Lab 7.10, anda menolak diff yang menapis permohonan dengan `if ($app->user_id == auth()->id())` dalam `pas/index.php`, dan meminta skop `ownedBy()` dalam `PassApplicationModel`. Kenapa?
+   - [ ] View lebih perlahan daripada Model apabila menjalankan gelung foreach
+   - [ ] Claude Code tidak boleh mengedit fail view dalam mod Manual
+   - [x] Query sudah memulangkan baris pemilik sahaja, jadi pagination, kiraan dan setiap controller yang memanggil ownedBy() tidak boleh membocorkan permohonan orang lain (BR-PAS-04)
+   - [ ] SPEC melarang sebarang pernyataan if dalam view
+   > Penapis dalam view berlaku selepas data orang lain sudah dimuatkan: jumlah halaman dan kiraan masih bocor, dan controller lain yang lupa penapis itu memaparkan semua rekod. Skop dalam Model menjadikan query yang betul sebagai satu-satunya cara mendapatkan senarai.
+
+2. Claude meminta kebenaran untuk diff yang mencipta migration baharu `CreatePassApplications`, walaupun `migrate_status` menunjukkan migration Hari 4 untuk jadual itu sudah dijalankan. Apakah tindakan yang betul?
+   - [x] Pilih No dan nyatakan bahawa jadual sudah wujud sejak Hari 4 dan pelan Slice 1 tidak mengandungi migration baharu
+   - [ ] Pilih Yes kerana migration baharu tidak berbahaya selagi belum dijalankan
+   - [ ] Pilih Yes, allow all edits supaya Claude menyelesaikan slice lebih cepat
+   - [ ] Pilih Yes, kemudian padam fail itu sebelum commit tanpa memberitahu Claude
+   > Diff di luar pelan ditolak dengan sebab supaya Claude membetulkan arah. Migration pendua akan gagal (`Table already exists`) atau, lebih teruk, mencipta skema yang tidak sepadan dengan SPEC. "Allow all edits" membuang pintu diff untuk seluruh sesi.
+
+---
+
+## S14 — Claude Code: Modul Pas (1) — Borang & Muat Naik Selamat (15:45–17:00)
+
+> ℹ️ **Dipindahkan ke pagi Hari 8 (10:45–12:30).** Petang Hari 7: [S16](#s16--claude-code-rancang--laras-keperluan-daripada-projek-contoh-15451700).
+
+> ℹ️ Lab: [Lab 7.11](./lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14) · Konsep: [S3](#s3--borang-validasi--muat-naik-dokumen-14301600) dan [nota 07](../docs/nota-07-muat-naik-fail-selamat.md) · Aliran kerja: [13.1](#131-aliran-kerja-claude-code-berlaku-hingga-hari-10).
+
+### 14.1 Slice 2: lima pintu muat naik dalam diff
+
+Claude menulis borang, validasi, `submit()` dan `download()`. Tugas anda ialah memastikan setiap diff mengekalkan **lima pintu** dari bahagian "Kenapa hari ini penting": had saiz → senarai putih extension → semakan kandungan (`mime_in`, `getMimeType()`) → nama rawak di luar `public/` → muat turun hanya melalui controller yang menyemak pemilikan. Tambah dua lagi: CSRF (`form_open_multipart()`) dan `permission:pas.apply` pada `new`/`create`.
+
+| Tolak diff yang… | Pintu yang rosak |
+|------------------|------------------|
+| menyimpan dalam `public/` atau memaut `base_url('uploads/…')` | Di luar `public/`, muat turun melalui controller |
+| menggunakan `getName()`/`getClientName()` di cakera | Nama rawak (BR-PAS-02) |
+| mempunyai `ext_in` tanpa `mime_in`, atau `getClientMimeType()` | Semakan kandungan |
+| membuang `csrf_field()` atau menambah route ke `except` CSRF | CSRF |
+| `download()` tanpa `canView()`, atau path daripada request | Pemilikan (BR-PAS-04) |
+
+### 14.2 Urutan simpan: fail dahulu, transaksi kemudian
+
+`move()` dipanggil **sebelum** transaksi: jika fail gagal dipindah, tiada baris DB ditulis. Transaksi kemudian menulis `pass_applications`, `pass_documents` dan `status_logs` (BR-PAS-05). Jika transaksi gagal, `catch` memanggil `transRollback()` **dan** memadam setiap fail yang sudah dipindah, supaya tiada fail yatim di `writable/uploads/pas/`.
+
+### 14.3 Banding dengan kod rujukan
+
+Selepas slice 2 lulus ujian, buka Lab 7.3 (kod manual) dan bandingkan tiga perkara: urutan `move()` dan transaksi, rules fail dengan mesej BM, dan semakan pemilikan dalam `download()`. Rekod perbezaan dalam `docs/nota-claude.md`. Kod Claude tidak semestinya salah jika berbeza; anda mesti boleh menerangkan kenapa kedua-duanya selamat, atau kenapa satu tidak.
+
+### 🎯 Kuiz S14
+
+> Jawab selepas Lab 7.11. Lulus kuiz ini menanda checkpoint Lab 7.11.
+
+1. Diff Claude untuk `PassWorkflowService::submit()` mengandungi `$file->move(WRITEPATH . 'uploads/pas', $file->getClientName())`. Apakah tindakan yang betul?
+   - [ ] Terima kerana fail sudah berada di luar public/
+   - [ ] Terima kerana nama asal memudahkan pegawai mengenal pasti dokumen
+   - [ ] Terima jika mime_in ada dalam rules validasi
+   - [x] Tolak dan minta getRandomName(): nama asal boleh diteka dan boleh menulis ganti fail lain; nama asal disimpan dalam original_name sahaja (BR-PAS-02)
+   > BR-PAS-02 mewajibkan nama rawak. Dua pemohon yang memuat naik `surat.pdf` akan menulis ganti fail satu sama lain, dan nama yang boleh diteka memudahkan serangan. Nama asal hanya untuk paparan dan header muat turun.
+
+2. Dalam `submit()`, kenapa fail dipindah dengan `move()` sebelum transaksi dibuka, dan apakah yang mesti ada dalam `catch`?
+   - [ ] Supaya transaksi lebih pendek; catch hanya perlu menulis log_message()
+   - [x] Supaya kegagalan move() berlaku sebelum sebarang baris DB ditulis; jika transaksi gagal, catch memanggil transRollback() dan memadam setiap fail yang sudah dipindah supaya tiada fail yatim
+   - [ ] Kerana CI4 memadam fail yang dipindah secara automatik apabila transaksi gagal
+   - [ ] Kerana move() tidak boleh dipanggil semasa transaksi MySQL dibuka
+   > Transaksi DB tidak merangkumi sistem fail. Rollback memulihkan jadual, tetapi fail di cakera kekal sehingga kod memadamnya. Diff tanpa `unlink()` dalam `catch` meninggalkan dokumen peribadi tanpa rekod pemilik.
 
 ---
 
@@ -1227,74 +1522,3 @@ Lab: [Lab 7.4b](./lab.md#lab-74b--automasikan-kes-sempadan-dengan-phpunit-s8)
    - [ ] `OK` — ujian tidak sensitif kepada `>` berbanding `>=`
    - [ ] `ERRORS!` — ketujuh-tujuh data set `rejectedProvider()` gagal
    > `2097152 >= 2097152` kini benar, jadi fail **tepat** 2 MB ditolak. Ujian itu tidak menjangka exception, maka PHPUnit melaporkannya sebagai *error* (exception tidak ditangkap), bukan *failure* (assertion gagal). Fail 2 MB + 1 bait masih ditolak — sebab itu sempadan mesti diuji pada **kedua-dua** belah.
-
----
-
-## 📦 Hasil Hari Ini
-
-- [ ] `app/Enums/PassType.php`, `app/Enums/PassStatus.php`
-- [ ] `app/Entities/PassApplication.php`
-- [ ] `app/Models/PassApplicationModel.php`, `app/Models/PassDocumentModel.php`
-- [ ] `app/Services/PassWorkflowService.php` (`canView`, `submit`, `documentPath`) + `Config\Services::passWorkflowService()`
-- [ ] `app/Controllers/Pas/ApplicationController.php` (`index`, `new`, `create`, `show`, `download`)
-- [ ] `app/Views/pas/index.php`, `new.php`, `show.php`
-- [ ] Route `pas/permohonan` dalam `app/Config/Routes.php`
-- [ ] Permohonan `PAS-2026-0001` dengan 1–3 dokumen berjaya dihantar dan dimuat turun
-- [ ] `docs/ujian-manual-pas.md` — ≥ 10 kes, semua Lulus (atau pepijat direkod)
-- [ ] Commit pada branch `feat/pas-permohonan` dengan prefix `PAS:`
-- [ ] `PassType::icon()`, `PassStatus::pending()`/`isPending()`, `PassApplication::validityDays()`/`daysRemaining()` (Lab 7.1b)
-- [ ] Penapis `?pass_type=` + carian `?q=` berkurungan (`withType()`, `search()`) pada `/pas/permohonan` (Lab 7.2b)
-- [ ] Route `pas.dokumen.tambah` + `PassWorkflowService::addDocuments()` — maksimum 3 dokumen setiap permohonan (Lab 7.3b)
-- [ ] `tests/_support/FakeUploadedFile.php` + `tests/feature/Pas/PassSubmitTest.php` hijau; bahagian *Diautomasikan* dalam `docs/ujian-manual-pas.md` (Lab 7.4b)
-
-Rujukan penuh jurulatih: `templates/kod/` (modul **Templat & Rujukan**) — `PassStatus`, `PassType`, `PassApplication-Entity`, `PassApplicationModel`, `PassWorkflowService`, `ApplicationController-upload`, `Routes-pas`. Nota topikal: [07 Muat naik fail selamat](../docs/nota-07-muat-naik-fail-selamat.md) · [03 Model, Entity & Enum](../docs/nota-03-model-entity-dan-enum.md) · [11 Keselamatan](../docs/nota-11-keselamatan-aplikasi-web.md).
-
----
-
-## 🧠 Semakan Kendiri
-
-1. Penyerang menamakan semula `setup.exe` kepada `surat.pdf` dan memuat naiknya. Rule mana yang menolaknya dan **bagaimana** rule itu tahu?
-
-<details><summary>Jawapan</summary>
-
-`mime_in` — ia menggunakan `getMimeType()` yang membaca **kandungan** fail melalui extension `fileinfo` (bait awal `MZ` → `application/x-dosexec` atau serupa), bukan nama atau header pelayar. Dalam CI 4.6 `ext_in` (strict) juga gagal kerana `guessExtension()` dari kandungan ≠ `pdf`. Service kita pula menyemak `guessExtension()` sekali lagi.
-</details>
-
-2. Kenapa kita simpan `stored_path = 'uploads/pas/1727…_ab12.pdf'` dan bukan `C:\laragon\www\kkm\writable\uploads\pas\…`, dan kenapa bukan nama asal fail?
-
-<details><summary>Jawapan</summary>
-
-Path **relatif** kekal sah apabila aplikasi dipindah ke server/OS lain; kita gabung dengan `WRITEPATH` semasa baca. Nama asal tidak digunakan di cakera kerana ia input tidak dipercayai (path traversal `../`, aksara pelik, dan dua pengguna dengan `ic.pdf` akan menulis ganti antara satu sama lain). Nama asal disimpan dalam `original_name` untuk paparan dan `setFileName()` semasa muat turun sahaja.
-</details>
-
-3. INSERT ke `pass_documents` gagal selepas dua fail telah di-`move()`. Apakah yang berlaku dalam kod kita, langkah demi langkah?
-
-<details><summary>Jawapan</summary>
-
-`RuntimeException` dibaling → blok `catch` → `transRollback()` membatalkan INSERT `pass_applications` (dan nombor rujukan) → `deleteStoredFiles()` memadam kedua-dua fail dari `writable/uploads/pas/` → exception dibaling semula (pengguna melihat ralat). Hasil: tiada rekod separa dalam DB, tiada fail yatim di cakera.
-</details>
-
-4. `pemohon2` membuka `/pas/permohonan/dokumen/3` (dokumen milik `pemohon1`). Apakah respons, dan kod mana yang menghasilkannya?
-
-<details><summary>Jawapan</summary>
-
-404. `download()` mencari dokumen, kemudian `findVisibleOr404($document['application_id'])` memanggil `canView()` yang pulang `false` (bukan pemilik, bukan pegawai) → `PageNotFoundException`. Filter `session` sahaja tidak menghalang kerana `pemohon2` memang log masuk.
-</details>
-
-5. Seorang peserta menetapkan `upload_max_filesize = 2M` dalam `php.ini`. Ujian fail 3 MB memaparkan "Sila lampirkan sekurang-kurangnya satu dokumen…" dan bukan "tidak melebihi 2 MB". Kenapa?
-
-<details><summary>Jawapan</summary>
-
-PHP menolak fail **sebelum** CI4 melihatnya (`UPLOAD_ERR_INI_SIZE`). Fail itu tidak "berjaya dimuat naik", jadi rule pertama `uploaded` gagal dan validasi berhenti di situ — `max_size` tidak sempat dinilai. Naikkan `upload_max_filesize` (cth `8M`) supaya had aplikasi 2 MB yang berkuat kuasa dan mesejnya tepat.
-</details>
-
----
-
-## ➡️ Persediaan untuk esok
-
-Hari 8 menyiapkan Modul Pas: aliran **semak → lulus/tolak**, **RBAC Shield**, garis masa `status_logs` dan ujian akses automatik.
-
-- Pastikan sekurang-kurangnya **3 permohonan** berstatus `submitted` wujud (guna `pemohon1` dan `pemohon2`) — ia akan menjadi data demo esok.
-- Log masuk sekali sebagai `penyemak@latihan.test` dan `pelulus@latihan.test` (kata laluan `Latihan@2026`) untuk memastikan akaun seeder berfungsi.
-- Baca semula [nota 06 — Shield auth & RBAC](../docs/nota-06-shield-auth-dan-rbac.md) §2–§4 (groups, permissions, `$matrix`).
-- Soalan untuk difikirkan: *Jika `reviewer` boleh membuka `/pas/semakan`, apakah yang menghalangnya daripada POST ke `/pas/semakan/5/approve`?*

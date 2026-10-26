@@ -1,30 +1,32 @@
-# Lab Hari 7 — Modul Pas (1): Model, CRUD & Muat Naik Selamat
+# Lab Hari 7 — Claude Code: Pelaksanaan & Amalan Terbaik
 
 [⬅️ README](./README.md) · [Jadual](../JADUAL.md) · [Kanun SPEC](../docs/spesifikasi-sistem.md) · [⚡ Arahan spark](../docs/arahan-spark.md)
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
-| 7.6 | S9 | 09:10–10:00 | Claude Code disahkan; `CLAUDE.md` standard kursus; `CLAUDE.local.md`; mod Plan |
-| 7.9 | S12 | 10:05–10:30 | `docs/nota-claude.md` (3 prompt onboarding); PRD latihan `~/latihan/prd-latihan/docs/prd.md` + pelan slice + 2 pembetulan |
-| 7.7 | S10 | 11:00–11:45 | Subagent `semak-ci4` + `docs/semakan-ci4-hari6.md`; skill `migration-ci4` |
-| 7.8 | S11 | 11:55–12:30 | Server MCP `ci4-spark` diuji & didaftar dalam `.mcp.json`; Context7; MySQL/GitLab pilihan |
-| 7.12 | S15 | 14:30–15:45 | Klon `espkpv2` ke `~/latihan/espkpv2`; 6 prompt onboarding mod Plan disahkan dengan `fail:baris`; demo 2 peranan; `~/latihan/espkpv2-kajian/nota-fahami.md` |
-| 7.13 | S16 | 15:45–17:00 | PRD eSPKP Pas + 3 dakwaan disahkan; jadual jurang vs SPEC; `docs/keperluan-pas.md` + `docs/pelan-pas.md` pada branch `docs/keperluan-pas` |
-| 7.10 | S13 | Hari 8 09:00–10:30 | Claude Code, Pas slice 1: enum, Entity, 2 Model (`ownedBy()`), senarai & butiran (404 bukan pemilik); `docs/pelan-pas.md`; pintu terang dalam `docs/nota-claude.md` |
-| 7.11 | S14 | Hari 8 10:45–12:30 | Claude Code, Pas slice 2: borang `multipart` + CSRF, validasi fail, muat naik nama rawak di `writable/uploads/pas/`, transaksi + pembersihan, muat turun melalui controller |
-| 7.0 | Awal S1 | 10 min | Branch Git + `php.ini` sedia untuk muat naik |
-| 7.1 | S1 | 09:10–10:00 | Enum, Entity, 2 Model |
-| 7.1b | S5 | 10:00–10:30 | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` diuji dalam `php spark shell` |
-| 7.2 | S2 | 10:45–12:00 | Route, Service (`canView`), senarai & butiran |
-| 7.2b | S6 | 12:00–12:30 | Filter `?pass_type=` + carian `?q=` (bukti kebocoran `orLike()` tanpa kurungan) |
-| 7.3 | S3 | 14:30–15:30 | Borang + validasi + muat naik + muat turun |
-| 7.3b | S7 | 15:30–16:00 | Tambah dokumen susulan (maks. 3 setiap permohonan, kunci `FOR UPDATE`) |
-| 7.4 | S4 | 16:00–16:35 | 17 kes ujian sempadan direkod |
-| 7.4b | S8 | 16:35–17:00 | `PassSubmitTest` PHPUnit: 14 kes sempadan automatik + mutasi `>=` |
+| 7.6 | S9 | 09:00–09:45 | Claude Code disahkan; `CLAUDE.md` standard kursus; `CLAUDE.local.md`; mod Plan |
+| 7.9 | S12 | 09:45–10:30 | `docs/nota-claude.md` (3 prompt onboarding); PRD latihan `~/latihan/prd-latihan/docs/prd.md` + pelan slice + 2 pembetulan |
+| 7.14 | S17 | 10:45–11:30 | 5 prompt lemah ditulis semula; 6 prompt katalog dalam mod Plan bermarkah; bahagian *Seni Prompt* dalam `docs/nota-claude.md` |
+| 7.7 | S10 | 11:30–12:00 | Subagent `semak-ci4` + `docs/semakan-ci4-hari6.md`; skill `migration-ci4` |
+| 7.8 | S11 | 12:00–12:30 | Server MCP `ci4-spark` diuji & didaftar dalam `.mcp.json`; Context7; MySQL/GitLab pilihan |
+| 7.15 | S18 | 14:30–15:30 | `/context`/`/compact`; `.claude/settings.json` (Manual, allow/deny); hook `sekat-env.php` + `semak-sintaks.php` dibuktikan; `/rewind`; semakan `claude -p`; `CLAUDE.md` dikemas kini |
+| 7.12 | S15 | 15:30–16:15 | Klon `espkpv2` ke `~/latihan/espkpv2`; 6 prompt onboarding mod Plan disahkan dengan `fail:baris`; demo 2 peranan; `~/latihan/espkpv2-kajian/nota-fahami.md` |
+| 7.13 | S16 | 16:15–17:00 | PRD eSPKP Pas + 3 dakwaan disahkan; jadual jurang vs SPEC; `docs/keperluan-pas.md` + `docs/pelan-pas.md` pada branch `docs/keperluan-pas` |
+| 7.10 | S13 | Hari 8 / rujukan (Hari 8 09:00–10:30) | Claude Code, Pas slice 1: enum, Entity, 2 Model (`ownedBy()`), senarai & butiran (404 bukan pemilik); `docs/pelan-pas.md`; pintu terang dalam `docs/nota-claude.md` |
+| 7.11 | S14 | Hari 8 / rujukan (Hari 8 10:45–12:30) | Claude Code, Pas slice 2: borang `multipart` + CSRF, validasi fail, muat naik nama rawak di `writable/uploads/pas/`, transaksi + pembersihan, muat turun melalui controller |
+| 7.0 | Awal S1 | Hari 8 / rujukan | Branch Git + `php.ini` sedia untuk muat naik |
+| 7.1 | S1 | Hari 8 / rujukan | Enum, Entity, 2 Model |
+| 7.1b | S5 | Hari 8 / rujukan | `PassType::icon()`, `PassStatus::pending()`, `validityDays()`/`daysRemaining()` diuji dalam `php spark shell` |
+| 7.2 | S2 | Hari 8 / rujukan | Route, Service (`canView`), senarai & butiran |
+| 7.2b | S6 | Hari 8 / rujukan | Filter `?pass_type=` + carian `?q=` (bukti kebocoran `orLike()` tanpa kurungan) |
+| 7.3 | S3 | Hari 8 / rujukan | Borang + validasi + muat naik + muat turun |
+| 7.3b | S7 | Hari 8 / rujukan | Tambah dokumen susulan (maks. 3 setiap permohonan, kunci `FOR UPDATE`) |
+| 7.4 | S4 | Hari 8 / rujukan | 17 kes ujian sempadan direkod |
+| 7.4b | S8 | Hari 8 / rujukan | `PassSubmitTest` PHPUnit: 14 kes sempadan automatik + mutasi `>=` |
 
-> ℹ️ **Jadual Hari 7 (dikemas kini):** Lab 7.6, 7.9, 7.7 dan 7.8 (Claude Code) pada waktu pagi; Lab 7.10 (S13) dan 7.11 (S14) bermula 14:30: Modul Pas dibina dengan Claude Code melalui tujuh pintu semakan ([`kolaborasi.md`](../docs/kolaborasi.md) §3). Lab Pas manual 7.0–7.4 (dan 7.1b–7.4b) kini **kod rujukan** untuk langkah "Banding dengan kod rujukan", tidak wajib. Masa 7.0–7.4b dalam jadual di atas ialah jadual asal.
+> ℹ️ **Hari 7 = Claude Code: pelaksanaan & amalan terbaik.** Lab dalam badan utama mengikut jadual [README](./README.md#-jadual-hari-ini): 7.6 → 7.9 → 7.14 → 7.7 → 7.8 → 7.15 → 7.12 → 7.13, kemudian *Semakan kendiri — akhir hari*. Jadual README yang berkuat kuasa; masa dalam tajuk lab tidak diubah.
 >
-> ℹ️ **Dikemas kini lagi:** petang Hari 7 kini Lab 7.12 (S15) dan Lab 7.13 (S16): fahami projek contoh eSPKP, kemudian tulis `docs/keperluan-pas.md` dan `docs/pelan-pas.md`. Lab 7.10/7.11 dipindahkan ke pagi Hari 8 (09:00–10:30 dan 10:45–12:30).
+> ℹ️ Lab 7.10/7.11 (pagi Hari 8) dan lab Pas manual 7.0–7.4 (dan 7.1b–7.4b, kod rujukan untuk langkah "Banding dengan kod rujukan") kini berada dalam [Lampiran](#lampiran--lab-modul-pas-hari-8--kod-rujukan) di hujung halaman ini.
 
 ---
 
@@ -329,7 +331,168 @@ Menulis tiga prompt onboarding dalam mod *Plan* pada projek `kelas-ci-<nama>` da
 
 ---
 
+## Lab 7.14 — Seni Prompt: Daripada Prompt Lemah kepada Prompt Berkesan (S17)
+
+> 🛡️ Peraturan data yang sama seperti [Lab 7.6](#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9): sintetik sahaja, tiada `.env`, tiada sistem KKM. Semua prompt dalam lab ini dijalankan dalam **mod Plan**: tiada fail kod berubah.
+
+### 🎯 Objektif
+Menulis semula 5 prompt lemah mengikut anatomi lima bahagian (konteks, tugas, kekangan, pengesahan, format), menjalankan 6 prompt daripada katalog [`seni-prompt.md`](../docs/seni-prompt.md) pada projek `kelas-ci-<nama>` dalam mod *Plan* (faham, rancang, semak, uji, nyahpepijat, Git), dan menilai setiap jawapan dengan rubrik S17 (betul, boleh disahkan, `fail:baris`).
+
+### Prasyarat
+- Lab 7.6 dan Lab 7.9 siap: `CLAUDE.md` di-commit, `docs/nota-claude.md` wujud pada branch `chore/claude-code`.
+- Kod TLK Hari 5–6 (`BookingController`, `BookingService`, `SlotAvailabilityService`, ujian PHPUnit) ada dalam projek.
+- 🪟 **Windows:** terminal Git Bash dalam VS Code. Blok arahan yang ada dua tab: pilih **PowerShell** jika terminal anda PowerShell.
+
+### Langkah
+
+1. **Sediakan sesi dan nota (3 minit).**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   cd ~/latihan/kelas-ci-<nama>
+   git switch chore/claude-code
+   git status
+   claude
+   ```
+
+   ```powershell tab="PowerShell"
+   cd $HOME\latihan\kelas-ci-<nama>
+   git switch chore/claude-code
+   git status
+   claude
+   ```
+
+   `git status` mesti bersih. Dalam VS Code, tambah bahagian ini di hujung `docs/nota-claude.md` (anda yang menaip):
+
+   `docs/nota-claude.md`
+
+   ```markdown
+   ## Seni Prompt (Lab 7.14)
+
+   ### A. Lima prompt lemah, ditulis semula
+
+   | # | Prompt lemah | Prompt baharu (konteks · tugas · kekangan · pengesahan · format) | Bahagian yang ditambah |
+   |---|--------------|------------------------------------------------------------------|------------------------|
+   | 1 | betulkan bug tempahan | ... | ... |
+
+   ### B. Enam prompt katalog (mod Plan)
+
+   | # | Kumpulan | Ringkasan jawapan | fail:baris yang saya buka | Betul (0–2) | Boleh disahkan (0–2) | fail:baris (0–2) | Jumlah |
+   |---|----------|-------------------|---------------------------|-------------|----------------------|------------------|--------|
+   | 1 | Faham | ... | ... | | | | |
+   ```
+
+2. **Tulis semula 5 prompt lemah (10 minit).** Jangan hantar lagi kepada Claude. Untuk setiap prompt, tulis versi baharu dengan **lima bahagian** dalam jadual A:
+
+   | # | Prompt lemah |
+   |---|--------------|
+   | 1 | betulkan bug tempahan |
+   | 2 | buat ujian untuk tempahan |
+   | 3 | semak kod saya |
+   | 4 | terangkan projek ini |
+   | 5 | tambah filter status |
+
+   Contoh untuk #3 (jangan salin; tulis empat yang lain sendiri):
+
+   ```text
+   Mod Plan. Semak @app/Controllers/Tlk/BookingController.php untuk XSS, CSRF dan skop pemilik (BR-TLK) sahaja. Jawab dalam jadual: fail:baris · isu · keterukan (Tinggi/Sederhana/Rendah) · cadangan. Maksimum 6 dapatan. Jika tiada isu, katakan tiada. Jangan ubah fail.
+   ```
+
+   Selepas siap, semak satu prompt anda dengan meta-prompt ini (**plan mode**, `Shift+Tab` hingga baris bawah menunjukkan *plan mode*):
+
+   ```text
+   Ini prompt yang saya mahu hantar: "<tampal prompt baharu #1>". Jangan jalankannya. Nilai prompt ini mengikut lima bahagian: konteks, tugas, kekangan, pengesahan, format. Apakah maklumat yang hilang yang anda perlukan untuk menjawab dengan betul? Beri versi yang lebih baik dalam satu blok.
+   ```
+
+   Kemas kini jadual A jika Claude menjumpai bahagian yang hilang.
+
+3. **Prompt 1 — Faham (5 minit).** Masih dalam **plan mode**:
+
+   ```text
+   Terangkan bagaimana BR-TLK-01 (tiada pertindihan tempahan pada slot yang sama) dikuatkuasa dalam projek ini. Senaraikan setiap fail dan kaedah, dari route hingga query, dengan fail:baris. Jika tidak pasti tentang sesuatu, katakan tidak pasti. Jangan ubah fail.
+   ```
+
+   Buka **satu** `fail:baris` yang disebut dalam VS Code dan sahkan. Isi baris 1 jadual B dengan markah anda.
+
+4. **Prompt 2 — Rancang (5 minit).** Taip `/clear` dahulu (tugas baharu), kemudian tukar semula ke **plan mode**:
+
+   ```text
+   Saya mahu menambah penapis status (?status=menunggu|diluluskan|ditolak) pada senarai Tempahan Saya. Sebelum membuat pelan, tanya saya maksimum 3 soalan. Kemudian beri pelan bernombor: fail yang berubah, perubahan dalam setiap fail, peraturan BR yang terlibat, dan ujian yang perlu ditambah. Jangan tulis kod.
+   ```
+
+   Jawab soalan Claude dengan ringkas. Pelan yang baik menapis dalam **Model** (skop pemilik kekal) dan menyemak nilai `status` dengan senarai putih enum. Jika Claude menawarkan untuk melaksanakan pelan, pilih **No** / teruskan merancang.
+
+5. **Prompt 3 — Semak (5 minit).** Hantar prompt #3 anda dari langkah 2 (versi yang sudah diperbaiki). Untuk satu dapatan, buka `fail:baris` dan putuskan: dapatan sebenar, atau positif palsu?
+
+6. **Prompt 4 — Uji (5 minit).**
+
+   ```text
+   Untuk SlotAvailabilityService::hasOverlap(), senaraikan 6 kes sempadan dalam jadual: (1) masa tamat = masa mula tempahan lain, (2) julat sama tepat, (3) julat di dalam, (4) julat merangkumi, (5) slot lain, (6) tempahan yang dibatalkan. Lajur: input · jangkaan (bertindih/tidak) · sudah diuji? (fail ujian:baris atau "tiada"). Jangan tulis kod.
+   ```
+
+   Sahkan lajur "sudah diuji?" dengan membuka fail ujian yang disebut. Ujian yang Claude kata wujud tetapi tiada = markah 0 untuk *Betul*.
+
+7. **Prompt 5 — Nyahpepijat (5 minit).** `/clear`, kemudian **plan mode**:
+
+   ```text
+   Laporan pengguna: tempahan 10:00–12:00 ditolak sebagai bertindih dengan tempahan 08:00–10:00 pada slot yang sama. Jejak dari mesej ralat yang dipaparkan hingga ke query dalam SlotAvailabilityService::hasOverlap(). Adakah ini pepijat atau kelakuan yang betul ikut BR-TLK-01? Buktikan dengan fail:baris (operator < atau <= dalam query). Jika pepijat, cadang satu ujian yang gagal sebelum pembetulan. Jangan ubah fail.
+   ```
+
+   Jawapan yang baik menunjuk operator perbandingan tepat dalam query dan menerangkan sempadan "tamat = mula".
+
+8. **Prompt 6 — Git (3 minit).**
+
+   ```text
+   Jalankan git log --oneline -10 dan git status sahaja. Berdasarkan perubahan dalam docs/nota-claude.md, cadangkan satu mesej commit ikut konvensyen kursus (prefix CHORE:, maksimum 72 aksara, Bahasa Melayu). Jangan commit.
+   ```
+
+   Claude meminta kebenaran untuk `git log` / `git status` jika perlu: baca arahan itu dahulu, kemudian luluskan.
+
+9. **Perbaiki prompt yang lemah (5 minit).** Pilih satu baris jadual B dengan jumlah **≤ 4**. Tulis semula prompt itu (tambah `@fail`, syarat `fail:baris`, atau had format), `/clear`, jalankan semula, dan rekod markah baharu di bawah jadual B: `Prompt #_ ditulis semula: markah lama _ → baharu _ (sebab: …)`.
+
+10. **Sahkan dan commit (anda sendiri).** Tekan `Shift+Tab` untuk keluar dari mod *Plan*, kemudian `/exit`.
+
+    ```bash tab="Git Bash / macOS / Linux"
+    git status
+    git add docs/nota-claude.md
+    git commit -m "CHORE: nota seni prompt (5 tulis semula, 6 prompt bermarkah)"
+    ```
+
+    ```powershell tab="PowerShell"
+    git status
+    git add docs/nota-claude.md
+    git commit -m "CHORE: nota seni prompt (5 tulis semula, 6 prompt bermarkah)"
+    ```
+
+    `git status` sebelum `add` mesti menunjukkan **hanya** `docs/nota-claude.md` berubah.
+
+### ✅ Checkpoint
+- [ ] `docs/nota-claude.md` ada bahagian *Seni Prompt* dengan 5 prompt lemah yang ditulis semula, setiap satu menyatakan konteks, tugas, kekangan, pengesahan dan format (Kuiz S17).
+- [ ] Enam prompt katalog (faham, rancang, semak, uji, nyahpepijat, Git) dijalankan dalam mod *Plan*, dan `git status` menunjukkan tiada fail kod berubah (Kuiz S17).
+- [ ] Setiap jawapan diberi markah 0–6 dengan sekurang-kurangnya satu `fail:baris` yang anda buka sendiri (Kuiz S17).
+- [ ] Satu prompt bermarkah ≤ 4 ditulis semula dan dijalankan semula, dengan markah lama dan baharu direkod (Kuiz S17).
+- [ ] Commit `CHORE: nota seni prompt …` ada dalam `git log --oneline` branch `chore/claude-code` (Kuiz S17).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| Claude terus mengedit fail | Mod *Manual* atau *accept edits*, bukan *plan mode* | Pilih **No**; `Shift+Tab` (Windows: `Alt+M`) hingga *plan mode*; `git restore <fail>` jika ada perubahan |
+| Claude menyebut `BookingService::approve()` tetapi kaedah itu tiada | Claude meneka daripada nama SPEC | Markah 0 untuk *Betul*; tulis semula prompt dengan `@app/Services/BookingService.php` |
+| Jawapan prompt 2 terus memberi pelan tanpa bertanya | Arahan "tanya dahulu" tidak jelas | `Esc`, kemudian: "Berhenti. Tanya saya 3 soalan dahulu, satu demi satu." |
+| `@app/Controllers/Tlk/BookingController.php` tidak dijumpai | Nama fail atau folder lain dalam projek anda | Taip `@` kemudian beberapa huruf; pilih fail dari senarai cadangan |
+| Konteks penuh, jawapan semakin lambat | Banyak prompt dalam satu perbualan | `/clear` antara prompt yang tidak berkaitan (langkah 4 dan 7) |
+| `Shift+Tab` tidak menukar mod | Terminal Windows tanpa mod input VT | `Alt+M`, atau taip `/plan` diikuti tugas anda |
+
+### ⭐ Cabaran tambahan
+- Pilih 3 prompt lain dari [`seni-prompt.md`](../docs/seni-prompt.md) (bahagian *Refactor*, *Prestasi* dan *CodeIgniter 4*), jalankan dalam mod *Plan* dan beri markah. Prompt mana yang paling banyak perlu disesuaikan dengan projek anda, dan kenapa?
+
+---
+
 ## Lab 7.7 — Subagent & Skill untuk Projek CI4 (S10)
+
+> 📘 Rujukan penuh menyediakan subagent, skill & MCP: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md)
+
+> 📘 Rujukan penuh: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md) (menyediakan subagent, skill & MCP di Windows).
 
 > 🛡️ Peraturan data yang sama seperti [Lab 7.6](#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9): sintetik sahaja, tiada `.env`, tiada sistem KKM.
 
@@ -506,6 +669,10 @@ Mencipta subagent baca sahaja `semak-ci4` dan **menggunakannya** untuk menyemak 
 ---
 
 ## Lab 7.8 — MCP: ci4-spark, MySQL, Context7 & GitLab (S11)
+
+> 📘 Rujukan penuh menyediakan subagent, skill & MCP: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md)
+
+> 📘 Rujukan penuh: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md) (menyediakan subagent, skill & MCP di Windows).
 
 > 🛡️ Peraturan data yang sama seperti [Lab 7.6](#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9). **Jangan sekali-kali halakan server MCP kepada database KKM/eSPKP.** Hanya DB latihan `kkm_latihan` dalam Laragon anda.
 
@@ -706,417 +873,287 @@ Memasang server MCP `ci4-spark` (PHP, baca sahaja) daripada templat kursus, **me
 
 ---
 
-## Lab 7.10 — Claude Code: Pas Slice 1 — Migration/Enum/Model, Senarai Skop Pemilik & Butiran (S13)
+## Lab 7.15 — Amalan Terbaik Claude Code dalam Tindakan (S18)
 
-> 🛡️ **Peraturan Lab 7.10–7.11.** Claude menulis kod, anda meluluskan setiap diff dalam mod **Manual** (lalai). Mod *accept edits*, *auto* dan *bypass permissions* **tidak dibenarkan**. Data sintetik sahaja; jangan beri isi `.env` kepada Claude. Aliran tujuh pintu: [`kolaborasi.md`](../docs/kolaborasi.md) §3 · prompt [AI-19, AI-20](../docs/pustaka-prompt.md#g--laksana-dengan-pintu-semakan).
->
-> ℹ️ **Pagi Hari 8 (09:00–10:30).** Jika Lab 7.13 siap, merge branch `docs/keperluan-pas` ke `main` sebelum langkah 1, supaya `docs/keperluan-pas.md` dan `docs/pelan-pas.md` ada. Pada langkah 3, tambah `@docs/keperluan-pas.md` pada prompt, dan perincikan bahagian **Slice 1** dalam `docs/pelan-pas.md` sedia ada, bukan cipta fail baharu.
+> 🛡️ Peraturan data yang sama seperti [Lab 7.6](#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9). Lab ini **menguji** sekatan dengan cara yang selamat: tiada nilai `.env` dipaparkan, dan fail rosak yang dicipta dibuang semula.
 
 ### 🎯 Objektif
-Menggunakan aliran kerja Claude Code tujuh pintu untuk membina slice pertama Modul Pas: enum `PassType`/`PassStatus`, Entity `PassApplication`, `PassApplicationModel` (dengan skop `ownedBy()`) dan `PassDocumentModel`, route `index`/`show`, `PassWorkflowService::canView()`, senarai "Permohonan Saya" dan butiran yang memulangkan **404** kepada bukan pemilik (BR-PAS-01, BR-PAS-04). Anda **membaca dan meluluskan** setiap diff, **mengesahkan** dengan `composer test` dan `ci4-spark`, dan **menerangkan** 3 baris utama dengan ayat sendiri.
+Mengurus konteks dengan `/context`, `/btw`, `/compact` dan `/clear`; mengkonfigurasi `.claude/settings.json` (mod Manual, allow/deny, tanpa bypass atau auto); memasang dan **membuktikan** dua hook PHP (`sekat-env.php` menyekat sebarang tool yang menyebut `.env`, `semak-sintaks.php` menjalankan `php -l` selepas setiap edit); memulihkan fail dengan `/rewind`; menjalankan semakan `claude -p` sebelum commit; dan mengemas kini `CLAUDE.md` dengan amalan baharu. Rujukan: [S18](./README.md#s18--amalan-terbaik-claude-code-14301530).
 
 ### Prasyarat
-- Lab 7.6–7.8 siap dan MR `chore/claude-code` sudah di-merge ke `main`: `CLAUDE.md`, subagent `semak-ci4`, skill `migration-ci4`, `.mcp.json` (`ci4-spark`) dan `docs/nota-claude.md` ada dalam `main`.
-- Branch baharu `feat/pas-claude` dari `main` (langkah 1). Lab Pas manual 7.0–7.4 **tidak** perlu dibuat; ia kod rujukan untuk langkah 8.
-- Jadual `pass_applications` dan `pass_documents` sudah wujud sejak Hari 4. Akaun `pemohon1` dan `pemohon2` ada dalam seeder.
-- 🪟 **Windows:** Laragon hidup (Apache + MySQL), terminal Git Bash dalam VS Code. Jika `Shift+Tab` tidak menukar mod, guna `Alt+M`.
+- Lab 7.6–7.8 siap pada branch `chore/claude-code`: `CLAUDE.md`, `.claude/settings.json` dengan 4 peraturan `deny`, subagent, skill, `.mcp.json`.
+- `php -v` berfungsi dalam terminal yang sama dengan `claude` (hook memanggil `php`).
+- 🪟 **Windows:** Git for Windows dipasang (Claude Code menjalankan hook melalui Git Bash). Terminal Git Bash dalam VS Code disyorkan; blok arahan yang ada dua tab: pilih **PowerShell** jika terminal anda PowerShell.
 
 ### Langkah
 
-1. **Branch dari `main` selepas merge pagi.**
+1. **Mula (2 minit).**
 
    ```bash tab="Git Bash / macOS / Linux"
-   git switch main && git pull
-   git switch -c feat/pas-claude
-   git log --oneline -3        # commit CHORE Lab 7.6–7.8 kelihatan
+   cd ~/latihan/kelas-ci-<nama>
+   git switch chore/claude-code
+   git status
+   claude
    ```
 
    ```powershell tab="PowerShell"
-   git switch main
-   git pull
-   git switch -c feat/pas-claude
-   git log --oneline -3        # commit CHORE Lab 7.6–7.8 kelihatan
+   cd $HOME\latihan\kelas-ci-<nama>
+   git switch chore/claude-code
+   git status
+   claude
    ```
 
-2. **Pintu 1 — SPEC → `CLAUDE.md` (10 minit).** SPEC kursus ada di pelatih.my, bukan dalam repo anda. Cipta `docs/spec-pas.md` dan **taip/salin** petikan SPEC Pas ini (dari [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §2.2, §3, §4, §5, §6, §9):
-
-   `docs/spec-pas.md`
-
-   ```markdown
-   # SPEC Modul Pas (petikan spesifikasi-sistem.md)
-
-   ## §2.2 Enum & peraturan
-   - PassType (pass_applications.pass_type): kenderaan · kakitangan · kontraktor
-   - PassStatus (pass_applications.status): submitted → under_review → approved → expired; under_review → rejected
-   - Label BM: Dihantar · Dalam Semakan · Diluluskan · Ditolak · Tamat Tempoh
-   - BR-PAS-01 Peralihan status hanya ikut jadual di atas — PassStatus::canTransitionTo().
-   - BR-PAS-02 Muat naik: pdf, jpg, png sahaja; maks 2 MB setiap fail; maks 3 fail; simpan di writable/uploads/pas/ dengan $file->getRandomName(); hanya path dalam DB.
-   - BR-PAS-03 Penolakan mesti ada remarks (min 10 aksara).
-   - BR-PAS-04 Pemohon hanya lihat permohonan sendiri; reviewer/approver/admin lihat semua.
-   - BR-PAS-05 Setiap peralihan status direkod dalam status_logs.
-   - BR-PAS-06 vehicle_id wajib hanya bila pass_type = kenderaan; valid_until >= valid_from.
-
-   ## §3 Jadual (sudah wujud sejak Hari 4)
-   - pass_applications: ref_no VARCHAR(20) UNIQUE, user_id FK, pass_type VARCHAR(20), vehicle_id FK NULL, purpose TEXT, valid_from DATE, valid_until DATE, status VARCHAR(20) DEFAULT submitted, reviewed_by FK NULL, reviewed_at DATETIME NULL, approved_by FK NULL, approved_at DATETIME NULL
-   - pass_documents: application_id FK, doc_type VARCHAR(30) ('sokongan'), original_name VARCHAR(255), stored_path VARCHAR(255), mime VARCHAR(80), size_bytes INT UNSIGNED
-   - status_logs: module ('PAS'), record_id, from_status NULL, to_status, actor_id, remarks NULL, created_at
-
-   ## §4–§6, §9 Kelas, route & kebenaran
-   - Kelas: Enums/PassType, Enums/PassStatus, Entities/PassApplication, Models/PassApplicationModel, Models/PassDocumentModel, Services/PassWorkflowService (service('passWorkflowService')), Controllers/Pas/ApplicationController
-   - Route: /pas/permohonan (index, new, create, show, dokumen/{id}) — filter session; new/create turut permission:pas.apply
-   - Kebenaran: applicant = pas.apply; reviewer = pas.review; approver = pas.approve; admin = pas.*
-   - Ralat input borang Pas → \InvalidArgumentException; ref_no PAS-{YYYY}-{0000} melalui ReferenceNumberService::next('PAS')
-   ```
-
-   Kemudian, dalam `CLAUDE.md`, **gantikan** bahagian `## Peranan anda (Claude)` dengan blok di bawah dan tambah bahagian `## Modul Pas` di hujung fail:
-
-   `CLAUDE.md`
-
-   ```markdown
-   ## Peranan anda (Claude)
-   - Mulai Hari 7 petang: anda boleh menulis kod pelaksanaan, SATU slice pada satu masa, daripada pelan yang saya luluskan.
-   - Saya membaca setiap diff dalam mod Manual. Selepas setiap fail, berhenti dan terangkan perubahan dalam 3 baris.
-   - Jangan ubah fail di luar senarai pelan. Jangan jalankan migrate, db:seed atau migrate:refresh tanpa saya minta.
-   - Jawab dalam Bahasa Melayu; istilah teknikal dalam English (route, filter, controller, view).
-
-   ## Modul Pas
-   - SPEC: @docs/spec-pas.md (BR-PAS-01..06). Nama jadual/medan/enum/kelas tepat seperti SPEC.
-   - Skop pemilik dalam Model (ownedBy()), bukan dalam view atau controller.
-   - Bukan pemilik → 404 (bukan 403) supaya kewujudan rekod tidak bocor.
-   - Fail muat naik: writable/uploads/pas/, nama getRandomName(), muat turun melalui controller sahaja.
-   ```
-
-   Semak: `/memory` dalam Claude Code menyenaraikan `CLAUDE.md` projek. Commit kedua-dua fail ini bersama slice pada langkah 9.
-
-3. **Pintu 2 — Pelan dalam mod *Plan* (10 minit).** Mulakan `claude` dalam akar projek, tukar ke **plan mode** (`Shift+Tab` atau `Alt+M`) dan hantar:
+2. **Urus konteks (8 minit).** Dalam Claude Code:
 
    ```text
-   Mod Plan. Baca @CLAUDE.md dan @docs/spec-pas.md. Rancang Slice 1 Modul Pas sahaja: enum PassType dan PassStatus, Entity PassApplication, PassApplicationModel dengan skop ownedBy(), PassDocumentModel, route GET pas/permohonan dan GET pas/permohonan/(:num), PassWorkflowService::canView() didaftar sebagai service('passWorkflowService'), ApplicationController index() dan show(), view pas/index dan pas/show.
-   Untuk setiap fail: laluan penuh, cipta atau ubah, dan BR-PAS yang dipenuhi. Sahkan dengan ci4-spark migrate_status bahawa jadual Hari 4 sudah wujud; jika ya, JANGAN rancang migration baharu.
-   Ujian: tests/unit/Enums/PassStatusTest.php (BR-PAS-01) dan tests/feature/Pas/PassAccessTest.php (pemilik 200, pemohon lain 404 — BR-PAS-04), ikut corak ujian Hari 6.
-   Akhiri dengan jadual BR → fail → ujian. Jangan tulis kod.
+   /context
    ```
 
-   **Pelan yang baik mengandungi:**
-   - tiada migration baharu (jadual Hari 4 sudah ada) atau, jika `migrate_status` menunjukkan jadual tiada, satu migration ikut skill `migration-ci4`;
-   - skop `ownedBy(int $userId)` dalam `PassApplicationModel`, dipanggil oleh `index()`;
-   - `show()` mencari rekod, kemudian `canView()` dalam service; bukan pemilik tanpa `pas.review`/`pas.approve`/`admin` → `PageNotFoundException` (404);
-   - status sebagai enum `PassStatus` (tiada rentetan `'submitted'` bertaburan dalam controller/view);
-   - `esc()` pada setiap output dalam `pas/index` dan `pas/show`;
-   - route dalam kumpulan `pas/permohonan` dengan filter `session`;
-   - jadual BR → fail → ujian yang meliputi BR-PAS-01 dan BR-PAS-04.
-
-   **Edit pelan sendiri.** Salin pelan ke `docs/pelan-pas.md` (anda yang menaip/menampal), buang apa-apa di luar Slice 1 (cth borang, muat naik, kelulusan), dan tambah baris yang tiada. Jika Claude menawarkan pilihan selepas pelan, pilih **No, keep planning**.
-
-4. **Pintu 3 — Laksana dalam mod *Manual* (25 minit).** Keluar dari mod *Plan* (`Shift+Tab` hingga baris bawah tidak menunjukkan *plan mode* atau *accept edits*). Hantar ([AI-19](../docs/pustaka-prompt.md#ai-19--laksana-satu-slice-daripada-pelan-mod-manual)):
+   Catat jumlah token yang digunakan (baris atas grid). Kemudian minta Claude membaca beberapa fail:
 
    ```text
-   Laksana HANYA Slice 1 daripada pelan dalam @docs/pelan-pas.md, satu fail pada satu masa.
-   Rujuk @docs/spec-pas.md (§2.2 BR-PAS-01, BR-PAS-04). Nama jadual, medan, enum dan kelas tepat seperti SPEC.
-   Kekangan: jangan ubah fail di luar senarai pelan; jangan jalankan migrate atau db:seed; tiada fail dalam public/; setiap output view melalui esc().
-   Selepas setiap fail, berhenti dan terangkan dalam 3 baris apa yang berubah dan BR mana dipenuhi, sebelum fail seterusnya.
-   Akhir sekali, tulis ujian dalam pelan dan jalankan composer test.
+   Mod Plan. Baca app/Config/Routes.php, app/Services/BookingService.php dan tests/ dan ringkaskan dalam 5 baris bagaimana tempahan TLK diuji. Jangan ubah fail.
    ```
 
-   Untuk **setiap** permintaan *Do you want to make this edit…?*, baca diff dahulu. Pilih **Yes** (sekali sahaja) jika diff lulus senarai di bawah. **Jangan** pilih *Yes, allow all edits during this session*.
+   Taip `/context` sekali lagi: catat jumlah baharu. Tanya soalan sampingan yang tidak perlu kekal dalam sejarah:
 
-   **Terima diff yang:**
-   - meletakkan `where('user_id', $userId)` dalam kaedah Model `ownedBy()`, dan `index()` memanggil `ownedBy((int) auth()->id())`;
-   - mengisi `$allowedFields` dengan medan SPEC sahaja (tiada `id`, tiada `$protectFields = false`);
-   - memulangkan enum melalui Entity (`statusEnum()`/`typeEnum()`) dan memanggil `PassStatus::canTransitionTo()` untuk BR-PAS-01;
-   - membalut setiap output view dengan `esc()`, termasuk `ref_no` dan `purpose`;
-   - membuang `PageNotFoundException` apabila `canView()` memulangkan `false`.
+   ```text
+   /btw Apakah beza $allowedFields dan $validationRules dalam Model CI4, dalam 2 baris?
+   ```
 
-   **TOLAK diff yang** (pilih **No** dan taip sebabnya supaya Claude membetulkan):
-   - menapis pemilik dalam view atau gelung controller (`if ($app->user_id == …)`) dan bukan dalam Model;
-   - memaparkan `find($id)` tanpa semakan `canView()`, atau memulangkan 403 kepada bukan pemilik;
-   - mencipta migration baharu untuk `pass_applications`/`pass_documents`, atau mengubah migration Hari 4;
-   - menggunakan nama medan yang tiada dalam SPEC (cth `type`, `applicant_id`, `file_path`);
-   - menggunakan SQL mentah bercantum input, atau `<?= $x ?>` tanpa `esc()`;
-   - mengubah fail di luar pelan (fail TLK, `app/Config/Filters.php`, `.env`) atau menjalankan `php spark migrate`.
+   Ringkaskan perbualan dengan arahan fokus, kemudian semak semula:
 
-   Jika anda tidak faham satu diff, pilih **No** dan hantar [AI-20](../docs/pustaka-prompt.md#ai-20--terangkan-diff-ini-sebelum-saya-terima) sebelum Claude mencuba semula.
+   ```text
+   /compact Kekalkan ringkasan ujian TLK dan senarai fail yang dibaca sahaja
+   ```
 
-5. **Pintu 4 — Sahkan (10 minit).** Masukkan data ujian sintetik mengikut [Lab 7.2 langkah 7](#lab-72--laluan-service--paparan-senaraibutiran-s2) (SQL `PAS-2026-9001` untuk `pemohon1`, `PAS-2026-9002` untuk `pemohon2`), kemudian jalankan:
+   ```text
+   /context
+   ```
+
+   Akhir sekali `/clear`. Rekod tiga nombor (sebelum baca, selepas baca, selepas `/compact`) dalam `docs/nota-claude.md` bahagian baharu `## Amalan Terbaik (Lab 7.15)`.
+
+3. **Cipta dua skrip hook (8 minit).** `/exit` dahulu. Dalam VS Code, cipta folder `.claude/hooks/` dan dua fail ini. Baca setiap baris: anda mesti boleh menerangkannya.
+
+   `.claude/hooks/sekat-env.php`
+
+   ```php
+   <?php
+
+   // PreToolUse: tolak sebarang tool yang menyebut fail .env (kecuali .env.example).
+   // Exit 2 = sekat; mesej stderr dihantar kepada Claude sebagai sebab.
+   $input = json_decode(stream_get_contents(STDIN), true) ?? [];
+   $tool  = $input['tool_input'] ?? [];
+
+   $teks = '';
+   foreach (['file_path', 'path', 'command', 'pattern', 'glob'] as $medan) {
+       if (isset($tool[$medan]) && is_string($tool[$medan])) {
+           $teks .= ' ' . str_replace('\\', '/', $tool[$medan]);
+       }
+   }
+
+   if (preg_match('/\.env(?!\.example)(?![\w])/', $teks)) {
+       fwrite(STDERR, "Disekat oleh hook sekat-env: fail .env mengandungi rahsia. Guna .env.example.\n");
+       exit(2);
+   }
+
+   exit(0);
+   ```
+
+   `.claude/hooks/semak-sintaks.php`
+
+   ```php
+   <?php
+
+   // PostToolUse: jalankan `php -l` pada fail .php yang baru diedit oleh Claude.
+   // Jika sintaks rosak, pulangkan decision "block" supaya Claude membaca ralat dan membetulkannya.
+   $input = json_decode(stream_get_contents(STDIN), true) ?? [];
+   $fail  = $input['tool_input']['file_path'] ?? '';
+
+   if (! is_string($fail) || ! str_ends_with($fail, '.php') || ! is_file($fail)) {
+       exit(0);
+   }
+
+   exec(escapeshellarg(PHP_BINARY) . ' -l ' . escapeshellarg($fail) . ' 2>&1', $output, $kod);
+
+   if ($kod !== 0) {
+       echo json_encode([
+           'decision' => 'block',
+           'reason'   => "php -l gagal:\n" . implode("\n", $output),
+       ]);
+   }
+
+   exit(0);
+   ```
+
+   Uji `sekat-env.php` **tanpa** Claude dahulu, dengan input JSON palsu:
 
    ```bash tab="Git Bash / macOS / Linux"
-   composer test
-   php spark routes | grep pas
-   php spark filter:check GET /pas/permohonan
+   echo '{"tool_name":"Bash","tool_input":{"command":"cat .env"}}' | php .claude/hooks/sekat-env.php; echo "kod=$?"
+   echo '{"tool_name":"Read","tool_input":{"file_path":"app/Config/App.php"}}' | php .claude/hooks/sekat-env.php; echo "kod=$?"
    ```
 
    ```powershell tab="PowerShell"
-   composer test
-   php spark routes | Select-String pas
-   php spark filter:check GET /pas/permohonan
+   '{"tool_name":"Bash","tool_input":{"command":"cat .env"}}' | php .claude/hooks/sekat-env.php; "kod=$LASTEXITCODE"
+   '{"tool_name":"Read","tool_input":{"file_path":"app/Config/App.php"}}' | php .claude/hooks/sekat-env.php; "kod=$LASTEXITCODE"
    ```
 
-   Dalam Claude Code, minta Claude menggunakan MCP (luluskan setiap panggilan tool `ci4-spark`):
+   Jangkaan: baris pertama mencetak `Disekat oleh hook sekat-env: …` dan `kod=2`; baris kedua `kod=0`.
+
+4. **Kemas kini `.claude/settings.json` (5 minit).** Gantikan seluruh fail dengan versi ini (4 peraturan `deny` dari Lab 6.3c kekal; 3 `deny` baharu, 4 `allow`, dua hook):
+
+   `.claude/settings.json`
+
+   ```json
+   {
+     "permissions": {
+       "defaultMode": "default",
+       "disableBypassPermissionsMode": "disable",
+       "allow": [
+         "Bash(composer test *)",
+         "Bash(php spark routes *)",
+         "Bash(git diff *)",
+         "Bash(git status *)"
+       ],
+       "deny": [
+         "Read(./.env)",
+         "Read(./writable/uploads/**)",
+         "Read(./writable/session/**)",
+         "Read(./writable/logs/**)",
+         "Bash(git push *)",
+         "Bash(php spark migrate:refresh *)",
+         "Bash(php spark db:seed *)"
+       ]
+     },
+     "disableAutoMode": "disable",
+     "hooks": {
+       "PreToolUse": [
+         {
+           "matcher": "Read|Edit|Write|Bash|Grep|Glob",
+           "hooks": [
+             {
+               "type": "command",
+               "command": "php",
+               "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/sekat-env.php"]
+             }
+           ]
+         }
+       ],
+       "PostToolUse": [
+         {
+           "matcher": "Edit|Write",
+           "hooks": [
+             {
+               "type": "command",
+               "command": "php",
+               "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/semak-sintaks.php"]
+             }
+           ]
+         }
+       ]
+     }
+   }
+   ```
+
+   Mulakan `claude` semula. Jika dialog *trust* muncul untuk folder ini, baca senarai fail yang akan berkuat kuasa, kemudian terima. Semak:
 
    ```text
-   Guna tool ci4-spark: routes (tapis pas), filter_check GET /pas/permohonan, dan migrate_status. Jadualkan hasilnya. Jangan ubah fail.
+   /permissions
    ```
-
-   | Semakan | Jangkaan |
-   |---------|----------|
-   | `composer test` | `OK`, tiada `FAILURES`; ujian `PassStatusTest` dan `PassAccessTest` disenaraikan |
-   | `routes` | 2 baris `pas/permohonan`: GET `/` → `index`, GET `(:num)` → `show` |
-   | `filter_check GET /pas/permohonan` | Senarai *before* mengandungi `session` |
-   | `migrate_status` | Migration Hari 4 untuk `pass_applications` dan `pass_documents` sudah dijalankan; tiada migration Pas baharu |
-   | Pelayar, `pemohon1` → `/pas/permohonan` | Hanya `PAS-2026-9001` |
-   | Pelayar, `pemohon2` → `/pas/permohonan/<id PAS-2026-9001>` | **404** |
-
-6. **Pintu 5 — Semak dengan `semak-ci4` (10 minit).** Hantar:
 
    ```text
-   Guna subagent semak-ci4 untuk menyemak app/Models/PassApplicationModel.php, app/Controllers/Pas, app/Services/PassWorkflowService.php dan app/Views/pas terhadap BR-PAS-04, esc(), filter route dan binding Query Builder. Jadual: fail:baris · isu · keterukan.
+   /hooks
    ```
 
-   Sahkan setiap dapatan dengan membuka `fail:baris` itu sendiri. Untuk dapatan yang benar:
+   `/permissions`: 4 *Allow*, 7 *Deny*. `/hooks`: satu hook di bawah `PreToolUse` dan satu di bawah `PostToolUse`. Baris bawah menunjukkan mod Manual (bukan *auto* atau *accept edits*).
+
+5. **Buktikan hook `PreToolUse` (5 minit).** Hantar:
 
    ```text
-   Baiki dapatan semak-ci4 nombor <1, 3> sahaja, satu fail pada satu masa. Terangkan setiap perubahan sebelum saya luluskan. Jalankan composer test selepas itu.
+   Jalankan arahan ini dengan tool Bash, sekali sahaja, dan laporkan apa yang berlaku: php -r "echo strlen(file_get_contents('.env'));"
    ```
 
-   Pintu diff yang sama: baca, kemudian **Yes** atau **No**.
+   Jangkaan: arahan **tidak** berjalan. Claude melaporkan mesej `Disekat oleh hook sekat-env: fail .env mengandungi rahsia. Guna .env.example.` Kemudian cuba:
 
-7. **Pintu 6 — Terangkan (10 minit).** Pilih 3 baris utama dan terangkan dengan ayat sendiri dalam `docs/nota-claude.md` (anda yang menaip, bukan Claude):
+   ```text
+   Baca fail .env dan beritahu saya nama database.
+   ```
 
-   `docs/nota-claude.md`
+   Jangkaan: ditolak (oleh peraturan `deny` atau hook). Rekod kedua-dua mesej dalam `docs/nota-claude.md` dan nyatakan **mekanisme mana** yang menyekat setiap satu.
+
+6. **Buktikan hook `PostToolUse`, kemudian rewind (7 minit).** Hantar:
+
+   ```text
+   Gunakan tool Write sekali untuk mencipta app/Libraries/Rosak.php dengan tepat dua baris: baris 1 "<?php", baris 2 "echo 'ujian hook'" (tanpa titik koma). Jangan betulkan fail itu. Laporkan maklum balas hook yang anda terima selepas menulis.
+   ```
+
+   Baca permintaan kebenaran `Write`, kemudian pilih **Yes**. Jangkaan: Claude melaporkan `php -l gagal:` dan `Parse error: syntax error, unexpected end of file`. Sekarang buang fail itu dengan checkpoint: tekan `Esc` dua kali (input kosong) atau taip `/rewind`, pilih prompt tadi, kemudian **Restore code**. Semak dalam terminal VS Code:
+
+   ```bash
+   git status
+   ```
+
+   `app/Libraries/Rosak.php` tidak lagi tersenarai. Jika fail masih ada, padam secara manual dan catat dalam nota.
+
+7. **Semakan `claude -p` sebelum commit (7 minit).** `/exit`. Stage fail lab ini, kemudian jalankan semakan berskrip:
+
+   ```bash
+   git add .claude/settings.json .claude/hooks/ docs/nota-claude.md
+   git diff --cached | claude -p "Anda penyemak kod CodeIgniter 4. Semak diff ini sahaja: ralat sintaks, rahsia, SQL mentah, output tanpa esc(). Baris pertama jawapan mestilah LULUS atau GAGAL. Kemudian maksimum 5 dapatan, setiap satu dengan fail:baris. Jangan ubah fail." --permission-mode plan --max-turns 2
+   ```
+
+   Arahan yang sama berjalan dalam Git Bash dan PowerShell. Jangkaan: baris pertama `LULUS` atau `GAGAL`, diikuti dapatan dengan `fail:baris`. Sahkan **satu** dapatan dengan membuka fail itu. Rekod keputusan dan sama ada dapatan itu benar dalam `docs/nota-claude.md`, kemudian `git add docs/nota-claude.md` sekali lagi.
+
+8. **Baca diff, commit, sambung sesi (5 minit).**
+
+   ```bash
+   git diff --cached --stat
+   git commit -m "CHORE: tetapan & hook Claude Code (allow/deny, sekat-env, php -l)"
+   claude --continue
+   ```
+
+   `claude --continue` membuka perbualan terakhir dalam folder ini. Taip `/usage` dan catat kos sesi; taip `/model` untuk melihat model semasa, kemudian `Esc` tanpa mengubahnya.
+
+9. **Kemas kini `CLAUDE.md` (3 minit).** Tambah bahagian ini di hujung `CLAUDE.md` (anda yang menaip):
 
    ```markdown
-   ## Pintu terang — Pas slice 1
-
-   | # | fail:baris | Apa baris ini buat (ayat saya) | Apa berlaku jika dibuang |
-   |---|-----------|--------------------------------|--------------------------|
-   | 1 | app/Models/PassApplicationModel.php:NN (ownedBy) | ... | ... |
-   | 2 | app/Controllers/Pas/ApplicationController.php:NN (404 bukan pemilik) | ... | ... |
-   | 3 | app/Enums/PassStatus.php:NN (canTransitionTo) | ... | ... |
+   ## Amalan Claude Code
+   - Mod Manual sahaja; jangan cadang auto, accept edits atau bypass.
+   - Hook sekat-env.php dan semak-sintaks.php aktif: jangan cadang cara memintasnya.
+   - /clear antara tugas; setiap dakwaan dengan fail:baris; sebelum commit: git diff --cached | claude -p (semakan).
    ```
 
-8. **Banding dengan kod rujukan (5 minit).** Buka [Lab 7.1 langkah 2–6](#lab-71--enum-entity--model-s1) dan [Lab 7.2 langkah 1–6](#lab-72--laluan-service--paparan-senaraibutiran-s2). Bandingkan dengan kod Claude dan rekod 3 perbezaan di bawah jadual pintu terang:
+   Commit, push dan buka MR `chore/claude-code` → `main` ([`trek-gitlab.md`](../docs/trek-gitlab.md)), kemudian merge supaya hook berkuat kuasa dalam branch Lab 7.13 dan Hari 8:
 
-   ```markdown
-   ## Banding dengan kod rujukan — slice 1
-
-   | Perkara | Kod Claude | Lab 7.1/7.2 | Mana lebih baik & kenapa |
-   |---------|-----------|-------------|--------------------------|
-   | ownedBy() | ... | ... | ... |
-   | 404 bukan pemilik | ... | ... | ... |
-   | ... | ... | ... | ... |
-   ```
-
-9. **Pintu 7 — Commit (5 minit).**
-
-   ```bash tab="Git Bash / macOS / Linux"
-   git status --short          # tiada .env, tiada writable/
-   git add CLAUDE.md docs/ app/ tests/
-   git commit -m "PAS: slice 1 enum, model skop pemilik, senarai & butiran (Claude Code, disemak)"
-   ```
-
-   ```powershell tab="PowerShell"
-   git status --short          # tiada .env, tiada writable/
-   git add CLAUDE.md docs/ app/ tests/
-   git commit -m "PAS: slice 1 enum, model skop pemilik, senarai & butiran (Claude Code, disemak)"
+   ```bash
+   git add CLAUDE.md
+   git commit -m "CHORE: CLAUDE.md bahagian Amalan Claude Code"
+   git push
    ```
 
 ### ✅ Checkpoint
-- [ ] `docs/spec-pas.md` wujud dan `CLAUDE.md` menunjuk kepadanya; bahagian `## Peranan anda (Claude)` dikemas kini untuk slice dan mod Manual (Kuiz S13).
-- [ ] `docs/pelan-pas.md` mengandungi pelan Slice 1 yang anda edit sendiri, dengan jadual BR → fail → ujian dan tanpa migration baharu (Kuiz S13).
-- [ ] `composer test` lulus dengan `PassStatusTest` dan `PassAccessTest`, dan `pemohon2` menerima 404 pada butiran milik `pemohon1` (Kuiz S13).
-- [ ] Dapatan `semak-ci4` disahkan dan yang benar dibaiki melalui pintu diff (Kuiz S13).
-- [ ] `docs/nota-claude.md` menerangkan 3 baris `fail:baris` dengan ayat sendiri dan merekod 3 perbezaan dengan Lab 7.1/7.2 (Kuiz S13).
-- [ ] Commit `PAS: slice 1 …` ada dalam `git log --oneline` pada branch `feat/pas-claude`. 🪟 PowerShell: `git log --oneline -3` (Kuiz S13).
+- [ ] `docs/nota-claude.md` merekod jumlah token `/context` sebelum membaca fail, selepas membaca dan selepas `/compact` (Kuiz S18).
+- [ ] `/permissions` menunjukkan 4 *Allow* dan 7 *Deny*, dan `/hooks` menyenaraikan satu hook `PreToolUse` dan satu `PostToolUse` (Kuiz S18).
+- [ ] Arahan `php -r` yang menyebut `.env` disekat dengan mesej `Disekat oleh hook sekat-env`, dan mekanisme setiap sekatan direkod (Kuiz S18).
+- [ ] `app/Libraries/Rosak.php` mencetuskan `php -l gagal`, kemudian dibuang dengan `/rewind` (Restore code) dan `git status` tidak lagi menyenaraikannya (Kuiz S18).
+- [ ] Semakan `claude -p` pada diff yang di-stage mencetak `LULUS` atau `GAGAL` pada baris pertama, dan satu dapatan disahkan. 🪟 PowerShell: arahan yang sama (Kuiz S18).
+- [ ] Commit `CHORE: tetapan & hook Claude Code …` dan `CHORE: CLAUDE.md bahagian Amalan Claude Code` ada dalam `git log --oneline` (Kuiz S18).
 
 ### 🧯 Masalah lazim
 
 | Gejala | Punca | Penyelesaian |
 |--------|-------|--------------|
-| `Shift+Tab` tidak menukar mod dalam Git Bash | Terminal mintty tidak menghantar kekunci itu | Guna `Alt+M`, atau jalankan `claude` dalam terminal VS Code / Windows Terminal |
-| Claude tidak meminta kebenaran sebelum mengedit | Mod *accept edits* aktif (baris bawah menunjukkannya) | `Shift+Tab` hingga mod lalai; `git diff` untuk membaca apa yang sudah berubah; `git restore <fail>` jika perlu |
-| `composer` atau `php` tidak dikenali dalam Bash Claude | `PATH` Laragon tiada dalam proses Claude Code | Laragon *Menu → Tools → Path → Add Laragon to Path*; tutup dan buka semula VS Code |
-| `git diff` menunjukkan seluruh fail berubah | Hujung baris CRLF/LF bercampur | `git config core.autocrlf true`; minta Claude mengekalkan hujung baris asal; tolak diff yang hanya menukar hujung baris |
-| Claude menjalankan `php spark migrate` | Perintah Bash diluluskan tanpa dibaca | Pilih **No** untuk perintah itu; semak `php spark migrate:status`; ulang peraturan dalam `CLAUDE.md` |
-| Pemilik juga menerima 404 | `auth()->id()` dibanding sebagai string, atau `user_id` tiada dalam `$casts` Entity | Minta Claude menunjukkan baris perbandingan (AI-20); guna `(int)` dan `'user_id' => 'integer'` |
-| `Class "App\Enums\PassStatus" not found` | `namespace` atau nama fail tidak sepadan (Windows tidak peka huruf, Composer peka) | Nama fail `PassStatus.php` dan `namespace App\Enums;` tepat; `composer dump-autoload` |
+| `/hooks` kosong | JSON tidak sah, atau fail disimpan di folder lain | `claude doctor`; semak koma dan kurungan; fail mesti di `.claude/settings.json` dalam akar projek |
+| Hook tidak menyekat, Claude membaca output `.env` | Skrip keluar dengan `exit(1)`, bukan `exit(2)` | Hanya `exit 2` menyekat; semak langkah 3 dengan `echo "kod=$?"` |
+| `php: command not found` dalam mesej hook | `php` tiada dalam PATH terminal yang menjalankan `claude` | Buka terminal baharu selepas Laragon; `php -v`; atau gunakan laluan penuh `php.exe` dalam `command` |
+| Windows: `blocking because Git Bash wasn't found` | Git for Windows tiada atau tidak dijumpai | Pasang Git for Windows ([`persediaan.md`](../docs/persediaan.md) §5), kemudian mulakan `claude` semula |
+| `claude -p` mencetak `Ignoring 4 permissions.allow entries … not been trusted` | Folder belum dipercayai | Jalankan `claude` interaktif sekali dan terima dialog *trust*; amaran ini tidak menjejaskan semakan |
+| `Restore code` tidak muncul dalam `/rewind` | Prompt yang dipilih tiada edit fail | Pilih prompt yang mencipta `Rosak.php`; atau padam fail secara manual |
+| Baris bawah menunjukkan *auto mode* | `disableAutoMode` tiada atau tetapan pengguna mengatasi | Semak langkah 4; `Shift+Tab` (Windows: `Alt+M`) ke Manual |
 
 ### ⭐ Cabaran tambahan
-- Minta Claude (mod *Plan*) mencadangkan satu ujian yang akan **gagal** jika `ownedBy()` dibuang dari `index()`. Tulis ujian itu melalui pintu diff, buang `ownedBy()` sementara, sahkan ujian gagal, kemudian pulihkan.
-
----
-
-## Lab 7.11 — Claude Code: Pas Slice 2 — Borang, Validasi & Muat Naik Dokumen Selamat (S14)
-
-> 🛡️ Peraturan yang sama seperti [Lab 7.10](#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13): mod Manual sahaja, data dan fail ujian sintetik sahaja. Jangan muat naik dokumen sebenar (IC, geran, surat rasmi).
-
-### 🎯 Objektif
-Menggunakan aliran kerja tujuh pintu untuk membina slice kedua: borang `multipart/form-data` dengan CSRF, validasi server `uploaded`/`max_size`/`ext_in`/`mime_in`, `PassWorkflowService::submit()` yang memindah fail ke `writable/uploads/pas/` dengan nama rawak, menyimpan dalam transaksi dan membersihkan fail jika gagal, serta muat turun melalui controller dengan semakan pemilikan (BR-PAS-02, BR-PAS-04, BR-PAS-05, BR-PAS-06). Anda **menolak** diff yang melemahkan mana-mana lima pintu muat naik dan **menerangkan** 3 baris utama.
-
-### Prasyarat
-- Lab 7.10 siap dan di-commit dalam `feat/pas-claude`.
-- Had PHP sedia: `upload_max_filesize` ≥ 8M, `post_max_size` ≥ 16M, extension `fileinfo` dimuatkan. Ikut [Lab 7.0 langkah 2–3](#lab-70--persediaan-10-minit-awal-s1) jika belum.
-- Fail ujian sintetik dalam `~/ujian-pas/` ikut [Lab 7.3 langkah 5](#lab-73--borang-validasi-muat-naik--muat-turun-s3) dan fail sempadan ikut [Lab 7.4 langkah 1](#lab-74--ujian-manual-kes-sempadan-s4).
-
-### Langkah
-
-1. **Pintu 1 — SPEC.** Tiada fail baharu: `docs/spec-pas.md` sudah ada BR-PAS-02, BR-PAS-05 dan BR-PAS-06. Tambah satu baris di bahagian `## Modul Pas` dalam `CLAUDE.md`:
-
-   `CLAUDE.md`
-
-   ```markdown
-   - Slice 2 (muat naik): validasi server uploaded/max_size/ext_in/mime_in; mime daripada getMimeType(), bukan getClientMimeType(); move() sebelum transaksi; padam fail jika transaksi gagal; new/create dengan permission:pas.apply.
-   ```
-
-2. **Pintu 2 — Pelan dalam mod *Plan* (10 minit).** `/clear`, tukar ke **plan mode** dan hantar:
-
-   ```text
-   Mod Plan. Baca @CLAUDE.md, @docs/spec-pas.md dan @docs/pelan-pas.md. Rancang Slice 2 Modul Pas sahaja: route GET pas/permohonan/new, POST pas/permohonan dan GET pas/permohonan/dokumen/(:num); filter permission:pas.apply pada new dan create; ApplicationController new(), create() dan download(); view pas/new dengan form_open_multipart() dan medan documents[]; PassWorkflowService::submit() dan documentPath().
-   Petakan setiap fail kepada BR-PAS-02, BR-PAS-04, BR-PAS-05 dan BR-PAS-06. Terangkan urutan: validasi → move() dengan getRandomName() ke writable/uploads/pas/ → transaksi (pass_applications + pass_documents + status_logs) → jika gagal, rollback dan padam fail.
-   Ujian: tests/feature/Pas/PassCreateTest.php untuk BR-PAS-06 (tarikh, kenderaan), had 3 fail, dan pemohon lain memuat turun dokumen → 404, ikut corak ujian Hari 6. Akhiri dengan jadual BR → fail → ujian. Jangan tulis kod.
-   ```
-
-   **Pelan yang baik mengandungi:**
-   - `permission:pas.apply` pada route `new` dan `create` (SPEC §9), selain `session` kumpulan;
-   - `form_open_multipart()` (CSRF tersembunyi dimasukkan automatik) dan tiada pengecualian CSRF dalam `Filters.php`;
-   - rule `uploaded[documents]|max_size[documents,2048]|ext_in[documents,pdf,jpg,png]|mime_in[documents,application/pdf,image/jpeg,image/png]` dan semakan 1–3 fail;
-   - fail di `WRITEPATH . 'uploads/pas/'` (di luar `public/`) dengan `getRandomName()`; DB menyimpan `stored_path`, `original_name`, `mime` (daripada `getMimeType()`) dan `size_bytes`;
-   - transaksi yang merangkumi `pass_applications`, `pass_documents` dan `status_logs` (`to_status = submitted`), dengan pembersihan fail dalam `catch`;
-   - `download()` mencari dokumen → permohonan → `canView()` → 404 jika tiada akses → `response->download()` daripada `stored_path`, bukan daripada input pengguna.
-
-   Kemas kini `docs/pelan-pas.md` dengan Slice 2 yang anda edit sendiri.
-
-3. **Pintu 3 — Laksana dalam mod *Manual* (30 minit).** Keluar dari mod *Plan* dan hantar ([AI-19](../docs/pustaka-prompt.md#ai-19--laksana-satu-slice-daripada-pelan-mod-manual)):
-
-   ```text
-   Laksana HANYA Slice 2 daripada pelan dalam @docs/pelan-pas.md, satu fail pada satu masa.
-   Rujuk @docs/spec-pas.md (§2.2 BR-PAS-02, BR-PAS-04, BR-PAS-05, BR-PAS-06). Nama jadual, medan, enum dan kelas tepat seperti SPEC.
-   Kekangan: jangan ubah fail di luar senarai pelan; jangan jalankan migrate atau db:seed; tiada fail dalam public/; setiap output view melalui esc(); jangan ubah app/Config/Filters.php.
-   Selepas setiap fail, berhenti dan terangkan dalam 3 baris apa yang berubah dan BR mana dipenuhi, sebelum fail seterusnya.
-   Akhir sekali, tulis ujian dalam pelan dan jalankan composer test.
-   ```
-
-   **Terima diff yang:**
-   - menggunakan `$file->getRandomName()` dan `move(WRITEPATH . 'uploads/pas', $newName)`;
-   - membaca `getMimeType()` dan `getSize()` **sebelum** `move()`;
-   - mempunyai keempat-empat rule fail dengan mesej ralat BM, dan menolak lebih daripada 3 fail;
-   - membuka transaksi selepas `move()`, dan dalam `catch` memanggil `transRollback()` serta `unlink()` untuk setiap fail yang sudah dipindah;
-   - merekod `status_logs` (`module = 'PAS'`, `to_status = 'submitted'`) dalam transaksi yang sama;
-   - dalam `download()`, menyemak `canView()` dan membina path daripada `stored_path` dalam DB, dengan `esc()` pada nama fail dalam view.
-
-   **TOLAK diff yang:**
-   - menyimpan fail dalam `public/` atau `FCPATH`, atau memaut dokumen dengan `base_url('uploads/…')`;
-   - menggunakan `getName()`/`getClientName()` sebagai nama fail di cakera;
-   - mempercayai `getClientMimeType()` atau `ext_in` sahaja (tiada `mime_in`), atau bergantung pada `accept=".pdf"` di pelayar sahaja;
-   - menyimpan ke DB tanpa transaksi, atau tidak memadam fail apabila transaksi gagal;
-   - membuang `csrf_field()`/`form_open_multipart()`, atau menambah route Pas ke `except` CSRF;
-   - tiada `permission:pas.apply` pada `new`/`create`, atau `download()` tanpa semakan pemilikan;
-   - menerima path atau nama fail daripada request (`?file=…`) untuk dimuat turun.
-
-4. **Pintu 4 — Sahkan (15 minit).**
-
-   ```bash tab="Git Bash / macOS / Linux"
-   composer test
-   php spark routes | grep pas
-   php spark filter:check POST /pas/permohonan
-   ls writable/uploads/pas/
-   find public -iname "*.pdf" -o -iname "*.png"     # tiada output
-   ```
-
-   ```powershell tab="PowerShell"
-   composer test
-   php spark routes | Select-String pas
-   php spark filter:check POST /pas/permohonan
-   Get-ChildItem writable/uploads/pas/
-   Get-ChildItem public -Recurse -Include *.pdf,*.png   # tiada output
-   ```
-
-   ```text
-   Guna tool ci4-spark: routes (tapis pas) dan filter_check POST /pas/permohonan. Jadualkan hasilnya. Jangan ubah fail.
-   ```
-
-   | Semakan | Jangkaan |
-   |---------|----------|
-   | `composer test` | `OK`, tiada `FAILURES`; `PassCreateTest` disenaraikan |
-   | `routes` | 5 baris `pas/permohonan`: `index`, `new`, `create`, `show`, `dokumen/(:num)` |
-   | `filter_check POST /pas/permohonan` | Senarai *before* mengandungi `csrf`, `session` dan `permission:pas.apply` |
-   | `pemohon1` hantar `surat-sokongan.pdf` + `gambar.png` | Redirect ke butiran `PAS-2026-…`; 2 fail bernama rawak dalam `writable/uploads/pas/` |
-   | Fail 3 MB | Kembali ke borang dengan mesej `Setiap fail mestilah tidak melebihi 2 MB.` (atau mesej BM setara); bilangan fail di cakera tidak bertambah |
-   | `skrip.php` dinamakan `skrip.pdf` | Ditolak oleh `mime_in`; tiada fail baharu |
-   | `pemohon2` buka URL muat turun dokumen `pemohon1` | **404** |
-   | `public/` | Tiada fail PDF/PNG |
-
-   Semak juga dalam MySQL (HeidiSQL Laragon): satu baris `status_logs` dengan `module = 'PAS'` dan `to_status = 'submitted'` bagi permohonan baharu.
-
-5. **Pintu 5 — Semak dengan `semak-ci4` (10 minit).**
-
-   ```text
-   Guna subagent semak-ci4 untuk menyemak app/Controllers/Pas/ApplicationController.php, app/Services/PassWorkflowService.php dan app/Views/pas/new.php terhadap BR-PAS-02, BR-PAS-04, CSRF, filter permission:pas.apply, esc() dan pembersihan fail jika transaksi gagal. Jadual: fail:baris · isu · keterukan.
-   ```
-
-   Sahkan setiap dapatan sendiri, kemudian minta pembaikan yang benar sahaja (prompt baiki Lab 7.10 langkah 6), dengan pintu diff yang sama.
-
-6. **Pintu 6 — Terangkan (10 minit).** Tambah dalam `docs/nota-claude.md`:
-
-   ```markdown
-   ## Pintu terang — Pas slice 2
-
-   | # | fail:baris | Apa baris ini buat (ayat saya) | Apa berlaku jika dibuang |
-   |---|-----------|--------------------------------|--------------------------|
-   | 1 | app/Services/PassWorkflowService.php:NN (getRandomName + move) | ... | ... |
-   | 2 | app/Services/PassWorkflowService.php:NN (catch: rollback + unlink) | ... | ... |
-   | 3 | app/Controllers/Pas/ApplicationController.php:NN (download: canView) | ... | ... |
-   ```
-
-7. **Banding dengan kod rujukan (5 minit).** Buka [Lab 7.3 langkah 1–3](#lab-73--borang-validasi-muat-naik--muat-turun-s3) (`PassWorkflowService` versi Hari 7, `ApplicationController::rules()`, `pas/new`). Rekod 3 perbezaan:
-
-   ```markdown
-   ## Banding dengan kod rujukan — slice 2
-
-   | Perkara | Kod Claude | Lab 7.3 | Mana lebih baik & kenapa |
-   |---------|-----------|---------|--------------------------|
-   | Urutan move() dan transaksi | ... | ... | ... |
-   | Rules fail & mesej BM | ... | ... | ... |
-   | ... | ... | ... | ... |
-   ```
-
-8. **Pintu 7 — Commit dan push (5 minit).**
-
-   ```bash tab="Git Bash / macOS / Linux"
-   git status --short          # tiada writable/uploads, tiada .env
-   git add CLAUDE.md docs/ app/ tests/
-   git commit -m "PAS: slice 2 borang, validasi & muat naik selamat (Claude Code, disemak)"
-   git push -u origin feat/pas-claude
-   ```
-
-   ```powershell tab="PowerShell"
-   git status --short          # tiada writable/uploads, tiada .env
-   git add CLAUDE.md docs/ app/ tests/
-   git commit -m "PAS: slice 2 borang, validasi & muat naik selamat (Claude Code, disemak)"
-   git push -u origin feat/pas-claude
-   ```
-
-### ✅ Checkpoint
-- [ ] `docs/pelan-pas.md` mengandungi Slice 2 dengan jadual BR → fail → ujian, termasuk `permission:pas.apply` dan pembersihan fail (Kuiz S14).
-- [ ] `filter_check POST /pas/permohonan` menunjukkan `csrf`, `session` dan `permission:pas.apply`, dan `routes` menunjukkan 5 route Pas (Kuiz S14).
-- [ ] Permohonan sah menyimpan fail bernama rawak dalam `writable/uploads/pas/`, `public/` tiada fail dokumen, dan `status_logs` ada baris `submitted` (Kuiz S14).
-- [ ] Fail 3 MB dan `skrip.pdf` ditolak tanpa fail baharu di cakera, dan `pemohon2` menerima 404 pada muat turun dokumen `pemohon1` (Kuiz S14).
-- [ ] `composer test` lulus dengan `PassCreateTest`, dan dapatan `semak-ci4` disahkan serta dibaiki melalui pintu diff (Kuiz S14).
-- [ ] `docs/nota-claude.md` menerangkan 3 baris slice 2 dan 3 perbezaan dengan Lab 7.3; commit `PAS: slice 2 …` di-push. 🪟 PowerShell: `git log --oneline -3` (Kuiz S14).
-
-### 🧯 Masalah lazim
-
-| Gejala | Punca | Penyelesaian |
-|--------|-------|--------------|
-| Setiap fail ditolak oleh `mime_in`, termasuk PDF sah | Extension `fileinfo` tidak dimuatkan | Laragon *Menu → PHP → Extensions → fileinfo*; mulakan semula Apache; `php -m` mesti menyenaraikan `fileinfo` |
-| Fail 3 MB memberi ralat `uploaded`, bukan `max_size` | `upload_max_filesize` Laragon 2M menolak fail sebelum CI4 | [Lab 7.0 langkah 3](#lab-70--persediaan-10-minit-awal-s1): `upload_max_filesize = 8M`, `post_max_size = 16M` |
-| `unlink(): Permission denied` semasa pembersihan | Fail dibuka dalam pemapar PDF atau diimbas antivirus | Tutup pemapar; cuba semula; jangan padam fail secara manual tanpa memadam baris `pass_documents` |
-| Claude menulis `WRITEPATH . 'uploads\pas'` | Garis condong belakang Windows | Tolak diff; minta `/` (PHP menerima `/` di Windows) |
-| Tiada `head -c` untuk menjana fail 3 MB dalam PowerShell | Arahan Git Bash | PowerShell: `[IO.File]::WriteAllBytes("$HOME\ujian-pas\besar.pdf", (New-Object byte[] 3145728))` |
-| `filter_check` tidak menunjukkan `permission:pas.apply` | Filter diletak pada kumpulan sahaja, atau pada route `show` | Minta Claude menunjukkan definisi route (AI-20); filter pada `new` dan `create` sahaja |
-| `The action you requested is not allowed.` semasa hantar borang | Token CSRF tiada (borang bukan `form_open_multipart()`), atau sesi tamat | Tolak diff yang membuang CSRF; muat semula borang dan cuba lagi |
-
-### ⭐ Cabaran tambahan
-- Minta Claude (mod *Plan*) membandingkan `PassCreateTest` dengan `PassSubmitTest` dalam [Lab 7.4b](#lab-74b--automasikan-kes-sempadan-dengan-phpunit-s8): kes sempadan BR-PAS-02 mana yang belum diuji? Tambah dua kes melalui pintu diff dan sahkan setiap satu gagal jika rule berkaitan dibuang.
+- Minta Claude menjalankan `php spark make:migration UjianRewind` melalui Bash (luluskan), kemudian `/rewind` → **Restore code** ke sebelum prompt itu. Adakah fail migration hilang? Terangkan dengan [S18.2](./README.md#182-checkpoint--rewind), kemudian padam fail itu sendiri.
+- (Pilihan, kerja selari) `claude --worktree ujian-hook` memulakan sesi dalam worktree terasing di `.claude/worktrees/ujian-hook`. Ubah satu fail di sana dan tunjukkan `git status` branch utama tidak terjejas.
 
 ---
 
@@ -1619,6 +1656,442 @@ Mendraf PRD aliran Pas eSPKP daripada kod (*reverse engineering*) dengan Claude 
 
 ### ⭐ Cabaran tambahan
 - Jalankan [AI-18](../docs/pustaka-prompt.md#ai-18--semak-prd) pada `docs/keperluan-pas.md`. Pilih 2 isu dan betulkan sendiri dalam commit `DOCS: …` kedua.
+
+---
+
+## Semakan kendiri — akhir hari
+
+```bash
+git log --oneline -9                    # 8 commit PAS: hari ini (4 lab teras + 4 lab lanjutan)
+php spark routes | grep pas/permohonan  # 6 laluan (5 + Lab 7.3b), filter session
+composer test -- --no-coverage tests/feature/Pas/PassSubmitTest.php   # OK (Lab 7.4b)
+ls writable/uploads/pas/ | head         # nama rawak sahaja
+git status                              # bersih; writable/uploads tidak dijejak
+```
+
+🪟 PowerShell: `php spark routes | Select-String pas/permohonan`, `composer test '--' --no-coverage tests/feature/Pas/PassSubmitTest.php`, `Get-ChildItem writable/uploads/pas/ -Name | Select-Object -First 10`.
+
+Peserta yang ketinggalan: salin dari `templates/kod/` (modul **Templat & Rujukan**) **selepas** jurulatih/rakan menerangkan setiap bahagian — dan tandakan dalam commit (`PAS: … (rujuk templat)`).
+
+---
+
+## Lampiran — Lab Modul Pas (Hari 8 / kod rujukan)
+
+> ℹ️ **Lab di bawah bukan sebahagian daripada jadual Hari 7.** Lab 7.10 dan 7.11 dibuat pada pagi Hari 8 (09:00–10:30 dan 10:45–12:30) dengan Claude Code. Lab Pas manual 7.0–7.4 dan 7.1b–7.4b kekal sebagai **kod rujukan** untuk langkah "Banding dengan kod rujukan" dalam Lab 7.10/7.11; ia tidak wajib. Kandungan tidak diubah; masa dalam jadual lab di atas ialah jadual asal.
+
+---
+
+## Lab 7.10 — Claude Code: Pas Slice 1 — Migration/Enum/Model, Senarai Skop Pemilik & Butiran (S13)
+
+> 🛡️ **Peraturan Lab 7.10–7.11.** Claude menulis kod, anda meluluskan setiap diff dalam mod **Manual** (lalai). Mod *accept edits*, *auto* dan *bypass permissions* **tidak dibenarkan**. Data sintetik sahaja; jangan beri isi `.env` kepada Claude. Aliran tujuh pintu: [`kolaborasi.md`](../docs/kolaborasi.md) §3 · prompt [AI-19, AI-20](../docs/pustaka-prompt.md#g--laksana-dengan-pintu-semakan).
+>
+> ℹ️ **Pagi Hari 8 (09:00–10:30).** Jika Lab 7.13 siap, merge branch `docs/keperluan-pas` ke `main` sebelum langkah 1, supaya `docs/keperluan-pas.md` dan `docs/pelan-pas.md` ada. Pada langkah 3, tambah `@docs/keperluan-pas.md` pada prompt, dan perincikan bahagian **Slice 1** dalam `docs/pelan-pas.md` sedia ada, bukan cipta fail baharu.
+
+### 🎯 Objektif
+Menggunakan aliran kerja Claude Code tujuh pintu untuk membina slice pertama Modul Pas: enum `PassType`/`PassStatus`, Entity `PassApplication`, `PassApplicationModel` (dengan skop `ownedBy()`) dan `PassDocumentModel`, route `index`/`show`, `PassWorkflowService::canView()`, senarai "Permohonan Saya" dan butiran yang memulangkan **404** kepada bukan pemilik (BR-PAS-01, BR-PAS-04). Anda **membaca dan meluluskan** setiap diff, **mengesahkan** dengan `composer test` dan `ci4-spark`, dan **menerangkan** 3 baris utama dengan ayat sendiri.
+
+### Prasyarat
+- Lab 7.6–7.8 siap dan MR `chore/claude-code` sudah di-merge ke `main`: `CLAUDE.md`, subagent `semak-ci4`, skill `migration-ci4`, `.mcp.json` (`ci4-spark`) dan `docs/nota-claude.md` ada dalam `main`.
+- Branch baharu `feat/pas-claude` dari `main` (langkah 1). Lab Pas manual 7.0–7.4 **tidak** perlu dibuat; ia kod rujukan untuk langkah 8.
+- Jadual `pass_applications` dan `pass_documents` sudah wujud sejak Hari 4. Akaun `pemohon1` dan `pemohon2` ada dalam seeder.
+- 🪟 **Windows:** Laragon hidup (Apache + MySQL), terminal Git Bash dalam VS Code. Jika `Shift+Tab` tidak menukar mod, guna `Alt+M`.
+
+### Langkah
+
+1. **Branch dari `main` selepas merge pagi.**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   git switch main && git pull
+   git switch -c feat/pas-claude
+   git log --oneline -3        # commit CHORE Lab 7.6–7.8 kelihatan
+   ```
+
+   ```powershell tab="PowerShell"
+   git switch main
+   git pull
+   git switch -c feat/pas-claude
+   git log --oneline -3        # commit CHORE Lab 7.6–7.8 kelihatan
+   ```
+
+2. **Pintu 1 — SPEC → `CLAUDE.md` (10 minit).** SPEC kursus ada di pelatih.my, bukan dalam repo anda. Cipta `docs/spec-pas.md` dan **taip/salin** petikan SPEC Pas ini (dari [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §2.2, §3, §4, §5, §6, §9):
+
+   `docs/spec-pas.md`
+
+   ```markdown
+   # SPEC Modul Pas (petikan spesifikasi-sistem.md)
+
+   ## §2.2 Enum & peraturan
+   - PassType (pass_applications.pass_type): kenderaan · kakitangan · kontraktor
+   - PassStatus (pass_applications.status): submitted → under_review → approved → expired; under_review → rejected
+   - Label BM: Dihantar · Dalam Semakan · Diluluskan · Ditolak · Tamat Tempoh
+   - BR-PAS-01 Peralihan status hanya ikut jadual di atas — PassStatus::canTransitionTo().
+   - BR-PAS-02 Muat naik: pdf, jpg, png sahaja; maks 2 MB setiap fail; maks 3 fail; simpan di writable/uploads/pas/ dengan $file->getRandomName(); hanya path dalam DB.
+   - BR-PAS-03 Penolakan mesti ada remarks (min 10 aksara).
+   - BR-PAS-04 Pemohon hanya lihat permohonan sendiri; reviewer/approver/admin lihat semua.
+   - BR-PAS-05 Setiap peralihan status direkod dalam status_logs.
+   - BR-PAS-06 vehicle_id wajib hanya bila pass_type = kenderaan; valid_until >= valid_from.
+
+   ## §3 Jadual (sudah wujud sejak Hari 4)
+   - pass_applications: ref_no VARCHAR(20) UNIQUE, user_id FK, pass_type VARCHAR(20), vehicle_id FK NULL, purpose TEXT, valid_from DATE, valid_until DATE, status VARCHAR(20) DEFAULT submitted, reviewed_by FK NULL, reviewed_at DATETIME NULL, approved_by FK NULL, approved_at DATETIME NULL
+   - pass_documents: application_id FK, doc_type VARCHAR(30) ('sokongan'), original_name VARCHAR(255), stored_path VARCHAR(255), mime VARCHAR(80), size_bytes INT UNSIGNED
+   - status_logs: module ('PAS'), record_id, from_status NULL, to_status, actor_id, remarks NULL, created_at
+
+   ## §4–§6, §9 Kelas, route & kebenaran
+   - Kelas: Enums/PassType, Enums/PassStatus, Entities/PassApplication, Models/PassApplicationModel, Models/PassDocumentModel, Services/PassWorkflowService (service('passWorkflowService')), Controllers/Pas/ApplicationController
+   - Route: /pas/permohonan (index, new, create, show, dokumen/{id}) — filter session; new/create turut permission:pas.apply
+   - Kebenaran: applicant = pas.apply; reviewer = pas.review; approver = pas.approve; admin = pas.*
+   - Ralat input borang Pas → \InvalidArgumentException; ref_no PAS-{YYYY}-{0000} melalui ReferenceNumberService::next('PAS')
+   ```
+
+   Kemudian, dalam `CLAUDE.md`, **gantikan** bahagian `## Peranan anda (Claude)` dengan blok di bawah dan tambah bahagian `## Modul Pas` di hujung fail:
+
+   `CLAUDE.md`
+
+   ```markdown
+   ## Peranan anda (Claude)
+   - Mulai Hari 7 petang: anda boleh menulis kod pelaksanaan, SATU slice pada satu masa, daripada pelan yang saya luluskan.
+   - Saya membaca setiap diff dalam mod Manual. Selepas setiap fail, berhenti dan terangkan perubahan dalam 3 baris.
+   - Jangan ubah fail di luar senarai pelan. Jangan jalankan migrate, db:seed atau migrate:refresh tanpa saya minta.
+   - Jawab dalam Bahasa Melayu; istilah teknikal dalam English (route, filter, controller, view).
+
+   ## Modul Pas
+   - SPEC: @docs/spec-pas.md (BR-PAS-01..06). Nama jadual/medan/enum/kelas tepat seperti SPEC.
+   - Skop pemilik dalam Model (ownedBy()), bukan dalam view atau controller.
+   - Bukan pemilik → 404 (bukan 403) supaya kewujudan rekod tidak bocor.
+   - Fail muat naik: writable/uploads/pas/, nama getRandomName(), muat turun melalui controller sahaja.
+   ```
+
+   Semak: `/memory` dalam Claude Code menyenaraikan `CLAUDE.md` projek. Commit kedua-dua fail ini bersama slice pada langkah 9.
+
+3. **Pintu 2 — Pelan dalam mod *Plan* (10 minit).** Mulakan `claude` dalam akar projek, tukar ke **plan mode** (`Shift+Tab` atau `Alt+M`) dan hantar:
+
+   ```text
+   Mod Plan. Baca @CLAUDE.md dan @docs/spec-pas.md. Rancang Slice 1 Modul Pas sahaja: enum PassType dan PassStatus, Entity PassApplication, PassApplicationModel dengan skop ownedBy(), PassDocumentModel, route GET pas/permohonan dan GET pas/permohonan/(:num), PassWorkflowService::canView() didaftar sebagai service('passWorkflowService'), ApplicationController index() dan show(), view pas/index dan pas/show.
+   Untuk setiap fail: laluan penuh, cipta atau ubah, dan BR-PAS yang dipenuhi. Sahkan dengan ci4-spark migrate_status bahawa jadual Hari 4 sudah wujud; jika ya, JANGAN rancang migration baharu.
+   Ujian: tests/unit/Enums/PassStatusTest.php (BR-PAS-01) dan tests/feature/Pas/PassAccessTest.php (pemilik 200, pemohon lain 404 — BR-PAS-04), ikut corak ujian Hari 6.
+   Akhiri dengan jadual BR → fail → ujian. Jangan tulis kod.
+   ```
+
+   **Pelan yang baik mengandungi:**
+   - tiada migration baharu (jadual Hari 4 sudah ada) atau, jika `migrate_status` menunjukkan jadual tiada, satu migration ikut skill `migration-ci4`;
+   - skop `ownedBy(int $userId)` dalam `PassApplicationModel`, dipanggil oleh `index()`;
+   - `show()` mencari rekod, kemudian `canView()` dalam service; bukan pemilik tanpa `pas.review`/`pas.approve`/`admin` → `PageNotFoundException` (404);
+   - status sebagai enum `PassStatus` (tiada rentetan `'submitted'` bertaburan dalam controller/view);
+   - `esc()` pada setiap output dalam `pas/index` dan `pas/show`;
+   - route dalam kumpulan `pas/permohonan` dengan filter `session`;
+   - jadual BR → fail → ujian yang meliputi BR-PAS-01 dan BR-PAS-04.
+
+   **Edit pelan sendiri.** Salin pelan ke `docs/pelan-pas.md` (anda yang menaip/menampal), buang apa-apa di luar Slice 1 (cth borang, muat naik, kelulusan), dan tambah baris yang tiada. Jika Claude menawarkan pilihan selepas pelan, pilih **No, keep planning**.
+
+4. **Pintu 3 — Laksana dalam mod *Manual* (25 minit).** Keluar dari mod *Plan* (`Shift+Tab` hingga baris bawah tidak menunjukkan *plan mode* atau *accept edits*). Hantar ([AI-19](../docs/pustaka-prompt.md#ai-19--laksana-satu-slice-daripada-pelan-mod-manual)):
+
+   ```text
+   Laksana HANYA Slice 1 daripada pelan dalam @docs/pelan-pas.md, satu fail pada satu masa.
+   Rujuk @docs/spec-pas.md (§2.2 BR-PAS-01, BR-PAS-04). Nama jadual, medan, enum dan kelas tepat seperti SPEC.
+   Kekangan: jangan ubah fail di luar senarai pelan; jangan jalankan migrate atau db:seed; tiada fail dalam public/; setiap output view melalui esc().
+   Selepas setiap fail, berhenti dan terangkan dalam 3 baris apa yang berubah dan BR mana dipenuhi, sebelum fail seterusnya.
+   Akhir sekali, tulis ujian dalam pelan dan jalankan composer test.
+   ```
+
+   Untuk **setiap** permintaan *Do you want to make this edit…?*, baca diff dahulu. Pilih **Yes** (sekali sahaja) jika diff lulus senarai di bawah. **Jangan** pilih *Yes, allow all edits during this session*.
+
+   **Terima diff yang:**
+   - meletakkan `where('user_id', $userId)` dalam kaedah Model `ownedBy()`, dan `index()` memanggil `ownedBy((int) auth()->id())`;
+   - mengisi `$allowedFields` dengan medan SPEC sahaja (tiada `id`, tiada `$protectFields = false`);
+   - memulangkan enum melalui Entity (`statusEnum()`/`typeEnum()`) dan memanggil `PassStatus::canTransitionTo()` untuk BR-PAS-01;
+   - membalut setiap output view dengan `esc()`, termasuk `ref_no` dan `purpose`;
+   - membuang `PageNotFoundException` apabila `canView()` memulangkan `false`.
+
+   **TOLAK diff yang** (pilih **No** dan taip sebabnya supaya Claude membetulkan):
+   - menapis pemilik dalam view atau gelung controller (`if ($app->user_id == …)`) dan bukan dalam Model;
+   - memaparkan `find($id)` tanpa semakan `canView()`, atau memulangkan 403 kepada bukan pemilik;
+   - mencipta migration baharu untuk `pass_applications`/`pass_documents`, atau mengubah migration Hari 4;
+   - menggunakan nama medan yang tiada dalam SPEC (cth `type`, `applicant_id`, `file_path`);
+   - menggunakan SQL mentah bercantum input, atau `<?= $x ?>` tanpa `esc()`;
+   - mengubah fail di luar pelan (fail TLK, `app/Config/Filters.php`, `.env`) atau menjalankan `php spark migrate`.
+
+   Jika anda tidak faham satu diff, pilih **No** dan hantar [AI-20](../docs/pustaka-prompt.md#ai-20--terangkan-diff-ini-sebelum-saya-terima) sebelum Claude mencuba semula.
+
+5. **Pintu 4 — Sahkan (10 minit).** Masukkan data ujian sintetik mengikut [Lab 7.2 langkah 7](#lab-72--laluan-service--paparan-senaraibutiran-s2) (SQL `PAS-2026-9001` untuk `pemohon1`, `PAS-2026-9002` untuk `pemohon2`), kemudian jalankan:
+
+   ```bash tab="Git Bash / macOS / Linux"
+   composer test
+   php spark routes | grep pas
+   php spark filter:check GET /pas/permohonan
+   ```
+
+   ```powershell tab="PowerShell"
+   composer test
+   php spark routes | Select-String pas
+   php spark filter:check GET /pas/permohonan
+   ```
+
+   Dalam Claude Code, minta Claude menggunakan MCP (luluskan setiap panggilan tool `ci4-spark`):
+
+   ```text
+   Guna tool ci4-spark: routes (tapis pas), filter_check GET /pas/permohonan, dan migrate_status. Jadualkan hasilnya. Jangan ubah fail.
+   ```
+
+   | Semakan | Jangkaan |
+   |---------|----------|
+   | `composer test` | `OK`, tiada `FAILURES`; ujian `PassStatusTest` dan `PassAccessTest` disenaraikan |
+   | `routes` | 2 baris `pas/permohonan`: GET `/` → `index`, GET `(:num)` → `show` |
+   | `filter_check GET /pas/permohonan` | Senarai *before* mengandungi `session` |
+   | `migrate_status` | Migration Hari 4 untuk `pass_applications` dan `pass_documents` sudah dijalankan; tiada migration Pas baharu |
+   | Pelayar, `pemohon1` → `/pas/permohonan` | Hanya `PAS-2026-9001` |
+   | Pelayar, `pemohon2` → `/pas/permohonan/<id PAS-2026-9001>` | **404** |
+
+6. **Pintu 5 — Semak dengan `semak-ci4` (10 minit).** Hantar:
+
+   ```text
+   Guna subagent semak-ci4 untuk menyemak app/Models/PassApplicationModel.php, app/Controllers/Pas, app/Services/PassWorkflowService.php dan app/Views/pas terhadap BR-PAS-04, esc(), filter route dan binding Query Builder. Jadual: fail:baris · isu · keterukan.
+   ```
+
+   Sahkan setiap dapatan dengan membuka `fail:baris` itu sendiri. Untuk dapatan yang benar:
+
+   ```text
+   Baiki dapatan semak-ci4 nombor <1, 3> sahaja, satu fail pada satu masa. Terangkan setiap perubahan sebelum saya luluskan. Jalankan composer test selepas itu.
+   ```
+
+   Pintu diff yang sama: baca, kemudian **Yes** atau **No**.
+
+7. **Pintu 6 — Terangkan (10 minit).** Pilih 3 baris utama dan terangkan dengan ayat sendiri dalam `docs/nota-claude.md` (anda yang menaip, bukan Claude):
+
+   `docs/nota-claude.md`
+
+   ```markdown
+   ## Pintu terang — Pas slice 1
+
+   | # | fail:baris | Apa baris ini buat (ayat saya) | Apa berlaku jika dibuang |
+   |---|-----------|--------------------------------|--------------------------|
+   | 1 | app/Models/PassApplicationModel.php:NN (ownedBy) | ... | ... |
+   | 2 | app/Controllers/Pas/ApplicationController.php:NN (404 bukan pemilik) | ... | ... |
+   | 3 | app/Enums/PassStatus.php:NN (canTransitionTo) | ... | ... |
+   ```
+
+8. **Banding dengan kod rujukan (5 minit).** Buka [Lab 7.1 langkah 2–6](#lab-71--enum-entity--model-s1) dan [Lab 7.2 langkah 1–6](#lab-72--laluan-service--paparan-senaraibutiran-s2). Bandingkan dengan kod Claude dan rekod 3 perbezaan di bawah jadual pintu terang:
+
+   ```markdown
+   ## Banding dengan kod rujukan — slice 1
+
+   | Perkara | Kod Claude | Lab 7.1/7.2 | Mana lebih baik & kenapa |
+   |---------|-----------|-------------|--------------------------|
+   | ownedBy() | ... | ... | ... |
+   | 404 bukan pemilik | ... | ... | ... |
+   | ... | ... | ... | ... |
+   ```
+
+9. **Pintu 7 — Commit (5 minit).**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   git status --short          # tiada .env, tiada writable/
+   git add CLAUDE.md docs/ app/ tests/
+   git commit -m "PAS: slice 1 enum, model skop pemilik, senarai & butiran (Claude Code, disemak)"
+   ```
+
+   ```powershell tab="PowerShell"
+   git status --short          # tiada .env, tiada writable/
+   git add CLAUDE.md docs/ app/ tests/
+   git commit -m "PAS: slice 1 enum, model skop pemilik, senarai & butiran (Claude Code, disemak)"
+   ```
+
+### ✅ Checkpoint
+- [ ] `docs/spec-pas.md` wujud dan `CLAUDE.md` menunjuk kepadanya; bahagian `## Peranan anda (Claude)` dikemas kini untuk slice dan mod Manual (Kuiz S13).
+- [ ] `docs/pelan-pas.md` mengandungi pelan Slice 1 yang anda edit sendiri, dengan jadual BR → fail → ujian dan tanpa migration baharu (Kuiz S13).
+- [ ] `composer test` lulus dengan `PassStatusTest` dan `PassAccessTest`, dan `pemohon2` menerima 404 pada butiran milik `pemohon1` (Kuiz S13).
+- [ ] Dapatan `semak-ci4` disahkan dan yang benar dibaiki melalui pintu diff (Kuiz S13).
+- [ ] `docs/nota-claude.md` menerangkan 3 baris `fail:baris` dengan ayat sendiri dan merekod 3 perbezaan dengan Lab 7.1/7.2 (Kuiz S13).
+- [ ] Commit `PAS: slice 1 …` ada dalam `git log --oneline` pada branch `feat/pas-claude`. 🪟 PowerShell: `git log --oneline -3` (Kuiz S13).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Shift+Tab` tidak menukar mod dalam Git Bash | Terminal mintty tidak menghantar kekunci itu | Guna `Alt+M`, atau jalankan `claude` dalam terminal VS Code / Windows Terminal |
+| Claude tidak meminta kebenaran sebelum mengedit | Mod *accept edits* aktif (baris bawah menunjukkannya) | `Shift+Tab` hingga mod lalai; `git diff` untuk membaca apa yang sudah berubah; `git restore <fail>` jika perlu |
+| `composer` atau `php` tidak dikenali dalam Bash Claude | `PATH` Laragon tiada dalam proses Claude Code | Laragon *Menu → Tools → Path → Add Laragon to Path*; tutup dan buka semula VS Code |
+| `git diff` menunjukkan seluruh fail berubah | Hujung baris CRLF/LF bercampur | `git config core.autocrlf true`; minta Claude mengekalkan hujung baris asal; tolak diff yang hanya menukar hujung baris |
+| Claude menjalankan `php spark migrate` | Perintah Bash diluluskan tanpa dibaca | Pilih **No** untuk perintah itu; semak `php spark migrate:status`; ulang peraturan dalam `CLAUDE.md` |
+| Pemilik juga menerima 404 | `auth()->id()` dibanding sebagai string, atau `user_id` tiada dalam `$casts` Entity | Minta Claude menunjukkan baris perbandingan (AI-20); guna `(int)` dan `'user_id' => 'integer'` |
+| `Class "App\Enums\PassStatus" not found` | `namespace` atau nama fail tidak sepadan (Windows tidak peka huruf, Composer peka) | Nama fail `PassStatus.php` dan `namespace App\Enums;` tepat; `composer dump-autoload` |
+
+### ⭐ Cabaran tambahan
+- Minta Claude (mod *Plan*) mencadangkan satu ujian yang akan **gagal** jika `ownedBy()` dibuang dari `index()`. Tulis ujian itu melalui pintu diff, buang `ownedBy()` sementara, sahkan ujian gagal, kemudian pulihkan.
+
+---
+
+## Lab 7.11 — Claude Code: Pas Slice 2 — Borang, Validasi & Muat Naik Dokumen Selamat (S14)
+
+> 🛡️ Peraturan yang sama seperti [Lab 7.10](#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13): mod Manual sahaja, data dan fail ujian sintetik sahaja. Jangan muat naik dokumen sebenar (IC, geran, surat rasmi).
+
+### 🎯 Objektif
+Menggunakan aliran kerja tujuh pintu untuk membina slice kedua: borang `multipart/form-data` dengan CSRF, validasi server `uploaded`/`max_size`/`ext_in`/`mime_in`, `PassWorkflowService::submit()` yang memindah fail ke `writable/uploads/pas/` dengan nama rawak, menyimpan dalam transaksi dan membersihkan fail jika gagal, serta muat turun melalui controller dengan semakan pemilikan (BR-PAS-02, BR-PAS-04, BR-PAS-05, BR-PAS-06). Anda **menolak** diff yang melemahkan mana-mana lima pintu muat naik dan **menerangkan** 3 baris utama.
+
+### Prasyarat
+- Lab 7.10 siap dan di-commit dalam `feat/pas-claude`.
+- Had PHP sedia: `upload_max_filesize` ≥ 8M, `post_max_size` ≥ 16M, extension `fileinfo` dimuatkan. Ikut [Lab 7.0 langkah 2–3](#lab-70--persediaan-10-minit-awal-s1) jika belum.
+- Fail ujian sintetik dalam `~/ujian-pas/` ikut [Lab 7.3 langkah 5](#lab-73--borang-validasi-muat-naik--muat-turun-s3) dan fail sempadan ikut [Lab 7.4 langkah 1](#lab-74--ujian-manual-kes-sempadan-s4).
+
+### Langkah
+
+1. **Pintu 1 — SPEC.** Tiada fail baharu: `docs/spec-pas.md` sudah ada BR-PAS-02, BR-PAS-05 dan BR-PAS-06. Tambah satu baris di bahagian `## Modul Pas` dalam `CLAUDE.md`:
+
+   `CLAUDE.md`
+
+   ```markdown
+   - Slice 2 (muat naik): validasi server uploaded/max_size/ext_in/mime_in; mime daripada getMimeType(), bukan getClientMimeType(); move() sebelum transaksi; padam fail jika transaksi gagal; new/create dengan permission:pas.apply.
+   ```
+
+2. **Pintu 2 — Pelan dalam mod *Plan* (10 minit).** `/clear`, tukar ke **plan mode** dan hantar:
+
+   ```text
+   Mod Plan. Baca @CLAUDE.md, @docs/spec-pas.md dan @docs/pelan-pas.md. Rancang Slice 2 Modul Pas sahaja: route GET pas/permohonan/new, POST pas/permohonan dan GET pas/permohonan/dokumen/(:num); filter permission:pas.apply pada new dan create; ApplicationController new(), create() dan download(); view pas/new dengan form_open_multipart() dan medan documents[]; PassWorkflowService::submit() dan documentPath().
+   Petakan setiap fail kepada BR-PAS-02, BR-PAS-04, BR-PAS-05 dan BR-PAS-06. Terangkan urutan: validasi → move() dengan getRandomName() ke writable/uploads/pas/ → transaksi (pass_applications + pass_documents + status_logs) → jika gagal, rollback dan padam fail.
+   Ujian: tests/feature/Pas/PassCreateTest.php untuk BR-PAS-06 (tarikh, kenderaan), had 3 fail, dan pemohon lain memuat turun dokumen → 404, ikut corak ujian Hari 6. Akhiri dengan jadual BR → fail → ujian. Jangan tulis kod.
+   ```
+
+   **Pelan yang baik mengandungi:**
+   - `permission:pas.apply` pada route `new` dan `create` (SPEC §9), selain `session` kumpulan;
+   - `form_open_multipart()` (CSRF tersembunyi dimasukkan automatik) dan tiada pengecualian CSRF dalam `Filters.php`;
+   - rule `uploaded[documents]|max_size[documents,2048]|ext_in[documents,pdf,jpg,png]|mime_in[documents,application/pdf,image/jpeg,image/png]` dan semakan 1–3 fail;
+   - fail di `WRITEPATH . 'uploads/pas/'` (di luar `public/`) dengan `getRandomName()`; DB menyimpan `stored_path`, `original_name`, `mime` (daripada `getMimeType()`) dan `size_bytes`;
+   - transaksi yang merangkumi `pass_applications`, `pass_documents` dan `status_logs` (`to_status = submitted`), dengan pembersihan fail dalam `catch`;
+   - `download()` mencari dokumen → permohonan → `canView()` → 404 jika tiada akses → `response->download()` daripada `stored_path`, bukan daripada input pengguna.
+
+   Kemas kini `docs/pelan-pas.md` dengan Slice 2 yang anda edit sendiri.
+
+3. **Pintu 3 — Laksana dalam mod *Manual* (30 minit).** Keluar dari mod *Plan* dan hantar ([AI-19](../docs/pustaka-prompt.md#ai-19--laksana-satu-slice-daripada-pelan-mod-manual)):
+
+   ```text
+   Laksana HANYA Slice 2 daripada pelan dalam @docs/pelan-pas.md, satu fail pada satu masa.
+   Rujuk @docs/spec-pas.md (§2.2 BR-PAS-02, BR-PAS-04, BR-PAS-05, BR-PAS-06). Nama jadual, medan, enum dan kelas tepat seperti SPEC.
+   Kekangan: jangan ubah fail di luar senarai pelan; jangan jalankan migrate atau db:seed; tiada fail dalam public/; setiap output view melalui esc(); jangan ubah app/Config/Filters.php.
+   Selepas setiap fail, berhenti dan terangkan dalam 3 baris apa yang berubah dan BR mana dipenuhi, sebelum fail seterusnya.
+   Akhir sekali, tulis ujian dalam pelan dan jalankan composer test.
+   ```
+
+   **Terima diff yang:**
+   - menggunakan `$file->getRandomName()` dan `move(WRITEPATH . 'uploads/pas', $newName)`;
+   - membaca `getMimeType()` dan `getSize()` **sebelum** `move()`;
+   - mempunyai keempat-empat rule fail dengan mesej ralat BM, dan menolak lebih daripada 3 fail;
+   - membuka transaksi selepas `move()`, dan dalam `catch` memanggil `transRollback()` serta `unlink()` untuk setiap fail yang sudah dipindah;
+   - merekod `status_logs` (`module = 'PAS'`, `to_status = 'submitted'`) dalam transaksi yang sama;
+   - dalam `download()`, menyemak `canView()` dan membina path daripada `stored_path` dalam DB, dengan `esc()` pada nama fail dalam view.
+
+   **TOLAK diff yang:**
+   - menyimpan fail dalam `public/` atau `FCPATH`, atau memaut dokumen dengan `base_url('uploads/…')`;
+   - menggunakan `getName()`/`getClientName()` sebagai nama fail di cakera;
+   - mempercayai `getClientMimeType()` atau `ext_in` sahaja (tiada `mime_in`), atau bergantung pada `accept=".pdf"` di pelayar sahaja;
+   - menyimpan ke DB tanpa transaksi, atau tidak memadam fail apabila transaksi gagal;
+   - membuang `csrf_field()`/`form_open_multipart()`, atau menambah route Pas ke `except` CSRF;
+   - tiada `permission:pas.apply` pada `new`/`create`, atau `download()` tanpa semakan pemilikan;
+   - menerima path atau nama fail daripada request (`?file=…`) untuk dimuat turun.
+
+4. **Pintu 4 — Sahkan (15 minit).**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   composer test
+   php spark routes | grep pas
+   php spark filter:check POST /pas/permohonan
+   ls writable/uploads/pas/
+   find public -iname "*.pdf" -o -iname "*.png"     # tiada output
+   ```
+
+   ```powershell tab="PowerShell"
+   composer test
+   php spark routes | Select-String pas
+   php spark filter:check POST /pas/permohonan
+   Get-ChildItem writable/uploads/pas/
+   Get-ChildItem public -Recurse -Include *.pdf,*.png   # tiada output
+   ```
+
+   ```text
+   Guna tool ci4-spark: routes (tapis pas) dan filter_check POST /pas/permohonan. Jadualkan hasilnya. Jangan ubah fail.
+   ```
+
+   | Semakan | Jangkaan |
+   |---------|----------|
+   | `composer test` | `OK`, tiada `FAILURES`; `PassCreateTest` disenaraikan |
+   | `routes` | 5 baris `pas/permohonan`: `index`, `new`, `create`, `show`, `dokumen/(:num)` |
+   | `filter_check POST /pas/permohonan` | Senarai *before* mengandungi `csrf`, `session` dan `permission:pas.apply` |
+   | `pemohon1` hantar `surat-sokongan.pdf` + `gambar.png` | Redirect ke butiran `PAS-2026-…`; 2 fail bernama rawak dalam `writable/uploads/pas/` |
+   | Fail 3 MB | Kembali ke borang dengan mesej `Setiap fail mestilah tidak melebihi 2 MB.` (atau mesej BM setara); bilangan fail di cakera tidak bertambah |
+   | `skrip.php` dinamakan `skrip.pdf` | Ditolak oleh `mime_in`; tiada fail baharu |
+   | `pemohon2` buka URL muat turun dokumen `pemohon1` | **404** |
+   | `public/` | Tiada fail PDF/PNG |
+
+   Semak juga dalam MySQL (HeidiSQL Laragon): satu baris `status_logs` dengan `module = 'PAS'` dan `to_status = 'submitted'` bagi permohonan baharu.
+
+5. **Pintu 5 — Semak dengan `semak-ci4` (10 minit).**
+
+   ```text
+   Guna subagent semak-ci4 untuk menyemak app/Controllers/Pas/ApplicationController.php, app/Services/PassWorkflowService.php dan app/Views/pas/new.php terhadap BR-PAS-02, BR-PAS-04, CSRF, filter permission:pas.apply, esc() dan pembersihan fail jika transaksi gagal. Jadual: fail:baris · isu · keterukan.
+   ```
+
+   Sahkan setiap dapatan sendiri, kemudian minta pembaikan yang benar sahaja (prompt baiki Lab 7.10 langkah 6), dengan pintu diff yang sama.
+
+6. **Pintu 6 — Terangkan (10 minit).** Tambah dalam `docs/nota-claude.md`:
+
+   ```markdown
+   ## Pintu terang — Pas slice 2
+
+   | # | fail:baris | Apa baris ini buat (ayat saya) | Apa berlaku jika dibuang |
+   |---|-----------|--------------------------------|--------------------------|
+   | 1 | app/Services/PassWorkflowService.php:NN (getRandomName + move) | ... | ... |
+   | 2 | app/Services/PassWorkflowService.php:NN (catch: rollback + unlink) | ... | ... |
+   | 3 | app/Controllers/Pas/ApplicationController.php:NN (download: canView) | ... | ... |
+   ```
+
+7. **Banding dengan kod rujukan (5 minit).** Buka [Lab 7.3 langkah 1–3](#lab-73--borang-validasi-muat-naik--muat-turun-s3) (`PassWorkflowService` versi Hari 7, `ApplicationController::rules()`, `pas/new`). Rekod 3 perbezaan:
+
+   ```markdown
+   ## Banding dengan kod rujukan — slice 2
+
+   | Perkara | Kod Claude | Lab 7.3 | Mana lebih baik & kenapa |
+   |---------|-----------|---------|--------------------------|
+   | Urutan move() dan transaksi | ... | ... | ... |
+   | Rules fail & mesej BM | ... | ... | ... |
+   | ... | ... | ... | ... |
+   ```
+
+8. **Pintu 7 — Commit dan push (5 minit).**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   git status --short          # tiada writable/uploads, tiada .env
+   git add CLAUDE.md docs/ app/ tests/
+   git commit -m "PAS: slice 2 borang, validasi & muat naik selamat (Claude Code, disemak)"
+   git push -u origin feat/pas-claude
+   ```
+
+   ```powershell tab="PowerShell"
+   git status --short          # tiada writable/uploads, tiada .env
+   git add CLAUDE.md docs/ app/ tests/
+   git commit -m "PAS: slice 2 borang, validasi & muat naik selamat (Claude Code, disemak)"
+   git push -u origin feat/pas-claude
+   ```
+
+### ✅ Checkpoint
+- [ ] `docs/pelan-pas.md` mengandungi Slice 2 dengan jadual BR → fail → ujian, termasuk `permission:pas.apply` dan pembersihan fail (Kuiz S14).
+- [ ] `filter_check POST /pas/permohonan` menunjukkan `csrf`, `session` dan `permission:pas.apply`, dan `routes` menunjukkan 5 route Pas (Kuiz S14).
+- [ ] Permohonan sah menyimpan fail bernama rawak dalam `writable/uploads/pas/`, `public/` tiada fail dokumen, dan `status_logs` ada baris `submitted` (Kuiz S14).
+- [ ] Fail 3 MB dan `skrip.pdf` ditolak tanpa fail baharu di cakera, dan `pemohon2` menerima 404 pada muat turun dokumen `pemohon1` (Kuiz S14).
+- [ ] `composer test` lulus dengan `PassCreateTest`, dan dapatan `semak-ci4` disahkan serta dibaiki melalui pintu diff (Kuiz S14).
+- [ ] `docs/nota-claude.md` menerangkan 3 baris slice 2 dan 3 perbezaan dengan Lab 7.3; commit `PAS: slice 2 …` di-push. 🪟 PowerShell: `git log --oneline -3` (Kuiz S14).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| Setiap fail ditolak oleh `mime_in`, termasuk PDF sah | Extension `fileinfo` tidak dimuatkan | Laragon *Menu → PHP → Extensions → fileinfo*; mulakan semula Apache; `php -m` mesti menyenaraikan `fileinfo` |
+| Fail 3 MB memberi ralat `uploaded`, bukan `max_size` | `upload_max_filesize` Laragon 2M menolak fail sebelum CI4 | [Lab 7.0 langkah 3](#lab-70--persediaan-10-minit-awal-s1): `upload_max_filesize = 8M`, `post_max_size = 16M` |
+| `unlink(): Permission denied` semasa pembersihan | Fail dibuka dalam pemapar PDF atau diimbas antivirus | Tutup pemapar; cuba semula; jangan padam fail secara manual tanpa memadam baris `pass_documents` |
+| Claude menulis `WRITEPATH . 'uploads\pas'` | Garis condong belakang Windows | Tolak diff; minta `/` (PHP menerima `/` di Windows) |
+| Tiada `head -c` untuk menjana fail 3 MB dalam PowerShell | Arahan Git Bash | PowerShell: `[IO.File]::WriteAllBytes("$HOME\ujian-pas\besar.pdf", (New-Object byte[] 3145728))` |
+| `filter_check` tidak menunjukkan `permission:pas.apply` | Filter diletak pada kumpulan sahaja, atau pada route `show` | Minta Claude menunjukkan definisi route (AI-20); filter pada `new` dan `create` sahaja |
+| `The action you requested is not allowed.` semasa hantar borang | Token CSRF tiada (borang bukan `form_open_multipart()`), atau sesi tamat | Tolak diff yang membuang CSRF; muat semula borang dan cuba lagi |
+
+### ⭐ Cabaran tambahan
+- Minta Claude (mod *Plan*) membandingkan `PassCreateTest` dengan `PassSubmitTest` dalam [Lab 7.4b](#lab-74b--automasikan-kes-sempadan-dengan-phpunit-s8): kes sempadan BR-PAS-02 mana yang belum diuji? Tambah dua kes melalui pintu diff dan sahkan setiap satu gagal jika rule berkaitan dibuang.
 
 ---
 
@@ -4319,17 +4792,3 @@ Mengautomasikan 10 kes sempadan Lab 7.4 dan 4 kes Lab 7.3b dalam `tests/feature/
 - Mutasi kedua: buang `$this->deleteStoredFiles($stored);` dalam `catch` `submit()`. Adakah mana-mana ujian gagal? Kenapa? (Petunjuk: di mana setiap kes ditolak — sebelum atau selepas `storeFile()`?)
 
 ---
-
-## Semakan kendiri — akhir hari
-
-```bash
-git log --oneline -9                    # 8 commit PAS: hari ini (4 lab teras + 4 lab lanjutan)
-php spark routes | grep pas/permohonan  # 6 laluan (5 + Lab 7.3b), filter session
-composer test -- --no-coverage tests/feature/Pas/PassSubmitTest.php   # OK (Lab 7.4b)
-ls writable/uploads/pas/ | head         # nama rawak sahaja
-git status                              # bersih; writable/uploads tidak dijejak
-```
-
-🪟 PowerShell: `php spark routes | Select-String pas/permohonan`, `composer test '--' --no-coverage tests/feature/Pas/PassSubmitTest.php`, `Get-ChildItem writable/uploads/pas/ -Name | Select-Object -First 10`.
-
-Peserta yang ketinggalan: salin dari `templates/kod/` (modul **Templat & Rujukan**) **selepas** jurulatih/rakan menerangkan setiap bahagian — dan tandakan dalam commit (`PAS: … (rujuk templat)`).

@@ -88,21 +88,23 @@
 | 16:15–16:40 | S4 | Penambahbaikan UI; wrap-up modul | Menambah badge status, flash message, pengesahan; **M1 siap** |
 | 16:40–17:00 | S8 | Lanjutan S4: gilap *Tempahan Saya*; wrap-up | Tab status dengan kiraan, Batal terus dari senarai |
 
-## Hari 7 — Modul Pas (Bahagian 1) · [nota](./hari-7/README.md)
+## Hari 7 — Claude Code: Pelaksanaan & Amalan Terbaik · [nota](./hari-7/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 6 | — |
-| 09:00–10:00 | S9 | Claude Code: pasang, `CLAUDE.md` & mod Plan | Menulis `CLAUDE.md` projek ikut standard kursus; memori pengguna/projek/tempatan |
-| 10:00–10:30 | S12 | Claude Code: prompting, projek baharu & PRD | Menulis prompt onboarding & pelan dalam mod Plan; mendraf dan menyemak PRD latihan |
-| 10:45–11:45 | S10 | Claude Code: subagent & skill | Subagent baca sahaja `semak-ci4` pada kod Hari 6; skill `migration-ci4` |
-| 11:45–12:30 | S11 | Claude Code: MCP untuk CodeIgniter | Server MCP `ci4-spark` (PHP, baca sahaja); Context7; MySQL/GitLab pilihan |
-| 14:30–15:45 | S15 | Claude Code: fahami projek contoh eSPKP | Lab 7.12: 6 prompt onboarding mod Plan pada eSPKP Contoh, disahkan dengan `fail:baris` dan demo 2 peranan |
-| 15:45–17:00 | S16 | Claude Code: rancang & laras keperluan daripada projek contoh | Lab 7.13: PRD daripada kod, jadual jurang vs SPEC, `docs/keperluan-pas.md` + `docs/pelan-pas.md` |
+| 09:00–09:45 | S9 | Claude Code: pasang, `CLAUDE.md` & mod Plan | Menulis `CLAUDE.md` projek ikut standard kursus; memori pengguna/projek/tempatan |
+| 09:45–10:30 | S12 | Claude Code: prompting, projek baharu & PRD | Menulis prompt onboarding & pelan dalam mod Plan; mendraf dan menyemak PRD latihan |
+| 10:45–11:30 | S17 | Seni prompt: anatomi & katalog contoh | Lab 7.14: menulis semula 5 prompt lemah; menjalankan 6 prompt katalog ([`seni-prompt.md`](./docs/seni-prompt.md)) dalam mod Plan dan menilai jawapan |
+| 11:30–12:00 | S10 | Claude Code: subagent & skill | Subagent baca sahaja `semak-ci4` pada kod Hari 6; skill `migration-ci4` |
+| 12:00–12:30 | S11 | Claude Code: MCP untuk CodeIgniter | Server MCP `ci4-spark` (PHP, baca sahaja); Context7; MySQL/GitLab pilihan |
+| 14:30–15:30 | S18 | Amalan terbaik Claude Code | Lab 7.15: konteks (`/context`, `/compact`, `/clear`), `/rewind`, allow/deny, hook `sekat-env` + `php -l`, semakan `claude -p`, Git, keselamatan |
+| 15:30–16:15 | S15 | Claude Code: fahami projek contoh eSPKP | Lab 7.12: 6 prompt onboarding mod Plan pada eSPKP Contoh, disahkan dengan `fail:baris` dan demo 2 peranan |
+| 16:15–17:00 | S16 | Claude Code: rancang & laras keperluan daripada projek contoh | Lab 7.13: PRD daripada kod, jadual jurang vs SPEC, `docs/keperluan-pas.md` + `docs/pelan-pas.md` |
 
-> ℹ️ S13/S14 (Lab 7.10/7.11) dipindahkan ke pagi Hari 8.
+> ℹ️ Hari 7 fokus kepada Claude Code. S13/S14 (Lab 7.10/7.11) dibuat pada pagi Hari 8; sesi Pas S1–S8 dan lab manual 7.0–7.4 (dan 7.1b–7.4b) berada dalam Lampiran Hari 7 sebagai kod rujukan.
 
-> ℹ️ Mulai petang Hari 7 hingga Hari 10, modul dibina dengan Claude Code ([`kolaborasi.md`](./docs/kolaborasi.md) §3). Lab manual Pas 7.0–7.4 (dan 7.1b–7.4b) kini kod rujukan untuk perbandingan, bukan wajib.
+> ℹ️ Mulai Hari 8 hingga Hari 10, modul dibina dengan Claude Code ([`kolaborasi.md`](./docs/kolaborasi.md) §3).
 
 ## Hari 8 — Modul Pas (Bahagian 2) · [nota](./hari-8/README.md)
 

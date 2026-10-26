@@ -88,21 +88,23 @@
 | 16:15–16:40 | S4 | UI improvements; module wrap-up | Add status badges, flash messages, confirmation; **M1 complete** |
 | 16:40–17:00 | S8 | S4 follow-up: polish *Tempahan Saya* (My Bookings); wrap-up | Status tabs with counts, Cancel right from the list |
 
-## Day 7 — Pass Module (Part 1) · [notes](./hari-7/README.md)
+## Day 7 — Claude Code: Implementation & Best Practice · [notes](./hari-7/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 6 recap | — |
-| 09:00–10:00 | S9 | Claude Code: install, `CLAUDE.md` & Plan mode | Write the project `CLAUDE.md` to the course standard; user/project/local memory |
-| 10:00–10:30 | S12 | Claude Code: prompting, new projects & PRD | Write onboarding and plan prompts in Plan mode; draft and review a practice PRD |
-| 10:45–11:45 | S10 | Claude Code: subagents & skills | Read-only `semak-ci4` subagent on Day 6 code; `migration-ci4` skill |
-| 11:45–12:30 | S11 | Claude Code: MCP for CodeIgniter | `ci4-spark` MCP server (PHP, read-only); Context7; MySQL/GitLab optional |
-| 14:30–15:45 | S15 | Claude Code: understand the eSPKP example project | Lab 7.12: 6 Plan-mode onboarding prompts on eSPKP Contoh, verified with `file:line` and a 2-role demo |
-| 15:45–17:00 | S16 | Claude Code: plan & adjust requirements from the example project | Lab 7.13: PRD from code, gap table vs SPEC, `docs/keperluan-pas.md` + `docs/pelan-pas.md` |
+| 09:00–09:45 | S9 | Claude Code: install, `CLAUDE.md` & Plan mode | Write the project `CLAUDE.md` to the course standard; user/project/local memory |
+| 09:45–10:30 | S12 | Claude Code: prompting, new projects & PRD | Write onboarding and plan prompts in Plan mode; draft and review a practice PRD |
+| 10:45–11:30 | S17 | The art of the prompt: anatomy & example catalogue | Lab 7.14: rewrite 5 weak prompts; run 6 catalogue prompts ([`seni-prompt.en.md`](./docs/seni-prompt.en.md)) in Plan mode and score the answers |
+| 11:30–12:00 | S10 | Claude Code: subagents & skills | Read-only `semak-ci4` subagent on Day 6 code; `migration-ci4` skill |
+| 12:00–12:30 | S11 | Claude Code: MCP for CodeIgniter | `ci4-spark` MCP server (PHP, read-only); Context7; MySQL/GitLab optional |
+| 14:30–15:30 | S18 | Claude Code best practice | Lab 7.15: context (`/context`, `/compact`, `/clear`), `/rewind`, allow/deny, `sekat-env` + `php -l` hooks, `claude -p` review, Git, security |
+| 15:30–16:15 | S15 | Claude Code: understand the eSPKP example project | Lab 7.12: 6 Plan-mode onboarding prompts on eSPKP Contoh, verified with `file:line` and a 2-role demo |
+| 16:15–17:00 | S16 | Claude Code: plan & adjust requirements from the example project | Lab 7.13: PRD from code, gap table vs SPEC, `docs/keperluan-pas.md` + `docs/pelan-pas.md` |
 
-> ℹ️ S13/S14 (Labs 7.10/7.11) move to Day 8 morning.
+> ℹ️ Day 7 focuses on Claude Code. S13/S14 (Labs 7.10/7.11) are done on Day 8 morning; the Pass sessions S1–S8 and the manual Labs 7.0–7.4 (and 7.1b–7.4b) are in the Day 7 Appendix as reference code.
 
-> ℹ️ From Day 7 afternoon to Day 10, modules are built with Claude Code ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3). The manual Pass Labs 7.0–7.4 (and 7.1b–7.4b) are now reference code for comparison, not required.
+> ℹ️ From Day 8 to Day 10, modules are built with Claude Code ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3).
 
 ## Day 8 — Pass Module (Part 2) · [notes](./hari-8/README.md)
 

@@ -169,6 +169,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 .t th{background:#F1F4F8;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .t tr:last-child td{border-bottom:0}
 .t td code{font-size:.84em}
+.t.tight th,.t.tight td{padding:7px 14px}
 .t .y{color:var(--teal-700);font-weight:800}.t .x{color:#CBD5E1}
 .t.center td:not(:first-child),.t.center th:not(:first-child){text-align:center}
 
@@ -1908,69 +1909,75 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <!-- ============================ DAY 7 ============================ -->
 
-<section class="slide dark divider" data-label="Day 7 · Pass (1)">
+<section class="slide dark divider" data-label="Day 7 · Claude Code">
   <div class="eyebrow">Day 7 · Phase B — Set Up &amp; Build</div>
-  <h1>Claude Code &amp; Pass Module — Part 1</h1>
-  <div><span class="chip m-pas">Claude Code · M2 Pass applications</span></div>
+  <h1>Claude Code: Implementation &amp; Best Practice</h1>
+  <div><span class="chip m-a">Claude Code · install · the art of the prompt · best practice</span></div>
   <div class="sessions">
-    <div><i>S9</i><span>Claude Code: install on Windows, <code>CLAUDE.md</code>, Plan mode</span></div>
-    <div><i>S12</i><span>Prompting, new projects &amp; PRD</span></div>
-    <div><i>S10</i><span>Subagent &amp; skill for the CI4 project</span></div>
-    <div><i>S11</i><span>MCP: <code>ci4-spark</code>, MySQL, Context7</span></div>
-    <div><i>S15</i><span>Afternoon: understand the eSPKP example project with Claude Code</span></div>
-    <div><i>S16</i><span>Afternoon: PRD → gaps → requirements → Pass slice plan</span></div>
+    <div><i>S9</i><span>Install on Windows &amp; <code>CLAUDE.md</code></span></div>
+    <div><i>S12</i><span>Prompting &amp; PRD</span></div>
+    <div><i>S17</i><span>The art of the prompt: anatomy &amp; catalogue</span></div>
+    <div><i>S10</i><span>Subagents &amp; skills</span></div>
+    <div><i>S11</i><span>MCP: <code>ci4-spark</code>, Context7</span></div>
+    <div><i>S18</i><span>Claude Code best practice</span></div>
+    <div><i>S15</i><span>Understand the eSPKP example project</span></div>
+    <div><i>S16</i><span>Planning: PRD → requirements → slice plan</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span><span></span></div>
   <div class="daynum">07</div>
-  <aside class="notes"><p>Pagi Claude Code (S9, S12, S10, S11). Petang S13 dan S14: modul Pas dibina dengan Claude Code melalui tujuh pintu semakan (Lab 7.10, 7.11). Lab Pas manual 7.0–7.4 kekal sebagai kod rujukan untuk perbandingan.</p></aside>
+  <aside class="notes"><p>Hari 7 sepenuhnya tentang Claude Code: pasang, tulis prompt yang baik, sambungan (subagent, skill, MCP) dan amalan terbaik. Tiada modul dibina hari ini. Esok pagi slice Pas 1–2 dilaksana dengan semua amalan ini (Lab 7.10, 7.11). Bahan Pas manual 7.0–7.4 kini kod rujukan dalam blok Hari 8.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 7 · Today's objectives</div>
   <h2>By the end of today, you can…</h2>
-  <ul class="checks sm">
-    <li><span><em>S9</em>Install Claude Code on Windows, log in, block <code>.env</code> and write the project <code>CLAUDE.md</code>.</span></li>
-    <li><span><em>S12</em>Write structured prompts and draft a PRD for a new project.</span></li>
-    <li><span><em>S10</em>Create the <code>semak-ci4</code> subagent &amp; <code>migration-ci4</code> skill, and verify AI findings.</span></li>
-    <li><span><em>S11</em>Install &amp; test the <code>ci4-spark</code> MCP server and register Context7.</span></li>
-    <li><span><em>S15</em>Explain the architecture of the eSPKP example project with Claude Code and verify every answer at <code>file:line</code>.</span></li>
-    <li><span><em>S16</em>Draft a PRD from the example project, compare it with the SPEC, and write <code>docs/keperluan-pas.md</code> + <code>docs/pelan-pas.md</code>.</span></li>
+  <ul class="checks sm" style="gap:8px">
+    <li><span><em>S9</em>Install Claude Code on Windows, block <code>.env</code> and write the project <code>CLAUDE.md</code>.</span></li>
+    <li><span><em>S12</em>Choose the existing vs new project path and draft a PRD.</span></li>
+    <li><span><em>S17</em>Write five-part prompts and rewrite weak prompts with the prompt catalogue.</span></li>
+    <li><span><em>S10</em>Create the <code>semak-ci4</code> subagent &amp; <code>migration-ci4</code> skill.</span></li>
+    <li><span><em>S11</em>Install &amp; test the <code>ci4-spark</code> MCP server and Context7.</span></li>
+    <li><span><em>S18</em>Manage context, checkpoints, permissions &amp; hooks; choose a model with cost in mind.</span></li>
+    <li><span><em>S15</em>Explain the architecture of the eSPKP example, every answer verified at <code>file:line</code>.</span></li>
+    <li><span><em>S16</em>Write <code>docs/keperluan-pas.md</code> + <code>docs/pelan-pas.md</code> for tomorrow's Lab 7.10.</span></li>
   </ul>
-  <p class="small mt16">Manual Pass labs 7.0–7.4 stay as <b>reference code</b> for comparison.</p>
-  <aside class="notes"><p>Empat objektif pagi diukur melalui Kuiz S9–S12; dua objektif petang melalui Kuiz S13 dan S14 (checkpoint Lab 7.10 dan 7.11). Tekankan: Claude kini boleh menulis kod, tetapi peserta mesti boleh menerangkan setiap diff yang diterima.</p></aside>
+  <aside class="notes"><p>Lapan objektif, semuanya tentang Claude Code, diukur melalui kuiz sesi dan checkpoint Lab 7.6–7.9 dan 7.12–7.15. Tekankan: hari ini kita belajar alat dan disiplin; esok alat ini menulis kod Pas melalui tujuh pintu, dan peserta mesti boleh menerangkan setiap diff yang diterima.</p></aside>
 </section>
 
 <!-- ---------------------------- DAY 7 · MORNING: CLAUDE CODE ---------------------------- -->
 
 <section class="slide dark divider">
   <div class="eyebrow">Day 7 · Morning 09:00–12:30</div>
-  <h1>Morning: Claude Code</h1>
-  <div><span class="chip m-a">Install · CLAUDE.md · Prompts &amp; PRD · Subagent · Skill · MCP</span></div>
+  <h1>Morning: install, prompts &amp; extensions</h1>
+  <div><span class="chip m-a">Install · CLAUDE.md · PRD · Art of the prompt · Subagent · Skill · MCP</span></div>
   <div class="sessions">
     <div><i>S9</i><span>Install on Windows, log in, block <code>.env</code>, <code>CLAUDE.md</code>, Plan mode</span></div>
     <div><i>S12</i><span>Prompting, new projects &amp; PRD</span></div>
+    <div><i>S17</i><span>The art of the prompt: anatomy, principles, WEAK → GOOD, catalogue</span></div>
     <div><i>S10</i><span>Subagent <code>semak-ci4</code> &amp; skill <code>migration-ci4</code></span></div>
-    <div><i>S11</i><span>MCP: <code>ci4-spark</code>, MySQL, Context7, GitLab</span></div>
+    <div><i>S11</i><span>MCP: <code>ci4-spark</code>, Context7</span></div>
   </div>
-  <p class="small mt24" style="max-width:880px">Labs 7.6 · 7.9 · 7.7 · 7.8 on pelatih.my<br><span style="color:#8FA2C6">Reference: docs/tutorial-claude-code.en.md · docs/tutorial-prompt-projek.en.md</span></p>
-  <aside class="notes"><p>Pagi ini sepenuhnya Claude Code; modul Pas bermula 14:30. Peranan Claude tidak berubah: penjelas dan penyemak, bukan penjana modul. Tanya dahulu siapa yang sudah berjaya menjalankan claude --version sejak Lab 6.3c, dan pasangkan peserta yang belum dengan rakan yang sudah.</p></aside>
+  <p class="small mt24" style="max-width:880px">Labs 7.6 · 7.9 · 7.14 · 7.7 · 7.8 on pelatih.my<br><span style="color:#8FA2C6">Reference: docs/tutorial-claude-code.en.md · docs/tutorial-prompt-projek.en.md · docs/seni-prompt.en.md</span></p>
+  <aside class="notes"><p>Pagi ini: pasang, prompt dan sambungan. Seni Prompt (S17) selepas rehat ialah teras hari ini, jadi S10 dan S11 dipendekkan kepada 30 minit setiap satu. Tanya dahulu siapa yang sudah berjaya menjalankan claude --version sejak Lab 6.3c, dan pasangkan peserta yang belum dengan rakan yang sudah.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 7 · Today's schedule</div>
-  <h2>Claude Code in the morning, Pass with Claude Code in the afternoon</h2>
-  <table class="t">
+  <h2>A full day of Claude Code</h2>
+  <table class="t" style="margin-top:-6px">
     <tr><th>Time</th><th>Session</th><th>Topic</th><th>Lab</th></tr>
-    <tr><td>09:00–10:00</td><td><b>S9</b></td><td>Install on Windows, log in, <code>settings.json</code> deny, <code>CLAUDE.md</code>, Plan mode</td><td>7.6</td></tr>
-    <tr><td>10:00–10:30</td><td><b>S12</b></td><td>Prompting, existing vs new projects, PRD</td><td>7.9</td></tr>
+    <tr><td>09:00–09:45</td><td><b>S9</b></td><td>Install on Windows, log in, deny <code>.env</code>, <code>CLAUDE.md</code>, Plan mode</td><td>7.6</td></tr>
+    <tr><td>09:45–10:30</td><td><b>S12</b></td><td>Prompting, existing vs new projects, PRD</td><td>7.9</td></tr>
     <tr><td>10:30–10:45</td><td>—</td><td>Morning break</td><td>—</td></tr>
-    <tr><td>10:45–11:45</td><td><b>S10</b></td><td>Subagent <code>semak-ci4</code> &amp; skill <code>migration-ci4</code></td><td>7.7</td></tr>
-    <tr><td>11:45–12:30</td><td><b>S11</b></td><td>MCP: <code>ci4-spark</code>, MySQL, Context7, GitLab</td><td>7.8</td></tr>
-    <tr><td>14:30–15:45</td><td><b>S15</b></td><td>Understand the eSPKP example project with Claude Code (Plan mode)</td><td>7.12</td></tr>
-    <tr><td>15:45–17:00</td><td><b>S16</b></td><td>PRD from the example → gaps vs SPEC → requirements &amp; slice plan</td><td>7.13</td></tr>
+    <tr><td>10:45–11:30</td><td><b>S17</b></td><td>The art of the prompt: anatomy, 6 principles, WEAK → GOOD, catalogue</td><td>7.14</td></tr>
+    <tr><td>11:30–12:00</td><td><b>S10</b></td><td>Subagent <code>semak-ci4</code> &amp; skill <code>migration-ci4</code></td><td>7.7</td></tr>
+    <tr><td>12:00–12:30</td><td><b>S11</b></td><td>MCP: <code>ci4-spark</code>, Context7</td><td>7.8</td></tr>
+    <tr><td>14:30–15:30</td><td><b>S18</b></td><td>Best practice: context, checkpoints, permissions, hooks, git, security, cost</td><td>7.15</td></tr>
+    <tr><td>15:30–16:15</td><td><b>S15</b></td><td>Understand the eSPKP example project (Plan mode)</td><td>7.12</td></tr>
+    <tr><td>16:15–17:00</td><td><b>S16</b></td><td>PRD → gaps vs SPEC → requirements &amp; slice plan</td><td>7.13</td></tr>
   </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div>Afternoon: Claude writes code through <b>7 review gates</b>. Manual labs 7.0–7.4 = reference code.</div></div>
-  <aside class="notes"><p>Tunjukkan perubahan jadual: S9 hanya sejam, jadi pemasangan mesti siap dalam 20 minit pertama. S12 ialah sesi baharu tentang prompt dan PRD. Petang ialah S13 dan S14: Pas dibina dengan Claude Code melalui tujuh pintu; lab manual 7.0–7.4 menjadi kod rujukan.</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div>No module is built today. Tomorrow morning Pass slices 1–2 are implemented with these practices (Labs 7.10/7.11).</div></div>
+  <aside class="notes"><p>Tunjukkan jadual baharu: S9 hanya 45 minit, jadi pemasangan mesti siap dalam 20 minit pertama. S17 Seni Prompt dan S18 Amalan Terbaik ialah sesi baharu. Petang selepas S18 menggunakan semua amalan itu pada projek sebenar: fahami eSPKP (S15) dan rancang slice Pas (S16).</p></aside>
 </section>
 
 <section class="slide">
@@ -2123,24 +2130,18 @@ claude doctor      <span class="c"># no errors</span></pre></div>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 7 · S12 — Prompt anatomy</div>
-  <h2>Five parts of a prompt, one work loop</h2>
-  <div class="flow">
-    <div class="node"><span class="k">1</span><b>Context</b><span><code>@file</code>, BR-*, SPEC</span></div><div class="arr">·</div>
-    <div class="node"><span class="k">2</span><b>Task</b><span>one thing only</span></div><div class="arr">·</div>
-    <div class="node"><span class="k">3</span><b>Constraints</b><span>"don't change files", CI 4.7</span></div><div class="arr">·</div>
-    <div class="node"><span class="k">4</span><b>Verification</b><span><code>composer test</code>, browser</span></div><div class="arr">·</div>
-    <div class="node"><span class="k">5</span><b>Format</b><span>table, ≤ 5 steps</span></div>
-  </div>
-  <div class="flow mt24">
-    <div class="node hot"><span class="k">EXPLORE</span><b>Read &amp; ask</b><span>Plan mode</span></div><div class="arr">→</div>
-    <div class="node hot"><span class="k">PLAN</span><b>Numbered plan</b><span>file · change · how to test</span></div><div class="arr">→</div>
-    <div class="node hot"><span class="k">IMPLEMENT</span><b>One small step</b><span>you write / read the diff</span></div><div class="arr">→</div>
-    <div class="node hot"><span class="k">VERIFY</span><b>Tests &amp; browser</b><span>fail → implement again</span></div><div class="arr">→</div>
-    <div class="node hot"><span class="k">COMMIT</span><b>You can explain it</b><span><code>PAS: …</code></span></div>
-  </div>
-  <div class="callout danger mt24"><span class="i">⛔</span><div>Anti-pattern: "Build the complete Pass module". Hundreds of lines with no checkpoints. Ask Claude to <b>ask first</b> (≤ 3 questions) when unclear.</div></div>
-  <aside class="notes"><p>Bandingkan prompt lemah "Buatkan validasi untuk tempahan TLK" dengan versi lima bahagian dalam tutorial prompt. Satu prompt bersamaan satu tugas yang boleh disahkan dalam 5 hingga 10 minit. (7 minit)</p></aside>
+  <div class="eyebrow">Day 7 · S9 — Common Windows problems</div>
+  <h2>Common Windows problems</h2>
+  <table class="t">
+    <tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+    <tr><td><code>claude: command not found</code></td><td>Terminal opened before install / PATH</td><td>Close all VS Code; <code>Test-Path</code> + user PATH</td></tr>
+    <tr><td><code>'irm' is not recognized</code></td><td>Run in CMD</td><td>Use Windows PowerShell (method A)</td></tr>
+    <tr><td><code>does not support 32-bit Windows</code></td><td>Opened <i>PowerShell (x86)</i></td><td>Open Windows PowerShell without (x86)</td></tr>
+    <tr><td><code>parameter name 'fsSL'</code> / <code>'&amp;&amp;' is not valid</code></td><td>Mac or CMD command in PowerShell</td><td>Method A, or open CMD for method B</td></tr>
+    <tr><td>HTML error, <code>403</code>, <i>Connecting…</i></td><td>Office proxy/firewall</td><td><code>curl.exe</code> check; <code>HTTPS_PROXY</code>; method C</td></tr>
+    <tr><td><code>Shift+Tab</code> doesn't switch mode</td><td>Terminal without VT input mode</td><td><code>Alt+M</code></td></tr>
+  </table>
+  <aside class="notes"><p>Paparkan slaid ini semasa peserta memasang dan biarkan mereka mencari gejala sendiri. Senarai penuh 16 baris ada dalam tutorial Claude Code, bahagian Masalah lazim. Yang masih gagal selepas 20 minit: pasangkan dengan rakan dan ikut demo jurulatih. (rujukan)</p></aside>
 </section>
 
 <section class="slide">
@@ -2193,6 +2194,112 @@ claude doctor      <span class="c"># no errors</span></pre></div>
   </div>
   <p class="small mt16">Every requirement has an ID so plans, tests and commits can reference it. In this course: Day 1–2 URS = PRD; <code>spesifikasi-sistem.md</code> = SPEC.</p>
   <aside class="notes"><p>Semak PRD yang didraf Claude untuk peranan yang tiada, BR yang kabur dan AC yang tidak boleh diuji. Betulkan sendiri dalam docs/prd.md, jangan minta Claude menulis semula keseluruhannya. PRD di-commit dan dikemas kini dahulu sebelum kod apabila keputusan berubah. (10 minit)</p></aside>
+</section>
+
+<!-- ---------------------------- DAY 7 · S17: THE ART OF THE PROMPT ---------------------------- -->
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S17 — Prompt anatomy</div>
+  <h2>Five parts of a prompt, one work loop</h2>
+  <div class="flow">
+    <div class="node"><span class="k">1</span><b>Context</b><span><code>@file</code>, BR-*, SPEC</span></div><div class="arr">·</div>
+    <div class="node"><span class="k">2</span><b>Task</b><span>one thing only</span></div><div class="arr">·</div>
+    <div class="node"><span class="k">3</span><b>Constraints</b><span>"don't change files", CI 4.7</span></div><div class="arr">·</div>
+    <div class="node"><span class="k">4</span><b>Verification</b><span><code>composer test</code>, browser</span></div><div class="arr">·</div>
+    <div class="node"><span class="k">5</span><b>Format</b><span>table, ≤ 5 steps</span></div>
+  </div>
+  <div class="flow mt24">
+    <div class="node hot"><span class="k">EXPLORE</span><b>Read &amp; ask</b><span>Plan mode</span></div><div class="arr">→</div>
+    <div class="node hot"><span class="k">PLAN</span><b>Numbered plan</b><span>file · change · how to test</span></div><div class="arr">→</div>
+    <div class="node hot"><span class="k">IMPLEMENT</span><b>One small step</b><span>you write / read the diff</span></div><div class="arr">→</div>
+    <div class="node hot"><span class="k">VERIFY</span><b>Tests &amp; browser</b><span>fail → implement again</span></div><div class="arr">→</div>
+    <div class="node hot"><span class="k">COMMIT</span><b>You can explain it</b><span><code>PAS: …</code></span></div>
+  </div>
+  <div class="callout danger mt24"><span class="i">⛔</span><div>Anti-pattern: "Build the complete Pass module". Hundreds of lines with no checkpoints. Ask Claude to <b>ask first</b> (≤ 3 questions) when unclear.</div></div>
+  <aside class="notes"><p>Bandingkan prompt lemah "Buatkan validasi untuk tempahan TLK" dengan versi lima bahagian dalam tutorial prompt. Satu prompt bersamaan satu tugas yang boleh disahkan dalam 5 hingga 10 minit. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S17 — Six principles</div>
+  <h2>Six principles of a good prompt</h2>
+  <div class="grid c3">
+    <div class="card top m-a"><span class="num-badge">1</span><h3>Be specific</h3><p>File names, methods, <code>BR-*</code> IDs, the full error message. Not "fix the bug".</p></div>
+    <div class="card top m-a"><span class="num-badge">2</span><h3>One task</h3><p>One prompt = one change you can verify in 5–10 minutes.</p></div>
+    <div class="card top m-a"><span class="num-badge">3</span><h3>Give a way to verify</h3><p>Tests, a command or expected output. Claude can then check its own work.</p></div>
+    <div class="card top m-a"><span class="num-badge">4</span><h3>Explore → plan → implement</h3><p>Plan mode first for multi-file changes; code only after the plan is agreed.</p></div>
+    <div class="card top m-a"><span class="num-badge">5</span><h3>State the boundaries</h3><p>What NOT to do: files out of scope, <code>migrate</code>, secrets, editing tests to go green.</p></div>
+    <div class="card top m-a"><span class="num-badge">6</span><h3>Ask for evidence</h3><p><code>file:line</code> for every claim; "ask ≤ 3 questions if unclear".</p></div>
+  </div>
+  <div class="callout tip mt16"><span class="i">💡</span><div>A long prompt is not the problem. A <b>vague</b> prompt is.</div></div>
+  <aside class="notes"><p>Prinsip 3 paling berkesan: tanpa ujian atau output dijangka, anda satu-satunya penguji. Minta peserta membuka prompt terakhir yang mereka tulis dalam Lab 7.9 dan namakan prinsip yang dilanggar. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S17 — WEAK → GOOD (1/2)</div>
+  <h2>Rewrite: from vague to verifiable</h2>
+  <table class="t">
+    <tr><th style="width:190px">Weak</th><th>Good</th><th style="width:150px">Principles</th></tr>
+    <tr><td>"Fix login."</td><td>"After logging in as <code>pemohon1</code>, <code>/pas</code> returns a 500. Full error: <i>&lt;paste&gt;</i>. Find the cause in the routes &amp; filters, give <code>file:line</code>. Propose a fix; don't change any files yet."</td><td>1 · 4 · 6</td></tr>
+    <tr><td>"Add validation to the Pass form."</td><td>"Add a rule to <code>$validationRules</code> in <code>@app/Models/PassApplicationModel.php</code>: <code>valid_until</code> must be after <code>valid_from</code>. Follow the existing style. Verify with <code>composer test -- tests/feature/Pas</code>."</td><td>1 · 3 · 5</td></tr>
+    <tr><td>"Write tests."</td><td>"Write ONE negative test in <code>tests/feature/Pas/</code>: <code>pemohon2</code> opens <code>pemohon1</code>'s application detail → 404, DB row unchanged. Run it and show the output."</td><td>2 · 3</td></tr>
+  </table>
+  <aside class="notes"><p>Baca setiap pasangan dan tanya peserta: apa yang Claude perlu teka dalam versi lemah? Dalam "Betulkan login" Claude perlu meneka simptom, fail dan sama ada boleh mengubah kod. Versi baik memberi simptom, bukti dan sempadan. (7 minit, bersama slaid seterusnya)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S17 — WEAK → GOOD (2/2)</div>
+  <h2>Rewrite: understand, refactor, performance</h2>
+  <table class="t">
+    <tr><th style="width:190px">Weak</th><th>Good</th><th style="width:150px">Principles</th></tr>
+    <tr><td>"Explain this project."</td><td>"Trace <code>POST /tlk/tempahan</code> from route to redirect in ≤ 8 steps. Each step: class, method, <code>file:line</code>. Don't change any files."</td><td>1 · 5 · 6</td></tr>
+    <tr><td>"Refactor this controller."</td><td>"<code>PassController::store()</code> is too long. Plan mode: propose moving the logic into <code>PassWorkflowService</code> <b>without</b> changing behaviour. Existing tests must stay green. Plan first, no code."</td><td>4 · 3 · 5</td></tr>
+    <tr><td>"Why is it slow?"</td><td>"<code>/laporan/pas</code> takes 4 s with 5,000 rows. Here is the query list from the Debug Toolbar: <i>&lt;paste&gt;</i>. Find repeated queries; propose a JOIN or an index with before/after evidence."</td><td>1 · 3 · 6</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Pattern: <b>symptom + evidence + boundaries + how to verify</b>. Nothing left for Claude to guess.</div></div>
+  <aside class="notes"><p>Latihan pantas: setiap peserta tulis semula satu prompt lemah sendiri dan bertukar dengan rakan. Rakan menanda prinsip mana yang dipenuhi. Prompt refactor mesti melalui mod Plan kerana menyentuh lebih daripada satu fail. (sambungan 7 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S17 — Prompt catalogue (1/2)</div>
+  <h2>Prompt catalogue: understand to debug</h2>
+  <div class="grid c3">
+    <div class="card top m-a"><span class="k">UNDERSTAND</span><p>"Explain <code>@app/Services/BookingService.php</code> in 5 lines. Who calls it? Give <code>file:line</code>."</p></div>
+    <div class="card top m-a"><span class="k">PLAN</span><p>"Plan mode: a ≤ 5-step plan for BR-PAS-03. Each step: file, change, how to test. No code."</p></div>
+    <div class="card top m-a"><span class="k">IMPLEMENT</span><p>"Implement step 1 of the plan only. Stop, then explain the diff in 3 lines."</p></div>
+    <div class="card top m-a"><span class="k">REVIEW</span><p>"Review the <code>git diff</code> for <code>esc()</code>, CSRF &amp; ownership. List findings by severity; don't fix them."</p></div>
+    <div class="card top m-a"><span class="k">TEST</span><p>"Write a FAILING test for this bug first. Show it fail, then fix until it is green."</p></div>
+    <div class="card top m-a"><span class="k">DEBUG</span><p>"Full error: <i>&lt;paste&gt;</i>. Give 3 hypotheses for the cause and how to test each. Don't change files."</p></div>
+  </div>
+  <aside class="notes"><p>Katalog ini juga ada dalam docs/seni-prompt.md. Setiap prompt mengikut anatomi lima bahagian dan sekurang-kurangnya dua prinsip. Minta peserta menyalin tiga prompt yang paling berguna ke dalam nota sendiri dan mengubah nama fail mengikut projek mereka. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S17 — Prompt catalogue (2/2)</div>
+  <h2>Prompt catalogue: refactor to CI4</h2>
+  <div class="grid c3">
+    <div class="card top m-a"><span class="k">REFACTOR</span><p>"Split <code>store()</code> into small methods without changing behaviour. <code>composer test</code> must stay green."</p></div>
+    <div class="card top m-a"><span class="k">DOCUMENTATION</span><p>"Update the README Install section from the real scripts in <code>composer.json</code>. Don't invent commands."</p></div>
+    <div class="card top m-a"><span class="k">GIT</span><p>"Draft a commit message for the staged changes: first line ≤ 60 chars, format <code>PAS: …</code>. I will commit."</p></div>
+    <div class="card top m-a"><span class="k">SECURITY</span><p>"Find user input that reaches a query without binding in <code>app/Models</code>. <code>file:line</code> only, don't change."</p></div>
+    <div class="card top m-a"><span class="k">PERFORMANCE</span><p>"Here is this page's query list: <i>&lt;paste&gt;</i>. Find repeated queries; propose a JOIN or an index."</p></div>
+    <div class="card top m-a"><span class="k">CI4</span><p>"Use Context7: the current Shield <code>permission:</code> filter syntax for CI 4.7. Cite the source link."</p></div>
+  </div>
+  <aside class="notes"><p>Perhatikan prompt GIT: Claude mendraf mesej, peserta yang commit. Prompt KESELAMATAN dan PRESTASI meminta bukti sahaja, bukan pembaikan, supaya peserta memutuskan sendiri. Prompt CI4 menggunakan Context7 dari S11 supaya sintaks mengikut versi semasa, bukan ingatan model. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S17 — Prompt modifiers</div>
+  <h2>Modifiers: what you add around a prompt</h2>
+  <table class="t">
+    <tr><th style="width:290px">Modifier</th><th>Effect</th><th>Example</th></tr>
+    <tr><td><b>Plan mode</b> · <code>Shift+Tab</code> (Windows: <code>Alt+M</code>)</td><td>Read &amp; propose only; no files change</td><td>"A ≤ 5-step plan for BR-PAS-03"</td></tr>
+    <tr><td><code>@file</code></td><td>Reference an exact file; path autocomplete</td><td><code>@app/Config/Routes.php</code></td></tr>
+    <tr><td><code>!command</code></td><td>Runs the command directly; output goes into the conversation</td><td><code>!composer test</code></td></tr>
+    <tr><td>Screenshot · <code>Ctrl+V</code> (Windows: <code>Alt+V</code>)</td><td>Image pasted as <code>[Image #1]</code></td><td>"<code>[Image #1]</code> why is the Submit button hidden?"</td></tr>
+    <tr><td><code>/clear</code></td><td>New conversation, empty context</td><td>After each finished task</td></tr>
+    <tr><td><code>Esc</code> · <code>Esc</code> <code>Esc</code></td><td>Stop the response · open the <i>rewind</i> menu (empty input)</td><td>Redirect as soon as Claude drifts</td></tr>
+  </table>
+  <aside class="notes"><p>Tangkapan skrin berguna untuk masalah paparan: tampal dengan Ctrl+V (di Windows Alt+V), dan Claude merujuknya sebagai Image #1. Gunakan data sintetik sahaja dalam tangkapan skrin. Esc sekali menghentikan jawapan tanpa membuang kerja; Esc dua kali dengan input kosong membuka menu rewind yang akan dibincang dalam S18. (5 minit)</p></aside>
 </section>
 
 <section class="slide codey">
@@ -2260,25 +2367,196 @@ down() reverses up() · NEVER run migrate</span></pre></div>
   <aside class="notes"><p>Baca templat ci4-spark 3 minit bersama: tools(), callTool() dengan regex, dan spark() dengan proc_open tanpa shell. Balasan id 4 (db_table dengan "users; DROP TABLE users") ialah soalan kuiz, jadi jangan dedahkan jawapannya. Kelayakan MySQL guna skop local, bukan .mcp.json. Jangan sekali-kali halakan MCP ke DB KKM. (10 minit demo)</p></aside>
 </section>
 
+<!-- ---------------------------- DAY 7 · AFTERNOON: S18 BEST PRACTICE · S15/S16 PLANNING ---------------------------- -->
+
 <section class="slide">
-  <div class="eyebrow">Day 7 · Common Windows problems</div>
-  <h2>Common Windows problems</h2>
-  <table class="t">
-    <tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
-    <tr><td><code>claude: command not found</code></td><td>Terminal opened before install / PATH</td><td>Close all VS Code; <code>Test-Path</code> + user PATH</td></tr>
-    <tr><td><code>'irm' is not recognized</code></td><td>Run in CMD</td><td>Use Windows PowerShell (method A)</td></tr>
-    <tr><td><code>does not support 32-bit Windows</code></td><td>Opened <i>PowerShell (x86)</i></td><td>Open Windows PowerShell without (x86)</td></tr>
-    <tr><td><code>parameter name 'fsSL'</code> / <code>'&amp;&amp;' is not valid</code></td><td>Mac or CMD command in PowerShell</td><td>Method A, or open CMD for method B</td></tr>
-    <tr><td>HTML error, <code>403</code>, <i>Connecting…</i></td><td>Office proxy/firewall</td><td><code>curl.exe</code> check; <code>HTTPS_PROXY</code>; method C</td></tr>
-    <tr><td><code>Shift+Tab</code> doesn't switch mode</td><td>Terminal without VT input mode</td><td><code>Alt+M</code></td></tr>
-  </table>
-  <aside class="notes"><p>Paparkan slaid ini semasa peserta memasang dan biarkan mereka mencari gejala sendiri. Senarai penuh 16 baris ada dalam tutorial Claude Code, bahagian Masalah lazim. Yang masih gagal selepas 20 minit: pasangkan dengan rakan dan ikut demo jurulatih. (rujukan)</p></aside>
+  <div class="eyebrow">Day 7 · S18 — Manage context</div>
+  <h2>Context is a limited resource: monitor, compact, clear</h2>
+  <div class="grid c3">
+    <div class="card top m-a"><span class="k">MONITOR</span><h3><code>/context</code></h3><p>A coloured grid of context usage, with suggestions for heavy tools and bloated memory.</p></div>
+    <div class="card top m-a"><span class="k">COMPACT</span><h3><code>/compact [instructions]</code></h3><p>Summarise the conversation to free space. Give a focus: <code>/compact keep the BR-PAS decisions</code>.</p></div>
+    <div class="card top m-a"><span class="k">CLEAR</span><h3><code>/clear</code></h3><p>New conversation, empty context. Return to the old one with <code>/resume</code>.</p></div>
+  </div>
+  <div class="card mt16"><span class="k">PRACTICE</span>
+    <ul>
+      <li>One task, one conversation: <code>/clear</code> before the next task.</li>
+      <li>Standing facts go in <code>CLAUDE.md</code>, not repeated in every prompt.</li>
+      <li>Reading many files? Hand it to a subagent: only a summary comes back.</li>
+      <li>Claude starts ignoring rules? <code>/clear</code> and a sharper prompt, not an argument.</li>
+    </ul>
+  </div>
+  <aside class="notes"><p>Demo: jalankan /context selepas Lab 7.12 yang membaca banyak fail, kemudian /compact dengan arahan fokus dan jalankan /context sekali lagi. Tekankan bahawa perbualan panjang yang penuh dengan percubaan gagal menurunkan kualiti jawapan; mula baharu selalunya lebih cepat daripada membetulkan. (8 minit)</p></aside>
 </section>
 
-<!-- ---------------------------- DAY 7 · AFTERNOON: PASS WITH CLAUDE CODE ---------------------------- -->
+<section class="slide">
+  <div class="eyebrow">Day 7 · S18 — Checkpoints &amp; rewind</div>
+  <h2>Checkpoints: rewind code and conversation</h2>
+  <div class="split">
+    <div class="stack">
+      <div class="card top m-a"><span class="k">OPEN THE MENU</span><h3><code>Esc</code> <code>Esc</code> (empty input) or <code>/rewind</code></h3><p>Every prompt you send creates a checkpoint. Pick a prompt, then:</p>
+        <ul>
+          <li><b>Restore code and conversation</b>: rewind both</li>
+          <li><b>Restore conversation</b>: code stays</li>
+          <li><b>Restore code</b>: conversation stays</li>
+          <li><b>Summarize from here</b>: compress to free context</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card top m-stat"><span class="k">NOT REWOUND</span><h3>Checkpoint limits</h3>
+      <ul>
+        <li>Files changed only by Bash commands (<code>rm</code>, scripts)</li>
+        <li>DB changes: <code>php spark migrate</code>, <code>db:seed</code></li>
+        <li>Your edits outside Claude Code or in other sessions</li>
+        <li>Most subagent edits</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Checkpoints are <b>not</b> git. Make a small commit after every green step.</div></div>
+  <aside class="notes"><p>Demo: minta Claude membuat perubahan kecil yang salah, kemudian Esc Esc, pilih prompt itu dan Restore code. Tunjukkan bahawa fail kembali. Kemudian terangkan had: perubahan DB dan arahan shell tidak diundur, sebab itu migrate dan db:seed tidak dijalankan oleh Claude dalam kursus ini. (7 minit)</p></aside>
+</section>
 
 <section class="slide">
-  <div class="eyebrow">Day 7 · S15 — Lab 7.12 (14:30–15:45)</div>
+  <div class="eyebrow">Day 7 · S18 — Permissions &amp; settings</div>
+  <h2>Permissions: deny → ask → allow, and never bypass</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">.claude/settings.json (committed)<span class="lang">json</span></div>
+<pre class="code sm" data-lang="json">{
+  <span class="s">"permissions"</span>: {
+    <span class="s">"allow"</span>: [<span class="s">"Bash(composer test *)"</span>,
+              <span class="s">"Bash(php spark routes)"</span>],
+    <span class="s">"ask"</span>:   [<span class="s">"Bash(git push *)"</span>],
+    <span class="s">"deny"</span>:  [<span class="s">"Read(./.env)"</span>,
+              <span class="s">"Bash(php spark migrate *)"</span>],
+    <span class="s">"disableBypassPermissionsMode"</span>: <span class="s">"disable"</span>
+  }
+}</pre></div>
+    <div class="stack">
+      <ul class="checks sm" style="gap:6px">
+        <li><span>Evaluated <b>deny → ask → allow</b>; the first match wins. An <i>allow</i> cannot carve a hole in a <i>deny</i>.</span></li>
+        <li><span><code>~/.claude/settings.json</code> user · <code>.claude/settings.json</code> project · <code>.claude/settings.local.json</code> personal.</span></li>
+        <li><span><code>/permissions</code>: view &amp; audit the rules by scope.</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout danger mt16"><span class="i">⛔</span><div><code>--dangerously-skip-permissions</code> = <i>bypassPermissions</i> mode: no questions at all. <b>Forbidden</b> in the course; <code>disableBypassPermissionsMode</code> switches it off.</div></div>
+  <aside class="notes"><p>Allow untuk arahan selamat yang kerap (ujian, routes) mengurangkan keletihan menekan Yes. Ask untuk perkara yang keluar dari mesin (git push). Deny untuk rahsia dan perubahan DB. Tunjukkan /permissions dan biar peserta menambah satu peraturan allow untuk composer test dalam Lab 7.15. (8 minit)</p></aside>
+</section>
+
+<section class="slide codey">
+  <div class="eyebrow">Day 7 · S18 — Hooks</div>
+  <h2>Hooks: rules that <u>always</u> run</h2>
+  <div class="split" style="grid-template-columns:1.15fr .85fr">
+    <div class="codewrap"><div class="codebar">.claude/settings.json<span class="lang">json</span></div>
+<pre class="code sm" data-lang="json">{
+  <span class="s">"hooks"</span>: {
+    <span class="s">"PreToolUse"</span>: [{ <span class="s">"matcher"</span>: <span class="s">"Read|Edit|Write|Bash|Grep|Glob"</span>, <span class="s">"hooks"</span>: [{
+      <span class="s">"type"</span>: <span class="s">"command"</span>, <span class="s">"command"</span>: <span class="s">"php"</span>,
+      <span class="s">"args"</span>: [<span class="s">"${CLAUDE_PROJECT_DIR}/.claude/hooks/sekat-env.php"</span>]
+    }] }],
+    <span class="s">"PostToolUse"</span>: [{ <span class="s">"matcher"</span>: <span class="s">"Edit|Write"</span>, <span class="s">"hooks"</span>: [{
+      <span class="s">"type"</span>: <span class="s">"command"</span>, <span class="s">"command"</span>: <span class="s">"php"</span>,
+      <span class="s">"args"</span>: [<span class="s">"${CLAUDE_PROJECT_DIR}/.claude/hooks/semak-sintaks.php"</span>]
+    }] }]
+  }
+}</pre></div>
+    <div class="stack">
+      <div class="codewrap"><div class="codebar">.claude/hooks/sekat-env.php (PreToolUse)<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php">&lt;?php
+<span class="v">$tool</span> = (json_decode(stream_get_contents(STDIN), <span class="k">true</span>) ?? [])[<span class="s">'tool_input'</span>] ?? [];
+<span class="v">$teks</span> = implode(<span class="s">' '</span>, array_filter(<span class="v">$tool</span>, <span class="s">'is_string'</span>));
+<span class="k">if</span> (preg_match(<span class="s">'/\.env(?!\.example)(?![\w])/'</span>, <span class="v">$teks</span>)) {
+    fwrite(STDERR, <span class="s">"Disekat oleh hook sekat-env"</span>);
+    <span class="k">exit</span>(2);  <span class="c">// 2 = sekat; mesej ke Claude</span>
+}</pre></div>
+      <ul class="checks sm" style="gap:6px">
+        <li><span><code>semak-sintaks.php</code> (PostToolUse): <code>php -l</code> on the edited <code>.php</code> file.</span></li>
+        <li><span><code>/hooks</code>: view the active hooks.</span></li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes"><p>Hook dijalankan oleh Claude Code, bukan model, jadi ia sentiasa berlaku walaupun Claude terlupa. PreToolUse dengan exit 2 menyekat tool sebelum ia berjalan, dan mesej stderr dihantar kepada Claude supaya ia boleh mengubah pendekatan. PostToolUse semak-sintaks.php menjalankan php -l pada fail PHP yang baru diedit. Hook dalam repo orang lain juga menjalankan arahan, jadi semak .claude/settings.json sebelum mempercayai repo. (8 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S18 — Git, sessions &amp; headless</div>
+  <h2>Git, sessions &amp; headless mode</h2>
+  <div class="grid c3">
+    <div class="card top m-a"><span class="k">GIT</span><h3>Habits</h3>
+      <ul>
+        <li>One branch per task</li>
+        <li>A small commit after every green step</li>
+        <li><code>/diff</code> to review changes before committing</li>
+        <li>You commit: <code>PAS: …</code></li>
+      </ul>
+    </div>
+    <div class="card top m-a"><span class="k">SESSIONS</span><h3>Pick up work</h3>
+      <ul>
+        <li><code>claude -c</code>: latest conversation in this folder</li>
+        <li><code>claude -r</code>: pick a session (ID or name)</li>
+        <li><code>/resume</code>: from inside a session</li>
+        <li><code>/clear slice-1</code>: label the old conversation</li>
+      </ul>
+    </div>
+    <div class="card top m-a"><span class="k">HEADLESS</span><h3><code>claude -p</code></h3>
+      <ul>
+        <li>Answer, then exit</li>
+        <li><code>git diff | claude -p "check esc()"</code></li>
+        <li><code>--output-format json</code> for scripts</li>
+        <li>No trust dialog: your own repos only</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes"><p>Claude Code menyimpan setiap perbualan: claude -c menyambung yang terkini dalam folder semasa, claude -r membuka pemilih sesi. Mod -p menjawab dan keluar tanpa sesi interaktif, sesuai untuk skrip, tetapi tiada dialog trust, jadi guna hanya dalam repo sendiri. Peserta tetap yang commit; Claude hanya mendraf mesej. (7 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S18 — Security, verification &amp; cost</div>
+  <h2>Safe, verified, affordable</h2>
+  <div class="grid c3">
+    <div class="card top m-stat"><span class="k">SECURITY</span><h3>Secrets &amp; injection</h3>
+      <ul>
+        <li>Deny <code>Read(./.env)</code>; never paste tokens</li>
+        <li><b>Prompt injection</b>: READMEs, issues, web pages can hide instructions. Read every command before <i>Yes</i></li>
+        <li>Unknown repo: check hooks &amp; <code>.mcp.json</code> before you <i>trust</i></li>
+      </ul>
+    </div>
+    <div class="card top m-tlk"><span class="k">VERIFICATION</span><h3>Confident ≠ correct</h3>
+      <ul>
+        <li>Run the tests yourself; don't accept "tests pass"</li>
+        <li>Open the <code>file:line</code> for every claim</li>
+        <li><code>/security-review</code>: branch diff vs <code>origin</code></li>
+        <li>Can't explain it = not done</li>
+      </ul>
+    </div>
+    <div class="card top m-a"><span class="k">MODEL &amp; COST</span><h3>Use it mindfully</h3>
+      <ul>
+        <li><code>/model</code>: switch model (saved as default)</li>
+        <li><code>/usage</code>: session cost &amp; plan limits</li>
+        <li><code>/clear</code> between tasks, subagents for heavy reading = fewer tokens</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes"><p>Prompt injection: README, issue GitLab atau laman web yang dibaca Claude boleh mengandungi arahan tersembunyi seperti "jalankan curl ini". Pertahanan utama ialah mod Manual: baca setiap arahan sebelum Yes. Repo baharu memaparkan dialog trust; semak .claude/settings.json (hook) dan .mcp.json dahulu. /security-review memerlukan remote origin. /usage menunjukkan kos sesi dan had pelan; /cost ialah aliasnya. (8 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S18 — Workflow for Days 8–10</div>
+  <h2>7 review gates: Claude writes, you approve</h2>
+  <div class="grid c4">
+    <div class="card top m-a"><span class="num-badge">1</span><h3>SPEC</h3><p>SPEC section &amp; <code>BR-*</code> IDs; <code>CLAUDE.md</code> points to it.</p></div>
+    <div class="card top m-a"><span class="num-badge">2</span><h3>Plan (Plan mode)</h3><p>Files &amp; BR mapping, <b>no code</b>. You review &amp; edit the plan.</p></div>
+    <div class="card top m-a"><span class="num-badge">3</span><h3>Implement (Manual)</h3><p>Read <b>every diff</b>: Yes / No. No <i>accept edits</i>, <i>auto</i>, <i>bypass</i>.</p></div>
+    <div class="card top m-a"><span class="num-badge">4</span><h3>Verify</h3><p><code>composer test</code>, browser, <code>ci4-spark</code> (<code>routes</code>, <code>filter_check</code>, <code>migrate_status</code>).</p></div>
+    <div class="card top m-a"><span class="num-badge">5</span><h3>Review</h3><p><code>semak-ci4</code> subagent, then fix through the same diff gate.</p></div>
+    <div class="card top m-a"><span class="num-badge">6</span><h3>Explain</h3><p>3 key lines, in your own words, in <code>docs/nota-claude.md</code> (<code>file:line</code>).</p></div>
+    <div class="card top m-a"><span class="num-badge">7</span><h3>Commit</h3><p>Small &amp; well described, on <code>feat/pas-claude</code>.</p></div>
+    <div class="card top m-stat tint"><span class="k">STILL FORBIDDEN</span><h3>One prompt = one module</h3><p><i>auto</i>/<i>bypass</i> mode; committing code you can't explain; secrets or real data.</p></div>
+  </div>
+  <aside class="notes"><p>Tujuh pintu ini berlaku mulai esok pagi (Lab 7.10) hingga Hari 10 (kolaborasi.md §3). Claude boleh menulis kod satu slice pada satu masa, tetapi diff diterima hanya selepas peserta boleh menerangkannya. Semak di meja peserta bahawa baris bawah Claude Code bukan accept edits atau auto. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S15 — Lab 7.12 (15:30–16:15)</div>
   <h2>S15 · Understand the eSPKP example project with Claude Code</h2>
   <div class="grid c3">
     <div class="card top m-a"><span class="num-badge">1</span><h3>Get the code</h3><p>Clone <code>aplikasi-baharu/espkpv2</code> (Reporter access) or the zip <code>espkpv2-01abad1.zip</code> → <code>~/latihan/espkpv2</code>. Not inside <code>kelas-ci</code>.</p></div>
@@ -2292,7 +2570,7 @@ down() reverses up() · NEVER run migrate</span></pre></div>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 7 · S16 — Lab 7.13 (15:45–17:00)</div>
+  <div class="eyebrow">Day 7 · S16 — Lab 7.13 (16:15–17:00)</div>
   <h2>S16 · PRD → gaps → requirements → slice plan</h2>
   <div class="grid c4">
     <div class="card top m-a"><span class="num-badge">1</span><h3>PRD from code</h3><p>Plan mode: roles, flows/states, BR, data, NFR (404 not 403, files outside <code>public/</code>) → <code>prd-espkp-pas.md</code>.</p></div>
@@ -2321,19 +2599,67 @@ down() reverses up() · NEVER run migrate</span></pre></div>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 7 · S13 — Workflow until Day 10</div>
-  <h2>7 review gates: Claude writes, you approve</h2>
-  <div class="grid c4">
-    <div class="card top m-a"><span class="num-badge">1</span><h3>SPEC</h3><p>SPEC section &amp; <code>BR-*</code> IDs; <code>CLAUDE.md</code> points to it.</p></div>
-    <div class="card top m-a"><span class="num-badge">2</span><h3>Plan (Plan mode)</h3><p>Files &amp; BR mapping, <b>no code</b>. You review &amp; edit the plan.</p></div>
-    <div class="card top m-a"><span class="num-badge">3</span><h3>Implement (Manual)</h3><p>Read <b>every diff</b>: Yes / No. No <i>accept edits</i>, <i>auto</i>, <i>bypass</i>.</p></div>
-    <div class="card top m-a"><span class="num-badge">4</span><h3>Verify</h3><p><code>composer test</code>, browser, <code>ci4-spark</code> (<code>routes</code>, <code>filter_check</code>, <code>migrate_status</code>).</p></div>
-    <div class="card top m-a"><span class="num-badge">5</span><h3>Review</h3><p><code>semak-ci4</code> subagent, then fix through the same diff gate.</p></div>
-    <div class="card top m-a"><span class="num-badge">6</span><h3>Explain</h3><p>3 key lines, in your own words, in <code>docs/nota-claude.md</code> (<code>file:line</code>).</p></div>
-    <div class="card top m-a"><span class="num-badge">7</span><h3>Commit</h3><p>Small &amp; well described, on <code>feat/pas-claude</code>.</p></div>
-    <div class="card top m-stat tint"><span class="k">STILL FORBIDDEN</span><h3>One prompt = one module</h3><p><i>auto</i>/<i>bypass</i> mode; committing code you can't explain; secrets or real data.</p></div>
+  <div class="eyebrow">Day 7 · Today's outputs</div>
+  <h2>Check before you leave</h2>
+  <ul class="checks done sm" style="gap:6px">
+    <li><span><code>.claude/settings.json</code> (deny) &amp; project <code>CLAUDE.md</code> committed (7.6).</span></li>
+    <li><span>3 onboarding prompts verified; practice <code>docs/prd.md</code> with FR, BR &amp; AC (7.9).</span></li>
+    <li><span>5 weak prompts rewritten; 6 catalogue prompts run &amp; scored 0–6 in <code>nota-claude.md</code> (7.14).</span></li>
+    <li><span><code>semak-ci4</code> subagent &amp; <code>migration-ci4</code> skill (7.7) · <code>ci4-spark</code> MCP &amp; Context7 <i>Connected</i> (7.8).</span></li>
+    <li><span>4 allow / 7 deny rules; hooks <code>sekat-env.php</code> + <code>semak-sintaks.php</code>; one <code>/rewind</code>; <code>claude -p</code> review prints LULUS/GAGAL (7.15).</span></li>
+    <li><span>eSPKP <code>nota-fahami.md</code> verified at <code>file:line</code> (7.12).</span></li>
+    <li><span><code>docs/keperluan-pas.md</code> + <code>docs/pelan-pas.md</code> on <code>docs/keperluan-pas</code> (7.13).</span></li>
+  </ul>
+  <aside class="notes"><p>Checkpoint akhir hari: settings.json dan CLAUDE.md di-commit, hook sekat-env.php menyekat edit .env, nota-fahami.md lengkap dengan fail:baris, dan keperluan-pas.md serta pelan-pas.md di-commit dalam branch docs/keperluan-pas. Esok pagi Lab 7.10 bermula terus daripada pelan-pas.md.</p></aside>
+</section>
+
+
+<!-- ============================ DAY 8 ============================ -->
+
+<section class="slide dark divider" data-label="Day 8 · Pass (2)">
+  <div class="eyebrow">Day 8 · Phase B — Set Up &amp; Build</div>
+  <h1>Pass Module — Part 2 (Claude Code)</h1>
+  <div><span class="chip m-pas">M2 · approval, RBAC &amp; audit</span></div>
+  <div class="sessions">
+    <div><i>S13</i><span>Morning: Lab 7.10 — Pass slice 1 (from <code>docs/pelan-pas.md</code>)</span></div>
+    <div><i>S14</i><span>Morning: Lab 7.11 — Pass slice 2, secure upload</span></div>
+    <div><i>S9</i><span>Pass approval flow (slice 3)</span></div>
+    <div><i>S10</i><span>Shield RBAC &amp; access scope (slice 4)</span></div>
+    <div><i>S11</i><span>Access tests &amp; status history (slice 5)</span></div>
+    <div><i>S12</i><span>M2 demo &amp; merge — start of Day 9 / homework</span></div>
   </div>
-  <aside class="notes"><p>Tujuh pintu ini berlaku mulai petang ini hingga Hari 10 (kolaborasi.md §3). Claude boleh menulis kod satu slice pada satu masa, tetapi diff diterima hanya selepas peserta boleh menerangkannya. Semak di meja peserta bahawa baris bawah Claude Code bukan accept edits atau auto. (5 minit)</p></aside>
+  <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span></div>
+  <div class="daynum">08</div>
+  <aside class="notes"><p>Hari 8 dibina bersama Claude Code: slice 3 hingga 5 modul Pas melalui tujuh gerbang yang sama seperti Hari 7 petang. Slaid S1–S4 manual kekal sebagai kod rujukan. Hujung hari: demo tiga peranan, gerbang terang rakan dan merge — M2 siap.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 8 · Today's objectives</div>
+  <h2>By the end of today, you can…</h2>
+  <ul class="checks sm">
+    <li><span><em>S13–14</em>Implement slices 1–2 from <code>docs/keperluan-pas.md</code> &amp; <code>pelan-pas.md</code> (Lab 7.10/7.11) through the 7 gates.</span></li>
+    <li><span><em>S9</em>Assess the <code>transition()</code> diff: <code>FOR UPDATE</code>, <code>canTransitionTo()</code>, <code>status_logs</code> in the transaction.</span></li>
+    <li><span><em>S10</em>Prove <code>permission:</code>, <code>authorize()</code> &amp; <code>canView()</code> with <code>filter_check</code> and attacks.</span></li>
+    <li><span><em>S11</em>Write the access matrix yourself; positive/negative <code>PassAccessTest</code> + 2 mutations.</span></li>
+    <li><span><em>S12</em>Run <code>semak-ci4</code> + AI-08, demo 3 roles, merge — <b>M2 done</b>.</span></li>
+  </ul>
+  <p class="small mt16">Labs 8.10–8.13 · Manual S1–S4 slides = <b>reference code</b>.</p>
+  <aside class="notes"><p>Setiap objektif diukur melalui Kuiz S9–S12 (checkpoint Lab 8.10–8.13). Tekankan: tugas peserta kini menilai diff Claude dan membuktikannya dengan alat yang bukan Claude (filter_check, serangan, ujian, mutasi).</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 8 · Today's slice plan</div>
+  <h2>Today's slice plan: Pass slices 3–5</h2>
+  <table class="t tight">
+    <tr><th>Slice</th><th>A good diff has</th><th>Reject if</th></tr>
+    <tr><td><b>Slices 1–2 · S13/S14</b><br><span class="small">Morning · Lab 7.10/7.11</span></td><td>Follows <code>docs/keperluan-pas.md</code>; <code>ownedBy()</code> in the Model; files outside <code>public/</code>, random names</td><td>A new Pass migration; owner check in the view; a slice outside the plan</td></tr>
+    <tr><td><b>Slice 3 · S9</b><br><span class="small">Approval flow · Lab 8.10</span></td><td><code>SELECT … FOR UPDATE</code> after <code>transBegin()</code>; <code>record()</code> before <code>transCommit()</code>; remarks ≥ 10 chars</td><td><code>status</code> from <code>getPost()</code>; check before the transaction; <code>approved_at</code> in <code>reject()</code></td></tr>
+    <tr><td><b>Slice 4 · S10</b><br><span class="small">RBAC &amp; scope · Lab 8.11</span></td><td><code>permission:pas.approve</code> per route; <code>$actor-&gt;can()</code>; <code>canView()</code> → 404</td><td><code>inGroup('approver')</code> instead of <code>can()</code>; 403 for non-owners; permissions outside SPEC §4</td></tr>
+    <tr><td><b>Slice 5 · S11</b><br><span class="small">Tests &amp; timeline · Lab 8.12</span></td><td>Negative tests check the response <b>and</b> the DB; <code>esc()</code> on <code>remarks</code></td><td><code>assertRedirect()</code> only; tests changed to go green</td></tr>
+    <tr><td><b>S12</b><br><span class="small">Demo &amp; merge · Lab 8.13</span></td><td><code>semak-ci4</code> + AI-08; 3 random lines explained without Claude</td><td>A line you can't explain = feature not done</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Branch <code>feat/pas-claude</code>; one small <code>PAS: …</code> commit per slice.</div></div>
+  <aside class="notes"><p>Baca jadual ini bersama sebelum Lab 8.10. Lajur kanan ialah senarai diff yang mesti ditolak dengan sebab. Ingatkan: permission yang tiada dalam SPEC §4 ditolak, dan bukan pemilik dapat 404, bukan 403. (5 minit)</p></aside>
 </section>
 
 <section class="slide">
@@ -2374,218 +2700,6 @@ After each file, stop and explain in 3 lines before the next file.</pre></div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Test: a 3 MB file and <code>skrip.pdf</code> are rejected with no new file on disk; <code>pemohon2</code> → 404 downloading <code>pemohon1</code>'s document.</div></div>
   <aside class="notes"><p>Lima pintu muat naik mesti kekal dalam setiap diff: saiz, extension, kandungan, nama rawak di luar public/, muat turun melalui controller bersemak pemilikan. Tekankan urutan move() sebelum transaksi dan pembersihan fail dalam catch. Selepas lulus ujian, bandingkan dengan Lab 7.3 manual dan rekod perbezaan dalam docs/nota-claude.md. (75 minit)</p></aside>
-</section>
-
-<section class="slide codey">
-  <div class="eyebrow">Day 7 · S1 — Model &amp; enum · reference code</div>
-  <h2>PassApplicationModel &amp; the PassType enum</h2>
-  <div class="split" style="grid-template-columns:1.18fr .82fr">
-    <div class="codewrap"><div class="codebar">app/Models/PassApplicationModel.php<span class="lang">php</span></div>
-<pre class="code sm" data-lang="php"><span class="k">class</span> <span class="t">PassApplicationModel</span> <span class="k">extends</span> <span class="t">Model</span>
-{
-    <span class="k">protected</span> <span class="v">$table</span>         = <span class="s">'pass_applications'</span>;
-    <span class="k">protected</span> <span class="v">$returnType</span>    = <span class="t">PassApplication</span>::<span class="k">class</span>;
-    <span class="k">protected</span> <span class="v">$useTimestamps</span> = <span class="k">true</span>;
-    <span class="k">protected</span> <span class="v">$allowedFields</span> = [<span class="s">'ref_no'</span>, <span class="s">'user_id'</span>,
-        <span class="s">'pass_type'</span>, <span class="s">'vehicle_id'</span>, <span class="s">'purpose'</span>, <span class="s">'valid_from'</span>,
-        <span class="s">'valid_until'</span>, <span class="s">'status'</span>, <span class="s">'reviewed_by'</span>,
-        <span class="s">'reviewed_at'</span>, <span class="s">'approved_by'</span>, <span class="s">'approved_at'</span>];
-
-    <span class="k">protected</span> <span class="v">$validationRules</span> = [
-        <span class="s">'pass_type'</span>   =&gt; <span class="s">'required|in_list[kenderaan,kakitangan,kontraktor]'</span>,
-        <span class="s">'vehicle_id'</span>  =&gt; <span class="s">'permit_empty|is_natural_no_zero'</span>,
-        <span class="s">'purpose'</span>     =&gt; <span class="s">'required|min_length[10]'</span>,
-        <span class="s">'valid_from'</span>  =&gt; <span class="s">'required|valid_date[Y-m-d]'</span>,
-        <span class="s">'valid_until'</span> =&gt; <span class="s">'required|valid_date[Y-m-d]'</span>,
-    ];
-}</pre></div>
-    <div class="stack">
-      <div class="codewrap"><div class="codebar">app/Enums/PassType.php<span class="lang">php</span></div>
-<pre class="code sm" data-lang="php"><span class="k">enum</span> <span class="t">PassType</span>: <span class="k">string</span>
-{
-    <span class="k">case</span> <span class="t">Kenderaan</span>  = <span class="s">'kenderaan'</span>;
-    <span class="k">case</span> <span class="t">Kakitangan</span> = <span class="s">'kakitangan'</span>;
-    <span class="k">case</span> <span class="t">Kontraktor</span> = <span class="s">'kontraktor'</span>;
-
-    <span class="k">public</span> <span class="k">function</span> <span class="f">label</span>(): <span class="k">string</span>
-    {
-        <span class="k">return</span> <span class="k">match</span> (<span class="v">$this</span>) {
-            <span class="k">self</span>::<span class="t">Kenderaan</span>  =&gt; <span class="s">'Pas Kenderaan'</span>,
-            <span class="k">self</span>::<span class="t">Kakitangan</span> =&gt; <span class="s">'Pas Kakitangan'</span>,
-            <span class="k">self</span>::<span class="t">Kontraktor</span> =&gt; <span class="s">'Pas Kontraktor'</span>,
-        };
-    }
-}</pre></div>
-    </div>
-  </div>
-  <aside class="notes"><p><code>vehicle_id</code> boleh kosong (permit_empty) kerana pas kakitangan tidak memerlukan kenderaan. PassDocumentModel menyimpan metadata fail sahaja: original_name, stored_path, mime, size_bytes.</p></aside>
-</section>
-
-<section class="slide codey">
-  <div class="eyebrow">Day 7 · S2 — Owner scope · reference code</div>
-  <h2>Applicants see only their own records (BR-PAS-04)</h2>
-  <div class="codewrap"><div class="codebar">app/Controllers/Pas/ApplicationController.php<span class="lang">php</span></div>
-<pre class="code sm" data-lang="php"><span class="k">public</span> <span class="k">function</span> <span class="f">index</span>()
-{
-    <span class="v">$model</span> = <span class="f">model</span>(<span class="t">PassApplicationModel</span>::<span class="k">class</span>);
-    <span class="k">if</span> (! <span class="f">auth</span>()-&gt;<span class="f">user</span>()-&gt;<span class="f">inGroup</span>(<span class="s">'reviewer'</span>, <span class="s">'approver'</span>, <span class="s">'admin'</span>)) {
-        <span class="v">$model</span>-&gt;<span class="f">where</span>(<span class="s">'user_id'</span>, <span class="f">auth</span>()-&gt;<span class="f">id</span>());                       <span class="c">// owner scope</span>
-    }
-
-    <span class="k">return</span> <span class="f">view</span>(<span class="s">'pas/index'</span>, [
-        <span class="s">'items'</span> =&gt; <span class="v">$model</span>-&gt;<span class="f">orderBy</span>(<span class="s">'created_at'</span>, <span class="s">'DESC'</span>)-&gt;<span class="f">paginate</span>(<span class="n">10</span>),
-        <span class="s">'pager'</span> =&gt; <span class="v">$model</span>-&gt;pager,
-    ]);
-}
-
-<span class="k">public</span> <span class="k">function</span> <span class="f">dokumen</span>(<span class="k">int</span> <span class="v">$id</span>)                                      <span class="c">// GET /pas/permohonan/dokumen/{id}</span>
-{
-    <span class="v">$doc</span> = <span class="f">model</span>(<span class="t">PassDocumentModel</span>::<span class="k">class</span>)-&gt;<span class="f">find</span>(<span class="v">$id</span>) ?? <span class="k">throw</span> <span class="t">PageNotFoundException</span>::<span class="f">forPageNotFound</span>();
-    <span class="v">$this</span>-&gt;<span class="f">findOwned</span>((<span class="k">int</span>) <span class="v">$doc</span>[<span class="s">'application_id'</span>]);                    <span class="c">// 404 if not the owner / staff</span>
-
-    <span class="k">return</span> <span class="v">$this</span>-&gt;response-&gt;<span class="f">download</span>(<span class="t">WRITEPATH</span> . <span class="v">$doc</span>[<span class="s">'stored_path'</span>], <span class="k">null</span>)
-        -&gt;<span class="f">setFileName</span>(<span class="v">$doc</span>[<span class="s">'original_name'</span>]);
-}</pre></div>
-  <div class="callout warn mt16"><span class="i">⚠️</span><div>Hiding a link is <b>not</b> access control. Try changing the ID in the URL — the server must refuse.</div></div>
-  <aside class="notes"><p>Demo serangan IDOR: log masuk sebagai pemohon2, buka /pas/permohonan/1 milik pemohon1. Tanpa semakan pemilikan, data bocor. findOwned() ditunjukkan penuh pada Hari 8.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 7 · S3 — Secure uploads · reference code</div>
-  <h2>Document upload checklist (BR-PAS-02)</h2>
-  <div class="grid c3">
-    <div class="card top m-pas"><span class="num-badge">1</span><h3>Type by content</h3><p><code>ext_in</code> + <code>mime_in</code>: pdf, jpg, png only.</p></div>
-    <div class="card top m-pas"><span class="num-badge">2</span><h3>Size &amp; count</h3><p><code>max_size[documents,2048]</code> (KB) · maximum 3 files.</p></div>
-    <div class="card top m-pas"><span class="num-badge">3</span><h3>Random name</h3><p><code>$file-&gt;getRandomName()</code> — never use the user's original name.</p></div>
-    <div class="card top m-pas"><span class="num-badge">4</span><h3>Outside the web root</h3><p>Store in <code>writable/uploads/pas/</code>, <b>not</b> <code>public/</code>.</p></div>
-    <div class="card top m-pas"><span class="num-badge">5</span><h3>DB stores the path only</h3><p><code>stored_path</code>, <code>mime</code>, <code>size_bytes</code> in <code>pass_documents</code>.</p></div>
-    <div class="card top m-pas"><span class="num-badge">6</span><h3>Checked download</h3><p>Through a controller + ownership check, not a direct link.</p></div>
-  </div>
-  <div class="callout warn mt16"><span class="i">⚠️</span><div><code>getClientName()</code> and <code>getClientMimeType()</code> come from the browser — <b>do not trust them</b> for security decisions.</div></div>
-  <aside class="notes"><p>Setiap item ialah satu lapisan pertahanan. Fail PHP yang dinamakan semula kepada .pdf ditolak oleh mime_in kerana CI memeriksa kandungan sebenar. Walaupun lepas, ia berada di luar public/ dan tidak boleh dilaksanakan melalui URL.</p></aside>
-</section>
-
-<section class="slide codey">
-  <div class="eyebrow">Day 7 · S3 — Upload code · reference code</div>
-  <h2>Validate, move, record</h2>
-  <div class="split">
-    <div class="codewrap"><div class="codebar">ApplicationController::create()<span class="lang">php</span></div>
-<pre class="code sm" data-lang="php"><span class="v">$rules</span> = [
-    <span class="s">'documents'</span> =&gt; [
-        <span class="s">'uploaded[documents]'</span>,
-        <span class="s">'max_size[documents,2048]'</span>,
-        <span class="s">'ext_in[documents,pdf,jpg,png]'</span>,
-        <span class="s">'mime_in[documents,application/pdf,'</span>
-            . <span class="s">'image/jpeg,image/png]'</span>,
-    ],
-];
-<span class="k">if</span> (! <span class="v">$this</span>-&gt;<span class="f">validate</span>(<span class="v">$rules</span>)) {
-    <span class="k">return</span> <span class="f">redirect</span>()-&gt;<span class="f">back</span>()-&gt;<span class="f">withInput</span>()
-        -&gt;<span class="f">with</span>(<span class="s">'errors'</span>, <span class="v">$this</span>-&gt;validator-&gt;<span class="f">getErrors</span>());
-}
-<span class="v">$files</span> = <span class="v">$this</span>-&gt;request-&gt;<span class="f">getFileMultiple</span>(<span class="s">'documents'</span>);
-<span class="k">if</span> (<span class="f">count</span>(<span class="v">$files</span>) &gt; <span class="n">3</span>) {
-    <span class="k">return</span> <span class="f">redirect</span>()-&gt;<span class="f">back</span>()-&gt;<span class="f">withInput</span>()
-        -&gt;<span class="f">with</span>(<span class="s">'error'</span>, <span class="s">'Maksimum 3 fail.'</span>);
-}</pre></div>
-    <div class="codewrap"><div class="codebar">… continued<span class="lang">php</span></div>
-<pre class="code sm" data-lang="php"><span class="v">$appId</span> = (<span class="k">new</span> <span class="t">PassWorkflowService</span>())
-    -&gt;<span class="f">submit</span>((<span class="k">int</span>) <span class="f">auth</span>()-&gt;<span class="f">id</span>(), <span class="v">$this</span>-&gt;request-&gt;<span class="f">getPost</span>(
-        [<span class="s">'pass_type'</span>, <span class="s">'vehicle_id'</span>, <span class="s">'purpose'</span>,
-         <span class="s">'valid_from'</span>, <span class="s">'valid_until'</span>]));
-
-<span class="k">foreach</span> (<span class="v">$files</span> <span class="k">as</span> <span class="v">$file</span>) {
-    <span class="v">$name</span> = <span class="v">$file</span>-&gt;<span class="f">getRandomName</span>();
-    <span class="v">$meta</span> = [<span class="s">'mime'</span>       =&gt; <span class="v">$file</span>-&gt;<span class="f">getMimeType</span>(),
-             <span class="s">'size_bytes'</span> =&gt; <span class="v">$file</span>-&gt;<span class="f">getSize</span>()];
-    <span class="v">$file</span>-&gt;<span class="f">move</span>(<span class="t">WRITEPATH</span> . <span class="s">'uploads/pas'</span>, <span class="v">$name</span>);
-
-    <span class="f">model</span>(<span class="t">PassDocumentModel</span>::<span class="k">class</span>)-&gt;<span class="f">insert</span>(<span class="v">$meta</span> + [
-        <span class="s">'application_id'</span> =&gt; <span class="v">$appId</span>,
-        <span class="s">'doc_type'</span>       =&gt; <span class="s">'sokongan'</span>,
-        <span class="s">'original_name'</span>  =&gt; <span class="v">$file</span>-&gt;<span class="f">getClientName</span>(),
-        <span class="s">'stored_path'</span>    =&gt; <span class="s">'uploads/pas/'</span> . <span class="v">$name</span>,
-    ]);
-}</pre></div>
-  </div>
-  <aside class="notes"><p>getMimeType() membaca kandungan sebenar fail, bukan sambungan. Ambil mime dan saiz sebelum move(). submit() dalam PassWorkflowService menjana PAS-2026-0001, menyimpan status submitted dan menulis log pertama.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 7 · S4 — Edge cases · reference code</div>
-  <h2>Test the edge cases, not just the happy path</h2>
-  <table class="t">
-    <tr><th>Case</th><th>Input</th><th>Expected</th></tr>
-    <tr><td>Valid file</td><td><code>surat.pdf</code> · 300 KB</td><td><span class="st approved">accepted</span> random name in <code>writable/uploads/pas/</code></td></tr>
-    <tr><td>Too large</td><td><code>gambar.jpg</code> · 2.4 MB</td><td><span class="st rejected">rejected</span> <code>max_size</code> error</td></tr>
-    <tr><td>Fake type</td><td><code>skrip.php</code> renamed to <code>skrip.pdf</code></td><td><span class="st rejected">rejected</span> <code>mime_in</code> error</td></tr>
-    <tr><td>Too many</td><td>4 files</td><td><span class="st rejected">rejected</span> “Maksimum 3 fail.”</td></tr>
-    <tr><td>No file</td><td>—</td><td><span class="st rejected">rejected</span> <code>uploaded</code> error</td></tr>
-    <tr><td>Direct access</td><td>URL to <code>writable/uploads/…</code></td><td><span class="st rejected">404</span> outside <code>public/</code></td></tr>
-  </table>
-  <aside class="notes"><p>Sediakan fail ujian ini dalam folder bersama (termasuk fail 2.4 MB dan PHP yang dinamakan semula). Setiap peserta rekod keputusan dalam templat kes ujian — setiap kegagalan menjadi pepijat untuk dibaiki.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 7 · Today's outputs</div>
-  <h2>Check before you leave</h2>
-  <ul class="checks done sm">
-    <li><span><code>.claude/settings.json</code> (4 <i>deny</i>) &amp; project <code>CLAUDE.md</code> committed; <code>CLAUDE.local.md</code> in <code>.gitignore</code> (7.6).</span></li>
-    <li><span>3 onboarding prompts verified; practice <code>docs/prd.md</code> with FR, BR &amp; AC (7.9).</span></li>
-    <li><span><code>semak-ci4</code> subagent, <code>migration-ci4</code> skill &amp; <code>docs/semakan-ci4-hari6.md</code> (7.7).</span></li>
-    <li><span><code>ci4-spark</code> MCP server in <code>.mcp.json</code>; Context7 <i>Connected</i> (7.8).</span></li>
-    <li><span>Pass slice 1: <code>ownedBy()</code>, list &amp; detail, 404 for non-owners (7.10).</span></li>
-    <li><span>Pass slice 2: secure upload, random names, transaction + clean-up; 3 explained lines per slice (7.11).</span></li>
-  </ul>
-  <aside class="notes"><p>Checkpoint petang: commit slice 1 dan 2 ada dalam feat/pas-claude, docs/nota-claude.md mempunyai 3 baris terangan setiap slice, dan pemohon2 mendapat 404 pada butiran dan muat turun dokumen pemohon1. MR chore/claude-code mesti sudah di-merge.</p></aside>
-</section>
-
-<!-- ============================ DAY 8 ============================ -->
-
-<section class="slide dark divider" data-label="Day 8 · Pass (2)">
-  <div class="eyebrow">Day 8 · Phase B — Set Up &amp; Build</div>
-  <h1>Pass Module — Part 2 (Claude Code)</h1>
-  <div><span class="chip m-pas">M2 · approval, RBAC &amp; audit</span></div>
-  <div class="sessions">
-    <div><i>S13</i><span>Morning: Lab 7.10 — Pass slice 1 (from <code>docs/pelan-pas.md</code>)</span></div>
-    <div><i>S14</i><span>Morning: Lab 7.11 — Pass slice 2, secure upload</span></div>
-    <div><i>S9</i><span>Pass approval flow (slice 3)</span></div>
-    <div><i>S10</i><span>Shield RBAC &amp; access scope (slice 4)</span></div>
-    <div><i>S11</i><span>Access tests &amp; status history (slice 5)</span></div>
-    <div><i>S12</i><span>M2 demo &amp; merge — start of Day 9 / homework</span></div>
-  </div>
-  <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span></div>
-  <div class="daynum">08</div>
-  <aside class="notes"><p>Hari 8 dibina bersama Claude Code: slice 3 hingga 5 modul Pas melalui tujuh gerbang yang sama seperti Hari 7 petang. Slaid S1–S4 manual kekal sebagai kod rujukan. Hujung hari: demo tiga peranan, gerbang terang rakan dan merge — M2 siap.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 8 · Today's objectives</div>
-  <h2>By the end of today, you can…</h2>
-  <ul class="checks sm">
-    <li><span><em>S13–14</em>Implement slices 1–2 from <code>docs/keperluan-pas.md</code> &amp; <code>pelan-pas.md</code> (Lab 7.10/7.11) through the 7 gates.</span></li>
-    <li><span><em>S9</em>Assess the <code>transition()</code> diff: <code>FOR UPDATE</code>, <code>canTransitionTo()</code>, <code>status_logs</code> in the transaction.</span></li>
-    <li><span><em>S10</em>Prove <code>permission:</code>, <code>authorize()</code> &amp; <code>canView()</code> with <code>filter_check</code> and attacks.</span></li>
-    <li><span><em>S11</em>Write the access matrix yourself; positive/negative <code>PassAccessTest</code> + 2 mutations.</span></li>
-    <li><span><em>S12</em>Run <code>semak-ci4</code> + AI-08, demo 3 roles, merge — <b>M2 done</b>.</span></li>
-  </ul>
-  <p class="small mt16">Labs 8.10–8.13 · Manual S1–S4 slides = <b>reference code</b>.</p>
-  <aside class="notes"><p>Setiap objektif diukur melalui Kuiz S9–S12 (checkpoint Lab 8.10–8.13). Tekankan: tugas peserta kini menilai diff Claude dan membuktikannya dengan alat yang bukan Claude (filter_check, serangan, ujian, mutasi).</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 8 · Today's slice plan</div>
-  <h2>Today's slice plan: Pass slices 3–5</h2>
-  <table class="t">
-    <tr><th>Slice</th><th>A good diff has</th><th>Reject if</th></tr>
-    <tr><td><b>Slices 1–2 · S13/S14</b><br><span class="small">Morning · Lab 7.10/7.11</span></td><td>Follows <code>docs/keperluan-pas.md</code>; <code>ownedBy()</code> in the Model; files outside <code>public/</code>, random names</td><td>A new Pass migration; owner check in the view; a slice outside the plan</td></tr>
-    <tr><td><b>Slice 3 · S9</b><br><span class="small">Approval flow · Lab 8.10</span></td><td><code>SELECT … FOR UPDATE</code> after <code>transBegin()</code>; <code>record()</code> before <code>transCommit()</code>; remarks ≥ 10 chars</td><td><code>status</code> from <code>getPost()</code>; check before the transaction; <code>approved_at</code> in <code>reject()</code></td></tr>
-    <tr><td><b>Slice 4 · S10</b><br><span class="small">RBAC &amp; scope · Lab 8.11</span></td><td><code>permission:pas.approve</code> per route; <code>$actor-&gt;can()</code>; <code>canView()</code> → 404</td><td><code>inGroup('approver')</code> instead of <code>can()</code>; 403 for non-owners; permissions outside SPEC §4</td></tr>
-    <tr><td><b>Slice 5 · S11</b><br><span class="small">Tests &amp; timeline · Lab 8.12</span></td><td>Negative tests check the response <b>and</b> the DB; <code>esc()</code> on <code>remarks</code></td><td><code>assertRedirect()</code> only; tests changed to go green</td></tr>
-    <tr><td><b>S12</b><br><span class="small">Demo &amp; merge · Lab 8.13</span></td><td><code>semak-ci4</code> + AI-08; 3 random lines explained without Claude</td><td>A line you can't explain = feature not done</td></tr>
-  </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div>Branch <code>feat/pas-claude</code>; one small <code>PAS: …</code> commit per slice.</div></div>
-  <aside class="notes"><p>Baca jadual ini bersama sebelum Lab 8.10. Lajur kanan ialah senarai diff yang mesti ditolak dengan sebab. Ingatkan: permission yang tiada dalam SPEC §4 ditolak, dan bukan pemilik dapat 404, bukan 403. (5 minit)</p></aside>
 </section>
 
 <section class="slide">
@@ -2795,6 +2909,158 @@ git diff main...feat/pas-claude</pre></div>
   <aside class="notes"><p>Ujian negatif lebih penting daripada positif — ia membuktikan pintu berkunci. Tambah ujian untuk pemohon2 membuka dokumen pemohon1 (jangkaan 404). Filter Shield yang menolak akan melakukan redirect dengan mesej ralat.</p></aside>
 </section>
 
+<!-- ---------------------------- DAY 8 · SLICE 1–2 REFERENCE CODE (MANUAL LABS 7.1–7.4) ---------------------------- -->
+
+<section class="slide codey">
+  <div class="eyebrow">Day 8 · Slice 1 — Model &amp; enum · reference code</div>
+  <h2>PassApplicationModel &amp; the PassType enum</h2>
+  <div class="split" style="grid-template-columns:1.18fr .82fr">
+    <div class="codewrap"><div class="codebar">app/Models/PassApplicationModel.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">class</span> <span class="t">PassApplicationModel</span> <span class="k">extends</span> <span class="t">Model</span>
+{
+    <span class="k">protected</span> <span class="v">$table</span>         = <span class="s">'pass_applications'</span>;
+    <span class="k">protected</span> <span class="v">$returnType</span>    = <span class="t">PassApplication</span>::<span class="k">class</span>;
+    <span class="k">protected</span> <span class="v">$useTimestamps</span> = <span class="k">true</span>;
+    <span class="k">protected</span> <span class="v">$allowedFields</span> = [<span class="s">'ref_no'</span>, <span class="s">'user_id'</span>,
+        <span class="s">'pass_type'</span>, <span class="s">'vehicle_id'</span>, <span class="s">'purpose'</span>, <span class="s">'valid_from'</span>,
+        <span class="s">'valid_until'</span>, <span class="s">'status'</span>, <span class="s">'reviewed_by'</span>,
+        <span class="s">'reviewed_at'</span>, <span class="s">'approved_by'</span>, <span class="s">'approved_at'</span>];
+
+    <span class="k">protected</span> <span class="v">$validationRules</span> = [
+        <span class="s">'pass_type'</span>   =&gt; <span class="s">'required|in_list[kenderaan,kakitangan,kontraktor]'</span>,
+        <span class="s">'vehicle_id'</span>  =&gt; <span class="s">'permit_empty|is_natural_no_zero'</span>,
+        <span class="s">'purpose'</span>     =&gt; <span class="s">'required|min_length[10]'</span>,
+        <span class="s">'valid_from'</span>  =&gt; <span class="s">'required|valid_date[Y-m-d]'</span>,
+        <span class="s">'valid_until'</span> =&gt; <span class="s">'required|valid_date[Y-m-d]'</span>,
+    ];
+}</pre></div>
+    <div class="stack">
+      <div class="codewrap"><div class="codebar">app/Enums/PassType.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">enum</span> <span class="t">PassType</span>: <span class="k">string</span>
+{
+    <span class="k">case</span> <span class="t">Kenderaan</span>  = <span class="s">'kenderaan'</span>;
+    <span class="k">case</span> <span class="t">Kakitangan</span> = <span class="s">'kakitangan'</span>;
+    <span class="k">case</span> <span class="t">Kontraktor</span> = <span class="s">'kontraktor'</span>;
+
+    <span class="k">public</span> <span class="k">function</span> <span class="f">label</span>(): <span class="k">string</span>
+    {
+        <span class="k">return</span> <span class="k">match</span> (<span class="v">$this</span>) {
+            <span class="k">self</span>::<span class="t">Kenderaan</span>  =&gt; <span class="s">'Pas Kenderaan'</span>,
+            <span class="k">self</span>::<span class="t">Kakitangan</span> =&gt; <span class="s">'Pas Kakitangan'</span>,
+            <span class="k">self</span>::<span class="t">Kontraktor</span> =&gt; <span class="s">'Pas Kontraktor'</span>,
+        };
+    }
+}</pre></div>
+    </div>
+  </div>
+  <aside class="notes"><p><code>vehicle_id</code> boleh kosong (permit_empty) kerana pas kakitangan tidak memerlukan kenderaan. PassDocumentModel menyimpan metadata fail sahaja: original_name, stored_path, mime, size_bytes.</p></aside>
+</section>
+
+<section class="slide codey">
+  <div class="eyebrow">Day 8 · Slice 1 — Owner scope · reference code</div>
+  <h2>Applicants see only their own records (BR-PAS-04)</h2>
+  <div class="codewrap"><div class="codebar">app/Controllers/Pas/ApplicationController.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">public</span> <span class="k">function</span> <span class="f">index</span>()
+{
+    <span class="v">$model</span> = <span class="f">model</span>(<span class="t">PassApplicationModel</span>::<span class="k">class</span>);
+    <span class="k">if</span> (! <span class="f">auth</span>()-&gt;<span class="f">user</span>()-&gt;<span class="f">inGroup</span>(<span class="s">'reviewer'</span>, <span class="s">'approver'</span>, <span class="s">'admin'</span>)) {
+        <span class="v">$model</span>-&gt;<span class="f">where</span>(<span class="s">'user_id'</span>, <span class="f">auth</span>()-&gt;<span class="f">id</span>());                       <span class="c">// owner scope</span>
+    }
+
+    <span class="k">return</span> <span class="f">view</span>(<span class="s">'pas/index'</span>, [
+        <span class="s">'items'</span> =&gt; <span class="v">$model</span>-&gt;<span class="f">orderBy</span>(<span class="s">'created_at'</span>, <span class="s">'DESC'</span>)-&gt;<span class="f">paginate</span>(<span class="n">10</span>),
+        <span class="s">'pager'</span> =&gt; <span class="v">$model</span>-&gt;pager,
+    ]);
+}
+
+<span class="k">public</span> <span class="k">function</span> <span class="f">dokumen</span>(<span class="k">int</span> <span class="v">$id</span>)                                      <span class="c">// GET /pas/permohonan/dokumen/{id}</span>
+{
+    <span class="v">$doc</span> = <span class="f">model</span>(<span class="t">PassDocumentModel</span>::<span class="k">class</span>)-&gt;<span class="f">find</span>(<span class="v">$id</span>) ?? <span class="k">throw</span> <span class="t">PageNotFoundException</span>::<span class="f">forPageNotFound</span>();
+    <span class="v">$this</span>-&gt;<span class="f">findOwned</span>((<span class="k">int</span>) <span class="v">$doc</span>[<span class="s">'application_id'</span>]);                    <span class="c">// 404 if not the owner / staff</span>
+
+    <span class="k">return</span> <span class="v">$this</span>-&gt;response-&gt;<span class="f">download</span>(<span class="t">WRITEPATH</span> . <span class="v">$doc</span>[<span class="s">'stored_path'</span>], <span class="k">null</span>)
+        -&gt;<span class="f">setFileName</span>(<span class="v">$doc</span>[<span class="s">'original_name'</span>]);
+}</pre></div>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Hiding a link is <b>not</b> access control. Try changing the ID in the URL — the server must refuse.</div></div>
+  <aside class="notes"><p>Demo serangan IDOR: log masuk sebagai pemohon2, buka /pas/permohonan/1 milik pemohon1. Tanpa semakan pemilikan, data bocor. findOwned() ditunjukkan penuh pada Hari 8.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 8 · Slice 2 — Secure uploads · reference code</div>
+  <h2>Document upload checklist (BR-PAS-02)</h2>
+  <div class="grid c3">
+    <div class="card top m-pas"><span class="num-badge">1</span><h3>Type by content</h3><p><code>ext_in</code> + <code>mime_in</code>: pdf, jpg, png only.</p></div>
+    <div class="card top m-pas"><span class="num-badge">2</span><h3>Size &amp; count</h3><p><code>max_size[documents,2048]</code> (KB) · maximum 3 files.</p></div>
+    <div class="card top m-pas"><span class="num-badge">3</span><h3>Random name</h3><p><code>$file-&gt;getRandomName()</code> — never use the user's original name.</p></div>
+    <div class="card top m-pas"><span class="num-badge">4</span><h3>Outside the web root</h3><p>Store in <code>writable/uploads/pas/</code>, <b>not</b> <code>public/</code>.</p></div>
+    <div class="card top m-pas"><span class="num-badge">5</span><h3>DB stores the path only</h3><p><code>stored_path</code>, <code>mime</code>, <code>size_bytes</code> in <code>pass_documents</code>.</p></div>
+    <div class="card top m-pas"><span class="num-badge">6</span><h3>Checked download</h3><p>Through a controller + ownership check, not a direct link.</p></div>
+  </div>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div><code>getClientName()</code> and <code>getClientMimeType()</code> come from the browser — <b>do not trust them</b> for security decisions.</div></div>
+  <aside class="notes"><p>Setiap item ialah satu lapisan pertahanan. Fail PHP yang dinamakan semula kepada .pdf ditolak oleh mime_in kerana CI memeriksa kandungan sebenar. Walaupun lepas, ia berada di luar public/ dan tidak boleh dilaksanakan melalui URL.</p></aside>
+</section>
+
+<section class="slide codey">
+  <div class="eyebrow">Day 8 · Slice 2 — Upload code · reference code</div>
+  <h2>Validate, move, record</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">ApplicationController::create()<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="v">$rules</span> = [
+    <span class="s">'documents'</span> =&gt; [
+        <span class="s">'uploaded[documents]'</span>,
+        <span class="s">'max_size[documents,2048]'</span>,
+        <span class="s">'ext_in[documents,pdf,jpg,png]'</span>,
+        <span class="s">'mime_in[documents,application/pdf,'</span>
+            . <span class="s">'image/jpeg,image/png]'</span>,
+    ],
+];
+<span class="k">if</span> (! <span class="v">$this</span>-&gt;<span class="f">validate</span>(<span class="v">$rules</span>)) {
+    <span class="k">return</span> <span class="f">redirect</span>()-&gt;<span class="f">back</span>()-&gt;<span class="f">withInput</span>()
+        -&gt;<span class="f">with</span>(<span class="s">'errors'</span>, <span class="v">$this</span>-&gt;validator-&gt;<span class="f">getErrors</span>());
+}
+<span class="v">$files</span> = <span class="v">$this</span>-&gt;request-&gt;<span class="f">getFileMultiple</span>(<span class="s">'documents'</span>);
+<span class="k">if</span> (<span class="f">count</span>(<span class="v">$files</span>) &gt; <span class="n">3</span>) {
+    <span class="k">return</span> <span class="f">redirect</span>()-&gt;<span class="f">back</span>()-&gt;<span class="f">withInput</span>()
+        -&gt;<span class="f">with</span>(<span class="s">'error'</span>, <span class="s">'Maksimum 3 fail.'</span>);
+}</pre></div>
+    <div class="codewrap"><div class="codebar">… continued<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="v">$appId</span> = (<span class="k">new</span> <span class="t">PassWorkflowService</span>())
+    -&gt;<span class="f">submit</span>((<span class="k">int</span>) <span class="f">auth</span>()-&gt;<span class="f">id</span>(), <span class="v">$this</span>-&gt;request-&gt;<span class="f">getPost</span>(
+        [<span class="s">'pass_type'</span>, <span class="s">'vehicle_id'</span>, <span class="s">'purpose'</span>,
+         <span class="s">'valid_from'</span>, <span class="s">'valid_until'</span>]));
+
+<span class="k">foreach</span> (<span class="v">$files</span> <span class="k">as</span> <span class="v">$file</span>) {
+    <span class="v">$name</span> = <span class="v">$file</span>-&gt;<span class="f">getRandomName</span>();
+    <span class="v">$meta</span> = [<span class="s">'mime'</span>       =&gt; <span class="v">$file</span>-&gt;<span class="f">getMimeType</span>(),
+             <span class="s">'size_bytes'</span> =&gt; <span class="v">$file</span>-&gt;<span class="f">getSize</span>()];
+    <span class="v">$file</span>-&gt;<span class="f">move</span>(<span class="t">WRITEPATH</span> . <span class="s">'uploads/pas'</span>, <span class="v">$name</span>);
+
+    <span class="f">model</span>(<span class="t">PassDocumentModel</span>::<span class="k">class</span>)-&gt;<span class="f">insert</span>(<span class="v">$meta</span> + [
+        <span class="s">'application_id'</span> =&gt; <span class="v">$appId</span>,
+        <span class="s">'doc_type'</span>       =&gt; <span class="s">'sokongan'</span>,
+        <span class="s">'original_name'</span>  =&gt; <span class="v">$file</span>-&gt;<span class="f">getClientName</span>(),
+        <span class="s">'stored_path'</span>    =&gt; <span class="s">'uploads/pas/'</span> . <span class="v">$name</span>,
+    ]);
+}</pre></div>
+  </div>
+  <aside class="notes"><p>getMimeType() membaca kandungan sebenar fail, bukan sambungan. Ambil mime dan saiz sebelum move(). submit() dalam PassWorkflowService menjana PAS-2026-0001, menyimpan status submitted dan menulis log pertama.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 8 · Slice 2 — Edge cases · reference code</div>
+  <h2>Test the edge cases, not just the happy path</h2>
+  <table class="t">
+    <tr><th>Case</th><th>Input</th><th>Expected</th></tr>
+    <tr><td>Valid file</td><td><code>surat.pdf</code> · 300 KB</td><td><span class="st approved">accepted</span> random name in <code>writable/uploads/pas/</code></td></tr>
+    <tr><td>Too large</td><td><code>gambar.jpg</code> · 2.4 MB</td><td><span class="st rejected">rejected</span> <code>max_size</code> error</td></tr>
+    <tr><td>Fake type</td><td><code>skrip.php</code> renamed to <code>skrip.pdf</code></td><td><span class="st rejected">rejected</span> <code>mime_in</code> error</td></tr>
+    <tr><td>Too many</td><td>4 files</td><td><span class="st rejected">rejected</span> “Maksimum 3 fail.”</td></tr>
+    <tr><td>No file</td><td>—</td><td><span class="st rejected">rejected</span> <code>uploaded</code> error</td></tr>
+    <tr><td>Direct access</td><td>URL to <code>writable/uploads/…</code></td><td><span class="st rejected">404</span> outside <code>public/</code></td></tr>
+  </table>
+  <aside class="notes"><p>Sediakan fail ujian ini dalam folder bersama (termasuk fail 2.4 MB dan PHP yang dinamakan semula). Setiap peserta rekod keputusan dalam templat kes ujian — setiap kegagalan menjadi pepijat untuk dibaiki.</p></aside>
+</section>
+
 <section class="slide">
   <div class="eyebrow">Day 8 · Today's prompting</div>
   <h2>🤖 Today's prompting: Pass slices 3–5</h2>
@@ -2821,6 +3087,7 @@ git diff main...feat/pas-claude</pre></div>
   </ul>
   <aside class="notes"><p>Fasa B selesai. Kedua-dua modul transaksi berfungsi dan diuji. Esok kita membaca data ini untuk laporan.</p></aside>
 </section>
+
 
 
 <!-- ============================ DAY 9 ============================ -->

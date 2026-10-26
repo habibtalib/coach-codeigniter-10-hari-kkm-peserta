@@ -1,8 +1,8 @@
-# Day 7 — Pass Module (Part 1): Model, CRUD & Secure Document Upload
+# Day 7 — Claude Code: Implementation & Best Practice
 
-[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 7 Lab](./lab.md)
+[📅 Schedule](../JADUAL.md) · [📘 SPEC Canon](../docs/spesifikasi-sistem.md) · [🧪 Day 7 Lab](./lab.md) · [✍️ The Art of the Prompt](../docs/seni-prompt.md)
 
-> **Today we start building the Pass Module (M2).** The basic pattern is the same as TLK (Special Vehicle Parking, Days 5–6): enum → entity → model → thin controller → service. What is **new**, and the riskiest part, is **file upload**. A file from a user is the most dangerous input in a web application: it can be a script, it can be too large, it can overwrite another file. Today we build an upload that is **secure by default** and prove it with boundary tests.
+> **Today is all about Claude Code.** You set up the tools (`CLAUDE.md`, subagents, skills, MCP), learn to write prompts that produce answers you can verify, and build safe working habits: clean context, checkpoints, permissions, hooks, Git and review. This afternoon you use all of it to understand a finished project and plan the Pass module. The Pass module itself is built from Day 8 (Labs 7.10/7.11), and the manual Pass material is now in the [Appendix](#appendix--pass-module-moved-to-day-8--reference-code) at the end of this page.
 
 ---
 
@@ -12,24 +12,16 @@ By the end of today, participants can:
 
 | # | Objective (measurable) | Session | Evidence |
 |---|------------------------|------|-------|
-| O1 | **Write** the `PassType` & `PassStatus` enums (with `label()`, `badge()`, `canTransitionTo()`) and a `PassApplication` Entity that returns the status as an enum | S1 | `php spark` REPL / quick test: `PassStatus::Submitted->canTransitionTo(PassStatus::Approved)` → `false` |
-| O2 | **Build** `PassApplicationModel` & `PassDocumentModel` with `$allowedFields`, `$validationRules` and an `ownedBy()` scope | S1 | The model rejects `pass_type = 'vip'` with a validation error |
-| O3 | **Build** a "My Applications" list (owner scope + pagination + status filter) and a detail view that returns **404** to non-owners (BR-PAS-04) | S2 | `pemohon2` opens `/pas/permohonan/{id milik pemohon1}` (an ID owned by `pemohon1`) → 404 |
-| O4 | **Build** a `multipart/form-data` form with server validation `uploaded`, `max_size`, `ext_in`, `mime_in` for multiple files | S3 | The form rejects a 3 MB file with a Malay message |
-| O5 | **Implement** BR-PAS-02 secure upload: `getRandomName()` names, stored in `writable/uploads/pas/`, only `stored_path` in the DB, transaction + file cleanup, download through a controller with an ownership check | S3 | Files on disk have random names; `public/` has no files; download works for the owner only |
-| O6 | **Test** at least 10 upload & validation boundary cases, and **explain** the OWASP risk each one prevents | S4 | `docs/ujian-manual-pas.md` complete with Pass/Fail results |
-| O7 | **Write** `PassType::icon()`, `PassStatus::pending()` and the Entity methods `validityDays()`/`daysRemaining()` that can be tested with a fixed date | S5 | [Lab 7.1b](./lab.en.md#lab-71b--enum--entity-icons-pending-statuses--validity-period-s5); `php spark shell` output |
-| O8 | **Build** a type filter and a search inside the owner scope with `groupStart()`/`groupEnd()`, and **prove** the BR-PAS-04 leak when the brackets are missing | S6 | [Lab 7.2b](./lab.en.md#lab-72b--type-filter--search-on-my-applications-s6); `pemohon2` at `?q=sintetik` → 1 application |
-| O9 | **Build** follow-up document upload for the owner with a 3-documents-per-application limit, checked before `move()` and under a `FOR UPDATE` lock | S7 | [Lab 7.3b](./lab.en.md#lab-73b--adding-follow-up-documents-to-an-application-s7); a 4th document is rejected with no orphan file |
-| O10 | **Automate** the Lab 7.4 boundary cases with PHPUnit (`FakeUploadedFile`, `#[DataProvider]`) and **show** the tests catch a `>` → `>=` mutation | S8 | [Lab 7.4b](./lab.en.md#lab-74b--automating-the-boundary-cases-with-phpunit-s8); `OK (14 tests, …)` |
 | O11 | **Write** a project `CLAUDE.md` to the course standard and **tell apart** user memory, project memory and `CLAUDE.local.md` | S9 | [Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9); `CLAUDE.md` committed, `CLAUDE.local.md` in `.gitignore` |
+| O14 | **Write** onboarding and plan prompts in *Plan* mode for an existing project, and **draft** and **review** a practice PRD before any code | S12 | [Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12); `docs/nota-claude.md` + `~/latihan/prd-latihan/docs/prd.md` |
+| O19 | **Rewrite** 5 weak prompts using the prompt anatomy, **run** 6 catalogue prompts in *Plan* mode on `kelas-ci-<nama>`, and **score** every answer (correct? verifiable? has `file:line`?) | S17 | [Lab 7.14](./lab.en.md#lab-714--the-art-of-the-prompt-from-weak-prompts-to-effective-prompts-s17); the *Seni Prompt* section in `docs/nota-claude.md` |
 | O12 | **Create** the read-only `semak-ci4` subagent and the `migration-ci4` skill, and **verify** AI findings against the real code | S10 | [Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10); `docs/semakan-ci4-hari6.md` |
 | O13 | **Install** and **test** the `ci4-spark` MCP server (JSON-RPC over stdio, read-only) and **register** Context7 | S11 | [Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11); `.mcp.json` + 5 JSON-RPC replies |
-| O14 | **Write** onboarding and plan prompts in *Plan* mode for an existing project, and **draft** and **review** a practice PRD before any code | S12 | [Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12); `docs/nota-claude.md` + `~/latihan/prd-latihan/docs/prd.md` |
-| O15 | **Build** Pass slice 1 with Claude Code through the seven gates, **reject** diffs that break the owner scope, and **explain** 3 key lines in your own words | S13 | [Lab 7.10](./lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13); `pemohon2` → 404; `docs/nota-claude.md` |
-| O16 | **Build** Pass slice 2 (form, validation, secure upload) with Claude Code and **verify** the five upload gates with `ci4-spark` and the browser | S14 | [Lab 7.11](./lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14); randomly named files in `writable/uploads/pas/`, `filter_check` shows `permission:pas.apply` |
+| O20 | **Configure** permission rules and two hooks (block `.env`, `php -l` after edits) in `.claude/settings.json`, **prove** both work, and **use** `/context`, `/compact`, `/clear`, `/rewind` and a `claude -p` review before commit | S18 | [Lab 7.15](./lab.en.md#lab-715--claude-code-best-practice-in-action-s18); hook block + `php -l gagal` recorded in `docs/nota-claude.md`; commit `CHORE: tetapan & hook Claude Code` |
 | O17 | **Explain** the architecture of a finished CI4 project (request path, `Config/Aliran.php` workflow table, roles, data, tests) with Claude Code in *Plan* mode and **verify** every claim with `file:line` | S15 | [Lab 7.12](./lab.en.md#lab-712--understand-the-espkp-example-project-with-claude-code-s15); `~/latihan/espkpv2-kajian/nota-fahami.md` |
 | O18 | **Draft** a PRD from code, **compare** it with the SPEC in a gap table, and **write** your own Pass requirements and slice plan | S16 | [Lab 7.13](./lab.en.md#lab-713--prd-from-the-example-project-compare-with-the-spec--pass-slice-plan-s16); `docs/keperluan-pas.md` + `docs/pelan-pas.md` on the branch `docs/keperluan-pas` |
+
+> ℹ️ The Pass module objectives (O1–O10 for S1–S8, O15–O16 for S13–S14) are now reached on Day 8. Their sessions and labs are in the [Appendix](#appendix--pass-module-moved-to-day-8--reference-code).
 
 ---
 
@@ -38,49 +30,46 @@ By the end of today, participants can:
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 6 recap | — |
-| 09:00–10:00 | S9 | Claude Code: install, `CLAUDE.md` & Plan mode | Write the project `CLAUDE.md` to the course standard; tell user/project/local memory apart ([Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9)) |
-| 10:00–10:30 | S12 | Claude Code: prompting, new projects & PRD | Write onboarding and plan prompts in Plan mode; draft and review a practice PRD ([Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12)) |
+| 09:00–09:45 | S9 | Claude Code: install, `CLAUDE.md` & Plan mode | Write the project `CLAUDE.md` to the course standard; tell user/project/local memory apart ([Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9)) |
+| 09:45–10:30 | S12 | Claude Code: prompting, new projects & PRD | Write onboarding and plan prompts in Plan mode; draft and review a practice PRD ([Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12)) |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–11:45 | S10 | Claude Code: subagents & skills | Read-only `semak-ci4` subagent on Day 6 code; `migration-ci4` skill ([Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10)) |
-| 11:45–12:30 | S11 | Claude Code: MCP for CodeIgniter | `ci4-spark` MCP server (PHP, read-only) tested & registered; Context7; MySQL/GitLab optional ([Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
+| 10:45–11:30 | S17 | The art of the prompt: anatomy & example catalogue | Rewrite 5 weak prompts; run 6 catalogue prompts in Plan mode and score the answers ([Lab 7.14](./lab.en.md#lab-714--the-art-of-the-prompt-from-weak-prompts-to-effective-prompts-s17)) |
+| 11:30–12:00 | S10 | Claude Code: subagents & skills | Read-only `semak-ci4` subagent on Day 6 code; `migration-ci4` skill ([Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10)) |
+| 12:00–12:30 | S11 | Claude Code: MCP for CodeIgniter | `ci4-spark` MCP server (PHP, read-only) tested & registered; Context7; MySQL/GitLab optional ([Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–15:45 | S15 | Claude Code: understand the eSPKP example project | Understand a finished project in Plan mode: request path, `Config/Aliran.php`, roles, data, tests; verify every claim with `file:line` and the live demo ([Lab 7.12](./lab.en.md#lab-712--understand-the-espkp-example-project-with-claude-code-s15)) |
-| 15:45–17:00 | S16 | Claude Code: plan & adjust requirements from the example project | PRD from the eSPKP code, gap table against the SPEC, `docs/keperluan-pas.md` and `docs/pelan-pas.md` ([Lab 7.13](./lab.en.md#lab-713--prd-from-the-example-project-compare-with-the-spec--pass-slice-plan-s16)) |
+| 14:30–15:30 | S18 | Claude Code best practice | Context, checkpoints, permissions, hooks, Git, cost, `claude -p`, security, verification ([Lab 7.15](./lab.en.md#lab-715--claude-code-best-practice-in-action-s18)) |
+| 15:30–16:15 | S15 | Claude Code: understand the eSPKP example project | Understand a finished project in Plan mode; verify every claim with `file:line` and the live demo ([Lab 7.12](./lab.en.md#lab-712--understand-the-espkp-example-project-with-claude-code-s15)) |
+| 16:15–17:00 | S16 | Claude Code: plan & adjust requirements from the example project | PRD from the eSPKP code, gap table against the SPEC, `docs/keperluan-pas.md` and `docs/pelan-pas.md` ([Lab 7.13](./lab.en.md#lab-713--prd-from-the-example-project-compare-with-the-spec--pass-slice-plan-s16)) |
 
-> ℹ️ **Course decision:** from this afternoon until Day 10, the modules are built with Claude Code through seven review gates ([`kolaborasi.md`](../docs/kolaborasi.md) §3). The manual Pass Labs 7.0–7.4 (and 7.1b–7.4b) and sessions S1–S8 are now **reference code** for comparison, not required. Day 8 continues the Pass module with the same workflow.
+> ℹ️ **The schedule above is the one that applies.** The times in the session headings below are the old schedule and are not changed, so your progress is kept.
 >
-> ℹ️ The times in the S1–S8 headings below are the original schedule; follow the schedule above.
->
-> ℹ️ **Updated:** S13/S14 (Labs 7.10/7.11) move to Day 8 morning (09:00–10:30 and 10:45–12:30). This afternoon is S15/S16 (Labs 7.12/7.13): understand the eSPKP example project, then write the Pass requirements and slice plan that feed Lab 7.10 tomorrow.
+> ℹ️ **Course decision:** Day 7 now focuses on **implementing Claude Code and its best practice**. The Pass module is built with Claude Code through seven review gates ([`kolaborasi.md`](../docs/kolaborasi.md) §3) from Day 8 morning (Labs 7.10/7.11). Sessions S1–S8, S13–S14 and the manual Pass Labs 7.0–7.4 (and 7.1b–7.4b) are in the [Appendix](#appendix--pass-module-moved-to-day-8--reference-code) as reference code.
 
 ---
 
 ## 🧭 Why today matters
 
-The Pass Module looks like "TLK plus files". In fact it brings two new risks that do not exist in TLK:
+Claude Code can read a whole project, run commands and write code in seconds. That speed is only useful when the result is **correct** and you **understand** what changed. Today builds the three skills that make the difference:
 
-1. **Files from users.** The TLK form only accepts text and dates — CI4 validation handles them. The Pass form accepts **raw bytes** that are stored on the server's disk. If they are stored in `public/` with the original name, an attacker can upload `surat.php` and run it through a URL. This is one of the most common ways government servers get hacked.
-2. **Personal data in documents.** Copies of identity cards, vehicle registration certificates and appointment letters are personal data (PDPA). If file URLs can be guessed (`/uploads/1.pdf`, `/uploads/2.pdf`, …), anyone can download other people's documents.
-
-By the end of today, every file that enters your system will pass through **five gates**: size limit → extension allowlist → check of the actual content → random name outside `public/` → download only through a controller that checks ownership.
+1. **Context.** Claude only knows what is in its context window: `CLAUDE.md`, the files it read, command output, the conversation. Precise context (SPEC, `BR-*` IDs, `@file`) gives precise answers; a full, mixed context gives mistakes.
+2. **Prompts.** A good prompt states the context, one task, constraints, how to verify and the answer format. A weak prompt ("fix this bug") forces Claude to guess.
+3. **Control and verification.** `CLAUDE.md` is only advice. `deny` rules, hooks, Manual mode, checkpoints, Git and tests are what actually stop mistakes and prove the work. The course principle stays: **understand first, accept later**.
 
 ```mermaid
 flowchart LR
-    A[Browser: documents&#91;&#93;] -->|multipart POST + CSRF| B{CI4 validation<br/>uploaded · max_size<br/>ext_in · mime_in}
-    B -- fail --> X[Back to the form<br/>+ Malay message]
-    B -- pass --> C{Service:<br/>1–3 files?<br/>own vehicle?}
-    C -- fail --> X
-    C -- pass --> D[move to writable/uploads/pas/<br/>getRandomName name]
-    D --> E[(DB transaction:<br/>pass_applications<br/>+ pass_documents<br/>+ status_logs)]
-    E -- error --> F[rollback + delete files]
-    E -- commit --> G[Redirect to details<br/>PAS-2026-0001]
+    A[Context<br/>CLAUDE.md · @file · SPEC] --> B[Prompt<br/>task · constraints · verify]
+    B --> C{Plan mode:<br/>numbered plan}
+    C -- you agree --> D[Manual mode:<br/>read every diff]
+    D --> E[Verify:<br/>composer test · hooks · claude -p]
+    E -- fail --> B
+    E -- pass --> F[Small commit<br/>+ explain in notes]
 ```
 
 ---
 
 ## S9 — Claude Code: Install, CLAUDE.md & Plan Mode (09:00–10:00)
 
-> ℹ️ **Day 7 morning = Claude Code.** S9, S12, S10 and S11 replace S1/S5/S2/S6 in the morning. The Pass Module (S1, S2) starts at 14:30. Labs: [Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9) · [Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12) · [Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10) · [Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11).
+> ℹ️ **Day 7 = Claude Code.** Today's order: S9 → S12 → S17 → S10 → S11 → S18 → S15 → S16 (see the [schedule](#-todays-schedule)). Morning labs: [Lab 7.6](./lab.en.md#lab-76--claude-code-install-log-in--project-claudemd-s9) · [Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12) · [Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10) · [Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11).
 
 ### 9.1 From Lab 6.3c to today
 
@@ -215,7 +204,79 @@ A **PRD** describes **what** and **why**: problem, roles, scope, FR, BR, NFR, da
 
 ---
 
+## S17 — The Art of the Prompt: Anatomy & Example Catalogue (10:45–11:30)
+
+> ℹ️ Full reference: [`seni-prompt.md`](../docs/seni-prompt.md) (principles + a catalogue of 65 prompts + 8 weak → effective pairs) · Base prompts AI-01..AI-20: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) · Lab: [Lab 7.14](./lab.en.md#lab-714--the-art-of-the-prompt-from-weak-prompts-to-effective-prompts-s17).
+
+### 17.1 Prompt anatomy: five parts, one task
+
+S12 introduced the five parts. S17 practises them until they become a habit:
+
+| Part | Question it answers | CI4 example |
+|------|---------------------|-------------|
+| **Context** | What does Claude need to read? | `@app/Controllers/Aduan.php`, `BR-ADU-02`, SPEC §3 |
+| **Task** | What is the **one** thing asked? | "Explain the POST `/aduan` flow" |
+| **Constraints** | What must not change? | "Don't change files. CI 4.6+, Query Builder, no raw SQL" |
+| **Verification** | How do we know the answer is right? | "Include `file:line`", "`composer test` must be green" |
+| **Format** | Shape of the answer? | "3-column table", "numbered steps, at most 8" |
+
+Habits that make prompts effective:
+
+- **One task per prompt.** "Explain, then fix, then write a test" is three prompts.
+- **Ask for questions first** when the requirement is unclear: *"Before you answer, ask me at most 3 questions."*
+- **Plan mode first** (`Shift+Tab`, or `/plan <task>`). Code only after you agree with the plan.
+- **`@file`** to reference a file (Claude reads it first), **`!command`** to run a shell command and put its output in the conversation (e.g. `!php spark routes`).
+- **Paste evidence**: the full error message, logs, screenshots (`Alt+V` on Windows, `Ctrl+V` on macOS/Linux).
+- **Ask for options, not code**, when you are not sure yet: *"Give 2 approaches with their pros and risks; don't write code."*
+- **Iterate.** The first answer is a draft. If you correct the same thing twice, `/clear` and write a better prompt.
+- **`/clear` between tasks** that are not related.
+- **Understand first, accept later.** You must be able to explain every line you accept ([`kolaborasi.md`](../docs/kolaborasi.md) §3).
+
+### 17.2 From weak to effective
+
+| Weak prompt | Why it is weak | Effective prompt |
+|-------------|----------------|------------------|
+| "Betulkan bug ini." (Fix this bug.) | No error, no file, no definition of "fixed" | "Mod Plan. Ralat: `[tampal ralat penuh]` semasa POST `/aduan`. Baca `@app/Controllers/Aduan.php`. Terangkan punca dengan `fail:baris`, cadang satu pembetulan dan satu ujian yang gagal sebelum pembetulan. Jangan ubah fail." (Plan mode. Error: [paste the full error] during POST /aduan. Read the controller. Explain the cause with file:line, suggest one fix and one test that fails before the fix. Don't change files.) |
+| "Buat CRUD aduan." (Build the complaint CRUD.) | Too big; Claude guesses the schema, roles and rules | "Mod Plan. Pecahkan CRUD aduan kepada slice kecil ikut `@docs/prd.md` (FR-01..FR-03). Setiap slice: fail, `BR-*`, cara uji. Jangan tulis kod." (Plan mode. Split the complaint CRUD into small slices following the PRD (FR-01..FR-03). Each slice: files, `BR-*`, how to test. Don't write code.) |
+| "Semak kod saya." (Review my code.) | No scope, no criteria | "Semak `@app/Controllers/Aduan.php` untuk XSS, CSRF dan skop pemilik sahaja. Jadual: `fail:baris` · isu · keterukan · cadangan. Maksimum 6 dapatan. Jangan ubah fail." (Review the controller for XSS, CSRF and owner scope only. Table: file:line · issue · severity · suggestion. At most 6 findings. Don't change files.) |
+
+The eight full pairs and 65 ready-to-use prompts (understand code, plan, implement, review, test, debug, refactor, documentation, Git, security, performance, CodeIgniter 4, meta-prompting) are in [`seni-prompt.md`](../docs/seni-prompt.md).
+
+### 17.3 Scoring Claude's answer
+
+A good prompt does not guarantee a correct answer. Score every answer with three questions, and record the score:
+
+| Criterion | 2 | 1 | 0 |
+|-----------|---|---|---|
+| **Correct** | Every claim verified in the code | Partly correct | Wrong, or the file does not exist |
+| **Verifiable** | Has a command or test that proves it | Can be checked by reading only | No way to check |
+| **`file:line`** | Every claim has `file:line` | File name only | No reference |
+
+Score 5–6: accept once you understand it. Score 3–4: ask for evidence. Score 0–2: rewrite the prompt. This meta-prompt helps: *"Before you answer, what information missing from my prompt do you need?"*
+
+### 🎯 Quiz S17
+
+> Answer after Lab 7.14. Passing this quiz marks the Lab 7.14 checkpoint.
+
+1. Prompt: "Fix the error in the complaint form." Which rewrite is the most effective?
+   - [ ] "Fix every error in this project quickly and make sure there are no more errors."
+   - [x] "Plan mode. Full error: [paste]. It happens during POST /aduan. Read @app/Controllers/Aduan.php. Explain the cause with file:line and suggest one fix and one test that fails before the fix. Don't change files."
+   - [ ] "You are the best CodeIgniter 4 expert in the world. Fix the complaint form."
+   - [ ] "Rewrite the whole complaint controller so it is better."
+   > An effective prompt has context (the full error, the route, the file), one task (find the cause), constraints (Plan mode, don't change files), verification (file:line, a failing test first) and a clear format. Praising Claude or saying "fix everything" adds no information.
+
+2. Claude answers an onboarding question confidently, but with no `file:line`, and one file it names does not exist in your project. What is the best action?
+   - [ ] Accept the answer because Claude has already read the project
+   - [ ] Ask Claude to create the missing file so the answer becomes correct
+   - [ ] Switch to another model and ask the same question without changing the prompt
+   - [x] Give a low score, then rewrite the prompt with the exact @file and the condition "every claim must have file:line; if you are not sure, say you are not sure"
+   > An answer with no evidence and a file that does not exist shows Claude is guessing. A better prompt gives precise context and asks for evidence you can check. Code is evidence; a confident sentence is not.
+
+---
+
 ## S10 — Claude Code: Subagents & Skills (10:45–11:45)
+
+> 📘 Full reference: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md) (setting up subagents, skills & MCP on Windows).
 
 ### 10.1 Subagents: helpers with their own context
 
@@ -295,6 +356,8 @@ Steps and rules ...
 
 ## S11 — Claude Code: MCP for CodeIgniter (11:45–12:30)
 
+> 📘 Full reference: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md) (setting up subagents, skills & MCP on Windows).
+
 ### 11.1 What MCP is
 
 The **Model Context Protocol (MCP)** is an open protocol that lets Claude Code call **tools** from other programs, called MCP *servers*. Messages are JSON-RPC 2.0, over:
@@ -354,105 +417,144 @@ Flow: `initialize` (protocol version negotiation) → `tools/list` (tool list + 
 
 ---
 
-## S13 — Claude Code: Pass Module (1) — Model, List & Detail (14:30–15:45)
+## S18 — Claude Code Best Practice (14:30–15:30)
 
-> ℹ️ **Moved to Day 8 morning (09:00–10:30).** Day 7 afternoon: [S15](#s15--claude-code-understand-the-espkp-example-project-14301545).
+> ℹ️ Lab: [Lab 7.15](./lab.en.md#lab-715--claude-code-best-practice-in-action-s18) · Official docs: [best practices](https://code.claude.com/docs/en/best-practices), [settings](https://code.claude.com/docs/en/settings), [permissions](https://code.claude.com/docs/en/permissions), [hooks](https://code.claude.com/docs/en/hooks), [checkpointing](https://code.claude.com/docs/en/checkpointing), [headless](https://code.claude.com/docs/en/headless). Checked against Claude Code 2.1.310.
 
-> ℹ️ Lab: [Lab 7.10](./lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13) · Prompts [AI-19, AI-20](../docs/pustaka-prompt.en.md#g--implement-with-review-gates) · Rules: [`kolaborasi.md`](../docs/kolaborasi.md) §3.
+### 18.1 Manage context
 
-### 13.1 Claude Code workflow (applies until Day 10)
+The context window is the most important resource: the fuller it gets, the easier it is for Claude to "forget" early instructions and make mistakes.
 
-From this afternoon until Day 10, you build the same modules (Pass, Report, Statistics) **with Claude Code**. Claude may write implementation code, but every slice goes through seven gates:
+| Command | What it does | When to use it |
+|---------|--------------|----------------|
+| `/context` | Grid of context usage + suggestions | Before a big task; after reading many files |
+| `/compact [instructions]` | Summarise the conversation, keep the same session | A long task that isn't finished: `/compact Kekalkan senarai fail yang diubah dan arahan ujian` (keep the list of changed files and the test commands) |
+| `/clear` | New conversation, empty context | **Between unrelated tasks**; after two failed corrections of the same issue |
+| `/btw <question>` | A side question that does not enter the history | Check a small detail without growing the context |
 
-1. **SPEC:** read the SPEC section and the `BR-*` IDs; `CLAUDE.md` points to them.
-2. **Plan (*Plan* mode):** files, migration/model/service/controller/view/tests and the BR mapping, with no code. You review and edit the plan.
-3. **Implement (*Manual* mode):** Claude edits; you read every diff and choose **Yes** or **No**. The *accept edits*, *auto* and *bypass* modes are not allowed.
-4. **Verify:** `composer test`, the browser, `ci4-spark` (`routes`, `filter_check`, `migrate_status`).
-5. **Review:** the `semak-ci4` subagent, then Claude fixes the findings through the same diff gate.
-6. **Explain:** 3 key lines in your own words in `docs/nota-claude.md` (`fail:baris`, file:line).
-7. **Commit:** small, with a message, on the `feat/pas-claude` feature branch.
+Subagents (S10) also save context: the files a subagent reads stay in that subagent's context.
 
-The manual Pass Labs 7.0–7.4 stay as **reference code**: after each slice, you compare Claude's code with the matching manual lab and record the differences.
+### 18.2 Checkpoints & rewind
 
-### 13.2 Slice 1: what you build
+Every prompt that starts a turn creates a **checkpoint**. Press `Esc` twice (empty input) or run `/rewind` to open the menu: *Restore code and conversation*, *Restore conversation*, *Restore code*, *Summarize from here*, *Summarize up to here*.
 
-The `PassType`/`PassStatus` enums, the `PassApplication` Entity, `PassApplicationModel` and `PassDocumentModel`, the `index`/`show` routes, `PassWorkflowService::canView()`, the "My Applications" list and the detail view. The Pass tables have existed since Day 4, so a good plan does **not** create a new migration; `migrate_status` proves it.
+- Checkpoints only track edits made by Claude's file tools. A file changed **only** by a Bash command (e.g. `php spark make:migration`) is not restored.
+- Checkpoints are **not a replacement for Git**. Small commits stay the real safe points.
+- A single `Esc` stops Claude mid-way so you can change direction; the work already done is kept.
 
-The owner scope lives in the **Model** (`ownedBy()`), not in the view. The query itself returns only the owner's rows, so pagination, counts and every controller that calls it are safe (BR-PAS-04). Someone else's detail page returns **404**, not 403, so the record's existence does not leak.
+### 18.3 Permissions: allow, ask, deny
 
-### 13.3 Reading a diff: accept or reject
+Rules in `.claude/settings.json` are evaluated in the order **deny → ask → allow**; the first match wins, and an `allow` cannot make an exception to a `deny`. Settings files (highest priority first): *managed* → `--settings` → `.claude/settings.local.json` (personal, not committed) → `.claude/settings.json` (project, committed) → `~/.claude/settings.json` (user).
 
-| Accept | Reject |
-|--------|--------|
-| `where('user_id', …)` in `ownedBy()` | `if ($app->user_id == …)` in the view or a controller loop |
-| `canView()` → `PageNotFoundException` | `find($id)` straight to the view, or 403 |
-| The `PassStatus` enum and `canTransitionTo()` | `'submitted'` strings scattered around |
-| `esc()` on every output | `<?= $x ?>` without `esc()` |
-| Only files in the plan's list | A new Pass migration, TLK files, `Filters.php`, `php spark migrate` |
+```json
+{
+  "permissions": {
+    "defaultMode": "default",
+    "disableBypassPermissionsMode": "disable",
+    "allow": [
+      "Bash(composer test *)",
+      "Bash(php spark routes *)",
+      "Bash(git diff *)",
+      "Bash(git status *)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./writable/uploads/**)",
+      "Read(./writable/session/**)",
+      "Read(./writable/logs/**)",
+      "Bash(git push *)",
+      "Bash(php spark migrate:refresh *)",
+      "Bash(php spark db:seed *)"
+    ]
+  },
+  "disableAutoMode": "disable"
+}
+```
 
-### 🎯 Quiz S13
+- `"defaultMode": "default"` = **Manual** mode: Claude asks before every edit and command. Since Claude Code 2.1.283, an interactive session can start in *auto* mode when nothing is set; this course requires Manual, so set this value and `"disableAutoMode": "disable"`.
+- `"disableBypassPermissionsMode": "disable"` rejects `--dangerously-skip-permissions`. **Never** bypass permissions in this project.
+- The space before `*` matters: `Bash(git diff *)` matches `git diff` and `git diff --cached`, but not `git diff-index`.
+- `allow` rules in the project file only take effect after the folder is **trusted** (the *trust* dialog on the first interactive `claude`). `deny` rules take effect immediately.
+- `Read(./.env)` blocks the `Read` tool and commands such as `cat .env`, but **not** a script that opens the file itself (e.g. `php -r "…file_get_contents('.env')…"`). That is why we add a hook.
 
-> Answer after Lab 7.10. Passing this quiz marks the Lab 7.10 checkpoint.
+### 18.4 Hooks: actions that always happen
 
-1. In Lab 7.10, you reject a diff that filters applications with `if ($app->user_id == auth()->id())` in `pas/index.php`, and ask for an `ownedBy()` scope in `PassApplicationModel`. Why?
-   - [ ] The view is slower than the Model when running a foreach loop
-   - [ ] Claude Code cannot edit view files in Manual mode
-   - [x] The query already returns only the owner's rows, so pagination, counts and every controller that calls ownedBy() cannot leak other people's applications (BR-PAS-04)
-   - [ ] The SPEC forbids any if statement in a view
-   > A filter in the view runs after other people's data is already loaded: the page count and totals still leak, and another controller that forgets the filter shows every record. A scope in the Model makes the correct query the only way to get the list.
+`CLAUDE.md` is advice; a **hook** is a shell command that Claude Code runs at a given point, every time, with no exceptions. A hook receives JSON on stdin (`tool_name`, `tool_input.file_path`, `tool_input.command`, …).
 
-2. Claude asks permission for a diff that creates a new `CreatePassApplications` migration, even though `migrate_status` shows the Day 4 migration for that table has already run. What is the right action?
-   - [x] Choose No and state that the table has existed since Day 4 and the Slice 1 plan has no new migration
-   - [ ] Choose Yes because a new migration is harmless as long as it has not run
-   - [ ] Choose Yes, allow all edits so Claude finishes the slice faster
-   - [ ] Choose Yes, then delete the file before committing without telling Claude
-   > A diff outside the plan is rejected with a reason so Claude corrects course. A duplicate migration will fail (`Table already exists`) or, worse, create a schema that does not match the SPEC. "Allow all edits" removes the diff gate for the whole session.
+| Course hook | Event | Matcher | Effect |
+|-------------|-------|---------|--------|
+| `sekat-env.php` | `PreToolUse` | `Read\|Edit\|Write\|Bash\|Grep\|Glob` | If the input mentions `.env` (except `.env.example`): `exit 2` + a stderr message → the tool is **blocked** |
+| `semak-sintaks.php` | `PostToolUse` | `Edit\|Write` | `php -l` on the `.php` file just edited; if it fails, JSON `{"decision":"block","reason":…}` → Claude reads the error and fixes it |
 
----
+Both scripts are written in PHP so they run the same on Windows and macOS without `jq`. Register them in **exec form** (`command` + `args`) so the `${CLAUDE_PROJECT_DIR}` path needs no quoting:
 
-## S14 — Claude Code: Pass Module (1) — Form & Secure Upload (15:45–17:00)
+```json
+{
+  "type": "command",
+  "command": "php",
+  "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/sekat-env.php"]
+}
+```
 
-> ℹ️ **Moved to Day 8 morning (10:45–12:30).** Day 7 afternoon: [S16](#s16--claude-code-plan--adjust-requirements-from-the-example-project-15451700).
+`exit 1` does **not** block; only `exit 2` (or a JSON decision) blocks. `/hooks` shows the hooks that are loaded. Full code: [Lab 7.15 steps 3–4](./lab.en.md#lab-715--claude-code-best-practice-in-action-s18).
 
-> ℹ️ Lab: [Lab 7.11](./lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14) · Concepts: [S3](#s3--form-validation--document-upload-14301600) and [note 07](../docs/nota-07-muat-naik-fail-selamat.md) · Workflow: [13.1](#131-claude-code-workflow-applies-until-day-10).
+### 18.5 Git and session habits
 
-### 14.1 Slice 2: the five upload gates in a diff
+- **One branch per task** (`feat/…`, `fix/…`, `chore/…`), small commits with messages.
+- **Read the diff before you commit**: `/diff` in Claude Code, or `git diff` in VS Code. You are the one who commits.
+- **Pick up work again**: `claude --continue` (`-c`) opens the last conversation in this folder; `claude --resume` (`-r`) shows a list of sessions. Name a session with `claude -n pas-slice-1` or `/rename`.
+- **Parallel work (optional)**: `claude --worktree nama` (`-w`) starts Claude in an isolated git worktree at `.claude/worktrees/nama`, so two tasks don't collide.
 
-Claude writes the form, the validation, `submit()` and `download()`. Your job is to make sure every diff keeps the **five gates** from the "Why today matters" section: size limit → extension allow-list → content check (`mime_in`, `getMimeType()`) → random name outside `public/` → download only through a controller that checks ownership. Add two more: CSRF (`form_open_multipart()`) and `permission:pas.apply` on `new`/`create`.
+### 18.6 Model and cost
 
-| Reject a diff that… | The gate it breaks |
-|---------------------|--------------------|
-| stores in `public/` or links `base_url('uploads/…')` | Outside `public/`, download through the controller |
-| uses `getName()`/`getClientName()` on disk | Random name (BR-PAS-02) |
-| has `ext_in` without `mime_in`, or `getClientMimeType()` | Content check |
-| removes `csrf_field()` or adds a route to the CSRF `except` list | CSRF |
-| has a `download()` without `canView()`, or a path from the request | Ownership (BR-PAS-04) |
+- `/model` switches the model (and saves it as the default); press `s` in the picker for this session only. A large model for planning and reviewing; a small model for simple tasks.
+- `/usage` (aliases `/cost`, `/stats`) shows the session cost and your plan limits.
+- A clean context (18.1) is the cheapest way to save cost.
 
-### 14.2 Save order: files first, transaction second
+### 18.7 `claude -p`: scripted review
 
-`move()` is called **before** the transaction: if a file fails to move, no DB row is written. The transaction then writes `pass_applications`, `pass_documents` and `status_logs` (BR-PAS-05). If the transaction fails, the `catch` calls `transRollback()` **and** deletes every file already moved, so no orphan files stay in `writable/uploads/pas/`.
+`claude -p "prompt"` runs without the interface, prints the answer and exits. Pipe a diff into it for a review before you commit:
 
-### 14.3 Compare with the reference code
+```bash
+git diff --cached | claude -p "Anda penyemak kod CodeIgniter 4. Semak diff ini sahaja: ralat sintaks, rahsia, SQL mentah, output tanpa esc(). Baris pertama jawapan mestilah LULUS atau GAGAL. Kemudian maksimum 5 dapatan, setiap satu dengan fail:baris. Jangan ubah fail." --permission-mode plan --max-turns 2
+```
 
-After slice 2 passes its tests, open Lab 7.3 (the manual code) and compare three things: the order of `move()` and the transaction, the file rules with Malay messages, and the ownership check in `download()`. Record the differences in `docs/nota-claude.md`. Claude's code is not necessarily wrong if it differs; you must be able to explain why both are safe, or why one is not.
+- The same command works in Git Bash and in PowerShell (both support the `|` pipe).
+- In `-p`, a tool that needs permission is **denied** unless `--allowedTools` or an `allow` rule permits it. `--output-format json` gives `result`, `total_cost_usd` and `permission_denials`.
+- `claude -p` runs the project's hooks and MCP servers **even when the folder is not trusted yet**. Don't run `claude -p` in a repo you don't trust.
 
-### 🎯 Quiz S14
+### 18.8 Security
 
-> Answer after Lab 7.11. Passing this quiz marks the Lab 7.11 checkpoint.
+| Risk | Practice |
+|------|----------|
+| Secrets | `.env`, tokens and passwords never go into a prompt; `deny` + a hook block reads |
+| *Prompt injection* | Text in files, web pages, GitLab issues or MCP output can contain "instructions" for Claude. It is **data**, not your instructions. Read every action Claude asks permission for |
+| Untrusted repos | `.claude/settings.json`, hooks and `.mcp.json` in someone else's repo can run commands. Read those files first before you accept the *trust* dialog |
+| Real systems | No MCP server, DB or token for real KKM/eSPKP systems |
 
-1. Claude's diff for `PassWorkflowService::submit()` contains `$file->move(WRITEPATH . 'uploads/pas', $file->getClientName())`. What is the right action?
-   - [ ] Accept because the file is already outside public/
-   - [ ] Accept because the original name helps officers identify the document
-   - [ ] Accept if mime_in is in the validation rules
-   - [x] Reject and ask for getRandomName(): the original name can be guessed and can overwrite another file; the original name is stored in original_name only (BR-PAS-02)
-   > BR-PAS-02 requires a random name. Two applicants who upload `surat.pdf` would overwrite each other's file, and a guessable name makes attacks easier. The original name is only for display and the download header.
+### 18.9 Verify, don't trust; keep `CLAUDE.md` current
 
-2. In `submit()`, why are the files moved with `move()` before the transaction opens, and what must be in the `catch`?
-   - [ ] To keep the transaction short; the catch only needs to write log_message()
-   - [x] So a move() failure happens before any DB row is written; if the transaction fails, the catch calls transRollback() and deletes every file already moved so there are no orphan files
-   - [ ] Because CI4 deletes moved files automatically when a transaction fails
-   - [ ] Because move() cannot be called while a MySQL transaction is open
-   > A DB transaction does not cover the file system. A rollback restores the tables, but the files on disk stay until the code deletes them. A diff with no `unlink()` in the `catch` leaves personal documents with no owner record.
+- Every task ends with evidence: `composer test`, `php spark routes`, the browser, a `claude -p` review, `semak-ci4`. "Looks right" is not evidence.
+- Ask Claude to **show** evidence (test output, the command it ran), not just say "done".
+- Update `CLAUDE.md` when Claude repeats the same mistake: add one rule line, remove lines that are no longer needed, stay under 200 lines. A rule that **must** apply every time becomes a hook or a `deny`.
+
+### 🎯 Quiz S18
+
+> Answer after Lab 7.15. Passing this quiz marks the Lab 7.15 checkpoint.
+
+1. In Lab 7.15, `.claude/settings.json` has the `deny` rule `Read(./.env)`. Claude proposes the command `php -r "echo file_get_contents('.env');"`. What blocks this command?
+   - [ ] The deny rule Read(./.env), because it blocks every process that opens .env
+   - [ ] CLAUDE.md, because it says "don't read .env"
+   - [x] The PreToolUse hook sekat-env.php, which sees ".env" in tool_input.command and exits with code 2
+   - [ ] Nothing; Claude Code cannot block PHP commands
+   > A `Read` rule covers Claude's file tools and known file commands such as `cat`, but not a script that opens the file itself. A `PreToolUse` hook runs before every tool call and `exit 2` blocks it; `CLAUDE.md` is only advice.
+
+2. Claude changes three files with the Edit tool, then runs `php spark make:migration AddRemarks` through Bash. You choose *Restore code* in `/rewind` to the checkpoint before all of that. What state are the files in now?
+   - [x] The three edited files are restored; the migration file created by Bash stays and must be removed with Git or by hand
+   - [ ] Every change, including the migration, is restored because rewind is the same as git reset
+   - [ ] Nothing is restored because a Bash command cancels every checkpoint
+   - [ ] Only the migration file is restored
+   > Checkpoints track edits made by Claude's file tools. A file changed only by Bash is not tracked, so it stays. That is why checkpoints are not a replacement for Git: `git status` shows the new file.
 
 ---
 
@@ -578,6 +680,199 @@ Short rule: Plan mode to **think**, `CLAUDE.md` for **fixed facts**, a skill for
    - [ ] Let Claude decide while implementing Slice 3
    - [x] No for this module: the SPEC is canon (BR-PAS-01), so record amendment as an open question for the system owner
    > Adding a status changes the enum, the transition table and the tests that the SPEC locks. Scope decisions are made by the system owner, not by the developer or Claude. A recorded open question makes the decision visible.
+
+---
+
+## 📦 Deliverables — Today's Output
+
+**Claude Code (Day 7):**
+
+- [ ] A course-standard project `CLAUDE.md` + `CLAUDE.local.md` in `.gitignore` (Lab 7.6)
+- [ ] `docs/nota-claude.md`: 3 onboarding prompts (Lab 7.9), a *Seni Prompt* section with 5 rewritten prompts and 6 scored answers (Lab 7.14), and the hook evidence (Lab 7.15)
+- [ ] The practice PRD `~/latihan/prd-latihan/docs/prd.md` (Lab 7.9)
+- [ ] `.claude/agents/semak-ci4.md`, `.claude/skills/migration-ci4/SKILL.md`, `docs/semakan-ci4-hari6.md` (Lab 7.7)
+- [ ] `.mcp.json` with `ci4-spark`; Context7 registered (Lab 7.8)
+- [ ] `.claude/settings.json` (allow/deny, Manual mode) + `.claude/hooks/sekat-env.php` + `.claude/hooks/semak-sintaks.php`, tested (Lab 7.15)
+- [ ] `~/latihan/espkpv2-kajian/nota-fahami.md` (Lab 7.12)
+- [ ] `docs/keperluan-pas.md` + `docs/pelan-pas.md` on the branch `docs/keperluan-pas` (Lab 7.13)
+
+**Pass module (reference code, built from Day 8 — [Appendix](#appendix--pass-module-moved-to-day-8--reference-code)):**
+
+- [ ] `app/Enums/PassType.php`, `app/Enums/PassStatus.php`
+- [ ] `app/Entities/PassApplication.php`
+- [ ] `app/Models/PassApplicationModel.php`, `app/Models/PassDocumentModel.php`
+- [ ] `app/Services/PassWorkflowService.php` (`canView`, `submit`, `documentPath`) + `Config\Services::passWorkflowService()`
+- [ ] `app/Controllers/Pas/ApplicationController.php` (`index`, `new`, `create`, `show`, `download`)
+- [ ] `app/Views/pas/index.php`, `new.php`, `show.php`
+- [ ] `pas/permohonan` routes in `app/Config/Routes.php`
+- [ ] Application `PAS-2026-0001` with 1–3 documents successfully submitted and downloaded
+- [ ] `docs/ujian-manual-pas.md` — ≥ 10 cases, all Pass (or bugs recorded)
+- [ ] Commit on the `feat/pas-permohonan` branch with the `PAS:` prefix
+- [ ] `PassType::icon()`, `PassStatus::pending()`/`isPending()`, `PassApplication::validityDays()`/`daysRemaining()` (Lab 7.1b)
+- [ ] The `?pass_type=` filter + bracketed `?q=` search (`withType()`, `search()`) on `/pas/permohonan` (Lab 7.2b)
+- [ ] The `pas.dokumen.tambah` route + `PassWorkflowService::addDocuments()` — at most 3 documents per application (Lab 7.3b)
+- [ ] `tests/_support/FakeUploadedFile.php` + `tests/feature/Pas/PassSubmitTest.php` green; the *Diautomasikan* section in `docs/ujian-manual-pas.md` (Lab 7.4b)
+
+Full trainer reference: `templates/kod/` (**Templat & Rujukan** module) — `PassStatus`, `PassType`, `PassApplication-Entity`, `PassApplicationModel`, `PassWorkflowService`, `ApplicationController-upload`, `Routes-pas`. Topic notes: [07 Secure file upload](../docs/nota-07-muat-naik-fail-selamat.md) · [03 Model, Entity & Enum](../docs/nota-03-model-entity-dan-enum.md) · [11 Security](../docs/nota-11-keselamatan-aplikasi-web.md).
+
+---
+
+## 🧠 Self-check
+
+1. An attacker renames `setup.exe` to `surat.pdf` and uploads it. Which rule rejects it and **how** does that rule know?
+
+<details><summary>Answer</summary>
+
+`mime_in` — it uses `getMimeType()`, which reads the file **content** through the `fileinfo` extension (leading bytes `MZ` → `application/x-dosexec` or similar), not the name or the browser header. In CI 4.6 `ext_in` (strict) also fails because `guessExtension()` from the content ≠ `pdf`. Our Service also checks `guessExtension()` once more.
+</details>
+
+2. Why do we store `stored_path = 'uploads/pas/1727…_ab12.pdf'` and not `C:\laragon\www\kkm\writable\uploads\pas\…`, and why not the original file name?
+
+<details><summary>Answer</summary>
+
+A **relative** path stays valid when the application moves to another server/OS; we join it with `WRITEPATH` when reading. The original name is not used on disk because it is untrusted input (path traversal `../`, odd characters, and two users with `ic.pdf` would overwrite each other). The original name is stored in `original_name` for display and for `setFileName()` during download only.
+</details>
+
+3. The INSERT into `pass_documents` fails after two files have been `move()`d. What happens in our code, step by step?
+
+<details><summary>Answer</summary>
+
+A `RuntimeException` is thrown → the `catch` block → `transRollback()` cancels the `pass_applications` INSERT (and the reference number) → `deleteStoredFiles()` deletes both files from `writable/uploads/pas/` → the exception is rethrown (the user sees an error). Result: no partial records in the DB, no orphan files on disk.
+</details>
+
+4. `pemohon2` opens `/pas/permohonan/dokumen/3` (a document owned by `pemohon1`). What is the response, and which code produces it?
+
+<details><summary>Answer</summary>
+
+404. `download()` finds the document, then `findVisibleOr404($document['application_id'])` calls `canView()`, which returns `false` (not the owner, not an officer) → `PageNotFoundException`. The `session` filter alone does not stop it because `pemohon2` is in fact logged in.
+</details>
+
+5. A participant sets `upload_max_filesize = 2M` in `php.ini`. A 3 MB file test shows "Sila lampirkan sekurang-kurangnya satu dokumen…" and not "tidak melebihi 2 MB". Why?
+
+<details><summary>Answer</summary>
+
+PHP rejects the file **before** CI4 sees it (`UPLOAD_ERR_INI_SIZE`). The file was not "uploaded successfully", so the first rule, `uploaded`, fails and validation stops there — `max_size` is never evaluated. Raise `upload_max_filesize` (e.g. `8M`) so that the application's 2 MB limit is the one that applies and the message is accurate.
+</details>
+
+---
+
+## ➡️ Preparation for tomorrow
+
+Day 8 builds the Pass Module **with Claude Code**: in the morning Lab 7.10 (slice 1) and Lab 7.11 (slice 2) from the [Appendix](#appendix--pass-module-moved-to-day-8--reference-code), then the **review → approve/reject** flow, **Shield RBAC** and automated access tests.
+
+- Make sure `docs/keperluan-pas.md` and `docs/pelan-pas.md` (Lab 7.13) are committed; they are the first input of Lab 7.10.
+- Make sure `.claude/settings.json` and the two hooks (Lab 7.15) are committed and `/hooks` lists them; those hooks protect you through Days 8–10.
+- Pick 3 prompts from [`seni-prompt.md`](../docs/seni-prompt.md) (the *Implement* and *Review* sections) that you will use for slice 1.
+- Log in once as `penyemak@latihan.test` and `pelulus@latihan.test` (password `Latihan@2026`) to make sure the seeder accounts work.
+- A question to think about: *If `reviewer` can open `/pas/semakan`, what stops them from POSTing to `/pas/semakan/5/approve`?*
+
+---
+
+## Appendix — Pass module (moved to Day 8 / reference code)
+
+> ℹ️ **This part is not on the Day 7 schedule.** S13 and S14 (Labs 7.10/7.11) are Day 8 morning sessions: Pass slice 1 and slice 2 are built with Claude Code through seven review gates, guided by `docs/keperluan-pas.md` and `docs/pelan-pas.md` from Lab 7.13. Sessions S1–S8 (the manual Pass Labs 7.0–7.4 and 7.1b–7.4b) stay as **reference code** for the "Compare with the reference code" step: migrations, enums, a Model with the `ownedBy()` scope, a list and a detail page with 404 for non-owners, and uploads through five gates (size limit → extension allowlist → check of the actual content → random name outside `public/` → download only through a controller that checks ownership). The content below is unchanged; the times in the headings are the original schedule.
+
+---
+
+## S13 — Claude Code: Pass Module (1) — Model, List & Detail (14:30–15:45)
+
+> ℹ️ **Moved to Day 8 morning (09:00–10:30).** Day 7 afternoon: [S15](#s15--claude-code-understand-the-espkp-example-project-14301545).
+
+> ℹ️ Lab: [Lab 7.10](./lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13) · Prompts [AI-19, AI-20](../docs/pustaka-prompt.en.md#g--implement-with-review-gates) · Rules: [`kolaborasi.md`](../docs/kolaborasi.md) §3.
+
+### 13.1 Claude Code workflow (applies until Day 10)
+
+From this afternoon until Day 10, you build the same modules (Pass, Report, Statistics) **with Claude Code**. Claude may write implementation code, but every slice goes through seven gates:
+
+1. **SPEC:** read the SPEC section and the `BR-*` IDs; `CLAUDE.md` points to them.
+2. **Plan (*Plan* mode):** files, migration/model/service/controller/view/tests and the BR mapping, with no code. You review and edit the plan.
+3. **Implement (*Manual* mode):** Claude edits; you read every diff and choose **Yes** or **No**. The *accept edits*, *auto* and *bypass* modes are not allowed.
+4. **Verify:** `composer test`, the browser, `ci4-spark` (`routes`, `filter_check`, `migrate_status`).
+5. **Review:** the `semak-ci4` subagent, then Claude fixes the findings through the same diff gate.
+6. **Explain:** 3 key lines in your own words in `docs/nota-claude.md` (`fail:baris`, file:line).
+7. **Commit:** small, with a message, on the `feat/pas-claude` feature branch.
+
+The manual Pass Labs 7.0–7.4 stay as **reference code**: after each slice, you compare Claude's code with the matching manual lab and record the differences.
+
+### 13.2 Slice 1: what you build
+
+The `PassType`/`PassStatus` enums, the `PassApplication` Entity, `PassApplicationModel` and `PassDocumentModel`, the `index`/`show` routes, `PassWorkflowService::canView()`, the "My Applications" list and the detail view. The Pass tables have existed since Day 4, so a good plan does **not** create a new migration; `migrate_status` proves it.
+
+The owner scope lives in the **Model** (`ownedBy()`), not in the view. The query itself returns only the owner's rows, so pagination, counts and every controller that calls it are safe (BR-PAS-04). Someone else's detail page returns **404**, not 403, so the record's existence does not leak.
+
+### 13.3 Reading a diff: accept or reject
+
+| Accept | Reject |
+|--------|--------|
+| `where('user_id', …)` in `ownedBy()` | `if ($app->user_id == …)` in the view or a controller loop |
+| `canView()` → `PageNotFoundException` | `find($id)` straight to the view, or 403 |
+| The `PassStatus` enum and `canTransitionTo()` | `'submitted'` strings scattered around |
+| `esc()` on every output | `<?= $x ?>` without `esc()` |
+| Only files in the plan's list | A new Pass migration, TLK files, `Filters.php`, `php spark migrate` |
+
+### 🎯 Quiz S13
+
+> Answer after Lab 7.10. Passing this quiz marks the Lab 7.10 checkpoint.
+
+1. In Lab 7.10, you reject a diff that filters applications with `if ($app->user_id == auth()->id())` in `pas/index.php`, and ask for an `ownedBy()` scope in `PassApplicationModel`. Why?
+   - [ ] The view is slower than the Model when running a foreach loop
+   - [ ] Claude Code cannot edit view files in Manual mode
+   - [x] The query already returns only the owner's rows, so pagination, counts and every controller that calls ownedBy() cannot leak other people's applications (BR-PAS-04)
+   - [ ] The SPEC forbids any if statement in a view
+   > A filter in the view runs after other people's data is already loaded: the page count and totals still leak, and another controller that forgets the filter shows every record. A scope in the Model makes the correct query the only way to get the list.
+
+2. Claude asks permission for a diff that creates a new `CreatePassApplications` migration, even though `migrate_status` shows the Day 4 migration for that table has already run. What is the right action?
+   - [x] Choose No and state that the table has existed since Day 4 and the Slice 1 plan has no new migration
+   - [ ] Choose Yes because a new migration is harmless as long as it has not run
+   - [ ] Choose Yes, allow all edits so Claude finishes the slice faster
+   - [ ] Choose Yes, then delete the file before committing without telling Claude
+   > A diff outside the plan is rejected with a reason so Claude corrects course. A duplicate migration will fail (`Table already exists`) or, worse, create a schema that does not match the SPEC. "Allow all edits" removes the diff gate for the whole session.
+
+---
+
+## S14 — Claude Code: Pass Module (1) — Form & Secure Upload (15:45–17:00)
+
+> ℹ️ **Moved to Day 8 morning (10:45–12:30).** Day 7 afternoon: [S16](#s16--claude-code-plan--adjust-requirements-from-the-example-project-15451700).
+
+> ℹ️ Lab: [Lab 7.11](./lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14) · Concepts: [S3](#s3--form-validation--document-upload-14301600) and [note 07](../docs/nota-07-muat-naik-fail-selamat.md) · Workflow: [13.1](#131-claude-code-workflow-applies-until-day-10).
+
+### 14.1 Slice 2: the five upload gates in a diff
+
+Claude writes the form, the validation, `submit()` and `download()`. Your job is to make sure every diff keeps the **five gates** from the "Why today matters" section: size limit → extension allow-list → content check (`mime_in`, `getMimeType()`) → random name outside `public/` → download only through a controller that checks ownership. Add two more: CSRF (`form_open_multipart()`) and `permission:pas.apply` on `new`/`create`.
+
+| Reject a diff that… | The gate it breaks |
+|---------------------|--------------------|
+| stores in `public/` or links `base_url('uploads/…')` | Outside `public/`, download through the controller |
+| uses `getName()`/`getClientName()` on disk | Random name (BR-PAS-02) |
+| has `ext_in` without `mime_in`, or `getClientMimeType()` | Content check |
+| removes `csrf_field()` or adds a route to the CSRF `except` list | CSRF |
+| has a `download()` without `canView()`, or a path from the request | Ownership (BR-PAS-04) |
+
+### 14.2 Save order: files first, transaction second
+
+`move()` is called **before** the transaction: if a file fails to move, no DB row is written. The transaction then writes `pass_applications`, `pass_documents` and `status_logs` (BR-PAS-05). If the transaction fails, the `catch` calls `transRollback()` **and** deletes every file already moved, so no orphan files stay in `writable/uploads/pas/`.
+
+### 14.3 Compare with the reference code
+
+After slice 2 passes its tests, open Lab 7.3 (the manual code) and compare three things: the order of `move()` and the transaction, the file rules with Malay messages, and the ownership check in `download()`. Record the differences in `docs/nota-claude.md`. Claude's code is not necessarily wrong if it differs; you must be able to explain why both are safe, or why one is not.
+
+### 🎯 Quiz S14
+
+> Answer after Lab 7.11. Passing this quiz marks the Lab 7.11 checkpoint.
+
+1. Claude's diff for `PassWorkflowService::submit()` contains `$file->move(WRITEPATH . 'uploads/pas', $file->getClientName())`. What is the right action?
+   - [ ] Accept because the file is already outside public/
+   - [ ] Accept because the original name helps officers identify the document
+   - [ ] Accept if mime_in is in the validation rules
+   - [x] Reject and ask for getRandomName(): the original name can be guessed and can overwrite another file; the original name is stored in original_name only (BR-PAS-02)
+   > BR-PAS-02 requires a random name. Two applicants who upload `surat.pdf` would overwrite each other's file, and a guessable name makes attacks easier. The original name is only for display and the download header.
+
+2. In `submit()`, why are the files moved with `move()` before the transaction opens, and what must be in the `catch`?
+   - [ ] To keep the transaction short; the catch only needs to write log_message()
+   - [x] So a move() failure happens before any DB row is written; if the transaction fails, the catch calls transRollback() and deletes every file already moved so there are no orphan files
+   - [ ] Because CI4 deletes moved files automatically when a transaction fails
+   - [ ] Because move() cannot be called while a MySQL transaction is open
+   > A DB transaction does not cover the file system. A rollback restores the tables, but the files on disk stay until the code deletes them. A diff with no `unlink()` in the `catch` leaves personal documents with no owner record.
 
 ---
 
@@ -1227,74 +1522,3 @@ Lab: [Lab 7.4b](./lab.en.md#lab-74b--automating-the-boundary-cases-with-phpunit-
    - [ ] `OK` — the tests are not sensitive to `>` versus `>=`
    - [ ] `ERRORS!` — all seven `rejectedProvider()` data sets fail
    > `2097152 >= 2097152` is now true, so a file of **exactly** 2 MB is rejected. That test does not expect an exception, so PHPUnit reports it as an *error* (uncaught exception), not a *failure* (failed assertion). The 2 MB + 1 byte file is still rejected — that is why a boundary must be tested on **both** sides.
-
----
-
-## 📦 Deliverables — Today's Output
-
-- [ ] `app/Enums/PassType.php`, `app/Enums/PassStatus.php`
-- [ ] `app/Entities/PassApplication.php`
-- [ ] `app/Models/PassApplicationModel.php`, `app/Models/PassDocumentModel.php`
-- [ ] `app/Services/PassWorkflowService.php` (`canView`, `submit`, `documentPath`) + `Config\Services::passWorkflowService()`
-- [ ] `app/Controllers/Pas/ApplicationController.php` (`index`, `new`, `create`, `show`, `download`)
-- [ ] `app/Views/pas/index.php`, `new.php`, `show.php`
-- [ ] `pas/permohonan` routes in `app/Config/Routes.php`
-- [ ] Application `PAS-2026-0001` with 1–3 documents successfully submitted and downloaded
-- [ ] `docs/ujian-manual-pas.md` — ≥ 10 cases, all Pass (or bugs recorded)
-- [ ] Commit on the `feat/pas-permohonan` branch with the `PAS:` prefix
-- [ ] `PassType::icon()`, `PassStatus::pending()`/`isPending()`, `PassApplication::validityDays()`/`daysRemaining()` (Lab 7.1b)
-- [ ] The `?pass_type=` filter + bracketed `?q=` search (`withType()`, `search()`) on `/pas/permohonan` (Lab 7.2b)
-- [ ] The `pas.dokumen.tambah` route + `PassWorkflowService::addDocuments()` — at most 3 documents per application (Lab 7.3b)
-- [ ] `tests/_support/FakeUploadedFile.php` + `tests/feature/Pas/PassSubmitTest.php` green; the *Diautomasikan* section in `docs/ujian-manual-pas.md` (Lab 7.4b)
-
-Full trainer reference: `templates/kod/` (**Templat & Rujukan** module) — `PassStatus`, `PassType`, `PassApplication-Entity`, `PassApplicationModel`, `PassWorkflowService`, `ApplicationController-upload`, `Routes-pas`. Topic notes: [07 Secure file upload](../docs/nota-07-muat-naik-fail-selamat.md) · [03 Model, Entity & Enum](../docs/nota-03-model-entity-dan-enum.md) · [11 Security](../docs/nota-11-keselamatan-aplikasi-web.md).
-
----
-
-## 🧠 Self-check
-
-1. An attacker renames `setup.exe` to `surat.pdf` and uploads it. Which rule rejects it and **how** does that rule know?
-
-<details><summary>Answer</summary>
-
-`mime_in` — it uses `getMimeType()`, which reads the file **content** through the `fileinfo` extension (leading bytes `MZ` → `application/x-dosexec` or similar), not the name or the browser header. In CI 4.6 `ext_in` (strict) also fails because `guessExtension()` from the content ≠ `pdf`. Our Service also checks `guessExtension()` once more.
-</details>
-
-2. Why do we store `stored_path = 'uploads/pas/1727…_ab12.pdf'` and not `C:\laragon\www\kkm\writable\uploads\pas\…`, and why not the original file name?
-
-<details><summary>Answer</summary>
-
-A **relative** path stays valid when the application moves to another server/OS; we join it with `WRITEPATH` when reading. The original name is not used on disk because it is untrusted input (path traversal `../`, odd characters, and two users with `ic.pdf` would overwrite each other). The original name is stored in `original_name` for display and for `setFileName()` during download only.
-</details>
-
-3. The INSERT into `pass_documents` fails after two files have been `move()`d. What happens in our code, step by step?
-
-<details><summary>Answer</summary>
-
-A `RuntimeException` is thrown → the `catch` block → `transRollback()` cancels the `pass_applications` INSERT (and the reference number) → `deleteStoredFiles()` deletes both files from `writable/uploads/pas/` → the exception is rethrown (the user sees an error). Result: no partial records in the DB, no orphan files on disk.
-</details>
-
-4. `pemohon2` opens `/pas/permohonan/dokumen/3` (a document owned by `pemohon1`). What is the response, and which code produces it?
-
-<details><summary>Answer</summary>
-
-404. `download()` finds the document, then `findVisibleOr404($document['application_id'])` calls `canView()`, which returns `false` (not the owner, not an officer) → `PageNotFoundException`. The `session` filter alone does not stop it because `pemohon2` is in fact logged in.
-</details>
-
-5. A participant sets `upload_max_filesize = 2M` in `php.ini`. A 3 MB file test shows "Sila lampirkan sekurang-kurangnya satu dokumen…" and not "tidak melebihi 2 MB". Why?
-
-<details><summary>Answer</summary>
-
-PHP rejects the file **before** CI4 sees it (`UPLOAD_ERR_INI_SIZE`). The file was not "uploaded successfully", so the first rule, `uploaded`, fails and validation stops there — `max_size` is never evaluated. Raise `upload_max_filesize` (e.g. `8M`) so that the application's 2 MB limit is the one that applies and the message is accurate.
-</details>
-
----
-
-## ➡️ Preparation for tomorrow
-
-Day 8 completes the Pass Module: the **review → approve/reject** flow, **Shield RBAC**, the `status_logs` timeline and automated access tests.
-
-- Make sure at least **3 applications** with status `submitted` exist (use `pemohon1` and `pemohon2`) — they will be tomorrow's demo data.
-- Log in once as `penyemak@latihan.test` and `pelulus@latihan.test` (password `Latihan@2026`) to make sure the seeder accounts work.
-- Re-read [note 06 — Shield auth & RBAC](../docs/nota-06-shield-auth-dan-rbac.md) §2–§4 (groups, permissions, `$matrix`).
-- A question to think about: *If `reviewer` can open `/pas/semakan`, what stops them from POSTing to `/pas/semakan/5/approve`?*

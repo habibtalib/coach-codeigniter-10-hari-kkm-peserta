@@ -13,6 +13,8 @@
 | [`tutorial-claude-code.md`](./tutorial-claude-code.md) | Persediaan Claude Code (Windows): pasang, log masuk, `.claude/settings.json` menyekat `.env`, mod *Plan*, proxy KKM | Sebelum Hari 6 |
 | [`pustaka-prompt.md`](./pustaka-prompt.md) | Pustaka prompt Claude Code / AI untuk **belajar** (terang ralat, semak logik, cadang ujian, terang kod baris demi baris, semakan keselamatan muat naik) | Hari 4–10, bila tersekat |
 | [`tutorial-prompt-projek.md`](./tutorial-prompt-projek.md) | Prompting Claude Code: anatomi prompt, gelung teroka → rancang → laksana → sahkan, projek sedia ada, projek baharu daripada PRD, templat & semakan PRD (AI-15..AI-18) | Hari 7 S12 |
+| [`seni-prompt.md`](./seni-prompt.md) | Seni prompt Claude Code: anatomi lima bahagian, tabiat (mod Plan, `@fail`, `!arahan`, `/clear`), rubrik menilai jawapan, 8 pasangan lemah → berkesan dan katalog 65 prompt (faham, rancang, laksana, semak, uji, nyahpepijat, refactor, dokumentasi, Git, keselamatan, prestasi, CI4, meta) | Hari 7 S17 · Hari 8–10 |
+| [`tutorial-agent-skill-mcp.md`](./tutorial-agent-skill-mcp.md) | Menyediakan subagent, skill & MCP dalam Claude Code (Windows): bila guna apa, fail `.claude/agents/`, `.claude/skills/`, `.mcp.json` dan skop pendaftaran | Hari 7 S10–S11 · Hari 8–10 |
 | [`pautan-rujukan.md`](./pautan-rujukan.md) | Pautan dokumentasi rasmi disusun ikut hari | Sepanjang kursus |
 | [`senarai-semak-modul.md`](./senarai-semak-modul.md) | Senarai semak kemajuan M1–M4 dipetakan kepada Definition of Done & peraturan `BR-*` | Hujung setiap sesi pembinaan; sebelum demo |
 | [`rubrik-capstone.md`](./rubrik-capstone.md) | Rubrik penilaian demo capstone Hari 10 | Hari 9 (baca), Hari 10 S4 (dinilai) |
