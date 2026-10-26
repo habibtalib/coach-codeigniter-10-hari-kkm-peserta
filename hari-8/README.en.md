@@ -22,26 +22,26 @@ By the end of today, participants can:
 | O8 | **Enforce** `permission:pas.review` on the bulk route and **prove** both layers with a Console `fetch()` attack for 4 roles | S6 | [Lab 8.2b](./lab.en.md#lab-82b--protect-the-bulk-route-permission-filter--role-matrix-s6); UT-PAS-27..30 in `docs/ujian-manual-pas.md` |
 | O9 | **Write** `PassBatchReviewTest` (5 tests: flash, partial failure, negative response + DB) and **prove** it with 2 mutations | S7 | [Lab 8.3b](./lab.en.md#lab-83b--feature-tests-for-the-bulk-action-s7); `OK (5 tests, …)` + mutation table |
 | O10 | **Demo** the `admin` role (apply → bulk review → approve own) and **record** the separation-of-duties finding for the system owner | S8 | [Lab 8.4b](./lab.en.md#lab-84b--fourth-role-demo-admin--separation-of-duties-finding-s8); `docs/demo-m2.md` on `main` |
+| O11 | **Build** the approval flow (`startReview`/`approve`/`reject` through `transition()` and `canTransitionTo()`) with Claude Code, and **reject** diffs that break BR-PAS-01/03/05 | S9 | [Lab 8.10](./lab.en.md#lab-810--claude-code-pass-approval-flow-s9); edited plan + 3 lines explained in `docs/nota-claude.md` |
+| O12 | **Prove** the three access layers (`permission:` filter, `authorize()`, `canView()`) in Claude-generated code with the `filter_check` MCP tool, `php spark filter:check` and a DevTools attack | S10 | [Lab 8.11](./lab.en.md#lab-811--claude-code-shield-rbac--access-scope-s10); redirect, 403 and 404 for the right roles |
+| O13 | **Write** the role × action matrix yourself and **test** the Claude-generated `PassAccessTest` with 2 mutations | S11 | [Lab 8.12](./lab.en.md#lab-812--claude-code-access-tests--status-history-s11); each mutation fails a test |
+| O14 | **Demo** M2 and **explain** 3 random lines from the diff without Claude before the merge | S12 | [Lab 8.13](./lab.en.md#lab-813--claude-code-m2-demo--final-review-s12); MR `feat/pas-claude` merged |
 
 ---
 
 ## 📅 Today's Schedule
 
-> ℹ️ Day 8 starts by finishing Lab 7.3 and 7.4 (and 7.3b/7.4b) from Day 7 (carried over because Day 7 morning was used for Claude Code); then continue with the schedule below.
+> ℹ️ **Day 8 schedule (updated):** from today, modules are built **with Claude Code** (S9–S12, Labs 8.10–8.13). Start by continuing Pass slices 1–2 from Day 7 (Lab 7.10/7.11) if not finished. The manual labs (S1–S8, Labs 8.0–8.4b) and Labs 7.3/7.4 are **reference code, not required**: every new lab has a *Compare with the reference code* step that points to the matching manual section.
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 7 recap | — |
-| 09:00–10:00 | S1 | Approval flow apply → review → approve/reject | Implement `PassWorkflowService` with `PassStatus::canTransitionTo()` |
-| 10:00–10:30 | S5 | S1 follow-up: bulk start review | Build a bulk action through `startReview()`; report partial failures |
+| 09:00–10:30 | S9 | Claude Code: Pass approval flow (slice 3) | Build `PassWorkflowService` with `PassStatus::canTransitionTo()` through the plan and diff gates |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–12:00 | S2 | Role-based access control | Configure Shield groups/permissions + route filters + ownership check |
-| 12:00–12:30 | S6 | S2 follow-up: protecting the bulk route | Add `permission:pas.review`; `fetch()` attack + 4-role matrix |
+| 10:45–12:30 | S10 | Claude Code: Shield RBAC & access scope (slice 4) | Prove the `permission:` filter, `authorize()` and `canView()` with `filter_check` and an attack |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–15:30 | S3 | Status log/history & functional tests | Display the `status_logs` timeline; positive & negative access tests |
-| 15:30–16:00 | S7 | S3 follow-up: bulk action feature tests | Write `PassBatchReviewTest` + 2 mutations |
-| 16:00–16:35 | S4 | Pass Module wrap-up | Full 3-role flow demo; **M2 done** |
-| 16:35–17:00 | S8 | S4 follow-up: `admin` role demo | Demo the admin; record the separation-of-duties finding in `docs/demo-m2.md` |
+| 14:30–16:00 | S11 | Claude Code: access tests & status history (slice 5) | `status_logs` timeline; positive & negative `PassAccessTest` + 2 mutations |
+| 16:00–17:00 | S12 | Claude Code: M2 demo & final review | `semak-ci4` + AI-08, 3-role demo, neighbour explain gate; **M2 done** |
 
 ---
 
@@ -69,6 +69,143 @@ flowchart LR
     U((User)) --> L1 --> L2 --> DB[(MySQL)]
     U -. GET details/documents .-> L3
 ```
+
+---
+
+## S9 — Claude Code: Pass Approval Flow (09:00–10:30)
+
+From today, modules are built **with Claude Code**: Claude writes the implementation code, you drive and approve. Every slice goes through the same seven gates:
+
+| # | Gate | Who | Evidence |
+|---|---------|-------|-------|
+| 1 | SPEC & BR | You | BR ids and SPEC sections in `docs/nota-claude.md` |
+| 2 | Slice plan (Plan mode, no code) | Claude proposes, you edit | Final plan in `docs/nota-claude.md` |
+| 3 | Implement (Manual mode) | Claude writes, you read **every** diff | Yes/No on every `Edit`; *accept edits*/*auto*/*bypass* forbidden |
+| 4 | Verify | You | `composer test`, browser, the `ci4-spark` MCP tools `routes`/`filter_check`/`db_table` |
+| 5 | `semak-ci4` review | The subagent, then you | Real findings fixed through gate 3 |
+| 6 | Explain gate | You | 3 key lines in your own words in `docs/nota-claude.md` |
+| 7 | Small commit | You | One commit on `feat/pas-claude` |
+
+Slice 3 is the approval flow. The technical content is the same as S1 below (§1.1–§1.4): one `transition()` locked with `FOR UPDATE`, `PassStatus::canTransitionTo()` (BR-PAS-01), mandatory remarks ≥ 10 characters (BR-PAS-03), and `status_logs` in the same transaction (BR-PAS-05). The difference: your job now is to **judge** the code, not to type it:
+
+| In Claude's diff, look for | Reject if you see |
+|-------------------------|------------------------|
+| `SELECT … FOR UPDATE` after `transBegin()` | `canTransitionTo()` checked before the transaction |
+| `canTransitionTo()` throwing a `DomainException` | `status` taken from `getPost()` |
+| `record()` in the same `try`, before `transCommit()` | `record()` after the commit or in the controller |
+| `approved_by/at` in `approve()` only | `approved_at` set during `reject()` |
+
+Lab: [Lab 8.10](./lab.en.md#lab-810--claude-code-pass-approval-flow-s9)
+
+### 🎯 Quiz S9
+
+> Answer after Lab 8.10 — the answers come from your real diffs and plan. Passing this quiz marks the Lab 8.10 checkpoint.
+
+1. Claude proposes this diff in `ReviewController::approve()`: `$model->update($id, ['status' => $this->request->getPost('status')]);`. What do you do at the diff gate?
+   - [ ] Accept, because the route is already protected by the `group:reviewer,approver,admin` filter
+   - [x] Reject: the status comes from user input and bypasses `transition()`, so `canTransitionTo()` and `status_logs` do not run
+   - [ ] Accept, then add a test that checks the status afterwards
+   - [ ] Reject only because the code uses CI3 syntax
+   > A route filter checks **who**, not **what**. The status must come from the enum in the service through the single `transition()` door. This is not CI3 syntax — it is valid but unsafe CI4.
+
+2. What is the correct order in the `transition()` that Claude generated?
+   - [ ] `canTransitionTo()` → `transBegin()` → `update()` → `transCommit()` → `record()`
+   - [ ] `update()` → `record()` → `canTransitionTo()` → `transCommit()`
+   - [x] `transBegin()` → `SELECT … FOR UPDATE` → `canTransitionTo()` → `update()` → `record()` → `transCommit()`
+   - [ ] `transBegin()` → `update()` → `transCommit()` → `SELECT … FOR UPDATE` → `record()`
+   > The status must be read **after** the lock is acquired (otherwise two concurrent approvers both succeed), and the log must be written before the commit so there is no status change without a log (BR-PAS-05).
+
+---
+
+## S10 — Claude Code: Shield RBAC & Access Scope (10:45–12:30)
+
+Slice 4 closes the three layers of defence from S2 (§2.1–§2.5): the **route filter** (`permission:` per action), **`authorize()`** in the service, and the **ownership check** `canView()` (BR-PAS-04). Claude writes the code; you prove each layer with tools that are not Claude:
+
+| Layer | Code Claude writes | How you prove it |
+|---------|-----------------------|-----------------------|
+| 1 — route filter | `'filter' => 'permission:pas.approve'` on `/approve` | The `filter_check` MCP tool **and** your own `php spark filter:check` |
+| 2 — service | `authorize()` → `$actor->can(...)` → `PermissionException` | Remove the filter temporarily → 403, then restore it |
+| 3 — ownership | `canView()` in `show()` and the document download | `pemohon2` opens `pemohon1`'s URL → 404 |
+
+Two things AI code often gets wrong: `inGroup('approver')` replacing `can('pas.approve')` (an admin with `pas.*` gets blocked), and 403 for a non-owner (leaks that the ID exists). SPEC §4 is the only source of `$matrix` — if Claude proposes a permission that is not in the SPEC, reject it.
+
+Lab: [Lab 8.11](./lab.en.md#lab-811--claude-code-shield-rbac--access-scope-s10)
+
+### 🎯 Quiz S10
+
+> Answer after Lab 8.11 — the answers come from your `filter_check` output and your attack. Passing this quiz marks the Lab 8.11 checkpoint.
+
+1. After Claude finishes, the `filter_check` MCP tool for `POST /pas/semakan/1/approve` shows *Before Filters* `csrf` and `group:reviewer,approver,admin` only. What does that mean?
+   - [ ] Correct — `group:` is enough because `authorize()` is in the service
+   - [ ] The MCP tool is broken; trust Claude's diff
+   - [ ] `csrf` replaces the need for `permission:`
+   - [x] Layer 1 is missing: the reviewer passes the filter to the controller, and only `authorize()` stops them — the slice is not finished
+   > Defence in depth means both layers must exist. Confirm with your own `php spark filter:check`; then ask Claude to add `permission:pas.approve` through the diff gate.
+
+2. `pemohon2` opens `/pas/permohonan/<id>` owned by `pemohon1`. What is the correct response according to BR-PAS-04 and the slice 4 plan?
+   - [x] 404, from the `canView()` check on the server
+   - [ ] 200, but the action buttons are hidden
+   - [ ] 403 — Akses Ditolak, so the applicant knows they have no right
+   - [ ] A redirect to `/` by the Shield filter
+   > Hiding buttons is UX only. A 404 does not reveal that the ID exists. The Shield filter does not know the record's owner, so this check must be in the controller/service.
+
+---
+
+## S11 — Claude Code: Access Tests & Status History (14:30–16:00)
+
+Slice 5 adds the `status_logs` timeline (§3.1) and `PassAccessTest` (§3.2–§3.3). Claude can write tests quickly — and that is the risk: a green test does not always test anything. Three rules for AI-generated tests:
+
+1. **Matrix first, by you.** You write the role × action table (result + DB state) before Claude writes a single test. Tests must match the cells, not the other way round.
+2. **Negative test = response + DB.** `assertRedirect()` alone misses the bug "the status already changed before the redirect". Every negative test also checks `seeInDatabase` (the status stays) and `dontSeeInDatabase('status_logs', …)`.
+3. **Mutations prove it.** You break the code yourself (remove a filter, `canView()` returns `true`). If no test fails, that test does not test yet.
+
+The timeline is also checked for security: `remarks` is reviewer/approver input that the applicant reads, so every value in the partial must go through `esc()`.
+
+Lab: [Lab 8.12](./lab.en.md#lab-812--claude-code-access-tests--status-history-s11)
+
+### 🎯 Quiz S11
+
+> Answer after Lab 8.12 — the answers come from your real tests and mutations. Passing this quiz marks the Lab 8.12 checkpoint.
+
+1. Claude generates `testPenyemakTidakBolehLuluskan` that only calls `assertRedirect()`. What do you ask it to add?
+   - [ ] `assertTrue(true)` so the test is not empty
+   - [x] `seeInDatabase` for the status staying `under_review` and `dontSeeInDatabase` for no `to_status = approved` log
+   - [ ] `markTestSkipped()` until Lab 8.13
+   - [ ] Nothing — the redirect already proves the reviewer is blocked
+   > If the service changes the status before the permission check, the response is still a redirect and the test passes even though the data is broken. The DB assertions catch it.
+
+2. `semak-ci4` reports `<?= $log['remarks'] ?>` in `status_timeline.php` as a category 1 finding. Why is it real?
+   - [ ] `remarks` is always empty for `approve()`, so it prints a PHP error
+   - [ ] A partial cannot print data from `status_logs`
+   - [x] `remarks` is officer input shown to the applicant; without `esc()`, a note containing `<script>` runs in the applicant's browser (XSS)
+   - [ ] CI4 escapes output automatically, so the finding is false
+   > CI4 does **not** escape `<?= ?>` automatically. Fix it through the diff gate: `<?= esc($log['remarks']) ?>`.
+
+---
+
+## S12 — Claude Code: M2 Demo & Final Review (16:00–17:00)
+
+Before the merge, the Pass module goes through three reviews: `semak-ci4` on the whole module, the AI-08 DoD review against [`kolaborasi.md`](../docs/kolaborasi.en.md) §2 and BR-PAS-01..06, and the **neighbour explain gate** — your neighbour picks 3 random lines from `git diff main...feat/pas-claude` and you explain them without Claude. The DoD does not change because Claude wrote the code: *the participant can explain every line*. The 5-minute demo follows the §4.1 script and the §4.2 DoD list.
+
+Lab: [Lab 8.13](./lab.en.md#lab-813--claude-code-m2-demo--final-review-s12)
+
+### 🎯 Quiz S12
+
+> Answer after Lab 8.13 — the answers come from your real demo and review. Passing this quiz marks the Lab 8.13 checkpoint.
+
+1. In the demo, application D is submitted, reviewed and approved. How many `status_logs` rows does D have?
+   - [x] 3: `NULL → submitted`, `submitted → under_review`, `under_review → approved`
+   - [ ] 2: the creation is not recorded
+   - [ ] 4: the reviewer's **Lulus** attempt through DevTools is also recorded
+   - [ ] 1: only the final status is stored
+   > The reviewer's attempt is refused by the filter before the controller, so there is no log. Every successful transition is recorded exactly once (BR-PAS-05).
+
+2. Your neighbour points at `$this->db->transRollback();` in the `catch` and you cannot explain it. What is the feature's status according to the DoD?
+   - [ ] Done — a green `composer test` is enough
+   - [ ] Done — Claude wrote it, so it is correct
+   - [x] Not done: use AI-02 in Plan mode, write the explanation in your own words in `docs/nota-claude.md`, and explain it again before the merge
+   - [ ] Not done: delete the line because it is not understood
+   > DoD: *the participant can explain every line*. Deleting a line you do not understand is more dangerous — without a rollback, the transaction stays open after an exception.
 
 ---
 

@@ -6,6 +6,10 @@
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
+| 9.10 | S9 | 09:00–10:30 | Claude Code slice L1: route `permission:laporan.view` · `ReportService` penapis whitelist + builder berbinding |
+| 9.11 | S10 | 10:45–12:30 | Claude Code slice L2: borang GET · jadual berpagination · pautan eksport dari penapis bersih · RPT-03 |
+| 9.12 | S11 | 14:30–16:00 | Claude Code slice L3: `ExportService` PDF & Excel · `exportRows()` berhad · teks `TYPE_STRING` |
+| 9.13 | S12 | 16:00–17:00 | `ReportServiceTest` + mutasi · `db_table` + `laporan:explain` · cadangan index · **M3 siap** |
 | 9.1 | S1 | 09:00–10:00 | Kad spesifikasi RPT-01..03 · route · controller rangka · borang filter GET |
 | 9.1b | S5 | 10:00–10:30 | Tempoh pantas (Bulan ini/Bulan lepas/Tahun ini) · cip filter aktif |
 | 9.2 | S2 | 10:45–12:00 | `ReportService` penuh · jadual berpagination untuk 3 laporan |
@@ -14,6 +18,475 @@
 | 9.3b | S7 | 15:30–16:00 | Lembaran Excel *Ringkasan* (`=SUM()`) · jadual ringkasan PDF |
 | 9.4 | S4 | 16:00–16:35 | `ReportServiceTest` hijau · EXPLAIN · **M3 siap** |
 | 9.4b | S8 | 16:35–17:00 | 5 ujian ringkasan/JUMLAH/Excel · 2 mutasi · push ke MR |
+
+> ℹ️ **Lab 9.10–9.13 ialah lab hari ini** (Claude Code, branch `feat/laporan-claude`). Lab 9.1–9.4b (manual) ialah **kod rujukan, tidak wajib** — buka hanya pada langkah *Banding dengan kod rujukan*. Lab 9.5 eSPKP di hujung fail ialah lab tambahan yang berasingan.
+>
+> **Aliran kerja setiap lab Claude Code:** (1) SPEC & ID RPT → (2) pelan slice dalam mod Plan, tiada kod, anda menyunting → (3) laksana dalam mod **Manual**, anda membaca dan meluluskan setiap diff (*accept edits*, *auto* dan *bypass permissions* dilarang) → (4) sahkan dengan `composer test`, pelayar dan tool MCP `ci4-spark` `routes`/`filter_check`/`db_table` → (5) semakan subagent `semak-ci4`, pembaikan melalui gerbang yang sama → (6) gerbang terang: 3 baris utama dengan ayat sendiri dalam `docs/nota-claude.md` → (7) commit kecil di branch `feat/laporan-claude`.
+
+---
+
+## Lab 9.10 — Claude Code: `ReportService` & Penapis Whitelist (S9)
+
+### 🎯 Objektif
+Membina slice L1 Modul Laporan dengan Claude Code: route `/laporan/*` dengan `permission:laporan.view`, `ReportController` nipis, dan `ReportService` (`normaliseFilters()` dengan whitelist, `builder()` dengan `join()` + `when()` + binding, `applySort()` dengan whitelist lajur). Anda **menulis jadual input → hasil penapis sendiri** dahulu, kemudian **membuktikan** setiap baris dengan `php spark shell` dan tool MCP `ci4-spark`.
+
+### Prasyarat
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
+- M1 dan M2 di-merge ke `main` (Lab 8.13); `composer test` hijau.
+- Lab 7.6–7.8: `CLAUDE.md`, subagent `semak-ci4`, server MCP `ci4-spark` *connected*.
+- `php spark shell` (Hari 3, [`arahan-spark.md`](../docs/arahan-spark.md)) berfungsi.
+
+### Langkah
+
+0. **Branch & data demo.**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   git switch main && git pull
+   git switch -c feat/laporan-claude
+   ```
+
+   ```powershell tab="PowerShell"
+   git switch main
+   git pull
+   git switch -c feat/laporan-claude
+   ```
+
+   Data demo: ikut Lab 9.1 **langkah 0** sahaja (salin `DemoDataSeeder.php.txt`, tambah panggilan dalam `DatabaseSeeder::run()`, jalankan seeder). Ini data, bukan latihan menulis kod.
+
+   > 📚 **Rujukan sahaja:** Lab 9.1–9.4 (manual) ialah kod rujukan Modul Laporan. Anda **tidak** perlu menaipnya. Buka hanya pada langkah *Banding dengan kod rujukan* atau apabila diff Claude meragukan.
+
+1. **SPEC & jadual penapis (anda, 15 minit).** Baca SPEC §2.3 (RPT-01..03 dan penapisnya), §5 (`ReportService`), §6 (route laporan) dan §10 (*Jangan tulis SQL mentah dengan input pengguna*). Kemudian:
+   - Salin kad spesifikasi Lab 9.1 langkah 1 ke `docs/laporan-spec.md` dan isi sendiri untuk RPT-01 dan RPT-02.
+   - Tambah jadual sasaran penapis ini dan isi lajur kanan **sebelum** membuka Claude:
+
+   ```markdown
+   ## Penapis — sasaran (slice L1)
+   | Input ?query | Hasil $filters dijangka |
+   |--------------|-------------------------|
+   | from=2026-06-01 | |
+   | from=2026-02-31 | |
+   | from=2026-06-30&to=2026-06-01 | |
+   | status=approved | |
+   | status=bogus | |
+   | status[]=approved | |
+   | sort=b.id; DROP TABLE users | |
+   | dir=sideways | |
+   ```
+
+2. **Pelan (mod Plan).** Mulakan `claude`, tekan `Shift+Tab` (atau `Alt+M`) hingga **plan mode**, kemudian tampal:
+
+   ```text
+   Mod Plan. Jangan ubah sebarang fail.
+   Slice L1 Modul Laporan: route, controller rangka dan ReportService (penapis + builder), tanpa view lagi.
+   Baca @docs/spesifikasi-sistem.md bahagian 2.3, 3, 5, 6, 9 dan 10, @docs/laporan-spec.md,
+   @app/Enums/BookingStatus.php, @app/Enums/PassStatus.php, @app/Enums/PassType.php dan @app/Enums/SlotCategory.php.
+   Cadangkan pelan bernombor (maksimum 5 langkah). Setiap langkah: fail, kaedah, apa berubah, cara saya uji.
+   Pelan mesti mengandungi:
+   - Route group laporan (tempahan, pas, penggunaan) dengan filter permission:laporan.view.
+   - ReportController nipis: bookings(), passes(), usage() memanggil service('reportService').
+   - ReportService::normaliseFilters(string $report, array $input): setiap nilai melalui whitelist —
+     enum ::tryFrom(), tarikh sah (Y-m-d dan wujud), julat terbalik ditukar, id positif sahaja,
+     array ditolak, sort hanya kunci dalam pemalar SORTABLE (kunci URL => lajur SQL), dir hanya asc/desc.
+     Mesti memenuhi jadual "Penapis — sasaran" dalam @docs/laporan-spec.md.
+   - ReportService::builder(string $report, array $f): Query Builder dengan join() dan when();
+     RPT-01 julat bertindih (start_date <= :to AND end_date >= :from, BR-TLK-01);
+     RPT-02 created_at separuh terbuka (>= from, < to + 1 hari); departments LEFT JOIN.
+   - applySort() yang hanya menghantar lajur dari SORTABLE ke orderBy(), dengan id sebagai susunan kedua.
+   - Daftar reportService dalam app/Config/Services.php.
+   Tiada SQL bercantum input. Jangan sentuh migration atau ujian. Tanya saya dahulu jika ada yang kabur.
+   ```
+
+   **Pelan yang baik mengandungi:** whitelist sebelum query (penapis dibersihkan sekali, kemudian builder hanya menerima `$filters` bersih); `where('b.status', $f['status'])` (binding automatik); `SORTABLE` sebagai pemalar; julat tarikh yang berbeza bagi RPT-01 (bertindih) dan RPT-02 (separuh terbuka); nama route dan kelas tepat SPEC §5–§6.
+
+   **TOLAK pelan jika:** `orderBy($this->request->getGet('sort'))` atau mana-mana input terus ke `orderBy()`/`select()`; `where("status = '$status'")`; validasi penapis dalam controller sahaja; `group:` menggantikan `permission:laporan.view`; query berasingan untuk setiap laporan tanpa `builder()` dikongsi; view atau eksport dalam slice ini.
+
+   Sunting pelan dan salin pelan akhir ke `docs/nota-claude.md` → bahagian baharu *Slice L1 — ReportService (Lab 9.10)*.
+
+3. **Laksana dalam mod Manual** (`Shift+Tab` hingga tiada *plan mode* atau *accept edits*; *auto*/*bypass* dilarang), satu langkah pada satu masa:
+
+   ```text
+   Laksana langkah 1 pelan sahaja. Sebelum setiap Edit, terangkan dalam 2 baris apa yang berubah dan kenapa.
+   Jangan jalankan php spark, composer atau git. Berhenti selepas langkah 1.
+   ```
+
+   **Diff yang baik:** `PassStatus::tryFrom($this->str($input, 'status') ?? '')?->value`; `array_key_exists((string) $sort, self::SORTABLE[$report]) ? $sort : $defaultSort`; `->when($f['status'] ?? null, static fn (BaseBuilder $q, string $s) => $q->where('p.status', $s))`; `->orderBy(self::SORTABLE[$report][$f['sort']], $f['dir'])->orderBy('p.id', $f['dir'])`.
+
+   **TOLAK diff jika:** nilai `$_GET` mentah sampai ke `builder()`; `$db->query("... {$x} ...")`; `like()` atau `orWhere()` tanpa `groupStart()`; `escape()` manual menggantikan binding; tarikh `<= to` pada `created_at` (hari terakhir tercicir); fail di luar pelan.
+
+4. **Sahkan (anda sendiri).**
+   - MCP (mod Plan): `Guna tool ci4-spark filter_check untuk GET /laporan/pas dan GET /laporan/tempahan.` Dijangka: `permission:laporan.view` dalam *Before Filters*. Bandingkan dengan `php spark routes` sendiri.
+   - `php spark shell` (🪟 Git Bash: `winpty php spark shell` jika prompt tergantung), satu baris pada satu masa:
+
+     ```php
+     $r = service('reportService');
+     print_r($r->normaliseFilters('pas', ['status' => 'bogus', 'sort' => 'b.id; DROP TABLE users', 'dir' => 'sideways']));
+     print_r($r->normaliseFilters('tempahan', ['from' => '2026-06-30', 'to' => '2026-06-01', 'status' => ['approved']]));
+     echo $r->builder('pas', $r->normaliseFilters('pas', ['status' => 'approved', 'from' => '2026-09-01', 'to' => '2026-09-30']))->getCompiledSelect();
+     ```
+
+     Dijangka: baris 1 → `status` kosong, `sort` = `created_at`, `dir` = `desc`; baris 2 → `from` `2026-06-01`, `to` `2026-06-30`, `status` kosong; baris 3 → SQL dengan `LEFT JOIN` `departments`, `'approved'` dilepaskan, `created_at >= '2026-09-01 00:00:00'` dan `created_at < '2026-10-01 00:00:00'`. Tandakan setiap baris jadual *Penapis — sasaran* sebagai ✔ atau ✘.
+   - `composer test` → hijau (M1/M2 tidak rosak).
+
+5. **Semakan `semak-ci4`** (mod Plan):
+
+   ```text
+   Guna subagent semak-ci4 untuk menyemak app/Services/ReportService.php, app/Controllers/Laporan dan app/Config/Routes.php. Fokus kategori 4 (Query Builder, orderBy, whitelist).
+   ```
+
+   Baiki dapatan sahih melalui gelung yang sama; rekod dapatan palsu dengan sebabnya.
+
+6. **Gerbang terang.** Dalam `docs/nota-claude.md` (Slice L1), 3 baris dengan ayat sendiri: baris `SORTABLE`/`array_key_exists` untuk `sort`, satu baris `tryFrom()`, dan baris julat `created_at <`. Untuk setiap satu: *input jahat apa yang disekat, dan apa jadi jika dibuang*.
+
+7. **Commit kecil:**
+
+   ```bash
+   git add app/ docs/
+   git commit -m "RPT: ReportService — penapis whitelist & builder berbinding (slice L1)"
+   ```
+
+8. **Banding dengan kod rujukan.** Buka [Lab 9.2](#lab-92--reportservice-join-penapis-dinamik-aggregate-pagination-s2) langkah 2 (`normaliseFilters()`), 3–5 (builder dan `applySort()`). Catat dalam `docs/nota-claude.md` satu perbezaan dan sama ada ia boleh diterima.
+
+### ✅ Checkpoint
+- [ ] Jadual *Penapis — sasaran* diisi oleh anda sebelum pelan, dan kelapan-lapan baris ✔ dalam `php spark shell` (Kuiz S9).
+- [ ] `filter_check` (MCP) dan `php spark routes` menunjukkan `permission:laporan.view` pada ketiga-tiga route laporan (Kuiz S9).
+- [ ] SQL `getCompiledSelect()` RPT-02 menunjukkan `LEFT JOIN` dan julat `created_at` separuh terbuka (Kuiz S9).
+- [ ] Tiada input pengguna sampai ke `orderBy()` tanpa melalui `SORTABLE`; dapatan `semak-ci4` direkod (Kuiz S9).
+- [ ] Gerbang terang 3 baris diisi dengan ayat anda sendiri (Kuiz S9).
+- [ ] Commit `RPT: ReportService — penapis whitelist & builder berbinding (slice L1)` dalam `git log` (Kuiz S9).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `php spark shell` tergantung dalam Git Bash | mintty tidak menyokong input interaktif PHP | `winpty php spark shell`, atau guna terminal PowerShell VS Code |
+| `Call to undefined method ... reportService()` | Service belum didaftar dalam `app/Config/Services.php` | Lihat langkah pelan; tolak diff yang mencipta `new ReportService()` dalam controller tanpa pendaftaran |
+| `php spark routes \| grep laporan` gagal dalam PowerShell | `grep` tiada | `php spark routes \| Select-String laporan` |
+| `filter_check` dalam Git Bash: route tidak dijumpai | Git Bash menukar `/laporan/pas` kepada path Windows | `MSYS_NO_PATHCONV=1 php spark filter:check GET /laporan/pas` |
+| `print_r` dalam shell mencetak `Array ( )` kosong | Kunci input salah eja (`from_date` bukan `from`) | Guna kunci SPEC: `from`, `to`, `status`, `pass_type`, `department_id`, `zone_id`, `category`, `sort`, `dir` |
+| `Unknown column 'd.name'` | `departments` di-join dengan alias berbeza | Tolak diff; minta Claude ikut alias pelan (`p`, `u`, `d`) |
+
+### ⭐ Cabaran tambahan
+- Minta Claude (mod Plan) mencari satu input `?query` yang masih melepasi `normaliseFilters()` tetapi menghasilkan laporan kosong secara senyap. Tambah baris itu ke jadual sasaran dan putuskan sendiri tingkah laku yang betul.
+
+---
+
+## Lab 9.11 — Claude Code: Paparan Senarai Laporan & RPT-03 (S10)
+
+### 🎯 Objektif
+Membina slice L2: borang penapis `method="get"` yang mengekalkan nilai, jadual berpagination yang membawa penapis yang sama, pengepala boleh disusun (whitelist), pautan eksport dari penapis **bersih**, dan RPT-03 aggregate (`selectCount()` + `groupBy()`). Anda **menguji** XSS dalam atribut dan kebocoran akses sendiri.
+
+### Prasyarat
+- Lab 9.10 selesai dan di-commit di `feat/laporan-claude`.
+
+### Langkah
+
+1. **SPEC (anda, 5 minit).** Baca SPEC §2.3 (*paparan HTML berpagination + butang Eksport PDF + Eksport Excel; filter sama dibawa melalui query string*) dan README §1.3–§1.4. Dalam `docs/nota-claude.md`, tulis bahagian *Slice L2* dengan 4 perkara yang anda akan uji: penapis kekal selepas hantar, penapis kekal di halaman 2, pautan eksport membawa penapis yang sama, dan `pemohon1` ditolak.
+
+2. **Pelan (mod Plan):**
+
+   ```text
+   Mod Plan. Jangan ubah sebarang fail.
+   Slice L2 Modul Laporan: paparan senarai RPT-01/RPT-02 dan RPT-03 aggregate.
+   Baca @docs/spesifikasi-sistem.md bahagian 2.3, 3 dan 6, @docs/laporan-spec.md,
+   @app/Services/ReportService.php, @app/Controllers/Laporan/ReportController.php dan @app/Views/layouts/main.php.
+   Cadangkan pelan bernombor (maksimum 5 langkah). Setiap langkah: fail, apa berubah, cara saya uji.
+   Pelan mesti mengandungi:
+   - Satu view app/Views/laporan/index.php untuk ketiga-tiga laporan: borang method="get" yang
+     mengekalkan nilai dari $filters BERSIH (bukan $_GET), setiap nilai melalui esc(..., 'attr').
+   - ReportService::paginate(): jumlah rekod + baris halaman semasa dari builder() yang sama.
+   - Pager yang mengekalkan penapis di setiap halaman.
+   - Pengepala lajur boleh disusun hanya bagi kunci dalam SORTABLE.
+   - Pautan Eksport PDF/Excel dibina dari toQuery($filters) + export=pdf|xlsx (eksport sebenar dalam slice L3).
+   - RPT-03 usageByZone(): selectCount() + groupBy() mengikut zon bagi bulan/tahun; peratus penggunaan dikira dalam PHP.
+   - Pautan menu Laporan hanya jika auth()->user()->can('laporan.view') (UX sahaja).
+   Jangan ubah normaliseFilters() atau route. Tanya saya dahulu jika ada yang kabur.
+   ```
+
+   **Pelan yang baik mengandungi:** satu sumber penapis (`$filters` dari `normaliseFilters()`) untuk borang, pager, pengepala susun dan pautan eksport; `esc()` dengan konteks `'attr'` dalam atribut; `GET` (bukan `POST`) untuk borang penapis.
+
+   **TOLAK pelan jika:** borang `method="post"`; nilai borang atau pautan dibina dari `$_GET`/`$this->request->getGet()` mentah; query aggregate RPT-03 ditulis sebagai SQL mentah bercantum; `getResultArray()` untuk semua baris tanpa pagination; menu disembunyikan sebagai satu-satunya kawalan akses.
+
+   Sunting pelan dan salin ke `docs/nota-claude.md`.
+
+3. **Laksana dalam mod Manual**, satu langkah pada satu masa:
+
+   ```text
+   Laksana langkah 1 pelan sahaja. Sebelum setiap Edit, terangkan dalam 2 baris apa yang berubah dan kenapa.
+   Jangan jalankan php spark, composer atau git. Berhenti selepas langkah 1.
+   ```
+
+   **Diff yang baik:** `<input type="date" name="from" value="<?= esc($filters['from'] ?? '', 'attr') ?>">`; `href="<?= current_url() . '?' . esc(http_build_query($query + ['export' => 'pdf']), 'attr') ?>"`; `->selectCount('b.id', 'bookings')->groupBy('z.id')`.
+
+   **TOLAK diff jika:** `value="<?= $_GET['from'] ?>"` atau `value="<?= $filters['from'] ?>"` tanpa `esc()`; `<?= $row['full_name'] ?>` tanpa `esc()`; pautan eksport dari `$_GET`; pengepala susun menerima nama lajur dari URL tanpa semakan `SORTABLE`.
+
+4. **Sahkan (anda sendiri)** sebagai `penyemak@latihan.test`:
+   - `/laporan/pas?status=approved` → hantar borang dengan `pass_type`; kedua-dua nilai kekal dalam borang; klik halaman 2 → URL masih ada `status` dan `pass_type`.
+   - Hover pautan **Eksport Excel** → URL membawa penapis yang sama + `export=xlsx`.
+   - XSS atribut: buka `/laporan/tempahan?from=%22%3E%3Cb%3Ex` → *View Page Source*: nilai `from` kosong (tarikh tidak sah dibuang) dan tiada `<b>` mentah dalam HTML.
+   - Debug Toolbar → *Database*: query laporan menunjukkan nilai penapis dalam `WHERE`, `LIMIT 20`.
+   - `/laporan/penggunaan?year=2026&month=6` → satu baris bagi setiap zon dengan peratus penggunaan.
+   - Log masuk `pemohon1@latihan.test` → buka `/laporan/pas` → redirect dengan mesej Shield; menu Laporan tiada.
+
+5. **Semakan `semak-ci4`** (mod Plan):
+
+   ```text
+   Guna subagent semak-ci4 untuk menyemak app/Views/laporan, app/Services/ReportService.php dan app/Views/layouts/main.php. Fokus kategori 1 (esc() dan konteks attr/url).
+   ```
+
+6. **Gerbang terang.** Dalam `docs/nota-claude.md` (Slice L2), 3 baris dengan ayat sendiri: baris `esc(..., 'attr')` dalam borang, baris pautan eksport dari `$query`, dan baris `groupBy()` RPT-03.
+
+7. **Commit kecil:**
+
+   ```bash
+   git add app/ docs/
+   git commit -m "RPT: paparan senarai berpagination & RPT-03 aggregate (slice L2)"
+   ```
+
+8. **Banding dengan kod rujukan.** Buka [Lab 9.1](#lab-91--reka-bentuk-laporan--borang-penapis-get-s1) langkah 4 (borang) dan [Lab 9.2](#lab-92--reportservice-join-penapis-dinamik-aggregate-pagination-s2) langkah 6, 7 dan 9 (pagination, RPT-03, jadual). Catat satu perbezaan dalam `docs/nota-claude.md`.
+
+### ✅ Checkpoint
+- [ ] Penapis kekal selepas hantar dan di halaman 2; pautan eksport membawa penapis yang sama (Kuiz S10).
+- [ ] `?from=%22%3E%3Cb%3Ex` tidak menghasilkan HTML mentah dalam *View Page Source* (Kuiz S10).
+- [ ] RPT-03 Jun 2026 memaparkan satu baris bagi setiap zon dengan peratus penggunaan (Kuiz S10).
+- [ ] `pemohon1` ditolak di server untuk `/laporan/pas`; menu Laporan tidak dipaparkan (Kuiz S10).
+- [ ] Gerbang terang 3 baris diisi; dapatan `semak-ci4` direkod (Kuiz S10).
+- [ ] Commit `RPT: paparan senarai berpagination & RPT-03 aggregate (slice L2)` dalam `git log` (Kuiz S10).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| Halaman 2 kehilangan penapis | Pager dibina tanpa query string semasa | Tolak diff; minta pager yang membawa `toQuery($filters)` |
+| Input `type="date"` kosong walaupun URL ada `from` | Format bukan `Y-m-d` (contoh `01/06/2026` dari tetapan bahasa Windows) | Nilai `value` mesti `Y-m-d`; paparan tempatan diurus oleh pelayar |
+| Peratus RPT-03 lebih 100 % | Hari tempahan dikira melebihi bulan dipilih | Minta Claude (mod Plan) terangkan rumus; banding dengan README §1.2 (Zon A Jun = 25.0 %) |
+| `Undefined variable $query` dalam view | Controller tidak menghantar `toQuery($filters)` | Lihat langkah pelan; terima diff yang menambah `'query' => $service->toQuery($filters)` |
+| Debug Toolbar tiada | `CI_ENVIRONMENT` bukan `development` | `.env`: `CI_ENVIRONMENT = development` (jangan commit `.env`) |
+
+### ⭐ Cabaran tambahan
+- Minta Claude (mod Plan) membandingkan bilangan query dalam Debug Toolbar untuk RPT-01 halaman 1 dan halaman 2. Terangkan sendiri kenapa `countAllResults(false)` digunakan sebelum `limit()`.
+
+---
+
+## Lab 9.12 — Claude Code: Eksport PDF & Excel Selamat (S11)
+
+### 🎯 Objektif
+Membina slice L3: `ExportService::pdf()` (Dompdf) dan `xlsx()` (PhpSpreadsheet) daripada `ReportService::exportRows()` yang memanggil `builder()` yang **sama** dengan skrin, dengan had baris (`LengthException`), `esc()` dalam view PDF, dan teks Excel ditulis eksplisit sebagai string (selamat daripada formula injection). Anda **membuktikan** skrin = PDF = Excel dan `=1+1` kekal teks.
+
+### Prasyarat
+- Lab 9.11 selesai dan di-commit.
+- `ext-zip` dan `ext-gd` aktif (`php -m`).
+
+### Langkah
+
+1. **Pustaka (anda sendiri, bukan Claude).**
+
+   ```bash
+   composer require dompdf/dompdf phpoffice/phpspreadsheet
+   composer show dompdf/dompdf phpoffice/phpspreadsheet
+   ```
+
+   Dijangka: kedua-dua pakej disenaraikan dengan versi. Commit `composer.json` dan `composer.lock` sahaja (`vendor/` dalam `.gitignore`).
+
+2. **SPEC & risiko (anda, 5 minit).** Baca SPEC §1 (Dompdf, PhpSpreadsheet), §2.3 dan README §3.1–§3.4. Dalam `docs/nota-claude.md` → *Slice L3*, tulis 4 risiko yang pelan mesti tangani: formula injection Excel, HTML dalam nama (PDF), had baris/memori, penapis eksport berbeza daripada skrin.
+
+3. **Pelan (mod Plan):**
+
+   ```text
+   Mod Plan. Jangan ubah sebarang fail.
+   Slice L3 Modul Laporan: eksport PDF dan Excel.
+   Baca @docs/spesifikasi-sistem.md bahagian 1, 2.3, 5 dan 9, @app/Services/ReportService.php,
+   @app/Controllers/Laporan/ReportController.php dan @app/Views/laporan/index.php.
+   Cadangkan pelan bernombor (maksimum 5 langkah). Setiap langkah: fail, apa berubah, cara saya uji.
+   Pelan mesti mengandungi:
+   - ReportService::exportRows(string $report, array $filters, string $format): guna builder() yang SAMA
+     dengan skrin; countAllResults(false) dahulu; LengthException jika melebihi EXPORT_LIMIT
+     (pdf 2000, xlsx 10000); baris dibaca satu demi satu (getUnbufferedRow), bukan getResultArray().
+   - app/Services/ExportService.php: pdf() dengan Dompdf (A4 landskap, isRemoteEnabled false, fon DejaVu Sans)
+     dan xlsx() dengan PhpSpreadsheet (pengepala tebal, lebar automatik, baris beku).
+   - Dalam xlsx(): nombor ditulis sebagai nombor; SEMUA teks ditulis dengan
+     setCellValueExplicit(..., DataType::TYPE_STRING) supaya teks bermula =, +, - atau @ tidak menjadi formula.
+   - View app/Views/laporan/pdf.php tanpa layout Bootstrap; setiap nilai melalui esc().
+   - ReportController: ?export=pdf|xlsx -> exportRows() -> ExportService -> download() dengan nama fail
+     laporan-<laporan>-YmdHis.<ext>; LengthException -> redirect ke URL yang sama tanpa export, flash error.
+   - Daftar exportService dalam app/Config/Services.php.
+   Jangan ubah normaliseFilters(), builder() atau route. Tanya saya dahulu jika ada yang kabur.
+   ```
+
+   **Pelan yang baik mengandungi:** eksport melalui `builder()` yang sama (satu sumber kebenaran); semakan had **sebelum** membaca baris; `TYPE_STRING` untuk teks; `esc()` dalam `pdf.php`; kebenaran eksport datang dari filter route yang sama (`permission:laporan.view`).
+
+   **TOLAK pelan jika:** query eksport ditulis semula (`$db->table('pass_applications')->...`); `fromArray()` untuk data pengguna (nilai `=...` menjadi formula); `isRemoteEnabled` `true`; fail sementara dalam `public/`; route eksport baharu tanpa filter; Claude mencadangkan menjalankan `composer require` sendiri.
+
+   Sunting pelan dan salin ke `docs/nota-claude.md`.
+
+4. **Laksana dalam mod Manual**, satu langkah pada satu masa:
+
+   ```text
+   Laksana langkah 1 pelan sahaja. Sebelum setiap Edit, terangkan dalam 2 baris apa yang berubah dan kenapa.
+   Jangan jalankan composer, php spark atau git. Berhenti selepas langkah 1.
+   ```
+
+   **Diff yang baik:** `$sheet->setCellValueExplicit($coord, (string) $value, DataType::TYPE_STRING);` dalam gelung baris; `if ($total > $limit) { throw new LengthException(...); }` sebelum `streamRows()`; `<td><?= esc($row[$key]) ?></td>` dalam `pdf.php`; `$options->set('isRemoteEnabled', false);`.
+
+   **TOLAK diff jika:** `$sheet->fromArray($rows)` untuk baris data; `setCellValue()` untuk teks pengguna; `<?= $row[$key] ?>` tanpa `esc()` dalam PDF; `ini_set('memory_limit', '-1')` sebagai "penyelesaian"; `echo` atau `var_dump` tertinggal (merosakkan fail binari).
+
+5. **Sahkan (anda sendiri)** sebagai `penyemak@latihan.test`:
+   - RPT-01 `status=approved`: skrin *N* rekod → PDF "Jumlah rekod: *N*" → Excel *N* baris data. **Tiga nombor sama.**
+   - Formula injection: catat `full_name` asal `pemohon2`, tukar kepada `=1+1` (Lab 9.3 langkah 8, arahan `mysql … UPDATE users SET full_name = '=1+1' …`), eksport RPT-02 ke Excel → sel nama menunjukkan teks `=1+1`, bukan `2`. Pulihkan `full_name` asal.
+   - Nama fail: `laporan-pas-<tarikh>-<masa>.xlsx`.
+   - `pemohon1@latihan.test` buka terus `/laporan/pas?export=xlsx` → ditolak (redirect Shield), tiada fail dimuat turun.
+   - `composer test` → hijau.
+
+6. **Semakan `semak-ci4`** (mod Plan), kemudian semakan eksport gaya AI-06 dari Lab 9.3 langkah 8 (tampal prompt yang sama):
+
+   ```text
+   Guna subagent semak-ci4 untuk menyemak app/Services/ExportService.php, app/Services/ReportService.php, app/Views/laporan/pdf.php dan app/Controllers/Laporan/ReportController.php.
+   ```
+
+7. **Gerbang terang.** Dalam `docs/nota-claude.md` (Slice L3), 3 baris dengan ayat sendiri: baris `setCellValueExplicit(..., TYPE_STRING)`, baris semakan `EXPORT_LIMIT`, dan baris `esc()` dalam `pdf.php`.
+
+8. **Commit kecil:**
+
+   ```bash
+   git add app/ composer.json composer.lock docs/
+   git commit -m "RPT: eksport PDF & Excel selamat dari builder yang sama (slice L3)"
+   ```
+
+9. **Banding dengan kod rujukan.** Buka [Lab 9.3](#lab-93--eksport-pdf-dompdf--excel-phpspreadsheet-s3) langkah 2 (`ExportService`), 4 (`exportRows()`) dan 5 (controller). Catat satu perbezaan dalam `docs/nota-claude.md`.
+
+### ✅ Checkpoint
+- [ ] Skrin, PDF dan Excel memaparkan jumlah rekod yang sama untuk RPT-01 `status=approved` (Kuiz S11).
+- [ ] Nama sintetik `=1+1` kekal teks dalam Excel; `full_name` asal dipulihkan (Kuiz S11).
+- [ ] `pemohon1` ditolak untuk `/laporan/pas?export=xlsx` (Kuiz S11).
+- [ ] Eksport melebihi had memaparkan flash ralat, bukan fail rosak atau ralat memori (Kuiz S11).
+- [ ] Gerbang terang 3 baris diisi; dapatan `semak-ci4` direkod (Kuiz S11).
+- [ ] Commit `RPT: eksport PDF & Excel selamat dari builder yang sama (slice L3)` dalam `git log` (Kuiz S11).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `ZipArchive not found` semasa `.xlsx` | `ext-zip` tidak aktif dalam Laragon | `php.ini`: `extension=zip`; mulakan semula Laragon |
+| Excel: *We found a problem with some content* | Output tambahan (ruang selepas `?>`, BOM, `echo`) bercampur binari | Buang `?>` penutup dalam fail PHP tulen; simpan UTF-8 **tanpa BOM** (VS Code: *Save with Encoding*) |
+| `mysql` meminta kata laluan tetapi tiada prompt dalam Git Bash | mintty | `winpty mysql …`, atau HeidiSQL Laragon |
+| Aksara `?` dalam PDF | Fon Helvetica tiada glif Unicode | `setDefaultFont('DejaVu Sans')` dalam pelan; tolak diff yang membuang fon |
+| `composer require` gagal: `ext-gd` diperlukan | `extension=gd` dikomen dalam `php.ini` | Aktifkan `gd`; `php -m` dalam terminal yang sama |
+| Fail dimuat turun bernama `pas` tanpa extension | `download()` tanpa nama fail penuh | Nama `laporan-<laporan>-YmdHis.<ext>` seperti pelan |
+
+### ⭐ Cabaran tambahan
+- Minta Claude (mod Plan) menerangkan kenapa `exportRows()` **bukan** fungsi generator walaupun ia memulangkan generator. Sahkan dengan membaca komen dalam Lab 9.3 langkah 4.
+
+---
+
+## Lab 9.13 — Claude Code: Ujian Laporan & Prestasi (S12)
+
+### 🎯 Objektif
+Menutup Modul Laporan: `tests/Services/ReportServiceTest.php` yang membuktikan *jumlah laporan = jumlah SQL* daripada fixture yang **anda kira dengan tangan**, satu mutasi yang menggagalkan ujian, analisis `EXPLAIN` (arahan `laporan:explain`) dan index sedia ada melalui tool MCP `db_table`, serta cadangan index yang direkod (bukan dilaksana) — **M3 siap**.
+
+### Prasyarat
+- Lab 9.10–9.12 di-commit; `.env` `database.tests.*` → MySQL `kkm_latihan_test`.
+
+### Langkah
+
+1. **Fixture di atas kertas (anda, 10 minit).** Reka 5 tempahan (slot, tarikh, status) dan 3 permohonan pas (`created_at`, status). Kira dengan tangan dan tulis dalam `docs/nota-claude.md` → *Slice L4*: berapa `approved`; berapa bertindih dengan Jun 2026; berapa pas dalam September 2026 termasuk hari terakhir; peratus penggunaan Zon A Jun.
+
+2. **Pelan (mod Plan):**
+
+   ```text
+   Mod Plan. Jangan ubah sebarang fail.
+   Slice L4 Modul Laporan: ujian ReportService dan analisis prestasi.
+   Baca @app/Services/ReportService.php, @docs/spesifikasi-sistem.md bahagian 3 dan 9,
+   dan fixture serta jawapan tangan Slice L4 dalam @docs/nota-claude.md.
+   Cadangkan pelan bernombor (maksimum 4 langkah). Setiap langkah: fail, apa berubah, cara saya uji.
+   Pelan mesti mengandungi:
+   - tests/Services/ReportServiceTest.php: DatabaseTestTrait, $migrate = true, $refresh = true,
+     $namespace = null; fixture TEPAT seperti dalam nota saya, dengan tarikh tetap (bukan date('Y-m-d')).
+   - Sekurang-kurangnya 7 ujian: RPT-01 tanpa penapis = jumlah jadual; RPT-01 status = COUNT(*) SQL;
+     julat bertindih; sort di luar whitelist jatuh ke lalai; jumlah eksport = jumlah HTML;
+     RPT-02 hari terakhir julat tidak tercicir; kadar penggunaan RPT-03 Jun 2026.
+   - Nilai dijangka diambil dari jawapan tangan saya, bukan dikira semula oleh kod yang diuji.
+   - app/Commands/ReportExplain.php (laporan:explain <tempahan|pas> [status] [from] [to]) yang mencetak
+     SQL dari builder()->getCompiledSelect() dan EXPLAIN FORMAT=TRADITIONAL.
+   Jangan ubah ReportService untuk membuat ujian lulus. Jangan tambah migration atau index.
+   Tanya saya dahulu jika ada yang kabur.
+   ```
+
+   **Pelan yang baik mengandungi:** nilai dijangka dari nota anda (contoh `assertSame(3, $total)`); perbandingan dengan `COUNT(*)` SQL terus melalui `$this->db->table(...)->countAllResults()`; tarikh tetap Jun/September 2026.
+
+   **TOLAK pelan jika:** ujian mengira nilai dijangka dengan memanggil `ReportService` sendiri; ujian menggunakan SQLite; fixture bergantung pada data `kkm_latihan`; migration index baharu; kod aplikasi diubah supaya ujian lulus.
+
+3. **Laksana dalam mod Manual**, satu langkah pada satu masa:
+
+   ```text
+   Laksana langkah 1 pelan sahaja. Sebelum setiap Edit, terangkan dalam 2 baris apa yang berubah dan kenapa.
+   Jangan jalankan composer, php spark atau git. Berhenti selepas langkah 1.
+   ```
+
+   **TOLAK diff jika:** `assertGreaterThan(0, ...)` menggantikan nombor tepat; `markTestSkipped()`; nilai dijangka berbeza daripada jawapan tangan anda tanpa penjelasan (bincang dahulu: siapa yang salah, anda atau kod?).
+
+4. **Sahkan (anda sendiri).**
+
+   ```bash
+   composer test -- tests/Services/ReportServiceTest.php --testdox
+   ```
+
+   Dijangka: sekurang-kurangnya 7 baris `✔` dan `OK (N tests, M assertions)`.
+
+   **Mutasi:** dalam `builder()` RPT-02, tukar sendiri `'p.created_at <'` kepada `'p.created_at <='` dan buang `+ 1 hari` (ikut Lab 9.4 langkah 5). Jalankan semula → ujian *hari terakhir julat* **mesti gagal**. Pulihkan dengan `git restore app/Services/ReportService.php` → hijau.
+
+5. **Prestasi (MCP + EXPLAIN).**
+   - Mod Plan: `Guna tool ci4-spark db_table untuk pass_applications dan slot_bookings. Senaraikan index setiap jadual.` Dijangka: `pass_applications` ada index `status` dan `ref_no` (UNIQUE) tetapi **tiada** index pada `created_at`; `slot_bookings` ada index (`slot_id`,`start_date`,`end_date`) dan `status`. Bandingkan dengan `php spark db:table pass_applications --metadata`.
+   - Terminal:
+
+     ```bash
+     php spark laporan:explain tempahan approved 2026-06-01 2026-06-30
+     php spark laporan:explain pas "" 2026-09-01 2026-09-30
+     ```
+
+     Dijangka: RPT-01 dengan `status` → jadual `b` menggunakan index (`key` tidak kosong); RPT-02 dengan tarikh sahaja → jadual `p` `type = ALL`. Catat `type`, `key`, `rows` dalam `docs/laporan-spec.md` → *Prestasi*.
+   - Mod Plan: tampal output EXPLAIN dan minta Claude menerangkan `type = ALL` serta index yang sesuai dan kosnya pada `INSERT`. Cadangan `INDEX(created_at)` direkod dalam `docs/log-keputusan.md` sebagai **cadangan kepada pemilik sistem** — tiada migration hari ini.
+
+6. **Semakan akhir.** `semak-ci4` pada `app/Services`, `app/Controllers/Laporan`, `app/Views/laporan` dan `app/Commands/ReportExplain.php`; kemudian AI-08 (DoD [`kolaborasi.md`](../docs/kolaborasi.md) §2) dalam mod Plan seperti Lab 8.13 langkah 2. Baiki setiap "Tidak" yang sahih dengan commit `FIX:`.
+
+7. **Gerbang terang.** Dalam `docs/nota-claude.md` (Slice L4), 3 baris dengan ayat sendiri: satu `assertSame()` dengan nilai tangan anda, baris `getCompiledSelect()` dalam `ReportExplain`, dan satu baris output EXPLAIN (`type = ALL`). Kemudian rakan memilih 1 baris rawak dari `git diff main...feat/laporan-claude -- app/` untuk anda terangkan tanpa Claude.
+
+8. **Commit & MR:**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   git add app/ tests/ docs/
+   git commit -m "RPT: ReportServiceTest, laporan:explain & cadangan index (slice L4)"
+   git push -u origin feat/laporan-claude
+   ```
+
+   ```powershell tab="PowerShell"
+   git add app/ tests/ docs/
+   git commit -m "RPT: ReportServiceTest, laporan:explain & cadangan index (slice L4)"
+   git push -u origin feat/laporan-claude
+   ```
+
+   Buka MR `feat/laporan-claude` → `main`, jawab satu komen, kemudian merge — **M3 siap**.
+
+9. **Banding dengan kod rujukan.** Buka [Lab 9.4](#lab-94--ujian-jumlah-laporan--jumlah-sql--explain-s4) langkah 2–3 (fixture dan 7 ujian) dan 6 (`ReportExplain`). Cari satu ujian rujukan yang tiada dalam ujian anda dan catat sama ada ia patut ditambah.
+
+### ✅ Checkpoint
+- [ ] Jawapan tangan fixture ditulis sebelum pelan; `ReportServiceTest` hijau dengan sekurang-kurangnya 7 ujian yang memakai nombor tangan itu (Kuiz S12).
+- [ ] Mutasi `<=` menggagalkan ujian hari terakhir; kod dipulihkan (Kuiz S12).
+- [ ] Senarai index `db_table` (MCP) sama dengan `php spark db:table --metadata`; RPT-02 tarikh sahaja menunjukkan `type = ALL` pada `p` (Kuiz S12).
+- [ ] Cadangan index direkod dalam `docs/log-keputusan.md`, tiada migration baharu (Kuiz S12).
+- [ ] MR `feat/laporan-claude` → `main` di-merge selepas semakan akhir dan gerbang terang — **M3 siap** (Kuiz S12).
+
+### 🧯 Masalah lazim
+
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `no such function: DATEDIFF` | Kumpulan DB `tests` masih SQLite | `.env`: `database.tests.*` → MySQL `kkm_latihan_test` |
+| EXPLAIN mencetak pokok `-> Nested loop …` | MySQL 9 menukar format lalai | `EXPLAIN FORMAT=TRADITIONAL`; MariaDB: buang `FORMAT=TRADITIONAL` |
+| `laporan:explain pas "" 2026-09-01 …` dalam PowerShell: tarikh masuk sebagai status | PowerShell membuang `""` kosong | Guna `'""'` atau `--% pas "" 2026-09-01 2026-09-30` |
+| Ujian lulus di laptop anda, gagal di laptop rakan | Fixture bergantung pada `date('Y-m-d')` | Tarikh tetap Jun/September 2026 |
+| `Duplicate entry 'WXX 9001'` | Data kekal dari ujian lepas | `protected $refresh = true;` |
+| `db_table` MCP: `Table 'pass_applications' not found` | `.env` menunjuk database lain | Semak `database.default.database = kkm_latihan`; `/mcp` → *reconnect* |
+
+### ⭐ Cabaran tambahan
+- Minta Claude (mod Plan) mendraf migration **baharu** `AddCreatedAtIndexToPassApplications` tanpa menulis fail. Bandingkan dengan skill `migration-ci4` (Lab 7.7): dua peraturan yang dipatuhi, satu yang tidak.
 
 ---
 

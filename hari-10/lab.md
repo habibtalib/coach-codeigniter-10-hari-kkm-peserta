@@ -6,10 +6,689 @@
 
 | Lab | Sesi | Tempoh | Hasil |
 |-----|------|--------|-------|
-| 10.1 | S1 | 75 min | `StatisticsService` (tanpa cache) · `/statistik` + `/statistik/data` · 4 KPI · 4 carta |
-| 10.2 | S2 | 90 min | `remember()` · invalidasi dalam `BookingService` & `PassWorkflowService` · `StatisticsCacheTest` |
-| 10.3 | S3 | 85 min | UAT diisi · ≥ 1 pepijat dibaiki melalui ujian gagal · senarai semak keselamatan · tag `v1.0-capstone` |
-| 10.4 | S4 | 60 min | Demo 8 minit · retrospektif |
+| 10.10 | S5 | 150 min | Claude Code: 4 slice Statistik (KPI · JSON · Chart.js · cache) · 12 baris gerbang terangkan · 4 commit `STAT:` |
+| 10.11 | S6 | 90 min | `docs/semakan-capstone.md` · pembaikan merah → hijau · 2 ujian AI-09 · README/CLAUDE.md · tag `v1.0-capstone` |
+| 10.12 | S7 | 60 min | Demo 8 minit · refleksi terima/tolak dalam `docs/nota-claude.md` |
+| 10.1 | S1 | 75 min | `StatisticsService` (tanpa cache) · `/statistik` + `/statistik/data` · 4 KPI · 4 carta — *kod rujukan* |
+| 10.2 | S2 | 90 min | `remember()` · invalidasi dalam `BookingService` & `PassWorkflowService` · `StatisticsCacheTest` — *kod rujukan* |
+| 10.3 | S3 | 85 min | UAT diisi · ≥ 1 pepijat dibaiki melalui ujian gagal · senarai semak keselamatan · tag `v1.0-capstone` — langkah 1–3 dan 5 pada 11:45–12:30 |
+| 10.4 | S4 | 60 min | Demo 8 minit · retrospektif — format demo untuk Lab 10.12 |
+
+> ℹ️ **Lab 10.10–10.12 dahulu.** Modul Statistik dan persediaan capstone dibina dengan Claude Code (Lab 10.10–10.12, di bawah). Lab 10.1–10.2 ialah **kod rujukan** untuk langkah "Banding dengan kod rujukan"; jangan taip semula. Lab 10.3 langkah 1–3 dan 5 (UAT manual + K1–K10) dijalankan 11:45–12:30; Lab 10.4 ialah format demo untuk Lab 10.12.
+
+---
+
+## Lab 10.10 — Claude Code: Statistik slice demi slice (S5)
+
+> 🛡️ **Peraturan Lab 10.10–10.12.** Data sintetik sahaja; jangan beri isi `.env` kepada Claude. Setiap edit dibuat dalam mod **Manual**: anda membaca dan meluluskan setiap diff satu demi satu. Mod *accept edits*, *auto* dan `bypassPermissions` dilarang, begitu juga pilihan "Yes, allow all edits…" dan "Yes, and don't ask again" untuk edit fail. Kod Lab 10.1–10.2 ialah **kod rujukan** untuk langkah "Banding dengan kod rujukan", bukan untuk ditaip semula.
+
+### 🎯 Objektif
+Membina modul Statistik (M4) bersama Claude Code dalam 4 slice (`StatisticsService` + 4 KPI; dataset carta + endpoint JSON; view Chart.js 4; cache + invalidasi selepas commit). Setiap slice melalui gelung 7 langkah [README §5.1](./README.md#51-gelung-7-langkah-untuk-setiap-slice), dan 3 baris kunci setiap slice diterangkan dengan ayat anda sendiri dalam `docs/nota-claude.md`.
+
+### Prasyarat
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
+- Lab 7.6–7.9 siap: `CLAUDE.md` projek, subagent `semak-ci4`, server MCP `ci4-spark` dalam `.mcp.json`, dan `docs/nota-claude.md`.
+- `.claude/settings.json` mempunyai `"defaultMode": "default"` (dipaparkan sebagai **Manual**) dan peraturan `deny` untuk `.env` ([tutorial Claude Code](../docs/tutorial-claude-code.md) §5).
+- M1, M2, M3 di-merge ke `main`; `composer test` hijau; data demo daripada `DemoDataSeeder` (Lab 9.1 langkah 0).
+
+### Langkah
+
+**1. Branch, sesi dan mod (5 min).**
+
+```bash tab="Git Bash / macOS / Linux"
+git switch main && git pull
+git switch -c feat/statistik
+claude
+```
+
+```powershell tab="PowerShell"
+git switch main
+git pull
+git switch -c feat/statistik
+claude
+```
+
+Dalam Claude Code, taip `/mcp`: `ci4-spark` berstatus *connected*. Baris bawah **tidak** menunjukkan *accept edits on* atau *plan mode on*: itulah mod Manual. Jika ia menunjukkan *accept edits on*, tekan `Shift+Tab` (atau `Alt+M`) sehingga tiada label mod.
+
+**2. Gelung langkah 1: SPEC & BR (5 min).** Buka [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §2.4, §4, §6 dan §9, serta README §1.1 dan §1.4. Tambah bahagian ini dalam `docs/nota-claude.md` (anda yang menaip):
+
+```text
+## Hari 10 — Statistik (M4)
+
+| Slice | SPEC / takrif | BR / gate | Ujian bukti |
+|---|---|---|---|
+| 1 KPI | §2.4, §9 Pendaftaran service, README §1.1 | BR-TLK-04 (takrif aktif) | tests/Services/StatisticsServiceTest.php |
+| 2 Data + JSON | §2.4, §4, §6, README §1.4 | G2 | tests/feature/Statistik/StatistikAccessTest.php |
+| 3 View | README §1.2, §1.5 | K2 (esc) | pelayar + semak-ci4 |
+| 4 Cache | §2.4, §9 Cache | BR-PAS-01, BR-PAS-05, BR-TLK-05 | tests/Services/StatisticsCacheTest.php |
+
+### Gerbang terangkan
+| Slice | Fail:baris | Apa | Kenapa | Jika dibuang |
+|---|---|---|---|---|
+
+### Diff yang saya tolak
+| Slice | Cadangan Claude | Sebab saya tolak |
+|---|---|---|
+```
+
+**3. Gelung langkah 2: pelan slice dalam mod Plan (15 min).** Tekan `Shift+Tab` (atau `Alt+M`) sehingga baris bawah menunjukkan **plan mode**, kemudian tampal:
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+Konteks: @docs/spesifikasi-sistem.md §2.4 (M4 Statistik), §4 (peranan), §6 (route), §9 (baris "Pendaftaran service"
+dan "Cache"), dan @CLAUDE.md.
+Takrif KPI: Tempahan aktif = slot_bookings dengan status pending/approved (BR-TLK-04). Kadar penggunaan slot =
+slot berbeza dengan tempahan approved yang meliputi hari ini ÷ slot aktif (is_active = 1, tidak dipadam) × 100.
+Pas menunggu = pass_applications dengan status submitted/under_review. Purata hari lulus =
+AVG(TIMESTAMPDIFF(HOUR, created_at, approved_at)) / 24 bagi approved_at IS NOT NULL.
+Tugas: cadangkan pelan 4 slice untuk modul Statistik:
+1. StatisticsService::build() dengan 4 KPI + daftar service('statisticsService') + ujian unit dengan $now tetap.
+2. 4 dataset carta (12 bulan diisi sifar; usage_by_zone guna semula ReportService::usageByZone()) + dashboard()
+   + DashboardController index()/data() + route group statistik dengan filter permission:statistik.view + ujian feature.
+3. View app/Views/statistik/dashboard.php: kad KPI dirender di server, 4 <canvas>, Chart.js 4.4.7, fetch /statistik/data.
+4. cache()->remember(StatisticsService::CACHE_KEY, 600, ...) + cache()->delete(StatisticsService::CACHE_KEY) SELEPAS
+   setiap transCommit() dalam BookingService dan PassWorkflowService + StatisticsCacheTest yang merah dahulu.
+Untuk setiap slice: fail yang dicipta/diubah, kaedah, ujian yang membuktikannya, arahan pengesahan, dan risiko.
+Kekangan: CodeIgniter 4.6+, PHP 8.2+, Query Builder sahaja, nama tepat ikut SPEC, tiada package composer baharu,
+jangan sentuh .env atau migration. Tanya saya dahulu jika ada yang kabur.
+```
+
+Pelan yang baik mengandungi:
+- 4 slice yang setiap satunya boleh diuji sendiri, dengan fail, kaedah dan ujian dinamakan;
+- `StatisticsService::CACHE_KEY = 'stat_dashboard'` dan TTL 600 (SPEC §9), `service('statisticsService')`;
+- `$now` disuntik melalui constructor supaya KPI "hari ini" boleh diuji;
+- slice 4 bermula dengan ujian merah, dan `cache()->delete(...)` selepas **setiap** `transCommit()` (`create()`/`submit()` dan `transition()`).
+
+Tolak atau edit pelan yang: menggabungkan semua slice dalam satu langkah, menambah migration atau jadual baharu, menulis query kedua untuk penggunaan zon (bukan `ReportService::usageByZone()`), atau meletakkan invalidasi dalam controller.
+
+**Edit pelan itu sekurang-kurangnya sekali.** Pada soalan kelulusan pelan, pilih pilihan untuk terus merancang dan taip pembetulan anda, cth "Slice 2: tambah ujian applicant → bukan 200 untuk /statistik/data." Apabila pelan betul, pilih pilihan yang **mengekalkan kelulusan manual** untuk setiap edit; jangan sekali-kali pilih pilihan *auto-accept edits*.
+
+**4. Slice 1: KPI (25 min).**
+
+**4a. Laksana (Manual).** Pastikan baris bawah tiada label mod, kemudian tampal:
+
+```text
+Laksanakan Slice 1 sahaja daripada pelan.
+- app/Services/StatisticsService.php: CACHE_KEY = 'stat_dashboard', CACHE_TTL = 600, constructor
+  (?BaseConnection $db = null, ?DateTimeImmutable $now = null), build() yang memulangkan generated_at dan kpi
+  (active_bookings, slot_utilisation, pending_passes, avg_days_to_approve). charts = [] buat masa ini.
+- Daftar statisticsService dalam app/Config/Services.php (SPEC §9).
+- tests/Services/StatisticsServiceTest.php: fixture sintetik sendiri, $now tetap 2026-09-25 09:00:00, satu ujian bagi
+  setiap KPI, termasuk avg_days_to_approve = null apabila tiada pas diluluskan dan slot_utilisation = 0 apabila tiada slot aktif.
+Guna enum BookingStatus/PassStatus untuk nilai status, bukan string bertaip. Satu fail pada satu masa; selepas setiap
+fail, terangkan 3 baris paling penting. Jangan jalankan migration.
+```
+
+Diff yang baik: `declare(strict_types=1)`, `whereIn('status', …)` dengan nilai enum, `TIMESTAMPDIFF(HOUR, …) / 24`, `$this->now` untuk "hari ini", kawalan pembahagian dengan sifar, dan ujian dengan `DatabaseTestTrait` (`$migrate`, `$refresh`, `$namespace = null`).
+
+**Tolak** (pilih **No** dan taip sebabnya) jika anda nampak: `TIMESTAMPDIFF(DAY`, `status = 'approved'` untuk purata, `date('Y-m-d')` dalam service, `->query("… $x")`, ujian yang hanya `assertIsArray()`, atau perubahan pada service lain. Contoh sebab: "No: guna $this->now, bukan date(), supaya ujian tidak bergantung pada tarikh hari ini." Rekod setiap penolakan dalam jadual *Diff yang saya tolak*.
+
+**4b. Sahkan.** Dalam Claude Code:
+
+```text
+!composer test -- tests/Services/StatisticsServiceTest.php
+```
+
+Jangkaan: `OK (5 tests, …)` atau lebih. Kemudian jalankan sendiri di HeidiSQL/phpMyAdmin `SELECT COUNT(*) FROM slot_bookings WHERE status IN ('pending','approved');` pada DB pembangunan, dan bandingkan dengan `php spark shell` → `service('statisticsService')->build()['kpi']`.
+
+**4c. Semak dengan `semak-ci4`.**
+
+```text
+Guna subagent semak-ci4 untuk menyemak app/Services/StatisticsService.php, app/Config/Services.php dan
+tests/Services/StatisticsServiceTest.php: Query Builder/binding, nama ikut SPEC §9, pembahagian dengan sifar,
+kebergantungan pada tarikh hari ini, dan ujian yang tidak menguji apa-apa.
+Jadual | Fail:baris | Isu | Keterukan | Cadangan |. Jangan ubah fail.
+```
+
+Buka setiap fail:baris sendiri. Untuk setiap dapatan yang sahih, minta pembetulan **satu dapatan pada satu masa** ("Betulkan dapatan #1 sahaja"), baca diff, luluskan, dan ulang 4b.
+
+**4d. Gerbang terangkan.** Pilih 3 baris kunci (cth `whereIn('status', …)`, `/ 24`, kawalan sifar) dan isi jadual *Gerbang terangkan* dengan ayat anda sendiri: apa, kenapa, apa jadi jika dibuang. Jangan salin jawapan Claude.
+
+**4e. Commit kecil.**
+
+```bash tab="Git Bash / macOS / Linux"
+git add app/Services/StatisticsService.php app/Config/Services.php tests/Services/StatisticsServiceTest.php docs/nota-claude.md
+git commit -m "STAT: StatisticsService 4 KPI + ujian (slice 1)"
+```
+
+```powershell tab="PowerShell"
+git add app/Services/StatisticsService.php app/Config/Services.php tests/Services/StatisticsServiceTest.php docs/nota-claude.md
+git commit -m "STAT: StatisticsService 4 KPI + ujian (slice 1)"
+```
+
+Taip `/clear` dalam Claude Code sebelum slice seterusnya, kemudian `@docs/nota-claude.md` jika perlu konteks pelan.
+
+**5. Slice 2: dataset carta + endpoint JSON (30 min).**
+
+**5a. Laksana (Manual):**
+
+```text
+Laksanakan Slice 2 sahaja.
+- Dalam StatisticsService::build() tambah charts: bookings_by_month (12 bulan tahun semasa, bulan kosong = 0),
+  pass_status (keys = nilai enum PassStatus, labels BM, data), usage_by_zone (guna semula ReportService::usageByZone(),
+  jangan tulis query kedua), pass_trend (12 bulan terakhir). Bentuk mesti sama dengan kontrak README Hari 10 §1.4.
+- Tambah dashboard() yang memulangkan build() (slice 4 akan membalutnya dengan cache).
+- app/Controllers/Statistik/DashboardController.php: index() memaparkan view dengan kpi;
+  data() memulangkan $this->response->setJSON(service('statisticsService')->dashboard()).
+- app/Config/Routes.php: route group statistik (namespace App\Controllers\Statistik, filter permission:statistik.view),
+  GET / (as statistik) dan GET data (as statistik.data), ikut SPEC §6.
+- Ujian unit: bookings_by_month mempunyai 12 nilai dan bulan tanpa rekod = 0.
+- tests/feature/Statistik/StatistikAccessTest.php: approver → GET /statistik/data 200 JSON; applicant → bukan 200.
+Satu fail pada satu masa; terangkan 3 baris paling penting selepas setiap fail.
+```
+
+Diff yang baik: `array_column($rows, 'total', 'm')` + gelung 1..12 dengan `?? 0`, `groupBy` pada alias, `keys` berasingan daripada `labels`, controller tanpa query, dan satu route group dengan filter.
+
+**Tolak** jika: query penggunaan zon ditulis semula dalam `StatisticsService`, controller memanggil `db_connect()`, route tanpa filter atau filter `session` sahaja, ujian akses hanya untuk peranan yang dibenarkan, atau `labels` digunakan sebagai kunci warna.
+
+**5b. Sahkan:**
+
+```text
+!composer test
+```
+
+Jangkaan: semua hijau, termasuk `StatistikAccessTest`. Kemudian tanya `ci4-spark`:
+
+```text
+Guna tool ci4-spark: senaraikan route statistik dan filter bagi GET /statistik/data. Adakah kedua-dua route dilindungi permission:statistik.view?
+```
+
+Luluskan panggilan `ci4-spark - routes` dan `ci4-spark - filter_check`, dan bandingkan dengan `php spark routes` yang anda jalankan sendiri. Dalam pelayar: `pelulus@latihan.test` → `/statistik/data` memaparkan JSON dengan 12 nilai `charts.bookings_by_month.data`; `pemohon1@latihan.test` → disekat.
+
+**5c. Semak:**
+
+```text
+Guna subagent semak-ci4 untuk menyemak app/Controllers/Statistik/DashboardController.php, app/Config/Routes.php
+(group statistik) dan perubahan charts dalam app/Services/StatisticsService.php: filter pada setiap route statistik,
+tiada query dalam controller, bulan kosong diisi sifar, usage_by_zone guna semula ReportService.
+Jadual | Fail:baris | Isu | Keterukan | Cadangan |. Jangan ubah fail.
+```
+
+**5d–5e.** Gerbang terangkan (3 baris, cth filter `permission:statistik.view`, `array_column(..., 'total', 'm')`, `setJSON()`), kemudian commit:
+
+```bash tab="Git Bash / macOS / Linux"
+git add app/ tests/ docs/nota-claude.md
+git commit -m "STAT: dataset carta + /statistik/data + ujian akses (slice 2)"
+```
+
+```powershell tab="PowerShell"
+git add app/ tests/ docs/nota-claude.md
+git commit -m "STAT: dataset carta + /statistik/data + ujian akses (slice 2)"
+```
+
+**6. Slice 3: view Chart.js (20 min).**
+
+**6a. Laksana (Manual):**
+
+```text
+Laksanakan Slice 3 sahaja: app/Views/statistik/dashboard.php menggunakan layout sedia ada.
+- Kad KPI dirender di server dengan esc() dan number_format(); papar — apabila avg_days_to_approve null.
+- 4 <canvas> (chartBookingsByMonth, chartPassStatus, chartUsageByZone, chartPassTrend), setiap satu dalam
+  <div style="position:relative;height:280px">.
+- Chart.js 4.4.7 dari https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js, dimuat sebelum skrip anda.
+- fetch ke url_to('statistik.data') dengan semakan res.ok dan Content-Type sebelum res.json(); mesej mesra jika gagal.
+- Fungsi draw() memanggil Chart.getChart(canvas)?.destroy() dahulu. Jenis: bar, doughnut, bar mendatar
+  (indexAxis: 'y'), line; maintainAspectRatio: false.
+- Jangan guna innerHTML untuk data dari server; guna textContent.
+Terangkan 3 baris paling penting selepas fail siap.
+```
+
+Diff yang baik: setiap `<?= ?>` melalui `esc()` (atau `url_to()` yang dibalut `esc()`), semakan `res.ok`, `indexAxis: 'y'`, `destroy()` sebelum `new Chart()`.
+
+**Tolak** jika: `innerHTML` dengan data server, `res.json()` tanpa semakan `res.ok`, Chart.js versi lain atau `@latest`, KPI dikira semula dalam JavaScript, atau view memanggil `service()`/query terus.
+
+**6b. Sahkan.** Log masuk sebagai `pelulus@latihan.test` → `/statistik`: 4 kad + 4 carta. DevTools (`F12`) → *Console*: tiada ralat merah; *Network* → `data`: status 200, `Content-Type: application/json`. Kemudian `!composer test`: hijau.
+
+**6c. Semak:**
+
+```text
+Guna subagent semak-ci4 untuk menyemak app/Views/statistik/dashboard.php: setiap <?= tanpa esc(), penggunaan
+innerHTML atau insertAdjacentHTML dengan data server, semakan res.ok sebelum res.json(), dan URL dibina dengan url_to().
+Jadual | Fail:baris | Isu | Keterukan | Cadangan |. Jangan ubah fail.
+```
+
+**6d–6e.** Gerbang terangkan (cth `res.ok`, `indexAxis: 'y'`, `Chart.getChart(canvas)?.destroy()`), kemudian commit:
+
+```bash tab="Git Bash / macOS / Linux"
+git add app/Views/statistik/dashboard.php docs/nota-claude.md
+git commit -m "STAT: dashboard Chart.js 4 kad KPI + 4 carta (slice 3)"
+```
+
+```powershell tab="PowerShell"
+git add app/Views/statistik/dashboard.php docs/nota-claude.md
+git commit -m "STAT: dashboard Chart.js 4 kad KPI + 4 carta (slice 3)"
+```
+
+**7. Slice 4: cache + invalidasi selepas commit (30 min).**
+
+**7a. Ujian merah dahulu (Manual):**
+
+```text
+Laksanakan Slice 4, bahagian A sahaja: tulis tests/Services/StatisticsCacheTest.php DAHULU.
+- setUp() memanggil cache()->delete(StatisticsService::CACHE_KEY).
+- Ujian 1: dashboard() mengisi cache (cache()->get(StatisticsService::CACHE_KEY) bukan null).
+- Ujian 2: isi cache, BookingService::approve() pada tempahan pending sintetik, kemudian cache mesti null.
+- Ujian 3: sama untuk satu peralihan PassWorkflowService (ikut corak pengguna Shield dalam tests/feature/Pas/PassAccessTest.php).
+JANGAN ubah kod aplikasi. Selepas fail siap, terangkan ujian mana yang patut merah sekarang dan kenapa.
+```
+
+Kemudian jalankan sendiri:
+
+```text
+!composer test -- tests/Services/StatisticsCacheTest.php
+```
+
+Jangkaan: **merah** (dashboard() belum menggunakan cache, jadi ujian 1 dan semakan `assertNotNull` dalam ujian 2 gagal). Simpan output ini; checkpoint memerlukannya.
+
+**7b. Pelaksanaan (Manual):**
+
+```text
+Laksanakan Slice 4, bahagian B. Sebelum mengubah apa-apa, senaraikan setiap $this->db->transCommit() dalam
+app/Services/BookingService.php dan app/Services/PassWorkflowService.php (kaedah + peralihan status).
+Kemudian:
+- balut dashboard() dengan cache()->remember(self::CACHE_KEY, self::CACHE_TTL, fn (): array => $this->build());
+- tambah SATU baris cache()->delete(StatisticsService::CACHE_KEY); SELEPAS setiap transCommit() yang anda senaraikan:
+  bukan sebelum commit, bukan dalam blok try sebelum commit, bukan dalam controller.
+Jangan ubah ujian. Satu fail pada satu masa.
+```
+
+Diff yang baik: senarai `transCommit()` merangkumi `create()`/`submit()` dan `transition()`; setiap `delete` berada pada baris **selepas** `transCommit()`; kunci sentiasa `StatisticsService::CACHE_KEY`.
+
+**Tolak** jika: `delete` sebelum `transCommit()` atau dalam controller, string `'stat_dashboard'` ditaip dalam service lain, `cache()->clean()`, TTL selain 600, atau sebarang perubahan pada `StatisticsCacheTest`.
+
+**7c. Sahkan:**
+
+```bash tab="Git Bash / macOS / Linux"
+grep -n -e "transCommit" -e "CACHE_KEY" app/Services/*.php
+composer test
+```
+
+```powershell tab="PowerShell"
+Select-String -Path app\Services\*.php -Pattern "transCommit|CACHE_KEY"
+composer test
+```
+
+Jangkaan: setiap baris `transCommit` dalam `BookingService` dan `PassWorkflowService` diikuti baris `CACHE_KEY`; semua ujian hijau. Dalam pelayar: sebagai `pelulus`, lulus satu permohonan pas → `/statistik` → "Pas menunggu" turun serta-merta.
+
+**7d. Semak:**
+
+```text
+Guna subagent semak-ci4 untuk menyemak app/Services/BookingService.php, app/Services/PassWorkflowService.php dan
+app/Services/StatisticsService.php: setiap transCommit() diikuti cache()->delete(StatisticsService::CACHE_KEY),
+tiada delete sebelum commit atau dalam controller, tiada string 'stat_dashboard' di luar StatisticsService,
+dan data cache hanya array skalar. Jadual | Fail:baris | Isu | Keterukan | Cadangan |. Jangan ubah fail.
+```
+
+**7e.** Gerbang terangkan (cth `remember()`, `delete` selepas `transCommit()`, `setUp()` yang mengosongkan cache), kemudian commit:
+
+```bash tab="Git Bash / macOS / Linux"
+git add app/ tests/ docs/nota-claude.md
+git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit (slice 4)"
+```
+
+```powershell tab="PowerShell"
+git add app/ tests/ docs/nota-claude.md
+git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit (slice 4)"
+```
+
+**8. Banding dengan kod rujukan (10 min).** Buka Lab 10.1 langkah 2 dan seterusnya, Lab 10.2 langkah 2 dan 5–7, dan `StatisticsService.php.txt` (modul **Templat & Rujukan**). Isi jadual ini dalam `docs/nota-claude.md`:
+
+```text
+| Perkara | Kod saya (Claude + saya) | Kod rujukan | Sama? | Jika beza: kenapa, dan adakah ia melanggar SPEC? |
+|---|---|---|---|---|
+| Takrif 4 KPI | | | | |
+| Bulan kosong = 0 | | | | |
+| usage_by_zone guna ReportService | | | | |
+| Lokasi cache()->delete | | | | |
+| Ujian cache (merah dahulu) | | | | |
+```
+
+Perbezaan gaya boleh dikekalkan dengan sebab. Perbezaan yang melanggar SPEC atau takrif KPI dibaiki melalui gelung yang sama (pelan kecil → diff Manual → sahkan → commit `FIX:`).
+
+**9. Merge.**
+
+```bash tab="Git Bash / macOS / Linux"
+git add docs/nota-claude.md && git commit -m "STAT: banding dengan kod rujukan"
+git push -u origin feat/statistik
+```
+
+```powershell tab="PowerShell"
+git add docs/nota-claude.md
+git commit -m "STAT: banding dengan kod rujukan"
+git push -u origin feat/statistik
+```
+
+Buka MR ke `main` dan merge. Lab 10.11 bermula dari `main`.
+
+### ✅ Checkpoint 10.10
+- [ ] Pelan 4 slice dibuat dalam mod Plan dan anda edit sekurang-kurangnya sekali; setiap edit fail diluluskan dalam mod Manual, tanpa *accept edits*, *auto* atau *bypass* (Kuiz S5).
+- [ ] `composer test` hijau, termasuk `StatisticsServiceTest`, `StatistikAccessTest` dan `StatisticsCacheTest`, dan output merah `StatisticsCacheTest` dari langkah 7a ditunjukkan kepada jurulatih (Kuiz S5).
+- [ ] `pelulus@latihan.test` melihat 4 kad + 4 carta di `/statistik`; `pemohon1@latihan.test` disekat; setiap `transCommit()` diikuti `cache()->delete(StatisticsService::CACHE_KEY)`. 🪟 PowerShell: `Select-String -Path app\Services\*.php -Pattern "transCommit|CACHE_KEY"` (Kuiz S5).
+- [ ] `docs/nota-claude.md` mengandungi 12 baris gerbang terangkan (3 setiap slice) dalam ayat anda sendiri, sekurang-kurangnya 1 diff yang ditolak dengan sebab, dan jadual banding dengan kod rujukan (Kuiz S5).
+- [ ] `git log --oneline` menunjukkan 4 commit `STAT:` kecil (satu setiap slice) pada `feat/statistik`, di-merge ke `main` (Kuiz S5).
+
+### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `Shift+Tab` tidak menukar mod (Windows) | Terminal memintas kekunci | Tekan `Alt+M` |
+| `!composer test` → `'composer' is not recognized` atau `command not found` (Windows) | PATH sesi Claude Code berbeza daripada terminal anda | Tutup dan buka semula VS Code selepas memasang Composer; semak `where composer` dalam PowerShell |
+| Claude Code tidak boleh menjalankan arahan shell (Windows) | Claude Code di Windows memerlukan Git Bash | Pasang Git for Windows; jika masih gagal, tetapkan `CLAUDE_CODE_GIT_BASH_PATH` kepada `C:\Program Files\Git\bin\bash.exe` ([tutorial](../docs/tutorial-claude-code.md)) |
+| Diff menunjukkan setiap baris fail berubah (Windows) | Hujung baris CRLF/LF bercampur | Tolak diff itu dan minta Claude mengekalkan hujung baris asal; semak `git diff --stat` sebelum commit |
+| `/mcp` → `ci4-spark` *failed* (Windows) | `php` tiada dalam PATH proses Claude | `claude mcp add --scope local ci4-spark -- "C:\laragon\bin\php\<versi>\php.exe" tools/ci4-spark-mcp.php` (skop `local`, tidak mengubah `.mcp.json` yang dikongsi) |
+| `Cache unable to write to "…\writable\cache\"` (Windows) | Folder baca sahaja atau projek dalam OneDrive | Alih projek keluar dari OneDrive; buang tanda *Read-only* pada `writable\` |
+| Carta kosong; *Console*: `Chart is not defined` | Proksi jabatan menyekat CDN | Salinan tempatan `chart.umd.min.js` (Lab 10.1 🧯) |
+
+### ⭐ Cabaran tambahan
+- Minta Claude (mod Plan) menerangkan `cache()->remember()` dalam `system/Cache/` CodeIgniter, kemudian sahkan sendiri dengan membuka fail itu dan rekod baris yang disahkan dalam `docs/nota-claude.md`.
+
+---
+
+## Lab 10.11 — Claude Code: Persediaan capstone (S6)
+
+### 🎯 Objektif
+Menjalankan 4 semakan capstone dengan Claude Code: subagent `semak-ci4` pada seluruh repo, AI-08 (DoD) untuk setiap modul, AI-09 (jurang ujian) dan AI-18 (`README.md`/`CLAUDE.md`/PRD). Anda mengesahkan setiap dapatan sendiri, membaiki yang diterima melalui gelung 7 langkah, dan menanda `v1.0-capstone`.
+
+### Prasyarat
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
+- Checkpoint 10.10 lulus; `feat/statistik` di-merge ke `main`.
+- UAT manual (Lab 10.3 langkah 1–3 dan 5, 11:45–12:30) sudah dijalankan: `docs/UAT-signoff.md` diisi dan pepijat direkod dalam `docs/kes-ujian-akhir.md`.
+
+### Langkah
+
+**1. Branch dan konteks bersih (2 min).**
+
+```bash tab="Git Bash / macOS / Linux"
+git switch main && git pull
+git switch -c chore/capstone
+claude
+```
+
+```powershell tab="PowerShell"
+git switch main
+git pull
+git switch -c chore/capstone
+claude
+```
+
+**2. Seluruh repo melalui subagent `semak-ci4` (15 min).**
+
+```text
+Guna subagent semak-ci4 untuk menyemak SELURUH repo sebagai panel capstone (@docs/rubrik-capstone.md §2 dan
+README Hari 10 §3.4):
+- G1 / BR-PAS-04: setiap kaedah yang membuka rekod Pas/TLK mengikut id menyemak pemilikan dalam service.
+- G2 / K5: setiap route dalam app/Config/Routes.php selain log masuk mempunyai filter session, group atau permission.
+- K2: setiap <?= $ dalam app/Views tanpa esc() (abaikan app/Views/errors/).
+- G4: setiap move()/store() fail muat naik menulis di luar public/.
+- G5 / K7: setiap ->query( dan setiap where/like yang mencantum input pengguna.
+Beri jadual | # | Gate/K | Fail:baris | Lulus/Gagal | Bukti |. Jangan ubah fail.
+```
+
+Cipta `docs/semakan-capstone.md` dan rekod **setiap** dapatan (anda yang menaip):
+
+```text
+# Semakan capstone (subagent semak-ci4)
+
+| # | Gate/K | Dapatan | Fail:baris | Disahkan dengan | Terima/Tolak | Sebab |
+|---|---|---|---|---|---|---|
+| 1 | K5 | ... | app/Config/Routes.php:.. | php spark filter:check GET /... | Tolak | filter pada group |
+```
+
+Sahkan dengan arahan bukti Lab 10.3 langkah 5 atau tool `ci4-spark`:
+
+```text
+Guna tool ci4-spark filter_check untuk GET /statistik, GET /laporan/tempahan dan GET /pas/semakan. Senaraikan filter bagi setiap satu.
+```
+
+**3. Baiki dapatan yang diterima (20 min).** Untuk setiap dapatan **Terima** (dan pepijat UAT keterukan tertinggi), satu demi satu:
+
+```bash
+git switch -c fix/<bug-id>-<ringkas>
+```
+
+Ujian merah dahulu (AI-10, Manual):
+
+```text
+Dapatan #<n> dalam docs/semakan-capstone.md (atau BUG-00N dalam docs/kes-ujian-akhir.md): <ringkasan>.
+Langkah reproduce: <1. … 2. … 3. …>. Peraturan: <BR-… / G… / K…>.
+Tulis SATU ujian PHPUnit (DatabaseTestTrait atau FeatureTestTrait) yang GAGAL sekarang kerana isu ini.
+JANGAN ubah kod aplikasi. Terangkan setiap baris ujian.
+```
+
+Jalankan `!composer test -- --filter <namaUjian>`: mesti **merah**. Kemudian:
+
+```text
+Ujian <namaUjian> merah. Cadangkan pembetulan MINIMUM dalam satu fail untuk menjadikannya hijau, tanpa mengubah ujian.
+Terangkan kenapa pembetulan itu cukup dan apa yang boleh rosak.
+```
+
+Baca diff, luluskan, jalankan `!composer test` (semua hijau). Stage perubahan di terminal anda (`git add app/ tests/ docs/`), kemudian dalam Claude Code jalankan AI-08 ke atas diff staged:
+
+```text
+!git diff --staged
+```
+
+```text
+Mod Plan. Semak diff staged di atas terhadap Definition of Done @docs/kolaborasi.md §2 (AI-08): validasi di server,
+akses di server, status_logs, esc(), tiada SQL mentah bercantum input, tiada rahsia, nama ikut SPEC.
+Lulus/Gagal + baris bukti bagi setiap perkara. Cadangkan mesej commit "FIX: <ringkasan> (BUG-00N)".
+```
+
+Baiki setiap "Gagal" melalui gerbang yang sama, kemudian commit `FIX:` dan merge ke `chore/capstone`. Tandakan *Ditutup* dalam log pepijat.
+
+**Tolak** jika: pembetulan menyentuh lebih daripada fail yang perlu, ujian diubah supaya hijau, atau "pembetulan" menyembunyikan butang sahaja tanpa semakan di server.
+
+**4. AI-08: matriks Definition of Done (15 min).** Dalam mod Plan:
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+Untuk setiap modul (M1 TLK, M2 Pas, M3 Laporan, M4 Statistik), semak 7 item Definition of Done dalam
+@docs/kolaborasi.md §2 terhadap kod sekarang. Beri matriks | Item DoD | M1 | M2 | M3 | M4 |, setiap sel
+Lulus/Gagal + fail:baris atau nama ujian sebagai bukti. Untuk item "peserta boleh menerangkan", tulis "Peserta".
+Akhir sekali senaraikan maksimum 5 sel Gagal, paling penting dahulu.
+```
+
+Matriks yang baik: setiap sel ada bukti yang boleh dibuka. Pilih **3 sel secara rawak** (termasuk satu "Lulus") dan sahkan sendiri dengan membuka fail atau menjalankan ujian itu. Sel tanpa bukti atau bukti yang salah ditanda "Tidak disahkan" dalam `docs/semakan-capstone.md`. Setiap sel Gagal yang sahih dibaiki seperti langkah 3.
+
+**5. AI-09: jurang ujian (15 min).** Dalam mod Plan:
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+Bandingkan setiap peraturan BR-TLK-01..06 dan BR-PAS-01..06 dalam @docs/spesifikasi-sistem.md §2 dengan ujian dalam tests/.
+Jadual | BR | Ujian yang meliputi (fail::kaedah) | Tiada / Separa / Penuh |.
+Kemudian cadangkan kes ujian (AI-09) untuk 2 jurang paling berisiko:
+| # | Jenis (unit/feature) | Given | When | Then | BR |. JANGAN tulis kod ujian lagi.
+```
+
+Pilih 2 kes, kemudian dalam mod Manual:
+
+```text
+Tulis kes ujian #<a> dan #<b> daripada jadual tadi dalam <fail ujian sedia ada atau baharu dalam tests/>.
+Fixture sintetik sendiri, tarikh relatif (+1 day). Jangan ubah kod aplikasi. Terangkan setiap assert.
+```
+
+**Bukti ujian mengesan pelanggaran:** untuk setiap ujian baharu, langgar peraturan itu sementara dalam service (cth tukar `90` kepada `91` untuk BR-TLK-03), jalankan ujian (merah), kemudian pulihkan:
+
+```bash
+composer test -- --filter <namaUjian>
+git restore app/
+git diff --stat app/
+composer test
+```
+
+Jangkaan: merah semasa peraturan dilanggar; `git diff --stat app/` kosong selepas `git restore`; semua hijau. Commit `FIX: ujian <BR> (jurang AI-09)`.
+
+**6. AI-18: dokumen serahan (10 min).** Dalam mod Plan:
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+Semak @README.md, @CLAUDE.md dan @docs/prd.md (jika wujud) secara kritis (AI-18) sebagai pembangun baharu yang mewarisi
+repo esok: langkah pemasangan yang tiada (composer install, php spark migrate --all, php spark db:seed, composer test,
+akaun @latihan.test), arahan yang lapuk berbanding kod sekarang (Laporan, Statistik, cache, subagent semak-ci4,
+ci4-spark), dan FR/AC dalam PRD yang belum dibina atau sudah berubah.
+Maksimum 8 isu dalam jadual | Fail · bahagian | Isu | Kenapa penting | Cadangan |, paling penting dahulu.
+```
+
+Sahkan sekurang-kurangnya 2 isu dengan membuka fail, kemudian dalam mod Manual:
+
+```text
+Betulkan isu #<a> dan #<b> sahaja dalam README.md/CLAUDE.md (dan docs/prd.md jika berkaitan). Satu fail pada satu masa.
+Jangan tambah rahsia; hanya akaun sintetik @latihan.test dan Latihan@2026 dibenarkan. Tunjukkan diff setiap fail.
+```
+
+**Tolak** jika diff menambah kandungan `.env`, URL atau kata laluan sebenar, atau menulis semula keseluruhan fail. Sahkan setiap arahan dalam README benar-benar wujud (`composer run-script --list`, `php spark list`). Commit `CHORE: kemas kini README & CLAUDE.md untuk serahan`.
+
+**7. Banding dengan kod rujukan (5 min).** Bandingkan ujian dan pembetulan anda dengan Lab 10.3 langkah 4–5 serta `BookingServiceTest.php.txt` dan `PassAccessTest.php.txt` (modul **Templat & Rujukan**). Tulis 2 perbezaan dan sebabnya dalam `docs/semakan-capstone.md`.
+
+**8. Merge dan tag.**
+
+```bash tab="Git Bash / macOS / Linux"
+git add docs/ && git commit -m "SETUP: semakan capstone semak-ci4, DoD & jurang ujian"
+git push -u origin chore/capstone
+```
+
+```powershell tab="PowerShell"
+git add docs/
+git commit -m "SETUP: semakan capstone semak-ci4, DoD & jurang ujian"
+git push -u origin chore/capstone
+```
+
+Buka MR ke `main` dan merge. Kemudian uji `main` dan tag (sama seperti Lab 10.3 langkah 6):
+
+```bash tab="Git Bash / macOS / Linux"
+git switch main && git pull
+composer test
+git tag -a v1.0-capstone -m "Capstone CI-KKM-10"
+git push origin main --tags
+```
+
+```powershell tab="PowerShell"
+git switch main
+git pull
+composer test
+git tag -a v1.0-capstone -m "Capstone CI-KKM-10"
+git push origin main --tags
+```
+
+### ✅ Checkpoint 10.11
+- [ ] `docs/semakan-capstone.md` merekod setiap dapatan `semak-ci4` dengan Terima/Tolak dan bukti arahan yang anda jalankan sendiri (Kuiz S6).
+- [ ] Setiap dapatan yang diterima dibaiki melalui ujian merah → hijau, dan AI-08 dijalankan pada diff staged sebelum setiap commit `FIX:` (Kuiz S6).
+- [ ] 2 ujian baharu daripada AI-09 hijau, dan setiap satu dilihat merah semasa peraturannya dilanggar sementara (Kuiz S6).
+- [ ] Sekurang-kurangnya 2 isu AI-18 dibetulkan dalam `README.md`/`CLAUDE.md` dan di-commit `CHORE:` (Kuiz S6).
+- [ ] `composer test` hijau pada `main` dan `git tag -l` menunjukkan `v1.0-capstone`. 🪟 PowerShell: arahan sama, `git tag -l` (Kuiz S6).
+
+### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `semak-ci4` tidak berjalan; Claude menyemak sendiri | Subagent tidak dimuat dalam sesi ini | `/agents` untuk menyemak; `/exit` dan `claude` semula; atau taip `@agent-semak-ci4` |
+| `!git diff --staged` kosong | Perubahan belum di-stage | Jalankan `git add app/ tests/ docs/` di terminal anda dahulu |
+| `git restore app/` turut membuang pembetulan yang belum di-commit | Perubahan lain belum di-commit semasa peraturan dilanggar sementara | Commit pembetulan dahulu; `git status --short` mesti bersih sebelum langkah 5 |
+| `php spark filter:check GET /statistik` → laluan ditukar kepada `C:/Program Files/Git/statistik` (Windows Git Bash) | Git Bash menukar laluan bermula `/` | Awalan `MSYS_NO_PATHCONV=1` (Lab 10.3 langkah 5), atau guna PowerShell |
+| `git tag` ditolak: *already exists* | Tag dicipta sebelum pembaikan terakhir | `git tag -d v1.0-capstone`, kemudian `git tag -a …` semula (sebelum push); PowerShell: jalankan satu demi satu |
+| Ujian lulus di mesin anda, gagal pada rakan (Windows) | Tarikh tetap atau zon masa berbeza | Tarikh relatif; `app.appTimezone = 'Asia/Kuala_Lumpur'` (SPEC §9) |
+
+### ⭐ Cabaran tambahan
+- Minta Claude (mod Plan) membandingkan `docs/semakan-capstone.md` dengan K1–K10 README §3.4: K mana yang belum ada bukti? Sahkan dan lengkapkan sendiri.
+
+---
+
+## Lab 10.12 — Demo capstone & refleksi Claude Code (S7)
+
+### 🎯 Objektif
+Mendemokan sistem dalam 8 minit mengikut format README §4.1, menerangkan sendiri baris yang dipilih panel (termasuk baris yang ditulis Claude), dan menulis refleksi terima/tolak berdasarkan bukti dalam `docs/nota-claude.md`.
+
+### Prasyarat
+- 🪟 **Windows:** Git Bash disyorkan ([`persediaan.md`](../docs/persediaan.md) §5). Jika terminal VS Code anda PowerShell, pilih tab **PowerShell** pada blok arahan yang ada dua tab; blok tanpa tab berjalan dalam kedua-dua terminal.
+- Checkpoint 10.11 lulus; tag `v1.0-capstone`.
+- Prasyarat Lab 10.4: DB demo bersih + seed, 5 tetingkap log masuk, skrip demo 1 halaman.
+
+### Langkah
+
+**1. Latih segmen terangkan kod (10 min, sebelum giliran).** Dalam Claude Code, mod Plan (AI-14):
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+Bertindak sebagai panel capstone (@docs/rubrik-capstone.md §3 kriteria E dan §4.3). Pilih SATU baris daripada setiap fail:
+app/Services/StatisticsService.php, app/Services/BookingService.php dan app/Views/statistik/dashboard.php.
+Tanya saya satu baris pada satu masa: apa baris ini buat, kenapa ia di sini, apa jadi jika dibuang?
+Tunggu jawapan saya, kemudian beri Tahap 1–4 ikut kriteria E dan terangkan apa yang tertinggal.
+```
+
+Untuk setiap jawapan Tahap 1–2: baca semula fail itu dan kemas kini baris gerbang terangkan berkaitan dalam `docs/nota-claude.md`. Jangan hafal jawapan Claude; terangkan dengan ayat anda sendiri.
+
+**2. Demo 8 minit.** Ikut Lab 10.4 langkah 1–4. Dalam segmen M4 (minit 6–7): lulus satu permohonan pas, kemudian muat semula `/statistik` → "Pas menunggu" berubah serta-merta (invalidasi slice 4). Dalam segmen terangkan kod (minit 7–8), jawab sendiri: *apa + kenapa + apa jadi jika dibuang*.
+
+**3. Bukti di laptop selepas minit 8.** Panel menyemak semasa mengisi helaian markah:
+
+```bash
+composer test
+git tag -l
+git log --oneline -20
+```
+
+Tunjukkan juga `docs/nota-claude.md` (12 baris gerbang terangkan + diff yang ditolak) dan `docs/semakan-capstone.md`.
+
+**4. Refleksi Claude Code (10 min).** Kumpul data mentah dahulu (mod Plan):
+
+```text
+Mod Plan. Jangan ubah sebarang fail.
+Daripada git log hari ini dan @docs/nota-claude.md, senaraikan dalam jadual: setiap commit STAT:/FIX:/CHORE:, fail yang
+diubah, dan baris gerbang terangkan atau diff ditolak yang berkaitan. Jangan tulis refleksi untuk saya.
+```
+
+Kemudian tulis refleksi **sendiri** di hujung `docs/nota-claude.md`:
+
+```text
+## Refleksi Claude Code — Hari 10
+
+| # | Cadangan Claude | Terima / Tolak | Bukti (commit, ujian, fail:baris) | Pengajaran |
+|---|---|---|---|---|
+| 1 | | Terima | | |
+| 2 | | Terima | | |
+| 3 | | Terima | | |
+| 4 | | Tolak | | |
+| 5 | | Tolak | | |
+
+Satu kali Claude salah, dan bagaimana saya mengesannya: ...
+Satu peraturan yang saya akan terus guna selepas kursus: ...
+```
+
+**5. Retrospektif.** Ikut Lab 10.4 langkah 5, dan tambah satu kad tentang Claude Code (Start/Stop/Continue).
+
+**6. Banding dengan kod rujukan (5 min).** Bandingkan `app/Services/StatisticsService.php` anda dengan `StatisticsService.php.txt` (modul **Templat & Rujukan**). Tulis 2 perbezaan dalam refleksi anda: kenapa ia wujud, dan sama ada anda akan mengekalkannya.
+
+**7. Serah repo.** Ikut Lab 10.4 langkah 6. Sertakan `CLAUDE.md`, `.claude/agents/`, `.claude/skills/`, `.mcp.json` dan `docs/nota-claude.md`. Jangan sertakan `.env`, `.claude/settings.local.json` atau `CLAUDE.local.md`:
+
+```bash tab="Git Bash / macOS / Linux"
+git ls-files | grep -E "settings\.local|CLAUDE\.local|(^|/)\.env$"
+git add docs/nota-claude.md && git commit -m "CHORE: refleksi Claude Code Hari 10"
+git push origin main
+```
+
+```powershell tab="PowerShell"
+git ls-files | Select-String "settings\.local|CLAUDE\.local|(^|/)\.env$"
+git add docs/nota-claude.md
+git commit -m "CHORE: refleksi Claude Code Hari 10"
+git push origin main
+```
+
+Jangkaan: arahan `ls-files` tiada output. Commit refleksi selepas tag tidak mengalih `v1.0-capstone`.
+
+### ✅ Checkpoint 10.12
+- [ ] Demo selesai dalam ≤ 8 minit, dan segmen M4 menunjukkan KPI "Pas menunggu" berubah serta-merta selepas kelulusan (Kuiz S7).
+- [ ] Baris yang dipilih panel diterangkan sendiri: apa, kenapa, dan apa jadi jika dibuang (Kuiz S7).
+- [ ] Refleksi dalam `docs/nota-claude.md` mempunyai ≥ 3 Terima dan ≥ 2 Tolak, setiap satu dengan bukti commit, ujian atau fail:baris (Kuiz S7).
+- [ ] Repo diserahkan tanpa `.env`, `.claude/settings.local.json` atau `CLAUDE.local.md` dalam `git ls-files`. 🪟 PowerShell: `git ls-files | Select-String "settings\.local|CLAUDE\.local|(^|/)\.env$"` tiada output (Kuiz S7).
+
+### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|--------|-------|--------------|
+| `.claude/settings.local.json` muncul dalam `git ls-files` (Windows) | Fail di-commit sebelum `.gitignore` dikemas kini | `git rm --cached .claude/settings.local.json`, tambah ke `.gitignore`, commit |
+| Claude dalam mod Plan meminta kebenaran untuk `git log` | Arahan shell tetap memerlukan kelulusan | Luluskan sekali sahaja ("Yes"); jangan pilih "don't ask again" untuk arahan yang mengubah fail |
+| Carta kosong semasa demo | Tiada internet untuk CDN | Salinan tempatan `chart.umd.min.js` (Lab 10.1 🧯), sediakan sebelum demo |
+| `php spark serve` gagal: *Address already in use* (Windows) | Laragon/Apache menggunakan port 8080 | `php spark serve --port 8081` dan `app.baseURL = 'http://localhost:8081/'` dalam `.env` |
+
+### ⭐ Cabaran tambahan
+- Tulis satu perenggan untuk penyelia anda: bagaimana gelung 7 langkah boleh digunakan dalam projek jabatan anda tanpa melanggar peraturan data (sintetik sahaja, tiada `.env`, tiada sistem sebenar).
 
 ---
 

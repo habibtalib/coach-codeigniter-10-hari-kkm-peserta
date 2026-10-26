@@ -32,8 +32,19 @@ Run the tests with `composer test` (= `vendor/bin/phpunit`; it works the same in
 
 ## 3. AI discipline — "understand first, accept later"
 
-Claude Code (or any AI) **is allowed** to: explain errors, suggest tests, review logic, generate small boilerplate.
-**Not allowed:** generating a whole module to copy. A suggestion is accepted **only** after the participant can explain it. On an error: **reproduce → failing test → fix → passing test**.
+**Claude Code may write implementation code, with review gates.** From Day 1 to Day 7 morning, Claude explains, plans and reviews; you write the code. From Day 7 afternoon to Day 10, Claude may write module code (Pass, Report, Statistics) **one slice at a time**, and every slice goes through these seven gates:
+
+1. **SPEC.** Read the SPEC section and the related `BR-*` IDs. The project `CLAUDE.md` points to them.
+2. **Plan (*Plan* mode).** Ask for a slice plan: files (migration, model, service, controller, view, tests) and the BR mapping, **with no code**. You review and edit the plan.
+3. **Implement (*Manual* mode, the default).** Claude edits; you **read every diff** and approve or reject it. The *accept edits*, *auto* and *bypass permissions* modes are not allowed.
+4. **Verify.** `composer test`, the browser, and the `ci4-spark` tools (`routes`, `filter_check`, `migrate_status`).
+5. **Review.** Run the `semak-ci4` subagent, then ask Claude to fix the findings, with the same diff gate.
+6. **Explain.** In `docs/nota-claude.md`, explain 3 key lines in your own words (`fail:baris`, file:line). The quiz checks this understanding.
+7. **Commit.** A small commit with a clear message, on a feature branch.
+
+**Still not allowed:** one prompt that generates a whole module; the *auto*/*bypass* modes (or *accept edits*); committing code you cannot explain; secrets (`.env`, passwords, tokens) or real data in a prompt.
+
+The principle stays **"understand first, accept later"**: a diff is accepted **only** after you can explain it. On an error: **reproduce → failing test → fix → passing test**.
 
 ## 4. Individual work & review
 

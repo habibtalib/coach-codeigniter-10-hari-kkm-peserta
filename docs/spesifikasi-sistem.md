@@ -22,7 +22,7 @@ Kursus: **Coaching Pembangunan Aplikasi Menggunakan CodeIgniter** · 10 hari · 
 | CLI | **Spark** (`migrate`, `db:seed`, `make:*`, `routes`, `serve`) |
 | Kawalan versi | **Git** (satu branch per modul/ciri) |
 | Diagram | **Mermaid** (ERD, carta alir, carta status) · **draw.io/Excalidraw** (wireframe) |
-| Pembantu AI (opsyenal) | **Claude Code** — penjelas & pencadang, bukan penjana modul |
+| Pembantu AI | **Claude Code** — mulai petang Hari 7 boleh melaksanakan kod satu slice demi satu melalui 7 pintu semakan ([`kolaborasi.md`](./kolaborasi.md) §3) |
 | Bahasa | Nota/UI **Bahasa Melayu** · kod, nama kelas & istilah teknikal **Bahasa Inggeris** |
 
 ## 2. Empat modul
@@ -230,4 +230,4 @@ Kod rujukan diuji pada CodeIgniter 4.7.5 + Shield 1.4.1 + PHP 8.3 + MySQL (ujian
 - Jangan commit `.env`, kata laluan, token.
 - Jangan simpan fail muat naik dalam `public/`.
 - Jangan tulis SQL mentah dengan input pengguna — guna Query Builder / binding.
-- Jangan biar AI menjana modul penuh — peserta mesti boleh menerangkan setiap baris.
+- Jangan biar AI menjana modul penuh dalam satu prompt — laksana slice demi slice melalui pintu semakan; peserta mesti boleh menerangkan setiap baris yang di-commit.

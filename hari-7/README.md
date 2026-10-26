@@ -26,6 +26,8 @@ Di akhir hari ini, peserta boleh:
 | O12 | **Mencipta** subagent baca sahaja `semak-ci4` dan skill `migration-ci4`, dan **mengesahkan** dapatan AI terhadap kod sebenar | S10 | [Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10); `docs/semakan-ci4-hari6.md` |
 | O13 | **Memasang** dan **menguji** server MCP `ci4-spark` (JSON-RPC stdio, baca sahaja) serta **mendaftarkan** Context7 | S11 | [Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11); `.mcp.json` + 5 balasan JSON-RPC |
 | O14 | **Menulis** prompt onboarding dan pelan dalam mod *Plan* untuk projek sedia ada, serta **mendraf** dan **menyemak** PRD latihan sebelum sebarang kod | S12 | [Lab 7.9](./lab.md#lab-79--prompting-projek-sedia-ada-projek-baharu--prd-s12); `docs/nota-claude.md` + `~/latihan/prd-latihan/docs/prd.md` |
+| O15 | **Membina** Pas slice 1 dengan Claude Code melalui tujuh pintu, **menolak** diff yang melanggar skop pemilik, dan **menerangkan** 3 baris utama dengan ayat sendiri | S13 | [Lab 7.10](./lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13); `pemohon2` → 404; `docs/nota-claude.md` |
+| O16 | **Membina** Pas slice 2 (borang, validasi, muat naik selamat) dengan Claude Code dan **mengesahkan** lima pintu muat naik dengan `ci4-spark` dan pelayar | S14 | [Lab 7.11](./lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14); fail bernama rawak dalam `writable/uploads/pas/`, `filter_check` menunjukkan `permission:pas.apply` |
 
 ---
 
@@ -40,11 +42,10 @@ Di akhir hari ini, peserta boleh:
 | 10:45–11:45 | S10 | Claude Code: subagent & skill | Subagent baca sahaja `semak-ci4` pada kod Hari 6; skill `migration-ci4` ([Lab 7.7](./lab.md#lab-77--subagent--skill-untuk-projek-ci4-s10)) |
 | 11:45–12:30 | S11 | Claude Code: MCP untuk CodeIgniter | Server MCP `ci4-spark` (PHP, baca sahaja) diuji & didaftar; Context7; MySQL/GitLab pilihan ([Lab 7.8](./lab.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–15:30 | S1 | Migration & Model permohonan pas | Menulis Model/Entity `PassApplication` & `PassDocument` (Lab 7.0, 7.1) |
-| 15:30–16:45 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran (Lab 7.2) |
-| 16:45–17:00 | S5, S6 | Lanjutan jika sempat; wrap-up | Lab 7.1b / 7.2b (selebihnya disambung sendiri) |
+| 14:30–15:45 | S13 | Claude Code: Modul Pas (1) — model, senarai & butiran | Membina Pas slice 1 dengan tujuh pintu: enum, Model `ownedBy()`, senarai & butiran 404 bukan pemilik ([Lab 7.10](./lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13)) |
+| 15:45–17:00 | S14 | Claude Code: Modul Pas (1) — borang & muat naik selamat | Membina Pas slice 2: borang + CSRF, validasi fail, nama rawak di luar `public/`, transaksi + pembersihan ([Lab 7.11](./lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14)) |
 
-> ℹ️ Lab 7.3, 7.4 (dan 7.3b/7.4b) disambung pada pagi Hari 8.
+> ℹ️ **Keputusan kursus:** mulai petang ini hingga Hari 10, modul dibina dengan Claude Code melalui tujuh pintu semakan ([`kolaborasi.md`](../docs/kolaborasi.md) §3). Lab Pas manual 7.0–7.4 (dan 7.1b–7.4b) dan sesi S1–S8 kini **kod rujukan** untuk perbandingan, tidak wajib. Hari 8 menyambung Modul Pas dengan aliran kerja yang sama.
 >
 > ℹ️ Masa pada tajuk S1–S8 di bawah ialah jadual asal; ikut jadual di atas.
 
@@ -346,6 +347,104 @@ Aliran: `initialize` (rundingan versi protokol) → `tools/list` (senarai tool +
    - [ ] Claude Code menolak `.mcp.json` yang mengandungi kata laluan
    - [ ] Server stdio tidak boleh menerima *environment variable*
    > `.mcp.json` ialah fail projek yang masuk ke GitLab. Skop `local` menyimpan konfigurasi dalam `~/.claude.json` anda; `${VAR}` dalam `.mcp.json` dikembangkan daripada *environment* semasa Claude Code dimulakan.
+
+---
+
+## S13 — Claude Code: Modul Pas (1) — Model, Senarai & Butiran (14:30–15:45)
+
+> ℹ️ Lab: [Lab 7.10](./lab.md#lab-710--claude-code-pas-slice-1--migrationenummodel-senarai-skop-pemilik--butiran-s13) · Prompt [AI-19, AI-20](../docs/pustaka-prompt.md#g--laksana-dengan-pintu-semakan) · Peraturan: [`kolaborasi.md`](../docs/kolaborasi.md) §3.
+
+### 13.1 Aliran kerja Claude Code (berlaku hingga Hari 10)
+
+Mulai petang ini hingga Hari 10, anda membina modul yang sama (Pas, Laporan, Statistik) **dengan Claude Code**. Claude boleh menulis kod pelaksanaan, tetapi setiap slice melalui tujuh pintu:
+
+1. **SPEC:** baca seksyen SPEC dan ID `BR-*`; `CLAUDE.md` menunjuk kepadanya.
+2. **Pelan (mod *Plan*):** fail, migration/model/service/controller/view/ujian dan pemetaan BR, tanpa kod. Anda menyemak dan mengedit pelan.
+3. **Laksana (mod *Manual*):** Claude mengedit; anda membaca setiap diff dan memilih **Yes** atau **No**. Mod *accept edits*, *auto* dan *bypass* tidak dibenarkan.
+4. **Sahkan:** `composer test`, pelayar, `ci4-spark` (`routes`, `filter_check`, `migrate_status`).
+5. **Semak:** subagent `semak-ci4`, kemudian Claude membaiki dapatan melalui pintu diff yang sama.
+6. **Terangkan:** 3 baris utama dengan ayat sendiri dalam `docs/nota-claude.md` (`fail:baris`).
+7. **Commit:** kecil, bermesej, dalam feature branch `feat/pas-claude`.
+
+Lab Pas manual 7.0–7.4 kekal sebagai **kod rujukan**: selepas setiap slice, anda membandingkan kod Claude dengan lab manual yang sepadan dan merekod perbezaannya.
+
+### 13.2 Slice 1: apa yang dibina
+
+Enum `PassType`/`PassStatus`, Entity `PassApplication`, `PassApplicationModel` dan `PassDocumentModel`, route `index`/`show`, `PassWorkflowService::canView()`, senarai "Permohonan Saya" dan butiran. Jadual Pas sudah wujud sejak Hari 4, jadi pelan yang baik **tidak** mencipta migration baharu; `migrate_status` membuktikannya.
+
+Skop pemilik berada dalam **Model** (`ownedBy()`), bukan dalam view. Query itu sendiri hanya memulangkan baris pemilik, jadi pagination, kiraan dan setiap controller yang memanggilnya selamat (BR-PAS-04). Butiran milik orang lain memulangkan **404**, bukan 403, supaya kewujudan rekod tidak bocor.
+
+### 13.3 Membaca diff: terima atau tolak
+
+| Terima | Tolak |
+|--------|-------|
+| `where('user_id', …)` dalam `ownedBy()` | `if ($app->user_id == …)` dalam view atau gelung controller |
+| `canView()` → `PageNotFoundException` | `find($id)` terus ke view, atau 403 |
+| Enum `PassStatus` dan `canTransitionTo()` | Rentetan `'submitted'` bertaburan |
+| `esc()` pada setiap output | `<?= $x ?>` tanpa `esc()` |
+| Fail dalam senarai pelan sahaja | Migration Pas baharu, fail TLK, `Filters.php`, `php spark migrate` |
+
+### 🎯 Kuiz S13
+
+> Jawab selepas Lab 7.10. Lulus kuiz ini menanda checkpoint Lab 7.10.
+
+1. Dalam Lab 7.10, anda menolak diff yang menapis permohonan dengan `if ($app->user_id == auth()->id())` dalam `pas/index.php`, dan meminta skop `ownedBy()` dalam `PassApplicationModel`. Kenapa?
+   - [ ] View lebih perlahan daripada Model apabila menjalankan gelung foreach
+   - [ ] Claude Code tidak boleh mengedit fail view dalam mod Manual
+   - [x] Query sudah memulangkan baris pemilik sahaja, jadi pagination, kiraan dan setiap controller yang memanggil ownedBy() tidak boleh membocorkan permohonan orang lain (BR-PAS-04)
+   - [ ] SPEC melarang sebarang pernyataan if dalam view
+   > Penapis dalam view berlaku selepas data orang lain sudah dimuatkan: jumlah halaman dan kiraan masih bocor, dan controller lain yang lupa penapis itu memaparkan semua rekod. Skop dalam Model menjadikan query yang betul sebagai satu-satunya cara mendapatkan senarai.
+
+2. Claude meminta kebenaran untuk diff yang mencipta migration baharu `CreatePassApplications`, walaupun `migrate_status` menunjukkan migration Hari 4 untuk jadual itu sudah dijalankan. Apakah tindakan yang betul?
+   - [x] Pilih No dan nyatakan bahawa jadual sudah wujud sejak Hari 4 dan pelan Slice 1 tidak mengandungi migration baharu
+   - [ ] Pilih Yes kerana migration baharu tidak berbahaya selagi belum dijalankan
+   - [ ] Pilih Yes, allow all edits supaya Claude menyelesaikan slice lebih cepat
+   - [ ] Pilih Yes, kemudian padam fail itu sebelum commit tanpa memberitahu Claude
+   > Diff di luar pelan ditolak dengan sebab supaya Claude membetulkan arah. Migration pendua akan gagal (`Table already exists`) atau, lebih teruk, mencipta skema yang tidak sepadan dengan SPEC. "Allow all edits" membuang pintu diff untuk seluruh sesi.
+
+---
+
+## S14 — Claude Code: Modul Pas (1) — Borang & Muat Naik Selamat (15:45–17:00)
+
+> ℹ️ Lab: [Lab 7.11](./lab.md#lab-711--claude-code-pas-slice-2--borang-validasi--muat-naik-dokumen-selamat-s14) · Konsep: [S3](#s3--borang-validasi--muat-naik-dokumen-14301600) dan [nota 07](../docs/nota-07-muat-naik-fail-selamat.md) · Aliran kerja: [13.1](#131-aliran-kerja-claude-code-berlaku-hingga-hari-10).
+
+### 14.1 Slice 2: lima pintu muat naik dalam diff
+
+Claude menulis borang, validasi, `submit()` dan `download()`. Tugas anda ialah memastikan setiap diff mengekalkan **lima pintu** dari bahagian "Kenapa hari ini penting": had saiz → senarai putih extension → semakan kandungan (`mime_in`, `getMimeType()`) → nama rawak di luar `public/` → muat turun hanya melalui controller yang menyemak pemilikan. Tambah dua lagi: CSRF (`form_open_multipart()`) dan `permission:pas.apply` pada `new`/`create`.
+
+| Tolak diff yang… | Pintu yang rosak |
+|------------------|------------------|
+| menyimpan dalam `public/` atau memaut `base_url('uploads/…')` | Di luar `public/`, muat turun melalui controller |
+| menggunakan `getName()`/`getClientName()` di cakera | Nama rawak (BR-PAS-02) |
+| mempunyai `ext_in` tanpa `mime_in`, atau `getClientMimeType()` | Semakan kandungan |
+| membuang `csrf_field()` atau menambah route ke `except` CSRF | CSRF |
+| `download()` tanpa `canView()`, atau path daripada request | Pemilikan (BR-PAS-04) |
+
+### 14.2 Urutan simpan: fail dahulu, transaksi kemudian
+
+`move()` dipanggil **sebelum** transaksi: jika fail gagal dipindah, tiada baris DB ditulis. Transaksi kemudian menulis `pass_applications`, `pass_documents` dan `status_logs` (BR-PAS-05). Jika transaksi gagal, `catch` memanggil `transRollback()` **dan** memadam setiap fail yang sudah dipindah, supaya tiada fail yatim di `writable/uploads/pas/`.
+
+### 14.3 Banding dengan kod rujukan
+
+Selepas slice 2 lulus ujian, buka Lab 7.3 (kod manual) dan bandingkan tiga perkara: urutan `move()` dan transaksi, rules fail dengan mesej BM, dan semakan pemilikan dalam `download()`. Rekod perbezaan dalam `docs/nota-claude.md`. Kod Claude tidak semestinya salah jika berbeza; anda mesti boleh menerangkan kenapa kedua-duanya selamat, atau kenapa satu tidak.
+
+### 🎯 Kuiz S14
+
+> Jawab selepas Lab 7.11. Lulus kuiz ini menanda checkpoint Lab 7.11.
+
+1. Diff Claude untuk `PassWorkflowService::submit()` mengandungi `$file->move(WRITEPATH . 'uploads/pas', $file->getClientName())`. Apakah tindakan yang betul?
+   - [ ] Terima kerana fail sudah berada di luar public/
+   - [ ] Terima kerana nama asal memudahkan pegawai mengenal pasti dokumen
+   - [ ] Terima jika mime_in ada dalam rules validasi
+   - [x] Tolak dan minta getRandomName(): nama asal boleh diteka dan boleh menulis ganti fail lain; nama asal disimpan dalam original_name sahaja (BR-PAS-02)
+   > BR-PAS-02 mewajibkan nama rawak. Dua pemohon yang memuat naik `surat.pdf` akan menulis ganti fail satu sama lain, dan nama yang boleh diteka memudahkan serangan. Nama asal hanya untuk paparan dan header muat turun.
+
+2. Dalam `submit()`, kenapa fail dipindah dengan `move()` sebelum transaksi dibuka, dan apakah yang mesti ada dalam `catch`?
+   - [ ] Supaya transaksi lebih pendek; catch hanya perlu menulis log_message()
+   - [x] Supaya kegagalan move() berlaku sebelum sebarang baris DB ditulis; jika transaksi gagal, catch memanggil transRollback() dan memadam setiap fail yang sudah dipindah supaya tiada fail yatim
+   - [ ] Kerana CI4 memadam fail yang dipindah secara automatik apabila transaksi gagal
+   - [ ] Kerana move() tidak boleh dipanggil semasa transaksi MySQL dibuka
+   > Transaksi DB tidak merangkumi sistem fail. Rollback memulihkan jadual, tetapi fail di cakera kekal sehingga kod memadamnya. Diff tanpa `unlink()` dalam `catch` meninggalkan dokumen peribadi tanpa rekod pemilik.
 
 ---
 

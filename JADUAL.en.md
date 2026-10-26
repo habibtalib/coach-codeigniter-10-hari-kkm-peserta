@@ -97,49 +97,47 @@
 | 10:00–10:30 | S12 | Claude Code: prompting, new projects & PRD | Write onboarding and plan prompts in Plan mode; draft and review a practice PRD |
 | 10:45–11:45 | S10 | Claude Code: subagents & skills | Read-only `semak-ci4` subagent on Day 6 code; `migration-ci4` skill |
 | 11:45–12:30 | S11 | Claude Code: MCP for CodeIgniter | `ci4-spark` MCP server (PHP, read-only); Context7; MySQL/GitLab optional |
-| 14:30–15:30 | S1 | Pass application migration & Model | Write the `PassApplication` & `PassDocument` Model/Entity |
-| 15:30–16:45 | S2 | Basic CRUD Controller & View | Build the list (owner scope) & detail view |
-| 16:45–17:00 | S5, S6 | Follow-ups if time allows; wrap-up | Lab 7.1b / 7.2b |
+| 14:30–15:45 | S13 | Claude Code: Pass Module (1) — model, list & detail | Lab 7.10: Pass slice 1 with review gates (plan → diff → tests → `semak-ci4` → explain → commit) |
+| 15:45–17:00 | S14 | Claude Code: Pass Module (1) — form & secure upload | Lab 7.11: form, validation & secure document upload through Claude Code |
 
-> ℹ️ Lab 7.3, 7.4 (and 7.3b/7.4b) continue on Day 8 morning.
+> ℹ️ From Day 7 afternoon to Day 10, modules are built with Claude Code ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3). The manual Pass Labs 7.0–7.4 (and 7.1b–7.4b) are now reference code for comparison, not required.
 
 ## Day 8 — Pass Module (Part 2) · [notes](./hari-8/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 7 recap | — |
-| 09:00–10:00 | S1 | Approval flow apply → review → approve/reject | Implement `PassWorkflowService` with `PassStatus::canTransitionTo()` |
-| 10:00–10:30 | S5 | S1 follow-up: bulk start review | Build a bulk action through `startReview()`; report partial failures |
-| 10:45–12:00 | S2 | Role-based access control | Configure Shield groups/permissions + route filters + ownership check |
-| 12:00–12:30 | S6 | S2 follow-up: protecting the bulk route | Add `permission:pas.review`; `fetch()` attack + 4-role matrix |
-| 14:30–15:30 | S3 | Status log/history & functional tests | Display the `status_logs` timeline; positive & negative access tests |
-| 15:30–16:00 | S7 | S3 follow-up: bulk action feature tests | Write `PassBatchReviewTest` + 2 mutations |
-| 16:00–16:35 | S4 | Pass Module wrap-up | Full 3-role flow demo; **M2 done** |
-| 16:35–17:00 | S8 | S4 follow-up: `admin` role demo | Demo the admin; record the separation-of-duties finding in `docs/demo-m2.md` |
+| 09:00–10:30 | S9 | Claude Code: Pass approval flow (slice 3) | Build `PassWorkflowService` with `PassStatus::canTransitionTo()` through the plan and diff gates |
+| 10:45–12:30 | S10 | Claude Code: Shield RBAC & access scope (slice 4) | Prove the `permission:` filter, `authorize()` and `canView()` with `filter_check` and an attack |
+| 14:30–16:00 | S11 | Claude Code: access tests & status history (slice 5) | `status_logs` timeline; positive & negative `PassAccessTest` + 2 mutations |
+| 16:00–17:00 | S12 | Claude Code: M2 demo & final review | `semak-ci4` + AI-08, 3-role demo, neighbour explain gate; **M2 done** |
+
+> ℹ️ Modules are built with Claude Code through the 7 review gates ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3); today's manual labs are reference code, not required.
 
 ## Day 9 — Report Module · [notes](./hari-9/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Day 8 recap (Pass flow + RBAC) | — |
-| 09:00–10:00 | **S1** | Report design (types, search/filter criteria) | O1, O2 |
-| 10:00–10:30 | **S5** | S1 follow-up: quick periods & active filter chips | O7 |
-| 10:45–12:00 | **S2** | Aggregate queries & data search | O3 |
-| 12:00–12:30 | **S6** | S2 follow-up: status summary & RPT-03 JUMLAH row | O8 |
-| 14:30–15:30 | **S3** | PDF/Excel export | O4, O6 |
-| 15:30–16:00 | **S7** | S3 follow-up: Excel Summary sheet & PDF summary | O9 |
-| 16:00–16:35 | **S4** | Testing the reports module — **M3 done** | O5, O6 |
-| 16:35–17:00 | **S8** | S4 follow-up: summary tests & mutations; wrap-up | O10 |
+| 09:00–10:30 | **S9** | Claude Code: `ReportService` & whitelisted filters (slice L1) | O11 |
+| 10:45–12:30 | **S10** | Claude Code: list views & RPT-03 (slice L2) | O12 |
+| 14:30–16:00 | **S11** | Claude Code: safe PDF & Excel export (slice L3) | O13 |
+| 16:00–17:00 | **S12** | Claude Code: report tests & performance — **M3 done** | O14 |
+
+> ℹ️ Modules are built with Claude Code through the 7 review gates ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3); today's manual labs are reference code, not required.
 
 ## Day 10 — Statistics Module & Capstone · [notes](./hari-10/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Day 9 recap | — |
-| 09:00–10:30 | S1 | Statistics dashboard (charts, cross-module summary) | Build KPI cards + 4 Chart.js charts from a JSON endpoint |
-| 10:45–12:30 | S2 | Aggregate queries & basic caching | Use `cache()->remember()` + invalidation when a status changes |
-| 14:30–16:00 | S3 | Final system testing & bug fixing | Run the UAT script; reproduce → failing test → fix cycle |
-| 16:00–17:00 | S4 | Capstone demo to the system owner & closing | Demo the end-to-end flow; retrospective |
+| 08:30–09:00 | — | Day 9 recap (reports & export) | — |
+| 09:00–10:30 | **S5** | Claude Code: Statistics module slices 1–2 (KPIs, chart datasets, `/statistik/data`) — Lab 10.10 | O1, O7 |
+| 10:45–11:45 | **S5** | Claude Code: Statistics module slices 3–4 (Chart.js, cache + invalidation after commit) | O2, O3, O7 |
+| 11:45–12:30 | **S3** | Manual UAT across the 4 modules + K1–K10 (Lab 10.3 steps 1–3 and 5) | O4 |
+| 14:30–16:00 | **S6** | Claude Code: capstone preparation (`semak-ci4`, AI-08, AI-09, AI-18, tag) — Lab 10.11 | O5, O8 |
+| 16:00–17:00 | **S7** | Capstone demo (S4 format) & Claude Code reflection — Lab 10.12 | O6, O9 |
+
+> ℹ️ Modules are built with Claude Code through the 7 review gates ([`kolaborasi.en.md`](./docs/kolaborasi.en.md) §3); today's manual labs are reference code, not required.
 
 ---
 

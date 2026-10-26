@@ -6,10 +6,689 @@
 
 | Lab | Session | Duration | Outcome |
 |-----|------|--------|-------|
-| 10.1 | S1 | 75 min | `StatisticsService` (no cache) · `/statistik` + `/statistik/data` · 4 KPIs · 4 charts |
-| 10.2 | S2 | 90 min | `remember()` · invalidation in `BookingService` & `PassWorkflowService` · `StatisticsCacheTest` |
-| 10.3 | S3 | 85 min | UAT filled in · ≥ 1 bug fixed through a failing test · security checklist · tag `v1.0-capstone` |
-| 10.4 | S4 | 60 min | 8-minute demo · retrospective |
+| 10.10 | S5 | 150 min | Claude Code: 4 Statistics slices (KPIs · JSON · Chart.js · cache) · 12 explain gate lines · 4 `STAT:` commits |
+| 10.11 | S6 | 90 min | `docs/semakan-capstone.md` · red → green fixes · 2 AI-09 tests · README/CLAUDE.md · tag `v1.0-capstone` |
+| 10.12 | S7 | 60 min | 8-minute demo · accept/reject reflection in `docs/nota-claude.md` |
+| 10.1 | S1 | 75 min | `StatisticsService` (no cache) · `/statistik` + `/statistik/data` · 4 KPIs · 4 charts — *reference code* |
+| 10.2 | S2 | 90 min | `remember()` · invalidation in `BookingService` & `PassWorkflowService` · `StatisticsCacheTest` — *reference code* |
+| 10.3 | S3 | 85 min | UAT filled in · ≥ 1 bug fixed through a failing test · security checklist · tag `v1.0-capstone` — steps 1–3 and 5 at 11:45–12:30 |
+| 10.4 | S4 | 60 min | 8-minute demo · retrospective — demo format for Lab 10.12 |
+
+> ℹ️ **Labs 10.10–10.12 first.** The Statistics module and capstone preparation are built with Claude Code (Labs 10.10–10.12, below). Labs 10.1–10.2 are **reference code** for the "Compare with the reference code" step; do not retype them. Lab 10.3 steps 1–3 and 5 (manual UAT + K1–K10) run at 11:45–12:30; Lab 10.4 is the demo format for Lab 10.12.
+
+---
+
+## Lab 10.10 — Claude Code: Statistics slice by slice (S5)
+
+> 🛡️ **Rules for Labs 10.10–10.12.** Synthetic data only; do not give the contents of `.env` to Claude. Every edit is made in **Manual** mode: you read and approve each diff one at a time. *Accept edits*, *auto* and `bypassPermissions` modes are forbidden, and so are the "Yes, allow all edits…" and "Yes, and don't ask again" options for file edits. The Lab 10.1–10.2 code is **reference code** for the "Compare with the reference code" step, not for retyping.
+
+### 🎯 Objective
+Build the Statistics module (M4) with Claude Code in 4 slices (`StatisticsService` + 4 KPIs; chart datasets + JSON endpoint; Chart.js 4 view; cache + invalidation after commit). Each slice goes through the 7-step loop in [README §5.1](./README.md#51-the-7-step-loop-for-each-slice), and 3 key lines per slice are explained in your own words in `docs/nota-claude.md`.
+
+### Prerequisites
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, choose the **PowerShell** tab on command blocks that have two tabs; blocks without tabs run in both terminals.
+- Labs 7.6–7.9 done: the project `CLAUDE.md`, the `semak-ci4` subagent, the `ci4-spark` MCP server in `.mcp.json`, and `docs/nota-claude.md`.
+- `.claude/settings.json` has `"defaultMode": "default"` (shown as **Manual**) and a `deny` rule for `.env` ([Claude Code tutorial](../docs/tutorial-claude-code.md) §5).
+- M1, M2, M3 merged to `main`; `composer test` green; demo data from `DemoDataSeeder` (Lab 9.1 step 0).
+
+### Steps
+
+**1. Branch, session and mode (5 min).**
+
+```bash tab="Git Bash / macOS / Linux"
+git switch main && git pull
+git switch -c feat/statistik
+claude
+```
+
+```powershell tab="PowerShell"
+git switch main
+git pull
+git switch -c feat/statistik
+claude
+```
+
+In Claude Code, type `/mcp`: `ci4-spark` shows *connected*. The bottom line does **not** show *accept edits on* or *plan mode on*: that is Manual mode. If it shows *accept edits on*, press `Shift+Tab` (or `Alt+M`) until there is no mode label.
+
+**2. Loop step 1: SPEC & BR (5 min).** Open [`spesifikasi-sistem.md`](../docs/spesifikasi-sistem.md) §2.4, §4, §6 and §9, and README §1.1 and §1.4. Add this section to `docs/nota-claude.md` (you type it):
+
+```text
+## Day 10 — Statistics (M4)
+
+| Slice | SPEC / definition | BR / gate | Proof test |
+|---|---|---|---|
+| 1 KPI | §2.4, §9 service registration, README §1.1 | BR-TLK-04 (active definition) | tests/Services/StatisticsServiceTest.php |
+| 2 Data + JSON | §2.4, §4, §6, README §1.4 | G2 | tests/feature/Statistik/StatistikAccessTest.php |
+| 3 View | README §1.2, §1.5 | K2 (esc) | browser + semak-ci4 |
+| 4 Cache | §2.4, §9 Cache | BR-PAS-01, BR-PAS-05, BR-TLK-05 | tests/Services/StatisticsCacheTest.php |
+
+### Explain gate
+| Slice | File:line | What | Why | If removed |
+|---|---|---|---|---|
+
+### Diffs I rejected
+| Slice | Claude's suggestion | Why I rejected it |
+|---|---|---|
+```
+
+**3. Loop step 2: slice plan in Plan mode (15 min).** Press `Shift+Tab` (or `Alt+M`) until the bottom line shows **plan mode**, then paste:
+
+```text
+Plan mode. Do not change any files.
+Context: @docs/spesifikasi-sistem.md §2.4 (M4 Statistics), §4 (roles), §6 (routes), §9 (the "Pendaftaran service"
+and "Cache" rows), and @CLAUDE.md.
+KPI definitions: Active bookings = slot_bookings with status pending/approved (BR-TLK-04). Slot utilisation rate =
+distinct slots with an approved booking covering today ÷ active slots (is_active = 1, not deleted) × 100.
+Pending passes = pass_applications with status submitted/under_review. Average days to approve =
+AVG(TIMESTAMPDIFF(HOUR, created_at, approved_at)) / 24 for approved_at IS NOT NULL.
+Task: propose a 4-slice plan for the Statistics module:
+1. StatisticsService::build() with 4 KPIs + register service('statisticsService') + a unit test with a fixed $now.
+2. 4 chart datasets (12 months filled with zero; usage_by_zone reuses ReportService::usageByZone()) + dashboard()
+   + DashboardController index()/data() + the statistik route group with the permission:statistik.view filter + a feature test.
+3. View app/Views/statistik/dashboard.php: KPI cards rendered on the server, 4 <canvas>, Chart.js 4.4.7, fetch /statistik/data.
+4. cache()->remember(StatisticsService::CACHE_KEY, 600, ...) + cache()->delete(StatisticsService::CACHE_KEY) AFTER
+   every transCommit() in BookingService and PassWorkflowService + a StatisticsCacheTest that is red first.
+For each slice: files created/changed, methods, the test that proves it, the verification command, and the risks.
+Constraints: CodeIgniter 4.6+, PHP 8.2+, Query Builder only, names exactly as in the SPEC, no new composer packages,
+do not touch .env or migrations. Ask me first if anything is unclear.
+```
+
+A good plan contains:
+- 4 slices that can each be tested on their own, with the files, methods and tests named;
+- `StatisticsService::CACHE_KEY = 'stat_dashboard'` and TTL 600 (SPEC §9), `service('statisticsService')`;
+- `$now` injected through the constructor so that the "today" KPI can be tested;
+- slice 4 starting with a red test, and `cache()->delete(...)` after **every** `transCommit()` (`create()`/`submit()` and `transition()`).
+
+Reject or edit a plan that: merges all slices into one step, adds a migration or a new table, writes a second query for zone usage (instead of `ReportService::usageByZone()`), or puts the invalidation in a controller.
+
+**Edit the plan at least once.** At the plan approval question, choose the option to keep planning and type your corrections, e.g. "Slice 2: add an applicant → not 200 test for /statistik/data." When the plan is right, choose the option that **keeps manual approval** for every edit; never choose an *auto-accept edits* option.
+
+**4. Slice 1: KPIs (25 min).**
+
+**4a. Implement (Manual).** Make sure the bottom line has no mode label, then paste:
+
+```text
+Implement Slice 1 only from the plan.
+- app/Services/StatisticsService.php: CACHE_KEY = 'stat_dashboard', CACHE_TTL = 600, constructor
+  (?BaseConnection $db = null, ?DateTimeImmutable $now = null), build() that returns generated_at and kpi
+  (active_bookings, slot_utilisation, pending_passes, avg_days_to_approve). charts = [] for now.
+- Register statisticsService in app/Config/Services.php (SPEC §9).
+- tests/Services/StatisticsServiceTest.php: its own synthetic fixtures, a fixed $now of 2026-09-25 09:00:00, one test per
+  KPI, including avg_days_to_approve = null when no pass is approved and slot_utilisation = 0 when there are no active slots.
+Use the BookingStatus/PassStatus enums for status values, not typed strings. One file at a time; after each
+file, explain the 3 most important lines. Do not run migrations.
+```
+
+A good diff: `declare(strict_types=1)`, `whereIn('status', …)` with enum values, `TIMESTAMPDIFF(HOUR, …) / 24`, `$this->now` for "today", a divide-by-zero guard, and tests with `DatabaseTestTrait` (`$migrate`, `$refresh`, `$namespace = null`).
+
+**Reject** (choose **No** and type the reason) if you see: `TIMESTAMPDIFF(DAY`, `status = 'approved'` for the average, `date('Y-m-d')` in the service, `->query("… $x")`, a test that only does `assertIsArray()`, or changes to other services. Example reason: "No: use $this->now, not date(), so the tests do not depend on today's date." Record every rejection in the *Diffs I rejected* table.
+
+**4b. Verify.** In Claude Code:
+
+```text
+!composer test -- tests/Services/StatisticsServiceTest.php
+```
+
+Expected: `OK (5 tests, …)` or more. Then run yourself, in HeidiSQL/phpMyAdmin, `SELECT COUNT(*) FROM slot_bookings WHERE status IN ('pending','approved');` on the development DB, and compare it with `php spark shell` → `service('statisticsService')->build()['kpi']`.
+
+**4c. Review with `semak-ci4`.**
+
+```text
+Use the semak-ci4 subagent to review app/Services/StatisticsService.php, app/Config/Services.php and
+tests/Services/StatisticsServiceTest.php: Query Builder/binding, names as in SPEC §9, division by zero,
+dependence on today's date, and tests that test nothing.
+Table | File:line | Issue | Severity | Suggestion |. Do not change files.
+```
+
+Open every file:line yourself. For each valid finding, ask for the fix **one finding at a time** ("Fix finding #1 only"), read the diff, approve it, and repeat 4b.
+
+**4d. Explain gate.** Choose 3 key lines (e.g. `whereIn('status', …)`, `/ 24`, the zero guard) and fill the *Explain gate* table in your own words: what, why, what happens if it is removed. Do not copy Claude's answer.
+
+**4e. Small commit.**
+
+```bash tab="Git Bash / macOS / Linux"
+git add app/Services/StatisticsService.php app/Config/Services.php tests/Services/StatisticsServiceTest.php docs/nota-claude.md
+git commit -m "STAT: StatisticsService 4 KPI + ujian (slice 1)"
+```
+
+```powershell tab="PowerShell"
+git add app/Services/StatisticsService.php app/Config/Services.php tests/Services/StatisticsServiceTest.php docs/nota-claude.md
+git commit -m "STAT: StatisticsService 4 KPI + ujian (slice 1)"
+```
+
+Type `/clear` in Claude Code before the next slice, then `@docs/nota-claude.md` if you need the plan context.
+
+**5. Slice 2: chart datasets + JSON endpoint (30 min).**
+
+**5a. Implement (Manual):**
+
+```text
+Implement Slice 2 only.
+- In StatisticsService::build() add charts: bookings_by_month (12 months of the current year, empty months = 0),
+  pass_status (keys = PassStatus enum values, Malay labels, data), usage_by_zone (reuse ReportService::usageByZone(),
+  do not write a second query), pass_trend (last 12 months). The shape must match the contract in Day 10 README §1.4.
+- Add dashboard() that returns build() (slice 4 will wrap it with the cache).
+- app/Controllers/Statistik/DashboardController.php: index() shows the view with kpi;
+  data() returns $this->response->setJSON(service('statisticsService')->dashboard()).
+- app/Config/Routes.php: the statistik route group (namespace App\Controllers\Statistik, filter permission:statistik.view),
+  GET / (as statistik) and GET data (as statistik.data), following SPEC §6.
+- Unit test: bookings_by_month has 12 values and months with no records = 0.
+- tests/feature/Statistik/StatistikAccessTest.php: approver → GET /statistik/data 200 JSON; applicant → not 200.
+One file at a time; explain the 3 most important lines after each file.
+```
+
+A good diff: `array_column($rows, 'total', 'm')` + a 1..12 loop with `?? 0`, `groupBy` on the alias, `keys` separate from `labels`, a controller with no queries, and one route group with the filter.
+
+**Reject** if: the zone usage query is rewritten in `StatisticsService`, the controller calls `db_connect()`, a route has no filter or only the `session` filter, the access test covers only the allowed role, or `labels` are used as colour keys.
+
+**5b. Verify:**
+
+```text
+!composer test
+```
+
+Expected: all green, including `StatistikAccessTest`. Then ask `ci4-spark`:
+
+```text
+Use the ci4-spark tools: list the statistik routes and the filters for GET /statistik/data. Are both routes protected by permission:statistik.view?
+```
+
+Approve the `ci4-spark - routes` and `ci4-spark - filter_check` calls, and compare with `php spark routes` that you run yourself. In the browser: `pelulus@latihan.test` → `/statistik/data` shows JSON with 12 values in `charts.bookings_by_month.data`; `pemohon1@latihan.test` → blocked.
+
+**5c. Review:**
+
+```text
+Use the semak-ci4 subagent to review app/Controllers/Statistik/DashboardController.php, app/Config/Routes.php
+(the statistik group) and the charts changes in app/Services/StatisticsService.php: a filter on every statistik route,
+no queries in the controller, empty months filled with zero, usage_by_zone reusing ReportService.
+Table | File:line | Issue | Severity | Suggestion |. Do not change files.
+```
+
+**5d–5e.** Explain gate (3 lines, e.g. the `permission:statistik.view` filter, `array_column(..., 'total', 'm')`, `setJSON()`), then commit:
+
+```bash tab="Git Bash / macOS / Linux"
+git add app/ tests/ docs/nota-claude.md
+git commit -m "STAT: dataset carta + /statistik/data + ujian akses (slice 2)"
+```
+
+```powershell tab="PowerShell"
+git add app/ tests/ docs/nota-claude.md
+git commit -m "STAT: dataset carta + /statistik/data + ujian akses (slice 2)"
+```
+
+**6. Slice 3: Chart.js view (20 min).**
+
+**6a. Implement (Manual):**
+
+```text
+Implement Slice 3 only: app/Views/statistik/dashboard.php using the existing layout.
+- KPI cards rendered on the server with esc() and number_format(); show — when avg_days_to_approve is null.
+- 4 <canvas> (chartBookingsByMonth, chartPassStatus, chartUsageByZone, chartPassTrend), each inside
+  <div style="position:relative;height:280px">.
+- Chart.js 4.4.7 from https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js, loaded before your script.
+- fetch to url_to('statistik.data') with res.ok and Content-Type checks before res.json(); a friendly message on failure.
+- A draw() function that calls Chart.getChart(canvas)?.destroy() first. Types: bar, doughnut, horizontal bar
+  (indexAxis: 'y'), line; maintainAspectRatio: false.
+- Do not use innerHTML for server data; use textContent.
+Explain the 3 most important lines when the file is done.
+```
+
+A good diff: every `<?= ?>` goes through `esc()` (or `url_to()` wrapped in `esc()`), a `res.ok` check, `indexAxis: 'y'`, `destroy()` before `new Chart()`.
+
+**Reject** if: `innerHTML` with server data, `res.json()` without a `res.ok` check, another Chart.js version or `@latest`, KPIs recalculated in JavaScript, or the view calls `service()`/queries directly.
+
+**6b. Verify.** Log in as `pelulus@latihan.test` → `/statistik`: 4 cards + 4 charts. DevTools (`F12`) → *Console*: no red errors; *Network* → `data`: status 200, `Content-Type: application/json`. Then `!composer test`: green.
+
+**6c. Review:**
+
+```text
+Use the semak-ci4 subagent to review app/Views/statistik/dashboard.php: every <?= without esc(), any use of
+innerHTML or insertAdjacentHTML with server data, the res.ok check before res.json(), and URLs built with url_to().
+Table | File:line | Issue | Severity | Suggestion |. Do not change files.
+```
+
+**6d–6e.** Explain gate (e.g. `res.ok`, `indexAxis: 'y'`, `Chart.getChart(canvas)?.destroy()`), then commit:
+
+```bash tab="Git Bash / macOS / Linux"
+git add app/Views/statistik/dashboard.php docs/nota-claude.md
+git commit -m "STAT: dashboard Chart.js 4 kad KPI + 4 carta (slice 3)"
+```
+
+```powershell tab="PowerShell"
+git add app/Views/statistik/dashboard.php docs/nota-claude.md
+git commit -m "STAT: dashboard Chart.js 4 kad KPI + 4 carta (slice 3)"
+```
+
+**7. Slice 4: cache + invalidation after commit (30 min).**
+
+**7a. Red test first (Manual):**
+
+```text
+Implement Slice 4, part A only: write tests/Services/StatisticsCacheTest.php FIRST.
+- setUp() calls cache()->delete(StatisticsService::CACHE_KEY).
+- Test 1: dashboard() fills the cache (cache()->get(StatisticsService::CACHE_KEY) is not null).
+- Test 2: fill the cache, BookingService::approve() on a synthetic pending booking, then the cache must be null.
+- Test 3: the same for one PassWorkflowService transition (follow the Shield user pattern in tests/feature/Pas/PassAccessTest.php).
+DO NOT change application code. When the file is done, explain which tests should be red now and why.
+```
+
+Then run it yourself:
+
+```text
+!composer test -- tests/Services/StatisticsCacheTest.php
+```
+
+Expected: **red** (dashboard() does not use the cache yet, so test 1 and the `assertNotNull` check in test 2 fail). Keep this output; the checkpoint needs it.
+
+**7b. Implementation (Manual):**
+
+```text
+Implement Slice 4, part B. Before changing anything, list every $this->db->transCommit() in
+app/Services/BookingService.php and app/Services/PassWorkflowService.php (method + status transition).
+Then:
+- wrap dashboard() with cache()->remember(self::CACHE_KEY, self::CACHE_TTL, fn (): array => $this->build());
+- add ONE line cache()->delete(StatisticsService::CACHE_KEY); AFTER every transCommit() you listed:
+  not before the commit, not inside the try block before the commit, not in a controller.
+Do not change the tests. One file at a time.
+```
+
+A good diff: the `transCommit()` list covers `create()`/`submit()` and `transition()`; every `delete` is on the line **after** `transCommit()`; the key is always `StatisticsService::CACHE_KEY`.
+
+**Reject** if: `delete` comes before `transCommit()` or is in a controller, the string `'stat_dashboard'` is typed in another service, `cache()->clean()`, a TTL other than 600, or any change to `StatisticsCacheTest`.
+
+**7c. Verify:**
+
+```bash tab="Git Bash / macOS / Linux"
+grep -n -e "transCommit" -e "CACHE_KEY" app/Services/*.php
+composer test
+```
+
+```powershell tab="PowerShell"
+Select-String -Path app\Services\*.php -Pattern "transCommit|CACHE_KEY"
+composer test
+```
+
+Expected: every `transCommit` line in `BookingService` and `PassWorkflowService` is followed by a `CACHE_KEY` line; all tests green. In the browser: as `pelulus`, approve one pass application → `/statistik` → "Pas menunggu" (Pending passes) drops immediately.
+
+**7d. Review:**
+
+```text
+Use the semak-ci4 subagent to review app/Services/BookingService.php, app/Services/PassWorkflowService.php and
+app/Services/StatisticsService.php: every transCommit() followed by cache()->delete(StatisticsService::CACHE_KEY),
+no delete before the commit or in a controller, no 'stat_dashboard' string outside StatisticsService,
+and cached data that is only a scalar array. Table | File:line | Issue | Severity | Suggestion |. Do not change files.
+```
+
+**7e.** Explain gate (e.g. `remember()`, `delete` after `transCommit()`, the `setUp()` that clears the cache), then commit:
+
+```bash tab="Git Bash / macOS / Linux"
+git add app/ tests/ docs/nota-claude.md
+git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit (slice 4)"
+```
+
+```powershell tab="PowerShell"
+git add app/ tests/ docs/nota-claude.md
+git commit -m "STAT: cache dashboard 10 minit + invalidasi selepas commit (slice 4)"
+```
+
+**8. Compare with the reference code (10 min).** Open Lab 10.1 step 2 onwards, Lab 10.2 steps 2 and 5–7, and `StatisticsService.php.txt` (**Templat & Rujukan** module). Fill in this table in `docs/nota-claude.md`:
+
+```text
+| Item | My code (Claude + me) | Reference code | Same? | If different: why, and does it break the SPEC? |
+|---|---|---|---|---|
+| Definition of the 4 KPIs | | | | |
+| Empty months = 0 | | | | |
+| usage_by_zone uses ReportService | | | | |
+| Location of cache()->delete | | | | |
+| Cache test (red first) | | | | |
+```
+
+Style differences may stay, with a reason. Differences that break the SPEC or the KPI definitions are fixed through the same loop (small plan → Manual diff → verify → `FIX:` commit).
+
+**9. Merge.**
+
+```bash tab="Git Bash / macOS / Linux"
+git add docs/nota-claude.md && git commit -m "STAT: banding dengan kod rujukan"
+git push -u origin feat/statistik
+```
+
+```powershell tab="PowerShell"
+git add docs/nota-claude.md
+git commit -m "STAT: banding dengan kod rujukan"
+git push -u origin feat/statistik
+```
+
+Open an MR to `main` and merge it. Lab 10.11 starts from `main`.
+
+### ✅ Checkpoint 10.10
+- [ ] The 4-slice plan was made in Plan mode and you edited it at least once; every file edit was approved in Manual mode, with no *accept edits*, *auto* or *bypass* (Quiz S5).
+- [ ] `composer test` is green, including `StatisticsServiceTest`, `StatistikAccessTest` and `StatisticsCacheTest`, and the red `StatisticsCacheTest` output from step 7a was shown to the trainer (Quiz S5).
+- [ ] `pelulus@latihan.test` sees 4 cards + 4 charts at `/statistik`; `pemohon1@latihan.test` is blocked; every `transCommit()` is followed by `cache()->delete(StatisticsService::CACHE_KEY)`. 🪟 PowerShell: `Select-String -Path app\Services\*.php -Pattern "transCommit|CACHE_KEY"` (Quiz S5).
+- [ ] `docs/nota-claude.md` contains 12 explain gate lines (3 per slice) in your own words, at least 1 rejected diff with a reason, and the reference code comparison table (Quiz S5).
+- [ ] `git log --oneline` shows 4 small `STAT:` commits (one per slice) on `feat/statistik`, merged to `main` (Quiz S5).
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| `Shift+Tab` does not change the mode (Windows) | The terminal captures the key | Press `Alt+M` |
+| `!composer test` → `'composer' is not recognized` or `command not found` (Windows) | The Claude Code session PATH differs from your terminal | Close and reopen VS Code after installing Composer; check `where composer` in PowerShell |
+| Claude Code cannot run shell commands (Windows) | Claude Code on Windows needs Git Bash | Install Git for Windows; if it still fails, set `CLAUDE_CODE_GIT_BASH_PATH` to `C:\Program Files\Git\bin\bash.exe` ([tutorial](../docs/tutorial-claude-code.md)) |
+| The diff shows every line of the file changed (Windows) | Mixed CRLF/LF line endings | Reject that diff and ask Claude to keep the original line endings; check `git diff --stat` before committing |
+| `/mcp` → `ci4-spark` *failed* (Windows) | `php` is not in the Claude process PATH | `claude mcp add --scope local ci4-spark -- "C:\laragon\bin\php\<versi>\php.exe" tools/ci4-spark-mcp.php` (`local` scope, does not change the shared `.mcp.json`) |
+| `Cache unable to write to "…\writable\cache\"` (Windows) | Read-only folder or the project is in OneDrive | Move the project out of OneDrive; untick *Read-only* on `writable\` |
+| Empty charts; *Console*: `Chart is not defined` | The department proxy blocks the CDN | Local copy of `chart.umd.min.js` (Lab 10.1 🧯) |
+
+### ⭐ Bonus challenge
+- Ask Claude (Plan mode) to explain `cache()->remember()` in CodeIgniter's `system/Cache/`, then confirm it yourself by opening that file, and record the confirmed line in `docs/nota-claude.md`.
+
+---
+
+## Lab 10.11 — Claude Code: Capstone preparation (S6)
+
+### 🎯 Objective
+Run 4 capstone reviews with Claude Code: the `semak-ci4` subagent on the whole repo, AI-08 (DoD) for each module, AI-09 (test gaps) and AI-18 (`README.md`/`CLAUDE.md`/PRD). You confirm every finding yourself, fix the accepted ones through the 7-step loop, and tag `v1.0-capstone`.
+
+### Prerequisites
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, choose the **PowerShell** tab on command blocks that have two tabs; blocks without tabs run in both terminals.
+- Checkpoint 10.10 passed; `feat/statistik` merged to `main`.
+- Manual UAT (Lab 10.3 steps 1–3 and 5, 11:45–12:30) already done: `docs/UAT-signoff.md` filled in and bugs recorded in `docs/kes-ujian-akhir.md`.
+
+### Steps
+
+**1. Branch and clean context (2 min).**
+
+```bash tab="Git Bash / macOS / Linux"
+git switch main && git pull
+git switch -c chore/capstone
+claude
+```
+
+```powershell tab="PowerShell"
+git switch main
+git pull
+git switch -c chore/capstone
+claude
+```
+
+**2. Whole-repo review with `semak-ci4` (15 min).**
+
+```text
+Use the semak-ci4 subagent to review the WHOLE repo as the capstone panel (@docs/rubrik-capstone.md §2 and
+Day 10 README §3.4):
+- G1 / BR-PAS-04: every method that opens a Pas/TLK record by id checks ownership in the service.
+- G2 / K5: every route in app/Config/Routes.php apart from login has a session, group or permission filter.
+- K2: every <?= $ in app/Views without esc() (ignore app/Views/errors/).
+- G4: every move()/store() of an uploaded file writes outside public/.
+- G5 / K7: every ->query( and every where/like that concatenates user input.
+Give a table | # | Gate/K | File:line | Pass/Fail | Evidence |. Do not change files.
+```
+
+Create `docs/semakan-capstone.md` and record **every** finding (you type it):
+
+```text
+# Capstone review (semak-ci4 subagent)
+
+| # | Gate/K | Finding | File:line | Confirmed with | Accept/Reject | Reason |
+|---|---|---|---|---|---|---|
+| 1 | K5 | ... | app/Config/Routes.php:.. | php spark filter:check GET /... | Reject | filter on the group |
+```
+
+Confirm with the Lab 10.3 step 5 evidence commands or the `ci4-spark` tools:
+
+```text
+Use the ci4-spark filter_check tool for GET /statistik, GET /laporan/tempahan and GET /pas/semakan. List the filters for each one.
+```
+
+**3. Fix the accepted findings (20 min).** For each **Accept** finding (and the highest-severity UAT bug), one at a time:
+
+```bash
+git switch -c fix/<bug-id>-<ringkas>
+```
+
+Red test first (AI-10, Manual):
+
+```text
+Finding #<n> in docs/semakan-capstone.md (or BUG-00N in docs/kes-ujian-akhir.md): <summary>.
+Steps to reproduce: <1. … 2. … 3. …>. Rule: <BR-… / G… / K…>.
+Write ONE PHPUnit test (DatabaseTestTrait or FeatureTestTrait) that FAILS now because of this issue.
+DO NOT change application code. Explain every line of the test.
+```
+
+Run `!composer test -- --filter <namaUjian>`: it must be **red**. Then:
+
+```text
+Test <testName> is red. Propose the MINIMUM fix in one file to make it green, without changing the test.
+Explain why the fix is enough and what could break.
+```
+
+Read the diff, approve it, run `!composer test` (all green). Stage the changes in your terminal (`git add app/ tests/ docs/`), then in Claude Code run AI-08 on the staged diff:
+
+```text
+!git diff --staged
+```
+
+```text
+Plan mode. Review the staged diff above against the Definition of Done in @docs/kolaborasi.md §2 (AI-08): server-side validation,
+server-side access control, status_logs, esc(), no raw SQL concatenating input, no secrets, names as in the SPEC.
+Pass/Fail + an evidence line for each item. Suggest a commit message "FIX: <summary> (BUG-00N)".
+```
+
+Fix every "Fail" through the same gate, then commit `FIX:` and merge into `chore/capstone`. Mark it *Closed* in the bug log.
+
+**Reject** if: the fix touches more files than needed, a test is changed so that it turns green, or the "fix" only hides a button with no check on the server.
+
+**4. AI-08: Definition of Done matrix (15 min).** In Plan mode:
+
+```text
+Plan mode. Do not change any files.
+For each module (M1 TLK, M2 Pas, M3 Laporan, M4 Statistik), check the 7 Definition of Done items in
+@docs/kolaborasi.md §2 against the current code. Give a matrix | DoD item | M1 | M2 | M3 | M4 |, each cell
+Pass/Fail + a file:line or test name as evidence. For the "participant can explain" item, write "Participant".
+Finally list at most 5 Fail cells, most important first.
+```
+
+A good matrix: every cell has evidence you can open. Choose **3 cells at random** (including one "Pass") and confirm them yourself by opening the file or running that test. Cells with no evidence or wrong evidence are marked "Not confirmed" in `docs/semakan-capstone.md`. Every valid Fail cell is fixed as in step 3.
+
+**5. AI-09: test gaps (15 min).** In Plan mode:
+
+```text
+Plan mode. Do not change any files.
+Compare every rule BR-TLK-01..06 and BR-PAS-01..06 in @docs/spesifikasi-sistem.md §2 with the tests in tests/.
+Table | BR | Covering test (file::method) | None / Partial / Full |.
+Then suggest test cases (AI-09) for the 2 riskiest gaps:
+| # | Type (unit/feature) | Given | When | Then | BR |. DO NOT write test code yet.
+```
+
+Choose 2 cases, then in Manual mode:
+
+```text
+Write test cases #<a> and #<b> from the table above in <an existing or new test file in tests/>.
+Its own synthetic fixtures, relative dates (+1 day). Do not change application code. Explain every assert.
+```
+
+**Proof that the test catches a violation:** for each new test, break that rule temporarily in the service (e.g. change `90` to `91` for BR-TLK-03), run the test (red), then restore:
+
+```bash
+composer test -- --filter <namaUjian>
+git restore app/
+git diff --stat app/
+composer test
+```
+
+Expected: red while the rule is broken; `git diff --stat app/` empty after `git restore`; all green. Commit `FIX: ujian <BR> (jurang AI-09)`.
+
+**6. AI-18: handover documents (10 min).** In Plan mode:
+
+```text
+Plan mode. Do not change any files.
+Review @README.md, @CLAUDE.md and @docs/prd.md (if it exists) critically (AI-18) as a new developer who inherits the
+repo tomorrow: missing setup steps (composer install, php spark migrate --all, php spark db:seed, composer test,
+@latihan.test accounts), instructions that are out of date compared with the current code (Laporan, Statistik, cache,
+the semak-ci4 subagent, ci4-spark), and FRs/ACs in the PRD that are not built yet or have changed.
+At most 8 issues in a table | File · section | Issue | Why it matters | Suggestion |, most important first.
+```
+
+Confirm at least 2 issues by opening the files, then in Manual mode:
+
+```text
+Fix issues #<a> and #<b> only in README.md/CLAUDE.md (and docs/prd.md if relevant). One file at a time.
+Do not add secrets; only the synthetic @latihan.test accounts and Latihan@2026 are allowed. Show the diff for each file.
+```
+
+**Reject** if the diff adds `.env` contents, a real URL or password, or rewrites a whole file. Confirm that every command in the README really exists (`composer run-script --list`, `php spark list`). Commit `CHORE: kemas kini README & CLAUDE.md untuk serahan`.
+
+**7. Compare with the reference code (5 min).** Compare your tests and fixes with Lab 10.3 steps 4–5 and with `BookingServiceTest.php.txt` and `PassAccessTest.php.txt` (**Templat & Rujukan** module). Write 2 differences and their reasons in `docs/semakan-capstone.md`.
+
+**8. Merge and tag.**
+
+```bash tab="Git Bash / macOS / Linux"
+git add docs/ && git commit -m "SETUP: semakan capstone semak-ci4, DoD & jurang ujian"
+git push -u origin chore/capstone
+```
+
+```powershell tab="PowerShell"
+git add docs/
+git commit -m "SETUP: semakan capstone semak-ci4, DoD & jurang ujian"
+git push -u origin chore/capstone
+```
+
+Open an MR to `main` and merge it. Then test `main` and tag it (same as Lab 10.3 step 6):
+
+```bash tab="Git Bash / macOS / Linux"
+git switch main && git pull
+composer test
+git tag -a v1.0-capstone -m "Capstone CI-KKM-10"
+git push origin main --tags
+```
+
+```powershell tab="PowerShell"
+git switch main
+git pull
+composer test
+git tag -a v1.0-capstone -m "Capstone CI-KKM-10"
+git push origin main --tags
+```
+
+### ✅ Checkpoint 10.11
+- [ ] `docs/semakan-capstone.md` records every `semak-ci4` finding with Accept/Reject and evidence from commands you ran yourself (Quiz S6).
+- [ ] Every accepted finding was fixed through a red → green test, and AI-08 was run on the staged diff before every `FIX:` commit (Quiz S6).
+- [ ] 2 new tests from AI-09 are green, and each one was seen red while its rule was temporarily broken (Quiz S6).
+- [ ] At least 2 AI-18 issues were fixed in `README.md`/`CLAUDE.md` and committed as `CHORE:` (Quiz S6).
+- [ ] `composer test` is green on `main` and `git tag -l` shows `v1.0-capstone`. 🪟 PowerShell: the same command, `git tag -l` (Quiz S6).
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| `semak-ci4` does not run; Claude reviews by itself | The subagent is not loaded in this session | `/agents` to check; `/exit` and `claude` again; or type `@agent-semak-ci4` |
+| `!git diff --staged` is empty | The changes are not staged yet | Run `git add app/ tests/ docs/` in your terminal first |
+| `git restore app/` also removes fixes that were not committed | Other changes were not committed while the rule was temporarily broken | Commit the fix first; `git status --short` must be clean before step 5 |
+| `php spark filter:check GET /statistik` → the path becomes `C:/Program Files/Git/statistik` (Windows Git Bash) | Git Bash converts paths that start with `/` | Prefix `MSYS_NO_PATHCONV=1` (Lab 10.3 step 5), or use PowerShell |
+| `git tag` rejected: *already exists* | The tag was created before the last fix | `git tag -d v1.0-capstone`, then `git tag -a …` again (before pushing); PowerShell: run them one at a time |
+| Tests pass on your machine but fail on a colleague's (Windows) | Fixed dates or a different time zone | Relative dates; `app.appTimezone = 'Asia/Kuala_Lumpur'` (SPEC §9) |
+
+### ⭐ Bonus challenge
+- Ask Claude (Plan mode) to compare `docs/semakan-capstone.md` with K1–K10 in README §3.4: which K has no evidence yet? Confirm and complete it yourself.
+
+---
+
+## Lab 10.12 — Capstone demo & Claude Code reflection (S7)
+
+### 🎯 Objective
+Demo the system in 8 minutes following the README §4.1 format, explain by yourself the line the panel chooses (including lines Claude wrote), and write an accept/reject reflection based on the evidence in `docs/nota-claude.md`.
+
+### Prerequisites
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, choose the **PowerShell** tab on command blocks that have two tabs; blocks without tabs run in both terminals.
+- Checkpoint 10.11 passed; tag `v1.0-capstone`.
+- Lab 10.4 prerequisites: a clean demo DB + seed, 5 login windows, a 1-page demo script.
+
+### Steps
+
+**1. Practise the explain-the-code segment (10 min, before your turn).** In Claude Code, Plan mode (AI-14):
+
+```text
+Plan mode. Do not change any files.
+Act as the capstone panel (@docs/rubrik-capstone.md §3 criterion E and §4.3). Choose ONE line from each file:
+app/Services/StatisticsService.php, app/Services/BookingService.php and app/Views/statistik/dashboard.php.
+Ask me about one line at a time: what does this line do, why is it here, what happens if it is removed?
+Wait for my answer, then give a Level 1–4 under criterion E and explain what was missing.
+```
+
+For every Level 1–2 answer: reread that file and update the related explain gate line in `docs/nota-claude.md`. Do not memorise Claude's answers; explain in your own words.
+
+**2. 8-minute demo.** Follow Lab 10.4 steps 1–4. In the M4 segment (minutes 6–7): approve one pass application, then reload `/statistik` → "Pas menunggu" (Pending passes) changes immediately (slice 4 invalidation). In the explain-the-code segment (minutes 7–8), answer yourself: *what + why + what happens if it is removed*.
+
+**3. Evidence on the laptop after minute 8.** The panel checks while filling in the mark sheet:
+
+```bash
+composer test
+git tag -l
+git log --oneline -20
+```
+
+Also show `docs/nota-claude.md` (12 explain gate lines + rejected diffs) and `docs/semakan-capstone.md`.
+
+**4. Claude Code reflection (10 min).** Collect the raw data first (Plan mode):
+
+```text
+Plan mode. Do not change any files.
+From today's git log and @docs/nota-claude.md, list in a table: every STAT:/FIX:/CHORE: commit, the files
+changed, and the related explain gate line or rejected diff. Do not write the reflection for me.
+```
+
+Then write the reflection **yourself** at the end of `docs/nota-claude.md`:
+
+```text
+## Claude Code reflection — Day 10
+
+| # | Claude's suggestion | Accept / Reject | Evidence (commit, test, file:line) | Lesson |
+|---|---|---|---|---|
+| 1 | | Accept | | |
+| 2 | | Accept | | |
+| 3 | | Accept | | |
+| 4 | | Reject | | |
+| 5 | | Reject | | |
+
+One time Claude was wrong, and how I caught it: ...
+One rule I will keep using after the course: ...
+```
+
+**5. Retrospective.** Follow Lab 10.4 step 5, and add one card about Claude Code (Start/Stop/Continue).
+
+**6. Compare with the reference code (5 min).** Compare your `app/Services/StatisticsService.php` with `StatisticsService.php.txt` (**Templat & Rujukan** module). Write 2 differences in your reflection: why they exist, and whether you will keep them.
+
+**7. Hand over the repo.** Follow Lab 10.4 step 6. Include `CLAUDE.md`, `.claude/agents/`, `.claude/skills/`, `.mcp.json` and `docs/nota-claude.md`. Do not include `.env`, `.claude/settings.local.json` or `CLAUDE.local.md`:
+
+```bash tab="Git Bash / macOS / Linux"
+git ls-files | grep -E "settings\.local|CLAUDE\.local|(^|/)\.env$"
+git add docs/nota-claude.md && git commit -m "CHORE: refleksi Claude Code Hari 10"
+git push origin main
+```
+
+```powershell tab="PowerShell"
+git ls-files | Select-String "settings\.local|CLAUDE\.local|(^|/)\.env$"
+git add docs/nota-claude.md
+git commit -m "CHORE: refleksi Claude Code Hari 10"
+git push origin main
+```
+
+Expected: the `ls-files` command prints nothing. A reflection commit after the tag does not move `v1.0-capstone`.
+
+### ✅ Checkpoint 10.12
+- [ ] The demo finished in ≤ 8 minutes, and the M4 segment showed the "Pas menunggu" KPI change immediately after an approval (Quiz S7).
+- [ ] The line chosen by the panel was explained by you: what, why, and what happens if it is removed (Quiz S7).
+- [ ] The reflection in `docs/nota-claude.md` has ≥ 3 Accept and ≥ 2 Reject, each with commit, test or file:line evidence (Quiz S7).
+- [ ] The repo was handed over with no `.env`, `.claude/settings.local.json` or `CLAUDE.local.md` in `git ls-files`. 🪟 PowerShell: `git ls-files | Select-String "settings\.local|CLAUDE\.local|(^|/)\.env$"` prints nothing (Quiz S7).
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|--------|-------|--------------|
+| `.claude/settings.local.json` appears in `git ls-files` (Windows) | The file was committed before `.gitignore` was updated | `git rm --cached .claude/settings.local.json`, add it to `.gitignore`, commit |
+| Claude in Plan mode asks permission for `git log` | Shell commands still need approval | Approve once only ("Yes"); do not choose "don't ask again" for commands that change files |
+| Empty charts during the demo | No internet for the CDN | Local copy of `chart.umd.min.js` (Lab 10.1 🧯), prepared before the demo |
+| `php spark serve` fails: *Address already in use* (Windows) | Laragon/Apache is using port 8080 | `php spark serve --port 8081` and `app.baseURL = 'http://localhost:8081/'` in `.env` |
+
+### ⭐ Bonus challenge
+- Write one paragraph for your supervisor: how the 7-step loop can be used in your department's projects without breaking the data rules (synthetic only, no `.env`, no real systems).
 
 ---
 

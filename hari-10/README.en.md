@@ -18,6 +18,9 @@ By the end of today, participants can:
 | O4 | **Run** a UAT script across the 4 modules by role and record the results in the UAT template. | S3 |
 | O5 | **Fix** bugs using the *reproduce → failing test → fix → passing test* cycle, and **verify** the final security checklist (CSRF, `esc()`, `.env`, uploads outside `public/`, route filters). | S3 |
 | O6 | **Demo** the system end-to-end in 8 minutes, **explain** the line of code chosen by the panel, and **contribute** to a Start/Stop/Continue retrospective. | S4 |
+| O7 | **Build** the Statistics module (`StatisticsService`, `/statistik/data`, Chart.js, cache + invalidation) with Claude Code in 4 slices, **approve** every diff after reading it, and **explain** 3 key lines per slice in `docs/nota-claude.md`. | S5 |
+| O8 | **Evaluate** the capstone repo with the `semak-ci4` subagent, AI-08 (DoD), AI-09 (test gaps) and AI-18 (`README.md`/`CLAUDE.md`), and **fix** the confirmed findings through the same loop. | S6 |
+| O9 | **Demo** the system and **argue**, with evidence from `docs/nota-claude.md`, when Claude's suggestions were accepted or rejected. | S7 |
 
 ---
 
@@ -26,12 +29,17 @@ By the end of today, participants can:
 | Time | Session | Activity | Objectives |
 |------|------|----------|----------|
 | 08:30–09:00 | — | Day 9 recap (reports & export) | — |
-| 09:00–10:30 | **S1** | Statistics dashboard (charts, cross-module summary) | O1, O2 |
+| 09:00–10:30 | **S5** | Claude Code: Statistics module slices 1–2 (KPIs, chart datasets, `/statistik/data`) — [Lab 10.10](./lab.md#lab-1010--claude-code-statistics-slice-by-slice-s5) | O1, O7 |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–12:30 | **S2** | Aggregate queries & basic caching | O3 |
+| 10:45–11:45 | **S5** | Claude Code: Statistics module slices 3–4 (Chart.js, cache + invalidation after commit) | O2, O3, O7 |
+| 11:45–12:30 | **S3** | Manual UAT across the 4 modules + K1–K10 (Lab 10.3 steps 1–3 and 5) | O4 |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–16:00 | **S3** | Final system testing & bug fixing | O4, O5 |
-| 16:00–17:00 | **S4** | Capstone demo to the system owner & closing | O6 |
+| 14:30–16:00 | **S6** | Claude Code: capstone preparation (`semak-ci4`, AI-08, AI-09, AI-18, tag) — [Lab 10.11](./lab.md#lab-1011--claude-code-capstone-preparation-s6) | O5, O8 |
+| 16:00–17:00 | **S7** | Capstone demo (S4 format) & Claude Code reflection — [Lab 10.12](./lab.md#lab-1012--capstone-demo--claude-code-reflection-s7) | O6, O9 |
+
+> ℹ️ **Reference code.** For the rest of the course, modules are built with Claude Code through the 7-step loop (§5.1). S1, S2 and Labs 10.1–10.2 are **reference code**: read them to understand the concepts and for the "Compare with the reference code" step; do not retype them. UAT in S3 stays manual. The S4 demo format (§4.1) and certificate criteria (§4.3) are used in S7.
+>
+> ℹ️ The times in the S1–S4 headings below are the original schedule; follow the schedule above.
 
 ---
 
@@ -53,6 +61,151 @@ flowchart LR
     end
     B --> C
 ```
+
+---
+
+## S5 — Claude Code: Build the Statistics Module (09:00–11:45)
+
+> ℹ️ **The module is built with Claude Code.** Claude may write the implementation code, but every line goes through your review gates. Lab: [Lab 10.10](./lab.md#lab-1010--claude-code-statistics-slice-by-slice-s5). Reference code: S1–S2 below and [Lab 10.1](./lab.md#lab-101--dashboard-kpis--4-chartjs-charts-s1)–[10.2](./lab.md#lab-102--remember-cache--invalidation-after-status-changes-s2).
+
+### 5.1 The 7-step loop for each slice
+
+| # | Step | Claude Code mode | Evidence you keep |
+|---|---------|-----------------|------------------------|
+| 1 | **SPEC & BR**: identify the SPEC sections and the `BR-*` ids | — (you, yourself) | Ids written in the prompt and in `docs/nota-claude.md` |
+| 2 | **Slice plan**: numbered plan, no code | *Plan* | The plan **you edited** before approving it |
+| 3 | **Implement**: one slice, one file at a time | **Manual**: every diff read and approved | The diffs you accepted or rejected (with a reason) |
+| 4 | **Verify** | Manual + `!composer test`, the browser, `ci4-spark` tools | Green output; browser screen; `routes`/`filter_check` answers |
+| 5 | **Review**: the `semak-ci4` subagent; fixes go through step 3 | Read-only subagent | Findings table, each one confirmed or rejected |
+| 6 | **Explain gate**: 3 key lines in your own words | — (you type) | 3 lines in `docs/nota-claude.md` |
+| 7 | **Small commit** on a feature branch | Your terminal | One `STAT:` commit per slice on `feat/statistik` |
+
+> ⚠️ **Forbidden:** *accept edits*, *auto* and `bypassPermissions` modes, and the "Yes, allow all edits…" or "Yes, and don't ask again" options for file edits. Every diff you did not read is a line you cannot explain in minutes 7–8 of the demo.
+
+### 5.2 Four slices of the Statistics module
+
+| Slice | Scope | SPEC / definition | Proof test |
+|-------|------|---------------|-------------|
+| 1 | `StatisticsService::build()` with 4 KPIs; `service('statisticsService')` | §2.4, §9 (service registration), §1.1 below; `BR-TLK-04` (active booking definition) | `tests/Services/StatisticsServiceTest.php` with a fixed `$now` |
+| 2 | 4 chart datasets; `DashboardController::index()`/`data()`; `statistik` route group + `permission:statistik.view` | §2.4, §4, §6, §1.4 below; gate G2 | 12-month test (empty months = 0); `tests/feature/Statistik/StatistikAccessTest.php` |
+| 3 | `app/Views/statistik/dashboard.php`: server-side KPI cards, 4 `<canvas>`, Chart.js 4.4.7, `fetch()` + `res.ok` | §1.2, §1.5 below | Browser + `semak-ci4` (`esc()`, no `innerHTML` for data) |
+| 4 | `cache()->remember()` + `cache()->delete(StatisticsService::CACHE_KEY)` **after** every `transCommit()` | §2.4, §9 (Cache); `BR-PAS-01`, `BR-PAS-05`, `BR-TLK-05` | `tests/Services/StatisticsCacheTest.php`: **red first**, then green |
+
+### 5.3 Diffs you reject
+
+Choose **No** and type the reason when a diff:
+
+- changes files outside the current slice, `.env`, another module's migrations, or `composer.json` (a new package);
+- puts `cache()->delete(...)` **before** `transCommit()`, inside the `try` block before the commit, or in a controller;
+- types the string `'stat_dashboard'` outside `StatisticsService`, or uses `cache()->clean()`;
+- calculates the average days to approve with `status = 'approved'` or `TIMESTAMPDIFF(DAY, …)`;
+- uses `date('Y-m-d')` in the service instead of `$this->now` (the tests then depend on today's date);
+- concatenates input into SQL (`->query("… $x")`), or inserts server data with `innerHTML`;
+- removes an `assert`, adds `markTestSkipped()`, or changes a test so that it turns green.
+
+### 🎯 Quiz S5
+
+> Answer after Lab 10.10. Passing this quiz marks the Lab 10.10 checkpoint.
+
+1. In slice 4, Claude proposes a diff that puts cache()->delete(StatisticsService::CACHE_KEY) inside the try block before transCommit(). All tests are green. What do you do?
+   - [ ] Approve it, because a green composer test proves the invalidation is correct
+   - [x] Choose No and ask for the delete to move after transCommit(), because another request can rebuild the cache with old data before the commit
+   - [ ] Approve it, then switch to accept edits mode so Claude fixes it by itself
+   - [ ] Choose No and ask Claude to delete the cache test because it does not catch this problem
+   > Green tests do not prove the order is right: in a test, no other request runs between the delete and the commit. This is why step 3 is reading the diff, not only watching the tests. The fix goes through the same gate (Manual mode), and the test is not deleted.
+
+2. After slice 2, what counts as an explain gate entry in docs/nota-claude.md?
+   - [ ] A full copy of Claude's answer about DashboardController
+   - [ ] A link to the STAT: commit for slice 2
+   - [ ] The list of files Claude changed in that slice
+   - [x] Three key lines (e.g. the permission:statistik.view filter, array_column with the month key, setJSON), each explained in your own words: what, why, and what happens if it is removed
+   > The explain gate proves that **you** understand, not Claude. A copied answer, a commit link and a file list do not show understanding. The "what + why + if removed" format is the same as the explain-the-code segment in the demo.
+
+---
+
+## S6 — Claude Code: Capstone Preparation (14:30–16:00)
+
+> ℹ️ Lab: [Lab 10.11](./lab.md#lab-1011--claude-code-capstone-preparation-s6). Prompts: [`pustaka-prompt.md`](../docs/pustaka-prompt.en.md) AI-08, AI-09, AI-10, AI-18. UAT (S3, 11:45–12:30) stays manual: you test as a user, not Claude.
+
+### 6.1 Four reviews, one fix loop
+
+| Review | Tool | Question | Output |
+|---------|------|--------|--------|
+| Whole repo | `semak-ci4` subagent | Rubric G1–G5 and K2/K5/K7 (§3.4) | `docs/semakan-capstone.md` |
+| Definition of Done | AI-08, *Plan* mode | Each module M1–M4 × 7 DoD items ([`kolaborasi.md`](../docs/kolaborasi.en.md) §2) | Matrix with file:line evidence |
+| Test gaps | AI-09, *Plan* mode | Which `BR-*` have no test? | 2 new tests that go red when the rule is broken |
+| Handover documents | AI-18, *Plan* then Manual | Are `README.md`, `CLAUDE.md`, `docs/prd.md` out of date? | `CHORE:` commit |
+
+Every finding you accept goes through the S5 7-step loop: small plan → red test (AI-10) → Manual diff → verify → AI-08 on `!git diff --staged` → `FIX:` commit.
+
+### 6.2 An AI finding is a hypothesis
+
+Every finding must have a file:line. You open that file and confirm it with your own command (`php spark filter:check`, `grep`, the `filter_check` tool) before you mark it **Accept** or **Reject**. Common false positives: `esc()` already done in a partial, a filter set on the route group (not on each route), and `->query()` in `ReportExplain` with SQL compiled by the Query Builder.
+
+### 6.3 Tag `v1.0-capstone` after everything is green
+
+Tag only after the fixes are merged to `main` and `composer test` is green on `main`. Findings discovered after the tag are recorded as `BUG-00N` and fixed after the demo; do not move the tag.
+
+### 🎯 Quiz S6
+
+> Answer after Lab 10.11. Passing this quiz marks the Lab 10.11 checkpoint.
+
+1. The semak-ci4 subagent reports "K5 Fail: GET statistik/data has no filter", but that route is inside the statistik group with the permission:statistik.view filter. What do you do?
+   - [x] Confirm with php spark filter:check GET /statistik/data or the ci4-spark filter_check tool, then record Reject with the evidence in docs/semakan-capstone.md
+   - [ ] Accept it and add a second filter to that route so the subagent stops reporting it
+   - [ ] Ignore the finding without a record because the subagent is read-only
+   - [ ] Ask Claude to rewrite Routes.php completely in Manual mode
+   > A finding is a hypothesis. A filter on a group applies to every route in that group; `filter:check` proves it. Record Reject with evidence so that the panel and you know the finding was checked.
+
+2. AI-09 suggests a test for BR-TLK-03 (maximum 90 days). Claude writes the test in Manual mode and it is green on the first run. What extra evidence do you need before the commit?
+   - [ ] None, because green on the first run means the test is correct
+   - [ ] Run composer test twice to make sure the result is stable
+   - [x] Break the rule temporarily (e.g. change 90 to 91 in the service), see the test go red, then restore the code and see it green again
+   - [ ] Ask the semak-ci4 subagent to confirm that the test is correct
+   > A test you never saw red may test nothing. Breaking the rule temporarily proves the test catches the violation. Restore with `git restore` and make sure `git diff` on `app/` is empty before the commit.
+
+---
+
+## S7 — Capstone Demo & Claude Code Reflection (16:00–17:00)
+
+> ℹ️ Lab: [Lab 10.12](./lab.md#lab-1012--capstone-demo--claude-code-reflection-s7). The demo format and certificate criteria do not change: §4.1 and §4.3 in S4 below.
+
+### 7.1 Demo: the S4 format, with no exception for Claude's code
+
+An 8-minute demo following §4.1. In the explain-the-code segment (minutes 7–8), the panel may choose a line that Claude wrote. That line is assessed the same way as a line you typed yourself. "Claude wrote it" is not an answer; the assessed answer is *what + why + what happens if it is removed*.
+
+### 7.2 Reflection: when to accept, when to reject
+
+| Accept a suggestion when | Reject a suggestion when |
+|-------------------------|------------------------|
+| You can explain every line and how it links to the `BR-*`/SPEC | You cannot explain at least one line |
+| The related test was red at some point, then green | A test was changed or skipped so that it turns green |
+| The diff is small and only inside the slice scope | The diff touches files outside the scope, `.env` or a new package |
+| Table/field/class names follow the SPEC exactly | Names are invented, or the code is CI3 / Laravel style |
+
+Reflection evidence comes from `docs/nota-claude.md` (explain gates and rejected diffs), `docs/semakan-capstone.md` and `git log`.
+
+### 7.3 Rubric note: Use of Claude Code
+
+[`rubrik-capstone.md`](../docs/rubrik-capstone.en.md) does not change and there are no extra marks. The panel assesses the use of Claude Code through the existing criteria: **C** (small prefixed commits; `BR-*` in services), **D** (red → green tests, including cache invalidation) and **E** (explaining lines yourself, including lines Claude wrote). Evidence: `docs/nota-claude.md` and `docs/semakan-capstone.md`. A line you cannot explain lowers criterion E and does not meet certificate criterion #4 (§4.3).
+
+### 🎯 Quiz S7
+
+> Answer after Lab 10.12. Passing this quiz marks the Lab 10.12 checkpoint.
+
+1. The panel chooses the line in StatisticsService that fills empty months with zero. Claude wrote that line in slice 2. Which answer meets Level 4 of criterion E?
+   - [ ] "Claude Code wrote this line; I approved the diff after the tests were green"
+   - [ ] "I'm not sure, but semak-ci4 did not report any issue in this file"
+   - [ ] "This line fills the empty months", with no reason or effect if removed
+   - [x] What the line does, why it is needed (GROUP BY does not return months with no records), and what happens if it is removed (the June bar is drawn in the March position)
+   > Level 4 needs *what + why + what happens if it is removed*, explained by you. Who typed the line does not change the criteria.
+
+2. In your reflection, which Claude suggestion SHOULD be rejected?
+   - [ ] Writing a red test first for a UAT bug before fixing the code
+   - [x] Removing the assert in StatisticsCacheTest because the test went red after the latest change
+   - [ ] Moving the KPI calculation from the controller into StatisticsService
+   - [ ] Using StatisticsService::CACHE_KEY instead of the typed string 'stat_dashboard'
+   > A red test is information: either the code is broken or the test needs updating for a reason you can explain. Removing the `assert` hides the bug. The other three options are course practice (red test first, logic in the service, one cache key constant).
 
 ---
 
@@ -470,6 +623,9 @@ Use Claude Code in *Plan* mode (`Shift+Tab` / `Alt+M`) for the prompts below: Cl
 | S2 · Cache | List every `transCommit()` against `cache()->delete()`; AI-09 for `StatisticsCacheTest` | `grep` `transCommit`/`CACHE_KEY`; `!composer test` | 10.2 step 11 |
 | S3 · UAT & bugs | The `semak-ci4` subagent on K2/K5/K7; AI-10 (red test first); AI-08 on `!git diff --staged` before `FIX:` | Your K marks in `docs/UAT-signoff.md` | 10.3 step 7 |
 | S4 · Demo & handover | AI-18 on `@README.md` and `@CLAUDE.md`; update the project `CLAUDE.md` | 2 issues fixed by you and committed | 10.4 step 7 |
+| S5 · Statistics with Claude Code | 4-slice plan (*Plan* mode) → Manual mode diffs → `semak-ci4` subagent → `ci4-spark` `routes`/`filter_check` tools | `!composer test`; the browser; 3 lines per slice in `docs/nota-claude.md` | 10.10 |
+| S6 · Capstone preparation | `semak-ci4` on the whole repo; AI-08 (DoD); AI-09 (test gaps); AI-10; AI-18 (README/CLAUDE.md/PRD) | Every finding Accept/Reject with evidence; tests red when the rule is broken | 10.11 |
+| S7 · Demo & reflection | AI-14 (practise the explain-the-code segment) | Accept/reject reflection with commit/test evidence | 10.12 |
 
 ---
 
@@ -484,6 +640,7 @@ Use Claude Code in *Plan* mode (`Shift+Tab` / `Alt+M`) for the prompts below: Cl
 - [ ] `docs/UAT-signoff.md` filled in; bug log with ≥ 1 bug closed through the failing-test cycle
 - [ ] Security checklist K1–K10 ticked
 - [ ] Tag `v1.0-capstone`; 8-minute demo; mark sheet signed → **M4 done** · **System complete** 🎓
+- [ ] Labs 10.10–10.12 (Claude Code): `docs/nota-claude.md` with 12 explain gate lines + an accept/reject reflection; `docs/semakan-capstone.md` with every finding marked Accept/Reject
 
 ---
 

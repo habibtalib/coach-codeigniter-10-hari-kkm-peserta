@@ -26,6 +26,8 @@ By the end of today, participants can:
 | O12 | **Create** the read-only `semak-ci4` subagent and the `migration-ci4` skill, and **verify** AI findings against the real code | S10 | [Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10); `docs/semakan-ci4-hari6.md` |
 | O13 | **Install** and **test** the `ci4-spark` MCP server (JSON-RPC over stdio, read-only) and **register** Context7 | S11 | [Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11); `.mcp.json` + 5 JSON-RPC replies |
 | O14 | **Write** onboarding and plan prompts in *Plan* mode for an existing project, and **draft** and **review** a practice PRD before any code | S12 | [Lab 7.9](./lab.en.md#lab-79--prompting-existing-project-new-project--prd-s12); `docs/nota-claude.md` + `~/latihan/prd-latihan/docs/prd.md` |
+| O15 | **Build** Pass slice 1 with Claude Code through the seven gates, **reject** diffs that break the owner scope, and **explain** 3 key lines in your own words | S13 | [Lab 7.10](./lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13); `pemohon2` → 404; `docs/nota-claude.md` |
+| O16 | **Build** Pass slice 2 (form, validation, secure upload) with Claude Code and **verify** the five upload gates with `ci4-spark` and the browser | S14 | [Lab 7.11](./lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14); randomly named files in `writable/uploads/pas/`, `filter_check` shows `permission:pas.apply` |
 
 ---
 
@@ -40,11 +42,10 @@ By the end of today, participants can:
 | 10:45–11:45 | S10 | Claude Code: subagents & skills | Read-only `semak-ci4` subagent on Day 6 code; `migration-ci4` skill ([Lab 7.7](./lab.en.md#lab-77--subagents--skills-for-a-ci4-project-s10)) |
 | 11:45–12:30 | S11 | Claude Code: MCP for CodeIgniter | `ci4-spark` MCP server (PHP, read-only) tested & registered; Context7; MySQL/GitLab optional ([Lab 7.8](./lab.en.md#lab-78--mcp-ci4-spark-mysql-context7--gitlab-s11)) |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–15:30 | S1 | Pass application migration & Model | Write the `PassApplication` & `PassDocument` Model/Entity (Lab 7.0, 7.1) |
-| 15:30–16:45 | S2 | Basic CRUD Controller & View | Build the list (owner scope) & detail view (Lab 7.2) |
-| 16:45–17:00 | S5, S6 | Follow-ups if time allows; wrap-up | Lab 7.1b / 7.2b (the rest continued on your own) |
+| 14:30–15:45 | S13 | Claude Code: Pass Module (1) — model, list & detail | Build Pass slice 1 with the seven gates: enums, `ownedBy()` Model, list & detail with 404 for non-owners ([Lab 7.10](./lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13)) |
+| 15:45–17:00 | S14 | Claude Code: Pass Module (1) — form & secure upload | Build Pass slice 2: form + CSRF, file validation, random names outside `public/`, transaction + clean-up ([Lab 7.11](./lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14)) |
 
-> ℹ️ Lab 7.3, 7.4 (and 7.3b/7.4b) continue on Day 8 morning.
+> ℹ️ **Course decision:** from this afternoon until Day 10, the modules are built with Claude Code through seven review gates ([`kolaborasi.md`](../docs/kolaborasi.md) §3). The manual Pass Labs 7.0–7.4 (and 7.1b–7.4b) and sessions S1–S8 are now **reference code** for comparison, not required. Day 8 continues the Pass module with the same workflow.
 >
 > ℹ️ The times in the S1–S8 headings below are the original schedule; follow the schedule above.
 
@@ -346,6 +347,104 @@ Flow: `initialize` (protocol version negotiation) → `tools/list` (tool list + 
    - [ ] Claude Code rejects a `.mcp.json` that contains a password
    - [ ] stdio servers cannot receive *environment variables*
    > `.mcp.json` is a project file that goes into GitLab. The `local` scope stores the configuration in your `~/.claude.json`; `${VAR}` in `.mcp.json` is expanded from the *environment* when Claude Code starts.
+
+---
+
+## S13 — Claude Code: Pass Module (1) — Model, List & Detail (14:30–15:45)
+
+> ℹ️ Lab: [Lab 7.10](./lab.en.md#lab-710--claude-code-pass-slice-1--migrationenummodel-owner-scoped-list--detail-s13) · Prompts [AI-19, AI-20](../docs/pustaka-prompt.en.md#g--implement-with-review-gates) · Rules: [`kolaborasi.md`](../docs/kolaborasi.md) §3.
+
+### 13.1 Claude Code workflow (applies until Day 10)
+
+From this afternoon until Day 10, you build the same modules (Pass, Report, Statistics) **with Claude Code**. Claude may write implementation code, but every slice goes through seven gates:
+
+1. **SPEC:** read the SPEC section and the `BR-*` IDs; `CLAUDE.md` points to them.
+2. **Plan (*Plan* mode):** files, migration/model/service/controller/view/tests and the BR mapping, with no code. You review and edit the plan.
+3. **Implement (*Manual* mode):** Claude edits; you read every diff and choose **Yes** or **No**. The *accept edits*, *auto* and *bypass* modes are not allowed.
+4. **Verify:** `composer test`, the browser, `ci4-spark` (`routes`, `filter_check`, `migrate_status`).
+5. **Review:** the `semak-ci4` subagent, then Claude fixes the findings through the same diff gate.
+6. **Explain:** 3 key lines in your own words in `docs/nota-claude.md` (`fail:baris`, file:line).
+7. **Commit:** small, with a message, on the `feat/pas-claude` feature branch.
+
+The manual Pass Labs 7.0–7.4 stay as **reference code**: after each slice, you compare Claude's code with the matching manual lab and record the differences.
+
+### 13.2 Slice 1: what you build
+
+The `PassType`/`PassStatus` enums, the `PassApplication` Entity, `PassApplicationModel` and `PassDocumentModel`, the `index`/`show` routes, `PassWorkflowService::canView()`, the "My Applications" list and the detail view. The Pass tables have existed since Day 4, so a good plan does **not** create a new migration; `migrate_status` proves it.
+
+The owner scope lives in the **Model** (`ownedBy()`), not in the view. The query itself returns only the owner's rows, so pagination, counts and every controller that calls it are safe (BR-PAS-04). Someone else's detail page returns **404**, not 403, so the record's existence does not leak.
+
+### 13.3 Reading a diff: accept or reject
+
+| Accept | Reject |
+|--------|--------|
+| `where('user_id', …)` in `ownedBy()` | `if ($app->user_id == …)` in the view or a controller loop |
+| `canView()` → `PageNotFoundException` | `find($id)` straight to the view, or 403 |
+| The `PassStatus` enum and `canTransitionTo()` | `'submitted'` strings scattered around |
+| `esc()` on every output | `<?= $x ?>` without `esc()` |
+| Only files in the plan's list | A new Pass migration, TLK files, `Filters.php`, `php spark migrate` |
+
+### 🎯 Quiz S13
+
+> Answer after Lab 7.10. Passing this quiz marks the Lab 7.10 checkpoint.
+
+1. In Lab 7.10, you reject a diff that filters applications with `if ($app->user_id == auth()->id())` in `pas/index.php`, and ask for an `ownedBy()` scope in `PassApplicationModel`. Why?
+   - [ ] The view is slower than the Model when running a foreach loop
+   - [ ] Claude Code cannot edit view files in Manual mode
+   - [x] The query already returns only the owner's rows, so pagination, counts and every controller that calls ownedBy() cannot leak other people's applications (BR-PAS-04)
+   - [ ] The SPEC forbids any if statement in a view
+   > A filter in the view runs after other people's data is already loaded: the page count and totals still leak, and another controller that forgets the filter shows every record. A scope in the Model makes the correct query the only way to get the list.
+
+2. Claude asks permission for a diff that creates a new `CreatePassApplications` migration, even though `migrate_status` shows the Day 4 migration for that table has already run. What is the right action?
+   - [x] Choose No and state that the table has existed since Day 4 and the Slice 1 plan has no new migration
+   - [ ] Choose Yes because a new migration is harmless as long as it has not run
+   - [ ] Choose Yes, allow all edits so Claude finishes the slice faster
+   - [ ] Choose Yes, then delete the file before committing without telling Claude
+   > A diff outside the plan is rejected with a reason so Claude corrects course. A duplicate migration will fail (`Table already exists`) or, worse, create a schema that does not match the SPEC. "Allow all edits" removes the diff gate for the whole session.
+
+---
+
+## S14 — Claude Code: Pass Module (1) — Form & Secure Upload (15:45–17:00)
+
+> ℹ️ Lab: [Lab 7.11](./lab.en.md#lab-711--claude-code-pass-slice-2--form-validation--secure-document-upload-s14) · Concepts: [S3](#s3--form-validation--document-upload-14301600) and [note 07](../docs/nota-07-muat-naik-fail-selamat.md) · Workflow: [13.1](#131-claude-code-workflow-applies-until-day-10).
+
+### 14.1 Slice 2: the five upload gates in a diff
+
+Claude writes the form, the validation, `submit()` and `download()`. Your job is to make sure every diff keeps the **five gates** from the "Why today matters" section: size limit → extension allow-list → content check (`mime_in`, `getMimeType()`) → random name outside `public/` → download only through a controller that checks ownership. Add two more: CSRF (`form_open_multipart()`) and `permission:pas.apply` on `new`/`create`.
+
+| Reject a diff that… | The gate it breaks |
+|---------------------|--------------------|
+| stores in `public/` or links `base_url('uploads/…')` | Outside `public/`, download through the controller |
+| uses `getName()`/`getClientName()` on disk | Random name (BR-PAS-02) |
+| has `ext_in` without `mime_in`, or `getClientMimeType()` | Content check |
+| removes `csrf_field()` or adds a route to the CSRF `except` list | CSRF |
+| has a `download()` without `canView()`, or a path from the request | Ownership (BR-PAS-04) |
+
+### 14.2 Save order: files first, transaction second
+
+`move()` is called **before** the transaction: if a file fails to move, no DB row is written. The transaction then writes `pass_applications`, `pass_documents` and `status_logs` (BR-PAS-05). If the transaction fails, the `catch` calls `transRollback()` **and** deletes every file already moved, so no orphan files stay in `writable/uploads/pas/`.
+
+### 14.3 Compare with the reference code
+
+After slice 2 passes its tests, open Lab 7.3 (the manual code) and compare three things: the order of `move()` and the transaction, the file rules with Malay messages, and the ownership check in `download()`. Record the differences in `docs/nota-claude.md`. Claude's code is not necessarily wrong if it differs; you must be able to explain why both are safe, or why one is not.
+
+### 🎯 Quiz S14
+
+> Answer after Lab 7.11. Passing this quiz marks the Lab 7.11 checkpoint.
+
+1. Claude's diff for `PassWorkflowService::submit()` contains `$file->move(WRITEPATH . 'uploads/pas', $file->getClientName())`. What is the right action?
+   - [ ] Accept because the file is already outside public/
+   - [ ] Accept because the original name helps officers identify the document
+   - [ ] Accept if mime_in is in the validation rules
+   - [x] Reject and ask for getRandomName(): the original name can be guessed and can overwrite another file; the original name is stored in original_name only (BR-PAS-02)
+   > BR-PAS-02 requires a random name. Two applicants who upload `surat.pdf` would overwrite each other's file, and a guessable name makes attacks easier. The original name is only for display and the download header.
+
+2. In `submit()`, why are the files moved with `move()` before the transaction opens, and what must be in the `catch`?
+   - [ ] To keep the transaction short; the catch only needs to write log_message()
+   - [x] So a move() failure happens before any DB row is written; if the transaction fails, the catch calls transRollback() and deletes every file already moved so there are no orphan files
+   - [ ] Because CI4 deletes moved files automatically when a transaction fails
+   - [ ] Because move() cannot be called while a MySQL transaction is open
+   > A DB transaction does not cover the file system. A rollback restores the tables, but the files on disk stay until the code deletes them. A diff with no `unlink()` in the `catch` leaves personal documents with no owner record.
 
 ---
 

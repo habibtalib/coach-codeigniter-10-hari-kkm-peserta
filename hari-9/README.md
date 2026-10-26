@@ -22,24 +22,26 @@ Di akhir hari ini, peserta boleh:
 | O8 | **Menulis** ringkasan status dengan `fromSubquery()` + `groupBy()` atas builder senarai yang sama, dan baris JUMLAH RPT-03 berwajaran. | S6 |
 | O9 | **Menjana** lembaran Excel *Ringkasan* dengan formula `=SUM()` dan jadual ringkasan PDF daripada `statusSummary()` yang sama dengan skrin. | S7 |
 | O10 | **Menguji** ringkasan dan JUMLAH terhadap `GROUP BY` SQL dan nombor yang dikira dengan tangan, dan **membuktikan** dengan mutasi bahawa ujian tanpa filter boleh lulus secara palsu. | S8 |
+| O11 | **Membina** `ReportService` (penapis whitelist, builder berbinding) dengan Claude Code dan **membuktikan** jadual *input → hasil penapis* yang anda tulis sendiri dengan `php spark shell`. | S9 |
+| O12 | **Menilai** diff paparan senarai Claude (satu sumber penapis, `esc(..., 'attr')`, `GET`) dan **menguji** XSS atribut, pagination dan akses sendiri. | S10 |
+| O13 | **Membuktikan** eksport PDF/Excel yang dijana Claude: skrin = PDF = Excel, dan teks `=1+1` kekal teks (formula injection). | S11 |
+| O14 | **Menguji** `ReportService` dengan nilai yang dikira dengan tangan + mutasi, dan **menganalisis** index (`db_table`) dan `EXPLAIN` untuk cadangan index yang direkod. | S12 |
 
 ---
 
 ## 📅 Jadual Hari Ini
 
+> ℹ️ **Jadual Hari 9 (dikemas kini):** Modul Laporan dibina **dengan Claude Code** (S9–S12, Lab 9.10–9.13) di branch `feat/laporan-claude`. Lab manual (S1–S8, Lab 9.1–9.4b) ialah **kod rujukan, tidak wajib**: setiap lab baharu ada langkah *Banding dengan kod rujukan* yang menunjuk ke bahagian manual yang sepadan. Nota konsep S1–S4 kekal sebagai bacaan untuk menilai diff.
+
 | Masa | Sesi | Aktiviti | Objektif |
 |------|------|----------|----------|
 | 08:30–09:00 | — | Recap Hari 8 (aliran Pas + RBAC) | — |
-| 09:00–10:00 | **S1** | Reka bentuk laporan (jenis, kriteria carian/filter) | O1, O2 |
-| 10:00–10:30 | **S5** | Lanjutan S1: tempoh pantas & cip filter aktif | O7 |
+| 09:00–10:30 | **S9** | Claude Code: `ReportService` & penapis whitelist (slice L1) | O11 |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:00 | **S2** | Query aggregate & carian data | O3 |
-| 12:00–12:30 | **S6** | Lanjutan S2: ringkasan status & baris JUMLAH RPT-03 | O8 |
+| 10:45–12:30 | **S10** | Claude Code: paparan senarai & RPT-03 (slice L2) | O12 |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–15:30 | **S3** | Eksport PDF/Excel | O4, O6 |
-| 15:30–16:00 | **S7** | Lanjutan S3: lembaran Ringkasan Excel & ringkasan PDF | O9 |
-| 16:00–16:35 | **S4** | Ujian modul laporan — **M3 siap** | O5, O6 |
-| 16:35–17:00 | **S8** | Lanjutan S4: ujian ringkasan & mutasi; wrap-up | O10 |
+| 14:30–16:00 | **S11** | Claude Code: eksport PDF & Excel selamat (slice L3) | O13 |
+| 16:00–17:00 | **S12** | Claude Code: ujian laporan & prestasi — **M3 siap** | O14 |
 
 ---
 
@@ -63,6 +65,138 @@ flowchart LR
     B -->|?export=pdf| P[exportRows → ExportService::pdf → Dompdf]
     B -->|?export=xlsx| X[exportRows → ExportService::xlsx → PhpSpreadsheet]
 ```
+
+---
+
+## S9 — Claude Code: ReportService & Penapis Whitelist (09:00–10:30)
+
+Modul Laporan dibina **bersama Claude Code** dengan tujuh gerbang yang sama seperti Hari 8 (S9): SPEC & ID → pelan slice dalam mod Plan (anda menyunting) → laksana dalam mod Manual (anda meluluskan setiap diff; *accept edits*/*auto*/*bypass* dilarang) → sahkan (`composer test`, pelayar, tool MCP `ci4-spark`) → `semak-ci4` → gerbang terang 3 baris dalam `docs/nota-claude.md` → commit kecil di `feat/laporan-claude`.
+
+Modul ini tiada BR bernombor seperti TLK/Pas. "Peraturan" anda datang dari SPEC §2.3 (RPT-01..03 dan penapisnya), §10 (*tiada SQL mentah dengan input pengguna*) dan prinsip README ini: **penapis ialah input pengguna**. Sebelum Claude menulis apa-apa, anda menulis jadual *input → hasil penapis* sendiri. Jadual itulah yang menilai kod Claude:
+
+| Input | Jika kod betul | Jika kod salah (tolak) |
+|-------|----------------|------------------------|
+| `status=bogus` | `status` dibuang (`tryFrom()` → `null`) | `WHERE status = 'bogus'` → laporan kosong secara senyap |
+| `sort=b.id; DROP TABLE users` | `sort` lalai dari `SORTABLE` | Masuk ke `orderBy()` — nama lajur **tidak boleh** di-bind |
+| `from=2026-06-30&to=2026-06-01` | julat ditukar | laporan kosong |
+| RPT-02 `to=2026-09-30` | `created_at < '2026-10-01 00:00:00'` | `<= '2026-09-30'` → rekod 30/09 14:00 tercicir |
+
+Nilai (`status`, tarikh) di-bind oleh Query Builder; **nama lajur** (`sort`) tidak boleh di-bind, jadi hanya whitelist yang melindunginya.
+
+Lab: [Lab 9.10](./lab.md#lab-910--claude-code-reportservice--penapis-whitelist-s9)
+
+### 🎯 Kuiz S9
+
+> Jawab selepas Lab 9.10 — jawapan datang daripada pelan, diff dan output `php spark shell` anda. Lulus kuiz ini menanda checkpoint Lab 9.10.
+
+1. Diff Claude mengandungi `->orderBy($this->request->getGet('sort'), 'desc')`. Kenapa anda menolaknya walaupun Query Builder melepaskan nilai?
+   - [ ] Kerana `orderBy()` hanya menerima nombor lajur
+   - [x] Kerana `sort` ialah nama lajur, bukan nilai — ia tidak di-bind, jadi mesti melalui whitelist `SORTABLE`
+   - [ ] Kerana `getGet()` tidak wujud dalam CodeIgniter 4
+   - [ ] Tidak perlu ditolak; filter `permission:laporan.view` sudah melindungi route
+   > Binding melindungi **nilai** dalam `WHERE`. Nama lajur dan arah susunan disisipkan ke dalam SQL, jadi hanya kunci yang dikenali (`SORTABLE`) dan `asc`/`desc` boleh diterima.
+
+2. Dalam `php spark shell`, anda menjalankan `normaliseFilters('pas', ['status' => ['approved'], 'sort' => 'b.id; DROP TABLE users'])`. Apakah hasil yang betul?
+   - [ ] `status` = `approved` dan `sort` = `b.id; DROP TABLE users`
+   - [ ] `InvalidArgumentException` kerana input mengandungi SQL
+   - [ ] `status` = `approved` dan `sort` = `created_at`
+   - [x] `status` kosong (array ditolak) dan `sort` = `created_at` (lalai RPT-02)
+   > `str()` menolak array (`?status[]=…`), jadi `tryFrom('')` memulangkan `null`. Kunci `sort` yang tiada dalam `SORTABLE` jatuh ke lalai. Penapis tidak membaling exception — laporan tetap dipaparkan dengan penapis yang sah.
+
+---
+
+## S10 — Claude Code: Paparan Senarai & RPT-03 (10:45–12:30)
+
+Slice L2 menyambungkan service kepada skrin: borang penapis `GET` (§1.3), pagination yang mengekalkan penapis (§2.5), dan RPT-03 aggregate (§2.4). Peraturan untuk diff Claude: **satu sumber penapis**. Borang, pager, pengepala susun dan pautan eksport semuanya dibina daripada `$filters` bersih dari `normaliseFilters()`, bukan dari `$_GET`:
+
+| Elemen | Dibina daripada | Konteks `esc()` |
+|--------|-----------------|-----------------|
+| Nilai borang | `$filters` | `esc($v, 'attr')` |
+| Pautan halaman & susun | `toQuery($filters)` | `esc(..., 'attr')` |
+| Pautan Eksport PDF/Excel | `toQuery($filters) + ['export' => …]` | `esc(..., 'attr')` |
+| Sel jadual | baris dari `builder()` | `esc($v)` |
+
+Anda menguji sendiri: XSS dalam atribut (`?from=%22%3E%3Cb%3Ex`), penapis di halaman 2, dan `pemohon1` ditolak di server (menu yang disembunyikan hanyalah UX).
+
+Lab: [Lab 9.11](./lab.md#lab-911--claude-code-paparan-senarai-laporan--rpt-03-s10)
+
+### 🎯 Kuiz S10
+
+> Jawab selepas Lab 9.11 — jawapan datang daripada pelayar dan *View Page Source* anda. Lulus kuiz ini menanda checkpoint Lab 9.11.
+
+1. Claude mencadangkan pautan eksport `href="<?= current_url() . '?' . http_build_query($_GET + ['export' => 'pdf']) ?>"`. Apakah masalahnya?
+   - [x] Ia dibina dari `$_GET` mentah dan tanpa `esc(..., 'attr')`: penapis eksport boleh berbeza daripada skrin, dan atribut terdedah kepada XSS
+   - [ ] Tiada masalah; `http_build_query()` sudah selamat untuk HTML
+   - [ ] `current_url()` tidak boleh digunakan dalam view
+   - [ ] Eksport mesti menggunakan `POST`, bukan pautan
+   > `http_build_query()` mengekod untuk URL, bukan HTML. Bina dari `toQuery($filters)` (penapis bersih yang sama dengan skrin) dan lepaskan dengan `esc(..., 'attr')`.
+
+2. Claude mencadangkan borang penapis `method="post"`. Kenapa pelan meminta `GET`?
+   - [ ] `POST` tidak menyokong input `type="date"`
+   - [ ] `GET` lebih pantas kerana tiada CSRF
+   - [x] Penapis ialah bacaan: URL boleh ditanda buku dan dikongsi, butang *Back* berfungsi, dan query string yang sama dibawa ke pagination dan eksport
+   - [ ] `POST` tidak boleh dilindungi oleh `permission:laporan.view`
+   > Borang yang **mengubah** data memerlukan `POST` + CSRF. Borang yang hanya **membaca** guna `GET` supaya keadaan laporan hidup dalam URL.
+
+---
+
+## S11 — Claude Code: Eksport PDF & Excel Selamat (14:30–16:00)
+
+Slice L3 menambah eksport (§3.1–§3.4). Tiga perkara yang kod AI sering terlepas:
+
+1. **Satu sumber kebenaran.** `exportRows()` memanggil `builder()` yang **sama** dengan skrin. Query eksport yang ditulis semula = skrin 47 rekod, Excel 52 rekod.
+2. **Formula injection.** Nama `=HYPERLINK(...)` atau `=1+1` yang ditulis dengan `setCellValue()`/`fromArray()` menjadi formula apabila fail dibuka. Teks mesti ditulis dengan `setCellValueExplicit(..., DataType::TYPE_STRING)`.
+3. **Had sebelum baca.** `countAllResults(false)` dan `LengthException` sebelum baris pertama dibaca; baris distrim dengan `getUnbufferedRow()`, bukan `getResultArray()`.
+
+PDF ialah HTML: setiap nilai dalam `pdf.php` melalui `esc()`, dan `isRemoteEnabled` kekal `false`.
+
+Lab: [Lab 9.12](./lab.md#lab-912--claude-code-eksport-pdf--excel-selamat-s11)
+
+### 🎯 Kuiz S11
+
+> Jawab selepas Lab 9.12 — jawapan datang daripada fail eksport sebenar anda. Lulus kuiz ini menanda checkpoint Lab 9.12.
+
+1. `full_name` sintetik ditukar kepada `=1+1`, kemudian RPT-02 dieksport ke Excel melalui `setCellValueExplicit(..., DataType::TYPE_STRING)`. Apakah yang dipaparkan dalam sel nama?
+   - [ ] `2`
+   - [x] Teks `=1+1`
+   - [ ] `#NAME?`
+   - [ ] Sel kosong kerana PhpSpreadsheet membuang formula
+   > `TYPE_STRING` menyimpan nilai sebagai teks, jadi Excel tidak menilainya. Dengan `setCellValue()`, PhpSpreadsheet mengesan `=` dan menyimpan formula — sel menunjukkan `2`.
+
+2. Diff Claude untuk `export()` membina query baharu `$db->table('pass_applications')->where('status', $status)->get()`. Kenapa anda menolaknya?
+   - [ ] Kerana `get()` lebih perlahan daripada `getResultArray()`
+   - [ ] Kerana eksport tidak boleh menggunakan Query Builder
+   - [ ] Kerana `status` mesti di-escape secara manual
+   - [x] Kerana eksport mesti melalui `exportRows()` yang memanggil `builder()` yang sama — jika tidak, penapis dan join boleh berbeza dan jumlah fail tidak sama dengan skrin
+   > Prinsip §1 README: HTML, PDF dan Excel memanggil builder yang sama. Query ini juga terlepas penapis tarikh, jabatan dan jenis pas.
+
+---
+
+## S12 — Claude Code: Ujian Laporan & Prestasi (16:00–17:00)
+
+Slice L4 membuktikan nombor (§4.1) dan mengukur query (§4.2). Ujian yang dijana Claude hanya bernilai jika **nilai dijangka datang dari anda**: fixture direka di atas kertas dan dikira dengan tangan sebelum Claude menulis ujian. Ujian yang mengira jangkaan dengan memanggil `ReportService` sendiri sentiasa lulus — termasuk apabila kod salah. Satu mutasi (`<` → `<=` pada `created_at`) membuktikan ujian menangkap pepijat.
+
+Untuk prestasi, tool MCP `db_table` menyenaraikan index sedia ada; `php spark laporan:explain` menunjukkan sama ada query menggunakannya. Index baharu ialah perubahan skema: ia direkod sebagai cadangan dalam `docs/log-keputusan.md` dan dibuat kemudian dalam migration **baharu**, bukan dengan menyunting migration lama.
+
+Lab: [Lab 9.13](./lab.md#lab-913--claude-code-ujian-laporan--prestasi-s12)
+
+### 🎯 Kuiz S12
+
+> Jawab selepas Lab 9.13 — jawapan datang daripada output `db_table` dan `laporan:explain` anda. Lulus kuiz ini menanda checkpoint Lab 9.13.
+
+1. `db_table` menunjukkan `pass_applications` ada index `status` dan `ref_no` sahaja. `laporan:explain pas "" 2026-09-01 2026-09-30` menunjukkan `type = ALL` pada `p`. Kenapa?
+   - [x] Tiada index pada `created_at`, dan index `status` tidak membantu julat `created_at`
+   - [ ] `EXPLAIN` sentiasa menunjukkan `ALL` untuk `LEFT JOIN`
+   - [ ] Index `ref_no` UNIQUE menyekat penggunaan index lain
+   - [ ] Query Builder tidak menghantar `WHERE` kepada MySQL
+   > Penapis utama RPT-02 tanpa status ialah julat tarikh. Tanpa index yang bermula dengan `created_at`, MySQL membaca semua baris.
+
+2. Claude mencadangkan menambah `INDEX(created_at)` dengan menyunting migration `CreatePassApplications` yang sudah dijalankan. Apakah tindakan yang betul?
+   - [ ] Terima, kemudian jalankan `php spark migrate:refresh` di `kkm_latihan`
+   - [ ] Terima, kerana index tidak mengubah data
+   - [x] Tolak: jangan ubah migration yang sudah dijalankan; rekod cadangan dalam `docs/log-keputusan.md` dan, jika diluluskan, tulis migration baharu
+   - [ ] Tambah index terus dalam HeidiSQL supaya tiada migration diperlukan
+   > Migration lama sudah dijalankan di setiap mesin; menyuntingnya tidak memberi kesan tanpa `refresh` (yang memadam data). Perubahan skema melalui migration baharu dan keputusan pemilik sistem.
 
 ---
 

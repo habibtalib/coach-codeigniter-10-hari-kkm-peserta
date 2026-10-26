@@ -97,49 +97,47 @@
 | 10:00–10:30 | S12 | Claude Code: prompting, projek baharu & PRD | Menulis prompt onboarding & pelan dalam mod Plan; mendraf dan menyemak PRD latihan |
 | 10:45–11:45 | S10 | Claude Code: subagent & skill | Subagent baca sahaja `semak-ci4` pada kod Hari 6; skill `migration-ci4` |
 | 11:45–12:30 | S11 | Claude Code: MCP untuk CodeIgniter | Server MCP `ci4-spark` (PHP, baca sahaja); Context7; MySQL/GitLab pilihan |
-| 14:30–15:30 | S1 | Migration & Model permohonan pas | Menulis Model/Entity `PassApplication` & `PassDocument` |
-| 15:30–16:45 | S2 | Controller & View CRUD asas | Membina senarai (skop pemilik) & paparan butiran |
-| 16:45–17:00 | S5, S6 | Lanjutan jika sempat; wrap-up | Lab 7.1b / 7.2b |
+| 14:30–15:45 | S13 | Claude Code: Modul Pas (1) — model, senarai & butiran | Lab 7.10: slice Pas 1 dengan pintu semakan (pelan → diff → ujian → `semak-ci4` → terangkan → commit) |
+| 15:45–17:00 | S14 | Claude Code: Modul Pas (1) — borang & muat naik selamat | Lab 7.11: borang, validasi & muat naik dokumen selamat melalui Claude Code |
 
-> ℹ️ Lab 7.3, 7.4 (dan 7.3b/7.4b) disambung pada pagi Hari 8.
+> ℹ️ Mulai petang Hari 7 hingga Hari 10, modul dibina dengan Claude Code ([`kolaborasi.md`](./docs/kolaborasi.md) §3). Lab manual Pas 7.0–7.4 (dan 7.1b–7.4b) kini kod rujukan untuk perbandingan, bukan wajib.
 
 ## Hari 8 — Modul Pas (Bahagian 2) · [nota](./hari-8/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 7 | — |
-| 09:00–10:00 | S1 | Aliran kelulusan mohon → semak → lulus/tolak | Melaksanakan `PassWorkflowService` dengan `PassStatus::canTransitionTo()` |
-| 10:00–10:30 | S5 | Lanjutan S1: mula semakan pukal | Membina tindakan pukal melalui `startReview()`; kegagalan separa dilaporkan |
-| 10:45–12:00 | S2 | Kawalan akses ikut peranan | Mengkonfigur Shield groups/permissions + filter route + semakan pemilikan |
-| 12:00–12:30 | S6 | Lanjutan S2: lindungi route pukal | Menambah `permission:pas.review`; serangan `fetch()` + matriks 4 peranan |
-| 14:30–15:30 | S3 | Log status/sejarah & ujian fungsian | Memaparkan garis masa `status_logs`; ujian akses positif & negatif |
-| 15:30–16:00 | S7 | Lanjutan S3: ujian fungsian tindakan pukal | Menulis `PassBatchReviewTest` + 2 mutasi |
-| 16:00–16:35 | S4 | Wrap-up Modul Pas | Demo aliran penuh 3 peranan; **M2 siap** |
-| 16:35–17:00 | S8 | Lanjutan S4: demo peranan `admin` | Mendemokan admin; merekod dapatan pemisahan tugas dalam `docs/demo-m2.md` |
+| 09:00–10:30 | S9 | Claude Code: aliran kelulusan Pas (slice 3) | Membina `PassWorkflowService` dengan `PassStatus::canTransitionTo()` melalui gerbang pelan dan diff |
+| 10:45–12:30 | S10 | Claude Code: RBAC Shield & skop akses (slice 4) | Membuktikan filter `permission:`, `authorize()` dan `canView()` dengan `filter_check` dan serangan |
+| 14:30–16:00 | S11 | Claude Code: ujian akses & sejarah status (slice 5) | Garis masa `status_logs`; `PassAccessTest` positif & negatif + 2 mutasi |
+| 16:00–17:00 | S12 | Claude Code: demo M2 & semakan akhir | `semak-ci4` + AI-08, demo 3 peranan, gerbang terang rakan; **M2 siap** |
+
+> ℹ️ Modul dibina dengan Claude Code melalui 7 pintu semakan ([`kolaborasi.md`](./docs/kolaborasi.md) §3); lab manual hari ini ialah kod rujukan, tidak wajib.
 
 ## Hari 9 — Modul Laporan · [nota](./hari-9/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 8 (aliran Pas + RBAC) | — |
-| 09:00–10:00 | **S1** | Reka bentuk laporan (jenis, kriteria carian/filter) | O1, O2 |
-| 10:00–10:30 | **S5** | Lanjutan S1: tempoh pantas & cip filter aktif | O7 |
-| 10:45–12:00 | **S2** | Query aggregate & carian data | O3 |
-| 12:00–12:30 | **S6** | Lanjutan S2: ringkasan status & baris JUMLAH RPT-03 | O8 |
-| 14:30–15:30 | **S3** | Eksport PDF/Excel | O4, O6 |
-| 15:30–16:00 | **S7** | Lanjutan S3: lembaran Ringkasan Excel & ringkasan PDF | O9 |
-| 16:00–16:35 | **S4** | Ujian modul laporan — **M3 siap** | O5, O6 |
-| 16:35–17:00 | **S8** | Lanjutan S4: ujian ringkasan & mutasi; wrap-up | O10 |
+| 09:00–10:30 | **S9** | Claude Code: `ReportService` & penapis whitelist (slice L1) | O11 |
+| 10:45–12:30 | **S10** | Claude Code: paparan senarai & RPT-03 (slice L2) | O12 |
+| 14:30–16:00 | **S11** | Claude Code: eksport PDF & Excel selamat (slice L3) | O13 |
+| 16:00–17:00 | **S12** | Claude Code: ujian laporan & prestasi — **M3 siap** | O14 |
+
+> ℹ️ Modul dibina dengan Claude Code melalui 7 pintu semakan ([`kolaborasi.md`](./docs/kolaborasi.md) §3); lab manual hari ini ialah kod rujukan, tidak wajib.
 
 ## Hari 10 — Modul Statistik & Capstone · [nota](./hari-10/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Recap Hari 9 | — |
-| 09:00–10:30 | S1 | Dashboard statistik (carta, ringkasan merentas modul) | Membina kad KPI + 4 carta Chart.js dari endpoint JSON |
-| 10:45–12:30 | S2 | Aggregate query & caching asas | Menggunakan `cache()->remember()` + invalidasi apabila status berubah |
-| 14:30–16:00 | S3 | Ujian akhir sistem & pembetulan pepijat | Menjalankan skrip UAT; kitaran reproduce → ujian gagal → baiki |
-| 16:00–17:00 | S4 | Demo capstone kepada pemilik sistem & penutup | Mendemokan aliran hujung-ke-hujung; retrospektif |
+| 08:30–09:00 | — | Recap Hari 9 (laporan & eksport) | — |
+| 09:00–10:30 | **S5** | Claude Code: modul Statistik slice 1–2 (KPI, dataset carta, `/statistik/data`) — Lab 10.10 | O1, O7 |
+| 10:45–11:45 | **S5** | Claude Code: modul Statistik slice 3–4 (Chart.js, cache + invalidasi selepas commit) | O2, O3, O7 |
+| 11:45–12:30 | **S3** | UAT manual merentas 4 modul + K1–K10 (Lab 10.3 langkah 1–3 dan 5) | O4 |
+| 14:30–16:00 | **S6** | Claude Code: persediaan capstone (`semak-ci4`, AI-08, AI-09, AI-18, tag) — Lab 10.11 | O5, O8 |
+| 16:00–17:00 | **S7** | Demo capstone (format S4) & refleksi Claude Code — Lab 10.12 | O6, O9 |
+
+> ℹ️ Modul dibina dengan Claude Code melalui 7 pintu semakan ([`kolaborasi.md`](./docs/kolaborasi.md) §3); lab manual hari ini ialah kod rujukan, tidak wajib.
 
 ---
 

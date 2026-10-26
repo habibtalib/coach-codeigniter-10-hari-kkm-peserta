@@ -6,6 +6,10 @@
 
 | Lab | Session | Time | Outcome |
 |-----|---------|------|---------|
+| 9.10 | S9 | 09:00–10:30 | Claude Code slice L1: `permission:laporan.view` routes · `ReportService` whitelisted filters + bound builder |
+| 9.11 | S10 | 10:45–12:30 | Claude Code slice L2: GET form · paginated table · export links from clean filters · RPT-03 |
+| 9.12 | S11 | 14:30–16:00 | Claude Code slice L3: `ExportService` PDF & Excel · limited `exportRows()` · `TYPE_STRING` text |
+| 9.13 | S12 | 16:00–17:00 | `ReportServiceTest` + mutation · `db_table` + `laporan:explain` · index proposal · **M3 done** |
 | 9.1 | S1 | 09:00–10:00 | Spec cards RPT-01..03 · routes · skeleton controller · GET filter form |
 | 9.1b | S5 | 10:00–10:30 | Quick periods (This month/Last month/This year) · active filter chips |
 | 9.2 | S2 | 10:45–12:00 | Full `ReportService` · paginated table for 3 reports |
@@ -14,6 +18,475 @@
 | 9.3b | S7 | 15:30–16:00 | Excel *Ringkasan* sheet (`=SUM()`) · PDF summary table |
 | 9.4 | S4 | 16:00–16:35 | `ReportServiceTest` green · EXPLAIN · **M3 done** |
 | 9.4b | S8 | 16:35–17:00 | 5 summary/JUMLAH/Excel tests · 2 mutations · push to the MR |
+
+> ℹ️ **Labs 9.10–9.13 are today's labs** (Claude Code, branch `feat/laporan-claude`). Labs 9.1–9.4b (manual) are **reference code, not required** — open them only at the *Compare with the reference code* step. Lab 9.5 eSPKP at the end of the file is a separate add-on lab.
+>
+> **Workflow for every Claude Code lab:** (1) SPEC & RPT IDs → (2) slice plan in Plan mode, no code, you edit it → (3) implement in **Manual** mode, you read and approve every diff (*accept edits*, *auto* and *bypass permissions* are forbidden) → (4) verify with `composer test`, the browser and the `ci4-spark` MCP tools `routes`/`filter_check`/`db_table` → (5) `semak-ci4` subagent review, fixes through the same gates → (6) explain gate: 3 key lines in your own words in `docs/nota-claude.md` → (7) small commit on the `feat/laporan-claude` branch.
+
+---
+
+## Lab 9.10 — Claude Code: `ReportService` & Whitelisted Filters (S9)
+
+### 🎯 Objective
+Build slice L1 of the Report Module with Claude Code: the `/laporan/*` routes with `permission:laporan.view`, a thin `ReportController`, and `ReportService` (`normaliseFilters()` with a whitelist, `builder()` with `join()` + `when()` + binding, `applySort()` with a column whitelist). You **write the input → filter result table yourself** first, then **prove** every row with `php spark shell` and the `ci4-spark` MCP tools.
+
+### Prerequisites
+- 🪟 **Windows:** Git Bash is recommended ([`persediaan.md`](../docs/persediaan.md) §5). If your VS Code terminal is PowerShell, pick the **PowerShell** tab on command blocks that have two tabs; blocks without tabs run in both terminals.
+- M1 and M2 merged into `main` (Lab 8.13); `composer test` green.
+- Lab 7.6–7.8: `CLAUDE.md`, the `semak-ci4` subagent, the `ci4-spark` MCP server *connected*.
+- `php spark shell` (Day 3, [`arahan-spark.md`](../docs/arahan-spark.md)) works.
+
+### Steps
+
+0. **Branch & demo data.**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   git switch main && git pull
+   git switch -c feat/laporan-claude
+   ```
+
+   ```powershell tab="PowerShell"
+   git switch main
+   git pull
+   git switch -c feat/laporan-claude
+   ```
+
+   Demo data: follow Lab 9.1 **step 0** only (copy `DemoDataSeeder.php.txt`, add the call in `DatabaseSeeder::run()`, run the seeder). This is data, not a code-writing exercise.
+
+   > 📚 **Reference only:** Labs 9.1–9.4 (manual) are the reference code for the Report Module. You do **not** need to type them. Open them only at the *Compare with the reference code* step or when a Claude diff looks doubtful.
+
+1. **SPEC & filter table (you, 15 minutes).** Read SPEC §2.3 (RPT-01..03 and their filters), §5 (`ReportService`), §6 (report routes) and §10 (*Do not write raw SQL with user input*). Then:
+   - Copy the spec card from Lab 9.1 step 1 into `docs/laporan-spec.md` and fill it in yourself for RPT-01 and RPT-02.
+   - Add this filter target table and fill in the right-hand column **before** opening Claude:
+
+   ```markdown
+   ## Filters — targets (slice L1)
+   | ?query input | Expected $filters result |
+   |--------------|--------------------------|
+   | from=2026-06-01 | |
+   | from=2026-02-31 | |
+   | from=2026-06-30&to=2026-06-01 | |
+   | status=approved | |
+   | status=bogus | |
+   | status[]=approved | |
+   | sort=b.id; DROP TABLE users | |
+   | dir=sideways | |
+   ```
+
+2. **Plan (Plan mode).** Start `claude`, press `Shift+Tab` (or `Alt+M`) until **plan mode**, then paste:
+
+   ```text
+   Plan mode. Do not change any file.
+   Report Module slice L1: routes, skeleton controller and ReportService (filters + builder), no views yet.
+   Read @docs/spesifikasi-sistem.md sections 2.3, 3, 5, 6, 9 and 10, @docs/laporan-spec.md,
+   @app/Enums/BookingStatus.php, @app/Enums/PassStatus.php, @app/Enums/PassType.php and @app/Enums/SlotCategory.php.
+   Propose a numbered plan (maximum 5 steps). Each step: file, method, what changes, how I test it.
+   The plan must include:
+   - A laporan route group (tempahan, pas, penggunaan) with the permission:laporan.view filter.
+   - A thin ReportController: bookings(), passes(), usage() calling service('reportService').
+   - ReportService::normaliseFilters(string $report, array $input): every value goes through a whitelist —
+     enum ::tryFrom(), valid dates (Y-m-d and real), reversed range swapped, positive ids only,
+     arrays refused, sort only keys in the SORTABLE constant (URL key => SQL column), dir only asc/desc.
+     It must satisfy the "Filters — targets" table in @docs/laporan-spec.md.
+   - ReportService::builder(string $report, array $f): Query Builder with join() and when();
+     RPT-01 overlapping range (start_date <= :to AND end_date >= :from, BR-TLK-01);
+     RPT-02 half-open created_at (>= from, < to + 1 day); departments LEFT JOIN.
+   - applySort() that only passes columns from SORTABLE to orderBy(), with id as the second sort.
+   - Register reportService in app/Config/Services.php.
+   No SQL concatenated with input. Do not touch migrations or tests. Ask me first if anything is unclear.
+   ```
+
+   **A good plan contains:** the whitelist before the query (filters are cleaned once, then the builder only accepts clean `$filters`); `where('b.status', $f['status'])` (automatic binding); `SORTABLE` as a constant; different date ranges for RPT-01 (overlap) and RPT-02 (half-open); route and class names exactly as SPEC §5–§6.
+
+   **REJECT the plan if:** `orderBy($this->request->getGet('sort'))` or any input straight into `orderBy()`/`select()`; `where("status = '$status'")`; filter validation in the controller only; `group:` instead of `permission:laporan.view`; a separate query per report without a shared `builder()`; views or export in this slice.
+
+   Edit the plan and copy the final plan into `docs/nota-claude.md` → a new section *Slice L1 — ReportService (Lab 9.10)*.
+
+3. **Implement in Manual mode** (`Shift+Tab` until neither *plan mode* nor *accept edits* shows; *auto*/*bypass* are forbidden), one step at a time:
+
+   ```text
+   Implement step 1 of the plan only. Before every Edit, explain in 2 lines what changes and why.
+   Do not run php spark, composer or git. Stop after step 1.
+   ```
+
+   **A good diff:** `PassStatus::tryFrom($this->str($input, 'status') ?? '')?->value`; `array_key_exists((string) $sort, self::SORTABLE[$report]) ? $sort : $defaultSort`; `->when($f['status'] ?? null, static fn (BaseBuilder $q, string $s) => $q->where('p.status', $s))`; `->orderBy(self::SORTABLE[$report][$f['sort']], $f['dir'])->orderBy('p.id', $f['dir'])`.
+
+   **REJECT the diff if:** raw `$_GET` values reach `builder()`; `$db->query("... {$x} ...")`; `like()` or `orWhere()` without `groupStart()`; manual `escape()` instead of binding; a `<= to` date on `created_at` (the last day is lost); files outside the plan.
+
+4. **Verify (yourself).**
+   - MCP (Plan mode): `Use the ci4-spark filter_check tool for GET /laporan/pas and GET /laporan/tempahan.` Expected: `permission:laporan.view` in *Before Filters*. Compare with `php spark routes` run yourself.
+   - `php spark shell` (🪟 Git Bash: `winpty php spark shell` if the prompt hangs), one line at a time:
+
+     ```php
+     $r = service('reportService');
+     print_r($r->normaliseFilters('pas', ['status' => 'bogus', 'sort' => 'b.id; DROP TABLE users', 'dir' => 'sideways']));
+     print_r($r->normaliseFilters('tempahan', ['from' => '2026-06-30', 'to' => '2026-06-01', 'status' => ['approved']]));
+     echo $r->builder('pas', $r->normaliseFilters('pas', ['status' => 'approved', 'from' => '2026-09-01', 'to' => '2026-09-30']))->getCompiledSelect();
+     ```
+
+     Expected: line 1 → `status` empty, `sort` = `created_at`, `dir` = `desc`; line 2 → `from` `2026-06-01`, `to` `2026-06-30`, `status` empty; line 3 → SQL with a `LEFT JOIN` on `departments`, `'approved'` escaped, `created_at >= '2026-09-01 00:00:00'` and `created_at < '2026-10-01 00:00:00'`. Mark each row of the *Filters — targets* table ✔ or ✘.
+   - `composer test` → green (M1/M2 not broken).
+
+5. **`semak-ci4` review** (Plan mode):
+
+   ```text
+   Use the semak-ci4 subagent to review app/Services/ReportService.php, app/Controllers/Laporan and app/Config/Routes.php. Focus on category 4 (Query Builder, orderBy, whitelist).
+   ```
+
+   Fix real findings through the same loop; record false findings with the reason.
+
+6. **Explain gate.** In `docs/nota-claude.md` (Slice L1), 3 lines in your own words: the `SORTABLE`/`array_key_exists` line for `sort`, one `tryFrom()` line, and the `created_at <` range line. For each one: *what malicious input it blocks, and what happens if it is removed*.
+
+7. **Small commit:**
+
+   ```bash
+   git add app/ docs/
+   git commit -m "RPT: ReportService — penapis whitelist & builder berbinding (slice L1)"
+   ```
+
+8. **Compare with the reference code.** Open [Lab 9.2](#lab-92--reportservice-join-dynamic-filters-aggregate-pagination-s2) step 2 (`normaliseFilters()`), 3–5 (builder and `applySort()`). Record one difference in `docs/nota-claude.md` and whether it is acceptable.
+
+### ✅ Checkpoint
+- [ ] The *Filters — targets* table is filled in by you before the plan, and all eight rows are ✔ in `php spark shell` (Quiz S9).
+- [ ] `filter_check` (MCP) and `php spark routes` show `permission:laporan.view` on all three report routes (Quiz S9).
+- [ ] The RPT-02 `getCompiledSelect()` SQL shows a `LEFT JOIN` and a half-open `created_at` range (Quiz S9).
+- [ ] No user input reaches `orderBy()` without going through `SORTABLE`; the `semak-ci4` findings are recorded (Quiz S9).
+- [ ] The 3-line explain gate is filled in in your own words (Quiz S9).
+- [ ] Commit `RPT: ReportService — penapis whitelist & builder berbinding (slice L1)` in `git log` (Quiz S9).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `php spark shell` hangs in Git Bash | mintty does not support interactive PHP input | `winpty php spark shell`, or use the VS Code PowerShell terminal |
+| `Call to undefined method ... reportService()` | The service is not registered in `app/Config/Services.php` | See the plan step; reject a diff that creates `new ReportService()` in the controller without registration |
+| `php spark routes \| grep laporan` fails in PowerShell | There is no `grep` | `php spark routes \| Select-String laporan` |
+| `filter_check` in Git Bash: route not found | Git Bash turns `/laporan/pas` into a Windows path | `MSYS_NO_PATHCONV=1 php spark filter:check GET /laporan/pas` |
+| `print_r` in the shell prints an empty `Array ( )` | Input key misspelt (`from_date` instead of `from`) | Use the SPEC keys: `from`, `to`, `status`, `pass_type`, `department_id`, `zone_id`, `category`, `sort`, `dir` |
+| `Unknown column 'd.name'` | `departments` is joined with a different alias | Reject the diff; ask Claude to follow the plan aliases (`p`, `u`, `d`) |
+
+### ⭐ Bonus challenge
+- Ask Claude (Plan mode) to find one `?query` input that still passes `normaliseFilters()` but silently produces an empty report. Add that row to the target table and decide yourself what the correct behaviour is.
+
+---
+
+## Lab 9.11 — Claude Code: Report List Views & RPT-03 (S10)
+
+### 🎯 Objective
+Build slice L2: a `method="get"` filter form that keeps its values, a paginated table that carries the same filters, sortable headers (whitelist), export links from the **clean** filters, and the RPT-03 aggregate (`selectCount()` + `groupBy()`). You **test** attribute XSS and access leaks yourself.
+
+### Prerequisites
+- Lab 9.10 done and committed on `feat/laporan-claude`.
+
+### Steps
+
+1. **SPEC (you, 5 minutes).** Read SPEC §2.3 (*paginated HTML view + Export PDF + Export Excel buttons; the same filter is carried through the query string*) and README §1.3–§1.4. In `docs/nota-claude.md`, write a *Slice L2* section with the 4 things you will test: filters kept after submitting, filters kept on page 2, export links carry the same filters, and `pemohon1` is refused.
+
+2. **Plan (Plan mode):**
+
+   ```text
+   Plan mode. Do not change any file.
+   Report Module slice L2: RPT-01/RPT-02 list views and the RPT-03 aggregate.
+   Read @docs/spesifikasi-sistem.md sections 2.3, 3 and 6, @docs/laporan-spec.md,
+   @app/Services/ReportService.php, @app/Controllers/Laporan/ReportController.php and @app/Views/layouts/main.php.
+   Propose a numbered plan (maximum 5 steps). Each step: file, what changes, how I test it.
+   The plan must include:
+   - One view app/Views/laporan/index.php for all three reports: a method="get" form that
+     keeps its values from the CLEAN $filters (not $_GET), every value through esc(..., 'attr').
+   - ReportService::paginate(): the record total + the current page rows from the same builder().
+   - A pager that keeps the filters on every page.
+   - Sortable column headers only for keys in SORTABLE.
+   - Export PDF/Excel links built from toQuery($filters) + export=pdf|xlsx (the real export comes in slice L3).
+   - RPT-03 usageByZone(): selectCount() + groupBy() per zone for the month/year; utilisation percentage calculated in PHP.
+   - A Laporan menu link only if auth()->user()->can('laporan.view') (UX only).
+   Do not change normaliseFilters() or the routes. Ask me first if anything is unclear.
+   ```
+
+   **A good plan contains:** one filter source (`$filters` from `normaliseFilters()`) for the form, the pager, the sort headers and the export links; `esc()` with the `'attr'` context in attributes; `GET` (not `POST`) for the filter form.
+
+   **REJECT the plan if:** the form is `method="post"`; form values or links are built from raw `$_GET`/`$this->request->getGet()`; the RPT-03 aggregate query is written as concatenated raw SQL; `getResultArray()` for all rows without pagination; hiding the menu is the only access control.
+
+   Edit the plan and copy it into `docs/nota-claude.md`.
+
+3. **Implement in Manual mode**, one step at a time:
+
+   ```text
+   Implement step 1 of the plan only. Before every Edit, explain in 2 lines what changes and why.
+   Do not run php spark, composer or git. Stop after step 1.
+   ```
+
+   **A good diff:** `<input type="date" name="from" value="<?= esc($filters['from'] ?? '', 'attr') ?>">`; `href="<?= current_url() . '?' . esc(http_build_query($query + ['export' => 'pdf']), 'attr') ?>"`; `->selectCount('b.id', 'bookings')->groupBy('z.id')`.
+
+   **REJECT the diff if:** `value="<?= $_GET['from'] ?>"` or `value="<?= $filters['from'] ?>"` without `esc()`; `<?= $row['full_name'] ?>` without `esc()`; export links from `$_GET`; sort headers accept a column name from the URL without a `SORTABLE` check.
+
+4. **Verify (yourself)** as `penyemak@latihan.test`:
+   - `/laporan/pas?status=approved` → submit the form with `pass_type`; both values stay in the form; click page 2 → the URL still has `status` and `pass_type`.
+   - Hover the **Eksport Excel** link → the URL carries the same filters + `export=xlsx`.
+   - Attribute XSS: open `/laporan/tempahan?from=%22%3E%3Cb%3Ex` → *View Page Source*: the `from` value is empty (invalid date dropped) and there is no raw `<b>` in the HTML.
+   - Debug Toolbar → *Database*: the report query shows the filter values in `WHERE`, `LIMIT 20`.
+   - `/laporan/penggunaan?year=2026&month=6` → one row per zone with the utilisation percentage.
+   - Log in as `pemohon1@latihan.test` → open `/laporan/pas` → redirect with a Shield message; there is no Laporan menu.
+
+5. **`semak-ci4` review** (Plan mode):
+
+   ```text
+   Use the semak-ci4 subagent to review app/Views/laporan, app/Services/ReportService.php and app/Views/layouts/main.php. Focus on category 1 (esc() and the attr/url contexts).
+   ```
+
+6. **Explain gate.** In `docs/nota-claude.md` (Slice L2), 3 lines in your own words: the `esc(..., 'attr')` line in the form, the export link line built from `$query`, and the RPT-03 `groupBy()` line.
+
+7. **Small commit:**
+
+   ```bash
+   git add app/ docs/
+   git commit -m "RPT: paparan senarai berpagination & RPT-03 aggregate (slice L2)"
+   ```
+
+8. **Compare with the reference code.** Open [Lab 9.1](#lab-91--report-design--get-filter-form-s1) step 4 (form) and [Lab 9.2](#lab-92--reportservice-join-dynamic-filters-aggregate-pagination-s2) steps 6, 7 and 9 (pagination, RPT-03, table). Record one difference in `docs/nota-claude.md`.
+
+### ✅ Checkpoint
+- [ ] Filters are kept after submitting and on page 2; export links carry the same filters (Quiz S10).
+- [ ] `?from=%22%3E%3Cb%3Ex` produces no raw HTML in *View Page Source* (Quiz S10).
+- [ ] RPT-03 June 2026 shows one row per zone with the utilisation percentage (Quiz S10).
+- [ ] `pemohon1` is refused on the server for `/laporan/pas`; the Laporan menu is not shown (Quiz S10).
+- [ ] The 3-line explain gate is filled in; the `semak-ci4` findings are recorded (Quiz S10).
+- [ ] Commit `RPT: paparan senarai berpagination & RPT-03 aggregate (slice L2)` in `git log` (Quiz S10).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| Page 2 loses the filters | The pager is built without the current query string | Reject the diff; ask for a pager that carries `toQuery($filters)` |
+| The `type="date"` input is empty even though the URL has `from` | The format is not `Y-m-d` (e.g. `01/06/2026` from Windows language settings) | The `value` must be `Y-m-d`; the browser handles the local display |
+| RPT-03 percentage over 100 % | Booking days counted beyond the selected month | Ask Claude (Plan mode) to explain the formula; compare with README §1.2 (Zone A June = 25.0 %) |
+| `Undefined variable $query` in the view | The controller does not pass `toQuery($filters)` | See the plan step; accept a diff that adds `'query' => $service->toQuery($filters)` |
+| No Debug Toolbar | `CI_ENVIRONMENT` is not `development` | `.env`: `CI_ENVIRONMENT = development` (do not commit `.env`) |
+
+### ⭐ Bonus challenge
+- Ask Claude (Plan mode) to compare the number of queries in the Debug Toolbar for RPT-01 page 1 and page 2. Explain yourself why `countAllResults(false)` is used before `limit()`.
+
+---
+
+## Lab 9.12 — Claude Code: Safe PDF & Excel Export (S11)
+
+### 🎯 Objective
+Build slice L3: `ExportService::pdf()` (Dompdf) and `xlsx()` (PhpSpreadsheet) from `ReportService::exportRows()`, which calls the **same** `builder()` as the screen, with a row limit (`LengthException`), `esc()` in the PDF view, and Excel text written explicitly as strings (safe from formula injection). You **prove** screen = PDF = Excel and that `=1+1` stays text.
+
+### Prerequisites
+- Lab 9.11 done and committed.
+- `ext-zip` and `ext-gd` enabled (`php -m`).
+
+### Steps
+
+1. **Libraries (yourself, not Claude).**
+
+   ```bash
+   composer require dompdf/dompdf phpoffice/phpspreadsheet
+   composer show dompdf/dompdf phpoffice/phpspreadsheet
+   ```
+
+   Expected: both packages listed with a version. Commit `composer.json` and `composer.lock` only (`vendor/` is in `.gitignore`).
+
+2. **SPEC & risks (you, 5 minutes).** Read SPEC §1 (Dompdf, PhpSpreadsheet), §2.3 and README §3.1–§3.4. In `docs/nota-claude.md` → *Slice L3*, write the 4 risks the plan must handle: Excel formula injection, HTML in names (PDF), row/memory limits, export filters that differ from the screen.
+
+3. **Plan (Plan mode):**
+
+   ```text
+   Plan mode. Do not change any file.
+   Report Module slice L3: PDF and Excel export.
+   Read @docs/spesifikasi-sistem.md sections 1, 2.3, 5 and 9, @app/Services/ReportService.php,
+   @app/Controllers/Laporan/ReportController.php and @app/Views/laporan/index.php.
+   Propose a numbered plan (maximum 5 steps). Each step: file, what changes, how I test it.
+   The plan must include:
+   - ReportService::exportRows(string $report, array $filters, string $format): use the SAME builder()
+     as the screen; countAllResults(false) first; LengthException if over EXPORT_LIMIT
+     (pdf 2000, xlsx 10000); rows read one at a time (getUnbufferedRow), not getResultArray().
+   - app/Services/ExportService.php: pdf() with Dompdf (A4 landscape, isRemoteEnabled false, DejaVu Sans font)
+     and xlsx() with PhpSpreadsheet (bold header, auto width, frozen row).
+   - In xlsx(): numbers written as numbers; ALL text written with
+     setCellValueExplicit(..., DataType::TYPE_STRING) so text starting with =, +, - or @ does not become a formula.
+   - View app/Views/laporan/pdf.php without the Bootstrap layout; every value through esc().
+   - ReportController: ?export=pdf|xlsx -> exportRows() -> ExportService -> download() with the file name
+     laporan-<report>-YmdHis.<ext>; LengthException -> redirect to the same URL without export, error flash.
+   - Register exportService in app/Config/Services.php.
+   Do not change normaliseFilters(), builder() or the routes. Ask me first if anything is unclear.
+   ```
+
+   **A good plan contains:** export through the same `builder()` (one source of truth); the limit check **before** reading rows; `TYPE_STRING` for text; `esc()` in `pdf.php`; export permission coming from the same route filter (`permission:laporan.view`).
+
+   **REJECT the plan if:** the export query is rewritten (`$db->table('pass_applications')->...`); `fromArray()` for user data (`=...` values become formulas); `isRemoteEnabled` `true`; temporary files in `public/`; a new export route without a filter; Claude proposes running `composer require` itself.
+
+   Edit the plan and copy it into `docs/nota-claude.md`.
+
+4. **Implement in Manual mode**, one step at a time:
+
+   ```text
+   Implement step 1 of the plan only. Before every Edit, explain in 2 lines what changes and why.
+   Do not run composer, php spark or git. Stop after step 1.
+   ```
+
+   **A good diff:** `$sheet->setCellValueExplicit($coord, (string) $value, DataType::TYPE_STRING);` in the row loop; `if ($total > $limit) { throw new LengthException(...); }` before `streamRows()`; `<td><?= esc($row[$key]) ?></td>` in `pdf.php`; `$options->set('isRemoteEnabled', false);`.
+
+   **REJECT the diff if:** `$sheet->fromArray($rows)` for the data rows; `setCellValue()` for user text; `<?= $row[$key] ?>` without `esc()` in the PDF; `ini_set('memory_limit', '-1')` as a "fix"; a leftover `echo` or `var_dump` (corrupts the binary file).
+
+5. **Verify (yourself)** as `penyemak@latihan.test`:
+   - RPT-01 `status=approved`: screen *N* records → PDF "Jumlah rekod: *N*" → Excel *N* data rows. **Three equal numbers.**
+   - Formula injection: note the original `full_name` of `pemohon2`, change it to `=1+1` (Lab 9.3 step 8, the `mysql … UPDATE users SET full_name = '=1+1' …` command), export RPT-02 to Excel → the name cell shows the text `=1+1`, not `2`. Restore the original `full_name`.
+   - File name: `laporan-pas-<tarikh>-<masa>.xlsx`.
+   - `pemohon1@latihan.test` opens `/laporan/pas?export=xlsx` directly → refused (Shield redirect), no file downloaded.
+   - `composer test` → green.
+
+6. **`semak-ci4` review** (Plan mode), then the AI-06-style export review from Lab 9.3 step 8 (paste the same prompt):
+
+   ```text
+   Use the semak-ci4 subagent to review app/Services/ExportService.php, app/Services/ReportService.php, app/Views/laporan/pdf.php and app/Controllers/Laporan/ReportController.php.
+   ```
+
+7. **Explain gate.** In `docs/nota-claude.md` (Slice L3), 3 lines in your own words: the `setCellValueExplicit(..., TYPE_STRING)` line, the `EXPORT_LIMIT` check line, and the `esc()` line in `pdf.php`.
+
+8. **Small commit:**
+
+   ```bash
+   git add app/ composer.json composer.lock docs/
+   git commit -m "RPT: eksport PDF & Excel selamat dari builder yang sama (slice L3)"
+   ```
+
+9. **Compare with the reference code.** Open [Lab 9.3](#lab-93--pdf-dompdf--excel-phpspreadsheet-export-s3) step 2 (`ExportService`), 4 (`exportRows()`) and 5 (controller). Record one difference in `docs/nota-claude.md`.
+
+### ✅ Checkpoint
+- [ ] The screen, the PDF and Excel show the same record total for RPT-01 `status=approved` (Quiz S11).
+- [ ] The synthetic name `=1+1` stays text in Excel; the original `full_name` is restored (Quiz S11).
+- [ ] `pemohon1` is refused for `/laporan/pas?export=xlsx` (Quiz S11).
+- [ ] An export over the limit shows an error flash, not a corrupt file or a memory error (Quiz S11).
+- [ ] The 3-line explain gate is filled in; the `semak-ci4` findings are recorded (Quiz S11).
+- [ ] Commit `RPT: eksport PDF & Excel selamat dari builder yang sama (slice L3)` in `git log` (Quiz S11).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `ZipArchive not found` during `.xlsx` | `ext-zip` not enabled in Laragon | `php.ini`: `extension=zip`; restart Laragon |
+| Excel: *We found a problem with some content* | Extra output (space after `?>`, BOM, `echo`) mixed with the binary | Remove the closing `?>` in pure PHP files; save as UTF-8 **without BOM** (VS Code: *Save with Encoding*) |
+| `mysql` asks for a password but no prompt appears in Git Bash | mintty | `winpty mysql …`, or Laragon's HeidiSQL |
+| `?` characters in the PDF | The Helvetica font has no Unicode glyphs | `setDefaultFont('DejaVu Sans')` in the plan; reject a diff that removes the font |
+| `composer require` fails: `ext-gd` required | `extension=gd` is commented out in `php.ini` | Enable `gd`; `php -m` in the same terminal |
+| The downloaded file is named `pas` with no extension | `download()` without the full file name | Name `laporan-<laporan>-YmdHis.<ext>` as in the plan |
+
+### ⭐ Bonus challenge
+- Ask Claude (Plan mode) to explain why `exportRows()` is **not** a generator function even though it returns a generator. Check the answer by reading the comment in Lab 9.3 step 4.
+
+---
+
+## Lab 9.13 — Claude Code: Report Tests & Performance (S12)
+
+### 🎯 Objective
+Close the Report Module: `tests/Services/ReportServiceTest.php` that proves *report total = SQL total* from a fixture **you calculate by hand**, one mutation that fails a test, an `EXPLAIN` analysis (the `laporan:explain` command) and the existing indexes through the `db_table` MCP tool, and an index proposal that is recorded (not implemented) — **M3 done**.
+
+### Prerequisites
+- Labs 9.10–9.12 committed; `.env` `database.tests.*` → MySQL `kkm_latihan_test`.
+
+### Steps
+
+1. **Fixture on paper (you, 10 minutes).** Design 5 bookings (slot, dates, status) and 3 pass applications (`created_at`, status). Calculate by hand and write in `docs/nota-claude.md` → *Slice L4*: how many are `approved`; how many overlap June 2026; how many passes fall in September 2026 including the last day; the Zone A utilisation percentage for June.
+
+2. **Plan (Plan mode):**
+
+   ```text
+   Plan mode. Do not change any file.
+   Report Module slice L4: ReportService tests and performance analysis.
+   Read @app/Services/ReportService.php, @docs/spesifikasi-sistem.md sections 3 and 9,
+   and the Slice L4 fixture and hand answers in @docs/nota-claude.md.
+   Propose a numbered plan (maximum 4 steps). Each step: file, what changes, how I test it.
+   The plan must include:
+   - tests/Services/ReportServiceTest.php: DatabaseTestTrait, $migrate = true, $refresh = true,
+     $namespace = null; the fixture EXACTLY as in my notes, with fixed dates (not date('Y-m-d')).
+   - At least 7 tests: RPT-01 without filters = table total; RPT-01 status = SQL COUNT(*);
+     overlapping range; sort outside the whitelist falls back to the default; export total = HTML total;
+     RPT-02 last day of the range not lost; RPT-03 utilisation rate June 2026.
+   - Expected values taken from my hand answers, not recalculated by the code under test.
+   - app/Commands/ReportExplain.php (laporan:explain <tempahan|pas> [status] [from] [to]) that prints
+     the SQL from builder()->getCompiledSelect() and EXPLAIN FORMAT=TRADITIONAL.
+   Do not change ReportService to make the tests pass. Do not add migrations or indexes.
+   Ask me first if anything is unclear.
+   ```
+
+   **A good plan contains:** expected values from your notes (e.g. `assertSame(3, $total)`); a comparison with a direct SQL `COUNT(*)` through `$this->db->table(...)->countAllResults()`; fixed June/September 2026 dates.
+
+   **REJECT the plan if:** the tests calculate expected values by calling `ReportService` itself; the tests use SQLite; the fixture depends on `kkm_latihan` data; a new index migration; application code is changed so the tests pass.
+
+3. **Implement in Manual mode**, one step at a time:
+
+   ```text
+   Implement step 1 of the plan only. Before every Edit, explain in 2 lines what changes and why.
+   Do not run composer, php spark or git. Stop after step 1.
+   ```
+
+   **REJECT the diff if:** `assertGreaterThan(0, ...)` replaces an exact number; `markTestSkipped()`; expected values differ from your hand answers without explanation (discuss first: who is wrong, you or the code?).
+
+4. **Verify (yourself).**
+
+   ```bash
+   composer test -- tests/Services/ReportServiceTest.php --testdox
+   ```
+
+   Expected: at least 7 `✔` lines and `OK (N tests, M assertions)`.
+
+   **Mutation:** in the RPT-02 `builder()`, change `'p.created_at <'` to `'p.created_at <='` yourself and remove the `+ 1 hari` (as in Lab 9.4 step 5). Run again → the *last day of the range* test **must fail**. Restore with `git restore app/Services/ReportService.php` → green.
+
+5. **Performance (MCP + EXPLAIN).**
+   - Plan mode: `Use the ci4-spark db_table tool for pass_applications and slot_bookings. List the indexes of each table.` Expected: `pass_applications` has the `status` and `ref_no` (UNIQUE) indexes but **no** index on `created_at`; `slot_bookings` has the (`slot_id`,`start_date`,`end_date`) and `status` indexes. Compare with `php spark db:table pass_applications --metadata`.
+   - Terminal:
+
+     ```bash
+     php spark laporan:explain tempahan approved 2026-06-01 2026-06-30
+     php spark laporan:explain pas "" 2026-09-01 2026-09-30
+     ```
+
+     Expected: RPT-01 with `status` → table `b` uses an index (`key` not empty); RPT-02 with dates only → table `p` `type = ALL`. Record `type`, `key`, `rows` in `docs/laporan-spec.md` → *Prestasi*.
+   - Plan mode: paste the EXPLAIN output and ask Claude to explain `type = ALL`, a suitable index and its cost on `INSERT`. The `INDEX(created_at)` proposal is recorded in `docs/log-keputusan.md` as a **proposal to the system owner** — no migration today.
+
+6. **Final review.** `semak-ci4` on `app/Services`, `app/Controllers/Laporan`, `app/Views/laporan` and `app/Commands/ReportExplain.php`; then AI-08 (DoD [`kolaborasi.md`](../docs/kolaborasi.md) §2) in Plan mode as in Lab 8.13 step 2. Fix every real "Not met" with a `FIX:` commit.
+
+7. **Explain gate.** In `docs/nota-claude.md` (Slice L4), 3 lines in your own words: one `assertSame()` with your hand value, the `getCompiledSelect()` line in `ReportExplain`, and one EXPLAIN output line (`type = ALL`). Then a partner picks 1 random line from `git diff main...feat/laporan-claude -- app/` for you to explain without Claude.
+
+8. **Commit & MR:**
+
+   ```bash tab="Git Bash / macOS / Linux"
+   git add app/ tests/ docs/
+   git commit -m "RPT: ReportServiceTest, laporan:explain & cadangan index (slice L4)"
+   git push -u origin feat/laporan-claude
+   ```
+
+   ```powershell tab="PowerShell"
+   git add app/ tests/ docs/
+   git commit -m "RPT: ReportServiceTest, laporan:explain & cadangan index (slice L4)"
+   git push -u origin feat/laporan-claude
+   ```
+
+   Open the MR `feat/laporan-claude` → `main`, answer one comment, then merge — **M3 done**.
+
+9. **Compare with the reference code.** Open [Lab 9.4](#lab-94--test-report-total--sql-total--explain-s4) steps 2–3 (fixture and 7 tests) and 6 (`ReportExplain`). Find one reference test that is missing from your tests and record whether it should be added.
+
+### ✅ Checkpoint
+- [ ] The fixture hand answers are written before the plan; `ReportServiceTest` is green with at least 7 tests that use those hand numbers (Quiz S12).
+- [ ] The `<=` mutation fails the last-day test; the code is restored (Quiz S12).
+- [ ] The `db_table` (MCP) index list matches `php spark db:table --metadata`; RPT-02 with dates only shows `type = ALL` on `p` (Quiz S12).
+- [ ] The index proposal is recorded in `docs/log-keputusan.md`, no new migration (Quiz S12).
+- [ ] The MR `feat/laporan-claude` → `main` is merged after the final review and the explain gate — **M3 done** (Quiz S12).
+
+### 🧯 Troubleshooting
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `no such function: DATEDIFF` | The `tests` DB group is still SQLite | `.env`: `database.tests.*` → MySQL `kkm_latihan_test` |
+| EXPLAIN prints a tree `-> Nested loop …` | MySQL 9 changed the default format | `EXPLAIN FORMAT=TRADITIONAL`; MariaDB: remove `FORMAT=TRADITIONAL` |
+| `laporan:explain pas "" 2026-09-01 …` in PowerShell: the date goes in as the status | PowerShell drops the empty `""` | Use `'""'` or `--% pas "" 2026-09-01 2026-09-30` |
+| Tests pass on your laptop, fail on your partner's | The fixture depends on `date('Y-m-d')` | Fixed June/September 2026 dates |
+| `Duplicate entry 'WXX 9001'` | Data left over from a previous test | `protected $refresh = true;` |
+| `db_table` MCP: `Table 'pass_applications' not found` | `.env` points to another database | Check `database.default.database = kkm_latihan`; `/mcp` → *reconnect* |
+
+### ⭐ Bonus challenge
+- Ask Claude (Plan mode) to draft a **new** migration `AddCreatedAtIndexToPassApplications` without writing the file. Compare it with the `migration-ci4` skill (Lab 7.7): two rules it follows, one it does not.
 
 ---
 

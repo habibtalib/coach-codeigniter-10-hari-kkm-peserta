@@ -22,26 +22,26 @@ Di akhir hari ini, peserta boleh:
 | O8 | **Menguatkuasa** `permission:pas.review` pada route pukal dan **membuktikan** dua lapisan dengan serangan `fetch()` dari Console untuk 4 peranan | S6 | [Lab 8.2b](./lab.md#lab-82b--lindungi-route-pukal-filter-permission--matriks-peranan-s6); UT-PAS-27..30 dalam `docs/ujian-manual-pas.md` |
 | O9 | **Menulis** `PassBatchReviewTest` (5 ujian: flash, kegagalan separa, negatif respons + DB) dan **membuktikannya** dengan 2 mutasi | S7 | [Lab 8.3b](./lab.md#lab-83b--ujian-fungsian-tindakan-pukal-s7); `OK (5 tests, …)` + jadual mutasi |
 | O10 | **Mendemokan** peranan `admin` (mohon → semak pukal → lulus sendiri) dan **merekod** dapatan pemisahan tugas untuk pemilik sistem | S8 | [Lab 8.4b](./lab.md#lab-84b--demo-peranan-keempat-admin--dapatan-pemisahan-tugas-s8); `docs/demo-m2.md` di `main` |
+| O11 | **Membina** aliran kelulusan (`startReview`/`approve`/`reject` melalui `transition()` dan `canTransitionTo()`) dengan Claude Code, dan **menolak** diff yang melanggar BR-PAS-01/03/05 | S9 | [Lab 8.10](./lab.md#lab-810--claude-code-aliran-kelulusan-pas-s9); pelan disunting + 3 baris diterangkan dalam `docs/nota-claude.md` |
+| O12 | **Membuktikan** tiga lapisan akses (filter `permission:`, `authorize()`, `canView()`) dalam kod yang dijana Claude dengan `filter_check` MCP, `php spark filter:check` dan serangan DevTools | S10 | [Lab 8.11](./lab.md#lab-811--claude-code-rbac-shield--skop-akses-s10); redirect, 403 dan 404 pada peranan yang betul |
+| O13 | **Menulis** matriks peranan × tindakan sendiri dan **menguji** `PassAccessTest` yang dijana Claude dengan 2 mutasi | S11 | [Lab 8.12](./lab.md#lab-812--claude-code-ujian-akses--sejarah-status-s11); setiap mutasi menggagalkan ujian |
+| O14 | **Mendemokan** M2 dan **menerangkan** 3 baris rawak dari diff tanpa Claude sebelum merge | S12 | [Lab 8.13](./lab.md#lab-813--claude-code-demo-m2--semakan-akhir-s12); MR `feat/pas-claude` di-merge |
 
 ---
 
 ## 📅 Jadual Hari Ini
 
-> ℹ️ Hari 8 bermula dengan menyiapkan Lab 7.3 dan 7.4 (dan 7.3b/7.4b) dari Hari 7 (disambung dari pagi Hari 7 yang digunakan untuk Claude Code); kemudian teruskan jadual di bawah.
+> ℹ️ **Jadual Hari 8 (dikemas kini):** mulai hari ini modul dibina **dengan Claude Code** (S9–S12, Lab 8.10–8.13). Mula dengan menyambung Pas slice 1–2 dari Hari 7 (Lab 7.10/7.11) jika belum siap. Lab manual (S1–S8, Lab 8.0–8.4b) dan Lab 7.3/7.4 ialah **kod rujukan, tidak wajib**: setiap lab baharu ada langkah *Banding dengan kod rujukan* yang menunjuk ke bahagian manual yang sepadan.
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Recap Hari 7 | — |
-| 09:00–10:00 | S1 | Aliran kelulusan mohon → semak → lulus/tolak | Melaksanakan `PassWorkflowService` dengan `PassStatus::canTransitionTo()` |
-| 10:00–10:30 | S5 | Lanjutan S1: mula semakan pukal | Membina tindakan pukal melalui `startReview()`; kegagalan separa dilaporkan |
+| 09:00–10:30 | S9 | Claude Code: aliran kelulusan Pas (slice 3) | Membina `PassWorkflowService` dengan `PassStatus::canTransitionTo()` melalui gerbang pelan dan diff |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:00 | S2 | Kawalan akses ikut peranan | Mengkonfigur Shield groups/permissions + filter route + semakan pemilikan |
-| 12:00–12:30 | S6 | Lanjutan S2: lindungi route pukal | Menambah `permission:pas.review`; serangan `fetch()` + matriks 4 peranan |
+| 10:45–12:30 | S10 | Claude Code: RBAC Shield & skop akses (slice 4) | Membuktikan filter `permission:`, `authorize()` dan `canView()` dengan `filter_check` dan serangan |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–15:30 | S3 | Log status/sejarah & ujian fungsian | Memaparkan garis masa `status_logs`; ujian akses positif & negatif |
-| 15:30–16:00 | S7 | Lanjutan S3: ujian fungsian tindakan pukal | Menulis `PassBatchReviewTest` + 2 mutasi |
-| 16:00–16:35 | S4 | Wrap-up Modul Pas | Demo aliran penuh 3 peranan; **M2 siap** |
-| 16:35–17:00 | S8 | Lanjutan S4: demo peranan `admin` | Mendemokan admin; merekod dapatan pemisahan tugas dalam `docs/demo-m2.md` |
+| 14:30–16:00 | S11 | Claude Code: ujian akses & sejarah status (slice 5) | Garis masa `status_logs`; `PassAccessTest` positif & negatif + 2 mutasi |
+| 16:00–17:00 | S12 | Claude Code: demo M2 & semakan akhir | `semak-ci4` + AI-08, demo 3 peranan, gerbang terang rakan; **M2 siap** |
 
 ---
 
@@ -69,6 +69,143 @@ flowchart LR
     U((Pengguna)) --> L1 --> L2 --> DB[(MySQL)]
     U -. GET butiran/dokumen .-> L3
 ```
+
+---
+
+## S9 — Claude Code: Aliran Kelulusan Pas (09:00–10:30)
+
+Mulai hari ini, modul dibina **bersama Claude Code**: Claude menulis kod pelaksanaan, anda memandu dan meluluskan. Setiap slice melalui tujuh gerbang yang sama:
+
+| # | Gerbang | Siapa | Bukti |
+|---|---------|-------|-------|
+| 1 | SPEC & BR | Anda | ID BR dan bahagian SPEC dalam `docs/nota-claude.md` |
+| 2 | Pelan slice (mod Plan, tiada kod) | Claude mencadang, anda menyunting | Pelan akhir dalam `docs/nota-claude.md` |
+| 3 | Laksana (mod Manual) | Claude menulis, anda membaca **setiap** diff | Yes/No pada setiap `Edit`; *accept edits*/*auto*/*bypass* dilarang |
+| 4 | Sahkan | Anda | `composer test`, pelayar, tool MCP `ci4-spark` `routes`/`filter_check`/`db_table` |
+| 5 | Semakan `semak-ci4` | Subagent, kemudian anda | Dapatan sahih dibaiki melalui gerbang 3 |
+| 6 | Gerbang terang | Anda | 3 baris utama dengan ayat sendiri dalam `docs/nota-claude.md` |
+| 7 | Commit kecil | Anda | Satu commit di `feat/pas-claude` |
+
+Slice 3 ialah aliran kelulusan. Kandungan teknikal sama seperti S1 di bawah (§1.1–§1.4): satu `transition()` berkunci `FOR UPDATE`, `PassStatus::canTransitionTo()` (BR-PAS-01), catatan wajib ≥ 10 aksara (BR-PAS-03), dan `status_logs` dalam transaksi yang sama (BR-PAS-05). Bezanya, tugas anda kini ialah **menilai** kod, bukan menaipnya:
+
+| Dalam diff Claude, cari | Tolak jika anda nampak |
+|-------------------------|------------------------|
+| `SELECT … FOR UPDATE` selepas `transBegin()` | `canTransitionTo()` disemak sebelum transaksi |
+| `canTransitionTo()` membaling `DomainException` | `status` diambil dari `getPost()` |
+| `record()` dalam `try` yang sama, sebelum `transCommit()` | `record()` selepas commit atau dalam controller |
+| `approved_by/at` dalam `approve()` sahaja | `approved_at` ditetapkan semasa `reject()` |
+
+Lab: [Lab 8.10](./lab.md#lab-810--claude-code-aliran-kelulusan-pas-s9)
+
+### 🎯 Kuiz S9
+
+> Jawab selepas Lab 8.10 — jawapan datang daripada diff dan pelan sebenar anda. Lulus kuiz ini menanda checkpoint Lab 8.10.
+
+1. Claude mencadangkan diff ini dalam `ReviewController::approve()`: `$model->update($id, ['status' => $this->request->getPost('status')]);`. Apakah tindakan anda di gerbang diff?
+   - [ ] Terima, kerana route sudah dilindungi filter `group:reviewer,approver,admin`
+   - [x] Tolak: status datang dari input pengguna dan memintas `transition()`, jadi `canTransitionTo()` dan `status_logs` tidak berjalan
+   - [ ] Terima, kemudian tambah ujian untuk menyemak status selepas itu
+   - [ ] Tolak hanya kerana kod itu menggunakan sintaks CI3
+   > Filter route menyemak **siapa**, bukan **apa**. Status mesti datang dari enum dalam service melalui satu pintu `transition()`. Ini bukan sintaks CI3 — ia CI4 yang sah tetapi tidak selamat.
+
+2. Apakah susunan yang betul dalam `transition()` yang dijana Claude?
+   - [ ] `canTransitionTo()` → `transBegin()` → `update()` → `transCommit()` → `record()`
+   - [ ] `update()` → `record()` → `canTransitionTo()` → `transCommit()`
+   - [x] `transBegin()` → `SELECT … FOR UPDATE` → `canTransitionTo()` → `update()` → `record()` → `transCommit()`
+   - [ ] `transBegin()` → `update()` → `transCommit()` → `SELECT … FOR UPDATE` → `record()`
+   > Status mesti dibaca **selepas** kunci diperoleh (jika tidak, dua pelulus serentak sama-sama lulus), dan log mesti ditulis sebelum commit supaya tiada perubahan status tanpa log (BR-PAS-05).
+
+---
+
+## S10 — Claude Code: RBAC Shield & Skop Akses (10:45–12:30)
+
+Slice 4 menutup tiga lapisan pertahanan dari S2 (§2.1–§2.5): **filter route** (`permission:` per tindakan), **`authorize()`** dalam service, dan **semakan pemilikan** `canView()` (BR-PAS-04). Claude menulis kod; anda membuktikan setiap lapisan dengan alat yang bukan Claude:
+
+| Lapisan | Kod yang Claude tulis | Cara anda membuktikan |
+|---------|-----------------------|-----------------------|
+| 1 — filter route | `'filter' => 'permission:pas.approve'` pada `/approve` | Tool MCP `filter_check` **dan** `php spark filter:check` sendiri |
+| 2 — service | `authorize()` → `$actor->can(...)` → `PermissionException` | Buang filter sementara → 403, kemudian pulihkan |
+| 3 — pemilikan | `canView()` dalam `show()` dan muat turun dokumen | `pemohon2` buka URL `pemohon1` → 404 |
+
+Dua perkara yang sering salah dalam kod AI: `inGroup('approver')` menggantikan `can('pas.approve')` (admin dengan `pas.*` disekat), dan 403 untuk bukan pemilik (membocorkan bahawa ID itu wujud). SPEC §4 ialah satu-satunya sumber `$matrix` — jika Claude mencadangkan permission yang tiada dalam SPEC, tolak.
+
+Lab: [Lab 8.11](./lab.md#lab-811--claude-code-rbac-shield--skop-akses-s10)
+
+### 🎯 Kuiz S10
+
+> Jawab selepas Lab 8.11 — jawapan datang daripada output `filter_check` dan serangan anda. Lulus kuiz ini menanda checkpoint Lab 8.11.
+
+1. Selepas Claude selesai, tool MCP `filter_check` untuk `POST /pas/semakan/1/approve` menunjukkan *Before Filters* `csrf` dan `group:reviewer,approver,admin` sahaja. Apakah maksudnya?
+   - [ ] Betul — `group:` sudah cukup kerana `authorize()` ada dalam service
+   - [ ] Tool MCP rosak; percaya diff Claude
+   - [ ] `csrf` menggantikan keperluan `permission:`
+   - [x] Lapisan 1 tiada: penyemak lepas filter ke controller, dan hanya `authorize()` menghalangnya — slice belum siap
+   > Pertahanan berlapis bermaksud kedua-dua lapisan mesti wujud. Sahkan dengan `php spark filter:check` sendiri; kemudian minta Claude menambah `permission:pas.approve` melalui gerbang diff.
+
+2. `pemohon2` membuka `/pas/permohonan/<id>` milik `pemohon1`. Apakah respons yang betul mengikut BR-PAS-04 dan pelan slice 4?
+   - [x] 404, daripada semakan `canView()` di server
+   - [ ] 200, tetapi butang tindakan disembunyikan
+   - [ ] 403 — Akses Ditolak, supaya pemohon tahu dia tiada hak
+   - [ ] Redirect ke `/` oleh filter Shield
+   > Menyembunyikan butang ialah UX sahaja. 404 tidak mendedahkan bahawa ID itu wujud. Filter Shield tidak tahu pemilik rekod, jadi semakan ini mesti dalam controller/service.
+
+---
+
+## S11 — Claude Code: Ujian Akses & Sejarah Status (14:30–16:00)
+
+Slice 5 menambah garis masa `status_logs` (§3.1) dan `PassAccessTest` (§3.2–§3.3). Claude boleh menulis ujian dengan cepat — dan itulah risikonya: ujian yang hijau tidak semestinya menguji apa-apa. Tiga peraturan untuk ujian yang dijana AI:
+
+1. **Matriks dahulu, oleh anda.** Anda menulis jadual peranan × tindakan (hasil + keadaan DB) sebelum Claude menulis satu ujian pun. Ujian mesti sepadan dengan sel, bukan sebaliknya.
+2. **Ujian negatif = respons + DB.** `assertRedirect()` sahaja terlepas pepijat "status sudah berubah sebelum redirect". Setiap ujian negatif juga menyemak `seeInDatabase` (status kekal) dan `dontSeeInDatabase('status_logs', …)`.
+3. **Mutasi membuktikan.** Anda sendiri merosakkan kod (buang filter, `canView()` pulang `true`). Jika tiada ujian gagal, ujian itu belum menguji.
+
+Garis masa juga diperiksa dari sudut keselamatan: `remarks` ialah input penyemak/pelulus yang dibaca pemohon, jadi setiap nilai dalam partial mesti melalui `esc()`.
+
+Lab: [Lab 8.12](./lab.md#lab-812--claude-code-ujian-akses--sejarah-status-s11)
+
+### 🎯 Kuiz S11
+
+> Jawab selepas Lab 8.12 — jawapan datang daripada ujian dan mutasi sebenar anda. Lulus kuiz ini menanda checkpoint Lab 8.12.
+
+1. Claude menjana `testPenyemakTidakBolehLuluskan` yang hanya memanggil `assertRedirect()`. Apakah yang anda minta ditambah?
+   - [ ] `assertTrue(true)` supaya ujian tidak kosong
+   - [x] `seeInDatabase` untuk status kekal `under_review` dan `dontSeeInDatabase` untuk tiada log `to_status = approved`
+   - [ ] `markTestSkipped()` sehingga Lab 8.13
+   - [ ] Tiada — redirect sudah membuktikan penyemak disekat
+   > Jika service mengubah status sebelum semakan kebenaran, respons tetap redirect dan ujian lulus walaupun data rosak. Assertion DB menangkapnya.
+
+2. `semak-ci4` melaporkan `<?= $log['remarks'] ?>` dalam `status_timeline.php` sebagai dapatan kategori 1. Kenapa ia sahih?
+   - [ ] `remarks` sentiasa kosong untuk `approve()`, jadi ia mencetak ralat PHP
+   - [ ] Partial tidak boleh mencetak data dari `status_logs`
+   - [x] `remarks` ialah input pegawai yang dipaparkan kepada pemohon; tanpa `esc()`, catatan berisi `<script>` berjalan dalam pelayar pemohon (XSS)
+   - [ ] CI4 melepaskan output secara automatik, jadi dapatan itu palsu
+   > CI4 **tidak** melepaskan `<?= ?>` secara automatik. Baiki melalui gerbang diff: `<?= esc($log['remarks']) ?>`.
+
+---
+
+## S12 — Claude Code: Demo M2 & Semakan Akhir (16:00–17:00)
+
+Sebelum merge, modul Pas melalui tiga semakan: `semak-ci4` pada seluruh modul, semakan DoD AI-08 terhadap [`kolaborasi.md`](../docs/kolaborasi.md) §2 dan BR-PAS-01..06, dan **gerbang terang rakan** — rakan memilih 3 baris rawak dari `git diff main...feat/pas-claude` dan anda menerangkannya tanpa Claude. DoD tidak berubah kerana Claude menulis kod: *peserta boleh menerangkan setiap baris*. Demo 5 minit ikut skrip §4.1 dan senarai DoD §4.2.
+
+Lab: [Lab 8.13](./lab.md#lab-813--claude-code-demo-m2--semakan-akhir-s12)
+
+### 🎯 Kuiz S12
+
+> Jawab selepas Lab 8.13 — jawapan datang daripada demo dan semakan sebenar anda. Lulus kuiz ini menanda checkpoint Lab 8.13.
+
+1. Dalam demo, permohonan D dihantar, disemak dan diluluskan. Berapa baris `status_logs` untuk D?
+   - [x] 3: `NULL → submitted`, `submitted → under_review`, `under_review → approved`
+   - [ ] 2: penciptaan tidak direkod
+   - [ ] 4: cubaan **Lulus** penyemak melalui DevTools juga direkod
+   - [ ] 1: hanya status akhir disimpan
+   > Cubaan penyemak ditolak oleh filter sebelum controller, jadi tiada log. Setiap peralihan yang berjaya direkod tepat sekali (BR-PAS-05).
+
+2. Rakan menunjuk `$this->db->transRollback();` dalam `catch` dan anda tidak dapat menerangkannya. Apakah status ciri itu mengikut DoD?
+   - [ ] Siap — `composer test` hijau sudah memadai
+   - [ ] Siap — Claude yang menulisnya, jadi ia betul
+   - [x] Belum siap: guna AI-02 dalam mod Plan, tulis penerangan dengan ayat sendiri dalam `docs/nota-claude.md`, dan terangkan semula sebelum merge
+   - [ ] Belum siap: padam baris itu kerana tidak difahami
+   > DoD: *peserta boleh menerangkan setiap baris*. Memadam baris yang tidak difahami lebih berbahaya — tanpa rollback, transaksi kekal terbuka selepas exception.
 
 ---
 

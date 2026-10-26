@@ -1917,12 +1917,12 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <div><i>S12</i><span>Prompting, new projects &amp; PRD</span></div>
     <div><i>S10</i><span>Subagent &amp; skill for the CI4 project</span></div>
     <div><i>S11</i><span>MCP: <code>ci4-spark</code>, MySQL, Context7</span></div>
-    <div><i>S1</i><span>Afternoon: pass application Migration &amp; Model</span></div>
-    <div><i>S2</i><span>Afternoon: list (owner scope) &amp; detail</span></div>
+    <div><i>S13</i><span>Afternoon: Pass slice 1 with Claude Code — model, list &amp; detail</span></div>
+    <div><i>S14</i><span>Afternoon: Pass slice 2 — form &amp; secure upload</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span><span></span></div>
   <div class="daynum">07</div>
-  <aside class="notes"><p>Pagi Claude Code (S9, S12, S10, S11), petang modul Pas S1 dan S2. Corak Hari 5 diulang untuk Pas — enum, Entity, Model, Service. Muat naik selamat (S3) dan kes sempadan (S4) bersambung pagi Hari 8.</p></aside>
+  <aside class="notes"><p>Pagi Claude Code (S9, S12, S10, S11). Petang S13 dan S14: modul Pas dibina dengan Claude Code melalui tujuh pintu semakan (Lab 7.10, 7.11). Lab Pas manual 7.0–7.4 kekal sebagai kod rujukan untuk perbandingan.</p></aside>
 </section>
 
 <section class="slide">
@@ -1933,11 +1933,11 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <li><span><em>S12</em>Write structured prompts and draft a PRD for a new project.</span></li>
     <li><span><em>S10</em>Create the <code>semak-ci4</code> subagent &amp; <code>migration-ci4</code> skill, and verify AI findings.</span></li>
     <li><span><em>S11</em>Install &amp; test the <code>ci4-spark</code> MCP server and register Context7.</span></li>
-    <li><span><em>S1</em>Write the <code>PassApplication</code> &amp; <code>PassDocument</code> Model/Entity.</span></li>
-    <li><span><em>S2</em>Build the list (owner scope) &amp; application detail view.</span></li>
+    <li><span><em>S13</em>Build Pass slice 1 with Claude Code through 7 gates: enums, Model <code>ownedBy()</code>, list &amp; detail with 404 for non-owners.</span></li>
+    <li><span><em>S14</em>Build Pass slice 2: form + CSRF, file validation, random names outside <code>public/</code>, transaction + clean-up.</span></li>
   </ul>
-  <p class="small mt16">Upload (S3) and edge cases (S4) continue on the morning of Day 8.</p>
-  <aside class="notes"><p>Empat objektif pagi diukur melalui Kuiz S9–S12; dua objektif petang melalui checkpoint Lab 7.1 dan 7.2. Tanya peserta: berapa banyak kod Hari 5 yang boleh diguna semula untuk Pas? ReferenceNumberService dan StatusLogModel terus diguna.</p></aside>
+  <p class="small mt16">Manual Pass labs 7.0–7.4 stay as <b>reference code</b> for comparison.</p>
+  <aside class="notes"><p>Empat objektif pagi diukur melalui Kuiz S9–S12; dua objektif petang melalui Kuiz S13 dan S14 (checkpoint Lab 7.10 dan 7.11). Tekankan: Claude kini boleh menulis kod, tetapi peserta mesti boleh menerangkan setiap diff yang diterima.</p></aside>
 </section>
 
 <!-- ---------------------------- DAY 7 · MORNING: CLAUDE CODE ---------------------------- -->
@@ -1958,7 +1958,7 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
 
 <section class="slide">
   <div class="eyebrow">Day 7 · Today's schedule</div>
-  <h2>Claude Code in the morning, Pass module in the afternoon</h2>
+  <h2>Claude Code in the morning, Pass with Claude Code in the afternoon</h2>
   <table class="t">
     <tr><th>Time</th><th>Session</th><th>Topic</th><th>Lab</th></tr>
     <tr><td>09:00–10:00</td><td><b>S9</b></td><td>Install on Windows, log in, <code>settings.json</code> deny, <code>CLAUDE.md</code>, Plan mode</td><td>7.6</td></tr>
@@ -1966,10 +1966,11 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
     <tr><td>10:30–10:45</td><td>—</td><td>Morning break</td><td>—</td></tr>
     <tr><td>10:45–11:45</td><td><b>S10</b></td><td>Subagent <code>semak-ci4</code> &amp; skill <code>migration-ci4</code></td><td>7.7</td></tr>
     <tr><td>11:45–12:30</td><td><b>S11</b></td><td>MCP: <code>ci4-spark</code>, MySQL, Context7, GitLab</td><td>7.8</td></tr>
-    <tr><td>14:30–17:00</td><td><b>S1 + S2</b></td><td>Pass: Model/Entity, list &amp; detail (7.1b/7.2b if time)</td><td>7.1, 7.2</td></tr>
+    <tr><td>14:30–15:45</td><td><b>S13</b></td><td>Pass slice 1 with Claude Code: enums, model, list &amp; detail</td><td>7.10</td></tr>
+    <tr><td>15:45–17:00</td><td><b>S14</b></td><td>Pass slice 2: form, validation &amp; secure upload</td><td>7.11</td></tr>
   </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div>Lab 7.3 (upload) and 7.4 (edge cases) continue on the <b>morning of Day 8</b>.</div></div>
-  <aside class="notes"><p>Tunjukkan perubahan jadual: S9 hanya sejam, jadi pemasangan mesti siap dalam 20 minit pertama. S12 ialah sesi baharu tentang prompt dan PRD. Petang hanya S1 dan S2 modul Pas; S3/S4 dipindah ke pagi Hari 8.</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Afternoon: Claude writes code through <b>7 review gates</b>. Manual labs 7.0–7.4 = reference code.</div></div>
+  <aside class="notes"><p>Tunjukkan perubahan jadual: S9 hanya sejam, jadi pemasangan mesti siap dalam 20 minit pertama. S12 ialah sesi baharu tentang prompt dan PRD. Petang ialah S13 dan S14: Pas dibina dengan Claude Code melalui tujuh pintu; lab manual 7.0–7.4 menjadi kod rujukan.</p></aside>
 </section>
 
 <section class="slide">
@@ -2274,8 +2275,66 @@ down() reverses up() · NEVER run migrate</span></pre></div>
   <aside class="notes"><p>Paparkan slaid ini semasa peserta memasang dan biarkan mereka mencari gejala sendiri. Senarai penuh 16 baris ada dalam tutorial Claude Code, bahagian Masalah lazim. Yang masih gagal selepas 20 minit: pasangkan dengan rakan dan ikut demo jurulatih. (rujukan)</p></aside>
 </section>
 
+<!-- ---------------------------- DAY 7 · AFTERNOON: PASS WITH CLAUDE CODE ---------------------------- -->
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S13 — Workflow until Day 10</div>
+  <h2>7 review gates: Claude writes, you approve</h2>
+  <div class="grid c4">
+    <div class="card top m-a"><span class="num-badge">1</span><h3>SPEC</h3><p>SPEC section &amp; <code>BR-*</code> IDs; <code>CLAUDE.md</code> points to it.</p></div>
+    <div class="card top m-a"><span class="num-badge">2</span><h3>Plan (Plan mode)</h3><p>Files &amp; BR mapping, <b>no code</b>. You review &amp; edit the plan.</p></div>
+    <div class="card top m-a"><span class="num-badge">3</span><h3>Implement (Manual)</h3><p>Read <b>every diff</b>: Yes / No. No <i>accept edits</i>, <i>auto</i>, <i>bypass</i>.</p></div>
+    <div class="card top m-a"><span class="num-badge">4</span><h3>Verify</h3><p><code>composer test</code>, browser, <code>ci4-spark</code> (<code>routes</code>, <code>filter_check</code>, <code>migrate_status</code>).</p></div>
+    <div class="card top m-a"><span class="num-badge">5</span><h3>Review</h3><p><code>semak-ci4</code> subagent, then fix through the same diff gate.</p></div>
+    <div class="card top m-a"><span class="num-badge">6</span><h3>Explain</h3><p>3 key lines, in your own words, in <code>docs/nota-claude.md</code> (<code>file:line</code>).</p></div>
+    <div class="card top m-a"><span class="num-badge">7</span><h3>Commit</h3><p>Small &amp; well described, on <code>feat/pas-claude</code>.</p></div>
+    <div class="card top m-stat tint"><span class="k">STILL FORBIDDEN</span><h3>One prompt = one module</h3><p><i>auto</i>/<i>bypass</i> mode; committing code you can't explain; secrets or real data.</p></div>
+  </div>
+  <aside class="notes"><p>Tujuh pintu ini berlaku mulai petang ini hingga Hari 10 (kolaborasi.md §3). Claude boleh menulis kod satu slice pada satu masa, tetapi diff diterima hanya selepas peserta boleh menerangkannya. Semak di meja peserta bahawa baris bawah Claude Code bukan accept edits atau auto. (5 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S13 — Lab 7.10 (14:30–15:45)</div>
+  <h2>S13 · Pass slice 1 with Claude Code</h2>
+  <div class="codewrap"><div class="codebar">AI-19 · after the slice plan is reviewed (Manual mode)<span class="lang">prompt</span></div>
+<pre class="code sm" data-lang="text">Implement ONLY Slice 1 from the plan in @docs/pelan-pas.md, one file at a time.
+Refer to @docs/spec-pas.md (§2.2, BR-PAS-01, BR-PAS-04). Names exactly as in the SPEC.
+Constraints: no files outside the plan; do not run migrate or db:seed; esc() on every output.
+After each file, stop and explain in 3 lines what changed and which BR it meets.</pre></div>
+  <div class="split mt16">
+    <div class="card top m-tlk"><span class="k">ACCEPT DIFFS THAT…</span>
+      <ul><li><code>PassType</code>/<code>PassStatus</code> enums + <code>canTransitionTo()</code></li><li><code>where('user_id', …)</code> in <code>ownedBy()</code> (Model)</li><li><code>canView()</code> → <code>PageNotFoundException</code> (404)</li><li><code>esc()</code> on every output; only files in the plan</li></ul>
+    </div>
+    <div class="card top m-stat"><span class="k">REJECT DIFFS THAT…</span>
+      <ul><li>A new Pass migration (tables exist since Day 4)</li><li><code>if ($app-&gt;user_id == …)</code> in the view</li><li><code>find($id)</code> straight to the view, or 403</li><li>TLK files, <code>Filters.php</code>, <code>php spark migrate</code></li></ul>
+    </div>
+  </div>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Verify: <code>migrate_status</code> (no new migration), <code>pemohon2</code> → 404 on <code>pemohon1</code>'s detail, <code>composer test</code>.</div></div>
+  <aside class="notes"><p>Mulakan dengan branch feat/pas-claude dari main selepas MR pagi di-merge. Demo satu diff yang ditolak: penapis pemilik dalam view, dan terangkan kenapa skop mesti dalam Model (pagination dan kiraan tidak bocor). Bandingkan hasil dengan Lab 7.1/7.2 manual sebagai kod rujukan. (75 minit)</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 7 · S14 — Lab 7.11 (15:45–17:00)</div>
+  <h2>S14 · Pass slice 2: secure upload</h2>
+  <div class="codewrap"><div class="codebar">AI-19 · Slice 2 (form, validation, submit, download)<span class="lang">prompt</span></div>
+<pre class="code sm" data-lang="text">Implement ONLY Slice 2 from @docs/pelan-pas.md: form, file validation, submit() and download().
+Refer to @docs/spec-pas.md (BR-PAS-02, BR-PAS-04, BR-PAS-05). pdf/jpg/png, max 2 MB, 3 files.
+Constraints: store in writable/uploads/pas/ with random names; no files in public/; keep CSRF.
+After each file, stop and explain in 3 lines before the next file.</pre></div>
+  <div class="split mt16">
+    <div class="card top m-tlk"><span class="k">ACCEPT DIFFS THAT…</span>
+      <ul><li><code>form_open_multipart()</code> (CSRF) + <code>permission:pas.apply</code></li><li><code>max_size</code> + <code>ext_in</code> + <code>mime_in</code>; <code>getMimeType()</code></li><li><code>getRandomName()</code> → <code>WRITEPATH . 'uploads/pas'</code></li><li><code>move()</code> first, transaction after; <code>catch</code>: rollback + delete files</li></ul>
+    </div>
+    <div class="card top m-stat"><span class="k">REJECT DIFFS THAT…</span>
+      <ul><li>Save in <code>public/</code> or link <code>base_url('uploads/…')</code></li><li><code>getClientName()</code> as the name on disk</li><li><code>ext_in</code> without <code>mime_in</code>; <code>getClientMimeType()</code></li><li><code>download()</code> without <code>canView()</code>; route in CSRF <code>except</code></li></ul>
+    </div>
+  </div>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Test: a 3 MB file and <code>skrip.pdf</code> are rejected with no new file on disk; <code>pemohon2</code> → 404 downloading <code>pemohon1</code>'s document.</div></div>
+  <aside class="notes"><p>Lima pintu muat naik mesti kekal dalam setiap diff: saiz, extension, kandungan, nama rawak di luar public/, muat turun melalui controller bersemak pemilikan. Tekankan urutan move() sebelum transaksi dan pembersihan fail dalam catch. Selepas lulus ujian, bandingkan dengan Lab 7.3 manual dan rekod perbezaan dalam docs/nota-claude.md. (75 minit)</p></aside>
+</section>
+
 <section class="slide codey">
-  <div class="eyebrow">Day 7 · S1 — Model &amp; enum</div>
+  <div class="eyebrow">Day 7 · S1 — Model &amp; enum · reference code</div>
   <h2>PassApplicationModel &amp; the PassType enum</h2>
   <div class="split" style="grid-template-columns:1.18fr .82fr">
     <div class="codewrap"><div class="codebar">app/Models/PassApplicationModel.php<span class="lang">php</span></div>
@@ -2320,7 +2379,7 @@ down() reverses up() · NEVER run migrate</span></pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 7 · S2 — Owner scope</div>
+  <div class="eyebrow">Day 7 · S2 — Owner scope · reference code</div>
   <h2>Applicants see only their own records (BR-PAS-04)</h2>
   <div class="codewrap"><div class="codebar">app/Controllers/Pas/ApplicationController.php<span class="lang">php</span></div>
 <pre class="code sm" data-lang="php"><span class="k">public</span> <span class="k">function</span> <span class="f">index</span>()
@@ -2349,7 +2408,7 @@ down() reverses up() · NEVER run migrate</span></pre></div>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 7 · S3 — Secure uploads</div>
+  <div class="eyebrow">Day 7 · S3 — Secure uploads · reference code</div>
   <h2>Document upload checklist (BR-PAS-02)</h2>
   <div class="grid c3">
     <div class="card top m-pas"><span class="num-badge">1</span><h3>Type by content</h3><p><code>ext_in</code> + <code>mime_in</code>: pdf, jpg, png only.</p></div>
@@ -2364,7 +2423,7 @@ down() reverses up() · NEVER run migrate</span></pre></div>
 </section>
 
 <section class="slide codey">
-  <div class="eyebrow">Day 7 · S3 — Upload code</div>
+  <div class="eyebrow">Day 7 · S3 — Upload code · reference code</div>
   <h2>Validate, move, record</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">ApplicationController::create()<span class="lang">php</span></div>
@@ -2410,7 +2469,7 @@ down() reverses up() · NEVER run migrate</span></pre></div>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 7 · S4 — Edge cases</div>
+  <div class="eyebrow">Day 7 · S4 — Edge cases · reference code</div>
   <h2>Test the edge cases, not just the happy path</h2>
   <table class="t">
     <tr><th>Case</th><th>Input</th><th>Expected</th></tr>

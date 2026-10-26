@@ -32,8 +32,19 @@ Jalankan ujian dengan `composer test` (= `vendor/bin/phpunit`; berfungsi sama di
 
 ## 3. Disiplin AI — "faham dahulu, terima kemudian"
 
-Claude Code (atau mana-mana AI) **dibenarkan** untuk: menerangkan ralat, mencadang ujian, menyemak logik, menjana boilerplate kecil.
-**Tidak dibenarkan:** menjana modul penuh untuk disalin. Cadangan diterima **hanya** selepas peserta boleh menerangkannya. Bila ralat: **reproduce → ujian gagal → baiki → ujian lulus**.
+**Claude Code boleh menulis kod pelaksanaan dengan pintu semakan.** Hari 1–7 pagi: Claude menerangkan, merancang dan menyemak; anda menulis kod. Mulai Hari 7 petang hingga Hari 10, Claude boleh menulis kod modul (Pas, Laporan, Statistik) **satu slice pada satu masa**, dan setiap slice melalui tujuh pintu ini:
+
+1. **SPEC.** Baca seksyen SPEC dan ID `BR-*` yang berkaitan. `CLAUDE.md` projek menunjuk kepadanya.
+2. **Pelan (mod *Plan*).** Minta pelan slice: fail (migration, model, service, controller, view, ujian) dan pemetaan BR, **tanpa kod**. Anda menyemak dan mengedit pelan itu.
+3. **Laksana (mod *Manual*, lalai).** Claude mengedit; anda **membaca setiap diff** dan meluluskan atau menolaknya. Mod *accept edits*, *auto* dan *bypass permissions* tidak dibenarkan.
+4. **Sahkan.** `composer test`, pelayar, dan tool `ci4-spark` (`routes`, `filter_check`, `migrate_status`).
+5. **Semak.** Jalankan subagent `semak-ci4`, kemudian minta Claude membaiki dapatan, dengan pintu diff yang sama.
+6. **Terangkan.** Dalam `docs/nota-claude.md`, terangkan 3 baris utama dengan ayat sendiri (`fail:baris`). Kuiz menyemak kefahaman ini.
+7. **Commit.** Commit kecil dengan mesej yang jelas, dalam feature branch.
+
+**Masih tidak dibenarkan:** satu prompt untuk menjana seluruh modul; mod *auto*/*bypass* (atau *accept edits*); commit kod yang anda tidak boleh terangkan; rahsia (`.env`, kata laluan, token) atau data sebenar dalam prompt.
+
+Prinsipnya kekal **"faham dahulu, terima kemudian"**: diff diterima **hanya** selepas anda boleh menerangkannya. Bila ralat: **reproduce → ujian gagal → baiki → ujian lulus**.
 
 ## 4. Kerja individu & semakan
 

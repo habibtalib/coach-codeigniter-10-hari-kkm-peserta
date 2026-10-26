@@ -9,7 +9,7 @@ AI dalam kursus ini ialah **penjelas dan penyemak**, bukan penjana modul. Anda a
 
 ```mermaid
 flowchart LR
-    A[Tulis kod sendiri] --> B{Tersekat / ragu?}
+    A[Tulis kod, atau minta Claude laksana satu slice — AI-19] --> B{Tersekat / ragu?}
     B -- Ya --> C[Guna prompt AI-xx]
     C --> D[Baca jawapan]
     D --> E{Boleh terangkan<br/>kepada rakan?}
@@ -58,6 +58,8 @@ flowchart LR
 | **AI-16** | Temu bual PRD | Projek | 7 |
 | **AI-17** | PRD → pelan *vertical slice* | Projek | 7 |
 | **AI-18** | Semak PRD | Projek | 7 |
+| **AI-19** | Laksana satu slice daripada pelan (mod Manual) | Laksana | 7–10 |
+| **AI-20** | Terangkan diff ini sebelum saya terima | Laksana | 7–10 |
 
 ---
 
@@ -355,7 +357,7 @@ model kereta biasa di Malaysia, warna). Tiada data sebenar. Format: array PHP.
 
 ## F · Projek & PRD
 
-Tutorial penuh: [`tutorial-prompt-projek.md`](tutorial-prompt-projek.md). AI-15, AI-17 dan AI-18 dijalankan dalam mod *Plan*; untuk AI-16, keluar dari mod *Plan* hanya apabila Claude meminta kebenaran menulis `docs/prd.md`, dan baca draf dahulu. Claude mendraf pelan, PRD dan penerangan, anda yang menulis kod.
+Tutorial penuh: [`tutorial-prompt-projek.md`](tutorial-prompt-projek.md). AI-15, AI-17 dan AI-18 dijalankan dalam mod *Plan*; untuk AI-16, keluar dari mod *Plan* hanya apabila Claude meminta kebenaran menulis `docs/prd.md`, dan baca draf dahulu. Claude mendraf pelan, PRD dan penerangan; kod pelaksanaan boleh ditulis Claude satu slice demi satu melalui pintu semakan ([§G](#g--laksana-dengan-pintu-semakan), [`kolaborasi.md`](kolaborasi.md) §3).
 
 ### AI-15 — Onboarding projek sedia ada
 
@@ -422,13 +424,47 @@ Maksimum 8 isu, paling penting dahulu.
 
 - **Selepas:** Pilih sekurang-kurangnya 2 isu dan betulkan **sendiri** dalam `docs/prd.md`. Commit `PRD: …`.
 
+## G · Laksana dengan pintu semakan
+
+Mulai Hari 7 petang hingga Hari 10, Claude boleh menulis kod pelaksanaan **satu slice pada satu masa** melalui tujuh pintu dalam [`kolaborasi.md`](kolaborasi.md) §3: SPEC → pelan (mod *Plan*) → laksana (mod *Manual*) → sahkan → `semak-ci4` → terangkan → commit. Untuk kod pelaksanaan, aliran ini menggantikan "tulis kod sendiri" dalam rajah di atas; AI-13 kekal untuk boilerplate kecil.
+
+### AI-19 — Laksana satu slice daripada pelan (mod Manual)
+
+- **Bila guna:** Selepas pelan slice (AI-17 atau prompt pelan dalam lab) disemak dan diedit oleh anda, dan mod Claude Code ialah *Manual* (lalai).
+- **Jangan:** Minta beberapa slice sekali gus; hidupkan *accept edits*, *auto* atau *bypass permissions*; luluskan diff yang anda belum baca.
+
+```prompt title="AI-19"
+Laksana HANYA <Slice 1> daripada pelan dalam @docs/pelan-pas.md, satu fail pada satu masa.
+Rujuk @docs/spec-pas.md (<§2.2 BR-PAS-01, BR-PAS-04>). Nama jadual, medan, enum dan kelas tepat seperti SPEC.
+Kekangan: jangan ubah fail di luar senarai pelan; jangan jalankan migrate atau db:seed; tiada fail dalam public/; setiap output view melalui esc().
+Selepas setiap fail, berhenti dan terangkan dalam 3 baris apa yang berubah dan BR mana dipenuhi, sebelum fail seterusnya.
+Akhir sekali, tulis ujian dalam pelan dan jalankan composer test.
+```
+
+- **Selepas:** Baca setiap diff sebelum `Yes`. Tolak (`No`, kemudian beri sebab) diff yang menyentuh fail di luar pelan atau melanggar `CLAUDE.md`. Jalankan `composer test` sendiri.
+
+### AI-20 — Terangkan diff ini sebelum saya terima
+
+- **Bila guna:** Apabila Claude meminta kebenaran untuk satu diff yang anda tidak faham sepenuhnya, atau sebelum mengisi pintu terang dalam `docs/nota-claude.md`.
+- **Jangan:** Terima jawapan yang hanya mengulang kod; minta Claude mengubah fail semasa menerangkan.
+
+```prompt title="AI-20"
+Sebelum saya terima diff untuk <app/Models/PassApplicationModel.php>, terangkan tanpa mengubah fail:
+1. Setiap baris yang berubah dan kenapa (rujuk BR-* jika berkaitan).
+2. Apa yang rosak atau bocor jika baris <ownedBy()> dibuang.
+3. Satu cara diff ini mungkin salah, dan ujian yang akan menangkapnya.
+Jawab dalam Bahasa Melayu; istilah teknikal dalam English.
+```
+
+- **Selepas:** Tulis semula penerangan itu dengan ayat sendiri dalam `docs/nota-claude.md` (`fail:baris`). Jika anda masih tidak boleh menerangkannya, tolak diff itu.
+
 ---
 
 ## Anti-corak — prompt yang **tidak** dibenarkan
 
 | ❌ Prompt | Kenapa salah | ✅ Ganti dengan |
 |-----------|--------------|-----------------|
-| "Buatkan modul Pas CodeIgniter lengkap dengan kelulusan." | Melanggar KOLABORASI §3; anda tidak boleh menerangkannya | AI-03 (konsep) + AI-04 (semak logik anda) |
+| "Buatkan modul Pas CodeIgniter lengkap dengan kelulusan." | Melanggar KOLABORASI §3: jana keseluruhan modul dalam satu prompt menghasilkan diff yang terlalu besar untuk dibaca dan diterangkan. Slice demi slice dengan pintu semakan dibenarkan | AI-17 (pelan slice) → AI-19 (laksana satu slice, mod Manual) → AI-20 (terangkan diff) → `semak-ci4` |
 | "Betulkan kod ini." (tanpa konteks) | AI meneka; anda tidak belajar punca | AI-01 |
 | "Tulis semua ujian untuk projek saya." | Ujian yang tidak difahami = keyakinan palsu | AI-09 → tulis sendiri |
 | "Tukar kod ini supaya lulus ujian." | Boleh melemahkan ujian atau menyembunyikan pepijat | AI-10 + baiki sendiri |

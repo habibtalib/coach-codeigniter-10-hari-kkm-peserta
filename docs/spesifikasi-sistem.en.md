@@ -22,7 +22,7 @@ Course: **Application Development Coaching with CodeIgniter** · 10 days · Mini
 | CLI | **Spark** (`migrate`, `db:seed`, `make:*`, `routes`, `serve`) |
 | Version control | **Git** (one branch per module/feature) |
 | Diagrams | **Mermaid** (ERD, flowcharts, status charts) · **draw.io/Excalidraw** (wireframes) |
-| AI assistant (optional) | **Claude Code** — explainer & advisor, not a module generator |
+| AI assistant | **Claude Code** — from Day 7 afternoon it may implement code one slice at a time through the 7 review gates ([`kolaborasi.en.md`](./kolaborasi.en.md) §3) |
 | Language | Notes/UI in **Malay** · code, class names & technical terms in **English** |
 
 ## 2. Four modules
@@ -230,4 +230,4 @@ The reference code is tested on CodeIgniter 4.7.5 + Shield 1.4.1 + PHP 8.3 + MyS
 - Don't commit `.env`, passwords, tokens.
 - Don't store uploaded files in `public/`.
 - Don't write raw SQL with user input — use Query Builder / bindings.
-- Don't let AI generate a whole module — participants must be able to explain every line.
+- Don't let AI generate a whole module in one prompt — implement slice by slice through the review gates; participants must be able to explain every committed line.

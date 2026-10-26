@@ -18,6 +18,9 @@ Di akhir hari ini, peserta boleh:
 | O4 | **Melaksanakan** skrip UAT merentas 4 modul mengikut peranan dan merekod keputusan dalam templat UAT. | S3 |
 | O5 | **Membaiki** pepijat menggunakan kitaran *reproduce → ujian gagal → baiki → ujian lulus*, dan **mengesahkan** senarai semak keselamatan akhir (CSRF, `esc()`, `.env`, muat naik luar `public/`, filter route). | S3 |
 | O6 | **Mendemokan** sistem hujung-ke-hujung dalam 8 minit, **menerangkan** baris kod yang dipilih panel, dan **menyumbang** kepada retrospektif Start/Stop/Continue. | S4 |
+| O7 | **Membina** modul Statistik (`StatisticsService`, `/statistik/data`, Chart.js, cache + invalidasi) bersama Claude Code dalam 4 slice, **meluluskan** setiap diff selepas membacanya, dan **menerangkan** 3 baris kunci setiap slice dalam `docs/nota-claude.md`. | S5 |
+| O8 | **Menilai** repo capstone dengan subagent `semak-ci4`, AI-08 (DoD), AI-09 (jurang ujian) dan AI-18 (`README.md`/`CLAUDE.md`), serta **membaiki** dapatan yang disahkan melalui gelung yang sama. | S6 |
+| O9 | **Mendemokan** sistem dan **menghujahkan**, dengan bukti dari `docs/nota-claude.md`, bila cadangan Claude diterima atau ditolak. | S7 |
 
 ---
 
@@ -26,12 +29,17 @@ Di akhir hari ini, peserta boleh:
 | Masa | Sesi | Aktiviti | Objektif |
 |------|------|----------|----------|
 | 08:30–09:00 | — | Recap Hari 9 (laporan & eksport) | — |
-| 09:00–10:30 | **S1** | Dashboard statistik (carta, ringkasan merentas modul) | O1, O2 |
+| 09:00–10:30 | **S5** | Claude Code: modul Statistik slice 1–2 (KPI, dataset carta, `/statistik/data`) — [Lab 10.10](./lab.md#lab-1010--claude-code-statistik-slice-demi-slice-s5) | O1, O7 |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | **S2** | Aggregate query & caching asas | O3 |
+| 10:45–11:45 | **S5** | Claude Code: modul Statistik slice 3–4 (Chart.js, cache + invalidasi selepas commit) | O2, O3, O7 |
+| 11:45–12:30 | **S3** | UAT manual merentas 4 modul + K1–K10 (Lab 10.3 langkah 1–3 dan 5) | O4 |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–16:00 | **S3** | Ujian akhir sistem & pembetulan pepijat | O4, O5 |
-| 16:00–17:00 | **S4** | Demo capstone kepada pemilik sistem & penutup | O6 |
+| 14:30–16:00 | **S6** | Claude Code: persediaan capstone (`semak-ci4`, AI-08, AI-09, AI-18, tag) — [Lab 10.11](./lab.md#lab-1011--claude-code-persediaan-capstone-s6) | O5, O8 |
+| 16:00–17:00 | **S7** | Demo capstone (format S4) & refleksi Claude Code — [Lab 10.12](./lab.md#lab-1012--demo-capstone--refleksi-claude-code-s7) | O6, O9 |
+
+> ℹ️ **Kod rujukan.** Untuk baki kursus, modul dibina dengan Claude Code melalui gelung 7 langkah (§5.1). S1, S2 dan Lab 10.1–10.2 ialah **kod rujukan**: baca untuk memahami konsep dan untuk langkah "Banding dengan kod rujukan"; jangan taip semula. UAT dalam S3 kekal manual. Format demo S4 (§4.1) dan kriteria sijil (§4.3) digunakan dalam S7.
+>
+> ℹ️ Masa pada tajuk S1–S4 di bawah ialah jadual asal; ikut jadual di atas.
 
 ---
 
@@ -53,6 +61,151 @@ flowchart LR
     end
     B --> C
 ```
+
+---
+
+## S5 — Claude Code: Bina Modul Statistik (09:00–11:45)
+
+> ℹ️ **Modul dibina bersama Claude Code.** Claude boleh menulis kod pelaksanaan, tetapi setiap baris melalui gerbang semakan anda. Lab: [Lab 10.10](./lab.md#lab-1010--claude-code-statistik-slice-demi-slice-s5). Kod rujukan: S1–S2 di bawah dan [Lab 10.1](./lab.md#lab-101--dashboard-kpi--4-carta-chartjs-s1)–[10.2](./lab.md#lab-102--cache-remember--invalidasi-selepas-perubahan-status-s2).
+
+### 5.1 Gelung 7 langkah untuk setiap slice
+
+| # | Langkah | Mod Claude Code | Bukti yang anda simpan |
+|---|---------|-----------------|------------------------|
+| 1 | **SPEC & BR**: kenal pasti seksyen SPEC dan ID `BR-*` | — (anda sendiri) | ID ditulis dalam prompt dan dalam `docs/nota-claude.md` |
+| 2 | **Pelan slice**: pelan bernombor, tiada kod | *Plan* | Pelan yang **anda edit** sebelum diluluskan |
+| 3 | **Laksana**: satu slice, satu fail pada satu masa | **Manual**: setiap diff dibaca dan diluluskan | Diff yang anda terima atau tolak (dengan sebab) |
+| 4 | **Sahkan** | Manual + `!composer test`, pelayar, tool `ci4-spark` | Output hijau; skrin pelayar; jawapan `routes`/`filter_check` |
+| 5 | **Semak**: subagent `semak-ci4`; pembaikan melalui langkah 3 | Subagent baca sahaja | Jadual dapatan, setiap satu disahkan atau ditolak |
+| 6 | **Gerbang terangkan**: 3 baris kunci dengan ayat anda sendiri | — (anda menaip) | 3 baris dalam `docs/nota-claude.md` |
+| 7 | **Commit kecil** pada branch ciri | Terminal anda | Satu commit `STAT:` setiap slice pada `feat/statistik` |
+
+> ⚠️ **Dilarang:** mod *accept edits*, *auto* dan `bypassPermissions`, serta pilihan "Yes, allow all edits…" atau "Yes, and don't ask again" untuk edit fail. Setiap diff yang anda tidak baca ialah baris yang anda tidak boleh terangkan pada minit 7–8 demo.
+
+### 5.2 Empat slice modul Statistik
+
+| Slice | Skop | SPEC / takrif | Ujian bukti |
+|-------|------|---------------|-------------|
+| 1 | `StatisticsService::build()` dengan 4 KPI; `service('statisticsService')` | §2.4, §9 (Pendaftaran service), §1.1 di bawah; `BR-TLK-04` (takrif tempahan aktif) | `tests/Services/StatisticsServiceTest.php` dengan `$now` tetap |
+| 2 | 4 dataset carta; `DashboardController::index()`/`data()`; route group `statistik` + `permission:statistik.view` | §2.4, §4, §6, §1.4 di bawah; gate G2 | Ujian 12 bulan (bulan kosong = 0); `tests/feature/Statistik/StatistikAccessTest.php` |
+| 3 | `app/Views/statistik/dashboard.php`: kad KPI di server, 4 `<canvas>`, Chart.js 4.4.7, `fetch()` + `res.ok` | §1.2, §1.5 di bawah | Pelayar + `semak-ci4` (`esc()`, tiada `innerHTML` untuk data) |
+| 4 | `cache()->remember()` + `cache()->delete(StatisticsService::CACHE_KEY)` **selepas** setiap `transCommit()` | §2.4, §9 (Cache); `BR-PAS-01`, `BR-PAS-05`, `BR-TLK-05` | `tests/Services/StatisticsCacheTest.php`: **merah dahulu**, kemudian hijau |
+
+### 5.3 Diff yang anda tolak
+
+Pilih **No** dan taip sebabnya apabila diff:
+
+- mengubah fail di luar slice semasa, `.env`, migration modul lain, atau `composer.json` (package baharu);
+- meletakkan `cache()->delete(...)` **sebelum** `transCommit()`, dalam blok `try` sebelum commit, atau dalam controller;
+- menaip string `'stat_dashboard'` di luar `StatisticsService`, atau menggunakan `cache()->clean()`;
+- mengira purata hari lulus dengan `status = 'approved'` atau `TIMESTAMPDIFF(DAY, …)`;
+- menggunakan `date('Y-m-d')` dalam service, bukan `$this->now` (ujian bergantung pada tarikh hari ini);
+- mencantum input ke dalam SQL (`->query("… $x")`), atau memasukkan data server dengan `innerHTML`;
+- membuang `assert`, menambah `markTestSkipped()`, atau mengubah ujian supaya menjadi hijau.
+
+### 🎯 Kuiz S5
+
+> Jawab selepas Lab 10.10. Lulus kuiz ini menanda checkpoint Lab 10.10.
+
+1. Dalam slice 4, Claude mencadangkan diff yang meletakkan cache()->delete(StatisticsService::CACHE_KEY) dalam blok try sebelum transCommit(). Semua ujian hijau. Apakah tindakan anda?
+   - [ ] Luluskan, kerana composer test yang hijau membuktikan invalidasi betul
+   - [x] Pilih No dan minta delete dipindahkan selepas transCommit(), kerana permintaan lain boleh membina semula cache dengan data lama sebelum commit
+   - [ ] Luluskan, kemudian tukar ke mod accept edits supaya Claude membetulkannya sendiri
+   - [ ] Pilih No dan minta Claude memadam ujian cache kerana ujian itu tidak mengesan masalah ini
+   > Ujian hijau tidak membuktikan susunan yang betul: dalam ujian, tiada permintaan lain di antara delete dan commit. Ini sebab langkah 3 ialah membaca diff, bukan hanya melihat ujian. Pembetulan dibuat melalui gerbang yang sama (mod Manual), dan ujian tidak dipadam.
+
+2. Selepas slice 2, apakah yang layak direkod sebagai gerbang terangkan dalam docs/nota-claude.md?
+   - [ ] Salinan penuh jawapan Claude tentang DashboardController
+   - [ ] Pautan ke commit STAT: slice 2
+   - [ ] Senarai fail yang diubah oleh Claude dalam slice itu
+   - [x] Tiga baris kunci (cth filter permission:statistik.view, array_column dengan kunci bulan, setJSON), setiap satu diterangkan dengan ayat anda sendiri: apa, kenapa, dan apa jadi jika dibuang
+   > Gerbang terangkan membuktikan **anda** faham, bukan Claude. Salinan jawapan, pautan commit dan senarai fail tidak menunjukkan kefahaman. Format "apa + kenapa + jika dibuang" sama dengan segmen terangkan kod dalam demo.
+
+---
+
+## S6 — Claude Code: Persediaan Capstone (14:30–16:00)
+
+> ℹ️ Lab: [Lab 10.11](./lab.md#lab-1011--claude-code-persediaan-capstone-s6). Prompt: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) AI-08, AI-09, AI-10, AI-18. UAT (S3, 11:45–12:30) kekal manual: anda menguji sebagai pengguna, bukan Claude.
+
+### 6.1 Empat semakan, satu gelung pembaikan
+
+| Semakan | Alat | Soalan | Output |
+|---------|------|--------|--------|
+| Seluruh repo | Subagent `semak-ci4` | G1–G5 rubrik dan K2/K5/K7 (§3.4) | `docs/semakan-capstone.md` |
+| Definition of Done | AI-08, mod *Plan* | Setiap modul M1–M4 × 7 item DoD ([`kolaborasi.md`](../docs/kolaborasi.md) §2) | Matriks dengan bukti fail:baris |
+| Jurang ujian | AI-09, mod *Plan* | `BR-*` mana tiada ujian? | 2 ujian baharu yang merah apabila peraturan dilanggar |
+| Dokumen serahan | AI-18, *Plan* kemudian Manual | `README.md`, `CLAUDE.md`, `docs/prd.md` lapuk? | Commit `CHORE:` |
+
+Setiap dapatan yang anda terima melalui gelung 7 langkah S5: pelan kecil → ujian merah (AI-10) → diff Manual → sahkan → AI-08 pada `!git diff --staged` → commit `FIX:`.
+
+### 6.2 Dapatan AI ialah hipotesis
+
+Setiap dapatan mesti ada fail:baris. Anda membuka fail itu dan mengesahkannya dengan arahan anda sendiri (`php spark filter:check`, `grep`, tool `filter_check`) sebelum menanda **Terima** atau **Tolak**. Positif palsu yang lazim: `esc()` sudah dibuat dalam partial, filter dipasang pada route group (bukan setiap route), dan `->query()` dalam `ReportExplain` dengan SQL yang dikompil Query Builder.
+
+### 6.3 Tag `v1.0-capstone` selepas semua hijau
+
+Tag hanya selepas pembaikan di-merge ke `main` dan `composer test` hijau pada `main`. Dapatan yang ditemui selepas tag direkod sebagai `BUG-00N` dan dibaiki selepas demo; jangan alih tag.
+
+### 🎯 Kuiz S6
+
+> Jawab selepas Lab 10.11. Lulus kuiz ini menanda checkpoint Lab 10.11.
+
+1. Subagent semak-ci4 melaporkan "K5 Gagal: GET statistik/data tiada filter", tetapi route itu berada dalam group statistik dengan filter permission:statistik.view. Apakah tindakan anda?
+   - [x] Sahkan dengan php spark filter:check GET /statistik/data atau tool filter_check ci4-spark, kemudian rekod Tolak dengan bukti dalam docs/semakan-capstone.md
+   - [ ] Terima dan tambah filter kedua pada route itu supaya subagent tidak melaporkannya lagi
+   - [ ] Abaikan dapatan itu tanpa rekod kerana subagent hanya baca sahaja
+   - [ ] Minta Claude menulis semula Routes.php sepenuhnya dalam mod Manual
+   > Dapatan ialah hipotesis. Filter pada group terpakai pada setiap route dalam group itu; `filter:check` membuktikannya. Rekod Tolak dengan bukti supaya panel dan anda sendiri tahu dapatan itu sudah disemak.
+
+2. AI-09 mencadangkan ujian untuk BR-TLK-03 (maksimum 90 hari). Claude menulis ujian itu dalam mod Manual dan ia hijau pada larian pertama. Apakah bukti tambahan yang diperlukan sebelum commit?
+   - [ ] Tiada, kerana hijau pada larian pertama bermaksud ujian itu betul
+   - [ ] Jalankan composer test dua kali untuk memastikan keputusan stabil
+   - [x] Langgar peraturan itu sementara (cth tukar 90 kepada 91 dalam service), lihat ujian merah, kemudian pulihkan kod dan lihat hijau semula
+   - [ ] Minta subagent semak-ci4 mengesahkan bahawa ujian itu betul
+   > Ujian yang tidak pernah dilihat merah mungkin tidak menguji apa-apa. Melanggar peraturan sementara membuktikan ujian itu mengesan pelanggaran. Pulihkan dengan `git restore` dan pastikan `git diff` pada `app/` kosong sebelum commit.
+
+---
+
+## S7 — Demo Capstone & Refleksi Claude Code (16:00–17:00)
+
+> ℹ️ Lab: [Lab 10.12](./lab.md#lab-1012--demo-capstone--refleksi-claude-code-s7). Format demo dan kriteria sijil tidak berubah: §4.1 dan §4.3 dalam S4 di bawah.
+
+### 7.1 Demo: format S4, tanpa pengecualian untuk kod Claude
+
+Demo 8 minit mengikut §4.1. Dalam segmen terangkan kod (minit 7–8), panel boleh memilih baris yang ditulis oleh Claude. Baris itu dinilai sama seperti baris yang anda taip sendiri. "Claude yang tulis" bukan jawapan; jawapan yang dinilai ialah *apa + kenapa + apa jadi jika dibuang*.
+
+### 7.2 Refleksi: bila terima, bila tolak
+
+| Terima cadangan apabila | Tolak cadangan apabila |
+|-------------------------|------------------------|
+| Anda boleh menerangkan setiap baris dan kaitannya dengan `BR-*`/SPEC | Anda tidak boleh menerangkan sekurang-kurangnya satu baris |
+| Ujian berkaitan pernah merah, kemudian hijau | Ujian diubah atau dilangkau supaya menjadi hijau |
+| Diff kecil dan hanya dalam skop slice | Diff menyentuh fail di luar skop, `.env` atau package baharu |
+| Nama jadual/medan/kelas tepat ikut SPEC | Nama direka, atau kod gaya CI3 / Laravel |
+
+Bukti refleksi datang daripada `docs/nota-claude.md` (gerbang terangkan dan diff yang ditolak), `docs/semakan-capstone.md` dan `git log`.
+
+### 7.3 Nota rubrik: Penggunaan Claude Code
+
+[`rubrik-capstone.md`](../docs/rubrik-capstone.md) tidak berubah dan tiada markah tambahan. Panel menilai penggunaan Claude Code melalui kriteria sedia ada: **C** (commit kecil berprefix; `BR-*` dalam service), **D** (ujian merah → hijau, termasuk invalidasi cache) dan **E** (menerangkan baris sendiri, termasuk baris yang ditulis Claude). Bukti: `docs/nota-claude.md` dan `docs/semakan-capstone.md`. Baris yang tidak dapat diterangkan menurunkan kriteria E dan tidak memenuhi kriteria sijil #4 (§4.3).
+
+### 🎯 Kuiz S7
+
+> Jawab selepas Lab 10.12. Lulus kuiz ini menanda checkpoint Lab 10.12.
+
+1. Panel memilih baris dalam StatisticsService yang mengisi bulan kosong dengan sifar. Baris itu ditulis oleh Claude dalam slice 2. Jawapan mana yang memenuhi Tahap 4 kriteria E?
+   - [ ] "Baris ini ditulis oleh Claude Code; saya meluluskan diff itu selepas ujian hijau"
+   - [ ] "Saya tidak pasti, tetapi semak-ci4 tidak melaporkan sebarang isu pada fail ini"
+   - [ ] "Baris ini mengisi bulan kosong", tanpa sebab atau kesan jika dibuang
+   - [x] Apa baris itu buat, kenapa ia perlu (GROUP BY tidak memulangkan bulan tanpa rekod), dan apa jadi jika dibuang (bar Jun dilukis pada kedudukan Mac)
+   > Tahap 4 memerlukan *apa + kenapa + apa jadi jika dibuang*, diterangkan sendiri. Siapa yang menaip baris itu tidak mengubah kriteria.
+
+2. Dalam refleksi anda, cadangan Claude yang manakah PATUT ditolak?
+   - [ ] Menulis ujian merah dahulu untuk pepijat UAT sebelum membaiki kod
+   - [x] Membuang assert dalam StatisticsCacheTest kerana ujian itu merah selepas perubahan terbaharu
+   - [ ] Memindahkan pengiraan KPI dari controller ke StatisticsService
+   - [ ] Menggunakan StatisticsService::CACHE_KEY menggantikan string 'stat_dashboard' yang ditaip
+   > Ujian yang merah ialah maklumat: sama ada kod rosak atau ujian perlu dikemas kini dengan sebab yang anda boleh terangkan. Membuang `assert` menyembunyikan pepijat. Tiga pilihan lain ialah amalan kursus (ujian merah dahulu, logik dalam service, satu pemalar kunci cache).
 
 ---
 
@@ -470,6 +623,9 @@ Guna Claude Code dalam mod *Plan* (`Shift+Tab` / `Alt+M`) untuk prompt di bawah:
 | S2 · Cache | Senarai setiap `transCommit()` lawan `cache()->delete()`; AI-09 untuk `StatisticsCacheTest` | `grep` `transCommit`/`CACHE_KEY`; `!composer test` | 10.2 langkah 11 |
 | S3 · UAT & pepijat | Subagent `semak-ci4` pada K2/K5/K7; AI-10 (ujian merah dahulu); AI-08 ke atas `!git diff --staged` sebelum `FIX:` | Tanda K anda dalam `docs/UAT-signoff.md` | 10.3 langkah 7 |
 | S4 · Demo & serahan | AI-18 pada `@README.md` dan `@CLAUDE.md`; kemas kini `CLAUDE.md` projek | 2 isu dibetulkan sendiri dan di-commit | 10.4 langkah 7 |
+| S5 · Statistik dengan Claude Code | Pelan 4 slice (mod *Plan*) → diff mod Manual → subagent `semak-ci4` → tool `ci4-spark` `routes`/`filter_check` | `!composer test`; pelayar; 3 baris setiap slice dalam `docs/nota-claude.md` | 10.10 |
+| S6 · Persediaan capstone | `semak-ci4` seluruh repo; AI-08 (DoD); AI-09 (jurang ujian); AI-10; AI-18 (README/CLAUDE.md/PRD) | Setiap dapatan Terima/Tolak dengan bukti; ujian merah apabila peraturan dilanggar | 10.11 |
+| S7 · Demo & refleksi | AI-14 (latih segmen terangkan kod) | Refleksi terima/tolak dengan bukti commit/ujian | 10.12 |
 
 ---
 
@@ -484,6 +640,7 @@ Guna Claude Code dalam mod *Plan* (`Shift+Tab` / `Alt+M`) untuk prompt di bawah:
 - [ ] `docs/UAT-signoff.md` diisi; log pepijat dengan ≥ 1 pepijat ditutup melalui kitaran ujian-gagal
 - [ ] Senarai semak keselamatan K1–K10 ditanda
 - [ ] Tag `v1.0-capstone`; demo 8 minit; helaian markah ditandatangani → **M4 siap** · **Sistem lengkap** 🎓
+- [ ] Lab 10.10–10.12 (Claude Code): `docs/nota-claude.md` dengan 12 baris gerbang terangkan + refleksi terima/tolak; `docs/semakan-capstone.md` dengan setiap dapatan bertanda Terima/Tolak
 
 ---
 

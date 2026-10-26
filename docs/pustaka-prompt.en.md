@@ -9,7 +9,7 @@ AI in this course is an **explainer and reviewer**, not a module generator. On D
 
 ```mermaid
 flowchart LR
-    A[Write the code yourself] --> B{Stuck / unsure?}
+    A[Write the code, or ask Claude to implement one slice — AI-19] --> B{Stuck / unsure?}
     B -- Yes --> C[Use prompt AI-xx]
     C --> D[Read the answer]
     D --> E{Can you explain it<br/>to a colleague?}
@@ -58,6 +58,8 @@ flowchart LR
 | **AI-16** | PRD interview | Project | 7 |
 | **AI-17** | PRD → *vertical slice* plan | Project | 7 |
 | **AI-18** | Review a PRD | Project | 7 |
+| **AI-19** | Implement one slice from the plan (Manual mode) | Implement | 7–10 |
+| **AI-20** | Explain this diff before I accept it | Implement | 7–10 |
 
 ---
 
@@ -355,7 +357,7 @@ common car models in Malaysia, colour). No real data. Format: PHP array.
 
 ## F · Project & PRD
 
-Full tutorial: [`tutorial-prompt-projek.md`](tutorial-prompt-projek.md). AI-15, AI-17 and AI-18 run in *Plan* mode; for AI-16, leave *Plan* mode only when Claude asks permission to write `docs/prd.md`, and read the draft first. Claude drafts plans, PRDs and explanations, you write the code.
+Full tutorial: [`tutorial-prompt-projek.md`](tutorial-prompt-projek.md). AI-15, AI-17 and AI-18 run in *Plan* mode; for AI-16, leave *Plan* mode only when Claude asks permission to write `docs/prd.md`, and read the draft first. Claude drafts plans, PRDs and explanations; implementation code may be written by Claude one slice at a time through the review gates ([§G](#g--implement-with-review-gates), [`kolaborasi.en.md`](kolaborasi.en.md) §3).
 
 ### AI-15 — Onboarding an existing project
 
@@ -422,13 +424,47 @@ At most 8 issues, most important first.
 
 - **After:** Pick at least 2 issues and fix them **yourself** in `docs/prd.md`. Commit `PRD: …`.
 
+## G · Implement with review gates
+
+From Day 7 afternoon to Day 10, Claude may write implementation code **one slice at a time** through the seven gates in [`kolaborasi.md`](kolaborasi.md) §3: SPEC → plan (*Plan* mode) → implement (*Manual* mode) → verify → `semak-ci4` → explain → commit. For implementation code, this flow replaces "write the code yourself" in the diagram above; AI-13 stays for small boilerplate.
+
+### AI-19 — Implement one slice from the plan (Manual mode)
+
+- **When to use:** After you have reviewed and edited the slice plan (AI-17 or the plan prompt in the lab), and the Claude Code mode is *Manual* (the default).
+- **Don't:** Ask for several slices at once; switch on *accept edits*, *auto* or *bypass permissions*; approve a diff you have not read.
+
+```prompt title="AI-19"
+Implement ONLY <Slice 1> from the plan in @docs/pelan-pas.md, one file at a time.
+Refer to @docs/spec-pas.md (<§2.2 BR-PAS-01, BR-PAS-04>). Table, field, enum and class names exactly as in the SPEC.
+Constraints: do not change files outside the plan's list; do not run migrate or db:seed; no files in public/; every view output goes through esc().
+After each file, stop and explain in 3 lines what changed and which BR it meets, before the next file.
+Finally, write the tests in the plan and run composer test.
+```
+
+- **After:** Read every diff before `Yes`. Reject (`No`, then give the reason) any diff that touches files outside the plan or breaks `CLAUDE.md`. Run `composer test` yourself.
+
+### AI-20 — Explain this diff before I accept it
+
+- **When to use:** When Claude asks permission for a diff you do not fully understand, or before you fill in the explain gate in `docs/nota-claude.md`.
+- **Don't:** Accept an answer that only repeats the code; let Claude change files while it explains.
+
+```prompt title="AI-20"
+Before I accept the diff for <app/Models/PassApplicationModel.php>, explain without changing files:
+1. Every changed line and why (refer to BR-* where relevant).
+2. What breaks or leaks if the <ownedBy()> line is removed.
+3. One way this diff might be wrong, and the test that would catch it.
+Answer in Malay; technical terms in English.
+```
+
+- **After:** Rewrite the explanation in your own words in `docs/nota-claude.md` (`fail:baris`). If you still cannot explain it, reject the diff.
+
 ---
 
 ## Anti-patterns — prompts that are **not** allowed
 
 | ❌ Prompt | Why it is wrong | ✅ Replace with |
 |-----------|--------------|-----------------|
-| "Build a complete CodeIgniter Pass module with approval." | Breaks KOLABORASI §3; you cannot explain it | AI-03 (concept) + AI-04 (check your logic) |
+| "Build a complete CodeIgniter Pass module with approval." | Breaks KOLABORASI §3: generating a whole module in one prompt gives a diff too large to read and explain. Slice by slice with review gates is allowed | AI-17 (slice plan) → AI-19 (implement one slice, Manual mode) → AI-20 (explain the diff) → `semak-ci4` |
 | "Fix this code." (with no context) | The AI guesses; you don't learn the cause | AI-01 |
 | "Write all the tests for my project." | Tests you don't understand = false confidence | AI-09 → write them yourself |
 | "Change this code so it passes the tests." | Can weaken the tests or hide bugs | AI-10 + fix it yourself |
