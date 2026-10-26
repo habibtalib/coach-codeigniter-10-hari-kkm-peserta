@@ -490,8 +490,6 @@ Menulis semula 5 prompt lemah mengikut anatomi lima bahagian (konteks, tugas, ke
 
 ## Lab 7.7 — Subagent & Skill untuk Projek CI4 (S10)
 
-> 📘 Rujukan penuh menyediakan subagent, skill & MCP: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md)
-
 > 📘 Rujukan penuh: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md) (menyediakan subagent, skill & MCP di Windows).
 
 > 🛡️ Peraturan data yang sama seperti [Lab 7.6](#lab-76--claude-code-pasang-log-masuk--claudemd-projek-s9): sintetik sahaja, tiada `.env`, tiada sistem KKM.
@@ -669,8 +667,6 @@ Mencipta subagent baca sahaja `semak-ci4` dan **menggunakannya** untuk menyemak 
 ---
 
 ## Lab 7.8 — MCP: ci4-spark, MySQL, Context7 & GitLab (S11)
-
-> 📘 Rujukan penuh menyediakan subagent, skill & MCP: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md)
 
 > 📘 Rujukan penuh: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md) (menyediakan subagent, skill & MCP di Windows).
 

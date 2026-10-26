@@ -490,8 +490,6 @@ Rewrite 5 weak prompts using the five-part anatomy (context, task, constraints, 
 
 ## Lab 7.7 — Subagents & Skills for a CI4 Project (S10)
 
-> 📘 Full reference for setting up subagents, skills & MCP: [`tutorial-agent-skill-mcp.en.md`](../docs/tutorial-agent-skill-mcp.en.md)
-
 > 📘 Full reference: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md) (setting up subagents, skills & MCP on Windows).
 
 > 🛡️ Same data rules as [Lab 7.6](#lab-76--claude-code-install-log-in--project-claudemd-s9): synthetic only, no `.env`, no KKM systems.
@@ -669,8 +667,6 @@ Create a read-only subagent `semak-ci4` and **use it** to security-review your o
 ---
 
 ## Lab 7.8 — MCP: ci4-spark, MySQL, Context7 & GitLab (S11)
-
-> 📘 Full reference for setting up subagents, skills & MCP: [`tutorial-agent-skill-mcp.en.md`](../docs/tutorial-agent-skill-mcp.en.md)
 
 > 📘 Full reference: [`tutorial-agent-skill-mcp.md`](../docs/tutorial-agent-skill-mcp.md) (setting up subagents, skills & MCP on Windows).
 

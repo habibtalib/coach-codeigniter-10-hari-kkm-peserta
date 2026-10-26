@@ -1916,10 +1916,10 @@ table.t{width:100%;border-collapse:separate;border-spacing:0;background:var(--su
   <div class="sessions">
     <div><i>S9</i><span>Pasang di Windows &amp; <code>CLAUDE.md</code></span></div>
     <div><i>S12</i><span>Prompting &amp; PRD</span></div>
-    <div><i>S17</i><span>Seni Prompt: anatomi &amp; katalog</span></div>
+    <div><i>S17</i><span>Seni Prompt: Anatomi &amp; Katalog Contoh</span></div>
     <div><i>S10</i><span>Subagent &amp; skill</span></div>
     <div><i>S11</i><span>MCP: <code>ci4-spark</code>, Context7</span></div>
-    <div><i>S18</i><span>Amalan terbaik Claude Code</span></div>
+    <div><i>S18</i><span>Amalan Terbaik Claude Code</span></div>
     <div><i>S15</i><span>Fahami projek contoh eSPKP</span></div>
     <div><i>S16</i><span>Merancang: PRD → keperluan → pelan slice</span></div>
   </div>
@@ -2445,36 +2445,45 @@ down() mengundur up() · JANGAN jalankan migrate</span></pre></div>
 <section class="slide codey">
   <div class="eyebrow">Hari 7 · S18 — Hook</div>
   <h2>Hook: peraturan yang <u>sentiasa</u> berlaku</h2>
-  <div class="split" style="grid-template-columns:1.15fr .85fr">
-    <div class="codewrap"><div class="codebar">.claude/settings.json<span class="lang">json</span></div>
-<pre class="code sm" data-lang="json">{
-  <span class="s">"hooks"</span>: {
-    <span class="s">"PreToolUse"</span>: [{ <span class="s">"matcher"</span>: <span class="s">"Read|Edit|Write|Bash|Grep|Glob"</span>, <span class="s">"hooks"</span>: [{
-      <span class="s">"type"</span>: <span class="s">"command"</span>, <span class="s">"command"</span>: <span class="s">"php"</span>,
-      <span class="s">"args"</span>: [<span class="s">"${CLAUDE_PROJECT_DIR}/.claude/hooks/sekat-env.php"</span>]
-    }] }],
-    <span class="s">"PostToolUse"</span>: [{ <span class="s">"matcher"</span>: <span class="s">"Edit|Write"</span>, <span class="s">"hooks"</span>: [{
-      <span class="s">"type"</span>: <span class="s">"command"</span>, <span class="s">"command"</span>: <span class="s">"php"</span>,
-      <span class="s">"args"</span>: [<span class="s">"${CLAUDE_PROJECT_DIR}/.claude/hooks/semak-sintaks.php"</span>]
-    }] }]
-  }
+  <div class="split" style="grid-template-columns:1fr 1fr">
+    <div class="codewrap"><div class="codebar">.claude/settings.json (bahagian hooks)<span class="lang">json</span></div>
+<pre class="code sm" data-lang="json" style="font-size:12px"><span class="s">"hooks"</span>: {
+  <span class="s">"PreToolUse"</span>: [{
+    <span class="s">"matcher"</span>: <span class="s">"Read|Edit|Write|Bash|Grep|Glob"</span>,
+    <span class="s">"hooks"</span>: [{ <span class="s">"type"</span>: <span class="s">"command"</span>, <span class="s">"command"</span>: <span class="s">"php"</span>,
+      <span class="s">"args"</span>: [
+        <span class="s">"${CLAUDE_PROJECT_DIR}/.claude/hooks/sekat-env.php"</span>
+      ] }]
+  }],
+  <span class="s">"PostToolUse"</span>: [{
+    <span class="s">"matcher"</span>: <span class="s">"Edit|Write"</span>,
+    <span class="s">"hooks"</span>: [{ <span class="s">"type"</span>: <span class="s">"command"</span>, <span class="s">"command"</span>: <span class="s">"php"</span>,
+      <span class="s">"args"</span>: [
+        <span class="s">"${CLAUDE_PROJECT_DIR}/.claude/hooks/semak-sintaks.php"</span>
+      ] }]
+  }]
 }</pre></div>
     <div class="stack">
       <div class="codewrap"><div class="codebar">.claude/hooks/sekat-env.php (PreToolUse)<span class="lang">php</span></div>
-<pre class="code sm" data-lang="php">&lt;?php
-<span class="v">$tool</span> = (json_decode(stream_get_contents(STDIN), <span class="k">true</span>) ?? [])[<span class="s">'tool_input'</span>] ?? [];
-<span class="v">$teks</span> = implode(<span class="s">' '</span>, array_filter(<span class="v">$tool</span>, <span class="s">'is_string'</span>));
+<pre class="code sm" data-lang="php" style="font-size:12px">&lt;?php
+<span class="v">$input</span> = json_decode(stream_get_contents(STDIN), <span class="k">true</span>) ?? [];
+<span class="v">$tool</span>  = <span class="v">$input</span>[<span class="s">'tool_input'</span>] ?? [];
+<span class="v">$teks</span>  = <span class="s">''</span>;
+<span class="k">foreach</span> ([<span class="s">'file_path'</span>, <span class="s">'path'</span>, <span class="s">'command'</span>, <span class="s">'pattern'</span>, <span class="s">'glob'</span>] <span class="k">as</span> <span class="v">$m</span>) {
+    <span class="k">if</span> (is_string(<span class="v">$tool</span>[<span class="v">$m</span>] ?? <span class="k">null</span>)) <span class="v">$teks</span> .= <span class="s">' '</span> . <span class="v">$tool</span>[<span class="v">$m</span>];
+}
 <span class="k">if</span> (preg_match(<span class="s">'/\.env(?!\.example)(?![\w])/'</span>, <span class="v">$teks</span>)) {
-    fwrite(STDERR, <span class="s">"Disekat oleh hook sekat-env"</span>);
-    <span class="k">exit</span>(2);  <span class="c">// 2 = sekat; mesej ke Claude</span>
-}</pre></div>
+    fwrite(STDERR, <span class="s">"Disekat: .env rahsia. Guna .env.example"</span>);
+    <span class="k">exit</span>(2);
+}
+<span class="k">exit</span>(0);</pre></div>
       <ul class="checks sm" style="gap:6px">
-        <li><span><code>semak-sintaks.php</code> (PostToolUse): <code>php -l</code> pada fail <code>.php</code> yang diedit.</span></li>
+        <li><span><code>semak-sintaks.php</code> (PostToolUse): <code>php -l</code>; sintaks rosak → <code>decision: block</code>, Claude membaiki.</span></li>
         <li><span><code>/hooks</code>: lihat hook yang aktif.</span></li>
       </ul>
     </div>
   </div>
-  <aside class="notes"><p>Hook dijalankan oleh Claude Code, bukan model, jadi ia sentiasa berlaku walaupun Claude terlupa. PreToolUse dengan exit 2 menyekat tool sebelum ia berjalan, dan mesej stderr dihantar kepada Claude supaya ia boleh mengubah pendekatan. PostToolUse semak-sintaks.php menjalankan php -l pada fail PHP yang baru diedit. Hook dalam repo orang lain juga menjalankan arahan, jadi semak .claude/settings.json sebelum mempercayai repo. (8 minit)</p></aside>
+  <aside class="notes"><p>Hook dijalankan oleh Claude Code, bukan model, jadi ia sentiasa berlaku walaupun Claude terlupa. PreToolUse dengan exit 2 menyekat tool sebelum ia berjalan, dan mesej stderr dihantar kepada Claude supaya ia boleh mengubah pendekatan. sekat-env.php menyemak file_path, command, pattern dan glob, jadi cat .env melalui Bash juga disekat. semak-sintaks.php menjalankan php -l pada fail PHP yang baru diedit dan memulangkan decision block jika rosak. Bentuk exec (command php + args) tidak melalui shell. Skrip penuh dalam Lab 7.15. Hook dalam repo orang lain juga menjalankan arahan, jadi semak .claude/settings.json sebelum mempercayai repo. (8 minit)</p></aside>
 </section>
 
 <section class="slide">
@@ -2604,13 +2613,13 @@ down() mengundur up() · JANGAN jalankan migrate</span></pre></div>
   <ul class="checks done sm" style="gap:6px">
     <li><span><code>.claude/settings.json</code> (deny) &amp; <code>CLAUDE.md</code> projek di-commit (7.6).</span></li>
     <li><span>3 prompt onboarding disahkan; <code>docs/prd.md</code> latihan dengan FR, BR &amp; AC (7.9).</span></li>
-    <li><span>5 prompt lemah ditulis semula; 6 prompt katalog dijalankan &amp; dinilai 0–6 dalam <code>nota-claude.md</code> (7.14).</span></li>
+    <li><span>5 prompt lemah ditulis semula + 6 prompt katalog bermarkah dalam <code>docs/nota-claude.md</code> (7.14).</span></li>
     <li><span>Subagent <code>semak-ci4</code> &amp; skill <code>migration-ci4</code> (7.7) · MCP <code>ci4-spark</code> &amp; Context7 <i>Connected</i> (7.8).</span></li>
-    <li><span>4 allow / 7 deny; hook <code>sekat-env.php</code> + <code>semak-sintaks.php</code>; satu <code>/rewind</code>; semakan <code>claude -p</code> cetak LULUS/GAGAL (7.15).</span></li>
+    <li><span>Allow/deny + hook <code>sekat-env.php</code> &amp; <code>semak-sintaks.php</code> dibuktikan, <code>/rewind</code>, <code>CLAUDE.md</code> Amalan (7.15).</span></li>
     <li><span><code>nota-fahami.md</code> eSPKP disahkan pada <code>fail:baris</code> (7.12).</span></li>
     <li><span><code>docs/keperluan-pas.md</code> + <code>docs/pelan-pas.md</code> dalam <code>docs/keperluan-pas</code> (7.13).</span></li>
   </ul>
-  <aside class="notes"><p>Checkpoint akhir hari: settings.json dan CLAUDE.md di-commit, hook sekat-env.php menyekat edit .env, nota-fahami.md lengkap dengan fail:baris, dan keperluan-pas.md serta pelan-pas.md di-commit dalam branch docs/keperluan-pas. Esok pagi Lab 7.10 bermula terus daripada pelan-pas.md.</p></aside>
+  <aside class="notes"><p>Checkpoint akhir hari: settings.json dan CLAUDE.md di-commit, hook sekat-env.php menyekat .env dan semak-sintaks.php menangkap php -l, CLAUDE.md ada bahagian Amalan Claude Code, MR chore/claude-code ke main, nota-fahami.md lengkap dengan fail:baris, dan keperluan-pas.md serta pelan-pas.md di-commit dalam branch docs/keperluan-pas. Esok pagi Lab 7.10 bermula terus daripada pelan-pas.md.</p></aside>
 </section>
 
 
