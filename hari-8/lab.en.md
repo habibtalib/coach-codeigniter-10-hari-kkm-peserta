@@ -236,7 +236,32 @@ In your **fixed team** (issue #19): finish the Sprint 1 issue up to a `Ready` MR
 ### Prerequisites
 - Lab 8.21: the morning owner of the issue has written a **"Handover"** comment in the issue (branch / done / next).
 - Your team and role: issue #19 (Projek: PM, BA, QA; Dev: pairs 1–4 + floater). Your pair's issues: label `pasangan::N`.
-- (Optional) Figma MCP + the `papan-figjam` subagent for the FigJam board: [`tutorial-figma-mcp.en.md`](../docs/tutorial-figma-mcp.en.md).
+- FigJam board invitation accepted (email from Figma). Figma MCP setup: *Steps — Figma MCP setup* below; details in [`tutorial-figma-mcp.en.md`](../docs/tutorial-figma-mcp.en.md).
+
+### Steps — Figma MCP setup (BA + one member of each Dev pair)
+
+1. Open the FigJam board link from the trainer, sign in to Figma with the invited email (free account) and check you can add a sticky.
+2. In Git Bash:
+
+   ```bash
+   claude mcp add --transport http --scope user figma https://mcp.figma.com/mcp
+   ```
+
+   The server name **must** be `figma`: the `papan-figjam` subagent uses the `mcp__figma__*` tools.
+3. Restart `claude` in `~/latihan/espkpv2` → `/mcp` → `figma` → **Authenticate** → sign in in the browser → **Allow** → `/mcp` again: `figma` ✔ connected.
+4. Test the account (*Plan* mode):
+
+   ```text
+   Use the Figma whoami tool and tell me my account name.
+   ```
+
+5. `git switch main && git pull` (the subagent is in `.claude/agents/papan-figjam.md`), restart `claude`, then test reading the board:
+
+   ```text
+   Use the papan-figjam subagent. List the section names on the class board. Read only.
+   ```
+
+Limit: the free Figma plan allows few MCP calls a day. One prompt per change; do not test repeatedly.
 
 ### Steps — Dev
 
@@ -301,6 +326,7 @@ In your **fixed team** (issue #19): finish the Sprint 1 issue up to a `Ready` MR
 - [ ] **QA:** A QA comment with an AC ↔ code ↔ tests table and a reasoned decision.
 - [ ] **PM:** The squad board is accurate; merge order agreed.
 - [ ] **BA:** Issue #20 has a user story and ≥ 3 AC including a 404 access AC, and the label `status::sedia`.
+- [ ] **Figma MCP:** BA and one member of each pair: `/mcp` shows `figma` ✔ connected and `papan-figjam` lists the board sections.
 
 ### Common mistakes
 | Symptom | Cause | Fix |
@@ -308,6 +334,9 @@ In your **fixed team** (issue #19): finish the Sprint 1 issue up to a `Ready` MR
 | QA approves based on Claude's summary only | Evidence not opened | Open every `file:line`; no evidence = not met |
 | The MR author presses *Approve* | Forgot the rule | *Revoke approval*; only the Projek team's QA |
 | The MR contains changes outside the issue | Claude "fixed" other files | Remove them from the branch (`git restore -s main <file>`); open a new issue |
+| `/mcp` does not show `figma` | Server added while `claude` was running, or a different name | Quit and restart `claude`; `claude mcp list`; the name must be `figma` |
+| `papan-figjam` not recognised | Local `main` does not have the agent yet | `git switch main && git pull`, restart `claude` |
+| Figma: call limit reached | Free plan, too many prompts | Wait until tomorrow or edit the board by hand; one prompt per change |
 
 ---
 

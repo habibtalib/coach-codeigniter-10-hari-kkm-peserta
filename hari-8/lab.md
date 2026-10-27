@@ -236,7 +236,32 @@ Dalam **pasukan tetap** anda (isu #19): menyiapkan isu Sprint 1 hingga MR `Ready
 ### Prasyarat
 - Lab 8.21: pemilik isu pagi telah menulis komen **"Serah tugas"** dalam isu (branch / siap / seterusnya).
 - Pasukan dan peranan anda: isu #19 (Projek: PM, BA, QA; Dev: pasangan 1–4 + floater). Isu pasangan anda: label `pasangan::N`.
-- (Pilihan) Figma MCP + subagent `papan-figjam` untuk papan FigJam: [`tutorial-figma-mcp.md`](../docs/tutorial-figma-mcp.md).
+- Jemputan papan FigJam diterima (e-mel daripada Figma). Persediaan Figma MCP: *Langkah — Persediaan Figma MCP* di bawah; butiran dalam [`tutorial-figma-mcp.md`](../docs/tutorial-figma-mcp.md).
+
+### Langkah — Persediaan Figma MCP (BA + seorang daripada setiap pasangan Dev)
+
+1. Buka pautan papan FigJam daripada jurulatih, log masuk Figma dengan e-mel yang dijemput (akaun percuma) dan pastikan anda boleh menambah sticky.
+2. Dalam Git Bash:
+
+   ```bash
+   claude mcp add --transport http --scope user figma https://mcp.figma.com/mcp
+   ```
+
+   Nama server **mesti** `figma`: subagent `papan-figjam` menggunakan tool `mcp__figma__*`.
+3. Mulakan semula `claude` dalam `~/latihan/espkpv2` → `/mcp` → `figma` → **Authenticate** → log masuk dalam pelayar → **Allow** → `/mcp` sekali lagi: `figma` ✔ connected.
+4. Uji akaun (mod *Plan*):
+
+   ```text
+   Guna tool whoami Figma dan beritahu nama akaun saya.
+   ```
+
+5. `git switch main && git pull` (subagent ada dalam `.claude/agents/papan-figjam.md`), mulakan semula `claude`, kemudian uji baca papan:
+
+   ```text
+   Guna subagent papan-figjam. Senaraikan nama seksyen pada papan kelas. Baca sahaja.
+   ```
+
+Had: pelan Figma percuma membenarkan sedikit panggilan MCP sehari. Satu prompt setiap perubahan; jangan uji berulang kali.
 
 ### Langkah — Dev
 
@@ -301,6 +326,7 @@ Dalam **pasukan tetap** anda (isu #19): menyiapkan isu Sprint 1 hingga MR `Ready
 - [ ] **QA:** Komen QA dengan jadual AC ↔ kod ↔ ujian dan keputusan bersebab.
 - [ ] **PM:** Papan skuad tepat; susunan merge dipersetujui.
 - [ ] **BA:** Isu #20 mempunyai cerita pengguna dan ≥ 3 AC termasuk AC akses 404, dan label `status::sedia`.
+- [ ] **Figma MCP:** BA dan seorang setiap pasangan: `/mcp` menunjukkan `figma` ✔ connected dan `papan-figjam` menyenaraikan seksyen papan.
 
 ### Kesilapan lazim
 | Gejala | Punca | Penyelesaian |
@@ -308,6 +334,9 @@ Dalam **pasukan tetap** anda (isu #19): menyiapkan isu Sprint 1 hingga MR `Ready
 | QA meluluskan berdasarkan ringkasan Claude sahaja | Bukti tidak dibuka | Buka setiap `fail:baris`; tiada bukti = tidak dipenuhi |
 | Pengarang MR menekan *Approve* | Lupa peraturan | Tarik balik (*Revoke approval*); hanya QA pasukan Projek |
 | MR berisi perubahan di luar isu | Claude "membaiki" fail lain | Buang daripada branch (`git restore -s main <fail>`); buka isu baharu |
+| `/mcp` tidak menunjukkan `figma` | Server ditambah semasa `claude` berjalan, atau nama lain | Keluar dan mulakan semula `claude`; `claude mcp list`; nama mesti `figma` |
+| `papan-figjam` tidak dikenali | `main` setempat belum mengandungi agent | `git switch main && git pull`, mulakan semula `claude` |
+| Figma: had panggilan dicapai | Pelan percuma, terlalu banyak prompt | Tunggu esok atau ubah papan secara manual; satu prompt setiap perubahan |
 
 ---
 
