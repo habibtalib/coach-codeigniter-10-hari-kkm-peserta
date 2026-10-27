@@ -72,6 +72,10 @@ flowchart LR
 | **AI-30** | Dev: slice daripada pelan /ciri-baharu | Pasukan | 8–10 |
 | **AI-31** | Dev: jawab komen QA | Pasukan | 8–10 |
 | **AI-32** | Semua: konflik merge | Pasukan | 8–10 |
+| **AI-33** | Semua: sambung dan uji MCP Jira | Pasukan | 9–10 |
+| **AI-34** | PM: ringkasan sprint Jira | Pasukan | 9–10 |
+| **AI-35** | QA / Dev: kad Bug Jira | Pasukan | 9–10 |
+| **AI-36** | PM keluaran: CHANGELOG daripada versi Jira | Pasukan | 10 |
 
 ---
 
@@ -572,6 +576,38 @@ Rebase saya berhenti dengan konflik dalam <app/Config/Routes.php>. Terangkan apa
 ```
 
 - **Selepas:** Dev memilih baris; `php spark routes` dan `composer semak` sebelum `git rebase --continue`.
+
+### AI-33 — Semua: sambung dan uji MCP Jira
+
+```prompt title="AI-33"
+Senaraikan site dan space Jira yang saya boleh lihat, kemudian 5 kad pertama dalam backlog KAN (kunci, ringkasan, status). Baca sahaja.
+```
+
+- **Selepas:** bandingkan dengan papan Jira di pelayar. Tiada `KAN` → jemputan belum diterima atau log masuk dengan emel lain ([tutorial](tutorial-jira-mcp.md) §6).
+
+### AI-34 — PM: ringkasan sprint Jira
+
+```prompt title="AI-34"
+Guna Jira. JQL: project = KAN AND sprint in openSprints() ORDER BY status. Jadual: kunci, ringkasan, status, pasangan, assignee, label disekat, MR berkaitan (glab mr list --search KAN-<n>). Tandakan kad tanpa assignee atau tanpa AC. Baca sahaja.
+```
+
+- **Selepas:** PM memutuskan; perubahan kad dibuat di pelayar atau dengan prompt tulis yang PM luluskan medan demi medan.
+
+### AI-35 — QA / Dev: kad Bug Jira
+
+```prompt title="AI-35"
+Draf kad Bug Jira untuk KAN daripada pemerhatian ini: <langkah, jangkaan, sebenar, akaun 9001010100NN>. Ikut bahagian .gitlab/issue_templates/Pepijat.md. Data sintetik sahaja. Tunjukkan medan (jenis, ringkasan, keterangan, label pasukan-projek); cipta hanya selepas saya kata ya.
+```
+
+- **Selepas:** ulang langkah sendiri sebelum *Yes*; PM menambah `pasangan-N` semasa triage.
+
+### AI-36 — PM keluaran: CHANGELOG daripada versi Jira
+
+```prompt title="AI-36"
+Guna Jira: kad JQL project = KAN AND fixVersion = v1.1.0 AND statusCategory = Done. Padankan setiap kad dengan MR KAN-<n>: … dalam glab mr list --merged. Draf bahagian CHANGELOG 1.1.0 (Ditambah, Diubah, Dibaiki, Keselamatan), satu baris setiap MR dengan !no dan KAN-n. Kad tanpa MR dan MR tanpa kad → senarai berasingan. Jangan tulis fail.
+```
+
+- **Selepas:** buang setiap baris yang tidak dapat dipautkan kepada MR sebenar.
 
 ---
 

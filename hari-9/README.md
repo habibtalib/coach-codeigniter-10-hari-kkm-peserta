@@ -2,7 +2,7 @@
 
 [← Jadual](../JADUAL.md) · [👥 Peranan pasukan](../docs/peranan-pasukan.md) · [🧪 Lab Hari 9](./lab.md) · [Hari 10 →](../hari-10/README.md)
 
-> **Sprint 2.** Semalam pasukan **Projek** (PM, BA, 2 QA) dan **Dev** (4 pasangan + floater) menyiapkan kitaran pertama isu → MR → merge. Hari ini kitaran yang sama berjalan lebih pantas dan lebih sukar: isu Sprint 2 termasuk jurang BRS (#21–#26), beberapa pasangan menyentuh fail yang sama, QA dan pasangan Dev menguji ciri **pasangan lain**, dan pipeline perlu membuktikan setiap MR. Pasukan kekal sama (isu #19).
+> **Sprint 2.** Semalam pasukan **Projek** (PM, BA, 2 QA) dan **Dev** (4 pasangan + floater) menyiapkan kitaran pertama isu → MR → merge. Hari ini kitaran yang sama berjalan lebih pantas dan lebih sukar: isu Sprint 2 termasuk jurang BRS (#21–#26), beberapa pasangan menyentuh fail yang sama, QA dan pasangan Dev menguji ciri **pasangan lain**, dan pipeline perlu membuktikan setiap MR. Pasukan kekal sama (isu #19). **Baharu hari ini: backlog berpindah ke Jira** (space `KAN`) dan Claude membacanya melalui MCP `atlassian` ([tutorial](../docs/tutorial-jira-mcp.md)); kod, MR dan CI kekal di GitLab KKM.
 
 ---
 
@@ -12,9 +12,9 @@ Di akhir hari ini, peserta boleh:
 
 | # | Objektif (boleh diukur) | Sesi | Bukti |
 |---|------------------------|------|-------|
-| O15 | **Merancang** Sprint 2 daripada backlog (isu sedia ada + jurang BRS) dan isu susulan Sprint 1, dan **menyelaras** fail panas serta susunan merge antara pasangan Dev (Projek + floater) | S13 | Isu Sprint 2 `status::sedia` + `pasukan::dev` + `pasangan::N`; nota sync dalam isu #19 |
-| O16 | **Melaksanakan** isu Sprint 2 pasangan (cth #13 peringatan, #9 kata laluan, #17 RPT-10, #21 aliran Hilang) slice demi slice dengan ujian | S14 | Commit `Rujuk #N` dengan ujian hijau setiap slice |
-| O17 | **Menguji** ciri yang di-merge secara eksploratori (QA dan pasangan Dev lain) dan **melaporkan** pepijat sebagai isu Pepijat yang boleh diulang | S15 | ≥ 1 isu Pepijat dengan langkah ulang, diulang oleh pasangan pemilik |
+| O15 | **Merancang** Sprint 2 daripada backlog (isu sedia ada + jurang BRS) dan isu susulan Sprint 1, dan **menyelaras** fail panas serta susunan merge antara pasangan Dev (Projek + floater) | S13 | MCP `atlassian` bersambung; Sprint 2 dimulakan dalam Jira, kad berlabel `pasukan-dev` + `pasangan-N`; nota sync dalam isu #19 |
+| O16 | **Melaksanakan** isu Sprint 2 pasangan (cth #13 peringatan, #9 kata laluan, #17 RPT-10, #21 aliran Hilang) slice demi slice dengan ujian | S14 | Commit `Rujuk KAN-<n>` dengan ujian hijau setiap slice |
+| O17 | **Menguji** ciri yang di-merge secara eksploratori (QA dan pasangan Dev lain) dan **melaporkan** pepijat sebagai kad Bug Jira yang boleh diulang | S15 | ≥ 1 kad Bug dengan langkah ulang, diulang oleh pasangan pemilik |
 | O18 | **Me-merge** MR Sprint 2 dan **membuktikan** `main` kekal hijau (PHPUnit + E2E) selepas semua merge | S16 | `composer test` + `npm run e2e` pada `main`; demo sprint |
 
 > ℹ️ Objektif O1–O14 (Modul Laporan individu) kekal sebagai rujukan dalam [Lampiran](#lampiran--kerja-individu-modul-laporan-rujukan).
@@ -25,6 +25,7 @@ Di akhir hari ini, peserta boleh:
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
+| 08:15–08:30 | — | Persediaan Jira & MCP `atlassian` (pemegang kerusi Jira) | [Lab 9.20](./lab.md#lab-920--perancangan-sprint-2-sync-pm--slice-1-s13) |
 | 08:30–09:00 | — | Stand-up pasukan Projek dan pasukan Dev (siap · seterusnya · tersekat) | — |
 | 09:00–10:30 | S13 | Perancangan Sprint 2 & sync (PM, BA, floater), pelan ujian, slice 1 | O15 · [Lab 9.20](./lab.md#lab-920--perancangan-sprint-2-sync-pm--slice-1-s13) |
 | 10:30–10:45 | — | Rehat pagi | — |
@@ -33,7 +34,7 @@ Di akhir hari ini, peserta boleh:
 | 14:30–16:00 | S15 | MR, semakan QA & ujian eksploratori antara pasangan | O17 · [Lab 9.22](./lab.md#lab-922--mr-semakan--ujian-eksploratori-s15) |
 | 16:00–17:00 | S16 | Merge, `main` hijau (PHPUnit + E2E), demo sprint & retro | O18 · [Lab 9.23](./lab.md#lab-923--merge-main-hijau-demo-sprint--retro-s16) |
 
-**Isu Sprint 2** (milestone *Sprint 2 (Hari 9)*) + isu susulan Sprint 1. Cadangan agihan — PM memutuskan dan menetapkan label `pasangan::N`:
+**Isu Sprint 2** (kad Jira dalam *Sprint 2 (Hari 9)*; nombor # di bawah ialah isu GitLab KKM yang dipautkan dalam setiap kad) + isu susulan Sprint 1. Cadangan agihan — PM memutuskan dan menetapkan label `pasangan-N` dalam Jira:
 
 | Pasangan | Isu Sprint 2 | Tema teknikal | Fail panas |
 |---|---|---|---|
@@ -60,9 +61,11 @@ Dua amalan hari ini:
 
 ## S13 — Perancangan Sprint 2, Sync PM & Slice 1 (09:00–10:30)
 
-**Stand-up (08:30, 2 minit setiap orang, dalam pasukan masing-masing):** apa yang saya siapkan semalam, apa yang saya buat hari ini, apa yang menyekat saya. PM (Projek) dan floater (Dev) mencatat penyekat dalam isu.
+**Stand-up (08:30, 2 minit setiap orang, dalam pasukan masing-masing):** apa yang saya siapkan semalam, apa yang saya buat hari ini, apa yang menyekat saya. PM (Projek) dan floater (Dev) mencatat penyekat dalam kad Jira (label `disekat`).
 
-**Perancangan (Projek, 20 minit):** PM mengesahkan skop Sprint 2; BA menyiapkan AC yang tinggal dengan `/isu-baharu <no>`; QA menulis jadual AC → kes ujian dalam komen isu. Isu siap → `status::sedia` + `pasukan::dev` + `pasangan::N`. Kapasiti realistik: satu isu bersaiz M setiap pasangan setiap separuh hari.
+**Jira (sebelum stand-up, pemegang kerusi: Projek + seorang setiap pasangan + floater; Jira Free = 10 kerusi):** `git pull` → luluskan server `atlassian` → `/mcp` → Authenticate → uji dengan prompt baca sahaja. Mulai hari ini kad Jira ialah backlog; isu GitLab KKM kekal sebagai rujukan BRS.
+
+**Perancangan (Projek, 20 minit):** PM mencipta sprint *Sprint 2 (Hari 9)* dan mengesahkan skopnya; BA menyiapkan AC yang tinggal dengan `/isu-baharu KAN-<n>`; QA menulis jadual AC → kes ujian dalam komen kad. Kad siap → masuk sprint, label `pasukan-dev` + `pasangan-N`, *Assignee*; PM **Start sprint** selepas sync. Kapasiti realistik: satu kad bersaiz M setiap pasangan setiap separuh hari.
 
 **Sync (15 minit, PM + BA + floater + wakil pasangan + jurulatih):**
 
@@ -75,8 +78,8 @@ Dua amalan hari ini:
 **Dev** mengulang ritma Lab 8.21: AI-29 → `/ciri-baharu <no>` → branch → slice 1. **QA** menulis ujian gagal dahulu dalam branch isu.
 
 ### ✅ Checkpoint S13
-- Isu Sprint 2 `status::sedia` + `pasukan::dev` + `pasangan::N`; nota sync dalam isu #19.
-- Branch Sprint 2 setiap pasangan dengan commit pertama `Rujuk #N`.
+- MCP `atlassian` bersambung untuk setiap pemegang kerusi Jira; Sprint 2 dimulakan dalam Jira dengan `pasangan-N` dan *Assignee*; nota sync dalam isu #19.
+- Branch `feat/KAN-<n>-…` setiap pasangan dengan commit pertama `Rujuk KAN-<n>`; kad *In Progress*.
 
 ---
 
@@ -108,11 +111,11 @@ Aliran MR sama seperti Lab 8.22. Tambahan hari ini:
 
 **Ujian eksploratori (30 minit).** QA menguji setiap ciri yang sudah di-merge ke `main`. Setiap pasangan Dev menguji ciri **pasangan lain** (1 → 2 → 3 → 4 → 1) selama 20 minit. Gunakan sekurang-kurangnya tiga akaun latihan berbeza. Cari: mesej yang mengelirukan, akses yang sepatutnya 404, paparan 360px yang pecah, eksport yang jumlahnya tidak sepadan.
 
-Pepijat → isu Pepijat (templat *Pepijat*, label `pasukan::projek` untuk triage PM dan `pasangan::N` pemilik ciri) dengan langkah ulang. Claude membantu mendraf (prompt AI-28), penguji mengesahkan setiap langkah sendiri.
+Pepijat → kad **Bug** Jira (bahagian templat *Pepijat*, label `pasukan-projek` untuk triage PM dan `pasangan-N` pemilik ciri) dengan langkah ulang. Claude mendraf (prompt AI-28) dan mencipta kad melalui MCP hanya selepas penguji membaca medan dan berkata ya; penguji mengesahkan setiap langkah sendiri.
 
 ### ✅ Checkpoint S15
 - MR Sprint 2 setiap pasangan `Ready` dengan komen semakan QA.
-- ≥ 1 isu Pepijat yang boleh diulang oleh pasangan pemilik.
+- ≥ 1 kad Bug Jira yang boleh diulang oleh pasangan pemilik.
 
 ---
 
@@ -129,11 +132,11 @@ composer test
 
 **E2E** dijalankan oleh QA (atau floater) mengikut bahagian *Ujian hujung ke hujung (E2E)* dalam README repo: database berasingan `espkp_contoh_e2e`, server `php -S localhost:8095`, kemudian `npm run e2e:sedia` dan `npm run e2e`. Jangan jalankan E2E pada database dev anda — data diset semula.
 
-Merah → pasangan yang MR terakhirnya menyebabkan kegagalan membuka isu Pepijat `keutamaan::1-kritikal` dan membaikinya **sebelum** Sprint 3. **Demo sprint** (3 minit setiap pasangan: BA tunjuk AC, Dev tunjuk ciri, QA tunjuk ujian) dan **retro** (sticky dalam seksyen *Retro* FigJam + isu `Retro Sprint 2`), kemudian PM menyenaraikan isu Sprint 3 dan skop keluaran **v1.1.0**.
+Merah → pasangan yang MR terakhirnya menyebabkan kegagalan membuka kad Bug Jira keutamaan *Highest* dan membaikinya **sebelum** Sprint 3. **Demo sprint** (3 minit setiap pasangan: BA tunjuk AC, Dev tunjuk ciri, QA tunjuk ujian) dan **retro** (sticky dalam seksyen *Retro* FigJam + isu `Retro Sprint 2`), kemudian PM menutup Sprint 2 dalam Jira (*Complete sprint*), mencipta Sprint 3 dan menetapkan *Fix version* `v1.1.0` pada kad skop keluaran.
 
 ### ✅ Checkpoint S16
 - Semua MR Sprint 2 yang lulus QA di-merge; `composer test` dan `npm run e2e` hijau pada `main`.
-- Isu retro Sprint 2 dan senarai skop v1.1.0 dalam milestone *Sprint 3 + v1.1 (Hari 10)*.
+- Isu retro Sprint 2; Sprint 3 dalam Jira dengan kad *Fix version* `v1.1.0`.
 
 ---
 ## 🤖 Prompting hari ini
@@ -142,12 +145,13 @@ Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) §H (AI-21..AI-32
 
 | Peranan | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
 |---|---|---|---|
-| PM · sync | AI-23: `Ringkaskan isu Sprint 2 berlabel pasukan::dev dan fail panas yang setiap isu akan sentuh; tandakan kebergantungan antara pasangan.` | Bandingkan dengan nota sync dalam isu #19 | 9.20 |
+| Semua · Jira MCP | AI-33: `Senaraikan site dan space Jira yang saya boleh lihat, kemudian 5 kad pertama dalam backlog KAN. Baca sahaja.` | Kunci dan ringkasan sama seperti di papan Jira | 9.20 |
+| PM · sync | AI-23 + AI-34: `Guna Jira. JQL: project = KAN AND sprint in openSprints(). Ringkaskan kad berlabel pasukan-dev dan fail panas yang setiap kad akan sentuh; tandakan kebergantungan antara pasangan.` | Bandingkan dengan nota sync dalam isu #19 | 9.20 |
 | BA · AC | AI-21: `/isu-baharu 21` → `Bandingkan AC ini dengan bahagian Keperluan BRS dalam isu; senaraikan apa yang tiada atau ditambah.` | Setiap AC berasal daripada isu/BRS, bukan rekaan Claude | 9.20 |
 | QA · pelan ujian | AI-25 dengan `penguji-espkp`; untuk #13: `Bagaimana menguji perintah peringatan tanpa menunggu 7 hari? Tunjukkan corak service('jam') dalam ujian sedia ada.` | Ujian gagal kerana ciri tiada, bukan kerana masa | 9.20 |
 | Dev · bina | AI-29 → `/ciri-baharu <no>` → AI-30 setiap slice; pasangan 3: `Ikut corak laporan/_carta dan data-carta; tiada <script> sebaris.` | `composer semak`; `semak-espkp`; pelayar 360px | 9.21 |
 | Dev · papan | `Guna subagent papan-figjam. #21 sudah di-merge: tukar anak panah cadangan Hilang 2 → 4 → 5 kepada garis biasa.` | Buka papan; hanya seksyen aliran Hilang berubah | 9.23 |
-| QA / Dev · eksploratori | AI-28: `Draf isu Pepijat daripada pemerhatian saya: <langkah, jangkaan, sebenar>. Data sintetik sahaja.` | Ulang langkah sendiri sebelum cipta isu | 9.22 |
+| QA / Dev · eksploratori | AI-28: `Draf kad Bug Jira untuk KAN daripada pemerhatian saya: <langkah, jangkaan, sebenar>. Data sintetik sahaja. Tunjukkan medan; cipta hanya selepas saya kata ya.` | Ulang langkah sendiri; baca medan sebelum *Yes* | 9.22 |
 | QA · semak MR | AI-27: `/semak-mr <no>` | Buka setiap `fail:baris` | 9.22 |
 | Semua · `main` merah | `Ujian ini gagal pada main selepas merge !<a> dan !<b>: <output>. Commit mana yang mungkin punca? Jangan baiki lagi.` | `git log`, `git bisect` jika perlu | 9.23 |
 
@@ -157,11 +161,11 @@ Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) §H (AI-21..AI-32
 
 **Kerja pasukan (hari ini):**
 
-- [ ] Isu Sprint 2 `status::sedia` + `pasukan::dev` + `pasangan::N`; nota sync dalam isu #19
+- [ ] MCP `atlassian` bersambung; Sprint 2 dalam Jira dengan `pasangan-N` dan *Assignee*; nota sync dalam isu #19
 - [ ] Ciri Sprint 2 setiap pasangan di-merge melalui MR dengan semakan QA dan ujian hijau
-- [ ] ≥ 1 isu Pepijat daripada ujian eksploratori dengan langkah ulang
+- [ ] ≥ 1 kad Bug Jira daripada ujian eksploratori dengan langkah ulang
 - [ ] `composer test` dan `npm run e2e` hijau pada `main` selepas semua merge
-- [ ] Isu retro Sprint 2 dan skop v1.1.0 dalam milestone Sprint 3; AC isu Sprint 3 siap
+- [ ] Isu retro Sprint 2; Sprint 3 dalam Jira dengan *Fix version* `v1.1.0`; AC kad Sprint 3 siap
 
 **Kerja individu Modul Laporan (rujukan, tidak wajib — [Lampiran](#lampiran--kerja-individu-modul-laporan-rujukan)):**
 
@@ -235,7 +239,7 @@ QA sudah membaca isu, AC dan pelan ujian — dia berkongsi sebahagian andaian de
 Hari 10 — **Sprint 3, keluaran v1.1.0 dan demo capstone pasukan**. Pasukan Projek dan Dev kekal sama.
 
 - `main` hijau (`composer test`, `npm run e2e`) — pepijat kritikal Sprint 2 dibaiki dahulu.
-- Projek: isu Sprint 3 (#14, #15, #18, #27–#32) dengan AC dan `pasangan::N` dalam milestone *Sprint 3 + v1.1 (Hari 10)*; tiada isu baharu selepas 12:30 esok.
+- Projek: kad Sprint 3 (daripada #14, #15, #18, #27–#32) dengan AC, `pasangan-N` dan *Fix version* `v1.1.0` dalam sprint Jira *Sprint 3 + v1.1 (Hari 10)*; tiada kad baharu dalam sprint selepas 12:30 esok.
 - Setiap ahli: sediakan satu baris kod yang anda commit minggu ini dan boleh terangkan tanpa Claude — panel capstone akan bertanya.
 
 ---

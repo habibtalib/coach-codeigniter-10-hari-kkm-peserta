@@ -4,12 +4,12 @@
 
 | Lab | Session | Time | Output |
 |-----|---------|------|--------|
-| 9.20 | S13 | 09:00–10:30 | Sprint 2 issues `status::sedia` + `pasangan::N`, sync note, failing tests from the AC, slice 1 |
+| 9.20 | S13 | 09:00–10:30 | `atlassian` MCP connected, Sprint 2 started in Jira (`pasangan-N`), sync note, failing tests from the AC, slice 1 |
 | 9.21 | S14 | 10:45–12:30 | Every pair's Sprint 2 feature slice by slice with green tests; Sprint 3 AC |
-| 9.22 | S15 | 14:30–16:00 | `Ready` MR + QA review; ≥ 1 Bug issue from exploratory testing |
+| 9.22 | S15 | 14:30–16:00 | `Ready` MR + QA review; ≥ 1 Jira Bug card from exploratory testing |
 | 9.23 | S16 | 16:00–17:00 | All MRs merged, green `main` (PHPUnit + E2E), sprint demo, retro |
 
-> ℹ️ Repo: `aplikasi-baharu/espkpv2`. Fixed teams: **Projek** (PM, BA, 2 QA) and **Dev** (4 pairs + a floater) — names in issue #19, rules in the repo's `docs/pasukan.md`. The issue → branch → MR → merge mechanics are the same as [Labs 8.21–8.23](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16); today's labs add the sync, exploratory testing between pairs and a green `main`. The individual Reports module labs (9.1–9.13) are in the [Appendix](#appendix--individual-reports-module-labs-reference).
+> ℹ️ Repo: `aplikasi-baharu/espkpv2`. Fixed teams: **Projek** (PM, BA, 2 QA) and **Dev** (4 pairs + a floater) — names in issue #19, rules in the repo's `docs/pasukan.md`. The issue → branch → MR → merge mechanics are the same as [Labs 8.21–8.23](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16); today's labs add the sync, exploratory testing between pairs and a green `main`. **From today the backlog lives in Jira** (space `KAN`, site link in issue #19, [Jira MCP tutorial](../docs/tutorial-jira-mcp.en.md)); code, MRs and CI stay on GitLab KKM, and GitLab KKM issues #1–#33 stay as the BRS reference. The individual Reports module labs (9.1–9.13) are in the [Appendix](#appendix--individual-reports-module-labs-reference).
 
 ---
 
@@ -21,6 +21,21 @@ Plan Sprint 2 (existing issues, BRS gaps and Sprint 1 follow-ups), **coordinate*
 ### Prerequisites
 - `git switch main && git pull && composer install && php spark migrate --all` — `composer test` green.
 - Your team and role: issue #19 (Projek: PM, BA, QA; Dev: pairs 1–4 + floater).
+- Jira seat holders: invitation accepted (email from Atlassian) and you can open the `KAN` space in the browser.
+
+### Steps — Jira & `atlassian` MCP setup (Jira seat holders, before the stand-up)
+
+Jira Free: **10 seats** — the trainer, PM, BA, 2 QA, one member of each Dev pair and the floater. The pair partner works in the same Claude session (driver/navigator), so one MCP sign-in per pair is enough.
+
+1. `git switch main && git pull` (`.mcp.json` now has the `atlassian` server), then restart `claude` in `~/latihan/espkpv2` and **approve** `atlassian` when asked.
+2. `/mcp` → `atlassian` → **Authenticate** → sign in with the invited email → choose the class site → **Accept** → `/mcp`: `atlassian` ✔ connected.
+3. Test (*Plan* mode):
+
+   ```text
+   List the Jira sites and spaces I can see, then the first 5 cards in the KAN backlog (key, summary, status). Read only.
+   ```
+
+4. Read the key convention ([tutorial §3](../docs/tutorial-jira-mcp.en.md#3-jira-key-convention)): branch `feat/KAN-<n>-<short>`, commit `Rujuk KAN-<n>`, MR title `KAN-<n>: …`.
 
 ### Steps
 
@@ -28,13 +43,13 @@ Plan Sprint 2 (existing issues, BRS gaps and Sprint 1 follow-ups), **coordinate*
 
 2. **Projek — Sprint 2 issues (20 minutes).**
 
-   ```bash
-   glab issue list --milestone "Sprint 2 (Hari 9)" --label pasukan::projek
+   ```text
+   Use Jira. JQL: project = KAN AND labels = pasukan-projek AND statusCategory != Done ORDER BY rank. Table: key, summary, GitLab KKM link, has AC (yes/no). Read only.
    ```
 
-   - **BA:** the remaining AC (`/isu-baharu <no>`, start with #21–#26).
-   - **QA:** an AC → test case table in a comment on every issue.
-   - **PM:** ready issue → `glab issue update <no> --label "status::sedia,pasukan::dev,pasangan::<N>"` and assign the pair's first member. Capacity: one M-size issue per pair per half day; extra issues → backlog with a comment giving the reason.
+   - **BA:** the remaining AC (`/isu-baharu KAN-<n>`, start with the cards from #21–#26).
+   - **QA:** an AC → test case table in a comment on every Jira card.
+   - **PM:** create the sprint *Sprint 2 (Hari 9)* on the board; ready card → into the sprint, labels `pasukan-dev` + `pasangan-<N>`, *Assignee* the pair's first member (in the browser, or ask Claude and approve the fields). **Start sprint** after the sync. Capacity: one M-size card per pair per half day; extra cards → stay in the backlog with a comment giving the reason.
 
 3. **Sync (09:00, 15 minutes: PM, BA, floater, one member of each pair + trainer).** The PM writes in a comment on issue #19:
 
@@ -55,13 +70,14 @@ Plan Sprint 2 (existing issues, BRS gaps and Sprint 1 follow-ups), **coordinate*
    Plan mode. How do the existing tests control time (service('jam')) and email (service('notifikasi')) so the reminder command can be tested without waiting 7 days? Show example file:line in tests/.
    ```
 
-5. **Dev — slice 1 (60 minutes, every pair).** The [Lab 8.21 — Dev](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16) rhythm: AI-29 → `/ciri-baharu <no>` → branch `feat/<no>-<short>` → slice 1 (*Manual* mode) → `composer semak` → `semak-espkp` → commit `Rujuk #<no>` → push. New migration: the first digit of the version = the pair number.
+5. **Dev — slice 1 (60 minutes, every pair).** The [Lab 8.21 — Dev](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16) rhythm: AI-29 → `/ciri-baharu <no>` → branch `feat/KAN-<n>-<short>` → card *In Progress* → slice 1 (*Manual* mode) → `composer semak` → `semak-espkp` → commit `Rujuk KAN-<n>` → push. New migration: the first digit of the version = the pair number.
 
 ### ✅ Checkpoint
-- [ ] Sprint 2 issues `status::sedia` + `pasukan::dev` + `pasangan::N`, with an *Assignee*.
+- [ ] `/mcp` shows `atlassian` ✔ connected and Claude lists the `KAN` backlog cards.
+- [ ] Sprint 2 started in Jira; every sprint card has the labels `pasukan-dev` + `pasangan-N` and an *Assignee*.
 - [ ] A sync note in issue #19 with the merge order agreed by all pairs.
 - [ ] The test fails because the feature is missing, with a message that names the AC.
-- [ ] A Sprint 2 branch per pair with a first commit; label `status::dalam-kerja`.
+- [ ] A `feat/KAN-<n>-…` branch per pair with a first commit; card *In Progress*.
 
 ---
 
@@ -72,7 +88,7 @@ Implement the pair's Sprint 2 issues slice by slice, paying special attention to
 
 ### Steps
 
-1. **Dev — continue the slices** (swap the driver every slice). Every slice: *Manual* mode → the navigator reads the diff → `composer semak` → `semak-espkp` → commit `Rujuk #<no>`.
+1. **Dev — continue the slices** (swap the driver every slice). Every slice: *Manual* mode → the navigator reads the diff → `composer semak` → `semak-espkp` → commit `Rujuk KAN-<n>`.
 
 2. **Dev — risk check** before the last slice: ask Claude (*Plan* mode) and verify yourself:
 
@@ -84,7 +100,7 @@ Implement the pair's Sprint 2 issues slice by slice, paying special attention to
    | 4 — #21 / #23 | `Show the Aliran.php change for Hilang via the Supervisor; are KonfigurasiAliranTest and the stepper steps still consistent?` | `vendor/bin/phpunit --filter KonfigurasiAliranTest`; try the Hilang flow with accounts 01 → 02 → 03 → 04 → 05 |
    | Floater — #8 | `Draft a mariadb CI job in .gitlab-ci.yml that runs migrate --all and the Database suite on mariadb:10.6, without changing the existing ujian job.` | Read the YAML; new job only |
 
-3. **Projek — Sprint 3.** BA: AC for #27–#32 (`/isu-baharu <no>`), system-owner questions → #33. QA: add AC tests to the Sprint 2 branches (in step with the pair) and run `vendor/bin/phpunit --filter <Class>` after every Dev commit. PM: board and blockers.
+3. **Projek — Sprint 3.** BA: AC for the cards from #27–#32 (`/isu-baharu KAN-<n>`), system-owner questions → card comment + label `disekat` (or #33). QA: add AC tests to the Sprint 2 branches (in step with the pair) and run `vendor/bin/phpunit --filter <Class>` after every Dev commit. PM: Jira board and blockers (label `disekat`).
 
 ### ✅ Checkpoint
 - [ ] ≥ 2 slices committed per pair; QA tests for the core AC **pass**.
@@ -98,26 +114,22 @@ Bring Sprint 2 to a QA-reviewed MR, and **test exploratorily** the features alre
 
 ### Steps
 
-1. **Dev — MR** as in [Lab 8.22 — Dev](../hari-8/lab.en.md#lab-822--sprint-1-afternoon-mr-qa-review--board-s17): draft MR → checklist → *Three key lines* → *Ready* → `status::semakan` + `pasukan::projek`.
+1. **Dev — MR** as in [Lab 8.22 — Dev](../hari-8/lab.en.md#lab-822--sprint-1-afternoon-mr-qa-review--board-s17): draft MR titled `KAN-<n>: …` (`Jira: KAN-<n>` in the description) → checklist → *Three key lines* → *Ready* → card *In Review*.
 
-2. **QA — MR review** with `/semak-mr <MR-no>` (AI-27), open every `file:line`, approve or request changes (`status::dalam-kerja` + `pasukan::dev`).
+2. **QA — MR review** with `/semak-mr <MR-no>` (AI-27), open every `file:line`, approve or request changes (card *In Progress* + a comment with the MR link).
 
 3. **Exploratory testing (30 minutes).** QA tests the features merged to `main`; every Dev pair tests **another pair's** feature (1 → 2 → 3 → 4 → 1) for 20 minutes. Use at least three training accounts (e.g. 01 applicant, 07 company rep, 05 approver) and a 360px width (DevTools → *Toggle device*). For every observation:
 
    ```text
-   Draft a Bug issue following .gitlab/issue_templates/Pepijat.md from this observation: <steps, expected, actual, account>. Synthetic data only. Do not create the issue.
+   Draft a Jira Bug card for KAN from this observation: <steps, expected, actual, account>. Follow the sections of .gitlab/issue_templates/Pepijat.md. Synthetic data only. Show the fields; do not create it yet.
    ```
 
-   Repeat the steps yourself, then create the issue; the PM triages and adds `pasangan::<owner>`:
-
-   ```bash
-   glab issue create --title "<ringkas>" --label "jenis::pepijat,pasukan::projek,status::baharu" --description "$(cat pepijat.md)"
-   ```
+   Repeat the steps yourself, then answer *Yes* to `createJiraIssue` (type Bug, label `pasukan-projek`). The PM triages, adds `pasangan-<owner>` and puts the card in the sprint or the backlog.
 
 4. **PM** — bug triage, board, blockers; re-confirm the S16 merge order with the floater.
 
 ### ✅ Checkpoint
-- [ ] ≥ 1 Bug issue that the owning pair managed to reproduce.
+- [ ] ≥ 1 Jira Bug card that the owning pair managed to reproduce.
 
 ---
 
@@ -147,17 +159,17 @@ Merge Sprint 2 in the sync order, **prove** `main` is green with PHPUnit and E2E
    npm run e2e
    ```
 
-   Red → ask Claude: `This E2E spec fails on main after merging !<a> and !<b>: <output>. Which commit is the likely cause? Do not fix it yet.` The causing pair opens a Bug issue `keutamaan::1-kritikal`.
+   Red → ask Claude: `This E2E spec fails on main after merging !<a> and !<b>: <output>. Which commit is the likely cause? Do not fix it yet.` The causing pair opens a Jira Bug card with priority *Highest*.
 
 4. **FigJam board (pairs that changed the schema or a workflow).** Update the ERD or the workflow arrows with the `papan-figjam` subagent ([tutorial](../docs/tutorial-figma-mcp.en.md)), one prompt per change.
 
 5. **Sprint demo (3 minutes per pair)** and **retro** (stickies in the FigJam *Retro* section + a `Retro Sprint 2` issue: went well, change, one prompt rule).
 
-6. **v1.1.0 scope (PM).** In the milestone *Sprint 3 + v1.1 (Hari 10)*: Sprint 3 issues with AC, critical bugs, and issues **not** in v1.1.0 moved to the backlog.
+6. **v1.1.0 scope (PM).** In Jira: *Complete sprint* Sprint 2 (unfinished cards → Sprint 3 or the backlog), create *Sprint 3 + v1.1 (Hari 10)*, add the Sprint 3 cards with AC and the critical Bugs, set *Fix version* `v1.1.0` (create the version under *Releases* if it does not exist). Cards **not** in v1.1.0 stay in the backlog.
 
 ### ✅ Checkpoint
-- [ ] `composer test` green; E2E green or every failure has a critical Bug issue.
-- [ ] The Sprint 3 milestone contains the v1.1.0 scope agreed by the PM and the floater.
+- [ ] `composer test` green; E2E green or every failure has a critical Bug card.
+- [ ] Sprint 3 in Jira contains the v1.1.0 scope (*Fix version*) agreed by the PM and the floater.
 
 ### Common mistakes
 | Symptom | Cause | Fix |
@@ -166,17 +178,19 @@ Merge Sprint 2 in the sync order, **prove** `main` is green with PHPUnit and E2E
 | `composer test` green locally, CI red on RPT-10 | `ONLY_FULL_GROUP_BY` on CI's MySQL 8.4 | Add the column to `GROUP BY` or use an aggregate; test on local MySQL 8 |
 | Two pairs' migrations collide | Same version | First digit of the version = the pair number (`…-1xxxxx_` … `5…` floater) |
 | Two MRs change `Aliran.php` at the same time | The sync did not name the hot file | One open MR per hot file; the second waits and rebases |
+| Claude cannot see the `KAN` space | MCP signed in with another email, or the invitation not accepted | Accept the invitation; sign out of Atlassian in the browser, `/mcp` → `atlassian` → Authenticate again |
+| The Jira card has no link to the MR | MR title or branch without the key | MR title `KAN-<n>: …`; add the MR link in a card comment |
 
 ---
 
 ## Self-check — end of day
 
-**Teamwork (today):** `glab mr list --merged -R aplikasi-baharu/espkpv2`, `glab issue list --label jenis::pepijat -R aplikasi-baharu/espkpv2`.
+**Teamwork (today):** `glab mr list --merged -R aplikasi-baharu/espkpv2`; in Claude: `JQL project = KAN AND sprint in openSprints()` and `project = KAN AND type = Bug AND created >= startOfDay()`.
 
-- [ ] Sprint 2 issues planned with pair labels and the sync note recorded in issue #19 (Lab 9.20).
-- [ ] My pair's Sprint 2 issue (or one I reviewed/wrote the AC for) is merged through an MR with a QA review and green tests (Labs 9.21–9.23).
-- [ ] I tested another pair's feature and at least one Bug issue was created from exploratory testing (Lab 9.22).
-- [ ] `composer test` and E2E are green on `main` after all merges, or every failure has a critical issue (Lab 9.23).
+- [ ] `atlassian` MCP connected; Sprint 2 planned in Jira with pair labels and the sync note recorded in issue #19 (Lab 9.20).
+- [ ] My pair's Sprint 2 card (or one I reviewed/wrote the AC for) is merged through an `KAN-<n>: …` MR with a QA review and green tests (Labs 9.21–9.23).
+- [ ] I tested another pair's feature and at least one Jira Bug card was created from exploratory testing (Lab 9.22).
+- [ ] `composer test` and E2E are green on `main` after all merges, or every failure has a critical Bug card (Lab 9.23).
 
 **Individual Reports module (reference, optional):**
 

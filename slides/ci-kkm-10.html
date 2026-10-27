@@ -2835,6 +2835,36 @@ git push --force-with-lease</pre></div>
 </section>
 
 <section class="slide">
+  <div class="eyebrow">Hari 9 · Jira</div>
+  <h2>Backlog dalam Jira, kod dalam GitLab</h2>
+  <table class="t tight">
+    <tr><th style="width:200px">Tempat</th><th style="width:330px">Format</th><th>Contoh</th></tr>
+    <tr><td><b>Kad Jira</b></td><td>Story / Bug dalam projek <code>KAN</code>: cerita pengguna, AC, pautan GitLab KKM</td><td><code>KAN-14</code></td></tr>
+    <tr><td><b>Branch</b></td><td><code>feat/KAN-&lt;n&gt;-&lt;ringkas&gt;</code></td><td><code>feat/KAN-14-peringatan</code></td></tr>
+    <tr><td><b>Commit</b></td><td>baris akhir <code>Rujuk KAN-&lt;n&gt;</code></td><td><code>Rujuk KAN-14</code></td></tr>
+    <tr><td><b>MR</b></td><td>tajuk <code>KAN-&lt;n&gt;: …</code> + <code>Jira: KAN-&lt;n&gt;</code> (+ <code>Closes #N</code>)</td><td><code>KAN-14: peringatan pindaan</code></td></tr>
+    <tr><td><b>Papan</b></td><td>To Do → In Progress → In Review → Done · label <code>pasangan-N</code>, <code>disekat</code></td><td>Sprint 2 (Hari 9)</td></tr>
+  </table>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Jira ialah perkhidmatan luar: kad hanya mengandungi ringkasan, cerita pengguna, AC dan pautan GitLab KKM. Tiada teks BRS, nama sebenar atau tangkapan skrin.</div></div>
+  <aside class="notes"><p>Isu GitLab KKM #1–#33 kekal sebagai rujukan BRS dan ditutup oleh MR. Jira Free: 10 kerusi — jurulatih, Projek (4), seorang setiap pasangan Dev, floater. Pautan site dalam isu #19.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · MCP <code>atlassian</code></div>
+  <h2>Claude membaca Jira; menulis hanya selepas ya</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">Git Bash · ~/latihan/espkpv2<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash">git switch main &amp;&amp; git pull   <span class="c"># .mcp.json → atlassian</span>
+claude
+<span class="c"># luluskan atlassian → /mcp → atlassian → Authenticate</span>
+<span class="c"># log masuk dengan emel yang dijemput → Accept</span></pre></div>
+    <div class="card top m-a"><span class="k">PEMEGANG KERUSI (10)</span><ul><li>Jurulatih, PM, BA, 2 QA, floater</li><li>Seorang setiap pasangan Dev — rakan pasangan dalam sesi Claude yang sama</li><li>Tool baca dibenarkan; cipta / ubah / tukar status ditanya setiap kali</li><li>Baca medan sebelum menjawab <b>Yes</b></li></ul></div>
+  </div>
+  <div class="callout tip mt16"><span class="i">💡</span><div><code>Guna Jira. JQL: project = KAN AND sprint in openSprints(). Jadual: kunci, ringkasan, status, pasangan, assignee. Baca sahaja.</code> — tutorial: <code>docs/tutorial-jira-mcp.md</code></div></div>
+  <aside class="notes"><p>Tunjuk /mcp dan satu prompt JQL secara langsung. Jika space KAN tiada: jemputan belum diterima atau log masuk dengan emel lain.</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Hari 9 · Isu Sprint 2</div>
   <h2>Sprint 2: dua isu setiap pasangan Dev</h2>
   <table class="t tight">
@@ -2889,8 +2919,8 @@ git push --force-with-lease</pre></div>
     <div class="card top m-tlk"><span class="k">UJIAN EKSPLORATORI · 30 MINIT</span>
       <ul><li>QA → semua ciri yang di-merge · pasangan 1 → 2 → 3 → 4 → 1 (20 minit)</li><li>Ciri yang sudah di-merge ke <code>main</code></li><li>≥ 3 akaun latihan berbeza</li><li>Cari: mesej mengelirukan, akses yang patut 404, 360px pecah, jumlah eksport tidak sepadan</li></ul>
     </div>
-    <div class="card top m-stat"><span class="k">ISU PEPIJAT</span>
-      <ul><li>Templat <i>Pepijat</i>, label <code>pasukan::projek</code>; PM triage → <code>pasangan::N</code> pemilik</li><li>Langkah ulang dengan akaun <code>9001010100NN</code></li><li>Jangkaan · sebenar · <code>fail:baris</code> yang mungkin</li><li>Claude mendraf (AI-28); penguji ulang setiap langkah sendiri</li></ul>
+    <div class="card top m-stat"><span class="k">KAD BUG JIRA</span>
+      <ul><li>Bahagian templat <i>Pepijat</i>, label <code>pasukan-projek</code>; PM triage → <code>pasangan-N</code> pemilik</li><li>Langkah ulang dengan akaun <code>9001010100NN</code></li><li>Jangkaan · sebenar · <code>fail:baris</code> yang mungkin</li><li>Claude mendraf (AI-28) dan mencipta selepas ya; penguji ulang setiap langkah sendiri</li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Mata baharu menemui pepijat yang pengarang — dan Claude pengarang — tidak nampak. Aliran MR kekal seperti Lab 8.22.</div></div>
@@ -2912,7 +2942,7 @@ composer test
 npm run e2e:sedia
 npm run e2e</pre></div>
     <div class="card top m-a"><span class="k">HUJUNG SPRINT 2</span>
-      <ul><li>Merge ikut susunan sync pagi (rebase, <code>--force-with-lease</code>)</li><li>Merah → isu Pepijat <code>keutamaan::1-kritikal</code>, baiki sebelum Sprint 3</li><li>Demo sprint: 3 minit setiap pasangan (BA · Dev · QA)</li><li>Retro: sticky FigJam + isu <code>Retro Sprint 2</code></li><li>PM: isu Sprint 3 + skop <b>v1.1.0</b></li></ul>
+      <ul><li>Merge ikut susunan sync pagi (rebase, <code>--force-with-lease</code>)</li><li>Merah → kad Bug Jira <i>Highest</i>, baiki sebelum Sprint 3</li><li>Demo sprint: 3 minit setiap pasangan (BA · Dev · QA)</li><li>Retro: sticky FigJam + isu <code>Retro Sprint 2</code></li><li>PM: <i>Complete sprint</i>, Sprint 3 + <i>Fix version</i> <b>v1.1.0</b></li></ul>
     </div>
   </div>
   <div class="callout warn mt16"><span class="i">⚠️</span><div>Jangan jalankan E2E pada database dev anda — data diset semula.</div></div>
@@ -2990,14 +3020,14 @@ npm run e2e</pre></div>
   <h2>S9 · Keluaran v1.1.0</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">PM keluaran · mod Plan<span class="lang">prompt</span></div>
-<pre class="code sm" data-lang="text">Jalankan glab mr list --merged untuk milestone
-Sprint 1, Sprint 2 dan Sprint 3 + v1.1.
-Draf "## [1.1.0] - 2026-10-30" untuk CHANGELOG.md
-(Keep a Changelog: Ditambah, Diubah, Dibaiki,
-Keselamatan), satu baris setiap MR dengan !no
-dan #isu. Jangan tulis fail.</pre></div>
+<pre class="code sm" data-lang="text">Guna Jira: JQL project = KAN AND
+fixVersion = v1.1.0 AND statusCategory = Done.
+Padankan setiap kad dengan MR KAN-n daripada
+glab mr list --merged. Draf "## [1.1.0] -
+2026-10-30" (Keep a Changelog), satu baris
+setiap MR dengan !no dan KAN-n. Jangan tulis fail.</pre></div>
     <div class="card top m-stat"><span class="k">LANGKAH KELUARAN</span>
-      <ul><li><b>Stabil:</b> <code>composer test</code> + E2E hijau pada <code>main</code></li><li><b>CHANGELOG:</b> setiap baris disemak terhadap MR sebenar; masuk melalui MR <code>docs/changelog-v1.1.0</code></li><li><b>Tag:</b> <code>v*</code> dilindungi — PM keluaran baca nota keluaran, <b>jurulatih</b> cipta tag beranotasi</li><li><b>Release</b> GitLab pada <code>v1.1.0</code></li></ul>
+      <ul><li><b>Stabil:</b> <code>composer test</code> + E2E hijau pada <code>main</code></li><li><b>CHANGELOG:</b> setiap baris disemak terhadap MR sebenar; masuk melalui MR <code>docs/changelog-v1.1.0</code></li><li><b>Tag:</b> <code>v*</code> dilindungi — PM keluaran baca nota keluaran, <b>jurulatih</b> cipta tag beranotasi</li><li><b>Release</b> GitLab pada <code>v1.1.0</code></li><li><b>Jira:</b> <i>Releases</i> → <code>v1.1.0</code> → Release</li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Baris CHANGELOG tanpa <code>!no</code> dan <code>#isu</code> = tanda Claude mereka perubahan. Buang.</div></div>

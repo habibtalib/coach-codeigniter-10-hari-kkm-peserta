@@ -2835,6 +2835,36 @@ git push --force-with-lease</pre></div>
 </section>
 
 <section class="slide">
+  <div class="eyebrow">Day 9 · Jira</div>
+  <h2>Backlog in Jira, code in GitLab</h2>
+  <table class="t tight">
+    <tr><th style="width:200px">Where</th><th style="width:330px">Format</th><th>Example</th></tr>
+    <tr><td><b>Jira card</b></td><td>Story / Bug in project <code>KAN</code>: user story, AC, GitLab KKM link</td><td><code>KAN-14</code></td></tr>
+    <tr><td><b>Branch</b></td><td><code>feat/KAN-&lt;n&gt;-&lt;short&gt;</code></td><td><code>feat/KAN-14-peringatan</code></td></tr>
+    <tr><td><b>Commit</b></td><td>last line <code>Rujuk KAN-&lt;n&gt;</code></td><td><code>Rujuk KAN-14</code></td></tr>
+    <tr><td><b>MR</b></td><td>title <code>KAN-&lt;n&gt;: …</code> + <code>Jira: KAN-&lt;n&gt;</code> (+ <code>Closes #N</code>)</td><td><code>KAN-14: peringatan pindaan</code></td></tr>
+    <tr><td><b>Board</b></td><td>To Do → In Progress → In Review → Done · labels <code>pasangan-N</code>, <code>disekat</code></td><td>Sprint 2 (Hari 9)</td></tr>
+  </table>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Jira is an external service: a card holds only the summary, user story, AC and GitLab KKM link. No BRS text, real names or screenshots.</div></div>
+  <aside class="notes"><p>Isu GitLab KKM #1–#33 kekal sebagai rujukan BRS dan ditutup oleh MR. Jira Free: 10 kerusi — jurulatih, Projek (4), seorang setiap pasangan Dev, floater. Pautan site dalam isu #19.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · The <code>atlassian</code> MCP</div>
+  <h2>Claude reads Jira; it writes only after yes</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">Git Bash · ~/latihan/espkpv2<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash">git switch main &amp;&amp; git pull   <span class="c"># .mcp.json → atlassian</span>
+claude
+<span class="c"># approve atlassian → /mcp → atlassian → Authenticate</span>
+<span class="c"># sign in with the invited email → Accept</span></pre></div>
+    <div class="card top m-a"><span class="k">SEAT HOLDERS (10)</span><ul><li>Trainer, PM, BA, 2 QA, floater</li><li>One member of each Dev pair — the partner is in the same Claude session</li><li>Read tools allowed; create / edit / transition asked every time</li><li>Read the fields before answering <b>Yes</b></li></ul></div>
+  </div>
+  <div class="callout tip mt16"><span class="i">💡</span><div><code>Use Jira. JQL: project = KAN AND sprint in openSprints(). Table: key, summary, status, pair, assignee. Read only.</code> — tutorial: <code>docs/tutorial-jira-mcp.en.md</code></div></div>
+  <aside class="notes"><p>Tunjuk /mcp dan satu prompt JQL secara langsung. Jika space KAN tiada: jemputan belum diterima atau log masuk dengan emel lain.</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Day 9 · Sprint 2 issues</div>
   <h2>Sprint 2: two issues per Dev pair</h2>
   <table class="t tight">
@@ -2889,8 +2919,8 @@ git push --force-with-lease</pre></div>
     <div class="card top m-tlk"><span class="k">EXPLORATORY TESTING · 30 MIN</span>
       <ul><li>QA → every merged feature · pair 1 → 2 → 3 → 4 → 1 (20 minutes)</li><li>Features already merged to <code>main</code></li><li>≥ 3 different training accounts</li><li>Look for: confusing messages, access that should be 404, broken 360px layout, export totals that do not match</li></ul>
     </div>
-    <div class="card top m-stat"><span class="k">BUG ISSUE</span>
-      <ul><li><i>Pepijat</i> template, label <code>pasukan::projek</code>; PM triage → the owner's <code>pasangan::N</code></li><li>Repro steps with <code>9001010100NN</code> accounts</li><li>Expected · actual · likely <code>file:line</code></li><li>Claude drafts (AI-28); the tester repeats every step personally</li></ul>
+    <div class="card top m-stat"><span class="k">JIRA BUG CARD</span>
+      <ul><li>Sections of the <i>Pepijat</i> template, label <code>pasukan-projek</code>; PM triage → the owner's <code>pasangan-N</code></li><li>Repro steps with <code>9001010100NN</code> accounts</li><li>Expected · actual · likely <code>file:line</code></li><li>Claude drafts (AI-28) and creates it after yes; the tester repeats every step personally</li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Fresh eyes find bugs the author — and the author's Claude — missed. The MR flow stays as in Lab 8.22.</div></div>
@@ -2912,7 +2942,7 @@ composer test
 npm run e2e:sedia
 npm run e2e</pre></div>
     <div class="card top m-a"><span class="k">END OF SPRINT 2</span>
-      <ul><li>Merge in the morning sync order (rebase, <code>--force-with-lease</code>)</li><li>Red → bug issue <code>keutamaan::1-kritikal</code>, fixed before Sprint 3</li><li>Sprint demo: 3 minutes per pair (BA · Dev · QA)</li><li>Retro: FigJam stickies + issue <code>Retro Sprint 2</code></li><li>PM: Sprint 3 issues + <b>v1.1.0</b> scope</li></ul>
+      <ul><li>Merge in the morning sync order (rebase, <code>--force-with-lease</code>)</li><li>Red → Jira Bug card <i>Highest</i>, fixed before Sprint 3</li><li>Sprint demo: 3 minutes per pair (BA · Dev · QA)</li><li>Retro: FigJam stickies + issue <code>Retro Sprint 2</code></li><li>PM: <i>Complete sprint</i>, Sprint 3 + <i>Fix version</i> <b>v1.1.0</b></li></ul>
     </div>
   </div>
   <div class="callout warn mt16"><span class="i">⚠️</span><div>Never run E2E against your dev database — the data is reset.</div></div>
@@ -2990,14 +3020,14 @@ npm run e2e</pre></div>
   <h2>S9 · Release v1.1.0</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">Release PM · Plan mode<span class="lang">prompt</span></div>
-<pre class="code sm" data-lang="text">Run glab mr list --merged for the milestones
-Sprint 1, Sprint 2 and Sprint 3 + v1.1.
-Draft "## [1.1.0] - 2026-10-30" for CHANGELOG.md
-(Keep a Changelog: Added, Changed, Fixed,
-Security), one line per MR with !no and #issue.
-Do not write any file.</pre></div>
+<pre class="code sm" data-lang="text">Use Jira: JQL project = KAN AND
+fixVersion = v1.1.0 AND statusCategory = Done.
+Match each card with its KAN-n MR from
+glab mr list --merged. Draft "## [1.1.0] -
+2026-10-30" (Keep a Changelog), one line per
+MR with !no and KAN-n. Do not write any file.</pre></div>
     <div class="card top m-stat"><span class="k">RELEASE STEPS</span>
-      <ul><li><b>Stabilise:</b> <code>composer test</code> + E2E green on <code>main</code></li><li><b>CHANGELOG:</b> every line checked against a real MR; lands via MR <code>docs/changelog-v1.1.0</code></li><li><b>Tag:</b> <code>v*</code> is protected — the release PM reads the notes, the <b>trainer</b> creates the annotated tag</li><li>GitLab <b>Release</b> on <code>v1.1.0</code></li></ul>
+      <ul><li><b>Stabilise:</b> <code>composer test</code> + E2E green on <code>main</code></li><li><b>CHANGELOG:</b> every line checked against a real MR; lands via MR <code>docs/changelog-v1.1.0</code></li><li><b>Tag:</b> <code>v*</code> is protected — the release PM reads the notes, the <b>trainer</b> creates the annotated tag</li><li>GitLab <b>Release</b> on <code>v1.1.0</code></li><li><b>Jira:</b> <i>Releases</i> → <code>v1.1.0</code> → Release</li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>A CHANGELOG line without <code>!no</code> and <code>#issue</code> is a sign that Claude invented a change. Remove it.</div></div>

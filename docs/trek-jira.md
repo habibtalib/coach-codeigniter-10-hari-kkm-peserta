@@ -3,6 +3,8 @@
 > **Trek sampingan pilihan.** Halaman ini menunjukkan cara anda menguruskan kerja 10 hari dalam **Jira Cloud** (pelan Free): backlog daripada keperluan rujukan, sprint yang dipadankan dengan modul M1–M4, dan pautan antara kad Jira dengan branch dan commit Git. Ia **tidak menggantikan** mana-mana deliverable kursus: [`rujukan-keperluan.md`](./rujukan-keperluan.md) (FR & AC), peraturan BR-* dalam [`spesifikasi-sistem.md`](./spesifikasi-sistem.md) dan `docs/pelan-kerja.md` kekal sebagai sumber kebenaran. Jira ialah paparan penjejakan di atasnya.
 > Kanun: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Jadual: [`JADUAL.md`](../JADUAL.md) · Kontrak kerja: [`docs/kolaborasi.md`](kolaborasi.md) · Trek berkaitan: [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
 
+> ℹ️ **Hari 9–10: Jira kelas.** Trek ini latihan solo Hari 1–4 pada site anda sendiri. Mulai Hari 9, kelas berkongsi **satu** site Jira (space `KAN`) untuk backlog pasukan espkpv2, dan Claude membacanya melalui MCP `atlassian`: [`tutorial-jira-mcp.md`](./tutorial-jira-mcp.md).
+
 > ⚠️ **Siap sebelum Hari 4.** Kod bermula Hari 4. Persediaan dan backlog dibuat Hari 1–2, story dengan acceptance criteria Hari 2, dan sprint planning Hari 4 S4 sebelum baris kod pertama modul.
 
 > ⚠️ **Amaran — data sintetik sahaja.** Jira Cloud ialah perkhidmatan luar. Jangan masukkan data KKM sebenar (nama pesakit/kakitangan, plat sebenar), tangkapan skrin sistem dalaman, kata laluan atau kandungan `.env` ke dalam kad. Guna nilai rekaan seperti dalam SPEC §10 (`pemohon1@latihan.test`, `WXX 1234`).

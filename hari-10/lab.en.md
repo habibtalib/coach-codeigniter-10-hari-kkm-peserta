@@ -4,11 +4,11 @@
 
 | Lab | Session | Time | Output |
 |-----|---------|------|--------|
-| 10.20 | S8 | 09:00–12:30 | Sprint 3 issues closed or moved; `main` green at the feature freeze |
-| 10.21 | S9 | 14:30–15:15 | CHANGELOG 1.1.0 MR, release notes, tag `v1.1.0` + Release |
+| 10.20 | S8 | 09:00–12:30 | Sprint 3 Jira cards *Done* or moved; `main` green at the feature freeze |
+| 10.21 | S9 | 14:30–15:15 | CHANGELOG 1.1.0 MR (from Jira version `v1.1.0` + real MRs), tag `v1.1.0` + Release, Jira version released |
 | 10.22 | S10–S11 | 15:15–17:00 | Team capstone demo, work-line questions, final retro |
 
-> ℹ️ Repo: `aplikasi-baharu/espkpv2`. The issue → MR → merge mechanics are as in [Labs 8.21–8.23](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16). The individual Statistics & capstone labs (10.1–10.12) are in the [Appendix](#appendix--individual-statistics--capstone-labs-reference).
+> ℹ️ Repo: `aplikasi-baharu/espkpv2`. The backlog is in Jira (space `KAN`, [Jira MCP tutorial](../docs/tutorial-jira-mcp.en.md)); code, MRs and CI on GitLab KKM. The card → branch → MR → merge mechanics are as in [Labs 8.21–8.23](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16). The individual Statistics & capstone labs (10.1–10.12) are in the [Appendix](#appendix--individual-statistics--capstone-labs-reference).
 
 ---
 
@@ -19,32 +19,32 @@ Finish every pair's Sprint 3 issues and critical bugs through MRs reviewed by QA
 
 ### Prerequisites
 - The latest `main` is green (`git pull`, `composer install`, `php spark migrate --all`, `composer test`).
-- The Projek and Dev teams stay the same (issue #19); Sprint 3 issues have AC and a `pasangan::N` label (Lab 9.21).
+- The Projek and Dev teams stay the same (issue #19); the Sprint 3 cards in Jira have AC, a `pasangan-N` label and *Fix version* `v1.1.0` (Lab 9.23); the `atlassian` MCP is connected.
 
 ### Steps
 
 1. **Stand-up and scope (08:30–09:30).** PM:
 
    ```text
-   Run glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" --label pasukan::dev. For each issue: size, pair, the risk of not finishing before 12:30. Propose a work order: keutamaan::1-kritikal bugs first.
+   Use Jira. JQL: project = KAN AND sprint in openSprints() AND statusCategory != Done ORDER BY priority DESC. For each card: size, pair, the risk of not finishing before 12:30. Propose a work order: Highest Bugs first. Read only.
    ```
 
-   The PM decides and updates the *Assignee* and `status::`.
+   The PM decides and updates the *Assignee* and the card status on the Jira board.
 
-2. **Critical bugs first (Dev + QA).** Each bug: a failing test that shows the bug → fix → green test → MR `fix/<no>-…` with `Closes #<no>`.
+2. **Critical bugs first (Dev + QA).** Each bug: a failing test that shows the bug → fix → green test → MR `fix/KAN-<n>-…` titled `KAN-<n>: …` (`Closes #<no>` if a GitLab KKM issue exists).
 
    ```text
    This test/E2E fails: <output>. Reproduce first: write one PHPUnit test that fails because of this bug. Do not change code in app/ yet.
    ```
 
-3. **Sprint 3 feature (09:30–11:30).** The rhythm of Labs 8.21–8.22: `/ciri-baharu <no>` → slice (*Manual* mode) → `composer semak` → `semak-espkp` → commit `Rujuk #<no>`.
+3. **Sprint 3 feature (09:30–11:30).** The rhythm of Labs 8.21–8.22: `/ciri-baharu <no>` → slice (*Manual* mode) → `composer semak` → `semak-espkp` → commit `Rujuk KAN-<n>`.
 
-4. **MR and merge (11:30–12:15).** `/semak-mr <no>` by QA → approve → the PM merges in order.
+4. **MR and merge (11:30–12:15).** `/semak-mr <no>` by QA → approve → the PM merges in order → card *Done*.
 
-5. **Freeze (12:30).** Feature MRs not yet merged: switch to draft, comment *"Moved to the backlog after the v1.1.0 freeze: <status, what is left>"*, remove the milestone. After 12:30, only `fix/…` branches can be merged.
+5. **Freeze (12:30).** Feature MRs not yet merged: switch to draft, comment *"Moved to the backlog after the v1.1.0 freeze: <status, what is left>"* on the MR and the Jira card; the card leaves the sprint and its *Fix version* is removed. After 12:30, only `fix/…` branches can be merged.
 
 ### ✅ Checkpoint
-- [ ] Every Sprint 3 issue is closed or moved with a comment; `composer test` is green on `main` after the last merge.
+- [ ] Every Sprint 3 Jira card is *Done* or moved with a comment; `composer test` is green on `main` after the last merge.
 
 ---
 
@@ -60,7 +60,7 @@ Prepare the v1.1.0 release from a green `main`: a CHANGELOG where every line lin
 2. **Draft the CHANGELOG (release PM, 15 minutes).** *Plan* mode:
 
    ```text
-   Run glab mr list --merged for the milestones "Sprint 1 (Hari 8)", "Sprint 2 (Hari 9)" and "Sprint 3 + v1.1 (Hari 10)". Draft CHANGELOG.md with the heading "# Changelog" and a "## [1.1.0] - 2026-10-30" section (Keep a Changelog format: Added, Changed, Fixed, Security). One line per MR with the !no and #issue. Do not write files.
+   Use Jira: list the cards with JQL project = KAN AND fixVersion = v1.1.0 AND statusCategory = Done (key, summary, type). Then run glab mr list --merged and match each card with its KAN-<n>: … MR (Day 8: MRs with Closes #N). Draft CHANGELOG.md with the heading "# Changelog" and a "## [1.1.0] - 2026-10-30" section (Keep a Changelog format: Added, Changed, Fixed, Security). One line per MR with the !no and KAN-n or #issue. Cards without an MR → list them separately. Do not write files.
    ```
 
    The BA and one member of each pair check their issues' lines against the real MRs. A line without an MR → remove it.
@@ -76,8 +76,10 @@ Prepare the v1.1.0 release from a green `main`: a CHANGELOG where every line lin
    glab release create v1.1.0 --notes-file nota-v1.1.0.md
    ```
 
+5. **Jira version (release PM).** After the tag: Jira → *Releases* → `v1.1.0` → **Release** (date 30/10). Cards in the version that are not *Done* → move to the next version or the backlog, with a comment.
+
 ### ✅ Checkpoint
-- [ ] `glab release view v1.1.0` shows the release notes; `CHANGELOG.md` is on `main`.
+- [ ] `glab release view v1.1.0` shows the release notes; `CHANGELOG.md` is on `main`; the Jira version `v1.1.0` is *Released*.
 
 ---
 
@@ -100,7 +102,7 @@ Demo the team's result on `v1.1.0` with evidence from every role, **explain** on
    Ask me 3 questions about the line <file:line> I committed, like the capstone panel. Do not give the answers.
    ```
 
-2. **Capstone demo.** The Projek team 12 minutes (PM: backlog & scope decisions; BA: one BRS issue → AC; QA: the tests that prove the AC, one bug caught before merge, E2E). Every Dev pair 10 minutes (the feature in the browser with ≥ 2 accounts, including one that gets a 404; MR and tests). Floater 5 minutes. Panel 18 minutes (work-line questions for every member).
+2. **Capstone demo.** The Projek team 12 minutes (PM: the Jira board, backlog & scope decisions; BA: one BRS issue → AC; QA: the tests that prove the AC, one bug caught before merge, E2E). Every Dev pair 10 minutes (the feature in the browser with ≥ 2 accounts, including one that gets a 404; MR and tests). Floater 5 minutes. Panel 18 minutes (work-line questions for every member).
 
 3. **Final retro (S11, 20 minutes).** In the issue `Retro akhir — Pasukan CI-KKM-10`, everyone adds one comment: the role that taught the most, one time Claude sped things up (which prompt) and one time Claude slowed things down or misled (which gate caught it), one rule to take back to the department.
 
@@ -112,10 +114,10 @@ Demo the team's result on `v1.1.0` with evidence from every role, **explain** on
 
 ## Self-check — end of day
 
-**Team work (today):** `glab release view v1.1.0 -R aplikasi-baharu/espkpv2`, `glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" -R aplikasi-baharu/espkpv2`.
+**Team work (today):** `glab release view v1.1.0 -R aplikasi-baharu/espkpv2`; in Claude: `JQL project = KAN AND fixVersion = v1.1.0`.
 
-- [ ] My team's Sprint 3 issues are closed or moved to the backlog with a reason before the freeze (Lab 10.20).
-- [ ] `CHANGELOG.md` 1.1.0 is merged and every line matches a real MR; tag `v1.1.0` exists (Lab 10.21).
+- [ ] My team's Sprint 3 cards are *Done* or moved to the Jira backlog with a reason before the freeze (Lab 10.20).
+- [ ] `CHANGELOG.md` 1.1.0 is merged and every line matches a real MR; tag `v1.1.0` exists and the Jira version `v1.1.0` is released (Lab 10.21).
 - [ ] I explained one line of my work (code, test or AC) without Claude during the demo (Lab 10.22).
 - [ ] My final retro comment is added in the team retro issue (Lab 10.22).
 

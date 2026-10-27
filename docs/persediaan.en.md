@@ -25,7 +25,7 @@ Experience from past courses: **the first 30–60 minutes of the first coding da
 | 8 | Windows: **Laragon** + **Git Bash** as the VS Code default terminal · macOS (optional): Herd | Laragon 8 | §2, §5 | Git Bash: **Day 1** · Laragon/Herd: Day 2 | [ ] |
 | 9 | Smoke test: empty CI4 project runs | CI **4.6+** | §6 | Day 2 | [ ] |
 | 10 | KKM GitLab account (GitLab KKM, from KKM IT) — [the `kelas-ci-<nama>` repo](./trek-gitlab.md) | — | log in to `https://<gitlab-kkm>` | Day 2 | [ ] |
-| 11 | *Optional* — [Jira track](./trek-jira.md): Jira Cloud account (email) | — | sign in to `*.atlassian.net` | Day 4 | — |
+| 11 | **Day 9, Jira seat holders** (PM, BA, 2 QA, one per Dev pair, floater) — class Jira invitation accepted (email); *optional* Days 1–4: [Jira track](./trek-jira.md) | — | sign in to the class Jira site, open the `KAN` space ([tutorial](./tutorial-jira-mcp.en.md)) | Day 9 | — |
 
 ### Why is each PHP extension needed?
 

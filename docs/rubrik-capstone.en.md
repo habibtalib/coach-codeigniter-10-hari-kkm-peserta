@@ -167,9 +167,9 @@ The course completion certificate criteria (Day 10 README §4.3) use this rubric
 
 | Criterion | Level 1 (0–4) | Level 2 (5–7) | Level 3 (8–10) |
 |---|---|---|---|
-| **P · Issues & AC** (PM, BA) | AC vague or missing; scope changed without a record | Testable AC; scope decisions in the issue | Given/When/Then AC including a 404 access case and edge cases; owner questions recorded and answered |
+| **P · Issues & AC** (PM, BA) | AC vague or missing; scope changed without a record | Testable AC; scope decisions in the issue or Jira card | Given/When/Then AC including a 404 access case and edge cases; owner questions recorded and answered; the Jira sprints and version `v1.1.0` match what was merged |
 | **Q · Review evidence** (QA) | MR merged without a review comment | Review comment with an AC table | Every AC has `file:line` + a test; ≥ 1 bug caught before merge; exploratory testing between pairs |
-| **D · MRs & tests** (Dev) | Large MR, no `Closes #N`, no tests | Small MR with `Rujuk #N` / `Closes #N`, green tests | Small slices, checklist with evidence, negative tests (404/role), `main` green after merge |
+| **D · MRs & tests** (Dev) | Large MR, no `Closes #N` / Jira key, no tests | Small MR with `Rujuk #N` / `Rujuk KAN-<n>` and `Closes #N` / `KAN-<n>: …`, green tests | Small slices, checklist with evidence, negative tests (404/role), `main` green after merge |
 | **K · Collaboration** | A hot file changed by two MRs at once without coordination; a conflict broke other work | Sync recorded in issue #19; conflicts resolved | Merge order followed; handovers in issues; retro with concrete actions |
 
 ### 8.2 Individual marks (every member)
@@ -178,7 +178,7 @@ The course completion certificate criteria (Day 10 README §4.3) use this rubric
 |---|---|
 | **Explain your own line** | Explains one line of their work without Claude — Dev/QA: a committed line (`git log --author`); PM/BA: one AC and how it is tested — what, why, what breaks if it is removed |
 | **Roles** | Shows one output from every role held (issue, review comment, commit) |
-| **AI discipline** | No commits in auto/bypass mode; no secrets or real data in issues, MRs or prompts |
+| **AI discipline** | No commits in auto/bypass mode; no secrets or real data in issues, Jira cards, MRs or prompts; no Jira write approved without reading the fields |
 
 ### 8.3 Certificate criteria mapping (team mode)
 

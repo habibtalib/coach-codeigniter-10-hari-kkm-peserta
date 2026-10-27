@@ -4,12 +4,12 @@
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
-| 9.20 | S13 | 09:00–10:30 | Isu Sprint 2 `status::sedia` + `pasangan::N`, nota sync, ujian gagal dari AC, slice 1 |
+| 9.20 | S13 | 09:00–10:30 | MCP `atlassian` bersambung, Sprint 2 dimulakan dalam Jira (`pasangan-N`), nota sync, ujian gagal dari AC, slice 1 |
 | 9.21 | S14 | 10:45–12:30 | Ciri Sprint 2 setiap pasangan slice demi slice dengan ujian hijau; AC Sprint 3 |
-| 9.22 | S15 | 14:30–16:00 | MR `Ready` + semakan QA; ≥ 1 isu Pepijat daripada ujian eksploratori |
+| 9.22 | S15 | 14:30–16:00 | MR `Ready` + semakan QA; ≥ 1 kad Bug Jira daripada ujian eksploratori |
 | 9.23 | S16 | 16:00–17:00 | Semua MR di-merge, `main` hijau (PHPUnit + E2E), demo sprint, retro |
 
-> ℹ️ Repo: `aplikasi-baharu/espkpv2`. Pasukan tetap: **Projek** (PM, BA, 2 QA) dan **Dev** (4 pasangan + floater) — nama dalam isu #19, peraturan dalam `docs/pasukan.md` repo. Mekanik isu → branch → MR → merge sama seperti [Lab 8.21–8.23](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16); lab hari ini menambah sync, ujian eksploratori antara pasangan dan `main` hijau. Lab individu Modul Laporan (9.1–9.13) dalam [Lampiran](#lampiran--lab-individu-modul-laporan-rujukan).
+> ℹ️ Repo: `aplikasi-baharu/espkpv2`. Pasukan tetap: **Projek** (PM, BA, 2 QA) dan **Dev** (4 pasangan + floater) — nama dalam isu #19, peraturan dalam `docs/pasukan.md` repo. Mekanik isu → branch → MR → merge sama seperti [Lab 8.21–8.23](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16); lab hari ini menambah sync, ujian eksploratori antara pasangan dan `main` hijau. **Mulai hari ini backlog dalam Jira** (space `KAN`, pautan site dalam isu #19, [tutorial Jira MCP](../docs/tutorial-jira-mcp.md)); kod, MR dan CI kekal di GitLab KKM, dan isu GitLab KKM #1–#33 kekal sebagai rujukan BRS. Lab individu Modul Laporan (9.1–9.13) dalam [Lampiran](#lampiran--lab-individu-modul-laporan-rujukan).
 
 ---
 
@@ -21,6 +21,21 @@ Merancang Sprint 2 (isu sedia ada, jurang BRS dan susulan Sprint 1), **menyelara
 ### Prasyarat
 - `git switch main && git pull && composer install && php spark migrate --all` — `composer test` hijau.
 - Pasukan dan peranan anda: isu #19 (Projek: PM, BA, QA; Dev: pasangan 1–4 + floater).
+- Pemegang kerusi Jira: jemputan diterima (emel daripada Atlassian) dan anda boleh membuka space `KAN` di pelayar.
+
+### Langkah — Persediaan Jira & MCP `atlassian` (pemegang kerusi Jira, sebelum stand-up)
+
+Jira Free: **10 kerusi** — jurulatih, PM, BA, 2 QA, seorang daripada setiap pasangan Dev dan floater. Rakan pasangan bekerja dalam sesi Claude yang sama (pemandu/navigator), jadi satu log masuk MCP setiap pasangan sudah cukup.
+
+1. `git switch main && git pull` (`.mcp.json` kini ada server `atlassian`), kemudian mulakan semula `claude` dalam `~/latihan/espkpv2` dan **luluskan** `atlassian` apabila ditanya.
+2. `/mcp` → `atlassian` → **Authenticate** → log masuk dengan emel yang dijemput → pilih site kelas → **Accept** → `/mcp`: `atlassian` ✔ connected.
+3. Uji (mod *Plan*):
+
+   ```text
+   Senaraikan site dan space Jira yang saya boleh lihat, kemudian 5 kad pertama dalam backlog KAN (kunci, ringkasan, status). Baca sahaja.
+   ```
+
+4. Baca konvensyen kunci ([tutorial §3](../docs/tutorial-jira-mcp.md#3-konvensyen-kunci-jira)): branch `feat/KAN-<n>-<ringkas>`, commit `Rujuk KAN-<n>`, tajuk MR `KAN-<n>: …`.
 
 ### Langkah
 
@@ -28,13 +43,13 @@ Merancang Sprint 2 (isu sedia ada, jurang BRS dan susulan Sprint 1), **menyelara
 
 2. **Projek — isu Sprint 2 (20 minit).**
 
-   ```bash
-   glab issue list --milestone "Sprint 2 (Hari 9)" --label pasukan::projek
+   ```text
+   Guna Jira. JQL: project = KAN AND labels = pasukan-projek AND statusCategory != Done ORDER BY rank. Jadual: kunci, ringkasan, pautan GitLab KKM, ada AC (ya/tidak). Baca sahaja.
    ```
 
-   - **BA:** AC yang tinggal (`/isu-baharu <no>`, mula dengan #21–#26).
-   - **QA:** jadual AC → kes ujian dalam komen setiap isu.
-   - **PM:** isu siap → `glab issue update <no> --label "status::sedia,pasukan::dev,pasangan::<N>"` dan assign ahli pertama pasangan. Kapasiti: satu isu bersaiz M setiap pasangan setiap separuh hari; isu lebih → backlog dengan komen sebab.
+   - **BA:** AC yang tinggal (`/isu-baharu KAN-<n>`, mula dengan kad daripada #21–#26).
+   - **QA:** jadual AC → kes ujian dalam komen setiap kad Jira.
+   - **PM:** cipta sprint *Sprint 2 (Hari 9)* di papan; kad siap → masuk sprint, label `pasukan-dev` + `pasangan-<N>`, *Assignee* ahli pertama pasangan (di pelayar, atau minta Claude dan luluskan medan). **Start sprint** selepas sync. Kapasiti: satu kad bersaiz M setiap pasangan setiap separuh hari; kad lebih → kekal dalam backlog dengan komen sebab.
 
 3. **Sync (09:00, 15 minit: PM, BA, floater, wakil setiap pasangan + jurulatih).** PM menulis dalam komen isu #19:
 
@@ -55,13 +70,14 @@ Merancang Sprint 2 (isu sedia ada, jurang BRS dan susulan Sprint 1), **menyelara
    Mod Plan. Bagaimana ujian sedia ada mengawal masa (service('jam')) dan emel (service('notifikasi')) supaya perintah peringatan boleh diuji tanpa menunggu 7 hari? Tunjukkan fail:baris contoh dalam tests/.
    ```
 
-5. **Dev — slice 1 (60 minit, setiap pasangan).** Ritma [Lab 8.21 — Dev](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16): AI-29 → `/ciri-baharu <no>` → branch `feat/<no>-<ringkas>` → slice 1 (mod *Manual*) → `composer semak` → `semak-espkp` → commit `Rujuk #<no>` → push. Migration baharu: digit pertama versi = nombor pasangan.
+5. **Dev — slice 1 (60 minit, setiap pasangan).** Ritma [Lab 8.21 — Dev](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16): AI-29 → `/ciri-baharu <no>` → branch `feat/KAN-<n>-<ringkas>` → kad *In Progress* → slice 1 (mod *Manual*) → `composer semak` → `semak-espkp` → commit `Rujuk KAN-<n>` → push. Migration baharu: digit pertama versi = nombor pasangan.
 
 ### ✅ Checkpoint
-- [ ] Isu Sprint 2 `status::sedia` + `pasukan::dev` + `pasangan::N`, dengan *Assignee*.
+- [ ] `/mcp` menunjukkan `atlassian` ✔ connected dan Claude menyenaraikan kad backlog `KAN`.
+- [ ] Sprint 2 dimulakan dalam Jira; setiap kad sprint ada label `pasukan-dev` + `pasangan-N` dan *Assignee*.
 - [ ] Nota sync dalam isu #19 dengan susunan merge yang dipersetujui semua pasangan.
 - [ ] Ujian gagal kerana ciri tiada, dengan mesej yang menyebut AC.
-- [ ] Branch Sprint 2 setiap pasangan dengan commit pertama; label `status::dalam-kerja`.
+- [ ] Branch `feat/KAN-<n>-…` setiap pasangan dengan commit pertama; kad *In Progress*.
 
 ---
 
@@ -72,7 +88,7 @@ Melaksanakan isu Sprint 2 pasangan slice demi slice, dengan perhatian khusus pad
 
 ### Langkah
 
-1. **Dev — teruskan slice** (pemandu bertukar setiap slice). Setiap slice: mod *Manual* → navigator membaca diff → `composer semak` → `semak-espkp` → commit `Rujuk #<no>`.
+1. **Dev — teruskan slice** (pemandu bertukar setiap slice). Setiap slice: mod *Manual* → navigator membaca diff → `composer semak` → `semak-espkp` → commit `Rujuk KAN-<n>`.
 
 2. **Dev — semakan risiko** sebelum slice terakhir, tanya Claude (mod *Plan*) dan sahkan sendiri:
 
@@ -84,7 +100,7 @@ Melaksanakan isu Sprint 2 pasangan slice demi slice, dengan perhatian khusus pad
    | 4 — #21 / #23 | `Tunjukkan perubahan Aliran.php untuk Hilang melalui Penyelia; adakah KonfigurasiAliranTest dan langkah stepper masih konsisten?` | `vendor/bin/phpunit --filter KonfigurasiAliranTest`; cuba aliran Hilang dengan akaun 01 → 02 → 03 → 04 → 05 |
    | Floater — #8 | `Draf job CI mariadb dalam .gitlab-ci.yml yang menjalankan migrate --all dan suite Database pada mariadb:10.6, tanpa mengubah job ujian sedia ada.` | Baca YAML; job baharu sahaja |
 
-3. **Projek — Sprint 3.** BA: AC untuk #27–#32 (`/isu-baharu <no>`), soalan pemilik sistem → #33. QA: sambungkan ujian AC ke branch Sprint 2 (selaras dengan pasangan) dan jalankan `vendor/bin/phpunit --filter <Kelas>` selepas setiap commit Dev. PM: papan dan penyekat.
+3. **Projek — Sprint 3.** BA: AC untuk kad daripada #27–#32 (`/isu-baharu KAN-<n>`), soalan pemilik sistem → komen kad + label `disekat` (atau #33). QA: sambungkan ujian AC ke branch Sprint 2 (selaras dengan pasangan) dan jalankan `vendor/bin/phpunit --filter <Kelas>` selepas setiap commit Dev. PM: papan Jira dan penyekat (label `disekat`).
 
 ### ✅ Checkpoint
 - [ ] ≥ 2 slice di-commit setiap pasangan; ujian QA untuk AC teras **lulus**.
@@ -98,26 +114,22 @@ Membawa Sprint 2 ke MR yang disemak QA, dan **menguji secara eksploratori** ciri
 
 ### Langkah
 
-1. **Dev — MR** seperti [Lab 8.22 — Dev](../hari-8/lab.md#lab-822--sprint-1-petang-mr-semakan-qa--papan-s17): MR draf → senarai semak → *Tiga baris utama* → *Ready* → `status::semakan` + `pasukan::projek`.
+1. **Dev — MR** seperti [Lab 8.22 — Dev](../hari-8/lab.md#lab-822--sprint-1-petang-mr-semakan-qa--papan-s17): MR draf bertajuk `KAN-<n>: …` (`Jira: KAN-<n>` dalam penerangan) → senarai semak → *Tiga baris utama* → *Ready* → kad *In Review*.
 
-2. **QA — semak MR** dengan `/semak-mr <no-MR>` (AI-27), buka setiap `fail:baris`, approve atau minta perubahan (`status::dalam-kerja` + `pasukan::dev`).
+2. **QA — semak MR** dengan `/semak-mr <no-MR>` (AI-27), buka setiap `fail:baris`, approve atau minta perubahan (kad *In Progress* + komen dengan pautan MR).
 
 3. **Ujian eksploratori (30 minit).** QA menguji ciri yang di-merge ke `main`; setiap pasangan Dev menguji ciri **pasangan lain** (1 → 2 → 3 → 4 → 1) selama 20 minit. Gunakan sekurang-kurangnya tiga akaun latihan (contoh 01 pemohon, 07 wakil, 05 pelulus) dan lebar 360px (DevTools → *Toggle device*). Untuk setiap pemerhatian:
 
    ```text
-   Draf isu Pepijat ikut .gitlab/issue_templates/Pepijat.md daripada pemerhatian ini: <langkah, jangkaan, sebenar, akaun>. Data sintetik sahaja. Jangan cipta isu.
+   Draf kad Bug Jira untuk KAN daripada pemerhatian ini: <langkah, jangkaan, sebenar, akaun>. Ikut bahagian .gitlab/issue_templates/Pepijat.md. Data sintetik sahaja. Tunjukkan medan; jangan cipta lagi.
    ```
 
-   Ulang langkah sendiri, kemudian cipta isu; PM membuat triage dan menambah `pasangan::<pemilik>`:
-
-   ```bash
-   glab issue create --title "<ringkas>" --label "jenis::pepijat,pasukan::projek,status::baharu" --description "$(cat pepijat.md)"
-   ```
+   Ulang langkah sendiri, kemudian jawab *Yes* kepada `createJiraIssue` (jenis Bug, label `pasukan-projek`). PM membuat triage, menambah `pasangan-<pemilik>` dan memasukkan kad ke sprint atau backlog.
 
 4. **PM** — triage pepijat, papan, penyekat; sahkan semula susunan merge S16 bersama floater.
 
 ### ✅ Checkpoint
-- [ ] ≥ 1 isu Pepijat yang pasangan pemilik berjaya ulang.
+- [ ] ≥ 1 kad Bug Jira yang pasangan pemilik berjaya ulang.
 
 ---
 
@@ -147,17 +159,17 @@ Me-merge Sprint 2 mengikut susunan sync, **membuktikan** `main` hijau dengan PHP
    npm run e2e
    ```
 
-   Merah → minta Claude: `Spesifikasi E2E ini gagal pada main selepas merge !<a> dan !<b>: <output>. Commit mana yang mungkin punca? Jangan baiki lagi.` Pasangan punca membuka isu Pepijat `keutamaan::1-kritikal`.
+   Merah → minta Claude: `Spesifikasi E2E ini gagal pada main selepas merge !<a> dan !<b>: <output>. Commit mana yang mungkin punca? Jangan baiki lagi.` Pasangan punca membuka kad Bug Jira dengan keutamaan *Highest*.
 
 4. **Papan FigJam (pasangan yang mengubah skema atau aliran).** Kemas kini ERD atau anak panah aliran dengan subagent `papan-figjam` ([tutorial](../docs/tutorial-figma-mcp.md)), satu prompt setiap perubahan.
 
 5. **Demo sprint (3 minit setiap pasangan)** dan **retro** (sticky dalam seksyen *Retro* FigJam + isu `Retro Sprint 2`: berjalan baik, ubah, satu peraturan prompt).
 
-6. **Skop v1.1.0 (PM).** Dalam milestone *Sprint 3 + v1.1 (Hari 10)*: isu Sprint 3 dengan AC, pepijat kritikal, dan isu yang **tidak** masuk v1.1.0 dialihkan ke backlog.
+6. **Skop v1.1.0 (PM).** Dalam Jira: *Complete sprint* Sprint 2 (kad belum siap → Sprint 3 atau backlog), cipta *Sprint 3 + v1.1 (Hari 10)*, masukkan kad Sprint 3 dengan AC dan Bug kritikal, tetapkan *Fix version* `v1.1.0` (cipta versi di *Releases* jika belum ada). Kad yang **tidak** masuk v1.1.0 kekal dalam backlog.
 
 ### ✅ Checkpoint
-- [ ] `composer test` hijau; E2E hijau atau setiap kegagalan ada isu Pepijat kritikal.
-- [ ] Milestone Sprint 3 mengandungi skop v1.1.0 yang dipersetujui PM dan floater.
+- [ ] `composer test` hijau; E2E hijau atau setiap kegagalan ada kad Bug kritikal.
+- [ ] Sprint 3 dalam Jira mengandungi skop v1.1.0 (*Fix version*) yang dipersetujui PM dan floater.
 
 ### Kesilapan lazim
 | Gejala | Punca | Penyelesaian |
@@ -166,17 +178,19 @@ Me-merge Sprint 2 mengikut susunan sync, **membuktikan** `main` hijau dengan PHP
 | `composer test` hijau setempat, CI merah pada RPT-10 | `ONLY_FULL_GROUP_BY` di MySQL 8.4 CI | Tambah lajur dalam `GROUP BY` atau guna aggregate; uji pada MySQL 8 setempat |
 | Dua migration pasangan bertembung | Versi sama | Digit pertama versi = nombor pasangan (`…-1xxxxx_` … `5…` floater) |
 | Dua MR mengubah `Aliran.php` serentak | Sync tidak menyebut fail panas | Satu MR terbuka setiap fail panas; yang kedua tunggu dan rebase |
+| Claude tidak nampak space `KAN` | Log masuk MCP dengan emel lain, atau jemputan belum diterima | Terima jemputan; log keluar Atlassian di pelayar, `/mcp` → `atlassian` → Authenticate semula |
+| Kad Jira tiada pautan ke MR | Tajuk MR atau branch tanpa kunci | Tajuk MR `KAN-<n>: …`; tambah pautan MR dalam komen kad |
 
 ---
 
 ## Semakan kendiri — akhir hari
 
-**Kerja pasukan (hari ini):** `glab mr list --merged -R aplikasi-baharu/espkpv2`, `glab issue list --label jenis::pepijat -R aplikasi-baharu/espkpv2`.
+**Kerja pasukan (hari ini):** `glab mr list --merged -R aplikasi-baharu/espkpv2`; dalam Claude: `JQL project = KAN AND sprint in openSprints()` dan `project = KAN AND type = Bug AND created >= startOfDay()`.
 
-- [ ] Isu Sprint 2 dirancang dengan label pasangan dan nota sync dicatat dalam isu #19 (Lab 9.20).
-- [ ] Isu Sprint 2 pasangan saya (atau yang saya semak/tulis AC) di-merge melalui MR dengan semakan QA dan ujian hijau (Lab 9.21–9.23).
-- [ ] Saya menguji ciri pasangan lain dan sekurang-kurangnya satu isu Pepijat dicipta daripada ujian eksploratori (Lab 9.22).
-- [ ] `composer test` dan E2E hijau pada `main` selepas semua merge, atau setiap kegagalan ada isu kritikal (Lab 9.23).
+- [ ] MCP `atlassian` bersambung; Sprint 2 dirancang dalam Jira dengan label pasangan dan nota sync dicatat dalam isu #19 (Lab 9.20).
+- [ ] Kad Sprint 2 pasangan saya (atau yang saya semak/tulis AC) di-merge melalui MR `KAN-<n>: …` dengan semakan QA dan ujian hijau (Lab 9.21–9.23).
+- [ ] Saya menguji ciri pasangan lain dan sekurang-kurangnya satu kad Bug Jira dicipta daripada ujian eksploratori (Lab 9.22).
+- [ ] `composer test` dan E2E hijau pada `main` selepas semua merge, atau setiap kegagalan ada kad Bug kritikal (Lab 9.23).
 
 **Modul Laporan individu (rujukan, tidak wajib):**
 

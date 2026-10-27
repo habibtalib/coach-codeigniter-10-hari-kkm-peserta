@@ -3,6 +3,8 @@
 > **Optional side track.** This page shows how you manage the 10 days of work in **Jira Cloud** (Free plan): a backlog from the reference requirements, sprints matched to modules M1–M4, and links between Jira cards and Git branches and commits. It **does not replace** any course deliverable: [`rujukan-keperluan.md`](./rujukan-keperluan.md) (FRs & AC), the BR-* rules in [`spesifikasi-sistem.md`](./spesifikasi-sistem.md) and `docs/pelan-kerja.md` stay the source of truth. Jira is a tracking view on top of them.
 > Canon: [`docs/spesifikasi-sistem.md`](spesifikasi-sistem.md) · Schedule: [`JADUAL.md`](../JADUAL.md) · Working agreement: [`docs/kolaborasi.md`](kolaborasi.md) · Related tracks: [`trek-gitlab.md`](./trek-gitlab.md) · [`trek-design-thinking.md`](./trek-design-thinking.md)
 
+> ℹ️ **Days 9–10: the class Jira.** This track is solo practice for Days 1–4 on your own site. From Day 9 the class shares **one** Jira site (space `KAN`) for the espkpv2 team backlog, and Claude reads it through the `atlassian` MCP: [`tutorial-jira-mcp.en.md`](./tutorial-jira-mcp.en.md).
+
 > ⚠️ **Finish before Day 4.** Coding starts on Day 4. Setup and the backlog happen on Days 1–2, stories with acceptance criteria on Day 2, and sprint planning on Day 4 S4 before the first line of module code.
 
 > ⚠️ **Warning — synthetic data only.** Jira Cloud is an external service. Don't put real KKM data (patient/staff names, real plates), screenshots of internal systems, passwords or `.env` content into cards. Use made-up values as in SPEC §10 (`pemohon1@latihan.test`, `WXX 1234`).

@@ -25,7 +25,7 @@ Pengalaman kursus lepas: **30–60 minit pertama hari koding pertama hilang** ke
 | 8 | Windows: **Laragon** + **Git Bash** sebagai terminal lalai VS Code · macOS (opsyenal): Herd | Laragon 8 | §2, §5 | Git Bash: **Hari 1** · Laragon/Herd: Hari 2 | [ ] |
 | 9 | Ujian asap: projek CI4 kosong berjalan | CI **4.6+** | §6 | Hari 2 | [ ] |
 | 10 | Akaun GitLab KKM (GitLab KKM, daripada IT KKM) — [repo `kelas-ci-<nama>`](./trek-gitlab.md) | — | log masuk `https://<gitlab-kkm>` | Hari 2 | [ ] |
-| 11 | *Pilihan* — [trek Jira](./trek-jira.md): akaun Jira Cloud (e-mel) | — | log masuk `*.atlassian.net` | Hari 4 | — |
+| 11 | **Hari 9, pemegang kerusi Jira** (PM, BA, 2 QA, seorang setiap pasangan Dev, floater) — jemputan Jira kelas diterima (e-mel); *pilihan* Hari 1–4: [trek Jira](./trek-jira.md) | — | log masuk site Jira kelas, space `KAN` dibuka ([tutorial](./tutorial-jira-mcp.md)) | Hari 9 | — |
 
 ### Kenapa setiap sambungan PHP diperlukan?
 

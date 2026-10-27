@@ -4,11 +4,11 @@
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
-| 10.20 | S8 | 09:00–12:30 | Isu Sprint 3 ditutup atau dialih; `main` hijau pada pembekuan ciri |
-| 10.21 | S9 | 14:30–15:15 | MR CHANGELOG 1.1.0, nota keluaran, tag `v1.1.0` + Release |
+| 10.20 | S8 | 09:00–12:30 | Kad Sprint 3 Jira *Done* atau dialih; `main` hijau pada pembekuan ciri |
+| 10.21 | S9 | 14:30–15:15 | MR CHANGELOG 1.1.0 (daripada versi Jira `v1.1.0` + MR sebenar), tag `v1.1.0` + Release, versi Jira dikeluarkan |
 | 10.22 | S10–S11 | 15:15–17:00 | Demo capstone pasukan, soalan baris kerja, retro akhir |
 
-> ℹ️ Repo: `aplikasi-baharu/espkpv2`. Mekanik isu → MR → merge seperti [Lab 8.21–8.23](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16). Lab individu Statistik & capstone (10.1–10.12) dalam [Lampiran](#lampiran--lab-individu-statistik--capstone-rujukan).
+> ℹ️ Repo: `aplikasi-baharu/espkpv2`. Backlog dalam Jira (space `KAN`, [tutorial Jira MCP](../docs/tutorial-jira-mcp.md)); kod, MR dan CI di GitLab KKM. Mekanik kad → branch → MR → merge seperti [Lab 8.21–8.23](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16). Lab individu Statistik & capstone (10.1–10.12) dalam [Lampiran](#lampiran--lab-individu-statistik--capstone-rujukan).
 
 ---
 
@@ -19,32 +19,32 @@ Menyiapkan isu Sprint 3 setiap pasangan dan pepijat kritikal melalui MR yang dis
 
 ### Prasyarat
 - `main` terkini hijau (`git pull`, `composer install`, `php spark migrate --all`, `composer test`).
-- Pasukan Projek dan Dev kekal (isu #19); isu Sprint 3 mempunyai AC dan label `pasangan::N` (Lab 9.21).
+- Pasukan Projek dan Dev kekal (isu #19); kad Sprint 3 dalam Jira mempunyai AC, label `pasangan-N` dan *Fix version* `v1.1.0` (Lab 9.23); MCP `atlassian` bersambung.
 
 ### Langkah
 
 1. **Stand-up dan skop (08:30–09:30).** PM:
 
    ```text
-   Jalankan glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" --label pasukan::dev. Untuk setiap isu: saiz, pasangan, risiko tidak siap sebelum 12:30. Cadangkan susunan kerja: pepijat keutamaan::1-kritikal dahulu.
+   Guna Jira. JQL: project = KAN AND sprint in openSprints() AND statusCategory != Done ORDER BY priority DESC. Untuk setiap kad: saiz, pasangan, risiko tidak siap sebelum 12:30. Cadangkan susunan kerja: Bug Highest dahulu. Baca sahaja.
    ```
 
-   PM memutuskan, mengemas kini *Assignee* dan `status::`.
+   PM memutuskan, mengemas kini *Assignee* dan status kad di papan Jira.
 
-2. **Pepijat kritikal dahulu (Dev + QA).** Setiap pepijat: ujian gagal yang menunjukkan pepijat → pembetulan → ujian hijau → MR `fix/<no>-…` dengan `Closes #<no>`.
+2. **Pepijat kritikal dahulu (Dev + QA).** Setiap pepijat: ujian gagal yang menunjukkan pepijat → pembetulan → ujian hijau → MR `fix/KAN-<n>-…` bertajuk `KAN-<n>: …` (`Closes #<no>` jika ada isu GitLab KKM).
 
    ```text
    Ujian/E2E ini gagal: <output>. Reproduce dahulu: tulis satu ujian PHPUnit yang gagal kerana pepijat ini. Jangan ubah kod app/ lagi.
    ```
 
-3. **Ciri Sprint 3 (09:30–11:30).** Ritma Lab 8.21–8.22: `/ciri-baharu <no>` → slice (mod *Manual*) → `composer semak` → `semak-espkp` → commit `Rujuk #<no>`.
+3. **Ciri Sprint 3 (09:30–11:30).** Ritma Lab 8.21–8.22: `/ciri-baharu <no>` → slice (mod *Manual*) → `composer semak` → `semak-espkp` → commit `Rujuk KAN-<n>`.
 
-4. **MR dan merge (11:30–12:15).** `/semak-mr <no>` oleh QA → approve → PM merge mengikut susunan.
+4. **MR dan merge (11:30–12:15).** `/semak-mr <no>` oleh QA → approve → PM merge mengikut susunan → kad *Done*.
 
-5. **Pembekuan (12:30).** MR ciri yang belum di-merge: tukar ke draf, komen *"Dialih ke backlog selepas pembekuan v1.1.0: <status, apa tinggal>"*, buang milestone. Selepas 12:30, hanya branch `fix/…` boleh di-merge.
+5. **Pembekuan (12:30).** MR ciri yang belum di-merge: tukar ke draf, komen *"Dialih ke backlog selepas pembekuan v1.1.0: <status, apa tinggal>"* pada MR dan kad Jira; kad keluar daripada sprint dan *Fix version* dibuang. Selepas 12:30, hanya branch `fix/…` boleh di-merge.
 
 ### ✅ Checkpoint
-- [ ] Setiap isu Sprint 3 ditutup atau dialih dengan komen; `composer test` hijau pada `main` selepas merge terakhir.
+- [ ] Setiap kad Sprint 3 Jira *Done* atau dialih dengan komen; `composer test` hijau pada `main` selepas merge terakhir.
 
 ---
 
@@ -60,7 +60,7 @@ Menyediakan keluaran v1.1.0 daripada `main` yang hijau: CHANGELOG yang setiap ba
 2. **Draf CHANGELOG (PM keluaran, 15 minit).** Mod *Plan*:
 
    ```text
-   Jalankan glab mr list --merged untuk milestone "Sprint 1 (Hari 8)", "Sprint 2 (Hari 9)" dan "Sprint 3 + v1.1 (Hari 10)". Draf CHANGELOG.md dengan tajuk "# Changelog" dan bahagian "## [1.1.0] - 2026-10-30" (format Keep a Changelog: Ditambah, Diubah, Dibaiki, Keselamatan). Satu baris setiap MR dengan !no dan #isu. Jangan tulis fail.
+   Guna Jira: senaraikan kad dengan JQL project = KAN AND fixVersion = v1.1.0 AND statusCategory = Done (kunci, ringkasan, jenis). Kemudian jalankan glab mr list --merged dan padankan setiap kad dengan MR KAN-<n>: … (Hari 8: MR dengan Closes #N). Draf CHANGELOG.md dengan tajuk "# Changelog" dan bahagian "## [1.1.0] - 2026-10-30" (format Keep a Changelog: Ditambah, Diubah, Dibaiki, Keselamatan). Satu baris setiap MR dengan !no dan KAN-n atau #isu. Kad tanpa MR → senaraikan berasingan. Jangan tulis fail.
    ```
 
    BA dan wakil setiap pasangan menyemak baris isu mereka terhadap MR sebenar. Baris tanpa MR → buang.
@@ -76,8 +76,10 @@ Menyediakan keluaran v1.1.0 daripada `main` yang hijau: CHANGELOG yang setiap ba
    glab release create v1.1.0 --notes-file nota-v1.1.0.md
    ```
 
+5. **Versi Jira (PM keluaran).** Selepas tag: Jira → *Releases* → `v1.1.0` → **Release** (tarikh 30/10). Kad dalam versi yang belum *Done* → pindah ke versi seterusnya atau backlog, dengan komen.
+
 ### ✅ Checkpoint
-- [ ] `glab release view v1.1.0` menunjukkan nota keluaran; `CHANGELOG.md` di `main`.
+- [ ] `glab release view v1.1.0` menunjukkan nota keluaran; `CHANGELOG.md` di `main`; versi Jira `v1.1.0` berstatus *Released*.
 
 ---
 
@@ -100,7 +102,7 @@ Mendemokan hasil pasukan pada `v1.1.0` dengan bukti setiap peranan, **menerangka
    Tanya saya 3 soalan tentang baris <fail:baris> yang saya commit, seperti panel capstone. Jangan beri jawapan.
    ```
 
-2. **Demo capstone.** Pasukan Projek 12 minit (PM: backlog & keputusan skop; BA: satu isu BRS → AC; QA: ujian yang membuktikan AC, satu pepijat yang ditangkap sebelum merge, E2E). Setiap pasangan Dev 10 minit (ciri di pelayar dengan ≥ 2 akaun, termasuk satu yang menerima 404; MR dan ujian). Floater 5 minit. Panel 18 minit (soalan baris kerja setiap ahli).
+2. **Demo capstone.** Pasukan Projek 12 minit (PM: papan Jira, backlog & keputusan skop; BA: satu isu BRS → AC; QA: ujian yang membuktikan AC, satu pepijat yang ditangkap sebelum merge, E2E). Setiap pasangan Dev 10 minit (ciri di pelayar dengan ≥ 2 akaun, termasuk satu yang menerima 404; MR dan ujian). Floater 5 minit. Panel 18 minit (soalan baris kerja setiap ahli).
 
 3. **Retro akhir (S11, 20 minit).** Dalam isu `Retro akhir — Pasukan CI-KKM-10`, setiap orang satu komen: peranan yang paling mengajar, satu kali Claude mempercepat (prompt mana) dan satu kali Claude melambatkan atau menyesatkan (pintu mana menangkapnya), satu peraturan yang dibawa ke jabatan.
 
@@ -112,10 +114,10 @@ Mendemokan hasil pasukan pada `v1.1.0` dengan bukti setiap peranan, **menerangka
 
 ## Semakan kendiri — akhir hari
 
-**Kerja pasukan (hari ini):** `glab release view v1.1.0 -R aplikasi-baharu/espkpv2`, `glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" -R aplikasi-baharu/espkpv2`.
+**Kerja pasukan (hari ini):** `glab release view v1.1.0 -R aplikasi-baharu/espkpv2`; dalam Claude: `JQL project = KAN AND fixVersion = v1.1.0`.
 
-- [ ] Isu Sprint 3 pasukan saya ditutup atau dialih ke backlog dengan sebab sebelum pembekuan (Lab 10.20).
-- [ ] `CHANGELOG.md` 1.1.0 di-merge dan setiap baris sepadan dengan MR sebenar; tag `v1.1.0` wujud (Lab 10.21).
+- [ ] Kad Sprint 3 pasukan saya *Done* atau dialih ke backlog Jira dengan sebab sebelum pembekuan (Lab 10.20).
+- [ ] `CHANGELOG.md` 1.1.0 di-merge dan setiap baris sepadan dengan MR sebenar; tag `v1.1.0` wujud dan versi Jira `v1.1.0` dikeluarkan (Lab 10.21).
 - [ ] Saya menerangkan satu baris kerja saya (kod, ujian atau AC) tanpa Claude semasa demo (Lab 10.22).
 - [ ] Komen retro akhir saya ditambah dalam isu retro pasukan (Lab 10.22).
 

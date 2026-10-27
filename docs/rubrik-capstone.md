@@ -167,9 +167,9 @@ Kriteria sijil tamat kursus (Hari 10 README §4.3) menggunakan rubrik ini sepert
 
 | Kriteria | Tahap 1 (0–4) | Tahap 2 (5–7) | Tahap 3 (8–10) |
 |---|---|---|---|
-| **P · Isu & AC** (PM, BA) | AC kabur atau tiada; skop berubah tanpa rekod | AC boleh diuji; keputusan skop dalam isu | AC Diberi/Apabila/Maka termasuk akses 404 dan kes sempadan; soalan pemilik direkod dan dijawab |
+| **P · Isu & AC** (PM, BA) | AC kabur atau tiada; skop berubah tanpa rekod | AC boleh diuji; keputusan skop dalam isu atau kad Jira | AC Diberi/Apabila/Maka termasuk akses 404 dan kes sempadan; soalan pemilik direkod dan dijawab; sprint dan versi `v1.1.0` dalam Jira tepat dengan apa yang di-merge |
 | **Q · Bukti semakan** (QA) | MR di-merge tanpa komen semakan | Komen semakan dengan jadual AC | Setiap AC ada `fail:baris` + ujian; ≥ 1 pepijat ditangkap sebelum merge; ujian eksploratori antara pasangan |
-| **D · MR & ujian** (Dev) | MR besar, tiada `Closes #N`, ujian tiada | MR kecil dengan `Rujuk #N` / `Closes #N`, ujian hijau | Slice kecil, senarai semak dengan bukti, ujian negatif (404/peranan), `main` hijau selepas merge |
+| **D · MR & ujian** (Dev) | MR besar, tiada `Closes #N` / kunci Jira, ujian tiada | MR kecil dengan `Rujuk #N` / `Rujuk KAN-<n>` dan `Closes #N` / `KAN-<n>: …`, ujian hijau | Slice kecil, senarai semak dengan bukti, ujian negatif (404/peranan), `main` hijau selepas merge |
 | **K · Kerjasama** | Fail panas diubah oleh dua MR serentak tanpa selaras; konflik merosakkan kerja lain | Sync direkod dalam isu #19; konflik diselesaikan | Susunan merge dipatuhi; serah tugas dalam isu; retro dengan tindakan konkrit |
 
 ### 8.2 Markah individu (setiap ahli)
@@ -178,7 +178,7 @@ Kriteria sijil tamat kursus (Hari 10 README §4.3) menggunakan rubrik ini sepert
 |---|---|
 | **Terangkan baris sendiri** | Menerangkan satu baris kerjanya tanpa Claude — Dev/QA: baris yang di-commit (`git log --author`); PM/BA: satu AC dan bagaimana ia diuji — apa, kenapa, apa rosak jika dibuang |
 | **Peranan** | Menunjukkan satu hasil daripada setiap peranan yang dipegang (isu, komen semakan, commit) |
-| **Disiplin AI** | Tiada commit dalam mod auto/bypass; tiada rahsia atau data sebenar dalam isu, MR atau prompt |
+| **Disiplin AI** | Tiada commit dalam mod auto/bypass; tiada rahsia atau data sebenar dalam isu, kad Jira, MR atau prompt; tiada tulisan Jira yang diluluskan tanpa membaca medan |
 
 ### 8.3 Pemetaan kriteria sijil (mod pasukan)
 

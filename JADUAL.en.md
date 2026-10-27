@@ -122,10 +122,11 @@
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
+| 08:15–08:30 | — | Jira & `atlassian` MCP setup (Jira seat holders) | Lab 9.20: `/mcp` → `atlassian` ✔, space `KAN` |
 | 08:30–09:00 | — | Stand-up of the Projek and Dev teams | — |
-| 09:00–10:30 | S13 | Sprint 2 planning, PM sync, test plan & slice 1 | Lab 9.20: Sprint 2 issue `status::sedia`, PM sync note, failing test from the AC, Sprint 2 branch |
+| 09:00–10:30 | S13 | Sprint 2 planning, PM sync, test plan & slice 1 | Lab 9.20: Sprint 2 started in Jira (`pasangan-N`), PM sync note, failing test from the AC, Sprint 2 branch |
 | 10:45–12:30 | S14 | Build Sprint 2: P1 #13/#22 reminders · P2 #9/#25 password & phone · P3 #17/#26 RPT-10 & yearly report · P4 #21/#23 Hilang workflow · floater #8/#24; Projek: Sprint 3 AC | Lab 9.21: slice by slice with tests; risk check (idempotency, training accounts, CSP, export limits, `Aliran.php`) |
-| 14:30–16:00 | S15 | MR, QA review & exploratory testing between pairs | Lab 9.22: `Ready` MR + `/semak-mr`; ≥ 1 Bug issue from exploratory testing |
+| 14:30–16:00 | S15 | MR, QA review & exploratory testing between pairs | Lab 9.22: `Ready` MR + `/semak-mr`; ≥ 1 Jira Bug card from exploratory testing |
 | 16:00–17:00 | S16 | Merge, green `main` (PHPUnit + E2E), sprint demo, retro, v1.1.0 scope | Lab 9.23: all MRs merged, `composer test` + `npm run e2e` green |
 
 > ℹ️ The individual Reports module sessions (S1–S12, Labs 9.1–9.13) are in the Day 9 Appendix as reference.
@@ -135,8 +136,8 @@
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Stand-up of the Projek and Dev teams | — |
-| 09:00–12:30 | S8 | Sprint 3: #14, #15, #18, #27–#32 (by `pasangan::N`) + critical bugs · **feature freeze 12:30** | Lab 10.20: issues closed or moved with a reason; `main` green |
-| 14:30–15:15 | S9 | Release v1.1.0 | Lab 10.21: CHANGELOG through an MR, release notes, tag `v1.1.0` + Release |
+| 09:00–12:30 | S8 | Sprint 3 in Jira: cards from #14, #15, #18, #27–#32 (by `pasangan-N`) + critical bugs · **feature freeze 12:30** | Lab 10.20: cards *Done* or moved with a reason; `main` green |
+| 14:30–15:15 | S9 | Release v1.1.0 | Lab 10.21: CHANGELOG (Jira version `v1.1.0` + MRs) through an MR, tag `v1.1.0` + Release, Jira version released |
 | 15:15–16:30 | S10 | Capstone demo (Projek 12 minutes + 10 minutes per Dev pair) | Lab 10.22: PM · BA · QA · Dev pairs · work-line questions for every member ([rubric](./docs/rubrik-capstone.en.md) §8) |
 | 16:30–17:00 | S11 | Team retro & Claude Code reflection, closing | Lab 10.22: every member's final retro comment |
 

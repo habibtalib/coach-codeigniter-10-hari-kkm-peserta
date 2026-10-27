@@ -16,6 +16,7 @@
 | [`seni-prompt.md`](./seni-prompt.md) | The art of the Claude Code prompt: five-part anatomy, habits (Plan mode, `@file`, `!command`, `/clear`), a rubric to score answers, 8 weak → effective pairs and a catalogue of 65 prompts (understand, plan, implement, review, test, debug, refactor, documentation, Git, security, performance, CI4, meta) | Day 7 S17 · Days 8–10 |
 | [`tutorial-agent-skill-mcp.md`](./tutorial-agent-skill-mcp.md) | Setting up subagents, skills & MCP in Claude Code (Windows): when to use which, the `.claude/agents/`, `.claude/skills/` and `.mcp.json` files and the registration scopes | Day 7 S10–S11 · Days 8–10 |
 | [`tutorial-figma-mcp.md`](./tutorial-figma-mcp.md) | Figma MCP & the `papan-figjam` subagent: update the class FigJam board (ERD, workflows, issue board, ERD proposals, Retro) with Claude Code prompts | Day 8 S17 · Days 8–10 |
+| [`tutorial-jira-mcp.md`](./tutorial-jira-mcp.md) | The class Jira Cloud & the `atlassian` MCP: backlog, sprints, Bug cards and version `v1.1.0` from Claude Code prompts; the `KAN-<n>` key convention | Day 9 S13 · Days 9–10 |
 | [`peranan-pasukan.md`](./peranan-pasukan.md) | Team work in espkpv2: squads, PM / QA / Dev role cards with Claude Code, rotation, one issue three Claude sessions | Days 8–10 |
 | [`pautan-rujukan.md`](./pautan-rujukan.md) | Official documentation links organised by day | Throughout the course |
 | [`senarai-semak-modul.md`](./senarai-semak-modul.md) | M1–M4 progress checklist mapped to the Definition of Done & `BR-*` rules | End of every build session; before the demo |

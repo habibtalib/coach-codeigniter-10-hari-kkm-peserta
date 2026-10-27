@@ -72,6 +72,10 @@ flowchart LR
 | **AI-30** | Dev: slice from the /ciri-baharu plan | Team | 8–10 |
 | **AI-31** | Dev: answer QA comments | Team | 8–10 |
 | **AI-32** | Everyone: merge conflict | Team | 8–10 |
+| **AI-33** | Everyone: connect and test the Jira MCP | Team | 9–10 |
+| **AI-34** | PM: Jira sprint summary | Team | 9–10 |
+| **AI-35** | QA / Dev: Jira Bug card | Team | 9–10 |
+| **AI-36** | Release PM: CHANGELOG from the Jira version | Team | 10 |
 
 ---
 
@@ -572,6 +576,38 @@ My rebase stopped with a conflict in <app/Config/Routes.php>. Explain what main 
 ```
 
 - **After:** The Dev chooses the lines; `php spark routes` and `composer semak` before `git rebase --continue`.
+
+### AI-33 — Everyone: connect and test the Jira MCP
+
+```prompt title="AI-33"
+List the Jira sites and spaces I can see, then the first 5 cards in the KAN backlog (key, summary, status). Read only.
+```
+
+- **After:** compare with the Jira board in the browser. No `KAN` → the invitation is not accepted or you signed in with another email ([tutorial](tutorial-jira-mcp.en.md) §6).
+
+### AI-34 — PM: Jira sprint summary
+
+```prompt title="AI-34"
+Use Jira. JQL: project = KAN AND sprint in openSprints() ORDER BY status. Table: key, summary, status, pair, assignee, disekat label, related MR (glab mr list --search KAN-<n>). Flag cards without an assignee or without AC. Read only.
+```
+
+- **After:** the PM decides; card changes are made in the browser or with a write prompt whose fields the PM approves one by one.
+
+### AI-35 — QA / Dev: Jira Bug card
+
+```prompt title="AI-35"
+Draft a Jira Bug card for KAN from this observation: <steps, expected, actual, account 9001010100NN>. Follow the sections of .gitlab/issue_templates/Pepijat.md. Synthetic data only. Show the fields (type, summary, description, label pasukan-projek); create it only after I say yes.
+```
+
+- **After:** repeat the steps yourself before *Yes*; the PM adds `pasangan-N` during triage.
+
+### AI-36 — Release PM: CHANGELOG from the Jira version
+
+```prompt title="AI-36"
+Use Jira: the cards from JQL project = KAN AND fixVersion = v1.1.0 AND statusCategory = Done. Match each card with its KAN-<n>: … MR in glab mr list --merged. Draft the CHANGELOG 1.1.0 section (Added, Changed, Fixed, Security), one line per MR with the !no and KAN-n. Cards without an MR and MRs without a card → a separate list. Do not write files.
+```
+
+- **After:** remove every line that cannot be linked to a real MR.
 
 ---
 
