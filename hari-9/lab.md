@@ -114,7 +114,7 @@ Membawa Sprint 2 ke MR yang disemak QA, dan **menguji secara eksploratori** ciri
 
 ### Langkah
 
-1. **Dev — MR** seperti [Lab 8.22 — Dev](../hari-8/lab.md#lab-822--sprint-1-petang-mr-semakan-qa--papan-s17): MR draf bertajuk `KAN-<n>: …` (`Jira: KAN-<n>` dalam penerangan) → senarai semak → *Tiga baris utama* → *Ready* → kad *In Review*.
+1. **Dev — MR** seperti [Lab 8.22 — Dev](../hari-8/lab.md#lab-822--sprint-1-petang-mr-semakan-qa--papan-s17): MR draf bertajuk `KAN-<n>: …` (`Jira: KAN-<n>` dalam penerangan) → senarai semak → *Tiga baris utama* → *Ready* → kad *Testing*.
 
 2. **QA — semak MR** dengan `/semak-mr <no-MR>` (AI-27), buka setiap `fail:baris`, approve atau minta perubahan (kad *In Progress* + komen dengan pautan MR).
 

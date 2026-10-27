@@ -41,7 +41,7 @@ The read tools (`getJiraIssue`, `searchJiraIssuesUsingJql`, `getVisibleJiraProje
 | MR title | `KAN-<n>: <summary>` | `KAN-14: peringatan pindaan > 7 hari` |
 | MR description | `Jira: KAN-<n>` + `Closes #N` if a GitLab KKM issue exists | `Jira: KAN-14` · `Closes #13` |
 
-Board statuses: **To Do → In Progress → In Review → Done**. Blocked = label `disekat` + flag. Pairs: labels `pasangan-1`…`pasangan-4`; the team acting now: `pasukan-projek` / `pasukan-dev`.
+Board statuses: **Idea (no AC yet) → To Do → In Progress → Testing (QA review) → Done**. Blocked = label `disekat` + flag. Pairs: labels `pasangan-1`…`pasangan-4`; the team acting now: `pasukan-projek` / `pasukan-dev`.
 
 ## 4. Prompts by role
 

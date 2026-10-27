@@ -79,7 +79,7 @@ The teams stay the same from Day 8 afternoon to Day 10 (Day 8 morning used 3 rot
 | 4. Slice plan | Dev | *Plan* + `/ciri-baharu` | Slice plan comment |
 | 5. Failing test | QA | *Manual* | Commit `ujian: … Rujuk #N` |
 | 6. Slice | Dev | *Manual* + `semak-espkp` | Commit `<area>: … Rujuk #N` |
-| 7. MR | Dev | — | MR `Closes #N`, `status::semakan` + `pasukan::projek` · MR `KAN-<n>: …`, card *In Review* |
+| 7. MR | Dev | — | MR `Closes #N`, `status::semakan` + `pasukan::projek` · MR `KAN-<n>: …`, card *Testing* |
 | 8. Review | QA | *Plan* + `/semak-mr` | Review comment + approve / request changes |
 | 9. Merge + UAT | PM, QA | — | Issue closed · card *Done*; QA confirms on `main` |
 

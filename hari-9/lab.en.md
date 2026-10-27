@@ -114,7 +114,7 @@ Bring Sprint 2 to a QA-reviewed MR, and **test exploratorily** the features alre
 
 ### Steps
 
-1. **Dev — MR** as in [Lab 8.22 — Dev](../hari-8/lab.en.md#lab-822--sprint-1-afternoon-mr-qa-review--board-s17): draft MR titled `KAN-<n>: …` (`Jira: KAN-<n>` in the description) → checklist → *Three key lines* → *Ready* → card *In Review*.
+1. **Dev — MR** as in [Lab 8.22 — Dev](../hari-8/lab.en.md#lab-822--sprint-1-afternoon-mr-qa-review--board-s17): draft MR titled `KAN-<n>: …` (`Jira: KAN-<n>` in the description) → checklist → *Three key lines* → *Ready* → card *Testing*.
 
 2. **QA — MR review** with `/semak-mr <MR-no>` (AI-27), open every `file:line`, approve or request changes (card *In Progress* + a comment with the MR link).
 

@@ -41,7 +41,7 @@ Tool baca (`getJiraIssue`, `searchJiraIssuesUsingJql`, `getVisibleJiraProjects`,
 | Tajuk MR | `KAN-<n>: <ringkasan>` | `KAN-14: peringatan pindaan > 7 hari` |
 | Penerangan MR | `Jira: KAN-<n>` + `Closes #N` jika ada isu GitLab KKM | `Jira: KAN-14` · `Closes #13` |
 
-Status papan: **To Do → In Progress → In Review → Done**. Disekat = label `disekat` + bendera (*flag*). Pasangan: label `pasangan-1`…`pasangan-4`; pasukan yang bertindak sekarang: `pasukan-projek` / `pasukan-dev`.
+Status papan: **Idea (belum ada AC) → To Do → In Progress → Testing (semakan QA) → Done**. Disekat = label `disekat` + bendera (*flag*). Pasangan: label `pasangan-1`…`pasangan-4`; pasukan yang bertindak sekarang: `pasukan-projek` / `pasukan-dev`.
 
 ## 4. Prompt mengikut peranan
 

@@ -79,7 +79,7 @@ Pasukan kekal sama dari Hari 8 petang hingga Hari 10 (Hari 8 pagi menggunakan 3 
 | 4. Pelan slice | Dev | *Plan* + `/ciri-baharu` | Komen pelan slice |
 | 5. Ujian gagal | QA | *Manual* | Commit `ujian: … Rujuk #N` |
 | 6. Slice | Dev | *Manual* + `semak-espkp` | Commit `<area>: … Rujuk #N` |
-| 7. MR | Dev | — | MR `Closes #N`, `status::semakan` + `pasukan::projek` · MR `KAN-<n>: …`, kad *In Review* |
+| 7. MR | Dev | — | MR `Closes #N`, `status::semakan` + `pasukan::projek` · MR `KAN-<n>: …`, kad *Testing* |
 | 8. Semakan | QA | *Plan* + `/semak-mr` | Komen semakan + approve / minta perubahan |
 | 9. Merge + UAT | PM, QA | — | Isu ditutup · kad *Done*; QA sahkan di `main` |
 
