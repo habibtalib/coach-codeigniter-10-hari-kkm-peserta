@@ -231,11 +231,12 @@ Work at the same time in your morning role on the squad's Sprint 1 issue: the **
 ## Lab 8.22 — Sprint 1 Afternoon: MR, QA Review & Board (S17)
 
 ### 🎯 Objective
-After **rotating roles**, finish the Sprint 1 issue up to a `Ready` MR (**Dev**), review the MR against the AC with evidence and decide *approve* or *request changes* (**QA**), and make sure the board reflects reality (**PM**).
+In your **fixed team** (issue #19): finish the Sprint 1 issue up to a `Ready` MR (**Dev**, pairs), review the MR against the AC with evidence and decide *approve* or *request changes* (**QA**), write the AC for the next BRS issue (**BA**), and make sure the board reflects reality (**PM**).
 
 ### Prerequisites
-- Lab 8.21: the morning PM has written a **"Handover"** comment in the issue (done / next / open questions).
-- Your afternoon role: the rotation table, slot *Sprint 1 afternoon*.
+- Lab 8.21: the morning owner of the issue has written a **"Handover"** comment in the issue (branch / done / next).
+- Your team and role: issue #19 (Projek: PM, BA, QA; Dev: pairs 1–4 + floater). Your pair's issues: label `pasangan::N`.
+- (Optional) Figma MCP + the `papan-figjam` subagent for the FigJam board: [`tutorial-figma-mcp.en.md`](../docs/tutorial-figma-mcp.en.md).
 
 ### Steps — Dev
 
@@ -267,26 +268,45 @@ After **rotating roles**, finish the Sprint 1 issue up to a `Ready` MR (**Dev**)
 1. Every 20 minutes:
 
    ```bash
-   glab issue list --milestone "Sprint 1 (Hari 8)" --label skuad::<x>
+   glab issue list --milestone "Sprint 1 (Hari 8)" --label pasukan::dev
    ```
 
    ```text
-   Summarise this squad's issue status and what is blocking, one line per issue. Propose a merge order based on the shared files each MR touches (glab mr diff).
+   Summarise the status of these issues and what is blocking, one line per issue. Propose a merge order based on the shared files each MR touches (glab mr diff).
    ```
 
 2. Resolve `status::disekat` (get the system owner's answer), make sure every issue is in the right board column.
-3. Agree the **merge order** with the other PMs for S18; write it in a comment on the squad issue.
+3. Agree the **merge order** with the floater for S18; write it in a comment on issue #19.
+
+### Steps — BA
+
+1. The next BRS issue (start with #20):
+
+   ```text
+   /isu-baharu 20
+   ```
+
+   Check the quality table; questions for the system owner → issue comment `@jurulatih` + `status::disekat`.
+2. Run the printed `glab issue update …` command. Ask QA to write the test plan in an issue comment.
+3. If the issue changes the schema: sketch it on FigJam (*Cadangan (Dev / BA)* lane):
+
+   ```text
+   Use the papan-figjam subagent. Issue #20: summarise the cards and arrows in the section "TLK Khas — Pelawat & Ibu Mengandung" that relate to cancellation. Read only.
+   ```
+
+4. AC + test plan done → the PM changes the labels to `status::sedia,pasukan::dev,pasangan::4`.
 
 ### ✅ Checkpoint
 - [ ] **Dev:** MR `Ready`, `Closes #<no>`, checklist filled in, no box ticked without evidence.
 - [ ] **QA:** A QA comment with an AC ↔ code ↔ tests table and a reasoned decision.
 - [ ] **PM:** The squad board is accurate; merge order agreed.
+- [ ] **BA:** Issue #20 has a user story and ≥ 3 AC including a 404 access AC, and the label `status::sedia`.
 
 ### Common mistakes
 | Symptom | Cause | Fix |
 |---|---|---|
 | QA approves based on Claude's summary only | Evidence not opened | Open every `file:line`; no evidence = not met |
-| The MR author presses *Approve* | Forgot the rule | *Revoke approval*; only the squad's QA |
+| The MR author presses *Approve* | Forgot the rule | *Revoke approval*; only the Projek team's QA |
 | The MR contains changes outside the issue | Claude "fixed" other files | Remove them from the branch (`git restore -s main <file>`); open a new issue |
 
 ---
@@ -294,7 +314,7 @@ After **rotating roles**, finish the Sprint 1 issue up to a `Ready` MR (**Dev**)
 ## Lab 8.23 — Merge, Conflicts, Demo & Retro (S18)
 
 ### 🎯 Objective
-Merge the squad MRs in the agreed order, **resolve** a rebase conflict in a shared file without removing another squad's work, and **demo** the Sprint 1 result.
+Merge the Dev pairs' MRs in the agreed order, **resolve** a rebase conflict in a shared file without removing another pair's work, and **demo** the Sprint 1 result.
 
 ### Steps
 
@@ -319,7 +339,7 @@ Merge the squad MRs in the agreed order, **resolve** a rebase conflict in a shar
    Explain the conflict in <file>: what did main add and what did my branch add? Do not resolve the conflict.
    ```
 
-   Choose yourself: keep both blocks in their own areas, remove the `<<<<<<<`, `=======`, `>>>>>>>` markers. A conflict in another squad's hotspot → **stop**, call the owning PM. A migration conflict → rename your migration with a version after the latest one.
+   Choose yourself: keep both blocks in their own areas, remove the `<<<<<<<`, `=======`, `>>>>>>>` markers. A conflict in a hot file (`docs/pasukan.md` §4) → **stop**, call the floater and the other MR's pair. A migration conflict → rename your migration with a version after the latest one.
 
    ```bash
    php spark routes
@@ -331,9 +351,9 @@ Merge the squad MRs in the agreed order, **resolve** a rebase conflict in a shar
 
 4. **Next merges** in order; QA re-checks briefly after the rebase (tests green, diff unchanged outside the conflict).
 
-5. **Squad demo (2 minutes per squad).** PM: issue + AC. Dev: the feature in the browser on the latest `main`. QA: the tests that prove the AC (`vendor/bin/phpunit --filter …`).
+5. **Demo (2 minutes per pair).** BA: issue + AC. Dev: the feature in the browser on the latest `main`. QA: the tests that prove the AC (`vendor/bin/phpunit --filter …`).
 
-6. **Retro (10 minutes).** The PM opens an issue `Retro Sprint 1 — Skuad <X>` (*Tugas* template, label `skuad::<x>`) with three parts: *Went well*, *Change tomorrow*, *Prompt rule for tomorrow* (one prompt that proved useful today).
+6. **Retro (10 minutes).** Each person adds one sticky in the *Retro* section of the FigJam board (write your team). The PM opens an issue `Retro Sprint 1` (*Tugas* template) and copies a summary in three parts: *Went well*, *Change tomorrow*, *Prompt rule for tomorrow* (one prompt that proved useful today).
 
 ### ✅ Checkpoint
 - [ ] The related issue is closed automatically by `Closes #<no>`.
@@ -344,8 +364,8 @@ Merge the squad MRs in the agreed order, **resolve** a rebase conflict in a shar
 | Symptom | Cause | Fix |
 |---|---|---|
 | `git push` after a rebase is rejected (`non-fast-forward`) | History changed after the rebase | `git push --force-with-lease` (not `--force`) on your own branch only |
-| After resolving the conflict, the other squad's route is gone | Their block was removed | `git rebase --abort` or `git reflog` → redo; keep both blocks |
-| Two migrations with the same version | Two squads picked the same time | Squad prefix in the version (`…-1xxxxx_` A, `2…` B, `3…` C) |
+| After resolving the conflict, the other pair's route is gone | Their block was removed | `git rebase --abort` or `git reflog` → redo; keep both blocks |
+| Two migrations with the same version | Two pairs picked the same time | Pair number as the first digit of the version (`…-1xxxxx_` pair 1 … `5…` floater) |
 
 ---
 

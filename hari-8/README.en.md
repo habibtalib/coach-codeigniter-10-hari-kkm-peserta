@@ -2,6 +2,8 @@
 
 [📅 Schedule](../JADUAL.md) · [👥 Team roles](../docs/peranan-pasukan.en.md) · [🤝 Collaboration](../docs/kolaborasi.en.md) · [🧪 Day 8 Lab](./lab.en.md)
 
+> ⚠️ **Update 27/10: from S17 (14:30) the class switches to 2 fixed teams until Day 10.** **Projek** (4: PM, BA, 2 QA) owns requirements, AC and testing; **Dev** (9: 4 pairs + a floater) builds. Names: issue #19. Backlog = existing issues + BRS gaps (#20–#32). Rules: `docs/pasukan.md` in espkpv2 and [`peranan-pasukan.en.md`](../docs/peranan-pasukan.en.md). FigJam board + Claude Code: [`tutorial-figma-mcp.en.md`](../docs/tutorial-figma-mcp.en.md).
+
 > **Today 12 people work in one repo.** From today until Day 10, the class becomes one development team in the real **eSPKP Contoh** repo (`aplikasi-baharu/espkpv2` on GitLab KKM): 3 squads × 4 people, each squad with a **PM**, a **QA** and **2 Devs**, and every role assisted by Claude Code. GitLab issue → branch → MR → QA review → merge. Roles rotate after lunch.
 
 ---
@@ -130,13 +132,14 @@ The three roles start **at the same time** on the same issue:
 
 ## S17 — Sprint 1 (Afternoon): MR, QA Review & Board (14:30–16:00)
 
-**Rotate roles first** (rotation table in [`peranan-pasukan.en.md`](../docs/peranan-pasukan.en.md)): morning PM → QA, morning QA → Dev, and so on. The handover happens **in the issue**: the morning PM writes a "Handover" comment (done, next, open questions) before lunch.
+**From this session: 2 fixed teams** (issue #19). **Projek** — PM `hafez.husin`, BA `jumaidi`, QA `khairol` & `mdanial`. **Dev** — pair 1 `noraini`+`Zuriyani` (#1), 2 `NURASMA`+`rifa` (#10, #12), 3 `cpchin`+`wahida` (#16), 4 `sukri`+`huda` (#20 once its AC is ready), floater `juhaida`. The handover happens **in the issue**: the morning owner writes a "Handover" comment (branch, done, next) before 14:30. The `pasukan::projek|dev` label shows who acts; `pasangan::N` shows the Dev pair.
 
 MR flow:
 
 1. **Dev:** next slice → `composer semak` → `semak-espkp` → push → draft MR (`glab mr create --draft`, *Default* template, `Closes #N`) → fill in the checklist and "Three key lines" → *Mark as ready* → `status::semakan`.
 2. **QA:** `/semak-mr <MR-no>` → open every referenced `file:line` → try 3 manual test steps in the browser → review comment → **approve** or **request changes** (`status::dalam-kerja`).
-3. **PM:** make sure every issue is in the right column, resolve `status::disekat`, agree the merge order with the other PMs.
+3. **BA:** the next BRS issue (#20, then #21–#26) → `/isu-baharu <no>` → AC → hand to QA for the test plan. Sketch schema changes on FigJam (*Cadangan ERD* lane, `papan-figjam` subagent).
+4. **PM:** make sure every issue has the right column and `pasukan::` label, resolve `status::disekat` (#33 system-owner questions), agree the merge order with the floater.
 
 A good QA comment is specific and verifiable:
 
@@ -146,15 +149,15 @@ A good QA comment is specific and verifiable:
 | "This code is wrong" | "`LaporanRpt10.php:41` `GROUP BY j.nama` without `j.kod` — fails `ONLY_FULL_GROUP_BY` in CI. Suggestion: add `j.kod` to the `GROUP BY`." |
 
 ### ✅ Checkpoint S17
-- Every squad has a `Ready` MR with `Closes #N` and the checklist filled in.
+- Every Dev pair has a `Ready` MR with `Closes #N` and the checklist filled in.
 - Every MR has a QA review comment with an AC table.
-- Board: no squad issue without a `status::` label.
+- Board: every Sprint 1 issue has a `status::` and a `pasukan::` label; the BA has finished the AC for #20.
 
 ---
 
 ## S18 — Merge, Conflict Drill, Demo & Retro (16:00–17:00)
 
-The **merge order** is set by the PMs: the MR that touches fewer shared files is merged first. After each merge, the other MRs **rebase**:
+The **merge order** is set by the PM with the floater: the MR that touches fewer shared files is merged first. After each merge, the other MRs **rebase**:
 
 ```bash
 git fetch origin
@@ -163,19 +166,19 @@ composer semak
 git push --force-with-lease
 ```
 
-**Conflict drill (10 minutes):** two squads add routes close together in `app/Config/Routes.php`. After the first squad merges, the second squad gets a conflict during rebase. Resolve it by:
+**Conflict drill (10 minutes):** two pairs add routes close together in `app/Config/Routes.php`. After the first pair merges, the second pair gets a conflict during rebase. Resolve it by:
 
 1. `git status` → conflicted file.
 2. Ask Claude: `Explain the conflict in app/Config/Routes.php: what did each side add? Do not resolve it.`
 3. **The Dev chooses**: keep both blocks (each in its own area), remove the `<<<<<<<`/`=======`/`>>>>>>>` markers.
 4. `php spark routes` (or the `ci4-spark` `routes` tool) → both routes exist → `composer semak` → `git rebase --continue`.
 
-**Squad demo (2 minutes per squad):** the PM shows the issue and AC, the Dev shows the feature in the browser, QA shows the tests that prove the AC. **Retro (10 minutes):** one thing that went well, one thing to change tomorrow, one prompt rule the squad will use tomorrow — written in the squad's retro issue.
+**Demo (2 minutes per pair):** the BA shows the issue and AC, the Dev shows the feature in the browser, QA shows the tests that prove the AC. **Retro (10 minutes):** one thing that went well, one thing to change tomorrow, one prompt rule for tomorrow — each person adds a sticky in the *Retro* section of the FigJam board (write your team), the PM copies a summary into the retro issue.
 
 ### ✅ Checkpoint S18
-- At least one MR per squad is merged into `main`; the related issue is closed automatically by `Closes #N`.
+- At least one MR per pair is merged into `main`; the related issue is closed automatically by `Closes #N`.
 - `main` can be cloned and `composer test` is green.
-- A squad retro issue with 3 points.
+- A Sprint 1 retro issue with 3 points from each team.
 
 ---
 ## 🤖 Today's prompting
@@ -189,7 +192,8 @@ Each role has its own prompts. Full prompts: [`pustaka-prompt.en.md`](../docs/pu
 | QA · test plan | `Use the penguji-espkp subagent: for each AC of issue #N, the existing tests that cover it (file:line) and the missing cases.` → `Write a failing PHPUnit test for AC-1 only, following UjianCiri and BinaPermohonan.` | The test fails with the right message, not a syntax error | 8.21 |
 | Dev · plan | *Plan* mode: `/ciri-baharu 1 satu permohonan terbuka` → `Implement slice 1 of this plan only. Stop after slice 1.` | Read every diff; `composer semak`; `Use the semak-espkp subagent on this slice's diff` | 8.21–8.22 |
 | QA · review the MR | `/semak-mr 3` → `For finding 2, show the code line and the test that prove it.` | Open every `file:line`; try the manual test steps in the browser | 8.22 |
-| PM · board | `glab issue list --milestone "Sprint 1 (Hari 8)" --label skuad::a` → `Summarise the squad's issue status and what is blocking, one line per issue.` | Compare with the board on GitLab KKM | 8.22 |
+| PM · board | `glab issue list --milestone "Sprint 1 (Hari 8)" --label pasukan::dev` → `Summarise the status of these issues and what is blocking, one line per issue.` | Compare with the board on GitLab KKM | 8.22 |
+| BA / Dev · FigJam board | `Use the papan-figjam subagent. Issue #25: copy the profil_pengguna card into the "Cadangan (Dev / BA)" lane and add column telefon_bimbit in yellow.` ([tutorial](../docs/tutorial-figma-mcp.en.md)) | Open the board; changes only in the proposal lane | 8.22 |
 | Dev · conflict | `Explain the conflict in app/Config/Routes.php: what did each side add? Do not resolve it.` | The Dev chooses the lines; `php spark routes` | 8.23 |
 
 ---

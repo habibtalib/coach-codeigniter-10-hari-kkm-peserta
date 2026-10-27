@@ -2,6 +2,8 @@
 
 [📅 Jadual](../JADUAL.md) · [👥 Peranan pasukan](../docs/peranan-pasukan.md) · [🤝 Kolaborasi](../docs/kolaborasi.md) · [🧪 Lab Hari 8](./lab.md)
 
+> ⚠️ **Kemas kini 27/10: mulai S17 (14:30) kelas bertukar kepada 2 pasukan tetap hingga Hari 10.** **Projek** (4: PM, BA, 2 QA) memiliki keperluan, AC dan pengujian; **Dev** (9: 4 pasangan + floater) membangun. Agihan nama: isu #19. Backlog = isu sedia ada + jurang BRS (#20–#32). Peraturan: `docs/pasukan.md` dalam espkpv2 dan [`peranan-pasukan.md`](../docs/peranan-pasukan.md). Papan FigJam + Claude Code: [`tutorial-figma-mcp.md`](../docs/tutorial-figma-mcp.md).
+
 > **Hari ini 12 orang bekerja dalam satu repo.** Mulai hari ini hingga Hari 10, kelas menjadi satu pasukan pembangunan dalam repo sebenar **eSPKP Contoh** (`aplikasi-baharu/espkpv2` di GitLab KKM): 3 skuad × 4 orang, setiap skuad ada **PM**, **QA** dan **2 Dev**, dan setiap peranan dibantu Claude Code. Isu GitLab → branch → MR → semakan QA → merge. Peranan bertukar selepas makan tengah hari.
 
 ---
@@ -130,13 +132,14 @@ Tiga peranan bermula **serentak** pada isu yang sama:
 
 ## S17 — Sprint 1 (Petang): MR, Semakan QA & Papan (14:30–16:00)
 
-**Tukar peranan dahulu** (jadual putaran dalam [`peranan-pasukan.md`](../docs/peranan-pasukan.md)): PM pagi → QA, QA pagi → Dev, dan seterusnya. Penyerahan berlaku **dalam isu**: PM pagi menulis komen "Serah tugas" (apa siap, apa seterusnya, soalan terbuka) sebelum makan tengah hari.
+**Mulai sesi ini: 2 pasukan tetap** (isu #19). **Projek** — PM `hafez.husin`, BA `jumaidi`, QA `khairol` & `mdanial`. **Dev** — pasangan 1 `noraini`+`Zuriyani` (#1), 2 `NURASMA`+`rifa` (#10, #12), 3 `cpchin`+`wahida` (#16), 4 `sukri`+`huda` (#20 selepas AC), floater `juhaida`. Penyerahan berlaku **dalam isu**: pemilik isu pagi menulis komen "Serah tugas" (branch, apa siap, seterusnya) sebelum 14:30. Label `pasukan::projek|dev` menunjukkan siapa bertindak; `pasangan::N` menunjukkan pasangan Dev.
 
 Aliran MR:
 
 1. **Dev:** slice seterusnya → `composer semak` → `semak-espkp` → push → MR draf (`glab mr create --draft`, templat *Default*, `Closes #N`) → isi senarai semak dan "Tiga baris utama" → *Mark as ready* → `status::semakan`.
 2. **QA:** `/semak-mr <no-MR>` → buka setiap `fail:baris` yang dirujuk → cuba 3 langkah ujian manual di pelayar → komen semakan → **approve** atau **minta perubahan** (`status::dalam-kerja`).
-3. **PM:** pastikan setiap isu dalam lajur yang betul, selesaikan `status::disekat`, tetapkan susunan merge bersama PM lain.
+3. **BA:** isu BRS seterusnya (#20, kemudian #21–#26) → `/isu-baharu <no>` → AC → serah kepada QA untuk pelan ujian. Lakar perubahan skema di FigJam (lorong *Cadangan ERD*, subagent `papan-figjam`).
+4. **PM:** pastikan setiap isu dalam lajur dan label `pasukan::` yang betul, selesaikan `status::disekat` (#33 soalan pemilik sistem), tetapkan susunan merge bersama floater.
 
 Komen QA yang baik adalah khusus dan boleh disahkan:
 
@@ -146,15 +149,15 @@ Komen QA yang baik adalah khusus dan boleh disahkan:
 | "Kod ini salah" | "`LaporanRpt10.php:41` `GROUP BY j.nama` tanpa `j.kod` — gagal `ONLY_FULL_GROUP_BY` di CI. Cadangan: tambah `j.kod` dalam `GROUP BY`." |
 
 ### ✅ Checkpoint S17
-- Setiap skuad mempunyai MR `Ready` dengan `Closes #N` dan senarai semak diisi.
+- Setiap pasangan Dev mempunyai MR `Ready` dengan `Closes #N` dan senarai semak diisi.
 - Setiap MR mempunyai komen semakan QA dengan jadual AC.
-- Papan: tiada isu skuad tanpa label `status::`.
+- Papan: setiap isu Sprint 1 ada label `status::` dan `pasukan::`; BA telah menyiapkan AC #20.
 
 ---
 
 ## S18 — Merge, Latihan Konflik, Demo & Retro (16:00–17:00)
 
-**Susunan merge** ditetapkan PM: MR yang menyentuh lebih sedikit fail dikongsi di-merge dahulu. Selepas setiap merge, MR lain **rebase**:
+**Susunan merge** ditetapkan PM bersama floater: MR yang menyentuh lebih sedikit fail dikongsi di-merge dahulu. Selepas setiap merge, MR lain **rebase**:
 
 ```bash
 git fetch origin
@@ -163,19 +166,19 @@ composer semak
 git push --force-with-lease
 ```
 
-**Latihan konflik (10 minit):** dua skuad menambah route dalam `app/Config/Routes.php` pada tempat yang berdekatan. Selepas skuad pertama merge, skuad kedua mendapat konflik semasa rebase. Selesaikan dengan:
+**Latihan konflik (10 minit):** dua pasangan menambah route dalam `app/Config/Routes.php` pada tempat yang berdekatan. Selepas pasangan pertama merge, pasangan kedua mendapat konflik semasa rebase. Selesaikan dengan:
 
 1. `git status` → fail berkonflik.
 2. Minta Claude: `Terangkan konflik dalam app/Config/Routes.php: apa yang ditambah setiap pihak? Jangan selesaikan.`
-3. **Dev memilih**: simpan kedua-dua blok (kawasan masing-masing), buang penanda `<<<<<<<`/`=======`/`>>>>>>>`.
+3. **Dev memilih**: simpan kedua-dua blok (modul masing-masing), buang penanda `<<<<<<<`/`=======`/`>>>>>>>`.
 4. `php spark routes` (atau tool `ci4-spark` `routes`) → kedua-dua route wujud → `composer semak` → `git rebase --continue`.
 
-**Demo skuad (2 minit setiap skuad):** PM menunjukkan isu dan AC, Dev menunjukkan ciri dalam pelayar, QA menunjukkan ujian yang membuktikan AC. **Retro (10 minit):** satu perkara yang berjalan baik, satu yang perlu diubah esok, satu peraturan prompt yang skuad akan gunakan esok — tulis dalam isu retro skuad.
+**Demo (2 minit setiap pasangan):** BA menunjukkan isu dan AC, Dev menunjukkan ciri dalam pelayar, QA menunjukkan ujian yang membuktikan AC. **Retro (10 minit):** satu perkara yang berjalan baik, satu yang perlu diubah esok, satu peraturan prompt untuk esok — setiap orang satu sticky dalam seksyen *Retro* papan FigJam (tulis pasukan anda), PM salin ringkasan ke isu retro.
 
 ### ✅ Checkpoint S18
-- Sekurang-kurangnya satu MR setiap skuad di-merge ke `main`; isu berkaitan ditutup automatik oleh `Closes #N`.
+- Sekurang-kurangnya satu MR setiap pasangan di-merge ke `main`; isu berkaitan ditutup automatik oleh `Closes #N`.
 - `main` boleh di-clone dan `composer test` hijau.
-- Isu retro skuad dengan 3 perkara.
+- Isu retro Sprint 1 dengan 3 perkara daripada setiap pasukan.
 
 ---
 ## 🤖 Prompting hari ini
@@ -189,7 +192,8 @@ Setiap peranan mempunyai prompt sendiri. Prompt penuh: [`pustaka-prompt.md`](../
 | QA · pelan ujian | `Guna subagent penguji-espkp: untuk setiap AC isu #N, ujian sedia ada yang meliputinya (fail:baris) dan kes yang tiada.` → `Tulis ujian PHPUnit gagal untuk AC-1 sahaja, ikut UjianCiri dan BinaPermohonan.` | Ujian gagal dengan mesej yang betul, bukan ralat sintaks | 8.21 |
 | Dev · rancang | Mod *Plan*: `/ciri-baharu 1 satu permohonan terbuka` → `Laksana slice 1 pelan ini sahaja. Berhenti selepas slice 1.` | Baca setiap diff; `composer semak`; `Guna subagent semak-espkp pada diff slice ini` | 8.21–8.22 |
 | QA · semak MR | `/semak-mr 3` → `Untuk dapatan 2, tunjukkan baris kod dan ujian yang membuktikannya.` | Buka setiap `fail:baris`; cuba langkah ujian manual di pelayar | 8.22 |
-| PM · papan | `glab issue list --milestone "Sprint 1 (Hari 8)" --label skuad::a` → `Ringkaskan status isu skuad dan apa yang menyekat, satu baris setiap isu.` | Bandingkan dengan papan di GitLab KKM | 8.22 |
+| PM · papan | `glab issue list --milestone "Sprint 1 (Hari 8)" --label pasukan::dev` → `Ringkaskan status isu ini dan apa yang menyekat, satu baris setiap isu.` | Bandingkan dengan papan di GitLab KKM | 8.22 |
+| BA / Dev · papan FigJam | `Guna subagent papan-figjam. Isu #25: salin kad profil_pengguna ke lorong "Cadangan (Dev / BA)" dan tambah lajur telefon_bimbit berwarna kuning.` ([tutorial](../docs/tutorial-figma-mcp.md)) | Buka papan; perubahan hanya dalam lorong cadangan | 8.22 |
 | Dev · konflik | `Terangkan konflik dalam app/Config/Routes.php: apa yang ditambah setiap pihak? Jangan selesaikan.` | Dev memilih baris; `php spark routes` | 8.23 |
 
 ---

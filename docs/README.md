@@ -15,6 +15,7 @@
 | [`tutorial-prompt-projek.md`](./tutorial-prompt-projek.md) | Prompting Claude Code: anatomi prompt, gelung teroka → rancang → laksana → sahkan, projek sedia ada, projek baharu daripada PRD, templat & semakan PRD (AI-15..AI-18) | Hari 7 S12 |
 | [`seni-prompt.md`](./seni-prompt.md) | Seni prompt Claude Code: anatomi lima bahagian, tabiat (mod Plan, `@fail`, `!arahan`, `/clear`), rubrik menilai jawapan, 8 pasangan lemah → berkesan dan katalog 65 prompt (faham, rancang, laksana, semak, uji, nyahpepijat, refactor, dokumentasi, Git, keselamatan, prestasi, CI4, meta) | Hari 7 S17 · Hari 8–10 |
 | [`tutorial-agent-skill-mcp.md`](./tutorial-agent-skill-mcp.md) | Menyediakan subagent, skill & MCP dalam Claude Code (Windows): bila guna apa, fail `.claude/agents/`, `.claude/skills/`, `.mcp.json` dan skop pendaftaran | Hari 7 S10–S11 · Hari 8–10 |
+| [`tutorial-figma-mcp.md`](./tutorial-figma-mcp.md) | Figma MCP & subagent `papan-figjam`: kemas kini papan FigJam kelas (ERD, aliran kerja, papan isu, Cadangan ERD, Retro) dengan prompt Claude Code | Hari 8 S17 · Hari 8–10 |
 | [`peranan-pasukan.md`](./peranan-pasukan.md) | Kerja pasukan dalam espkpv2: skuad, kad peranan PM / QA / Dev dengan Claude Code, putaran, satu isu tiga sesi Claude | Hari 8–10 |
 | [`pautan-rujukan.md`](./pautan-rujukan.md) | Pautan dokumentasi rasmi disusun ikut hari | Sepanjang kursus |
 | [`senarai-semak-modul.md`](./senarai-semak-modul.md) | Senarai semak kemajuan M1–M4 dipetakan kepada Definition of Done & peraturan `BR-*` | Hujung setiap sesi pembinaan; sebelum demo |

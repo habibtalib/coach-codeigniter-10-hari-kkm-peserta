@@ -231,11 +231,12 @@ Bekerja serentak dalam peranan pagi anda pada isu Sprint 1 skuad: **PM** menghas
 ## Lab 8.22 — Sprint 1 Petang: MR, Semakan QA & Papan (S17)
 
 ### 🎯 Objektif
-Selepas **tukar peranan**, menyiapkan isu Sprint 1 hingga MR `Ready` (**Dev**), menyemak MR terhadap AC dengan bukti dan memutuskan *approve* atau *minta perubahan* (**QA**), dan memastikan papan mencerminkan keadaan sebenar (**PM**).
+Dalam **pasukan tetap** anda (isu #19): menyiapkan isu Sprint 1 hingga MR `Ready` (**Dev**, pasangan), menyemak MR terhadap AC dengan bukti dan memutuskan *approve* atau *minta perubahan* (**QA**), menulis AC isu BRS seterusnya (**BA**), dan memastikan papan mencerminkan keadaan sebenar (**PM**).
 
 ### Prasyarat
-- Lab 8.21: PM pagi telah menulis komen **"Serah tugas"** dalam isu (siap / seterusnya / soalan terbuka).
-- Peranan petang anda: jadual putaran, slot *Sprint 1 petang*.
+- Lab 8.21: pemilik isu pagi telah menulis komen **"Serah tugas"** dalam isu (branch / siap / seterusnya).
+- Pasukan dan peranan anda: isu #19 (Projek: PM, BA, QA; Dev: pasangan 1–4 + floater). Isu pasangan anda: label `pasangan::N`.
+- (Pilihan) Figma MCP + subagent `papan-figjam` untuk papan FigJam: [`tutorial-figma-mcp.md`](../docs/tutorial-figma-mcp.md).
 
 ### Langkah — Dev
 
@@ -267,26 +268,45 @@ Selepas **tukar peranan**, menyiapkan isu Sprint 1 hingga MR `Ready` (**Dev**), 
 1. Setiap 20 minit:
 
    ```bash
-   glab issue list --milestone "Sprint 1 (Hari 8)" --label skuad::<x>
+   glab issue list --milestone "Sprint 1 (Hari 8)" --label pasukan::dev
    ```
 
    ```text
-   Ringkaskan status isu skuad ini dan apa yang menyekat, satu baris setiap isu. Cadangkan susunan merge berdasarkan fail dikongsi yang disentuh setiap MR (glab mr diff).
+   Ringkaskan status isu ini dan apa yang menyekat, satu baris setiap isu. Cadangkan susunan merge berdasarkan fail dikongsi yang disentuh setiap MR (glab mr diff).
    ```
 
 2. Selesaikan `status::disekat` (dapatkan jawapan pemilik sistem), pastikan setiap isu dalam lajur papan yang betul.
-3. Bersetuju **susunan merge** dengan PM lain untuk S18; tulis dalam komen isu skuad.
+3. Bersetuju **susunan merge** dengan floater untuk S18; tulis dalam komen isu #19.
+
+### Langkah — BA
+
+1. Isu BRS seterusnya (mula dengan #20):
+
+   ```text
+   /isu-baharu 20
+   ```
+
+   Semak jadual kualiti; soalan pemilik sistem → komen isu `@jurulatih` + `status::disekat`.
+2. Jalankan arahan `glab issue update …` yang dicetak. Minta QA menulis pelan ujian dalam komen isu.
+3. Jika isu mengubah skema: lakar di FigJam (lorong *Cadangan (Dev / BA)*):
+
+   ```text
+   Guna subagent papan-figjam. Isu #20: ringkaskan kad dan anak panah dalam seksyen "TLK Khas — Pelawat & Ibu Mengandung" yang berkaitan dengan pembatalan. Baca sahaja.
+   ```
+
+4. AC + pelan ujian siap → PM tukar label kepada `status::sedia,pasukan::dev,pasangan::4`.
 
 ### ✅ Checkpoint
 - [ ] **Dev:** MR `Ready`, `Closes #<no>`, senarai semak diisi, tiada kotak ditanda tanpa bukti.
 - [ ] **QA:** Komen QA dengan jadual AC ↔ kod ↔ ujian dan keputusan bersebab.
 - [ ] **PM:** Papan skuad tepat; susunan merge dipersetujui.
+- [ ] **BA:** Isu #20 mempunyai cerita pengguna dan ≥ 3 AC termasuk AC akses 404, dan label `status::sedia`.
 
 ### Kesilapan lazim
 | Gejala | Punca | Penyelesaian |
 |---|---|---|
 | QA meluluskan berdasarkan ringkasan Claude sahaja | Bukti tidak dibuka | Buka setiap `fail:baris`; tiada bukti = tidak dipenuhi |
-| Pengarang MR menekan *Approve* | Lupa peraturan | Tarik balik (*Revoke approval*); hanya QA skuad |
+| Pengarang MR menekan *Approve* | Lupa peraturan | Tarik balik (*Revoke approval*); hanya QA pasukan Projek |
 | MR berisi perubahan di luar isu | Claude "membaiki" fail lain | Buang daripada branch (`git restore -s main <fail>`); buka isu baharu |
 
 ---
@@ -294,7 +314,7 @@ Selepas **tukar peranan**, menyiapkan isu Sprint 1 hingga MR `Ready` (**Dev**), 
 ## Lab 8.23 — Merge, Konflik, Demo & Retro (S18)
 
 ### 🎯 Objektif
-Me-merge MR skuad mengikut susunan yang dipersetujui, **menyelesaikan** konflik rebase pada fail dikongsi tanpa membuang kerja skuad lain, dan **mendemokan** hasil Sprint 1.
+Me-merge MR pasangan Dev mengikut susunan yang dipersetujui, **menyelesaikan** konflik rebase pada fail dikongsi tanpa membuang kerja pasangan lain, dan **mendemokan** hasil Sprint 1.
 
 ### Langkah
 
@@ -319,7 +339,7 @@ Me-merge MR skuad mengikut susunan yang dipersetujui, **menyelesaikan** konflik 
    Terangkan konflik dalam <fail>: apa yang ditambah oleh main dan apa yang ditambah oleh branch saya? Jangan selesaikan konflik itu.
    ```
 
-   Pilih sendiri: simpan kedua-dua blok kawasan masing-masing, buang penanda `<<<<<<<`, `=======`, `>>>>>>>`. Konflik dalam hotspot skuad lain → **berhenti**, panggil PM pemilik. Konflik migration → namakan semula migration anda dengan versi selepas yang terkini.
+   Pilih sendiri: simpan kedua-dua blok kawasan masing-masing, buang penanda `<<<<<<<`, `=======`, `>>>>>>>`. Konflik dalam fail panas (`docs/pasukan.md` §4) → **berhenti**, panggil floater dan pasangan MR yang lain. Konflik migration → namakan semula migration anda dengan versi selepas yang terkini.
 
    ```bash
    php spark routes
@@ -331,9 +351,9 @@ Me-merge MR skuad mengikut susunan yang dipersetujui, **menyelesaikan** konflik 
 
 4. **Merge seterusnya** mengikut susunan; QA mengesahkan semula ringkas selepas rebase (ujian hijau, diff tidak berubah di luar konflik).
 
-5. **Demo skuad (2 minit setiap skuad).** PM: isu + AC. Dev: ciri di pelayar pada `main` terkini. QA: ujian yang membuktikan AC (`vendor/bin/phpunit --filter …`).
+5. **Demo (2 minit setiap pasangan).** BA: isu + AC. Dev: ciri di pelayar pada `main` terkini. QA: ujian yang membuktikan AC (`vendor/bin/phpunit --filter …`).
 
-6. **Retro (10 minit).** PM membuka isu `Retro Sprint 1 — Skuad <X>` (templat *Tugas*, label `skuad::<x>`) dengan tiga bahagian: *Berjalan baik*, *Ubah esok*, *Peraturan prompt untuk esok* (satu prompt yang terbukti berguna hari ini).
+6. **Retro (10 minit).** Setiap orang menambah satu sticky dalam seksyen *Retro* papan FigJam (tulis pasukan anda). PM membuka isu `Retro Sprint 1` (templat *Tugas*) dan menyalin ringkasan dalam tiga bahagian: *Berjalan baik*, *Ubah esok*, *Peraturan prompt untuk esok* (satu prompt yang terbukti berguna hari ini).
 
 ### ✅ Checkpoint
 - [ ] Isu berkaitan ditutup automatik oleh `Closes #<no>`.
@@ -344,8 +364,8 @@ Me-merge MR skuad mengikut susunan yang dipersetujui, **menyelesaikan** konflik 
 | Gejala | Punca | Penyelesaian |
 |---|---|---|
 | `git push` selepas rebase ditolak (`non-fast-forward`) | Sejarah berubah selepas rebase | `git push --force-with-lease` (bukan `--force`) pada branch anda sahaja |
-| Selepas selesai konflik, route skuad lain hilang | Blok mereka dibuang | `git rebase --abort` atau `git reflog` → ulang; simpan kedua-dua blok |
-| Dua migration dengan versi sama | Dua skuad memilih masa yang sama | Awalan skuad dalam versi (`…-1xxxxx_` A, `2…` B, `3…` C) |
+| Selepas selesai konflik, route pasangan lain hilang | Blok mereka dibuang | `git rebase --abort` atau `git reflog` → ulang; simpan kedua-dua blok |
+| Dua migration dengan versi sama | Dua pasangan memilih masa yang sama | Nombor pasangan sebagai digit pertama versi (`…-1xxxxx_` pasangan 1 … `5…` floater) |
 
 ---
 
