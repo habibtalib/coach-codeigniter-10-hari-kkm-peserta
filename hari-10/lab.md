@@ -6,7 +6,7 @@
 |-----|------|------|-------|
 | 10.20 | S8 | 09:00–12:30 | Isu Sprint 3 ditutup atau dialih; `main` hijau pada pembekuan ciri |
 | 10.21 | S9 | 14:30–15:15 | MR CHANGELOG 1.1.0, nota keluaran, tag `v1.1.0` + Release |
-| 10.22 | S10–S11 | 15:15–17:00 | Demo capstone skuad, soalan baris kod, retro akhir |
+| 10.22 | S10–S11 | 15:15–17:00 | Demo capstone pasukan, soalan baris kerja, retro akhir |
 
 > ℹ️ Repo: `aplikasi-baharu/espkpv2`. Mekanik isu → MR → merge seperti [Lab 8.21–8.23](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16). Lab individu Statistik & capstone (10.1–10.12) dalam [Lampiran](#lampiran--lab-individu-statistik--capstone-rujukan).
 
@@ -15,18 +15,18 @@
 ## Lab 10.20 — Sprint 3: Ciri Terakhir & Pembekuan (S8)
 
 ### 🎯 Objektif
-Menyiapkan isu Sprint 3 skuad dan pepijat kritikal melalui MR yang disemak QA sebelum **pembekuan ciri 12:30**, dan membuat keputusan skop yang jelas untuk isu yang tidak siap.
+Menyiapkan isu Sprint 3 setiap pasangan dan pepijat kritikal melalui MR yang disemak QA sebelum **pembekuan ciri 12:30**, dan membuat keputusan skop yang jelas untuk isu yang tidak siap.
 
 ### Prasyarat
 - `main` terkini hijau (`git pull`, `composer install`, `php spark migrate --all`, `composer test`).
-- Peranan Hari 10 dipilih skuad dan dicatat dalam komen isu Sprint 3 skuad.
+- Pasukan Projek dan Dev kekal (isu #19); isu Sprint 3 mempunyai AC dan label `pasangan::N` (Lab 9.21).
 
 ### Langkah
 
 1. **Stand-up dan skop (08:30–09:30).** PM:
 
    ```text
-   Jalankan glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" --label skuad::<x>. Untuk setiap isu: saiz, siapa, risiko tidak siap sebelum 12:30. Cadangkan susunan kerja: pepijat keutamaan::1-kritikal dahulu.
+   Jalankan glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" --label pasukan::dev. Untuk setiap isu: saiz, pasangan, risiko tidak siap sebelum 12:30. Cadangkan susunan kerja: pepijat keutamaan::1-kritikal dahulu.
    ```
 
    PM memutuskan, mengemas kini *Assignee* dan `status::`.
@@ -44,7 +44,7 @@ Menyiapkan isu Sprint 3 skuad dan pepijat kritikal melalui MR yang disemak QA se
 5. **Pembekuan (12:30).** MR ciri yang belum di-merge: tukar ke draf, komen *"Dialih ke backlog selepas pembekuan v1.1.0: <status, apa tinggal>"*, buang milestone. Selepas 12:30, hanya branch `fix/…` boleh di-merge.
 
 ### ✅ Checkpoint
-- [ ] Setiap isu Sprint 3 skuad ditutup atau dialih dengan komen; `composer test` hijau pada `main` selepas merge terakhir.
+- [ ] Setiap isu Sprint 3 ditutup atau dialih dengan komen; `composer test` hijau pada `main` selepas merge terakhir.
 
 ---
 
@@ -55,7 +55,7 @@ Menyediakan keluaran v1.1.0 daripada `main` yang hijau: CHANGELOG yang setiap ba
 
 ### Langkah
 
-1. **Stabil (QA setiap skuad, 15 minit).** Pada `main` terkini: `composer test` dan E2E (bahagian *Ujian hujung ke hujung (E2E)* README repo). Kegagalan → `fix/…` kecil atau isu yang diketahui dalam nota keluaran.
+1. **Stabil (QA dan floater, 15 minit).** Pada `main` terkini: `composer test` dan E2E (bahagian *Ujian hujung ke hujung (E2E)* README repo). Kegagalan → `fix/…` kecil atau isu yang diketahui dalam nota keluaran.
 
 2. **Draf CHANGELOG (PM keluaran, 15 minit).** Mod *Plan*:
 
@@ -63,9 +63,9 @@ Menyediakan keluaran v1.1.0 daripada `main` yang hijau: CHANGELOG yang setiap ba
    Jalankan glab mr list --merged untuk milestone "Sprint 1 (Hari 8)", "Sprint 2 (Hari 9)" dan "Sprint 3 + v1.1 (Hari 10)". Draf CHANGELOG.md dengan tajuk "# Changelog" dan bahagian "## [1.1.0] - 2026-10-30" (format Keep a Changelog: Ditambah, Diubah, Dibaiki, Keselamatan). Satu baris setiap MR dengan !no dan #isu. Jangan tulis fail.
    ```
 
-   PM lain menyemak baris skuad masing-masing terhadap MR sebenar. Baris tanpa MR → buang.
+   BA dan wakil setiap pasangan menyemak baris isu mereka terhadap MR sebenar. Baris tanpa MR → buang.
 
-3. **MR CHANGELOG.** Branch `docs/changelog-v1.1.0`, tampal CHANGELOG yang disemak, MR dengan QA mana-mana skuad sebagai penyemak, PM keluaran merge.
+3. **MR CHANGELOG.** Branch `docs/changelog-v1.1.0`, tampal CHANGELOG yang disemak, MR dengan QA sebagai penyemak, PM keluaran merge.
 
 4. **Tag dan Release (jurulatih, di hadapan kelas).** Tag `v*` dilindungi (Maintainer). PM keluaran membaca nota keluaran; jurulatih menjalankan:
 
@@ -84,7 +84,7 @@ Menyediakan keluaran v1.1.0 daripada `main` yang hijau: CHANGELOG yang setiap ba
 ## Lab 10.22 — Demo Capstone Pasukan & Refleksi (S10–S11)
 
 ### 🎯 Objektif
-Mendemokan hasil skuad pada `v1.1.0` dengan bukti setiap peranan, **menerangkan** baris kod sendiri tanpa Claude, dan merefleksi penggunaan Claude Code dalam pasukan.
+Mendemokan hasil pasukan pada `v1.1.0` dengan bukti setiap peranan, **menerangkan** satu baris kerja sendiri (kod, ujian atau AC) tanpa Claude, dan merefleksi penggunaan Claude Code dalam pasukan.
 
 ### Langkah
 
@@ -100,12 +100,12 @@ Mendemokan hasil skuad pada `v1.1.0` dengan bukti setiap peranan, **menerangkan*
    Tanya saya 3 soalan tentang baris <fail:baris> yang saya commit, seperti panel capstone. Jangan beri jawapan.
    ```
 
-2. **Demo skuad (15 minit setiap skuad).** PM 3 minit (isu, AC, keputusan skop), Dev 5 minit (ciri di pelayar dengan ≥ 2 akaun, termasuk satu yang menerima 404), QA 3 minit (ujian yang membuktikan AC, satu pepijat yang ditangkap sebelum merge), panel 4 minit (soalan baris kod setiap ahli).
+2. **Demo capstone.** Pasukan Projek 12 minit (PM: backlog & keputusan skop; BA: satu isu BRS → AC; QA: ujian yang membuktikan AC, satu pepijat yang ditangkap sebelum merge, E2E). Setiap pasangan Dev 10 minit (ciri di pelayar dengan ≥ 2 akaun, termasuk satu yang menerima 404; MR dan ujian). Floater 5 minit. Panel 18 minit (soalan baris kerja setiap ahli).
 
 3. **Retro akhir (S11, 20 minit).** Dalam isu `Retro akhir — Pasukan CI-KKM-10`, setiap orang satu komen: peranan yang paling mengajar, satu kali Claude mempercepat (prompt mana) dan satu kali Claude melambatkan atau menyesatkan (pintu mana menangkapnya), satu peraturan yang dibawa ke jabatan.
 
 ### ✅ Checkpoint
-- [ ] Helaian markah skuad ([`rubrik-capstone.md`](../docs/rubrik-capstone.md) §8) diisi panel.
+- [ ] Helaian markah pasukan ([`rubrik-capstone.md`](../docs/rubrik-capstone.md) §8) diisi panel.
 - [ ] Komen retro setiap ahli.
 
 ---
@@ -114,9 +114,9 @@ Mendemokan hasil skuad pada `v1.1.0` dengan bukti setiap peranan, **menerangkan*
 
 **Kerja pasukan (hari ini):** `glab release view v1.1.0 -R aplikasi-baharu/espkpv2`, `glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" -R aplikasi-baharu/espkpv2`.
 
-- [ ] Isu Sprint 3 skuad saya ditutup atau dialih ke backlog dengan sebab sebelum pembekuan (Lab 10.20).
+- [ ] Isu Sprint 3 pasukan saya ditutup atau dialih ke backlog dengan sebab sebelum pembekuan (Lab 10.20).
 - [ ] `CHANGELOG.md` 1.1.0 di-merge dan setiap baris sepadan dengan MR sebenar; tag `v1.1.0` wujud (Lab 10.21).
-- [ ] Saya menerangkan satu baris yang saya commit tanpa Claude semasa demo skuad (Lab 10.22).
+- [ ] Saya menerangkan satu baris kerja saya (kod, ujian atau AC) tanpa Claude semasa demo (Lab 10.22).
 - [ ] Komen retro akhir saya ditambah dalam isu retro pasukan (Lab 10.22).
 
 **Statistik & capstone individu (rujukan, tidak wajib):**

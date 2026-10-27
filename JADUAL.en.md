@@ -104,7 +104,7 @@
 
 > ℹ️ Day 7 focuses on Claude Code. S13/S14 (Labs 7.10/7.11), the Pass sessions S1–S8 and the manual Labs 7.0–7.4 (and 7.1b–7.4b) are in the Day 7 Appendix as reference.
 
-> ℹ️ From Day 8 to Day 10, the class works as **one team** in the espkpv2 repo (GitLab KKM `aplikasi-baharu/espkpv2`): 3 squads × 4 with PM, QA and Dev roles, every role assisted by Claude Code ([`peranan-pasukan.en.md`](./docs/peranan-pasukan.en.md), [`kolaborasi.en.md`](./docs/kolaborasi.en.md) §6).
+> ℹ️ From Day 8 to Day 10, the class works as **one team** in the espkpv2 repo (GitLab KKM `aplikasi-baharu/espkpv2`): Day 8 morning in 3 rotating squads, then **two fixed teams** — Projek (PM, BA, 2 QA) and Dev (4 pairs + a floater) — every role assisted by Claude Code ([`peranan-pasukan.en.md`](./docs/peranan-pasukan.en.md), [`kolaborasi.en.md`](./docs/kolaborasi.en.md) §6).
 
 ## Day 8 — Team Work with Claude Code: Sprint 1 · [notes](./hari-8/README.md)
 
@@ -113,8 +113,8 @@
 | 08:30–09:00 | — | Day 7 recap, squad formation & role cards | — |
 | 09:00–10:30 | S15 | Team setup: espkpv2 on Laragon, shared Claude Code, issue board | Lab 8.20: clone with a token, `composer test` green, `/isu-baharu` + `/semak-mr` + `ci4-spark` loaded, `glab` |
 | 10:45–12:30 | S16 | Sprint 1 morning: PM writes the issue, QA plans tests, Dev plans & slice 1 | Lab 8.21: issue `status::sedia` with AC, failing tests from the AC, branch `feat/<no>-…` + `Rujuk #N` commit |
-| 14:30–16:00 | S17 | Sprint 1 afternoon (roles rotate): MR, QA review, board | Lab 8.22: MR `Closes #N`, `/semak-mr` comment with an AC table, accurate board |
-| 16:00–17:00 | S18 | Merge, conflict drill, squad demo & retro | Lab 8.23: MRs merged, `Routes.php` conflict resolved, 2-minute demo, retro issue |
+| 14:30–16:00 | S17 | Sprint 1 afternoon (2 fixed teams: Projek & Dev): MR, QA review, BRS issue AC, board | Lab 8.22: MR `Closes #N`, `/semak-mr` comment with an AC table, accurate board |
+| 16:00–17:00 | S18 | Merge, conflict drill, pair demo & retro | Lab 8.23: MRs merged, `Routes.php` conflict resolved, 2-minute demo, retro issue |
 
 > ℹ️ The individual Day 8 Pass module sessions (S1–S12, Labs 8.0–8.13) are in the Day 8 Appendix as reference.
 
@@ -122,10 +122,10 @@
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Squad stand-up, role rotation (seat 3 = PM) | — |
+| 08:30–09:00 | — | Stand-up of the Projek and Dev teams | — |
 | 09:00–10:30 | S13 | Sprint 2 planning, PM sync, test plan & slice 1 | Lab 9.20: Sprint 2 issue `status::sedia`, PM sync note, failing test from the AC, Sprint 2 branch |
-| 10:45–12:30 | S14 | Build Sprint 2: A #13 Pindaan reminder · B #9/#8 passwords & MariaDB CI · C #17 RPT-10 chart & export | Lab 9.21: slice by slice with tests; squad risk check (idempotency, training accounts, CSP, export limits) |
-| 14:30–16:00 | S15 | MR, QA review & cross-squad exploratory testing | Lab 9.22: `Ready` MR + `/semak-mr`; ≥ 1 cross-squad Bug issue |
+| 10:45–12:30 | S14 | Build Sprint 2: P1 #13/#22 reminders · P2 #9/#25 password & phone · P3 #17/#26 RPT-10 & yearly report · P4 #21/#23 Hilang workflow · floater #8/#24; Projek: Sprint 3 AC | Lab 9.21: slice by slice with tests; risk check (idempotency, training accounts, CSP, export limits, `Aliran.php`) |
+| 14:30–16:00 | S15 | MR, QA review & exploratory testing between pairs | Lab 9.22: `Ready` MR + `/semak-mr`; ≥ 1 Bug issue from exploratory testing |
 | 16:00–17:00 | S16 | Merge, green `main` (PHPUnit + E2E), sprint demo, retro, v1.1.0 scope | Lab 9.23: all MRs merged, `composer test` + `npm run e2e` green |
 
 > ℹ️ The individual Reports module sessions (S1–S12, Labs 9.1–9.13) are in the Day 9 Appendix as reference.
@@ -134,10 +134,10 @@
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Squad stand-up, choose Day 10 roles | — |
-| 09:00–12:30 | S8 | Sprint 3: A #14 · B #15 · C #18 + critical bugs · **feature freeze 12:30** | Lab 10.20: issues closed or moved with a reason; `main` green |
+| 08:30–09:00 | — | Stand-up of the Projek and Dev teams | — |
+| 09:00–12:30 | S8 | Sprint 3: #14, #15, #18, #27–#32 (by `pasangan::N`) + critical bugs · **feature freeze 12:30** | Lab 10.20: issues closed or moved with a reason; `main` green |
 | 14:30–15:15 | S9 | Release v1.1.0 | Lab 10.21: CHANGELOG through an MR, release notes, tag `v1.1.0` + Release |
-| 15:15–16:30 | S10 | Team capstone demo (15 minutes per squad) | Lab 10.22: PM · Dev · QA · code-line questions for every member ([rubric](./docs/rubrik-capstone.en.md) §8) |
+| 15:15–16:30 | S10 | Capstone demo (Projek 12 minutes + 10 minutes per Dev pair) | Lab 10.22: PM · BA · QA · Dev pairs · work-line questions for every member ([rubric](./docs/rubrik-capstone.en.md) §8) |
 | 16:30–17:00 | S11 | Team retro & Claude Code reflection, closing | Lab 10.22: every member's final retro comment |
 
 > ℹ️ The individual Statistics & capstone sessions (S1–S7, Labs 10.1–10.12) are in the Day 10 Appendix as reference.

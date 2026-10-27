@@ -474,7 +474,7 @@ Jawab dalam Bahasa Melayu; istilah teknikal dalam English.
 
 ## H · Kerja pasukan: PM, QA & Dev
 
-Mulai Hari 8, setiap skuad dalam repo espkpv2 mempunyai PM, QA dan Dev ([`peranan-pasukan.md`](peranan-pasukan.md)). Setiap peranan menggunakan sesi Claude Code sendiri; tiga sesi itu tidak berkongsi konteks. Pintu §G kekal untuk setiap slice Dev.
+Mulai Hari 8 petang, repo espkpv2 mempunyai dua pasukan tetap: **Projek** (PM, BA, QA) dan **Dev** (pasangan + floater) ([`peranan-pasukan.md`](peranan-pasukan.md)). Prompt PM di bawah juga digunakan oleh BA untuk AC. Setiap peranan menggunakan sesi Claude Code sendiri; sesi itu tidak berkongsi konteks. Pintu §G kekal untuk setiap slice Dev.
 
 ### AI-21 — PM: idea kepada isu dengan AC
 
@@ -498,9 +498,9 @@ Setiap isu: tajuk, AC sendiri (Diberi/Apabila/Maka), hotspot yang disentuh, kebe
 ### AI-23 — PM: status papan dan susunan merge
 
 ```prompt title="AI-23"
-Jalankan glab issue list --milestone "<Sprint 1 (Hari 8)>" --label skuad::<a> dan glab mr list.
+Jalankan glab issue list --milestone "<Sprint 1 (Hari 8)>" --label pasukan::dev dan glab mr list.
 Ringkaskan satu baris setiap isu: status, siapa, apa yang menyekat.
-Cadangkan susunan merge MR skuad berdasarkan fail dikongsi yang disentuh (glab mr diff), dengan sebab.
+Cadangkan susunan merge MR pasangan Dev berdasarkan fail panas yang disentuh (glab mr diff), dengan sebab.
 ```
 
 ### AI-24 — PM: serah tugas
@@ -544,7 +544,7 @@ Draf isu Pepijat ikut templat .gitlab/issue_templates/Pepijat.md: langkah ulang 
 ### AI-29 — Dev: fahami isu sebelum merancang
 
 ```prompt title="AI-29"
-Mod Plan. Baca isu #<N> (di bawah). Tunjukkan fail:baris yang perlu berubah, corak sedia ada yang paling hampir, dan hotspot skuad lain yang mungkin tersentuh. Senaraikan soalan untuk PM. Jangan tulis kod.
+Mod Plan. Baca isu #<N> (di bawah). Tunjukkan fail:baris yang perlu berubah, corak sedia ada yang paling hampir, dan fail panas yang mungkin tersentuh (MR lain yang terbuka). Senaraikan soalan untuk PM. Jangan tulis kod.
 <tampal isu>
 ```
 
@@ -552,7 +552,7 @@ Mod Plan. Baca isu #<N> (di bawah). Tunjukkan fail:baris yang perlu berubah, cor
 
 ```prompt title="AI-30"
 Laksana slice <1> pelan /ciri-baharu di atas sahaja, dalam mod Manual, satu fail pada satu masa.
-Jangan sentuh hotspot skuad lain (docs/pasukan.md). Jangan jalankan migrate, db:seed atau git push.
+Jangan ubah fail panas yang sedang diubah MR lain (docs/pasukan.md §4). Jangan jalankan migrate, db:seed atau git push.
 Berhenti selepas slice <1>: senaraikan fail yang berubah dan AC yang kini dipenuhi.
 ```
 

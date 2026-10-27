@@ -2822,29 +2822,31 @@ git push --force-with-lease</pre></div>
 <section class="slide dark divider" data-label="Day 9 · Sprint 2">
   <div class="eyebrow">Day 9 · Phase C — Build as a team</div>
   <h1>Day 9 — Sprint 2</h1>
-  <div><span class="chip m-rpt">Reports · Security · Workflow — across squads</span></div>
+  <div><span class="chip m-rpt">Reports · Security · Workflow · BRS gaps — Projek &amp; Dev</span></div>
   <div class="sessions">
     <div><i>S13</i><span>Sprint 2 planning, PM sync &amp; slice 1</span></div>
-    <div><i>S14</i><span>Build Sprint 2: squad features slice by slice</span></div>
-    <div><i>S15</i><span>MR, QA review &amp; cross-squad exploratory testing</span></div>
+    <div><i>S14</i><span>Build Sprint 2: every Dev pair slice by slice</span></div>
+    <div><i>S15</i><span>MR, QA review &amp; exploratory testing between pairs</span></div>
     <div><i>S16</i><span>Merge, green <code>main</code> (PHPUnit + E2E), demo &amp; retro</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span></div>
   <div class="daynum">09</div>
-  <aside class="notes"><p>Sprint 2 repeats the issue, MR and merge cycle with cross-squad dependencies. Roles rotate: seat 3 becomes the morning PM. The individual Reports module work is now reference material in the Day 9 Appendix.</p></aside>
+  <aside class="notes"><p>Sprint 2 repeats the issue, MR and merge cycle with dependencies between Dev pairs. The Projek and Dev teams stay the same (issue #19). The individual Reports module work is now reference material in the Day 9 Appendix.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 9 · Sprint 2 issues</div>
-  <h2>Sprint 2: one technical theme per squad</h2>
+  <h2>Sprint 2: two issues per Dev pair</h2>
   <table class="t tight">
-    <tr><th style="width:230px">Squad</th><th style="width:330px">Sprint 2 issues</th><th>Technical theme</th></tr>
-    <tr><td><b>A — Workflow</b></td><td>#13 Applicant reminder: Amendment &gt; 7 days</td><td>Spark command + <code>peringatan_dihantar</code> (idempotent) + email</td></tr>
-    <tr><td><b>B — Accounts &amp; Security</b></td><td>#9 Password policy · #8 UUID on MariaDB 10.6</td><td>Shield validator, tests, new MariaDB CI job</td></tr>
-    <tr><td><b>C — Reports &amp; Statistics</b></td><td>#17 RPT-10: chart &amp; PDF/Excel export</td><td><code>laporan/_carta</code>, <code>EksportService</code>, report total = SQL total</td></tr>
+    <tr><th style="width:150px">Pair</th><th style="width:380px">Sprint 2 issues</th><th>Technical theme</th></tr>
+    <tr><td><b>P1</b></td><td>#13 Amendment reminder &gt; 7 days · #22 TLK reminder to UKS</td><td>Spark command, <code>PeringatanService</code>, idempotent</td></tr>
+    <tr><td><b>P2</b></td><td>#9 Password policy · #25 office + mobile phone</td><td>Shield validator, <code>profil_pengguna</code> migration</td></tr>
+    <tr><td><b>P3</b></td><td>#17 RPT-10 chart &amp; export · #26 yearly report</td><td><code>laporan/_carta</code>, <code>EksportService</code></td></tr>
+    <tr><td><b>P4</b></td><td>#21 Hilang via the Supervisor · #23 maintenance pass type</td><td><code>Config/Aliran.php</code>, <code>AliranKerja</code></td></tr>
+    <tr><td><b>Floater</b></td><td>#8 UUID on MariaDB (CI) · #24 approval email</td><td>New CI job, email template</td></tr>
   </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div>Plus <b>Sprint 1 follow-up issues</b> (unfinished AC). Realistic capacity: one size-M issue per Dev pair per half-day.</div></div>
-  <aside class="notes"><p>Sprint 2 (Hari 9) milestone on GitLab KKM. Stress the dependencies: #13 and RPT-10 both depend on the Amendment status that squad A's #1 changed yesterday.</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div><b>Projek</b>: the BA finishes the AC for #21–#26 and starts Sprint 3; QA writes failing tests first. Suggested split — the PM decides and sets <code>pasangan::N</code>.</div></div>
+  <aside class="notes"><p>Sprint 2 (Hari 9) milestone on GitLab KKM. Stress the dependencies: #21 changes Aliran.php, which #13 and RPT-10 read; #13 and #22 deliberately go to one pair because both change PeringatanService.</p></aside>
 </section>
 
 <section class="slide">
@@ -2852,45 +2854,47 @@ git push --force-with-lease</pre></div>
   <h2>S13 · Stand-up &amp; PM sync</h2>
   <div class="split">
     <div class="card top m-a"><span class="k">STAND-UP 08:30 · 2 MIN EACH</span>
-      <ul><li>What I finished yesterday</li><li>What I am doing today</li><li>What blocks me → the PM records it in the issue</li></ul>
+      <ul><li>What I finished yesterday</li><li>What I am doing today</li><li>What blocks me → the PM / floater records it in the issue</li></ul>
     </div>
     <table class="t tight">
-      <tr><th>PM sync (09:00, 15 min)</th><th>Example answer</th></tr>
-      <tr><td>Shared files?</td><td>A: command only, no new route</td></tr>
-      <tr><td>Depends on another squad?</td><td>C: RPT-10 must know Amendment now counts as "open" (#1)</td></tr>
-      <tr><td>Afternoon merge order?</td><td>B (#9, forms) → A (#13) → C (#17)</td></tr>
+      <tr><th>Sync 09:00 (PM, BA, floater, pair members)</th><th>Example answer</th></tr>
+      <tr><td>Hot files?</td><td>P4: <code>Aliran.php</code> (#21) · P2: <code>Auth.php</code> (#9)</td></tr>
+      <tr><td>Depends on another pair?</td><td>P3: RPT-10 must know the new Hilang status (#21)</td></tr>
+      <tr><td>Afternoon merge order?</td><td>P2 → P1 → P4 → P3</td></tr>
     </table>
   </div>
-  <div class="callout tip mt16"><span class="i">💡</span><div>Sync decisions go in the <b>issue</b>, not in memory. QA &amp; Devs repeat the Lab 8.21 rhythm: failing tests first, <code>/ciri-baharu</code> → branch → slice 1.</div></div>
-  <aside class="notes"><p>The trainer attends the PM sync as system owner. Checkpoint: Sprint 2 issues status::sedia with an Assignee, sync notes in the squad issue, a branch with a first Rujuk #N commit.</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Sync decisions go in <b>issue #19</b>, not in memory. QA &amp; Devs repeat the Lab 8.21 rhythm: failing tests first, <code>/ciri-baharu</code> → branch → slice 1.</div></div>
+  <aside class="notes"><p>The trainer attends the PM sync as system owner. Checkpoint: Sprint 2 issues status::sedia + pasukan::dev + pasangan::N, sync notes in issue #19, a branch per pair with a first Rujuk #N commit.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 9 · S14 — Lab 9.21 (10:45–12:30)</div>
-  <h2>S14 · Build Sprint 2: risks per squad</h2>
+  <h2>S14 · Build Sprint 2: risks per pair</h2>
   <table class="t tight">
-    <tr><th style="width:150px">Squad</th><th style="width:300px">Skill / agent</th><th>Watch out for</th></tr>
-    <tr><td><b>A · #13</b></td><td><code>/ciri-baharu</code>, <code>migration-espkp</code></td><td>Idempotent: running twice ≠ two emails. Test with a fake <code>service('jam')</code> — do not wait 7 days</td></tr>
-    <tr><td><b>B · #9 / #8</b></td><td><code>/ciri-baharu</code>, <code>migration-espkp</code></td><td><code>Latihan@2026</code> must stay valid; #8 = a <b>new</b> CI job, do not change the <code>ujian</code> job</td></tr>
-    <tr><td><b>C · #17</b></td><td><code>/ciri-baharu</code></td><td>Chart.js via <code>laporan/_carta</code> + <code>data-carta</code> (CSP); export via <code>EksportService</code> (capped, audited)</td></tr>
+    <tr><th style="width:150px">Pair</th><th style="width:300px">Skill / agent</th><th>Watch out for</th></tr>
+    <tr><td><b>P1 · #13/#22</b></td><td><code>/ciri-baharu</code>, <code>migration-espkp</code></td><td>Idempotent: running twice ≠ two emails. Test with a fake <code>service('jam')</code> — do not wait 7 days</td></tr>
+    <tr><td><b>P2 · #9/#25</b></td><td><code>/ciri-baharu</code>, <code>migration-espkp</code></td><td><code>Latihan@2026</code> must stay valid; new migration only</td></tr>
+    <tr><td><b>P3 · #17/#26</b></td><td><code>/ciri-baharu</code></td><td>Chart.js via <code>laporan/_carta</code> + <code>data-carta</code> (CSP); export via <code>EksportService</code> (capped, audited)</td></tr>
+    <tr><td><b>P4 · #21/#23</b></td><td><code>/ciri-baharu</code>, <code>aliran-kerja</code></td><td>Change <code>Aliran.php</code>, not controllers; <code>KonfigurasiAliranTest</code> green; update FigJam</td></tr>
+    <tr><td><b>Floater · #8</b></td><td><code>/ciri-baharu</code></td><td>A <b>new</b> CI job, do not change the <code>ujian</code> job</td></tr>
   </table>
   <div class="callout tip mt16"><span class="i">💡</span><div>Slice rule unchanged: slice → <code>composer semak</code> → <code>semak-espkp</code> → commit. The navigator reviews the diff; swap drivers every slice.</div></div>
-  <aside class="notes"><p>Checkpoint: at least 2 slices committed with green tests, and QA's tests for the core AC now pass on the branch.</p></aside>
+  <aside class="notes"><p>Checkpoint: at least 2 slices per pair committed with green tests, and QA's tests for the core AC now pass on the branch. Projek writes the Sprint 3 AC during this session.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 9 · S15 — Lab 9.22 (14:30–16:00)</div>
-  <h2>S15 · Cross-squad QA</h2>
+  <h2>S15 · Exploratory testing: fresh eyes</h2>
   <div class="split">
     <div class="card top m-tlk"><span class="k">EXPLORATORY TESTING · 30 MIN</span>
-      <ul><li>QA A → squad B's feature · QA B → C · QA C → A</li><li>Features already merged to <code>main</code></li><li>≥ 3 different training accounts</li><li>Look for: confusing messages, access that should be 404, broken 360px layout, export totals that do not match</li></ul>
+      <ul><li>QA → every merged feature · pair 1 → 2 → 3 → 4 → 1 (20 minutes)</li><li>Features already merged to <code>main</code></li><li>≥ 3 different training accounts</li><li>Look for: confusing messages, access that should be 404, broken 360px layout, export totals that do not match</li></ul>
     </div>
     <div class="card top m-stat"><span class="k">BUG ISSUE</span>
-      <ul><li><i>Pepijat</i> template, label of the squad that <b>owns</b> the feature</li><li>Repro steps with <code>9001010100NN</code> accounts</li><li>Expected · actual · likely <code>file:line</code></li><li>Claude drafts (AI-28); QA repeats every step personally</li></ul>
+      <ul><li><i>Pepijat</i> template, label <code>pasukan::projek</code>; PM triage → the owner's <code>pasangan::N</code></li><li>Repro steps with <code>9001010100NN</code> accounts</li><li>Expected · actual · likely <code>file:line</code></li><li>Claude drafts (AI-28); the tester repeats every step personally</li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Fresh eyes find bugs the author — and the author's Claude — missed. The MR flow stays as in Lab 8.22.</div></div>
-  <aside class="notes"><p>After the Day 9 afternoon rotation. Checkpoint: every squad's Sprint 2 MR is Ready with a QA comment, and at least one reproducible cross-squad bug issue exists.</p></aside>
+  <aside class="notes"><p>Checkpoint: every pair's Sprint 2 MR is Ready with a QA comment, and at least one bug issue the owning pair can reproduce exists.</p></aside>
 </section>
 
 <section class="slide">
@@ -2908,11 +2912,11 @@ composer test
 npm run e2e:sedia
 npm run e2e</pre></div>
     <div class="card top m-a"><span class="k">END OF SPRINT 2</span>
-      <ul><li>Merge in the morning sync order (rebase, <code>--force-with-lease</code>)</li><li>Red → bug issue <code>keutamaan::1-kritikal</code>, fixed before Sprint 3</li><li>Sprint demo: 3 minutes per squad</li><li>Issue <code>Retro Sprint 2 — Skuad &lt;X&gt;</code></li><li>PM: Sprint 3 issues + <b>v1.1.0</b> scope</li></ul>
+      <ul><li>Merge in the morning sync order (rebase, <code>--force-with-lease</code>)</li><li>Red → bug issue <code>keutamaan::1-kritikal</code>, fixed before Sprint 3</li><li>Sprint demo: 3 minutes per pair (BA · Dev · QA)</li><li>Retro: FigJam stickies + issue <code>Retro Sprint 2</code></li><li>PM: Sprint 3 issues + <b>v1.1.0</b> scope</li></ul>
     </div>
   </div>
   <div class="callout warn mt16"><span class="i">⚠️</span><div>Never run E2E against your dev database — the data is reset.</div></div>
-  <aside class="notes"><p>One person per squad runs composer test on the latest main; QA runs E2E. End of day: every QA-approved MR merged, main green, v1.1.0 scope in the Sprint 3 milestone.</p></aside>
+  <aside class="notes"><p>One person per pair runs composer test on the latest main; QA or the floater runs E2E. End of day: every QA-approved MR merged, main green, v1.1.0 scope in the Sprint 3 milestone.</p></aside>
 </section>
 
 <section class="slide">
@@ -2920,10 +2924,11 @@ npm run e2e</pre></div>
   <h2>🤖 Today's prompting: Sprint 2</h2>
   <table class="t">
     <tr><th style="width:170px">Role</th><th>Prompt (prompt library §H)</th><th style="width:280px">Verify yourself</th></tr>
-    <tr><td><b>PM · sync</b></td><td><b>AI-23</b> Sprint 2 issues + shared files + dependencies on other squads</td><td>Compare with the other PMs' sync notes</td></tr>
+    <tr><td><b>PM · sync</b></td><td><b>AI-23</b> Sprint 2 issues + hot files + dependencies between pairs</td><td>Compare with the sync note in issue #19</td></tr>
+    <tr><td><b>BA · AC</b></td><td><b>AI-21</b> <code>/isu-baharu 21</code> + "compare the AC with the BRS requirement section"</td><td>Every AC traces to the issue/BRS</td></tr>
     <tr><td><b>QA · plan</b></td><td><b>AI-25</b> + "test the reminder command without waiting 7 days — the <code>service('jam')</code> pattern"</td><td>Test fails because the feature is missing, not because of time</td></tr>
-    <tr><td><b>Dev · build</b></td><td><b>AI-29</b> → <code>/ciri-baharu</code> → <b>AI-30</b>; C: "follow <code>laporan/_carta</code>, no inline <code>&lt;script&gt;</code>"</td><td><code>composer semak</code>; browser at 360px</td></tr>
-    <tr><td><b>QA · exploratory</b></td><td><b>AI-28</b> draft a bug issue · <b>AI-27</b> <code>/semak-mr</code></td><td>Repeat the steps before creating the issue</td></tr>
+    <tr><td><b>Dev · build</b></td><td><b>AI-29</b> → <code>/ciri-baharu</code> → <b>AI-30</b>; P3: "follow <code>laporan/_carta</code>, no inline <code>&lt;script&gt;</code>"</td><td><code>composer semak</code>; browser at 360px</td></tr>
+    <tr><td><b>QA / Dev · exploratory</b></td><td><b>AI-28</b> draft a bug issue · <b>AI-27</b> <code>/semak-mr</code></td><td>Repeat the steps before creating the issue</td></tr>
     <tr><td><b>All · red main</b></td><td>"This test fails after merging !a and !b: … Which commit is the likely cause? Do not fix yet."</td><td><code>git log</code>, <code>git bisect</code></td></tr>
   </table>
   <aside class="notes"><p>The red-main prompt deliberately asks for diagnosis only: the team must know which MR caused the failure before anyone fixes it, so the fix goes through a reviewed fix/… MR.</p></aside>
@@ -2931,15 +2936,15 @@ npm run e2e</pre></div>
 
 <section class="slide">
   <div class="eyebrow">Day 9 · Today's outputs</div>
-  <h2>Sprint 2 done — check squad outputs</h2>
+  <h2>Sprint 2 done — check team outputs</h2>
   <ul class="checks done">
-    <li><span>Sprint 2 issues <code>status::sedia</code> with an <i>Assignee</i>; PM sync notes in the issue.</span></li>
+    <li><span>Sprint 2 issues <code>status::sedia</code> + <code>pasangan::N</code>; sync note in issue #19.</span></li>
     <li><span>Sprint 2 features merged through MRs with QA review and green tests.</span></li>
-    <li><span>≥ 1 cross-squad bug issue with repro steps.</span></li>
+    <li><span>≥ 1 bug issue from exploratory testing with repro steps.</span></li>
     <li><span><code>composer test</code> and <code>npm run e2e</code> green on <code>main</code>.</span></li>
-    <li><span>Sprint 2 retro issue; v1.1.0 scope in the Sprint 3 milestone.</span></li>
+    <li><span>Sprint 2 retro issue; v1.1.0 scope in the Sprint 3 milestone; Sprint 3 AC done.</span></li>
   </ul>
-  <aside class="notes"><p>Tomorrow is the last day: Sprint 3 in the morning with a 12:30 feature freeze, the v1.1.0 release and the team capstone demo. Squads choose their own roles tomorrow.</p></aside>
+  <aside class="notes"><p>Tomorrow is the last day: Sprint 3 in the morning with a 12:30 feature freeze, the v1.1.0 release and the team capstone demo. The Projek and Dev teams stay the same.</p></aside>
 </section>
 
 
@@ -2949,7 +2954,7 @@ npm run e2e</pre></div>
 <section class="slide dark divider" data-label="Day 10 · Release &amp; Capstone">
   <div class="eyebrow">Day 10 · Phase C — Release &amp; Hand Over</div>
   <h1>Day 10 — Sprint 3, v1.1.0 &amp; Team Capstone</h1>
-  <div><span class="chip m-stat">Freeze 12:30 · v1.1.0 · squad demos</span></div>
+  <div><span class="chip m-stat">Freeze 12:30 · v1.1.0 · Projek &amp; Dev pair demos</span></div>
   <div class="sessions">
     <div><i>S8</i><span>Sprint 3: last features &amp; critical bugs — freeze 12:30</span></div>
     <div><i>S9</i><span>Release v1.1.0: stabilise, CHANGELOG, tag &amp; Release</span></div>
@@ -2973,11 +2978,11 @@ npm run e2e</pre></div>
       <tr><td><b>12:30</b></td><td><b>Feature freeze</b> — only <code>fix/…</code> after this</td></tr>
     </table>
     <div class="card top m-a"><span class="k">SPRINT 3 ISSUES</span>
-      <ul><li><b>A</b> — #14 Workflow E2E &amp; docs</li><li><b>B</b> — #15 Login history in the profile</li><li><b>C</b> — #18 Approval-rate KPI card</li><li>+ critical bugs &amp; follow-ups in the v1.1.0 scope</li></ul>
+      <ul><li>#14 E2E &amp; docs · #15 Login history · #18 KPI card</li><li>#27–#32 Sprint 3 BRS gaps (AC by the BA yesterday)</li><li>Split by the <code>pasangan::N</code> label</li><li>+ critical bugs &amp; follow-ups in the v1.1.0 scope</li></ul>
     </div>
   </div>
   <div class="callout warn mt16"><span class="i">⚠️</span><div>Feature MRs not merged by 12:30 → the issue stays open and moves to the backlog with a comment. Never merge without QA review just to "make it".</div></div>
-  <aside class="notes"><p>Squads choose today's roles; suggest that people who have not yet been PM or QA take those roles. Checkpoint: each Sprint 3 issue closed or moved to the backlog with a reason, and composer test green on main.</p></aside>
+  <aside class="notes"><p>The Projek and Dev teams stay the same (issue #19). Checkpoint: each Sprint 3 issue closed or moved to the backlog with a reason, and composer test green on main.</p></aside>
 </section>
 
 <section class="slide">
@@ -2996,29 +3001,29 @@ Do not write any file.</pre></div>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>A CHANGELOG line without <code>!no</code> and <code>#issue</code> is a sign that Claude invented a change. Remove it.</div></div>
-  <aside class="notes"><p>The trainer picks the release PM, helped by the other PMs. Checkpoint: CHANGELOG.md 1.1.0 section on main with every line matching a real MR; the v1.1.0 tag and GitLab Release exist.</p></aside>
+  <aside class="notes"><p>The release PM is the Projek team's PM, helped by the BA and the floater. Checkpoint: CHANGELOG.md 1.1.0 section on main with every line matching a real MR; the v1.1.0 tag and GitLab Release exist.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 10 · S10 — Lab 10.22 (15:15–16:30)</div>
-  <h2>S10 · Team capstone demo: 15 minutes per squad</h2>
+  <h2>S10 · Capstone demo: Projek + every Dev pair</h2>
   <table class="t tight">
     <tr><th style="width:110px">Minutes</th><th style="width:130px">Who</th><th>What</th></tr>
-    <tr><td>0–3</td><td><b>PM</b></td><td>The squad's issues across 3 sprints: AC, owner decisions, what did not make v1.1.0 and why</td></tr>
-    <tr><td>3–8</td><td><b>Dev</b></td><td>Features running on <code>v1.1.0</code> with different accounts — including one that must get <b>404</b></td></tr>
-    <tr><td>8–11</td><td><b>QA</b></td><td>Tests proving the AC (<code>phpunit --filter</code>), one bug caught before merge, E2E results</td></tr>
-    <tr><td>11–15</td><td><b>Panel</b></td><td>Each member explains one line committed under their name (<code>git log --author</code>) — <b>without Claude</b></td></tr>
+    <tr><td>0–12</td><td><b>Projek</b></td><td>PM: BRS backlog → issue → AC, owner decisions, what did not make v1.1.0 · BA: one BRS issue → AC · QA: tests proving the AC, a bug caught, E2E</td></tr>
+    <tr><td>12–52</td><td><b>Dev</b></td><td>10 minutes per pair: the feature on <code>v1.1.0</code> with different accounts — including one that gets <b>404</b>; MR &amp; tests</td></tr>
+    <tr><td>52–57</td><td><b>Floater</b></td><td>CI job, conflicts resolved, E2E</td></tr>
+    <tr><td>57–75</td><td><b>Panel</b></td><td>Each member explains one line of their work — code, test or AC — <b>without Claude</b></td></tr>
   </table>
   <div class="callout tip mt16"><span class="i">💡</span><div>Practice: <code>Ask me 3 questions about the line &lt;file:line&gt; I committed, like a capstone panel. Do not give the answers.</code></div></div>
-  <aside class="notes"><p>The trainer, as system owner, and the panel fill in the squad score sheet (rubric §8). Panel questions: what does this line do, why, what breaks if it is removed.</p></aside>
+  <aside class="notes"><p>The trainer, as system owner, and the panel fill in the team score sheet (rubric §8). Panel questions: what does this line do, why, what breaks if it is removed.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 10 · Capstone rubric §8</div>
-  <h2>Squad score (40) + individual criteria</h2>
+  <h2>Team score (40) + individual criteria</h2>
   <table class="t tight">
-    <tr><th style="width:230px">Squad criterion (0–10)</th><th>Level 3 (8–10)</th></tr>
-    <tr><td><b>P · Issues &amp; AC</b> (PM)</td><td>Given/When/Then AC with 404 access &amp; edge cases; owner questions recorded</td></tr>
+    <tr><th style="width:230px">Team criterion (0–10)</th><th>Level 3 (8–10)</th></tr>
+    <tr><td><b>P · Issues &amp; AC</b> (PM, BA)</td><td>Given/When/Then AC with 404 access &amp; edge cases; owner questions recorded</td></tr>
     <tr><td><b>Q · Review evidence</b> (QA)</td><td>Every AC has <code>file:line</code> + a test; ≥ 1 bug caught before merge</td></tr>
     <tr><td><b>D · MRs &amp; tests</b> (Dev)</td><td>Small slices, checklist with evidence, negative tests, green <code>main</code></td></tr>
     <tr><td><b>K · Collaboration</b></td><td>Merge order respected; handovers in issues; retro with actions</td></tr>
@@ -3028,7 +3033,7 @@ Do not write any file.</pre></div>
     <div class="card flat side m-tlk"><span class="k">INDIVIDUAL</span><h3 class="mb0">Output from each role</h3></div>
     <div class="card flat side m-stat"><span class="k">INDIVIDUAL</span><h3 class="mb0">AI discipline</h3></div>
   </div>
-  <p class="small muted mt16">Certificate: squad score × 2.5 ≥ 60, no critical gate failed on <code>v1.1.0</code>, and "explain your own line" passed.</p>
+  <p class="small muted mt16">Certificate: team score × 2.5 ≥ 60, no critical gate failed on <code>v1.1.0</code>, and "explain your own line" passed.</p>
   <aside class="notes"><p>Summary of docs/rubrik-capstone.md section 8. AI discipline: no commits made in auto or bypass mode, no secrets or real data in issues, MRs or prompts.</p></aside>
 </section>
 
@@ -3064,7 +3069,7 @@ Do not write any file.</pre></div>
   <ul class="checks done">
     <li><span>Sprint 3 issues closed or moved to the backlog with a reason before 12:30.</span></li>
     <li><span><code>CHANGELOG.md</code> 1.1.0 via MR; tag <code>v1.1.0</code> + Release on a green <code>main</code>.</span></li>
-    <li><span>15-minute squad capstone demo; squad score sheet filled in.</span></li>
+    <li><span>Capstone demo by Projek + every Dev pair; team score sheet filled in.</span></li>
     <li><span>Every member explains one of their own lines without Claude.</span></li>
     <li><span>Every member's final retro comment — <b>a system released as a team</b> 🎓</span></li>
   </ul>
@@ -3106,7 +3111,7 @@ Do not write any file.</pre></div>
     <div class="card flat" style="display:grid;grid-template-columns:260px 1fr 60px;gap:18px;align-items:center;padding:14px 20px"><h3 class="mb0">PHPUnit tests</h3><div style="height:12px;border-radius:6px;background:var(--rose);width:50%"></div><b>15%</b></div>
     <div class="card flat" style="display:grid;grid-template-columns:260px 1fr 60px;gap:18px;align-items:center;padding:14px 20px"><h3 class="mb0">Demo &amp; explanation</h3><div style="height:12px;border-radius:6px;background:var(--navy-700);width:50%"></div><b>15%</b></div>
   </div>
-  <p class="small muted mt16">Team mode (Days 8–10): squad score P/Q/D/K + individual criteria — rubric §8. Pass condition: every Must module works and the trainee can explain every line of the demoed code (the “understand first, accept later” discipline).</p>
+  <p class="small muted mt16">Team mode (Days 8–10): team score P/Q/D/K + individual criteria — rubric §8. Pass condition: every Must module works and the trainee can explain every line of the demoed code (the “understand first, accept later” discipline).</p>
   <aside class="notes"><p>Rubrik ini cadangan jurulatih — boleh diselaraskan bersama pemilik sistem sebelum Hari 10. Pemberat tertinggi pada fungsi kerana matlamat kursus ialah sistem yang berfungsi.</p></aside>
 </section>
 

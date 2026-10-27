@@ -474,7 +474,7 @@ Answer in Malay; technical terms in English.
 
 ## H · Team work: PM, QA & Dev
 
-From Day 8, each squad in the espkpv2 repo has a PM, a QA and Devs ([`peranan-pasukan.en.md`](peranan-pasukan.en.md)). Each role uses its own Claude Code session; the three sessions do not share context. The §G gates still apply to every Dev slice.
+From Day 8 afternoon, the espkpv2 repo has two fixed teams: **Projek** (PM, BA, QA) and **Dev** (pairs + a floater) ([`peranan-pasukan.en.md`](peranan-pasukan.en.md)). The PM prompts below are also used by the BA for AC. Each role uses its own Claude Code session; the sessions do not share context. The §G gates still apply to every Dev slice.
 
 ### AI-21 — PM: idea to an issue with AC
 
@@ -498,9 +498,9 @@ Each issue: title, its own AC (Given/When/Then), the hotspots it touches, depend
 ### AI-23 — PM: board status and merge order
 
 ```prompt title="AI-23"
-Run glab issue list --milestone "<Sprint 1 (Hari 8)>" --label skuad::<a> and glab mr list.
+Run glab issue list --milestone "<Sprint 1 (Hari 8)>" --label pasukan::dev and glab mr list.
 Summarise one line per issue: status, who, what is blocking.
-Propose a merge order for the squad's MRs based on the shared files they touch (glab mr diff), with reasons.
+Propose a merge order for the Dev pairs' MRs based on the hot files they touch (glab mr diff), with reasons.
 ```
 
 ### AI-24 — PM: handover
@@ -544,7 +544,7 @@ Draft a Bug issue following .gitlab/issue_templates/Pepijat.md: reproduction ste
 ### AI-29 — Dev: understand the issue before planning
 
 ```prompt title="AI-29"
-Plan mode. Read issue #<N> (below). Show the file:line locations that need to change, the closest existing pattern, and any other squad's hotspots that might be touched. List questions for the PM. Do not write code.
+Plan mode. Read issue #<N> (below). Show the file:line locations that need to change, the closest existing pattern, and any hot files that might be touched (other open MRs). List questions for the PM. Do not write code.
 <paste issue>
 ```
 
@@ -552,7 +552,7 @@ Plan mode. Read issue #<N> (below). Show the file:line locations that need to ch
 
 ```prompt title="AI-30"
 Implement slice <1> of the /ciri-baharu plan above only, in Manual mode, one file at a time.
-Do not touch other squads' hotspots (docs/pasukan.md). Do not run migrate, db:seed or git push.
+Do not change hot files that another MR is changing (docs/pasukan.md §4). Do not run migrate, db:seed or git push.
 Stop after slice <1>: list the files that changed and the AC that are now met.
 ```
 

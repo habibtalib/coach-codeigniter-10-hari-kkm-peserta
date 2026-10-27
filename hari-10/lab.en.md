@@ -6,7 +6,7 @@
 |-----|---------|------|--------|
 | 10.20 | S8 | 09:00–12:30 | Sprint 3 issues closed or moved; `main` green at the feature freeze |
 | 10.21 | S9 | 14:30–15:15 | CHANGELOG 1.1.0 MR, release notes, tag `v1.1.0` + Release |
-| 10.22 | S10–S11 | 15:15–17:00 | Squad capstone demo, code-line questions, final retro |
+| 10.22 | S10–S11 | 15:15–17:00 | Team capstone demo, work-line questions, final retro |
 
 > ℹ️ Repo: `aplikasi-baharu/espkpv2`. The issue → MR → merge mechanics are as in [Labs 8.21–8.23](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16). The individual Statistics & capstone labs (10.1–10.12) are in the [Appendix](#appendix--individual-statistics--capstone-labs-reference).
 
@@ -15,18 +15,18 @@
 ## Lab 10.20 — Sprint 3: Final Features & Freeze (S8)
 
 ### 🎯 Objective
-Finish the squad's Sprint 3 issues and critical bugs through MRs reviewed by QA before the **12:30 feature freeze**, and make a clear scope decision for unfinished issues.
+Finish every pair's Sprint 3 issues and critical bugs through MRs reviewed by QA before the **12:30 feature freeze**, and make a clear scope decision for unfinished issues.
 
 ### Prerequisites
 - The latest `main` is green (`git pull`, `composer install`, `php spark migrate --all`, `composer test`).
-- Day 10 roles chosen by the squad and recorded in a comment on the squad's Sprint 3 issue.
+- The Projek and Dev teams stay the same (issue #19); Sprint 3 issues have AC and a `pasangan::N` label (Lab 9.21).
 
 ### Steps
 
 1. **Stand-up and scope (08:30–09:30).** PM:
 
    ```text
-   Run glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" --label skuad::<x>. For each issue: size, who, the risk of not finishing before 12:30. Propose a work order: keutamaan::1-kritikal bugs first.
+   Run glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" --label pasukan::dev. For each issue: size, pair, the risk of not finishing before 12:30. Propose a work order: keutamaan::1-kritikal bugs first.
    ```
 
    The PM decides and updates the *Assignee* and `status::`.
@@ -44,7 +44,7 @@ Finish the squad's Sprint 3 issues and critical bugs through MRs reviewed by QA 
 5. **Freeze (12:30).** Feature MRs not yet merged: switch to draft, comment *"Moved to the backlog after the v1.1.0 freeze: <status, what is left>"*, remove the milestone. After 12:30, only `fix/…` branches can be merged.
 
 ### ✅ Checkpoint
-- [ ] Every squad Sprint 3 issue is closed or moved with a comment; `composer test` is green on `main` after the last merge.
+- [ ] Every Sprint 3 issue is closed or moved with a comment; `composer test` is green on `main` after the last merge.
 
 ---
 
@@ -55,7 +55,7 @@ Prepare the v1.1.0 release from a green `main`: a CHANGELOG where every line lin
 
 ### Steps
 
-1. **Stabilise (each squad's QA, 15 minutes).** On the latest `main`: `composer test` and E2E (the repo README's *Ujian hujung ke hujung (E2E)* section). Failures → a small `fix/…` or a known issue in the release notes.
+1. **Stabilise (QA and the floater, 15 minutes).** On the latest `main`: `composer test` and E2E (the repo README's *Ujian hujung ke hujung (E2E)* section). Failures → a small `fix/…` or a known issue in the release notes.
 
 2. **Draft the CHANGELOG (release PM, 15 minutes).** *Plan* mode:
 
@@ -63,9 +63,9 @@ Prepare the v1.1.0 release from a green `main`: a CHANGELOG where every line lin
    Run glab mr list --merged for the milestones "Sprint 1 (Hari 8)", "Sprint 2 (Hari 9)" and "Sprint 3 + v1.1 (Hari 10)". Draft CHANGELOG.md with the heading "# Changelog" and a "## [1.1.0] - 2026-10-30" section (Keep a Changelog format: Added, Changed, Fixed, Security). One line per MR with the !no and #issue. Do not write files.
    ```
 
-   The other PMs check their squad's lines against the real MRs. A line without an MR → remove it.
+   The BA and one member of each pair check their issues' lines against the real MRs. A line without an MR → remove it.
 
-3. **CHANGELOG MR.** Branch `docs/changelog-v1.1.0`, paste the checked CHANGELOG, an MR with any squad's QA as reviewer, the release PM merges.
+3. **CHANGELOG MR.** Branch `docs/changelog-v1.1.0`, paste the checked CHANGELOG, an MR with QA as reviewer, the release PM merges.
 
 4. **Tag and Release (the trainer, in front of the class).** `v*` tags are protected (Maintainer). The release PM reads the release notes; the trainer runs:
 
@@ -84,7 +84,7 @@ Prepare the v1.1.0 release from a green `main`: a CHANGELOG where every line lin
 ## Lab 10.22 — Team Capstone Demo & Reflection (S10–S11)
 
 ### 🎯 Objective
-Demo the squad's result on `v1.1.0` with evidence from every role, **explain** your own line of code without Claude, and reflect on using Claude Code in a team.
+Demo the team's result on `v1.1.0` with evidence from every role, **explain** one line of your own work (code, test or AC) without Claude, and reflect on using Claude Code in a team.
 
 ### Steps
 
@@ -100,12 +100,12 @@ Demo the squad's result on `v1.1.0` with evidence from every role, **explain** y
    Ask me 3 questions about the line <file:line> I committed, like the capstone panel. Do not give the answers.
    ```
 
-2. **Squad demo (15 minutes per squad).** PM 3 minutes (issues, AC, scope decisions), Dev 5 minutes (the feature in the browser with ≥ 2 accounts, including one that gets a 404), QA 3 minutes (the tests that prove the AC, one bug caught before merge), panel 4 minutes (code-line questions for every member).
+2. **Capstone demo.** The Projek team 12 minutes (PM: backlog & scope decisions; BA: one BRS issue → AC; QA: the tests that prove the AC, one bug caught before merge, E2E). Every Dev pair 10 minutes (the feature in the browser with ≥ 2 accounts, including one that gets a 404; MR and tests). Floater 5 minutes. Panel 18 minutes (work-line questions for every member).
 
 3. **Final retro (S11, 20 minutes).** In the issue `Retro akhir — Pasukan CI-KKM-10`, everyone adds one comment: the role that taught the most, one time Claude sped things up (which prompt) and one time Claude slowed things down or misled (which gate caught it), one rule to take back to the department.
 
 ### ✅ Checkpoint
-- [ ] The squad score sheet ([`rubrik-capstone.en.md`](../docs/rubrik-capstone.en.md) §8) is filled in by the panel.
+- [ ] The team score sheet ([`rubrik-capstone.en.md`](../docs/rubrik-capstone.en.md) §8) is filled in by the panel.
 - [ ] A retro comment from every member.
 
 ---
@@ -114,9 +114,9 @@ Demo the squad's result on `v1.1.0` with evidence from every role, **explain** y
 
 **Team work (today):** `glab release view v1.1.0 -R aplikasi-baharu/espkpv2`, `glab issue list --milestone "Sprint 3 + v1.1 (Hari 10)" -R aplikasi-baharu/espkpv2`.
 
-- [ ] My squad's Sprint 3 issues are closed or moved to the backlog with a reason before the freeze (Lab 10.20).
+- [ ] My team's Sprint 3 issues are closed or moved to the backlog with a reason before the freeze (Lab 10.20).
 - [ ] `CHANGELOG.md` 1.1.0 is merged and every line matches a real MR; tag `v1.1.0` exists (Lab 10.21).
-- [ ] I explained one line I committed without Claude during the squad demo (Lab 10.22).
+- [ ] I explained one line of my work (code, test or AC) without Claude during the demo (Lab 10.22).
 - [ ] My final retro comment is added in the team retro issue (Lab 10.22).
 
 **Individual Statistics & capstone (reference, optional):**

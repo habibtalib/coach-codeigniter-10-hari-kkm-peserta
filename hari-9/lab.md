@@ -4,119 +4,120 @@
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
-| 9.20 | S13 | 09:00–10:30 | Isu Sprint 2 `status::sedia`, nota sync PM, ujian gagal dari AC, slice 1 |
-| 9.21 | S14 | 10:45–12:30 | Ciri Sprint 2 skuad slice demi slice dengan ujian hijau |
-| 9.22 | S15 | 14:30–16:00 | MR `Ready` + semakan QA; ≥ 1 isu Pepijat merentas skuad |
+| 9.20 | S13 | 09:00–10:30 | Isu Sprint 2 `status::sedia` + `pasangan::N`, nota sync, ujian gagal dari AC, slice 1 |
+| 9.21 | S14 | 10:45–12:30 | Ciri Sprint 2 setiap pasangan slice demi slice dengan ujian hijau; AC Sprint 3 |
+| 9.22 | S15 | 14:30–16:00 | MR `Ready` + semakan QA; ≥ 1 isu Pepijat daripada ujian eksploratori |
 | 9.23 | S16 | 16:00–17:00 | Semua MR di-merge, `main` hijau (PHPUnit + E2E), demo sprint, retro |
 
-> ℹ️ Repo: `aplikasi-baharu/espkpv2`. Mekanik isu → branch → MR → merge sama seperti [Lab 8.21–8.23](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16); lab hari ini menambah sync PM, ujian merentas skuad dan `main` hijau. Lab individu Modul Laporan (9.1–9.13) dalam [Lampiran](#lampiran--lab-individu-modul-laporan-rujukan).
+> ℹ️ Repo: `aplikasi-baharu/espkpv2`. Pasukan tetap: **Projek** (PM, BA, 2 QA) dan **Dev** (4 pasangan + floater) — nama dalam isu #19, peraturan dalam `docs/pasukan.md` repo. Mekanik isu → branch → MR → merge sama seperti [Lab 8.21–8.23](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16); lab hari ini menambah sync, ujian eksploratori antara pasangan dan `main` hijau. Lab individu Modul Laporan (9.1–9.13) dalam [Lampiran](#lampiran--lab-individu-modul-laporan-rujukan).
 
 ---
 
 ## Lab 9.20 — Perancangan Sprint 2, Sync PM & Slice 1 (S13)
 
 ### 🎯 Objektif
-Merancang Sprint 2 skuad (isu baharu + susulan Sprint 1), **menyelaras** fail dikongsi dan susunan merge dengan PM lain, dan memulakan slice pertama dengan ujian gagal dari AC.
+Merancang Sprint 2 (isu sedia ada, jurang BRS dan susulan Sprint 1), **menyelaras** fail panas dan susunan merge antara pasangan Dev, dan memulakan slice pertama dengan ujian gagal dari AC.
 
 ### Prasyarat
 - `git switch main && git pull && composer install && php spark migrate --all` — `composer test` hijau.
-- Peranan pagi: slot *Hari 9 pagi* dalam [`peranan-pasukan.md`](../docs/peranan-pasukan.md) §3 (tempat 3 = PM, 4 = QA, 1 & 2 = Dev).
+- Pasukan dan peranan anda: isu #19 (Projek: PM, BA, QA; Dev: pasangan 1–4 + floater).
 
 ### Langkah
 
-1. **Stand-up (08:30, semua).** Setiap orang 2 minit: siap · seterusnya · tersekat. PM mencatat penyekat sebagai komen dalam isu berkaitan.
+1. **Stand-up (08:30, dalam pasukan).** Setiap orang 2 minit: siap · seterusnya · tersekat. PM (Projek) dan floater (Dev) mencatat penyekat sebagai komen dalam isu berkaitan.
 
-2. **PM — isu Sprint 2 (20 minit).**
+2. **Projek — isu Sprint 2 (20 minit).**
 
    ```bash
-   glab issue list --milestone "Sprint 2 (Hari 9)" --label skuad::<x>
+   glab issue list --milestone "Sprint 2 (Hari 9)" --label pasukan::projek
    ```
 
-   ```text
-   /isu-baharu <13>
-   ```
+   - **BA:** AC yang tinggal (`/isu-baharu <no>`, mula dengan #21–#26).
+   - **QA:** jadual AC → kes ujian dalam komen setiap isu.
+   - **PM:** isu siap → `glab issue update <no> --label "status::sedia,pasukan::dev,pasangan::<N>"` dan assign ahli pertama pasangan. Kapasiti: satu isu bersaiz M setiap pasangan setiap separuh hari; isu lebih → backlog dengan komen sebab.
 
-   Sertakan isu susulan Sprint 1 (AC yang belum siap). Kapasiti: satu isu bersaiz M setiap pasangan Dev setiap separuh hari. Isu lebih → turunkan ke backlog dengan komen sebab.
-
-3. **PM — sync (09:00, 15 minit, tiga PM + jurulatih).** Setiap PM menjawab dalam komen isu utama skuad:
+3. **Sync (09:00, 15 minit: PM, BA, floater, wakil setiap pasangan + jurulatih).** PM menulis dalam komen isu #19:
 
    ```markdown
-   **Sync PM — Sprint 2**
-   - Fail dikongsi yang akan disentuh: …
-   - Bergantung pada skuad lain: …
+   **Sync Sprint 2**
+   - Pasangan 1: isu …, fail panas …
+   - Pasangan 2: …
+   - Pasangan 3: …
+   - Pasangan 4: …
+   - Floater: …
+   - Kebergantungan: …
    - Susunan merge dipersetujui: …
    ```
 
-4. **QA — pelan ujian dan ujian gagal (60 minit).** Ritma [Lab 8.21 — QA](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16): jadual AC → kes ujian dalam komen isu, AI-25 (`penguji-espkp`), AI-26 (satu ujian gagal). Skuad A (#13), sebelum menulis ujian:
+4. **QA — ujian gagal (60 minit).** Ritma [Lab 8.21 — QA](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16): AI-25 (`penguji-espkp`), AI-26 (satu ujian gagal) dalam branch isu. Untuk #13, sebelum menulis ujian:
 
    ```text
    Mod Plan. Bagaimana ujian sedia ada mengawal masa (service('jam')) dan emel (service('notifikasi')) supaya perintah peringatan boleh diuji tanpa menunggu 7 hari? Tunjukkan fail:baris contoh dalam tests/.
    ```
 
-5. **Dev — slice 1 (60 minit).** Ritma [Lab 8.21 — Dev](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16): AI-29 → `/ciri-baharu <no>` → branch `feat/<no>-<ringkas>` → slice 1 (mod *Manual*) → `composer semak` → `semak-espkp` → commit `Rujuk #<no>` → push.
+5. **Dev — slice 1 (60 minit, setiap pasangan).** Ritma [Lab 8.21 — Dev](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16): AI-29 → `/ciri-baharu <no>` → branch `feat/<no>-<ringkas>` → slice 1 (mod *Manual*) → `composer semak` → `semak-espkp` → commit `Rujuk #<no>` → push. Migration baharu: digit pertama versi = nombor pasangan.
 
 ### ✅ Checkpoint
-- [ ] Isu Sprint 2 `status::sedia` dengan *Assignee*.
-- [ ] Ketiga-tiga skuad mencatat susunan merge yang **sama**.
+- [ ] Isu Sprint 2 `status::sedia` + `pasukan::dev` + `pasangan::N`, dengan *Assignee*.
+- [ ] Nota sync dalam isu #19 dengan susunan merge yang dipersetujui semua pasangan.
 - [ ] Ujian gagal kerana ciri tiada, dengan mesej yang menyebut AC.
-- [ ] Branch Sprint 2 dengan commit pertama; label `status::dalam-kerja`.
+- [ ] Branch Sprint 2 setiap pasangan dengan commit pertama; label `status::dalam-kerja`.
 
 ---
 
-## Lab 9.21 — Bina Sprint 2: Ciri Skuad (S14)
+## Lab 9.21 — Bina Sprint 2: Ciri Pasangan Dev (S14)
 
 ### 🎯 Objektif
-Melaksanakan ciri Sprint 2 skuad slice demi slice, dengan perhatian khusus pada risiko teknikal skuad (idempoten, keserasian akaun latihan, CSP dan had eksport).
+Melaksanakan isu Sprint 2 pasangan slice demi slice, dengan perhatian khusus pada risiko teknikal isu (idempoten, keserasian akaun latihan, CSP dan had eksport, ketekalan `Aliran.php`), sementara pasukan Projek menyediakan Sprint 3.
 
 ### Langkah
 
-1. **Teruskan slice** (pemandu bertukar setiap slice). Setiap slice: mod *Manual* → navigator membaca diff → `composer semak` → `semak-espkp` → commit `Rujuk #<no>`.
+1. **Dev — teruskan slice** (pemandu bertukar setiap slice). Setiap slice: mod *Manual* → navigator membaca diff → `composer semak` → `semak-espkp` → commit `Rujuk #<no>`.
 
-2. **Semakan risiko skuad** — sebelum slice terakhir, tanya Claude (mod *Plan*) dan sahkan sendiri:
+2. **Dev — semakan risiko** sebelum slice terakhir, tanya Claude (mod *Plan*) dan sahkan sendiri:
 
-   | Skuad | Prompt | Sahkan |
+   | Pasangan | Prompt | Sahkan |
    |---|---|---|
-   | A — #13 | `Adakah perintah peringatan Pindaan idempoten? Tunjukkan baris yang menghalang emel kedua dan ujian yang membuktikannya.` | Jalankan `php spark espkp:peringatan` dua kali pada data dev; emel kedua tiada (log / TAC skrin) |
-   | B — #9 | `Adakah akaun latihan 9001010100NN dengan Latihan@2026 masih lulus dasar baharu? Tunjukkan ujian.` | Log masuk `900101010001` di pelayar |
-   | B — #8 | `Draf job CI mariadb dalam .gitlab-ci.yml yang menjalankan migrate --all dan suite Database pada mariadb:10.6, tanpa mengubah job ujian sedia ada.` | `composer validate`; baca YAML; job baharu sahaja |
-   | C — #17 | `Adakah carta RPT-10 menggunakan laporan/_carta dan data-carta tanpa <script> sebaris? Adakah eksport melalui EksportService dengan had dan audit?` | DevTools → tiada ralat CSP; muat turun XLSX, jumlah = jadual |
+   | 1 — #13 / #22 | `Adakah perintah peringatan idempoten? Tunjukkan baris yang menghalang emel kedua dan ujian yang membuktikannya.` | Jalankan `php spark espkp:peringatan` dua kali pada data dev; emel kedua tiada (log / TAC skrin) |
+   | 2 — #9 / #25 | `Adakah akaun latihan 9001010100NN dengan Latihan@2026 masih lulus dasar baharu? Adakah migration telefon menambah lajur NULL tanpa mengubah data sedia ada?` | Log masuk `900101010001` di pelayar; `php spark db:table profil_pengguna` |
+   | 3 — #17 / #26 | `Adakah carta RPT-10 menggunakan laporan/_carta dan data-carta tanpa <script> sebaris? Adakah eksport melalui EksportService dengan had dan audit?` | DevTools → tiada ralat CSP; muat turun XLSX, jumlah = jadual |
+   | 4 — #21 / #23 | `Tunjukkan perubahan Aliran.php untuk Hilang melalui Penyelia; adakah KonfigurasiAliranTest dan langkah stepper masih konsisten?` | `vendor/bin/phpunit --filter KonfigurasiAliranTest`; cuba aliran Hilang dengan akaun 01 → 02 → 03 → 04 → 05 |
+   | Floater — #8 | `Draf job CI mariadb dalam .gitlab-ci.yml yang menjalankan migrate --all dan suite Database pada mariadb:10.6, tanpa mengubah job ujian sedia ada.` | Baca YAML; job baharu sahaja |
 
-3. **QA** menyambungkan ujian AC yang lain ke dalam branch (selaras dengan Dev), dan menjalankan `vendor/bin/phpunit --filter <Kelas>` selepas setiap commit Dev.
+3. **Projek — Sprint 3.** BA: AC untuk #27–#32 (`/isu-baharu <no>`), soalan pemilik sistem → #33. QA: sambungkan ujian AC ke branch Sprint 2 (selaras dengan pasangan) dan jalankan `vendor/bin/phpunit --filter <Kelas>` selepas setiap commit Dev. PM: papan dan penyekat.
 
 ### ✅ Checkpoint
-- [ ] ≥ 2 slice di-commit; ujian QA untuk AC teras **lulus**.
+- [ ] ≥ 2 slice di-commit setiap pasangan; ujian QA untuk AC teras **lulus**.
 
 ---
 
-## Lab 9.22 — MR, Semakan & Ujian Merentas Skuad (S15)
+## Lab 9.22 — MR, Semakan & Ujian Eksploratori (S15)
 
 ### 🎯 Objektif
-Selepas tukar peranan, membawa Sprint 2 ke MR yang disemak QA, dan **menguji secara eksploratori** ciri skuad lain yang sudah di-merge.
+Membawa Sprint 2 ke MR yang disemak QA, dan **menguji secara eksploratori** ciri yang sudah di-merge — QA untuk semua ciri, pasangan Dev untuk ciri pasangan lain.
 
 ### Langkah
 
-1. **Tukar peranan** (slot *Hari 9 petang*: tempat 4 = PM, 1 = QA, 2 & 3 = Dev). Baca komen *Serah tugas* dalam isu.
+1. **Dev — MR** seperti [Lab 8.22 — Dev](../hari-8/lab.md#lab-822--sprint-1-petang-mr-semakan-qa--papan-s17): MR draf → senarai semak → *Tiga baris utama* → *Ready* → `status::semakan` + `pasukan::projek`.
 
-2. **Dev — MR** seperti [Lab 8.22 — Dev](../hari-8/lab.md#lab-822--sprint-1-petang-mr-semakan-qa--papan-s17): MR draf → senarai semak → *Tiga baris utama* → *Ready* → `status::semakan`.
+2. **QA — semak MR** dengan `/semak-mr <no-MR>` (AI-27), buka setiap `fail:baris`, approve atau minta perubahan (`status::dalam-kerja` + `pasukan::dev`).
 
-3. **QA — semak MR skuad sendiri** dengan `/semak-mr <no-MR>` (AI-27), buka setiap `fail:baris`, approve atau minta perubahan.
-
-4. **QA — ujian eksploratori merentas skuad (30 minit).** QA skuad A menguji ciri skuad B, B → C, C → A, pada `main` terkini. Gunakan sekurang-kurangnya tiga akaun latihan (contoh 01 pemohon, 07 wakil, 05 pelulus) dan lebar 360px (DevTools → *Toggle device*). Untuk setiap pemerhatian:
+3. **Ujian eksploratori (30 minit).** QA menguji ciri yang di-merge ke `main`; setiap pasangan Dev menguji ciri **pasangan lain** (1 → 2 → 3 → 4 → 1) selama 20 minit. Gunakan sekurang-kurangnya tiga akaun latihan (contoh 01 pemohon, 07 wakil, 05 pelulus) dan lebar 360px (DevTools → *Toggle device*). Untuk setiap pemerhatian:
 
    ```text
    Draf isu Pepijat ikut .gitlab/issue_templates/Pepijat.md daripada pemerhatian ini: <langkah, jangkaan, sebenar, akaun>. Data sintetik sahaja. Jangan cipta isu.
    ```
 
-   Ulang langkah sendiri, kemudian cipta isu dengan label skuad **pemilik** ciri:
+   Ulang langkah sendiri, kemudian cipta isu; PM membuat triage dan menambah `pasangan::<pemilik>`:
 
    ```bash
-   glab issue create --title "<ringkas>" --label "jenis::pepijat,skuad::<pemilik>,status::baharu" --description "$(cat pepijat.md)"
+   glab issue create --title "<ringkas>" --label "jenis::pepijat,pasukan::projek,status::baharu" --description "$(cat pepijat.md)"
    ```
 
-5. **PM** — papan, penyekat, dan sahkan semula susunan merge S16 dengan PM lain.
+4. **PM** — triage pepijat, papan, penyekat; sahkan semula susunan merge S16 bersama floater.
 
 ### ✅ Checkpoint
-- [ ] ≥ 1 isu Pepijat yang skuad pemilik berjaya ulang.
+- [ ] ≥ 1 isu Pepijat yang pasangan pemilik berjaya ulang.
 
 ---
 
@@ -129,7 +130,7 @@ Me-merge Sprint 2 mengikut susunan sync, **membuktikan** `main` hijau dengan PHP
 
 1. **Merge** mengikut susunan (Lab 8.23 langkah 1–4: QA approve → PM merge → MR lain rebase → `composer semak` → `--force-with-lease`).
 
-2. **`main` hijau (satu Dev setiap skuad).**
+2. **`main` hijau (seorang daripada setiap pasangan).**
 
    ```bash
    git switch main && git pull
@@ -138,7 +139,7 @@ Me-merge Sprint 2 mengikut susunan sync, **membuktikan** `main` hijau dengan PHP
    composer test
    ```
 
-3. **E2E (QA setiap skuad, sekali).** Ikut bahagian *Ujian hujung ke hujung (E2E)* dalam README espkpv2: database `espkp_contoh_e2e` berasingan, fail env di luar repo, server `php -S localhost:8095`, kemudian:
+3. **E2E (QA atau floater, sekali).** Ikut bahagian *Ujian hujung ke hujung (E2E)* dalam README espkpv2: database `espkp_contoh_e2e` berasingan, fail env di luar repo, server `php -S localhost:8095`, kemudian:
 
    ```bash
    npm install && npx playwright install chromium
@@ -146,22 +147,25 @@ Me-merge Sprint 2 mengikut susunan sync, **membuktikan** `main` hijau dengan PHP
    npm run e2e
    ```
 
-   Merah → minta Claude: `Spesifikasi E2E ini gagal pada main selepas merge !<a> dan !<b>: <output>. Commit mana yang mungkin punca? Jangan baiki lagi.` Skuad punca membuka isu Pepijat `keutamaan::1-kritikal`.
+   Merah → minta Claude: `Spesifikasi E2E ini gagal pada main selepas merge !<a> dan !<b>: <output>. Commit mana yang mungkin punca? Jangan baiki lagi.` Pasangan punca membuka isu Pepijat `keutamaan::1-kritikal`.
 
-4. **Demo sprint (3 minit setiap skuad)** dan **retro** (isu `Retro Sprint 2 — Skuad <X>`: berjalan baik, ubah, satu peraturan prompt).
+4. **Papan FigJam (pasangan yang mengubah skema atau aliran).** Kemas kini ERD atau anak panah aliran dengan subagent `papan-figjam` ([tutorial](../docs/tutorial-figma-mcp.md)), satu prompt setiap perubahan.
 
-5. **Skop v1.1.0 (PM).** Dalam milestone *Sprint 3 + v1.1 (Hari 10)*: isu Sprint 3, pepijat kritikal, dan isu yang **tidak** masuk v1.1.0 dialihkan ke backlog.
+5. **Demo sprint (3 minit setiap pasangan)** dan **retro** (sticky dalam seksyen *Retro* FigJam + isu `Retro Sprint 2`: berjalan baik, ubah, satu peraturan prompt).
+
+6. **Skop v1.1.0 (PM).** Dalam milestone *Sprint 3 + v1.1 (Hari 10)*: isu Sprint 3 dengan AC, pepijat kritikal, dan isu yang **tidak** masuk v1.1.0 dialihkan ke backlog.
 
 ### ✅ Checkpoint
 - [ ] `composer test` hijau; E2E hijau atau setiap kegagalan ada isu Pepijat kritikal.
-- [ ] Milestone Sprint 3 mengandungi skop v1.1.0 yang dipersetujui ketiga-tiga PM.
+- [ ] Milestone Sprint 3 mengandungi skop v1.1.0 yang dipersetujui PM dan floater.
 
 ### Kesilapan lazim
 | Gejala | Punca | Penyelesaian |
 |---|---|---|
 | E2E memadam data dev anda | E2E dijalankan pada `espkp_contoh_dev` | Fail env E2E dengan `database_default_database=espkp_contoh_e2e`; `migrate --all` + `db:seed` dev semula |
 | `composer test` hijau setempat, CI merah pada RPT-10 | `ONLY_FULL_GROUP_BY` di MySQL 8.4 CI | Tambah lajur dalam `GROUP BY` atau guna aggregate; uji pada MySQL 8 setempat |
-| Dua migration skuad bertembung | Versi sama | Awalan skuad (`…-1xxxxx_` A, `2…` B, `3…` C) |
+| Dua migration pasangan bertembung | Versi sama | Digit pertama versi = nombor pasangan (`…-1xxxxx_` … `5…` floater) |
+| Dua MR mengubah `Aliran.php` serentak | Sync tidak menyebut fail panas | Satu MR terbuka setiap fail panas; yang kedua tunggu dan rebase |
 
 ---
 
@@ -169,9 +173,9 @@ Me-merge Sprint 2 mengikut susunan sync, **membuktikan** `main` hijau dengan PHP
 
 **Kerja pasukan (hari ini):** `glab mr list --merged -R aplikasi-baharu/espkpv2`, `glab issue list --label jenis::pepijat -R aplikasi-baharu/espkpv2`.
 
-- [ ] Isu Sprint 2 skuad saya dirancang dan nota sync PM dicatat dalam isu (Lab 9.20).
-- [ ] Ciri Sprint 2 skuad saya di-merge melalui MR dengan semakan QA dan ujian hijau (Lab 9.21–9.23).
-- [ ] Saya menguji ciri skuad lain dan sekurang-kurangnya satu isu Pepijat merentas skuad dicipta (Lab 9.22).
+- [ ] Isu Sprint 2 dirancang dengan label pasangan dan nota sync dicatat dalam isu #19 (Lab 9.20).
+- [ ] Isu Sprint 2 pasangan saya (atau yang saya semak/tulis AC) di-merge melalui MR dengan semakan QA dan ujian hijau (Lab 9.21–9.23).
+- [ ] Saya menguji ciri pasangan lain dan sekurang-kurangnya satu isu Pepijat dicipta daripada ujian eksploratori (Lab 9.22).
 - [ ] `composer test` dan E2E hijau pada `main` selepas semua merge, atau setiap kegagalan ada isu kritikal (Lab 9.23).
 
 **Modul Laporan individu (rujukan, tidak wajib):**

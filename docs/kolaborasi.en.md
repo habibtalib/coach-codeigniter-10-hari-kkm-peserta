@@ -60,10 +60,10 @@ Every participant works **alone** in the private project `kelas-ci-<nama>` and b
 
 ## 6. Team work in espkpv2 (Days 8–10)
 
-From Day 8, the class works in **one** repo: `<gitlab-kkm>/aplikasi-baharu/espkpv2`, as 3 squads × 4 (PM, QA, 2 Devs). Role details and rotation: [`peranan-pasukan.en.md`](peranan-pasukan.en.md); the repo's technical rules: `docs/pasukan.md` and `CONTRIBUTING.md` in espkpv2.
+From Day 8, the class works in **one** repo: `<gitlab-kkm>/aplikasi-baharu/espkpv2`, as two fixed teams from Day 8 afternoon: **Projek** (PM, BA, 2 QA) and **Dev** (4 pairs + a floater); Day 8 morning used 3 rotating squads. Role details: [`peranan-pasukan.en.md`](peranan-pasukan.en.md); the repo's technical rules: `docs/pasukan.md` and `CONTRIBUTING.md` in espkpv2.
 
 - **One issue → one branch (`feat/<no>-<short>`) → one MR** into the protected `main`; commits `Rujuk #N`, MR `Closes #N`.
-- **The seven gates of §3 still apply** to every Dev slice. Gate 5 (review) now has two layers: the `semak-espkp` subagent by the Dev, then an MR review by the **squad's QA** with `/semak-mr` against the issue's AC.
-- **Nobody approves their own MR.** QA approves; the PM merges in the order agreed between the PMs.
-- **Hotspots have an owner** (squad A `Aliran.php`, B `Auth*.php`, C `Laporan.php`); shared files are changed only inside your own area's block.
+- **The seven gates of §3 still apply** to every Dev slice. Gate 5 (review) now has two layers: the `semak-espkp` subagent by the Dev, then an MR review by the **Projek team's QA** with `/semak-mr` against the issue's AC.
+- **Nobody approves their own MR.** QA approves; the PM merges in the order agreed with the floater.
+- **Hot files: one open MR at a time** (`Aliran.php`, `Auth*.php`, `Laporan.php` and the others in `docs/pasukan.md` §4); `Routes.php`/`Menu.php` are changed only inside the issue module's block. The `pasukan::projek|dev` label shows who acts; `pasangan::N` shows the Dev pair.
 - §4 (individual work in `kelas-ci-<nama>`) applies to Days 1–7 and to the reference labs in the Day 8–10 Appendices.

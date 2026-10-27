@@ -2822,29 +2822,31 @@ git push --force-with-lease</pre></div>
 <section class="slide dark divider" data-label="Hari 9 · Sprint 2">
   <div class="eyebrow">Hari 9 · Fasa C — Bina sebagai pasukan</div>
   <h1>Hari 9 — Sprint 2</h1>
-  <div><span class="chip m-rpt">Laporan · Keselamatan · Aliran — merentas skuad</span></div>
+  <div><span class="chip m-rpt">Laporan · Keselamatan · Aliran · jurang BRS — Projek &amp; Dev</span></div>
   <div class="sessions">
     <div><i>S13</i><span>Perancangan Sprint 2, sync PM &amp; slice 1</span></div>
-    <div><i>S14</i><span>Bina Sprint 2: ciri skuad slice demi slice</span></div>
-    <div><i>S15</i><span>MR, semakan QA &amp; ujian eksploratori merentas skuad</span></div>
+    <div><i>S14</i><span>Bina Sprint 2: setiap pasangan Dev slice demi slice</span></div>
+    <div><i>S15</i><span>MR, semakan QA &amp; ujian eksploratori antara pasangan</span></div>
     <div><i>S16</i><span>Merge, <code>main</code> hijau (PHPUnit + E2E), demo &amp; retro</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span></div>
   <div class="daynum">09</div>
-  <aside class="notes"><p>Sprint 2 mengulang kitaran isu, MR dan merge dengan kebergantungan merentas skuad. Peranan bertukar: tempat 3 menjadi PM pagi. Kerja individu Modul Laporan kini rujukan dalam Lampiran Hari 9.</p></aside>
+  <aside class="notes"><p>Sprint 2 mengulang kitaran isu, MR dan merge dengan kebergantungan antara pasangan Dev. Pasukan Projek dan Dev kekal sama (isu #19). Kerja individu Modul Laporan kini rujukan dalam Lampiran Hari 9.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 9 · Isu Sprint 2</div>
-  <h2>Sprint 2: satu tema teknikal setiap skuad</h2>
+  <h2>Sprint 2: dua isu setiap pasangan Dev</h2>
   <table class="t tight">
-    <tr><th style="width:230px">Skuad</th><th style="width:330px">Isu Sprint 2</th><th>Tema teknikal</th></tr>
-    <tr><td><b>A — Aliran</b></td><td>#13 Peringatan pemohon: Pindaan &gt; 7 hari</td><td>Perintah spark + <code>peringatan_dihantar</code> (idempoten) + emel</td></tr>
-    <tr><td><b>B — Akaun &amp; Keselamatan</b></td><td>#9 Dasar kata laluan · #8 UUID pada MariaDB 10.6</td><td>Validator Shield, ujian, job CI MariaDB baharu</td></tr>
-    <tr><td><b>C — Laporan &amp; Statistik</b></td><td>#17 RPT-10: carta &amp; eksport PDF/Excel</td><td><code>laporan/_carta</code>, <code>EksportService</code>, jumlah laporan = jumlah SQL</td></tr>
+    <tr><th style="width:150px">Pasangan</th><th style="width:380px">Isu Sprint 2</th><th>Tema teknikal</th></tr>
+    <tr><td><b>P1</b></td><td>#13 Peringatan Pindaan &gt; 7 hari · #22 peringatan TLK ke UKS</td><td>Perintah spark, <code>PeringatanService</code>, idempoten</td></tr>
+    <tr><td><b>P2</b></td><td>#9 Dasar kata laluan · #25 telefon pejabat + H/P</td><td>Validator Shield, migration <code>profil_pengguna</code></td></tr>
+    <tr><td><b>P3</b></td><td>#17 RPT-10 carta &amp; eksport · #26 laporan tahunan</td><td><code>laporan/_carta</code>, <code>EksportService</code></td></tr>
+    <tr><td><b>P4</b></td><td>#21 Hilang melalui Penyelia · #23 jenis pas penyelenggaraan</td><td><code>Config/Aliran.php</code>, <code>AliranKerja</code></td></tr>
+    <tr><td><b>Floater</b></td><td>#8 UUID pada MariaDB (CI) · #24 emel lulus</td><td>Job CI baharu, templat emel</td></tr>
   </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div>Ditambah <b>isu susulan Sprint 1</b> (AC yang belum siap). Kapasiti realistik: satu isu bersaiz M setiap pasangan Dev setiap separuh hari.</div></div>
-  <aside class="notes"><p>Milestone Sprint 2 (Hari 9) di GitLab KKM. Tekankan kebergantungan: #13 dan RPT-10 kedua-duanya bergantung pada status Pindaan yang diubah oleh #1 skuad A semalam.</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div><b>Projek</b>: BA siapkan AC #21–#26 dan mula Sprint 3; QA ujian gagal dahulu. Cadangan agihan — PM memutuskan dan menetapkan <code>pasangan::N</code>.</div></div>
+  <aside class="notes"><p>Milestone Sprint 2 (Hari 9) di GitLab KKM. Tekankan kebergantungan: #21 mengubah Aliran.php yang dibaca #13 dan RPT-10; #13 dan #22 sengaja diberi kepada satu pasangan kerana kedua-duanya mengubah PeringatanService.</p></aside>
 </section>
 
 <section class="slide">
@@ -2852,45 +2854,47 @@ git push --force-with-lease</pre></div>
   <h2>S13 · Stand-up &amp; sync PM</h2>
   <div class="split">
     <div class="card top m-a"><span class="k">STAND-UP 08:30 · 2 MINIT SEORANG</span>
-      <ul><li>Apa yang saya siapkan semalam</li><li>Apa yang saya buat hari ini</li><li>Apa yang menyekat saya → PM catat dalam isu</li></ul>
+      <ul><li>Apa yang saya siapkan semalam</li><li>Apa yang saya buat hari ini</li><li>Apa yang menyekat saya → PM / floater catat dalam isu</li></ul>
     </div>
     <table class="t tight">
-      <tr><th>Sync PM (09:00, 15 minit)</th><th>Contoh jawapan</th></tr>
-      <tr><td>Fail dikongsi?</td><td>A: perintah sahaja, tiada route baharu</td></tr>
-      <tr><td>Bergantung pada skuad lain?</td><td>C: RPT-10 perlu tahu Pindaan kini "terbuka" (#1)</td></tr>
-      <tr><td>Susunan merge petang?</td><td>B (#9, borang) → A (#13) → C (#17)</td></tr>
+      <tr><th>Sync 09:00 (PM, BA, floater, wakil pasangan)</th><th>Contoh jawapan</th></tr>
+      <tr><td>Fail panas?</td><td>P4: <code>Aliran.php</code> (#21) · P2: <code>Auth.php</code> (#9)</td></tr>
+      <tr><td>Bergantung pada pasangan lain?</td><td>P3: RPT-10 perlu tahu status Hilang baharu (#21)</td></tr>
+      <tr><td>Susunan merge petang?</td><td>P2 → P1 → P4 → P3</td></tr>
     </table>
   </div>
-  <div class="callout tip mt16"><span class="i">💡</span><div>Keputusan sync dicatat dalam <b>isu</b>, bukan diingat. QA &amp; Dev ulang ritma Lab 8.21: ujian gagal dahulu, <code>/ciri-baharu</code> → branch → slice 1.</div></div>
-  <aside class="notes"><p>Jurulatih hadir dalam sync PM sebagai pemilik sistem. Checkpoint: isu Sprint 2 status::sedia dengan Assignee, nota sync dalam isu skuad, branch dengan commit pertama Rujuk #N.</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Keputusan sync dicatat dalam <b>isu #19</b>, bukan diingat. QA &amp; Dev ulang ritma Lab 8.21: ujian gagal dahulu, <code>/ciri-baharu</code> → branch → slice 1.</div></div>
+  <aside class="notes"><p>Jurulatih hadir dalam sync PM sebagai pemilik sistem. Checkpoint: isu Sprint 2 status::sedia + pasukan::dev + pasangan::N, nota sync dalam isu #19, branch setiap pasangan dengan commit pertama Rujuk #N.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 9 · S14 — Lab 9.21 (10:45–12:30)</div>
-  <h2>S14 · Bina Sprint 2: risiko setiap skuad</h2>
+  <h2>S14 · Bina Sprint 2: risiko setiap pasangan</h2>
   <table class="t tight">
-    <tr><th style="width:150px">Skuad</th><th style="width:300px">Skill / agent</th><th>Perhatian khusus</th></tr>
-    <tr><td><b>A · #13</b></td><td><code>/ciri-baharu</code>, <code>migration-espkp</code></td><td>Idempoten: dijalankan dua kali ≠ dua emel. Uji dengan <code>service('jam')</code> palsu — bukan menunggu 7 hari</td></tr>
-    <tr><td><b>B · #9 / #8</b></td><td><code>/ciri-baharu</code>, <code>migration-espkp</code></td><td><code>Latihan@2026</code> mesti kekal sah; #8 = job CI <b>baharu</b>, jangan ubah job <code>ujian</code></td></tr>
-    <tr><td><b>C · #17</b></td><td><code>/ciri-baharu</code></td><td>Chart.js melalui <code>laporan/_carta</code> + <code>data-carta</code> (CSP); eksport melalui <code>EksportService</code> (had, diaudit)</td></tr>
+    <tr><th style="width:150px">Pasangan</th><th style="width:300px">Skill / agent</th><th>Perhatian khusus</th></tr>
+    <tr><td><b>P1 · #13/#22</b></td><td><code>/ciri-baharu</code>, <code>migration-espkp</code></td><td>Idempoten: dijalankan dua kali ≠ dua emel. Uji dengan <code>service('jam')</code> palsu — bukan menunggu 7 hari</td></tr>
+    <tr><td><b>P2 · #9/#25</b></td><td><code>/ciri-baharu</code>, <code>migration-espkp</code></td><td><code>Latihan@2026</code> mesti kekal sah; migration baharu sahaja</td></tr>
+    <tr><td><b>P3 · #17/#26</b></td><td><code>/ciri-baharu</code></td><td>Chart.js melalui <code>laporan/_carta</code> + <code>data-carta</code> (CSP); eksport melalui <code>EksportService</code> (had, diaudit)</td></tr>
+    <tr><td><b>P4 · #21/#23</b></td><td><code>/ciri-baharu</code>, <code>aliran-kerja</code></td><td>Ubah <code>Aliran.php</code>, bukan controller; <code>KonfigurasiAliranTest</code> hijau; kemas kini FigJam</td></tr>
+    <tr><td><b>Floater · #8</b></td><td><code>/ciri-baharu</code></td><td>Job CI <b>baharu</b>, jangan ubah job <code>ujian</code></td></tr>
   </table>
   <div class="callout tip mt16"><span class="i">💡</span><div>Peraturan slice kekal: slice → <code>composer semak</code> → <code>semak-espkp</code> → commit. Navigator semak diff; tukar pemandu setiap slice.</div></div>
-  <aside class="notes"><p>Checkpoint: sekurang-kurangnya 2 slice di-commit dengan ujian hijau, dan ujian QA untuk AC teras kini lulus dalam branch.</p></aside>
+  <aside class="notes"><p>Checkpoint: sekurang-kurangnya 2 slice setiap pasangan di-commit dengan ujian hijau, dan ujian QA untuk AC teras kini lulus dalam branch. Projek menulis AC Sprint 3 semasa sesi ini.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 9 · S15 — Lab 9.22 (14:30–16:00)</div>
-  <h2>S15 · QA merentas skuad</h2>
+  <h2>S15 · Ujian eksploratori: mata baharu</h2>
   <div class="split">
     <div class="card top m-tlk"><span class="k">UJIAN EKSPLORATORI · 30 MINIT</span>
-      <ul><li>QA A → ciri B · QA B → ciri C · QA C → ciri A</li><li>Ciri yang sudah di-merge ke <code>main</code></li><li>≥ 3 akaun latihan berbeza</li><li>Cari: mesej mengelirukan, akses yang patut 404, 360px pecah, jumlah eksport tidak sepadan</li></ul>
+      <ul><li>QA → semua ciri yang di-merge · pasangan 1 → 2 → 3 → 4 → 1 (20 minit)</li><li>Ciri yang sudah di-merge ke <code>main</code></li><li>≥ 3 akaun latihan berbeza</li><li>Cari: mesej mengelirukan, akses yang patut 404, 360px pecah, jumlah eksport tidak sepadan</li></ul>
     </div>
     <div class="card top m-stat"><span class="k">ISU PEPIJAT</span>
-      <ul><li>Templat <i>Pepijat</i>, label skuad <b>pemilik</b> ciri</li><li>Langkah ulang dengan akaun <code>9001010100NN</code></li><li>Jangkaan · sebenar · <code>fail:baris</code> yang mungkin</li><li>Claude mendraf (AI-28); QA ulang setiap langkah sendiri</li></ul>
+      <ul><li>Templat <i>Pepijat</i>, label <code>pasukan::projek</code>; PM triage → <code>pasangan::N</code> pemilik</li><li>Langkah ulang dengan akaun <code>9001010100NN</code></li><li>Jangkaan · sebenar · <code>fail:baris</code> yang mungkin</li><li>Claude mendraf (AI-28); penguji ulang setiap langkah sendiri</li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Mata baharu menemui pepijat yang pengarang — dan Claude pengarang — tidak nampak. Aliran MR kekal seperti Lab 8.22.</div></div>
-  <aside class="notes"><p>Selepas tukar peranan slot Hari 9 petang. Checkpoint: MR Sprint 2 setiap skuad Ready dengan komen QA, dan sekurang-kurangnya satu isu Pepijat merentas skuad yang boleh diulang.</p></aside>
+  <aside class="notes"><p>Checkpoint: MR Sprint 2 setiap pasangan Ready dengan komen QA, dan sekurang-kurangnya satu isu Pepijat yang boleh diulang oleh pasangan pemilik.</p></aside>
 </section>
 
 <section class="slide">
@@ -2908,11 +2912,11 @@ composer test
 npm run e2e:sedia
 npm run e2e</pre></div>
     <div class="card top m-a"><span class="k">HUJUNG SPRINT 2</span>
-      <ul><li>Merge ikut susunan sync pagi (rebase, <code>--force-with-lease</code>)</li><li>Merah → isu Pepijat <code>keutamaan::1-kritikal</code>, baiki sebelum Sprint 3</li><li>Demo sprint: 3 minit setiap skuad</li><li>Isu <code>Retro Sprint 2 — Skuad &lt;X&gt;</code></li><li>PM: isu Sprint 3 + skop <b>v1.1.0</b></li></ul>
+      <ul><li>Merge ikut susunan sync pagi (rebase, <code>--force-with-lease</code>)</li><li>Merah → isu Pepijat <code>keutamaan::1-kritikal</code>, baiki sebelum Sprint 3</li><li>Demo sprint: 3 minit setiap pasangan (BA · Dev · QA)</li><li>Retro: sticky FigJam + isu <code>Retro Sprint 2</code></li><li>PM: isu Sprint 3 + skop <b>v1.1.0</b></li></ul>
     </div>
   </div>
   <div class="callout warn mt16"><span class="i">⚠️</span><div>Jangan jalankan E2E pada database dev anda — data diset semula.</div></div>
-  <aside class="notes"><p>Satu orang dari setiap skuad menjalankan composer test pada main terkini; QA menjalankan E2E. Hujung hari: semua MR yang lulus QA di-merge, main hijau, skop v1.1.0 dalam milestone Sprint 3.</p></aside>
+  <aside class="notes"><p>Seorang daripada setiap pasangan menjalankan composer test pada main terkini; QA atau floater menjalankan E2E. Hujung hari: semua MR yang lulus QA di-merge, main hijau, skop v1.1.0 dalam milestone Sprint 3.</p></aside>
 </section>
 
 <section class="slide">
@@ -2920,10 +2924,11 @@ npm run e2e</pre></div>
   <h2>🤖 Prompting hari ini: Sprint 2</h2>
   <table class="t">
     <tr><th style="width:170px">Peranan</th><th>Prompt (pustaka-prompt §H)</th><th style="width:280px">Sahkan sendiri</th></tr>
-    <tr><td><b>PM · sync</b></td><td><b>AI-23</b> isu Sprint 2 + fail dikongsi + kebergantungan skuad lain</td><td>Banding dengan nota sync PM lain</td></tr>
+    <tr><td><b>PM · sync</b></td><td><b>AI-23</b> isu Sprint 2 + fail panas + kebergantungan antara pasangan</td><td>Banding dengan nota sync dalam isu #19</td></tr>
+    <tr><td><b>BA · AC</b></td><td><b>AI-21</b> <code>/isu-baharu 21</code> + "banding AC dengan bahagian Keperluan BRS"</td><td>Setiap AC berasal daripada isu/BRS</td></tr>
     <tr><td><b>QA · pelan</b></td><td><b>AI-25</b> + "uji perintah peringatan tanpa menunggu 7 hari — corak <code>service('jam')</code>"</td><td>Ujian gagal kerana ciri tiada, bukan masa</td></tr>
-    <tr><td><b>Dev · bina</b></td><td><b>AI-29</b> → <code>/ciri-baharu</code> → <b>AI-30</b>; C: "ikut <code>laporan/_carta</code>, tiada <code>&lt;script&gt;</code> sebaris"</td><td><code>composer semak</code>; pelayar 360px</td></tr>
-    <tr><td><b>QA · eksploratori</b></td><td><b>AI-28</b> draf isu Pepijat · <b>AI-27</b> <code>/semak-mr</code></td><td>Ulang langkah sebelum cipta isu</td></tr>
+    <tr><td><b>Dev · bina</b></td><td><b>AI-29</b> → <code>/ciri-baharu</code> → <b>AI-30</b>; P3: "ikut <code>laporan/_carta</code>, tiada <code>&lt;script&gt;</code> sebaris"</td><td><code>composer semak</code>; pelayar 360px</td></tr>
+    <tr><td><b>QA / Dev · eksploratori</b></td><td><b>AI-28</b> draf isu Pepijat · <b>AI-27</b> <code>/semak-mr</code></td><td>Ulang langkah sebelum cipta isu</td></tr>
     <tr><td><b>Semua · main merah</b></td><td>"Ujian ini gagal selepas merge !a dan !b: … Commit mana punca? Jangan baiki lagi."</td><td><code>git log</code>, <code>git bisect</code></td></tr>
   </table>
   <aside class="notes"><p>Prompt main merah sengaja meminta diagnosis sahaja: pasukan perlu tahu MR mana yang menyebabkan kegagalan sebelum sesiapa membaiki, supaya pembetulan masuk melalui MR fix/… dengan semakan.</p></aside>
@@ -2931,15 +2936,15 @@ npm run e2e</pre></div>
 
 <section class="slide">
   <div class="eyebrow">Hari 9 · Hasil hari ini</div>
-  <h2>Sprint 2 siap — semak hasil skuad</h2>
+  <h2>Sprint 2 siap — semak hasil pasukan</h2>
   <ul class="checks done">
-    <li><span>Isu Sprint 2 <code>status::sedia</code> dengan <i>Assignee</i>; nota sync PM dalam isu.</span></li>
+    <li><span>Isu Sprint 2 <code>status::sedia</code> + <code>pasangan::N</code>; nota sync dalam isu #19.</span></li>
     <li><span>Ciri Sprint 2 di-merge melalui MR dengan semakan QA dan ujian hijau.</span></li>
-    <li><span>≥ 1 isu Pepijat merentas skuad dengan langkah ulang.</span></li>
+    <li><span>≥ 1 isu Pepijat daripada ujian eksploratori dengan langkah ulang.</span></li>
     <li><span><code>composer test</code> dan <code>npm run e2e</code> hijau pada <code>main</code>.</span></li>
-    <li><span>Isu retro Sprint 2; skop v1.1.0 dalam milestone Sprint 3.</span></li>
+    <li><span>Isu retro Sprint 2; skop v1.1.0 dalam milestone Sprint 3; AC Sprint 3 siap.</span></li>
   </ul>
-  <aside class="notes"><p>Esok hari terakhir: Sprint 3 pagi dengan pembekuan ciri 12:30, keluaran v1.1.0 dan demo capstone pasukan. Skuad memilih peranan sendiri esok.</p></aside>
+  <aside class="notes"><p>Esok hari terakhir: Sprint 3 pagi dengan pembekuan ciri 12:30, keluaran v1.1.0 dan demo capstone pasukan. Pasukan Projek dan Dev kekal sama.</p></aside>
 </section>
 
 
@@ -2949,7 +2954,7 @@ npm run e2e</pre></div>
 <section class="slide dark divider" data-label="Hari 10 · Keluaran &amp; Capstone">
   <div class="eyebrow">Hari 10 · Fasa C — Keluar &amp; Serah</div>
   <h1>Hari 10 — Sprint 3, v1.1.0 &amp; Capstone Pasukan</h1>
-  <div><span class="chip m-stat">Pembekuan 12:30 · v1.1.0 · demo skuad</span></div>
+  <div><span class="chip m-stat">Pembekuan 12:30 · v1.1.0 · demo Projek &amp; pasangan Dev</span></div>
   <div class="sessions">
     <div><i>S8</i><span>Sprint 3: ciri terakhir &amp; pepijat kritikal — pembekuan 12:30</span></div>
     <div><i>S9</i><span>Keluaran v1.1.0: stabil, CHANGELOG, tag &amp; Release</span></div>
@@ -2973,11 +2978,11 @@ npm run e2e</pre></div>
       <tr><td><b>12:30</b></td><td><b>Pembekuan ciri</b> — selepas ini hanya <code>fix/…</code></td></tr>
     </table>
     <div class="card top m-a"><span class="k">ISU SPRINT 3</span>
-      <ul><li><b>A</b> — #14 E2E &amp; dokumentasi aliran</li><li><b>B</b> — #15 Sejarah log masuk dalam profil</li><li><b>C</b> — #18 Kad KPI kadar kelulusan</li><li>+ pepijat kritikal &amp; isu susulan dalam skop v1.1.0</li></ul>
+      <ul><li>#14 E2E &amp; dokumentasi · #15 Sejarah log masuk · #18 Kad KPI</li><li>#27–#32 jurang BRS Sprint 3 (AC oleh BA semalam)</li><li>Agihan ikut label <code>pasangan::N</code></li><li>+ pepijat kritikal &amp; isu susulan dalam skop v1.1.0</li></ul>
     </div>
   </div>
   <div class="callout warn mt16"><span class="i">⚠️</span><div>MR ciri yang belum di-merge pada 12:30 → isu kekal terbuka, alih ke backlog dengan komen. Jangan merge tanpa semakan QA untuk "sempat".</div></div>
-  <aside class="notes"><p>Skuad memilih peranan hari ini; cadangkan orang yang belum menjadi PM atau QA mengambilnya. Checkpoint: setiap isu Sprint 3 ditutup atau dialih ke backlog dengan sebab, dan composer test hijau pada main.</p></aside>
+  <aside class="notes"><p>Pasukan Projek dan Dev kekal (isu #19). Checkpoint: setiap isu Sprint 3 ditutup atau dialih ke backlog dengan sebab, dan composer test hijau pada main.</p></aside>
 </section>
 
 <section class="slide">
@@ -2996,29 +3001,29 @@ dan #isu. Jangan tulis fail.</pre></div>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Baris CHANGELOG tanpa <code>!no</code> dan <code>#isu</code> = tanda Claude mereka perubahan. Buang.</div></div>
-  <aside class="notes"><p>PM keluaran dipilih jurulatih dan dibantu PM lain. Checkpoint: CHANGELOG.md bahagian 1.1.0 di main dengan setiap baris sepadan MR sebenar; tag v1.1.0 dan Release GitLab wujud.</p></aside>
+  <aside class="notes"><p>PM keluaran ialah PM pasukan Projek, dibantu BA dan floater. Checkpoint: CHANGELOG.md bahagian 1.1.0 di main dengan setiap baris sepadan MR sebenar; tag v1.1.0 dan Release GitLab wujud.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 10 · S10 — Lab 10.22 (15:15–16:30)</div>
-  <h2>S10 · Demo capstone pasukan: 15 minit setiap skuad</h2>
+  <h2>S10 · Demo capstone: Projek + setiap pasangan Dev</h2>
   <table class="t tight">
     <tr><th style="width:110px">Minit</th><th style="width:130px">Siapa</th><th>Apa</th></tr>
-    <tr><td>0–3</td><td><b>PM</b></td><td>Isu skuad merentas 3 sprint: AC, keputusan pemilik, apa yang tidak masuk v1.1.0 dan kenapa</td></tr>
-    <tr><td>3–8</td><td><b>Dev</b></td><td>Ciri berjalan pada <code>v1.1.0</code> dengan akaun berbeza — termasuk satu yang mesti menerima <b>404</b></td></tr>
-    <tr><td>8–11</td><td><b>QA</b></td><td>Ujian yang membuktikan AC (<code>phpunit --filter</code>), satu pepijat ditangkap sebelum merge, hasil E2E</td></tr>
-    <tr><td>11–15</td><td><b>Panel</b></td><td>Setiap ahli terangkan satu baris yang di-commit atas namanya (<code>git log --author</code>) — <b>tanpa Claude</b></td></tr>
+    <tr><td>0–12</td><td><b>Projek</b></td><td>PM: backlog BRS → isu → AC, keputusan pemilik, apa tidak masuk v1.1.0 · BA: satu isu BRS → AC · QA: ujian yang membuktikan AC, pepijat ditangkap, E2E</td></tr>
+    <tr><td>12–52</td><td><b>Dev</b></td><td>10 minit setiap pasangan: ciri pada <code>v1.1.0</code> dengan akaun berbeza — termasuk satu yang menerima <b>404</b>; MR &amp; ujian</td></tr>
+    <tr><td>52–57</td><td><b>Floater</b></td><td>Job CI, konflik diselesaikan, E2E</td></tr>
+    <tr><td>57–75</td><td><b>Panel</b></td><td>Setiap ahli terangkan satu baris kerjanya — kod, ujian atau AC — <b>tanpa Claude</b></td></tr>
   </table>
   <div class="callout tip mt16"><span class="i">💡</span><div>Latihan: <code>Tanya saya 3 soalan tentang baris &lt;fail:baris&gt; yang saya commit, seperti panel capstone. Jangan beri jawapan.</code></div></div>
-  <aside class="notes"><p>Jurulatih sebagai pemilik sistem dan panel mengisi helaian markah skuad (rubrik §8). Soalan panel: apa baris ini buat, kenapa, apa yang rosak jika dibuang.</p></aside>
+  <aside class="notes"><p>Jurulatih sebagai pemilik sistem dan panel mengisi helaian markah pasukan (rubrik §8). Soalan panel: apa baris ini buat, kenapa, apa yang rosak jika dibuang.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 10 · Rubrik capstone §8</div>
-  <h2>Markah skuad (40) + markah individu</h2>
+  <h2>Markah pasukan (40) + markah individu</h2>
   <table class="t tight">
-    <tr><th style="width:230px">Kriteria skuad (0–10)</th><th>Tahap 3 (8–10)</th></tr>
-    <tr><td><b>P · Isu &amp; AC</b> (PM)</td><td>AC Diberi/Apabila/Maka dengan akses 404 &amp; kes sempadan; soalan pemilik direkod</td></tr>
+    <tr><th style="width:230px">Kriteria pasukan (0–10)</th><th>Tahap 3 (8–10)</th></tr>
+    <tr><td><b>P · Isu &amp; AC</b> (PM, BA)</td><td>AC Diberi/Apabila/Maka dengan akses 404 &amp; kes sempadan; soalan pemilik direkod</td></tr>
     <tr><td><b>Q · Bukti semakan</b> (QA)</td><td>Setiap AC ada <code>fail:baris</code> + ujian; ≥ 1 pepijat ditangkap sebelum merge</td></tr>
     <tr><td><b>D · MR &amp; ujian</b> (Dev)</td><td>Slice kecil, senarai semak dengan bukti, ujian negatif, <code>main</code> hijau</td></tr>
     <tr><td><b>K · Kerjasama</b></td><td>Susunan merge dipatuhi; serah tugas dalam isu; retro dengan tindakan</td></tr>
@@ -3028,7 +3033,7 @@ dan #isu. Jangan tulis fail.</pre></div>
     <div class="card flat side m-tlk"><span class="k">INDIVIDU</span><h3 class="mb0">Hasil setiap peranan</h3></div>
     <div class="card flat side m-stat"><span class="k">INDIVIDU</span><h3 class="mb0">Disiplin AI</h3></div>
   </div>
-  <p class="small muted mt16">Sijil: markah skuad × 2.5 ≥ 60, tiada gate kritikal gagal pada <code>v1.1.0</code>, dan "terangkan baris sendiri" lulus.</p>
+  <p class="small muted mt16">Sijil: markah pasukan × 2.5 ≥ 60, tiada gate kritikal gagal pada <code>v1.1.0</code>, dan "terangkan baris sendiri" lulus.</p>
   <aside class="notes"><p>Ringkasan docs/rubrik-capstone.md bahagian 8. Disiplin AI: tiada commit dalam mod auto atau bypass, tiada rahsia atau data sebenar dalam isu, MR atau prompt.</p></aside>
 </section>
 
@@ -3064,7 +3069,7 @@ dan #isu. Jangan tulis fail.</pre></div>
   <ul class="checks done">
     <li><span>Isu Sprint 3 ditutup atau dialih ke backlog dengan sebab sebelum 12:30.</span></li>
     <li><span><code>CHANGELOG.md</code> 1.1.0 melalui MR; tag <code>v1.1.0</code> + Release pada <code>main</code> yang hijau.</span></li>
-    <li><span>Demo capstone skuad 15 minit; helaian markah skuad diisi.</span></li>
+    <li><span>Demo capstone Projek + setiap pasangan Dev; helaian markah pasukan diisi.</span></li>
     <li><span>Setiap ahli menerangkan satu baris sendiri tanpa Claude.</span></li>
     <li><span>Komen retro akhir setiap ahli — <b>Sistem dikeluarkan sebagai pasukan</b> 🎓</span></li>
   </ul>
@@ -3106,7 +3111,7 @@ dan #isu. Jangan tulis fail.</pre></div>
     <div class="card flat" style="display:grid;grid-template-columns:260px 1fr 60px;gap:18px;align-items:center;padding:14px 20px"><h3 class="mb0">Ujian PHPUnit</h3><div style="height:12px;border-radius:6px;background:var(--rose);width:50%"></div><b>15%</b></div>
     <div class="card flat" style="display:grid;grid-template-columns:260px 1fr 60px;gap:18px;align-items:center;padding:14px 20px"><h3 class="mb0">Demo &amp; penjelasan</h3><div style="height:12px;border-radius:6px;background:var(--navy-700);width:50%"></div><b>15%</b></div>
   </div>
-  <p class="small muted mt16">Mod pasukan (Hari 8–10): markah skuad P/Q/D/K + kriteria individu — rubrik §8. Syarat lulus: semua modul Must berfungsi dan peserta boleh menerangkan setiap baris kod yang didemo (disiplin “faham dahulu, terima kemudian”).</p>
+  <p class="small muted mt16">Mod pasukan (Hari 8–10): markah pasukan P/Q/D/K + kriteria individu — rubrik §8. Syarat lulus: semua modul Must berfungsi dan peserta boleh menerangkan setiap baris kod yang didemo (disiplin “faham dahulu, terima kemudian”).</p>
   <aside class="notes"><p>Rubrik ini cadangan jurulatih — boleh diselaraskan bersama pemilik sistem sebelum Hari 10. Pemberat tertinggi pada fungsi kerana matlamat kursus ialah sistem yang berfungsi.</p></aside>
 </section>
 

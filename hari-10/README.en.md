@@ -2,7 +2,7 @@
 
 [← Schedule](../JADUAL.en.md) · [👥 Team roles](../docs/peranan-pasukan.en.md) · [🧪 Day 10 Lab](./lab.en.md) · [📋 Capstone Rubric](../docs/rubrik-capstone.en.md) · [← Day 9](../hari-9/README.en.md)
 
-> **The last day.** Morning: Sprint 3 — final features and critical bugs, with a **feature freeze** at 12:30. Afternoon: the team stabilises `main`, prepares the **v1.1.0 release** (CHANGELOG, release notes, tag), and every squad demos its work to the system owner. Every member must be able to explain the code committed under their name — without Claude.
+> **The last day.** Morning: Sprint 3 — final features and critical bugs, with a **feature freeze** at 12:30. Afternoon: the team stabilises `main`, prepares the **v1.1.0 release** (CHANGELOG, release notes, tag), and the Projek team and every Dev pair demo their work to the system owner. Every member must be able to explain the code committed under their name — without Claude.
 
 ---
 
@@ -12,9 +12,9 @@ By the end of today, participants can:
 
 | # | Objective (measurable) | Session | Evidence |
 |---|------------------------|---------|----------|
-| O10 | **Finish** the squad's Sprint 3 issues and critical bugs before the feature freeze, through MRs with QA review | S8 | Sprint 3 issues closed or moved to the backlog with a reason; `main` green |
+| O10 | **Finish** the Sprint 3 issues (every Dev pair) and critical bugs before the feature freeze, through MRs with QA review | S8 | Sprint 3 issues closed or moved to the backlog with a reason; `main` green |
 | O11 | **Prepare** the v1.1.0 release: a CHANGELOG from the merged MRs, release notes, and an annotated tag on a green `main` | S9 | CHANGELOG MR merged; tag `v1.1.0` + GitLab Release |
-| O12 | **Demo** the squad's result to the system owner with role evidence: issues & AC (PM), the running feature (Dev), the tests that prove the AC (QA) | S10 | 15-minute squad demo; squad score sheet |
+| O12 | **Demo** the team's result to the system owner with role evidence: backlog & AC (PM, BA), the tests that prove the AC (QA), the running feature (Dev pairs) | S10 | 12-minute Projek demo + 10 minutes per pair; team score sheet |
 | O13 | **Explain** one line of code you committed yourself without Claude, and **evaluate** when AI help sped up or slowed down the team | S10–S11 | Panel question answered; reflection in the final retro issue |
 
 > ℹ️ Objectives O1–O9 (individual Statistics & capstone) remain as reference in the [Appendix](#appendix--individual-statistics--capstone-work-reference).
@@ -25,7 +25,7 @@ By the end of today, participants can:
 
 | Time | Session | Activity | Session objective |
 |------|---------|----------|-------------------|
-| 08:30–09:00 | — | Squad stand-up, choose Day 10 roles | — |
+| 08:30–09:00 | — | Stand-up of the Projek and Dev teams | — |
 | 09:00–12:30 | S8 | Sprint 3: final features & critical bugs · **feature freeze 12:30** | O10 · [Lab 10.20](./lab.en.md#lab-1020--sprint-3-final-features--freeze-s8) |
 | 12:30–14:30 | — | Lunch | — |
 | 14:30–15:15 | S9 | Release v1.1.0: stabilise, CHANGELOG, release notes, tag | O11 · [Lab 10.21](./lab.en.md#lab-1021--release-v110-s9) |
@@ -48,7 +48,7 @@ Today's capstone is assessed as a **team and as individuals** ([`rubrik-capstone
 
 ## S8 — Sprint 3: Final Features & Freeze (09:00–12:30)
 
-Stand-up at 08:30, then each squad chooses its own roles for today (suggestion: people who have not yet been PM or QA take those roles). The same rhythm as Sprints 1–2 ([Labs 8.21–8.23](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16)), compressed:
+Stand-up at 08:30 within each team (Projek and Dev stay the same; issue #19). The same rhythm as Sprints 1–2 ([Labs 8.21–8.23](../hari-8/lab.en.md#lab-821--sprint-1-morning-issue-test-plan--first-slice-s16)), compressed:
 
 | Time | Focus |
 |---|---|
@@ -58,14 +58,14 @@ Stand-up at 08:30, then each squad chooses its own roles for today (suggestion: 
 | **12:30** | **Feature freeze.** Feature MRs not yet merged → the issue stays open, moved to the backlog with a comment. After this only `fix/…` |
 
 ### ✅ Checkpoint S8
-- Every squad Sprint 3 issue is closed **or** moved to the backlog with a reason.
+- Every Sprint 3 issue is closed **or** moved to the backlog with a reason.
 - `main` after the last merge: `composer test` green.
 
 ---
 
 ## S9 — Release v1.1.0 (14:30–15:15)
 
-One **release PM** (chosen by the trainer) leads these steps with help from the other PMs:
+The **release PM** (the Projek team's PM) leads these steps with help from the BA and the floater:
 
 1. **Stabilise.** `main` green: `composer test` and E2E (QA). Bugs found → `fix/…` with a small MR, or documented as a known issue.
 2. **CHANGELOG.** Claude drafts it from the merged MRs; the release PM checks every line against the real MRs:
@@ -85,17 +85,17 @@ One **release PM** (chosen by the trainer) leads these steps with help from the 
 
 ## S10 — Team Capstone Demo (15:15–16:30)
 
-Each squad has **15 minutes** with the system owner (the trainer) and the panel:
+Two parts for the system owner (the trainer) and the panel, **75 minutes** in total:
 
 | Minutes | Who | What |
 |---|---|---|
-| 0–3 | PM | The squad's issues across 3 sprints: AC, owner decisions, what did not make v1.1.0 and why |
-| 3–8 | Dev | The feature running on `v1.1.0` in the browser, with different training accounts (including one account that must get a 404) |
-| 8–11 | QA | The tests that prove the AC (`vendor/bin/phpunit --filter …`), one bug caught before merge, the E2E result |
-| 11–15 | Panel | Every member explains one line committed under their name (`git log --author`), **without Claude** |
+| 0–12 | Projek team | PM: the backlog across 3 sprints (BRS → issue → AC), owner decisions (#33), what did not make v1.1.0 and why. BA: one issue from the BRS requirement to the AC. QA: the tests that prove the AC, one bug caught before merge, the E2E result |
+| 12–52 | Dev team, 10 minutes per pair | The feature running on `v1.1.0` in the browser with different training accounts (including one that must get a 404), its MR and tests, the ERD/workflow changes on the FigJam board |
+| 52–57 | Floater | CI job, conflicts resolved, E2E on `main` |
+| 57–75 | Panel | Every member explains one line of their work **without Claude**: Dev and QA — a committed code/test line (`git log --author`); BA and PM — one AC and why it is testable |
 
 ### ✅ Checkpoint S10
-- The squad score sheet is filled in ([`rubrik-capstone.en.md`](../docs/rubrik-capstone.en.md) §8).
+- The team score sheet is filled in ([`rubrik-capstone.en.md`](../docs/rubrik-capstone.en.md) §8).
 - Every member answers the question on their own line of code.
 
 ---
@@ -130,9 +130,9 @@ Full prompts: [`pustaka-prompt.en.md`](../docs/pustaka-prompt.en.md) §H. After 
 
 **Team work (today):**
 
-- [ ] The squad's Sprint 3 issues closed or moved to the backlog with a reason before the 12:30 freeze
+- [ ] The Sprint 3 issues closed or moved to the backlog with a reason before the 12:30 freeze
 - [ ] `CHANGELOG.md` 1.1.0 section merged through an MR; tag `v1.1.0` and a GitLab Release on a green `main`
-- [ ] 15-minute squad capstone demo; squad score sheet filled in
+- [ ] Capstone demo: Projek 12 minutes + every Dev pair 10 minutes; team score sheet filled in
 - [ ] Every member explains one line they committed themselves without Claude
 - [ ] Every member's comment in the final retro
 
@@ -183,7 +183,7 @@ Advantage: the dashboard is fresh immediately after a status change (no "I appro
 (1) Reproduce with exact steps & data; (2) write a **failing** test; (3) fix with a minimal change; (4) that test and all other tests pass; (5) commit `FIX:` and update the bug log. Step 2 proves the test really detects the bug — a test that has never been seen failing may not test anything, and it becomes a regression guard forever.
 </details>
 
-6. At 12:20, squad C's Dev has almost finished the #18 KPI card but QA has not reviewed it. The PM suggests merging first and reviewing later, so it makes v1.1.0. What is the right decision?
+6. At 12:20, pair 3 has almost finished the #18 KPI card but QA has not reviewed it. The PM suggests merging first and reviewing later, so it makes v1.1.0. What is the right decision?
 
 <details><summary>Answer</summary>
 

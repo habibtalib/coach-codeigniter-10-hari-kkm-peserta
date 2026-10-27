@@ -2,7 +2,7 @@
 
 [← Jadual](../JADUAL.md) · [👥 Peranan pasukan](../docs/peranan-pasukan.md) · [🧪 Lab Hari 9](./lab.md) · [Hari 10 →](../hari-10/README.md)
 
-> **Sprint 2.** Semalam setiap skuad menyiapkan satu kitaran isu → MR → merge. Hari ini kitaran yang sama berjalan lebih pantas dan lebih sukar: isu Sprint 2 bergantung pada kerja semalam, QA mula menguji **merentas skuad**, dan pipeline perlu membuktikan setiap MR. Peranan bertukar lagi: tempat 3 menjadi PM pagi.
+> **Sprint 2.** Semalam pasukan **Projek** (PM, BA, 2 QA) dan **Dev** (4 pasangan + floater) menyiapkan kitaran pertama isu → MR → merge. Hari ini kitaran yang sama berjalan lebih pantas dan lebih sukar: isu Sprint 2 termasuk jurang BRS (#21–#26), beberapa pasangan menyentuh fail yang sama, QA dan pasangan Dev menguji ciri **pasangan lain**, dan pipeline perlu membuktikan setiap MR. Pasukan kekal sama (isu #19).
 
 ---
 
@@ -12,9 +12,9 @@ Di akhir hari ini, peserta boleh:
 
 | # | Objektif (boleh diukur) | Sesi | Bukti |
 |---|------------------------|------|-------|
-| O15 | **Merancang** Sprint 2 skuad daripada backlog dan isu susulan Sprint 1, dan **menyelaras** kebergantungan dengan skuad lain | S13 | Isu Sprint 2 `status::sedia` dengan *Assignee*; nota sync PM dalam isu |
-| O16 | **Melaksanakan** ciri Sprint 2 skuad (A: perintah peringatan; B: dasar kata laluan / CI MariaDB; C: carta + eksport RPT-10) slice demi slice dengan ujian | S14 | Commit `Rujuk #N` dengan ujian hijau setiap slice |
-| O17 | **Menguji** ciri skuad lain secara eksploratori dan **melaporkan** pepijat sebagai isu Pepijat yang boleh diulang | S15 | ≥ 1 isu Pepijat merentas skuad dengan langkah ulang |
+| O15 | **Merancang** Sprint 2 daripada backlog (isu sedia ada + jurang BRS) dan isu susulan Sprint 1, dan **menyelaras** fail panas serta susunan merge antara pasangan Dev (Projek + floater) | S13 | Isu Sprint 2 `status::sedia` + `pasukan::dev` + `pasangan::N`; nota sync dalam isu #19 |
+| O16 | **Melaksanakan** isu Sprint 2 pasangan (cth #13 peringatan, #9 kata laluan, #17 RPT-10, #21 aliran Hilang) slice demi slice dengan ujian | S14 | Commit `Rujuk #N` dengan ujian hijau setiap slice |
+| O17 | **Menguji** ciri yang di-merge secara eksploratori (QA dan pasangan Dev lain) dan **melaporkan** pepijat sebagai isu Pepijat yang boleh diulang | S15 | ≥ 1 isu Pepijat dengan langkah ulang, diulang oleh pasangan pemilik |
 | O18 | **Me-merge** MR Sprint 2 dan **membuktikan** `main` kekal hijau (PHPUnit + E2E) selepas semua merge | S16 | `composer test` + `npm run e2e` pada `main`; demo sprint |
 
 > ℹ️ Objektif O1–O14 (Modul Laporan individu) kekal sebagai rujukan dalam [Lampiran](#lampiran--kerja-individu-modul-laporan-rujukan).
@@ -25,92 +25,100 @@ Di akhir hari ini, peserta boleh:
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Stand-up skuad (siap · seterusnya · tersekat), tukar peranan | — |
-| 09:00–10:30 | S13 | Perancangan Sprint 2 & sync PM, pelan ujian, slice 1 | O15 · [Lab 9.20](./lab.md#lab-920--perancangan-sprint-2-sync-pm--slice-1-s13) |
+| 08:30–09:00 | — | Stand-up pasukan Projek dan pasukan Dev (siap · seterusnya · tersekat) | — |
+| 09:00–10:30 | S13 | Perancangan Sprint 2 & sync (PM, BA, floater), pelan ujian, slice 1 | O15 · [Lab 9.20](./lab.md#lab-920--perancangan-sprint-2-sync-pm--slice-1-s13) |
 | 10:30–10:45 | — | Rehat pagi | — |
-| 10:45–12:30 | S14 | Bina Sprint 2: ciri skuad slice demi slice | O16 · [Lab 9.21](./lab.md#lab-921--bina-sprint-2-ciri-skuad-s14) |
-| 12:30–14:30 | — | Makan tengah hari · **tukar peranan** | — |
-| 14:30–16:00 | S15 | MR, semakan QA & ujian eksploratori merentas skuad | O17 · [Lab 9.22](./lab.md#lab-922--mr-semakan--ujian-merentas-skuad-s15) |
+| 10:45–12:30 | S14 | Bina Sprint 2: setiap pasangan Dev slice demi slice; Projek menyiapkan AC Sprint 3 | O16 · [Lab 9.21](./lab.md#lab-921--bina-sprint-2-ciri-pasangan-dev-s14) |
+| 12:30–14:30 | — | Makan tengah hari | — |
+| 14:30–16:00 | S15 | MR, semakan QA & ujian eksploratori antara pasangan | O17 · [Lab 9.22](./lab.md#lab-922--mr-semakan--ujian-eksploratori-s15) |
 | 16:00–17:00 | S16 | Merge, `main` hijau (PHPUnit + E2E), demo sprint & retro | O18 · [Lab 9.23](./lab.md#lab-923--merge-main-hijau-demo-sprint--retro-s16) |
 
-**Isu Sprint 2** (milestone *Sprint 2 (Hari 9)*) + isu susulan Sprint 1:
+**Isu Sprint 2** (milestone *Sprint 2 (Hari 9)*) + isu susulan Sprint 1. Cadangan agihan — PM memutuskan dan menetapkan label `pasangan::N`:
 
-| Skuad | Isu Sprint 2 | Tema teknikal |
-|---|---|---|
-| A — Aliran | #13 Peringatan pemohon: Pindaan lebih 7 hari | Perintah spark + jadual `peringatan_dihantar` (idempoten) + emel |
-| B — Akaun & Keselamatan | #9 Dasar kata laluan, #8 Migration UUID pada MariaDB 10.6 | Validator Shield, ujian, job CI MariaDB |
-| C — Laporan & Statistik | #17 RPT-10: carta & eksport PDF/Excel | Chart.js melalui `laporan/_carta`, `EksportService`, jumlah laporan = jumlah SQL |
+| Pasangan | Isu Sprint 2 | Tema teknikal | Fail panas |
+|---|---|---|---|
+| 1 | #13 Peringatan Pindaan > 7 hari · #22 peringatan TLK juga kepada UKS | Perintah spark, `PeringatanService`, `peringatan_dihantar` (idempoten), emel | — (kedua-dua isu satu pasangan: satu fail) |
+| 2 | #9 Dasar kata laluan · #25 telefon pejabat + H/P | Validator Shield, migration `profil_pengguna`, borang profil | `Config/Auth.php` |
+| 3 | #17 RPT-10 carta & eksport · #26 laporan tahunan | `laporan/_carta`, `EksportService`, jumlah laporan = jumlah SQL | `Config/Laporan.php`, `Services/Laporan/*` |
+| 4 | #21 Aliran Hilang melalui Penyelia · #23 jenis pas penyelenggaraan | `Config/Aliran.php`, `AliranKerja`, enum/migration | `Config/Aliran.php`, `DemoSeeder.php` |
+| Floater | #8 Migration UUID pada MariaDB (job CI) · #24 emel lulus (tuntutan kad) | `.gitlab-ci.yml`, templat emel | — |
+
+Pasukan Projek: BA menyiapkan AC #21–#26 (semalam/pagi ini) dan memulakan Sprint 3 (#27–#32); QA menulis pelan ujian dan ujian gagal; PM mengurus #33 (soalan pemilik sistem).
 
 ---
 
 ## 🧭 Kenapa hari ini penting
 
-Sprint pertama mengajar aliran; sprint kedua mendedahkan **kos koordinasi**. Isu #13 skuad A memerlukan status Pindaan yang #1 baru ubah; RPT-10 skuad C membaca status yang sama; dasar kata laluan skuad B mengubah borang yang semua orang gunakan untuk log masuk demo. Tanpa sync, tiga MR yang betul secara berasingan boleh menghasilkan `main` yang rosak.
+Sprint pertama mengajar aliran; sprint kedua mendedahkan **kos koordinasi**. #21 (pasangan 4) mengubah `Aliran.php` yang dibaca #13 (pasangan 1) untuk status Pindaan; RPT-10 (pasangan 3) mengira status yang sama; dasar kata laluan #9 (pasangan 2) mengubah borang yang semua orang gunakan untuk log masuk demo. Tanpa sync, empat MR yang betul secara berasingan boleh menghasilkan `main` yang rosak.
 
 Dua amalan hari ini:
 
-1. **Sync PM (15 minit, 09:00).** Setiap PM menyebut fail dikongsi yang akan disentuh dan apa yang bergantung pada skuad lain. Keputusan dicatat dalam isu, bukan diingat.
-2. **QA merentas skuad.** QA skuad A menguji ciri skuad B yang di-merge semalam, dan seterusnya. Mata baharu menemui pepijat yang pengarang (dan Claude pengarang) tidak nampak.
+1. **Sync (15 minit, 09:00): PM + BA + floater + seorang wakil setiap pasangan.** Setiap pasangan menyebut fail panas yang akan disentuh dan apa yang bergantung pada pasangan lain. Keputusan dicatat dalam isu #19, bukan diingat.
+2. **Ujian eksploratori oleh mata baharu.** QA menguji setiap ciri yang di-merge, dan setiap pasangan Dev menguji ciri **pasangan lain** (1 → 2 → 3 → 4 → 1). Mata baharu menemui pepijat yang pengarang (dan Claude pengarang) tidak nampak.
 
 ---
 
 ## S13 — Perancangan Sprint 2, Sync PM & Slice 1 (09:00–10:30)
 
-**Stand-up (08:30, 2 minit setiap orang):** apa yang saya siapkan semalam, apa yang saya buat hari ini, apa yang menyekat saya. PM mencatat penyekat dalam isu.
+**Stand-up (08:30, 2 minit setiap orang, dalam pasukan masing-masing):** apa yang saya siapkan semalam, apa yang saya buat hari ini, apa yang menyekat saya. PM (Projek) dan floater (Dev) mencatat penyekat dalam isu.
 
-**Perancangan (PM, 20 minit):** `/isu-baharu <no>` untuk isu Sprint 2 skuad, kemudian semak isu susulan Sprint 1 (AC yang belum siap). Kapasiti realistik: satu isu bersaiz M setiap pasangan Dev setiap separuh hari.
+**Perancangan (Projek, 20 minit):** PM mengesahkan skop Sprint 2; BA menyiapkan AC yang tinggal dengan `/isu-baharu <no>`; QA menulis jadual AC → kes ujian dalam komen isu. Isu siap → `status::sedia` + `pasukan::dev` + `pasangan::N`. Kapasiti realistik: satu isu bersaiz M setiap pasangan setiap separuh hari.
 
-**Sync PM (15 minit, tiga PM + jurulatih):**
+**Sync (15 minit, PM + BA + floater + wakil pasangan + jurulatih):**
 
 | Soalan | Contoh jawapan |
 |---|---|
-| Fail dikongsi yang akan disentuh? | A: `Routes.php` (route peringatan tiada — perintah sahaja), `Config/Email` tidak |
-| Bergantung pada skuad lain? | C: RPT-10 perlu tahu status Pindaan kini dikira "terbuka" (#1 skuad A) |
-| Susunan merge petang? | B (#9, borang) → A (#13) → C (#17) |
+| Fail panas yang akan disentuh? | P4: `Config/Aliran.php` (#21); P2: `Config/Auth.php` (#9) |
+| Bergantung pada pasangan lain? | P3: RPT-10 perlu tahu sama ada status 4 kini digunakan untuk Hilang (#21) |
+| Susunan merge petang? | P2 (#9, borang) → P1 (#13) → P4 (#21) → P3 (#17) |
 
-**QA dan Dev** mengulang ritma Lab 8.21: pelan ujian daripada AC dan ujian gagal dahulu (QA), `/ciri-baharu` → branch → slice 1 (Dev).
+**Dev** mengulang ritma Lab 8.21: AI-29 → `/ciri-baharu <no>` → branch → slice 1. **QA** menulis ujian gagal dahulu dalam branch isu.
 
 ### ✅ Checkpoint S13
-- Isu Sprint 2 skuad `status::sedia`, *Assignee* ditetapkan; nota sync PM dalam isu skuad.
-- Branch Sprint 2 dengan commit pertama `Rujuk #N`.
+- Isu Sprint 2 `status::sedia` + `pasukan::dev` + `pasangan::N`; nota sync dalam isu #19.
+- Branch Sprint 2 setiap pasangan dengan commit pertama `Rujuk #N`.
 
 ---
 
-## S14 — Bina Sprint 2: Ciri Skuad (10:45–12:30)
+## S14 — Bina Sprint 2: Ciri Pasangan Dev (10:45–12:30)
 
-Setiap skuad mempunyai tema teknikal yang berbeza; Claude Code membantu dengan skill yang sesuai:
+Setiap pasangan mempunyai tema teknikal yang berbeza; Claude Code membantu dengan skill yang sesuai:
 
-| Skuad | Skill / agent | Perhatian khusus |
+| Pasangan | Skill / agent | Perhatian khusus |
 |---|---|---|
-| A — #13 | `/ciri-baharu`, `migration-espkp` (jika jadual baharu) | Idempoten: perintah dijalankan dua kali tidak menghantar dua emel (`peringatan_dihantar`). Uji dengan `service('jam')` palsu, bukan menunggu 7 hari |
-| B — #9 / #8 | `/ciri-baharu`; untuk #8 `migration-espkp` | Akaun latihan `Latihan@2026` mesti kekal sah; #8: job CI baharu, bukan mengubah job `ujian` sedia ada |
-| C — #17 | `/ciri-baharu` | Chart.js melalui partial `laporan/_carta` dan `data-carta` (CSP: tiada JS sebaris); eksport melalui `EksportService` (had PDF 2000 / XLSX 10000, diaudit) |
+| 1 — #13, #22 | `/ciri-baharu`, `migration-espkp` (jika jadual baharu) | Idempoten: perintah dijalankan dua kali tidak menghantar dua emel (`peringatan_dihantar`). Uji dengan `service('jam')` palsu, bukan menunggu 7 hari |
+| 2 — #9, #25 | `/ciri-baharu`, `migration-espkp` | Akaun latihan `Latihan@2026` mesti kekal sah; migration baharu sahaja (versi `…-2xxxxx_`) |
+| 3 — #17, #26 | `/ciri-baharu` | Chart.js melalui `laporan/_carta` dan `data-carta` (CSP: tiada JS sebaris); eksport melalui `EksportService` (had PDF 2000 / XLSX 10000, diaudit) |
+| 4 — #21, #23 | `/ciri-baharu`, skill `aliran-kerja`, `migration-espkp` | Ubah `Aliran.php`, bukan controller; `KonfigurasiAliranTest` mesti hijau; kemas kini `docs/aliran-kerja.md` dan anak panah di FigJam (`papan-figjam`) |
+| Floater — #8, #24 | `/ciri-baharu` | #8: job CI baharu, bukan mengubah job `ujian` sedia ada |
 
 Peraturan slice kekal: satu slice → `composer semak` → `semak-espkp` → commit. Navigator menyemak diff; tukar pemandu setiap slice.
 
+**Projek semasa S14:** BA menulis AC isu Sprint 3 (#27–#32) supaya Dev boleh mula esok pagi; QA menyambungkan ujian AC ke branch; PM menjawab penyekat dan mengemas kini papan.
+
 ### ✅ Checkpoint S14
-- Sekurang-kurangnya 2 slice di-commit pada branch Sprint 2 dengan ujian hijau.
+- Sekurang-kurangnya 2 slice di-commit pada branch Sprint 2 setiap pasangan dengan ujian hijau.
 - Ujian QA untuk AC teras wujud dalam branch dan kini **lulus**.
 
 ---
 
-## S15 — MR, Semakan & Ujian Merentas Skuad (14:30–16:00)
+## S15 — MR, Semakan & Ujian Eksploratori (14:30–16:00)
 
-Selepas tukar peranan (slot *Hari 9 petang*), aliran MR sama seperti Lab 8.22. Tambahan hari ini:
+Aliran MR sama seperti Lab 8.22. Tambahan hari ini:
 
-**Ujian eksploratori merentas skuad (QA, 30 minit).** Setiap QA menguji ciri skuad lain yang sudah di-merge ke `main` (A → B, B → C, C → A), selama 30 minit, dengan sekurang-kurangnya tiga akaun latihan berbeza. Cari: mesej yang mengelirukan, akses yang sepatutnya 404, paparan 360px yang pecah, eksport yang jumlahnya tidak sepadan.
+**Ujian eksploratori (30 minit).** QA menguji setiap ciri yang sudah di-merge ke `main`. Setiap pasangan Dev menguji ciri **pasangan lain** (1 → 2 → 3 → 4 → 1) selama 20 minit. Gunakan sekurang-kurangnya tiga akaun latihan berbeza. Cari: mesej yang mengelirukan, akses yang sepatutnya 404, paparan 360px yang pecah, eksport yang jumlahnya tidak sepadan.
 
-Pepijat → isu Pepijat (templat *Pepijat*, label skuad **pemilik** ciri) dengan langkah ulang. Claude membantu mendraf (prompt AI-28), QA mengesahkan setiap langkah sendiri.
+Pepijat → isu Pepijat (templat *Pepijat*, label `pasukan::projek` untuk triage PM dan `pasangan::N` pemilik ciri) dengan langkah ulang. Claude membantu mendraf (prompt AI-28), penguji mengesahkan setiap langkah sendiri.
 
 ### ✅ Checkpoint S15
-- MR Sprint 2 setiap skuad `Ready` dengan komen semakan QA.
-- ≥ 1 isu Pepijat merentas skuad, boleh diulang oleh skuad pemilik.
+- MR Sprint 2 setiap pasangan `Ready` dengan komen semakan QA.
+- ≥ 1 isu Pepijat yang boleh diulang oleh pasangan pemilik.
 
 ---
 
 ## S16 — Merge, `main` Hijau, Demo Sprint & Retro (16:00–17:00)
 
-Merge mengikut susunan sync pagi (Lab 8.23: rebase, konflik, `--force-with-lease`). Selepas merge terakhir, satu orang dari setiap skuad menjalankan pada `main` terkini:
+Merge mengikut susunan sync pagi (Lab 8.23: rebase, konflik, `--force-with-lease`). Selepas merge terakhir, seorang daripada setiap pasangan menjalankan pada `main` terkini:
 
 ```bash
 git switch main && git pull
@@ -119,9 +127,9 @@ php spark migrate --all
 composer test
 ```
 
-**E2E** dijalankan oleh QA setiap skuad mengikut bahagian *Ujian hujung ke hujung (E2E)* dalam README repo: database berasingan `espkp_contoh_e2e`, server `php -S localhost:8095`, kemudian `npm run e2e:sedia` dan `npm run e2e`. Jangan jalankan E2E pada database dev anda — data diset semula.
+**E2E** dijalankan oleh QA (atau floater) mengikut bahagian *Ujian hujung ke hujung (E2E)* dalam README repo: database berasingan `espkp_contoh_e2e`, server `php -S localhost:8095`, kemudian `npm run e2e:sedia` dan `npm run e2e`. Jangan jalankan E2E pada database dev anda — data diset semula.
 
-Merah → skuad yang MR terakhirnya menyebabkan kegagalan membuka isu Pepijat `keutamaan::1-kritikal` dan membaikinya **sebelum** Sprint 3. **Demo sprint** (3 minit setiap skuad) dan **retro** (isu `Retro Sprint 2 — Skuad <X>`), kemudian PM menyenaraikan isu Sprint 3 dan skop keluaran **v1.1.0**.
+Merah → pasangan yang MR terakhirnya menyebabkan kegagalan membuka isu Pepijat `keutamaan::1-kritikal` dan membaikinya **sebelum** Sprint 3. **Demo sprint** (3 minit setiap pasangan: BA tunjuk AC, Dev tunjuk ciri, QA tunjuk ujian) dan **retro** (sticky dalam seksyen *Retro* FigJam + isu `Retro Sprint 2`), kemudian PM menyenaraikan isu Sprint 3 dan skop keluaran **v1.1.0**.
 
 ### ✅ Checkpoint S16
 - Semua MR Sprint 2 yang lulus QA di-merge; `composer test` dan `npm run e2e` hijau pada `main`.
@@ -134,10 +142,12 @@ Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) §H (AI-21..AI-32
 
 | Peranan | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
 |---|---|---|---|
-| PM · sync | AI-23: `Ringkaskan isu Sprint 2 skuad dan fail dikongsi yang setiap isu akan sentuh; tandakan kebergantungan pada skuad lain.` | Bandingkan dengan nota sync PM lain | 9.20 |
+| PM · sync | AI-23: `Ringkaskan isu Sprint 2 berlabel pasukan::dev dan fail panas yang setiap isu akan sentuh; tandakan kebergantungan antara pasangan.` | Bandingkan dengan nota sync dalam isu #19 | 9.20 |
+| BA · AC | AI-21: `/isu-baharu 21` → `Bandingkan AC ini dengan bahagian Keperluan BRS dalam isu; senaraikan apa yang tiada atau ditambah.` | Setiap AC berasal daripada isu/BRS, bukan rekaan Claude | 9.20 |
 | QA · pelan ujian | AI-25 dengan `penguji-espkp`; untuk #13: `Bagaimana menguji perintah peringatan tanpa menunggu 7 hari? Tunjukkan corak service('jam') dalam ujian sedia ada.` | Ujian gagal kerana ciri tiada, bukan kerana masa | 9.20 |
-| Dev · bina | AI-29 → `/ciri-baharu <no>` → AI-30 setiap slice; skuad C: `Ikut corak laporan/_carta dan data-carta; tiada <script> sebaris.` | `composer semak`; `semak-espkp`; pelayar 360px | 9.21 |
-| QA · eksploratori | AI-28: `Draf isu Pepijat daripada pemerhatian saya: <langkah, jangkaan, sebenar>. Data sintetik sahaja.` | Ulang langkah sendiri sebelum cipta isu | 9.22 |
+| Dev · bina | AI-29 → `/ciri-baharu <no>` → AI-30 setiap slice; pasangan 3: `Ikut corak laporan/_carta dan data-carta; tiada <script> sebaris.` | `composer semak`; `semak-espkp`; pelayar 360px | 9.21 |
+| Dev · papan | `Guna subagent papan-figjam. #21 sudah di-merge: tukar anak panah cadangan Hilang 2 → 4 → 5 kepada garis biasa.` | Buka papan; hanya seksyen aliran Hilang berubah | 9.23 |
+| QA / Dev · eksploratori | AI-28: `Draf isu Pepijat daripada pemerhatian saya: <langkah, jangkaan, sebenar>. Data sintetik sahaja.` | Ulang langkah sendiri sebelum cipta isu | 9.22 |
 | QA · semak MR | AI-27: `/semak-mr <no>` | Buka setiap `fail:baris` | 9.22 |
 | Semua · `main` merah | `Ujian ini gagal pada main selepas merge !<a> dan !<b>: <output>. Commit mana yang mungkin punca? Jangan baiki lagi.` | `git log`, `git bisect` jika perlu | 9.23 |
 
@@ -147,11 +157,11 @@ Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) §H (AI-21..AI-32
 
 **Kerja pasukan (hari ini):**
 
-- [ ] Isu Sprint 2 skuad `status::sedia` dengan *Assignee*; nota sync PM dalam isu
-- [ ] Ciri Sprint 2 skuad di-merge melalui MR dengan semakan QA dan ujian hijau
-- [ ] ≥ 1 isu Pepijat merentas skuad dengan langkah ulang
+- [ ] Isu Sprint 2 `status::sedia` + `pasukan::dev` + `pasangan::N`; nota sync dalam isu #19
+- [ ] Ciri Sprint 2 setiap pasangan di-merge melalui MR dengan semakan QA dan ujian hijau
+- [ ] ≥ 1 isu Pepijat daripada ujian eksploratori dengan langkah ulang
 - [ ] `composer test` dan `npm run e2e` hijau pada `main` selepas semua merge
-- [ ] Isu retro Sprint 2 dan skop v1.1.0 dalam milestone Sprint 3
+- [ ] Isu retro Sprint 2 dan skop v1.1.0 dalam milestone Sprint 3; AC isu Sprint 3 siap
 
 **Kerja individu Modul Laporan (rujukan, tidak wajib — [Lampiran](#lampiran--kerja-individu-modul-laporan-rujukan)):**
 
@@ -204,28 +214,28 @@ Betul: (a) kuatkuasa had rekod dengan mesej "kecilkan julat filter" (`EXPORT_LIM
 Salah: `ini_set('memory_limit', '-1')` — menangguhkan masalah sehingga server jatuh.
 </details>
 
-6. Perintah peringatan skuad A dijalankan oleh cron setiap hari. QA menjalankannya dua kali berturut-turut dan pemohon menerima dua emel. Apakah AC yang hilang, dan bagaimana ujian membuktikan pembetulannya?
+6. Perintah peringatan pasangan 1 (#13) dijalankan oleh cron setiap hari. QA menjalankannya dua kali berturut-turut dan pemohon menerima dua emel. Apakah AC yang hilang, dan bagaimana ujian membuktikan pembetulannya?
 
 <details><summary>Jawapan</summary>
 
 AC idempoten: "Diberi peringatan Pindaan sudah dihantar untuk permohonan X, apabila perintah dijalankan semula, maka tiada emel kedua." Pembetulan merekod setiap penghantaran dalam `peringatan_dihantar` (kunci unik permohonan + jenis) dan menyemaknya sebelum menghantar. Ujian menjalankan perintah dua kali dan menegaskan bilangan emel = 1 dan satu baris dalam jadual.
 </details>
 
-7. Kenapa QA menguji ciri skuad **lain**, bukan hanya ciri skuad sendiri?
+7. Kenapa pasangan Dev menguji ciri pasangan **lain**, walaupun pasukan Projek sudah ada QA?
 
 <details><summary>Jawapan</summary>
 
-QA skuad sendiri sudah membaca isu, pelan dan perbincangan — dia berkongsi andaian yang sama dengan Dev. QA dari skuad lain datang tanpa andaian itu, seperti pengguna sebenar, dan lebih mungkin menemui mesej yang mengelirukan, akses yang bocor atau kes sempadan yang terlepas. Isu Pepijat ditujukan kepada skuad pemilik supaya hotspot kekal dimiliki satu skuad.
+QA sudah membaca isu, AC dan pelan ujian — dia berkongsi sebahagian andaian dengan pasangan pengarang. Pasangan Dev lain datang tanpa andaian itu, seperti pengguna sebenar, dan tahu bahagian kod yang berbeza, jadi lebih mungkin menemui mesej yang mengelirukan, akses yang bocor atau kes sempadan yang terlepas. Isu Pepijat ditujukan kepada pasangan pemilik (`pasangan::N`) melalui triage PM, supaya satu MR sahaja mengubah fail panas pada satu masa.
 </details>
 
 ---
 
 ## ➡️ Persediaan untuk esok
 
-Hari 10 — **Sprint 3, keluaran v1.1.0 dan demo capstone pasukan**. Peranan Hari 10 dipilih oleh skuad sendiri.
+Hari 10 — **Sprint 3, keluaran v1.1.0 dan demo capstone pasukan**. Pasukan Projek dan Dev kekal sama.
 
 - `main` hijau (`composer test`, `npm run e2e`) — pepijat kritikal Sprint 2 dibaiki dahulu.
-- PM: isu Sprint 3 skuad (#14, #15, #18) dan isu susulan dalam milestone *Sprint 3 + v1.1 (Hari 10)*; tiada isu baharu selepas 12:30 esok.
+- Projek: isu Sprint 3 (#14, #15, #18, #27–#32) dengan AC dan `pasangan::N` dalam milestone *Sprint 3 + v1.1 (Hari 10)*; tiada isu baharu selepas 12:30 esok.
 - Setiap ahli: sediakan satu baris kod yang anda commit minggu ini dan boleh terangkan tanpa Claude — panel capstone akan bertanya.
 
 ---

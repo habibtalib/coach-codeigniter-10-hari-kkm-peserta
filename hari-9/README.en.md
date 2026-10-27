@@ -2,115 +2,123 @@
 
 [← Schedule](../JADUAL.en.md) · [👥 Team roles](../docs/peranan-pasukan.en.md) · [🧪 Day 9 Lab](./lab.en.md) · [Day 10 →](../hari-10/README.en.md)
 
-> **Sprint 2.** Yesterday every squad finished one issue → MR → merge cycle. Today the same cycle runs faster and harder: Sprint 2 issues depend on yesterday's work, QA starts testing **across squads**, and the pipeline has to prove every MR. Roles rotate again: seat 3 becomes the morning PM.
+> **Sprint 2.** Yesterday the **Projek** team (PM, BA, 2 QA) and the **Dev** team (4 pairs + a floater) finished their first issue → MR → merge cycle. Today the same cycle runs faster and harder: Sprint 2 includes BRS gaps (#21–#26), some pairs touch the same files, QA and the Dev pairs test **other pairs'** features, and the pipeline must prove every MR. The teams stay the same (issue #19).
 
 ---
 
 ## 🎯 Learning Objectives
 
-By the end of today, participants can:
+By the end of today, trainees can:
 
 | # | Objective (measurable) | Session | Evidence |
 |---|------------------------|---------|----------|
-| O15 | **Plan** the squad's Sprint 2 from the backlog and the Sprint 1 follow-up issues, and **coordinate** dependencies with the other squads | S13 | Sprint 2 issue `status::sedia` with an *Assignee*; PM sync note in the issue |
-| O16 | **Implement** the squad's Sprint 2 feature (A: reminder command; B: password policy / MariaDB CI; C: RPT-10 chart + export) slice by slice with tests | S14 | `Rujuk #N` commits with green tests for every slice |
-| O17 | **Test** another squad's feature exploratorily and **report** bugs as reproducible Bug issues | S15 | ≥ 1 cross-squad Bug issue with reproduction steps |
+| O15 | **Plan** Sprint 2 from the backlog (existing issues + BRS gaps) and Sprint 1 follow-ups, and **coordinate** hot files and the merge order between the Dev pairs (Projek + floater) | S13 | Sprint 2 issues `status::sedia` + `pasukan::dev` + `pasangan::N`; sync note in issue #19 |
+| O16 | **Implement** the pair's Sprint 2 issues (e.g. #13 reminder, #9 password, #17 RPT-10, #21 Hilang workflow) slice by slice with tests | S14 | `Rujuk #N` commits with green tests on every slice |
+| O17 | **Test** merged features exploratorily (QA and other Dev pairs) and **report** bugs as reproducible Bug issues | S15 | ≥ 1 Bug issue with reproduction steps, reproduced by the owning pair |
 | O18 | **Merge** the Sprint 2 MRs and **prove** `main` stays green (PHPUnit + E2E) after all merges | S16 | `composer test` + `npm run e2e` on `main`; sprint demo |
 
-> ℹ️ Objectives O1–O14 (individual Reports module) remain as reference in the [Appendix](#appendix--individual-reports-module-work-reference).
+> ℹ️ Objectives O1–O14 (the individual Reports module) remain as reference in the [Appendix](#appendix--individual-reports-module-work-reference).
 
 ---
 
 ## 📅 Today's Schedule
 
-| Time | Session | Activity | Session objective |
-|------|---------|----------|-------------------|
-| 08:30–09:00 | — | Squad stand-up (done · next · blocked), role rotation | — |
-| 09:00–10:30 | S13 | Sprint 2 planning & PM sync, test plan, slice 1 | O15 · [Lab 9.20](./lab.en.md#lab-920--sprint-2-planning-pm-sync--slice-1-s13) |
+| Time | Session | Activity | Session objectives |
+|------|---------|----------|--------------------|
+| 08:30–09:00 | — | Stand-up of the Projek team and the Dev team (done · next · blocked) | — |
+| 09:00–10:30 | S13 | Sprint 2 planning & sync (PM, BA, floater), test plans, slice 1 | O15 · [Lab 9.20](./lab.en.md#lab-920--sprint-2-planning-pm-sync--slice-1-s13) |
 | 10:30–10:45 | — | Morning break | — |
-| 10:45–12:30 | S14 | Build Sprint 2: the squad's feature slice by slice | O16 · [Lab 9.21](./lab.en.md#lab-921--build-sprint-2-squad-features-s14) |
-| 12:30–14:30 | — | Lunch · **roles rotate** | — |
-| 14:30–16:00 | S15 | MR, QA review & cross-squad exploratory testing | O17 · [Lab 9.22](./lab.en.md#lab-922--mr-review--cross-squad-testing-s15) |
+| 10:45–12:30 | S14 | Build Sprint 2: every Dev pair slice by slice; Projek finishes the Sprint 3 AC | O16 · [Lab 9.21](./lab.en.md#lab-921--build-sprint-2-dev-pair-features-s14) |
+| 12:30–14:30 | — | Lunch | — |
+| 14:30–16:00 | S15 | MR, QA review & exploratory testing between pairs | O17 · [Lab 9.22](./lab.en.md#lab-922--mr-review--exploratory-testing-s15) |
 | 16:00–17:00 | S16 | Merge, green `main` (PHPUnit + E2E), sprint demo & retro | O18 · [Lab 9.23](./lab.en.md#lab-923--merge-green-main-sprint-demo--retro-s16) |
 
-**Sprint 2 issues** (milestone *Sprint 2 (Hari 9)*) + Sprint 1 follow-up issues:
+**Sprint 2 issues** (milestone *Sprint 2 (Hari 9)*) + Sprint 1 follow-ups. Suggested split — the PM decides and sets the `pasangan::N` label:
 
-| Squad | Sprint 2 issue | Technical theme |
-|---|---|---|
-| A — Workflow | #13 Applicant reminder: Pindaan for more than 7 days | spark command + `peringatan_dihantar` table (idempotent) + email |
-| B — Accounts & Security | #9 Password policy, #8 UUID migration on MariaDB 10.6 | Shield validators, tests, MariaDB CI job |
-| C — Reports & Statistics | #17 RPT-10: chart & PDF/Excel export | Chart.js through `laporan/_carta`, `EksportService`, report total = SQL total |
+| Pair | Sprint 2 issues | Technical theme | Hot files |
+|---|---|---|---|
+| 1 | #13 Pindaan reminder > 7 days · #22 TLK reminder also to UKS | spark command, `PeringatanService`, `peringatan_dihantar` (idempotent), email | — (both issues in one pair: one file) |
+| 2 | #9 Password policy · #25 office + mobile phone | Shield validator, `profil_pengguna` migration, profile form | `Config/Auth.php` |
+| 3 | #17 RPT-10 chart & export · #26 yearly report | `laporan/_carta`, `EksportService`, report total = SQL total | `Config/Laporan.php`, `Services/Laporan/*` |
+| 4 | #21 Hilang workflow via the Supervisor · #23 maintenance pass type | `Config/Aliran.php`, `AliranKerja`, enum/migration | `Config/Aliran.php`, `DemoSeeder.php` |
+| Floater | #8 UUID migration on MariaDB (CI job) · #24 approval email (card collection) | `.gitlab-ci.yml`, email template | — |
+
+Projek team: the BA finishes the AC for #21–#26 (yesterday/this morning) and starts Sprint 3 (#27–#32); QA writes test plans and failing tests; the PM handles #33 (system-owner questions).
 
 ---
 
 ## 🧭 Why today matters
 
-The first sprint teaches the flow; the second sprint exposes the **cost of coordination**. Squad A's #13 needs the Pindaan status that #1 has just changed; squad C's RPT-10 reads the same statuses; squad B's password policy changes the form everyone uses to log in to the demo. Without a sync, three MRs that are each correct can produce a broken `main`.
+The first sprint taught the flow; the second exposes the **cost of coordination**. #21 (pair 4) changes `Aliran.php`, which #13 (pair 1) reads for the Pindaan status; RPT-10 (pair 3) counts the same statuses; the #9 password policy (pair 2) changes the form everyone uses to log in to the demo. Without a sync, four MRs that are each correct can still produce a broken `main`.
 
 Two practices today:
 
-1. **PM sync (15 minutes, 09:00).** Each PM names the shared files they will touch and what depends on other squads. Decisions are recorded in the issue, not remembered.
-2. **Cross-squad QA.** Squad A's QA tests squad B's feature merged yesterday, and so on. Fresh eyes find bugs the author (and the author's Claude) do not see.
+1. **Sync (15 minutes, 09:00): PM + BA + floater + one member of every pair.** Each pair names the hot files it will touch and what it depends on from other pairs. Decisions go into issue #19, not into memory.
+2. **Exploratory testing by fresh eyes.** QA tests every merged feature, and every Dev pair tests **another pair's** feature (1 → 2 → 3 → 4 → 1). Fresh eyes find bugs the author (and the author's Claude) did not see.
 
 ---
 
 ## S13 — Sprint 2 Planning, PM Sync & Slice 1 (09:00–10:30)
 
-**Stand-up (08:30, 2 minutes per person):** what I finished yesterday, what I am doing today, what is blocking me. The PM records blockers in the issue.
+**Stand-up (08:30, 2 minutes each, within each team):** what I finished yesterday, what I do today, what blocks me. The PM (Projek) and the floater (Dev) record blockers in the issues.
 
-**Planning (PM, 20 minutes):** `/isu-baharu <no>` for the squad's Sprint 2 issue, then check the Sprint 1 follow-up issues (AC not yet done). Realistic capacity: one size-M issue per Dev pair per half day.
+**Planning (Projek, 20 minutes):** the PM confirms the Sprint 2 scope; the BA finishes the remaining AC with `/isu-baharu <no>`; QA writes the AC → test case table in an issue comment. A ready issue → `status::sedia` + `pasukan::dev` + `pasangan::N`. Realistic capacity: one M-size issue per pair per half day.
 
-**PM sync (15 minutes, the three PMs + the trainer):**
+**Sync (15 minutes, PM + BA + floater + pair members + trainer):**
 
 | Question | Example answer |
 |---|---|
-| Shared files we will touch? | A: `Routes.php` (no reminder route — command only), not `Config/Email` |
-| Depends on other squads? | C: RPT-10 needs to know that the Pindaan status now counts as "open" (#1, squad A) |
-| Afternoon merge order? | B (#9, form) → A (#13) → C (#17) |
+| Hot files to be touched? | P4: `Config/Aliran.php` (#21); P2: `Config/Auth.php` (#9) |
+| Depends on another pair? | P3: RPT-10 needs to know whether status 4 is now used for Hilang (#21) |
+| Afternoon merge order? | P2 (#9, form) → P1 (#13) → P4 (#21) → P3 (#17) |
 
-**QA and Dev** repeat the rhythm of Lab 8.21: a test plan from the AC and failing tests first (QA), `/ciri-baharu` → branch → slice 1 (Dev).
+**Dev** repeats the Lab 8.21 rhythm: AI-29 → `/ciri-baharu <no>` → branch → slice 1. **QA** writes failing tests first in the issue branch.
 
 ### ✅ Checkpoint S13
-- The squad's Sprint 2 issue is `status::sedia`, *Assignee* set; PM sync note in the squad issue.
-- A Sprint 2 branch with a first `Rujuk #N` commit.
+- Sprint 2 issues `status::sedia` + `pasukan::dev` + `pasangan::N`; sync note in issue #19.
+- A Sprint 2 branch per pair with a first `Rujuk #N` commit.
 
 ---
 
-## S14 — Build Sprint 2: Squad Features (10:45–12:30)
+## S14 — Build Sprint 2: Dev Pair Features (10:45–12:30)
 
-Each squad has a different technical theme; Claude Code helps with the matching skill:
+Each pair has a different technical theme; Claude Code helps with the matching skill:
 
-| Squad | Skill / agent | Special attention |
+| Pair | Skill / agent | Watch out for |
 |---|---|---|
-| A — #13 | `/ciri-baharu`, `migration-espkp` (if a new table) | Idempotent: running the command twice does not send two emails (`peringatan_dihantar`). Test with a fake `service('jam')`, not by waiting 7 days |
-| B — #9 / #8 | `/ciri-baharu`; for #8 `migration-espkp` | The `Latihan@2026` training accounts must stay valid; #8: a new CI job, not a change to the existing `ujian` job |
-| C — #17 | `/ciri-baharu` | Chart.js through the `laporan/_carta` partial and `data-carta` (CSP: no inline JS); export through `EksportService` (PDF 2000 / XLSX 10000 limits, audited) |
+| 1 — #13, #22 | `/ciri-baharu`, `migration-espkp` (if a new table) | Idempotent: running the command twice does not send two emails (`peringatan_dihantar`). Test with a fake `service('jam')`, not by waiting 7 days |
+| 2 — #9, #25 | `/ciri-baharu`, `migration-espkp` | The training accounts' `Latihan@2026` must stay valid; new migration only (version `…-2xxxxx_`) |
+| 3 — #17, #26 | `/ciri-baharu` | Chart.js through `laporan/_carta` and `data-carta` (CSP: no inline JS); export through `EksportService` (PDF 2000 / XLSX 10000 limits, audited) |
+| 4 — #21, #23 | `/ciri-baharu`, `aliran-kerja` skill, `migration-espkp` | Change `Aliran.php`, not controllers; `KonfigurasiAliranTest` must stay green; update `docs/aliran-kerja.md` and the FigJam arrows (`papan-figjam`) |
+| Floater — #8, #24 | `/ciri-baharu` | #8: a new CI job, not a change to the existing `ujian` job |
 
-The slice rule stays: one slice → `composer semak` → `semak-espkp` → commit. The navigator reviews the diff; swap drivers every slice.
+The slice rule stays: one slice → `composer semak` → `semak-espkp` → commit. The navigator reviews the diff; swap the driver every slice.
+
+**Projek during S14:** the BA writes the AC for the Sprint 3 issues (#27–#32) so Devs can start tomorrow morning; QA adds AC tests to the branches; the PM answers blockers and updates the board.
 
 ### ✅ Checkpoint S14
-- At least 2 slices committed on the Sprint 2 branch with green tests.
-- QA tests for the core AC exist in the branch and now **pass**.
+- At least 2 slices committed on every pair's Sprint 2 branch with green tests.
+- QA's tests for the core AC exist in the branch and now **pass**.
 
 ---
 
-## S15 — MR, Review & Cross-Squad Testing (14:30–16:00)
+## S15 — MR, Review & Exploratory Testing (14:30–16:00)
 
-After the role rotation (slot *Day 9 afternoon*), the MR flow is the same as Lab 8.22. Added today:
+The MR flow is the same as Lab 8.22. Added today:
 
-**Cross-squad exploratory testing (QA, 30 minutes).** Each QA tests another squad's feature already merged into `main` (A → B, B → C, C → A), for 30 minutes, with at least three different training accounts. Look for: confusing messages, access that should be 404, a broken 360px view, exports whose totals don't match.
+**Exploratory testing (30 minutes).** QA tests every feature already merged to `main`. Every Dev pair tests **another pair's** feature (1 → 2 → 3 → 4 → 1) for 20 minutes. Use at least three different training accounts. Look for: confusing messages, access that should be 404, a broken 360px layout, exports whose totals do not match.
 
-Bugs → a Bug issue (*Pepijat* template, label of the squad that **owns** the feature) with reproduction steps. Claude helps draft it (prompt AI-28), QA verifies every step themselves.
+Bug → a Bug issue (*Pepijat* template, label `pasukan::projek` for the PM's triage and `pasangan::N` of the feature's owner) with reproduction steps. Claude helps draft it (prompt AI-28); the tester checks every step themselves.
 
 ### ✅ Checkpoint S15
-- Every squad's Sprint 2 MR is `Ready` with a QA review comment.
-- ≥ 1 cross-squad Bug issue, reproducible by the owning squad.
+- Every pair's Sprint 2 MR is `Ready` with a QA review comment.
+- ≥ 1 Bug issue that the owning pair can reproduce.
 
 ---
 
 ## S16 — Merge, Green `main`, Sprint Demo & Retro (16:00–17:00)
 
-Merge in the morning sync order (Lab 8.23: rebase, conflicts, `--force-with-lease`). After the last merge, one person from each squad runs on the latest `main`:
+Merge in the morning sync order (Lab 8.23: rebase, conflicts, `--force-with-lease`). After the last merge, one person from each pair runs on the latest `main`:
 
 ```bash
 git switch main && git pull
@@ -119,13 +127,13 @@ php spark migrate --all
 composer test
 ```
 
-**E2E** is run by each squad's QA following the *Ujian hujung ke hujung (E2E)* section of the repo README: a separate `espkp_contoh_e2e` database, the `php -S localhost:8095` server, then `npm run e2e:sedia` and `npm run e2e`. Do not run E2E on your dev database — the data is reset.
+**E2E** is run by QA (or the floater) following the *Ujian hujung ke hujung (E2E)* section of the repo README: a separate database `espkp_contoh_e2e`, server `php -S localhost:8095`, then `npm run e2e:sedia` and `npm run e2e`. Do not run E2E on your dev database — the data is reset.
 
-Red → the squad whose last MR caused the failure opens a Bug issue `keutamaan::1-kritikal` and fixes it **before** Sprint 3. **Sprint demo** (3 minutes per squad) and **retro** (issue `Retro Sprint 2 — Skuad <X>`), then the PMs list the Sprint 3 issues and the **v1.1.0** release scope.
+Red → the pair whose last MR caused the failure opens a Bug issue `keutamaan::1-kritikal` and fixes it **before** Sprint 3. **Sprint demo** (3 minutes per pair: the BA shows the AC, the Dev the feature, QA the tests) and **retro** (stickies in the FigJam *Retro* section + a `Retro Sprint 2` issue), then the PM lists the Sprint 3 issues and the **v1.1.0** release scope.
 
 ### ✅ Checkpoint S16
-- All Sprint 2 MRs approved by QA are merged; `composer test` and `npm run e2e` are green on `main`.
-- A Sprint 2 retro issue and the v1.1.0 scope list in the milestone *Sprint 3 + v1.1 (Hari 10)*.
+- All Sprint 2 MRs that passed QA are merged; `composer test` and `npm run e2e` green on `main`.
+- The Sprint 2 retro issue and the v1.1.0 scope list in the milestone *Sprint 3 + v1.1 (Hari 10)*.
 
 ---
 ## 🤖 Today's prompting
@@ -134,12 +142,14 @@ Full prompts: [`pustaka-prompt.en.md`](../docs/pustaka-prompt.en.md) §H (AI-21.
 
 | Role | Prompt & Claude Code feature | Verify yourself | Lab |
 |---|---|---|---|
-| PM · sync | AI-23: `Summarise the squad's Sprint 2 issues and the shared files each issue will touch; flag dependencies on other squads.` | Compare with the other PMs' sync notes | 9.20 |
-| QA · test plan | AI-25 with `penguji-espkp`; for #13: `How do I test the reminder command without waiting 7 days? Show the service('jam') pattern in the existing tests.` | The test fails because the feature is missing, not because of time | 9.20 |
-| Dev · build | AI-29 → `/ciri-baharu <no>` → AI-30 for every slice; squad C: `Follow the laporan/_carta and data-carta pattern; no inline <script>.` | `composer semak`; `semak-espkp`; 360px browser | 9.21 |
-| QA · exploratory | AI-28: `Draft a Bug issue from my observation: <steps, expected, actual>. Synthetic data only.` | Repeat the steps yourself before creating the issue | 9.22 |
-| QA · review the MR | AI-27: `/semak-mr <no>` | Open every `file:line` | 9.22 |
-| Everyone · red `main` | `This test fails on main after merging !<a> and !<b>: <output>. Which commit is the likely cause? Do not fix it yet.` | `git log`, `git bisect` if needed | 9.23 |
+| PM · sync | AI-23: `Summarise the Sprint 2 issues labelled pasukan::dev and the hot files each issue will touch; mark dependencies between pairs.` | Compare with the sync note in issue #19 | 9.20 |
+| BA · AC | AI-21: `/isu-baharu 21` → `Compare these AC with the BRS requirement section of the issue; list what is missing or added.` | Every AC comes from the issue/BRS, not invented by Claude | 9.20 |
+| QA · test plan | AI-25 with `penguji-espkp`; for #13: `How can the reminder command be tested without waiting 7 days? Show the service('jam') pattern in the existing tests.` | The test fails because the feature is missing, not because of time | 9.20 |
+| Dev · build | AI-29 → `/ciri-baharu <no>` → AI-30 for every slice; pair 3: `Follow the laporan/_carta and data-carta pattern; no inline <script>.` | `composer semak`; `semak-espkp`; 360px browser | 9.21 |
+| Dev · board | `Use the papan-figjam subagent. #21 is merged: change the proposed Hilang arrows 2 → 4 → 5 to normal lines.` | Open the board; only the Hilang workflow section changed | 9.23 |
+| QA / Dev · exploratory | AI-28: `Draft a Bug issue from my observation: <steps, expected, actual>. Synthetic data only.` | Repeat the steps yourself before creating the issue | 9.22 |
+| QA · MR review | AI-27: `/semak-mr <no>` | Open every `file:line` | 9.22 |
+| All · red `main` | `This test fails on main after merging !<a> and !<b>: <output>. Which commit is the likely cause? Do not fix it yet.` | `git log`, `git bisect` if needed | 9.23 |
 
 ---
 
@@ -147,11 +157,11 @@ Full prompts: [`pustaka-prompt.en.md`](../docs/pustaka-prompt.en.md) §H (AI-21.
 
 **Team work (today):**
 
-- [ ] The squad's Sprint 2 issue `status::sedia` with an *Assignee*; PM sync note in the issue
-- [ ] The squad's Sprint 2 feature merged through an MR with a QA review and green tests
-- [ ] ≥ 1 cross-squad Bug issue with reproduction steps
+- [ ] Sprint 2 issues `status::sedia` + `pasukan::dev` + `pasangan::N`; sync note in issue #19
+- [ ] Every pair's Sprint 2 feature merged through an MR with a QA review and green tests
+- [ ] ≥ 1 Bug issue from exploratory testing with reproduction steps
 - [ ] `composer test` and `npm run e2e` green on `main` after all merges
-- [ ] Sprint 2 retro issue and the v1.1.0 scope in the Sprint 3 milestone
+- [ ] Sprint 2 retro issue and the v1.1.0 scope in the Sprint 3 milestone; Sprint 3 issue AC done
 
 **Individual Reports module work (reference, optional — [Appendix](#appendix--individual-reports-module-work-reference)):**
 
@@ -204,28 +214,28 @@ Correct: (a) enforce a record limit with a "narrow the filter range" message (`E
 Wrong: `ini_set('memory_limit', '-1')` — postpones the problem until the server goes down.
 </details>
 
-6. Squad A's reminder command is run by cron every day. QA runs it twice in a row and the applicant receives two emails. Which AC is missing, and how does a test prove the fix?
+6. Pair 1's reminder command (#13) is run by cron every day. QA runs it twice in a row and the applicant receives two emails. Which AC is missing, and how does a test prove the fix?
 
 <details><summary>Answer</summary>
 
 The idempotency AC: "Given a Pindaan reminder has already been sent for application X, when the command runs again, then no second email is sent." The fix records each send in `peringatan_dihantar` (unique key application + type) and checks it before sending. The test runs the command twice and asserts the email count = 1 and one row in the table.
 </details>
 
-7. Why does QA test **another** squad's feature, not only their own squad's?
+7. Why do Dev pairs test **another** pair's feature, even though the Projek team has QA?
 
 <details><summary>Answer</summary>
 
-The squad's own QA has already read the issue, the plan and the discussion — they share the same assumptions as the Dev. A QA from another squad comes without those assumptions, like a real user, and is more likely to find confusing messages, leaking access or missed edge cases. The Bug issue goes to the owning squad so each hotspot stays owned by one squad.
+QA has already read the issue, the AC and the test plan — they share some assumptions with the authoring pair. Another Dev pair comes without those assumptions, like a real user, and knows a different part of the code, so it is more likely to find confusing messages, leaking access or missed edge cases. Bug issues go to the owning pair (`pasangan::N`) through the PM's triage, so only one MR changes a hot file at a time.
 </details>
 
 ---
 
 ## ➡️ Preparation for tomorrow
 
-Day 10 — **Sprint 3, the v1.1.0 release and the team capstone demo**. Day 10 roles are chosen by each squad.
+Day 10 — **Sprint 3, the v1.1.0 release and the team capstone demo**. The Projek and Dev teams stay the same.
 
 - `main` green (`composer test`, `npm run e2e`) — Sprint 2 critical bugs fixed first.
-- PM: the squad's Sprint 3 issues (#14, #15, #18) and follow-up issues in the milestone *Sprint 3 + v1.1 (Hari 10)*; no new issues after 12:30 tomorrow.
+- Projek: the Sprint 3 issues (#14, #15, #18, #27–#32) with AC and `pasangan::N` in the milestone *Sprint 3 + v1.1 (Hari 10)*; no new issues after 12:30 tomorrow.
 - Every member: prepare one line of code you committed this week and can explain without Claude — the capstone panel will ask.
 
 ---

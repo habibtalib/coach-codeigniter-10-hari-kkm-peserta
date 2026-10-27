@@ -2,7 +2,7 @@
 
 [← Jadual](../JADUAL.md) · [👥 Peranan pasukan](../docs/peranan-pasukan.md) · [🧪 Lab Hari 10](./lab.md) · [📋 Rubrik Capstone](../docs/rubrik-capstone.md) · [← Hari 9](../hari-9/README.md)
 
-> **Hari terakhir.** Pagi: Sprint 3 — ciri terakhir dan pepijat kritikal, dengan **pembekuan ciri** pada 12:30. Petang: pasukan menstabilkan `main`, menyediakan **keluaran v1.1.0** (CHANGELOG, nota keluaran, tag), dan setiap skuad mendemokan kerjanya kepada pemilik sistem. Setiap ahli mesti boleh menerangkan kod yang di-commit atas namanya — tanpa Claude.
+> **Hari terakhir.** Pagi: Sprint 3 — ciri terakhir dan pepijat kritikal, dengan **pembekuan ciri** pada 12:30. Petang: pasukan menstabilkan `main`, menyediakan **keluaran v1.1.0** (CHANGELOG, nota keluaran, tag), dan pasukan Projek serta setiap pasangan Dev mendemokan kerja mereka kepada pemilik sistem. Setiap ahli mesti boleh menerangkan kod yang di-commit atas namanya — tanpa Claude.
 
 ---
 
@@ -12,9 +12,9 @@ Di akhir hari ini, peserta boleh:
 
 | # | Objektif (boleh diukur) | Sesi | Bukti |
 |---|------------------------|------|-------|
-| O10 | **Menyiapkan** isu Sprint 3 skuad dan pepijat kritikal sebelum pembekuan ciri, melalui MR dengan semakan QA | S8 | Isu Sprint 3 ditutup atau dialih ke backlog dengan sebab; `main` hijau |
+| O10 | **Menyiapkan** isu Sprint 3 (setiap pasangan Dev) dan pepijat kritikal sebelum pembekuan ciri, melalui MR dengan semakan QA | S8 | Isu Sprint 3 ditutup atau dialih ke backlog dengan sebab; `main` hijau |
 | O11 | **Menyediakan** keluaran v1.1.0: CHANGELOG daripada MR yang di-merge, nota keluaran, dan tag beranotasi pada `main` yang hijau | S9 | MR CHANGELOG di-merge; tag `v1.1.0` + Release GitLab |
-| O12 | **Mendemokan** hasil skuad kepada pemilik sistem dengan bukti peranan: isu & AC (PM), ciri berjalan (Dev), ujian yang membuktikan AC (QA) | S10 | Demo skuad 15 minit; helaian markah skuad |
+| O12 | **Mendemokan** hasil pasukan kepada pemilik sistem dengan bukti peranan: backlog & AC (PM, BA), ujian yang membuktikan AC (QA), ciri berjalan (pasangan Dev) | S10 | Demo Projek 12 minit + 10 minit setiap pasangan; helaian markah pasukan |
 | O13 | **Menerangkan** satu baris kod yang di-commit sendiri tanpa Claude, dan **menilai** bila bantuan AI mempercepat atau melambatkan pasukan | S10–S11 | Soalan panel dijawab; refleksi dalam isu retro akhir |
 
 > ℹ️ Objektif O1–O9 (Statistik & capstone individu) kekal sebagai rujukan dalam [Lampiran](#lampiran--kerja-individu-statistik--capstone-rujukan).
@@ -25,7 +25,7 @@ Di akhir hari ini, peserta boleh:
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Stand-up skuad, pilih peranan Hari 10 | — |
+| 08:30–09:00 | — | Stand-up pasukan Projek dan Dev | — |
 | 09:00–12:30 | S8 | Sprint 3: ciri terakhir & pepijat kritikal · **pembekuan ciri 12:30** | O10 · [Lab 10.20](./lab.md#lab-1020--sprint-3-ciri-terakhir--pembekuan-s8) |
 | 12:30–14:30 | — | Makan tengah hari | — |
 | 14:30–15:15 | S9 | Keluaran v1.1.0: stabil, CHANGELOG, nota keluaran, tag | O11 · [Lab 10.21](./lab.md#lab-1021--keluaran-v110-s9) |
@@ -48,7 +48,7 @@ Capstone hari ini dinilai sebagai **pasukan dan individu** ([`rubrik-capstone.md
 
 ## S8 — Sprint 3: Ciri Terakhir & Pembekuan (09:00–12:30)
 
-Stand-up 08:30, kemudian skuad memilih peranan sendiri untuk hari ini (cadangan: orang yang belum pernah menjadi PM atau QA mengambilnya). Ritma sama seperti Sprint 1–2 ([Lab 8.21–8.23](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16)), dipadatkan:
+Stand-up 08:30 dalam pasukan masing-masing (Projek dan Dev kekal sama; isu #19). Ritma sama seperti Sprint 1–2 ([Lab 8.21–8.23](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16)), dipadatkan:
 
 | Masa | Fokus |
 |---|---|
@@ -58,14 +58,14 @@ Stand-up 08:30, kemudian skuad memilih peranan sendiri untuk hari ini (cadangan:
 | **12:30** | **Pembekuan ciri.** MR ciri yang belum di-merge → isu kekal terbuka, alih ke backlog dengan komen. Selepas ini hanya `fix/…` |
 
 ### ✅ Checkpoint S8
-- Setiap isu Sprint 3 skuad ditutup **atau** dialih ke backlog dengan sebab.
+- Setiap isu Sprint 3 ditutup **atau** dialih ke backlog dengan sebab.
 - `main` selepas merge terakhir: `composer test` hijau.
 
 ---
 
 ## S9 — Keluaran v1.1.0 (14:30–15:15)
 
-Satu **PM keluaran** (dipilih jurulatih) memandu langkah ini dengan bantuan PM lain:
+**PM keluaran** (PM pasukan Projek) memandu langkah ini dengan bantuan BA dan floater:
 
 1. **Stabil.** `main` hijau: `composer test` dan E2E (QA). Pepijat yang ditemui → `fix/…` dengan MR kecil, atau didokumen sebagai isu yang diketahui.
 2. **CHANGELOG.** Claude mendraf daripada MR yang di-merge; PM keluaran menyemak setiap baris terhadap MR sebenar:
@@ -85,17 +85,17 @@ Satu **PM keluaran** (dipilih jurulatih) memandu langkah ini dengan bantuan PM l
 
 ## S10 — Demo Capstone Pasukan (15:15–16:30)
 
-Setiap skuad **15 minit** kepada pemilik sistem (jurulatih) dan panel:
+Dua bahagian kepada pemilik sistem (jurulatih) dan panel, **75 minit** keseluruhan:
 
 | Minit | Siapa | Apa |
 |---|---|---|
-| 0–3 | PM | Isu skuad merentas 3 sprint: AC, keputusan pemilik, apa yang tidak masuk v1.1.0 dan kenapa |
-| 3–8 | Dev | Ciri berjalan pada `v1.1.0` di pelayar, dengan akaun latihan yang berbeza (termasuk satu akaun yang mesti menerima 404) |
-| 8–11 | QA | Ujian yang membuktikan AC (`vendor/bin/phpunit --filter …`), satu pepijat yang ditangkap sebelum merge, hasil E2E |
-| 11–15 | Panel | Setiap ahli menerangkan satu baris yang di-commit atas namanya (`git log --author`), **tanpa Claude** |
+| 0–12 | Pasukan Projek | PM: backlog merentas 3 sprint (BRS → isu → AC), keputusan pemilik (#33), apa yang tidak masuk v1.1.0 dan kenapa. BA: satu isu daripada keperluan BRS hingga AC. QA: ujian yang membuktikan AC, satu pepijat yang ditangkap sebelum merge, hasil E2E |
+| 12–52 | Pasukan Dev, 10 minit setiap pasangan | Ciri berjalan pada `v1.1.0` di pelayar dengan akaun latihan berbeza (termasuk satu yang mesti menerima 404), MR dan ujiannya, perubahan ERD/aliran di papan FigJam |
+| 52–57 | Floater | Job CI, konflik yang diselesaikan, E2E pada `main` |
+| 57–75 | Panel | Setiap ahli menerangkan satu baris kerjanya **tanpa Claude**: Dev dan QA — baris kod/ujian yang di-commit (`git log --author`); BA dan PM — satu AC dan sebab ia boleh diuji |
 
 ### ✅ Checkpoint S10
-- Helaian markah skuad diisi ([`rubrik-capstone.md`](../docs/rubrik-capstone.md) §8).
+- Helaian markah pasukan diisi ([`rubrik-capstone.md`](../docs/rubrik-capstone.md) §8).
 - Setiap ahli menjawab soalan baris kod sendiri.
 
 ---
@@ -130,9 +130,9 @@ Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) §H. Selepas pemb
 
 **Kerja pasukan (hari ini):**
 
-- [ ] Isu Sprint 3 skuad ditutup atau dialih ke backlog dengan sebab sebelum pembekuan 12:30
+- [ ] Isu Sprint 3 ditutup atau dialih ke backlog dengan sebab sebelum pembekuan 12:30
 - [ ] `CHANGELOG.md` bahagian 1.1.0 di-merge melalui MR; tag `v1.1.0` dan Release GitLab pada `main` yang hijau
-- [ ] Demo capstone skuad 15 minit; helaian markah skuad diisi
+- [ ] Demo capstone: Projek 12 minit + setiap pasangan Dev 10 minit; helaian markah pasukan diisi
 - [ ] Setiap ahli menerangkan satu baris yang di-commit sendiri tanpa Claude
 - [ ] Komen retro akhir setiap ahli
 
@@ -183,7 +183,7 @@ Kelebihan: dashboard segar serta-merta selepas perubahan status (tiada kekelirua
 (1) Reproduce dengan langkah & data tepat; (2) tulis ujian yang **gagal**; (3) baiki dengan perubahan minimum; (4) ujian itu dan semua ujian lain lulus; (5) commit `FIX:` dan kemas kini log pepijat. Langkah 2 membuktikan ujian benar-benar mengesan pepijat — ujian yang tidak pernah dilihat gagal mungkin tidak menguji apa-apa, dan ia menjadi pengawal regresi selama-lamanya.
 </details>
 
-6. Pada 12:20, Dev skuad C hampir siap kad KPI #18 tetapi QA belum menyemak. PM mencadangkan merge dahulu, semak kemudian, supaya ia masuk v1.1.0. Apa keputusan yang betul?
+6. Pada 12:20, pasangan 3 hampir siap kad KPI #18 tetapi QA belum menyemak. PM mencadangkan merge dahulu, semak kemudian, supaya ia masuk v1.1.0. Apa keputusan yang betul?
 
 <details><summary>Jawapan</summary>
 

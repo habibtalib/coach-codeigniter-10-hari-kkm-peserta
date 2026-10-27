@@ -104,7 +104,7 @@
 
 > ℹ️ Hari 7 fokus kepada Claude Code. S13/S14 (Lab 7.10/7.11), sesi Pas S1–S8 dan lab manual 7.0–7.4 (dan 7.1b–7.4b) berada dalam Lampiran Hari 7 sebagai rujukan.
 
-> ℹ️ Mulai Hari 8 hingga Hari 10, kelas bekerja sebagai **satu pasukan** dalam repo espkpv2 (GitLab KKM `aplikasi-baharu/espkpv2`): 3 skuad × 4 dengan peranan PM, QA dan Dev, setiap peranan dibantu Claude Code ([`peranan-pasukan.md`](./docs/peranan-pasukan.md), [`kolaborasi.md`](./docs/kolaborasi.md) §6).
+> ℹ️ Mulai Hari 8 hingga Hari 10, kelas bekerja sebagai **satu pasukan** dalam repo espkpv2 (GitLab KKM `aplikasi-baharu/espkpv2`): Hari 8 pagi 3 skuad berputar, kemudian **dua pasukan tetap** — Projek (PM, BA, 2 QA) dan Dev (4 pasangan + floater) — setiap peranan dibantu Claude Code ([`peranan-pasukan.md`](./docs/peranan-pasukan.md), [`kolaborasi.md`](./docs/kolaborasi.md) §6).
 
 ## Hari 8 — Kerja Pasukan dengan Claude Code: Sprint 1 · [nota](./hari-8/README.md)
 
@@ -113,8 +113,8 @@
 | 08:30–09:00 | — | Recap Hari 7, pembentukan skuad & kad peranan | — |
 | 09:00–10:30 | S15 | Persediaan pasukan: espkpv2 pada Laragon, Claude Code dikongsi, papan isu | Lab 8.20: clone dengan token, `composer test` hijau, `/isu-baharu` + `/semak-mr` + `ci4-spark` dimuatkan, `glab` |
 | 10:45–12:30 | S16 | Sprint 1 pagi: PM tulis isu, QA rancang ujian, Dev rancang & slice 1 | Lab 8.21: isu `status::sedia` dengan AC, ujian gagal dari AC, branch `feat/<no>-…` + commit `Rujuk #N` |
-| 14:30–16:00 | S17 | Sprint 1 petang (peranan bertukar): MR, semakan QA, papan | Lab 8.22: MR `Closes #N`, komen `/semak-mr` dengan jadual AC, papan tepat |
-| 16:00–17:00 | S18 | Merge, latihan konflik, demo skuad & retro | Lab 8.23: MR di-merge, konflik `Routes.php` diselesaikan, demo 2 minit, isu retro |
+| 14:30–16:00 | S17 | Sprint 1 petang (2 pasukan tetap: Projek & Dev): MR, semakan QA, AC isu BRS, papan | Lab 8.22: MR `Closes #N`, komen `/semak-mr` dengan jadual AC, papan tepat |
+| 16:00–17:00 | S18 | Merge, latihan konflik, demo pasangan & retro | Lab 8.23: MR di-merge, konflik `Routes.php` diselesaikan, demo 2 minit, isu retro |
 
 > ℹ️ Sesi Modul Pas individu Hari 8 (S1–S12, Lab 8.0–8.13) berada dalam Lampiran Hari 8 sebagai rujukan.
 
@@ -122,10 +122,10 @@
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Stand-up skuad, tukar peranan (tempat 3 = PM) | — |
+| 08:30–09:00 | — | Stand-up pasukan Projek dan Dev | — |
 | 09:00–10:30 | S13 | Perancangan Sprint 2, sync PM, pelan ujian & slice 1 | Lab 9.20: isu Sprint 2 `status::sedia`, nota sync PM, ujian gagal dari AC, branch Sprint 2 |
-| 10:45–12:30 | S14 | Bina Sprint 2: A #13 peringatan Pindaan · B #9/#8 kata laluan & CI MariaDB · C #17 carta & eksport RPT-10 | Lab 9.21: slice demi slice dengan ujian; semakan risiko skuad (idempoten, akaun latihan, CSP, had eksport) |
-| 14:30–16:00 | S15 | MR, semakan QA & ujian eksploratori merentas skuad | Lab 9.22: MR `Ready` + `/semak-mr`; ≥ 1 isu Pepijat merentas skuad |
+| 10:45–12:30 | S14 | Bina Sprint 2: P1 #13/#22 peringatan · P2 #9/#25 kata laluan & telefon · P3 #17/#26 RPT-10 & laporan tahunan · P4 #21/#23 aliran Hilang · floater #8/#24; Projek: AC Sprint 3 | Lab 9.21: slice demi slice dengan ujian; semakan risiko (idempoten, akaun latihan, CSP, had eksport, `Aliran.php`) |
+| 14:30–16:00 | S15 | MR, semakan QA & ujian eksploratori antara pasangan | Lab 9.22: MR `Ready` + `/semak-mr`; ≥ 1 isu Pepijat daripada ujian eksploratori |
 | 16:00–17:00 | S16 | Merge, `main` hijau (PHPUnit + E2E), demo sprint, retro, skop v1.1.0 | Lab 9.23: semua MR di-merge, `composer test` + `npm run e2e` hijau |
 
 > ℹ️ Sesi Modul Laporan individu (S1–S12, Lab 9.1–9.13) berada dalam Lampiran Hari 9 sebagai rujukan.
@@ -134,10 +134,10 @@
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
-| 08:30–09:00 | — | Stand-up skuad, pilih peranan Hari 10 | — |
-| 09:00–12:30 | S8 | Sprint 3: A #14 · B #15 · C #18 + pepijat kritikal · **pembekuan ciri 12:30** | Lab 10.20: isu ditutup atau dialih dengan sebab; `main` hijau |
+| 08:30–09:00 | — | Stand-up pasukan Projek dan Dev | — |
+| 09:00–12:30 | S8 | Sprint 3: #14, #15, #18, #27–#32 (ikut `pasangan::N`) + pepijat kritikal · **pembekuan ciri 12:30** | Lab 10.20: isu ditutup atau dialih dengan sebab; `main` hijau |
 | 14:30–15:15 | S9 | Keluaran v1.1.0 | Lab 10.21: CHANGELOG melalui MR, nota keluaran, tag `v1.1.0` + Release |
-| 15:15–16:30 | S10 | Demo capstone pasukan (15 minit setiap skuad) | Lab 10.22: PM · Dev · QA · soalan baris kod setiap ahli ([rubrik](./docs/rubrik-capstone.md) §8) |
+| 15:15–16:30 | S10 | Demo capstone (Projek 12 minit + 10 minit setiap pasangan Dev) | Lab 10.22: PM · BA · QA · pasangan Dev · soalan baris kerja setiap ahli ([rubrik](./docs/rubrik-capstone.md) §8) |
 | 16:30–17:00 | S11 | Retro pasukan & refleksi Claude Code, penutup | Lab 10.22: komen retro akhir setiap ahli |
 
 > ℹ️ Sesi Statistik & capstone individu (S1–S7, Lab 10.1–10.12) berada dalam Lampiran Hari 10 sebagai rujukan.
