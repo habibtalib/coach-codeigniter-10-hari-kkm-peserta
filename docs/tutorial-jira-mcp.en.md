@@ -110,3 +110,20 @@ Draft a Bug work item for KAN from this observation: <steps, expected, actual, a
 - A Jira card contains only the summary, user story, AC, impact and the GitLab KKM link. **Do not** copy BRS text, BRS page/§ numbers, real names, IC numbers, emails, `.env`, tokens or screenshots into Jira.
 - The AI does not create, transition or close cards without you reading the fields and saying yes.
 - System-owner decisions are answered by the trainer in card comments; do not let Claude guess.
+
+## 8. Team flow: Projek plans, Dev picks up, discussion on the card
+
+Skills in the repo (`git pull` on `main`): Projek `/rancang-sprint` and `/isu-baharu`; Dev `/ambil-kad`. Claude writes to Jira only after you read the fields and say yes.
+
+| Step | Who | Prompt | Result in Jira |
+|---|---|---|---|
+| 1. AC ready | BA | `/isu-baharu KAN-<n>` | Description with AC; Idea → To Do |
+| 2. Assign | PM | `/rancang-sprint sprint` | Assignee + `pasukan-dev` + `pasangan-N`; the PM drags cards into the sprint and clicks *Start sprint* on the board |
+| 3. Pick up | Dev (the pair's seat holder) | `/ambil-kad` | Only the cards assigned to you |
+| 4. Ask | Dev | `/ambil-kad KAN-<n>` → unclear AC | Comment `SOALAN: AC-2 …` + label `soalan` |
+| 5. Answer | BA / PM | `/rancang-sprint soalan` | Comment `JAWAPAN: …`, AC updated, label `soalan` removed |
+| 6. Start | Dev | `/ambil-kad KAN-<n>` → ready | *In Progress* + comment `MULA: branch feat/KAN-<n>-…` |
+| 7. MR | Dev | `MR !<no> is Ready. Add an MR comment on KAN-<n> and propose the transition to Testing.` | Comment `MR: <link>` + *Testing* |
+| 8. Review & close | QA, PM | `/semak-mr <no>` → merge → UAT | PM: *Done* |
+
+**Discussion rule:** questions and answers go in card comments, not WhatsApp or private messages, so the next person (and Claude) reads the same context. The Dev does not change AC, assignee or sprint; Projek does not write code. System-owner decisions → the trainer, label `disekat`.

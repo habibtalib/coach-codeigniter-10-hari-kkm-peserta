@@ -146,6 +146,8 @@ Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) §H (AI-21..AI-32
 | Peranan | Prompt & ciri Claude Code | Sahkan sendiri | Lab |
 |---|---|---|---|
 | Semua · Jira MCP | AI-33: `Senaraikan site dan space Jira yang saya boleh lihat, kemudian 5 kad pertama dalam backlog KAN. Baca sahaja.` | Kunci dan ringkasan sama seperti di papan Jira | 9.20 |
+| Projek · agih | AI-37: `/rancang-sprint sprint` (agih kad) · `/rancang-sprint soalan` (jawab Dev) | Baca setiap baris cadangan sebelum *Yes*; sprint diseret di papan | 9.20 |
+| Dev · ambil | AI-38: `/ambil-kad` → `/ambil-kad KAN-<n>` (kad saya, `SOALAN:`, `MULA:`) | Hanya kad yang di-assign kepada anda; AC tidak diubah Dev | 9.20 |
 | PM · sync | AI-23 + AI-34: `Guna Jira. JQL: project = KAN AND sprint in openSprints(). Ringkaskan kad berlabel pasukan-dev dan fail panas yang setiap kad akan sentuh; tandakan kebergantungan antara pasangan.` | Bandingkan dengan nota sync dalam isu #19 | 9.20 |
 | BA · AC | AI-21: `/isu-baharu 21` → `Bandingkan AC ini dengan bahagian Keperluan BRS dalam isu; senaraikan apa yang tiada atau ditambah.` | Setiap AC berasal daripada isu/BRS, bukan rekaan Claude | 9.20 |
 | QA · pelan ujian | AI-25 dengan `penguji-espkp`; untuk #13: `Bagaimana menguji perintah peringatan tanpa menunggu 7 hari? Tunjukkan corak service('jam') dalam ujian sedia ada.` | Ujian gagal kerana ciri tiada, bukan kerana masa | 9.20 |

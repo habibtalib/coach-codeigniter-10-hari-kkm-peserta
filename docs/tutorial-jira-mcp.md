@@ -110,3 +110,20 @@ Draf work item Bug untuk KAN daripada pemerhatian ini: <langkah, jangkaan, seben
 - Kad Jira hanya mengandungi ringkasan, cerita pengguna, AC, kesan dan pautan GitLab KKM. **Jangan** salin teks BRS, nombor halaman/§ BRS, nama sebenar, No. KP, emel, `.env`, token atau tangkapan skrin ke dalam Jira.
 - AI tidak mencipta, menukar status atau menutup kad tanpa anda membaca medan dan berkata ya.
 - Keputusan pemilik sistem dijawab jurulatih dalam komen kad; jangan biar Claude meneka.
+
+## 8. Aliran pasukan: Projek merancang, Dev mengambil, berbincang dalam kad
+
+Skill dalam repo (`git pull` di `main`): Projek `/rancang-sprint` dan `/isu-baharu`; Dev `/ambil-kad`. Claude menulis ke Jira hanya selepas anda membaca medan dan berkata ya.
+
+| Langkah | Siapa | Prompt | Hasil dalam Jira |
+|---|---|---|---|
+| 1. AC siap | BA | `/isu-baharu KAN-<n>` | Description dengan AC; Idea → To Do |
+| 2. Agih | PM | `/rancang-sprint sprint` | Assignee + `pasukan-dev` + `pasangan-N`; PM seret kad ke sprint dan *Start sprint* di papan |
+| 3. Ambil | Dev (pemegang kerusi pasangan) | `/ambil-kad` | Senarai kad yang di-assign kepada anda sahaja |
+| 4. Tanya | Dev | `/ambil-kad KAN-<n>` → AC kabur | Komen `SOALAN: AC-2 …` + label `soalan` |
+| 5. Jawab | BA / PM | `/rancang-sprint soalan` | Komen `JAWAPAN: …`, AC dikemas kini, label `soalan` dibuang |
+| 6. Mula | Dev | `/ambil-kad KAN-<n>` → sedia | *In Progress* + komen `MULA: branch feat/KAN-<n>-…` |
+| 7. MR | Dev | `MR !<no> sudah Ready. Tambah komen MR pada KAN-<n> dan cadang transition ke Testing.` | Komen `MR: <pautan>` + *Testing* |
+| 8. Semak & tutup | QA, PM | `/semak-mr <no>` → merge → UAT | PM: *Done* |
+
+**Peraturan perbincangan:** soalan dan jawapan dalam komen kad, bukan WhatsApp atau mesej peribadi, supaya orang seterusnya (dan Claude) membaca konteks yang sama. Dev tidak mengubah AC, assignee atau sprint; Projek tidak menulis kod. Keputusan pemilik sistem → jurulatih, label `disekat`.

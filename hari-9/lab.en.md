@@ -37,6 +37,31 @@ Jira Free: **10 seats** — the trainer, PM, BA, 2 QA, one member of each Dev pa
 
 4. Read the key convention ([tutorial §3](../docs/tutorial-jira-mcp.en.md#3-jira-key-convention)): branch `feat/KAN-<n>-<short>`, commit `Rujuk KAN-<n>`, MR title `KAN-<n>: …`.
 
+### Steps — Projek: plan & assign cards with the Jira MCP (08:30–09:00)
+
+1. **BA:** Idea cards without AC → `/isu-baharu KAN-<n>` → read the fields → *Yes* → card to **To Do**.
+2. **PM:** proposed assignment:
+
+   ```text
+   /rancang-sprint sprint
+   ```
+
+   Check the proposal table (pair, hot files, reason), approve row by row. On the Jira board: drag cards into *Sprint 2 (Hari 9)*, **Complete sprint** *Sprint 1 (Hari 8)* (unfinished cards → Sprint 2), then **Start sprint** after the 09:00 sync.
+3. **QA:** To Do cards → an AC → test case table as a card comment (draft with Claude, send after *Yes*).
+
+### Steps — Dev: pick up assigned cards & discuss (09:15)
+
+1. The pair's Jira seat holder (pair partner alongside):
+
+   ```text
+   /ambil-kad
+   ```
+
+   Claude lists **only** the cards assigned to you in the open sprint.
+2. Choose a card: `/ambil-kad KAN-<n>`. Claude reads the AC and comments.
+3. Unclear AC or a dependency on another pair → approve a `SOALAN: …` comment + label `soalan`. Wait for `JAWAPAN:` (Projek checks `/rancang-sprint soalan` every 20 minutes); meanwhile take another card or help QA.
+4. Ready → approve the **In Progress** transition + comment `MULA: branch feat/KAN-<n>-…`, then step 5 below.
+
 ### Steps
 
 1. **Stand-up (08:30, within each team).** 2 minutes each: done · next · blocked. The PM (Projek) and the floater (Dev) record blockers as comments in the related issues.
@@ -77,6 +102,7 @@ Jira Free: **10 seats** — the trainer, PM, BA, 2 QA, one member of each Dev pa
 - [ ] Sprint 2 started in Jira; every sprint card has the labels `pasukan-dev` + `pasangan-N` and an *Assignee*.
 - [ ] A sync note in issue #19 with the merge order agreed by all pairs.
 - [ ] The test fails because the feature is missing, with a message that names the AC.
+- [ ] Dev: my card picked up with `/ambil-kad`; a `MULA:` comment (and `SOALAN:` if any) on the card, answered by Projek with `JAWAPAN:`.
 - [ ] A `feat/KAN-<n>-…` branch per pair with a first commit; card *In Progress*.
 
 ---

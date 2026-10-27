@@ -2865,6 +2865,21 @@ claude
 </section>
 
 <section class="slide">
+  <div class="eyebrow">Day 9 · The Jira MCP in the team</div>
+  <h2>Projek plans, Dev picks up, discussion on the card</h2>
+  <table class="t tight">
+    <tr><th style="width:150px">Who</th><th style="width:330px">Prompt</th><th>Result in Jira</th></tr>
+    <tr><td><b>BA</b></td><td><code>/isu-baharu KAN-&lt;n&gt;</code></td><td>AC ready · Idea → To Do</td></tr>
+    <tr><td><b>PM</b></td><td><code>/rancang-sprint sprint</code></td><td>Assignee + <code>pasangan-N</code> · drag into the sprint · Start sprint</td></tr>
+    <tr><td><b>Dev</b></td><td><code>/ambil-kad</code> → <code>/ambil-kad KAN-&lt;n&gt;</code></td><td>Only my cards · <code>SOALAN:</code> + label <code>soalan</code>, or <code>MULA:</code> + In Progress</td></tr>
+    <tr><td><b>BA / PM</b></td><td><code>/rancang-sprint soalan</code></td><td><code>JAWAPAN:</code> · AC updated · remove <code>soalan</code></td></tr>
+    <tr><td><b>Dev → QA → PM</b></td><td><code>MR: &lt;link&gt;</code> · <code>/semak-mr</code></td><td>Testing → merge → Done</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Discussion goes in card comments, not WhatsApp. Claude writes to Jira only after you read the fields and say <b>Yes</b>. Tutorial: <code>docs/tutorial-jira-mcp.en.md</code> §8.</div></div>
+  <aside class="notes"><p>Demo langsung: PM jalankan /rancang-sprint sprint, assign satu kad; Dev pasangan 1 jalankan /ambil-kad, tanya satu SOALAN; BA jawab dengan /rancang-sprint soalan. Dev tidak mengubah AC atau assignee; Projek tidak menulis kod.</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Day 9 · Sprint 2 issues</div>
   <h2>Sprint 2: two issues per Dev pair</h2>
   <table class="t tight">

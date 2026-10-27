@@ -76,6 +76,8 @@ flowchart LR
 | **AI-34** | PM: Jira sprint summary | Team | 9–10 |
 | **AI-35** | QA / Dev: Jira Bug card | Team | 9–10 |
 | **AI-36** | Release PM: CHANGELOG from the Jira version | Team | 10 |
+| **AI-37** | Projek: plan the sprint & answer Dev questions (Jira) | Team | 9–10 |
+| **AI-38** | Dev: pick up assigned cards & discuss (Jira) | Team | 9–10 |
 
 ---
 
@@ -608,6 +610,22 @@ Use Jira: the cards from JQL project = KAN AND fixVersion = v1.1.0 AND statusCat
 ```
 
 - **After:** remove every line that cannot be linked to a real MR.
+
+### AI-37 — Projek: plan the sprint & answer Dev questions
+
+```prompt title="AI-37"
+/rancang-sprint sprint
+```
+
+- **Then:** `/rancang-sprint soalan` every 20 minutes. Approve every proposed row yourself; drag cards into the sprint on the board.
+
+### AI-38 — Dev: pick up assigned cards & discuss
+
+```prompt title="AI-38"
+/ambil-kad
+```
+
+- **Then:** `/ambil-kad KAN-<n>` → `SOALAN:` (label `soalan`) if the AC is unclear, or `MULA:` + *In Progress* if ready. See the [tutorial](tutorial-jira-mcp.en.md) §8.
 
 ---
 

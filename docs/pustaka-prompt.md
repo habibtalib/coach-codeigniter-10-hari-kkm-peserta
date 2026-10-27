@@ -76,6 +76,8 @@ flowchart LR
 | **AI-34** | PM: ringkasan sprint Jira | Pasukan | 9–10 |
 | **AI-35** | QA / Dev: kad Bug Jira | Pasukan | 9–10 |
 | **AI-36** | PM keluaran: CHANGELOG daripada versi Jira | Pasukan | 10 |
+| **AI-37** | Projek: rancang sprint & jawab soalan Dev (Jira) | Pasukan | 9–10 |
+| **AI-38** | Dev: ambil kad yang di-assign & berbincang (Jira) | Pasukan | 9–10 |
 
 ---
 
@@ -608,6 +610,22 @@ Guna Jira: kad JQL project = KAN AND fixVersion = v1.1.0 AND statusCategory = Do
 ```
 
 - **Selepas:** buang setiap baris yang tidak dapat dipautkan kepada MR sebenar.
+
+### AI-37 — Projek: rancang sprint & jawab soalan Dev
+
+```prompt title="AI-37"
+/rancang-sprint sprint
+```
+
+- **Kemudian:** `/rancang-sprint soalan` setiap 20 minit. Luluskan setiap baris cadangan sendiri; seret kad ke sprint di papan.
+
+### AI-38 — Dev: ambil kad yang di-assign & berbincang
+
+```prompt title="AI-38"
+/ambil-kad
+```
+
+- **Kemudian:** `/ambil-kad KAN-<n>` → `SOALAN:` (label `soalan`) jika AC kabur, atau `MULA:` + *In Progress* jika sedia. Rujuk [tutorial](tutorial-jira-mcp.md) §8.
 
 ---
 

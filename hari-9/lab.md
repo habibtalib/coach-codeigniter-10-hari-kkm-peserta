@@ -37,6 +37,31 @@ Jira Free: **10 kerusi** — jurulatih, PM, BA, 2 QA, seorang daripada setiap pa
 
 4. Baca konvensyen kunci ([tutorial §3](../docs/tutorial-jira-mcp.md#3-konvensyen-kunci-jira)): branch `feat/KAN-<n>-<ringkas>`, commit `Rujuk KAN-<n>`, tajuk MR `KAN-<n>: …`.
 
+### Langkah — Projek: rancang & agih kad dengan Jira MCP (08:30–09:00)
+
+1. **BA:** kad Idea tanpa AC → `/isu-baharu KAN-<n>` → baca medan → *Yes* → kad ke **To Do**.
+2. **PM:** cadangan agihan:
+
+   ```text
+   /rancang-sprint sprint
+   ```
+
+   Semak jadual cadangan (pasangan, fail panas, sebab), luluskan baris demi baris. Di papan Jira: seret kad ke *Sprint 2 (Hari 9)*, **Complete sprint** *Sprint 1 (Hari 8)* (kad belum siap → Sprint 2), kemudian **Start sprint** selepas sync 09:00.
+3. **QA:** kad To Do → jadual AC → kes ujian sebagai komen kad (draf dengan Claude, hantar selepas *Yes*).
+
+### Langkah — Dev: ambil kad yang di-assign & berbincang (09:15)
+
+1. Pemegang kerusi Jira pasangan (rakan pasangan di sebelah):
+
+   ```text
+   /ambil-kad
+   ```
+
+   Claude menyenaraikan kad yang di-assign kepada anda dalam sprint terbuka **sahaja**.
+2. Pilih kad: `/ambil-kad KAN-<n>`. Claude membaca AC dan komen.
+3. AC kabur atau bergantung pada pasangan lain → luluskan komen `SOALAN: …` + label `soalan`. Tunggu `JAWAPAN:` (Projek menyemak `/rancang-sprint soalan` setiap 20 minit); sementara itu ambil kad lain atau bantu QA.
+4. Sedia → luluskan transition **In Progress** + komen `MULA: branch feat/KAN-<n>-…`, kemudian langkah 5 di bawah.
+
 ### Langkah
 
 1. **Stand-up (08:30, dalam pasukan).** Setiap orang 2 minit: siap · seterusnya · tersekat. PM (Projek) dan floater (Dev) mencatat penyekat sebagai komen dalam isu berkaitan.
@@ -77,6 +102,7 @@ Jira Free: **10 kerusi** — jurulatih, PM, BA, 2 QA, seorang daripada setiap pa
 - [ ] Sprint 2 dimulakan dalam Jira; setiap kad sprint ada label `pasukan-dev` + `pasangan-N` dan *Assignee*.
 - [ ] Nota sync dalam isu #19 dengan susunan merge yang dipersetujui semua pasangan.
 - [ ] Ujian gagal kerana ciri tiada, dengan mesej yang menyebut AC.
+- [ ] Dev: kad saya diambil dengan `/ambil-kad`; komen `MULA:` (dan `SOALAN:` jika ada) dalam kad, dijawab Projek dengan `JAWAPAN:`.
 - [ ] Branch `feat/KAN-<n>-…` setiap pasangan dengan commit pertama; kad *In Progress*.
 
 ---

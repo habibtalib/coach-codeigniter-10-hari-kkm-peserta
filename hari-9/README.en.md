@@ -146,6 +146,8 @@ Full prompts: [`pustaka-prompt.en.md`](../docs/pustaka-prompt.en.md) §H (AI-21.
 | Role | Prompt & Claude Code feature | Verify yourself | Lab |
 |---|---|---|---|
 | Everyone · Jira MCP | AI-33: `List the Jira sites and spaces I can see, then the first 5 cards in the KAN backlog. Read only.` | Keys and summaries match the Jira board | 9.20 |
+| Projek · assign | AI-37: `/rancang-sprint sprint` (assign cards) · `/rancang-sprint soalan` (answer Dev) | Read every proposed row before *Yes*; the sprint is dragged on the board | 9.20 |
+| Dev · pick up | AI-38: `/ambil-kad` → `/ambil-kad KAN-<n>` (my cards, `SOALAN:`, `MULA:`) | Only cards assigned to you; the Dev does not change AC | 9.20 |
 | PM · sync | AI-23 + AI-34: `Use Jira. JQL: project = KAN AND sprint in openSprints(). Summarise the cards labelled pasukan-dev and the hot files each card will touch; mark dependencies between pairs.` | Compare with the sync note in issue #19 | 9.20 |
 | BA · AC | AI-21: `/isu-baharu 21` → `Compare these AC with the BRS requirement section of the issue; list what is missing or added.` | Every AC comes from the issue/BRS, not invented by Claude | 9.20 |
 | QA · test plan | AI-25 with `penguji-espkp`; for #13: `How can the reminder command be tested without waiting 7 days? Show the service('jam') pattern in the existing tests.` | The test fails because the feature is missing, not because of time | 9.20 |
