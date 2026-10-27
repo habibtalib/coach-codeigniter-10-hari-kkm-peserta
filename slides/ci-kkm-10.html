@@ -2698,10 +2698,10 @@ down() mengundur up() · JANGAN jalankan migrate</span></pre></div>
   <div class="eyebrow">Hari 8 · S15 — Lab 8.20 (09:00–10:30)</div>
   <h2>S15 · Persediaan pasukan</h2>
   <div class="split">
-    <div class="codewrap"><div class="codebar">Git Bash · ~/latihan/pasukan<span class="lang">bash</span></div>
+    <div class="codewrap"><div class="codebar">Git Bash · ~/latihan/espkpv2<span class="lang">bash</span></div>
 <pre class="code sm" data-lang="bash"><span class="c"># nama pengguna + TOKEN GitLab KKM (bukan kata laluan)</span>
-git clone https://<gitlab-kkm>/aplikasi-baharu/espkpv2.git
-cd espkpv2 &amp;&amp; composer install
+cd ~/latihan/espkpv2 &amp;&amp; git switch main &amp;&amp; git pull
+composer install
 cp .env.example .env &amp;&amp; php spark key:generate
 php spark migrate --all &amp;&amp; php spark db:seed DatabaseSeeder
 composer test

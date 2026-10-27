@@ -18,7 +18,7 @@
 ## Lab 8.20 — Persediaan Pasukan: espkpv2, Claude Code & Papan Isu (S15)
 
 ### 🎯 Objektif
-Menyediakan espkpv2 pada Laragon sebagai ahli pasukan (clone dengan akses tulis, database dev + ujian, `composer test` hijau), **membuktikan** Claude Code memuatkan konfigurasi yang dikongsi, dan **mengenal** skuad, peranan serta isu Sprint 1 anda di papan.
+Menyediakan espkpv2 dari Hari 7 pada Laragon sebagai ahli pasukan (`main` terkini dengan akses tulis, database dev + ujian, `composer test` hijau), **membuktikan** Claude Code memuatkan konfigurasi yang dikongsi, dan **mengenal** skuad, peranan serta isu Sprint 1 anda di papan.
 
 ### Prasyarat
 - Akaun GitLab KKM anda telah ditambah ke projek `aplikasi-baharu/espkpv2` sebagai **Developer** (jurulatih). Semak: buka URL repo dalam pelayar — anda nampak fail, bukan 404.
@@ -29,18 +29,27 @@ Menyediakan espkpv2 pada Laragon sebagai ahli pasukan (clone dengan akses tulis,
 
 1. **Token GitLab KKM (5 minit).** Di GitLab KKM: avatar → *Edit profile* → *Access Tokens*. Cipta token bernama `kelas-ci` dengan skop `api`, `read_repository`, `write_repository`, tamat 30 hari. Salin sekali sahaja ke pengurus kata laluan anda — **jangan** tampal dalam fail repo, isu, chat kelas atau prompt Claude.
 
-2. **Clone repo pasukan (10 minit).**
+2. **Guna projek espkpv2 sedia ada dari Hari 7 (10 minit).** Folder `~/latihan/espkpv2` (Lab 7.12) ialah repo pasukan anda. Kini anda **Developer**, jadi tarik `main` terkini:
 
    ```bash
-   mkdir -p ~/latihan/pasukan && cd ~/latihan/pasukan
-   git clone https://<gitlab-kkm>/aplikasi-baharu/espkpv2.git
-   cd espkpv2
+   cd ~/latihan/espkpv2
+   git status
+   git switch main
+   git pull
    git log --oneline -3
    ```
 
-   Apabila diminta, nama pengguna = username GitLab KKM, kata laluan = **token** dari langkah 1. Folder `~/latihan/espkpv2` dari Hari 7 (zip, tanpa `.git`) tidak digunakan lagi.
+   Apabila diminta, nama pengguna = username GitLab KKM, kata laluan = **token** dari langkah 1. `git status` tunjuk fail diubah dari Hari 7 → `git stash` dahulu.
 
-3. **Pasang dan sediakan database (25 minit).** Ikut bahagian *Mula (Windows · Laragon · Git Bash)* dalam `README.md` repo, dalam folder `espkpv2`:
+   Folder dari **zip** (`git status` → `not a git repository`) atau tiada folder: simpan yang lama ke tepi dan clone di tempat yang sama:
+
+   ```bash
+   mv ~/latihan/espkpv2 ~/latihan/espkpv2-zip
+   git clone https://<gitlab-kkm>/aplikasi-baharu/espkpv2.git ~/latihan/espkpv2
+   cd ~/latihan/espkpv2
+   ```
+
+3. **Pasang dan sediakan database (25 minit).** Hari 7 hanya membaca kod; kini jalankan aplikasi. Ikut bahagian *Mula (Windows · Laragon · Git Bash)* dalam `README.md` repo, dalam folder `~/latihan/espkpv2` (`composer install` mengemas kini pakej jika sudah dipasang):
 
    ```bash
    composer check-platform-reqs --no-dev
@@ -95,10 +104,10 @@ Menyediakan espkpv2 pada Laragon sebagai ahli pasukan (clone dengan akses tulis,
 ### Kesilapan lazim
 | Gejala | Punca | Penyelesaian |
 |---|---|---|
-| `git clone` → `HTTP Basic: Access denied` | Kata laluan akaun digunakan, bukan token; atau token tanpa `read_repository` | Guna token; Windows: *Credential Manager* → buang kelayakan `<gitlab-kkm>` lama, clone semula |
-| `git clone` → 404 / `not found` | Belum ditambah ke projek | Beritahu jurulatih username GitLab KKM anda |
+| `git pull` / `git clone` → `HTTP Basic: Access denied` | Kata laluan akaun atau token lama Hari 7 digunakan; atau token tanpa `read_repository` | Guna token baharu; Windows: *Credential Manager* → buang kelayakan `<gitlab-kkm>` lama, cuba semula |
+| `git pull` / `git clone` → 404 / `not found` | Belum ditambah ke projek | Beritahu jurulatih username GitLab KKM anda |
 | `composer test` gagal `Unknown database 'espkp_contoh_test'` | Database ujian belum dicipta | Arahan `CREATE DATABASE` dalam langkah 3 |
-| `/isu-baharu` tiada dalam menu | `claude` dimulakan di luar folder `espkpv2` | `cd ~/latihan/pasukan/espkpv2`, mulakan `claude` semula |
+| `/isu-baharu` tiada dalam menu | `claude` dimulakan di luar folder `espkpv2` | `cd ~/latihan/espkpv2`, mulakan `claude` semula |
 | `ci4-spark` ✘ | `php` tiada dalam PATH sesi | `php -v` dalam Git Bash; Laragon → Tools → Path → *Add Laragon to Path* |
 | `winget` tiada | Windows lama | Muat turun pemasang `glab` Windows dari halaman *releases* GitLab CLI, atau guna pelayar sahaja untuk isu |
 
@@ -127,7 +136,7 @@ Bekerja serentak dalam peranan pagi anda pada isu Sprint 1 skuad: **PM** menghas
    Isu #1 bersaiz L. Cadangkan pecahan kepada isu ≤ M untuk Sprint 1 (AC teras: AC-1 dan AC-3) dan Sprint 2 (selebihnya). Jangan cipta isu; beri badan setiap isu.
    ```
 
-2. **Kemas kini isu.** Simpan badan sebagai `isu.md` **di luar** repo (cth `~/latihan/pasukan/isu.md`), kemudian jalankan arahan `glab issue update …` yang dicetak Claude. Soalan untuk pemilik sistem → komen isu `@jurulatih`, label `status::disekat` sehingga dijawab.
+2. **Kemas kini isu.** Simpan badan sebagai `isu.md` **di luar** repo (cth `~/latihan/isu.md`), kemudian jalankan arahan `glab issue update …` yang dicetak Claude. Soalan untuk pemilik sistem → komen isu `@jurulatih`, label `status::disekat` sehingga dijawab.
 
 3. **Selaras (sepanjang sesi).** Dengan PM skuad lain: siapa menyentuh `app/Config/Routes.php`, `Menu.php` atau `DemoSeeder.php` hari ini? Tulis jawapan dalam komen isu skuad.
 
