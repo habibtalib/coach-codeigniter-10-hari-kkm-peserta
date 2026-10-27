@@ -2632,8 +2632,8 @@ down() mengundur up() · JANGAN jalankan migrate</span></pre></div>
   <div class="sessions">
     <div><i>S15</i><span>Persediaan pasukan: espkpv2, Claude Code dikongsi, papan isu</span></div>
     <div><i>S16</i><span>Sprint 1 pagi: isu + AC, pelan ujian, slice pertama</span></div>
-    <div><i>S17</i><span>Sprint 1 petang (tukar peranan): MR &amp; semakan QA</span></div>
-    <div><i>S18</i><span>Merge, latihan konflik, demo skuad &amp; retro</span></div>
+    <div><i>S17</i><span>Sprint 1 petang (2 pasukan: Projek &amp; Dev): MR &amp; semakan QA</span></div>
+    <div><i>S18</i><span>Merge, latihan konflik, demo &amp; retro</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span></div>
   <div class="daynum">08</div>
@@ -2730,6 +2730,20 @@ glab auth login --hostname <gitlab-kkm></pre></div>
 </section>
 
 <section class="slide">
+  <div class="eyebrow">Hari 8 · Papan FigJam</div>
+  <h2>Ubah papan FigJam dengan prompt: Figma MCP + <code>papan-figjam</code></h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">Git Bash · ~/latihan/espkpv2<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="c"># sekali (Git Bash)</span>
+claude mcp add --transport http --scope user figma https://mcp.figma.com/mcp
+<span class="c"># dalam claude: /mcp → figma → Authenticate</span></pre></div>
+    <div class="card top m-a"><span class="k">FIGJAM</span><ul><li>ERD, aliran Pas/Hilang/TLK, papan isu, Cadangan ERD, Retro</li><li>Repo = sumber kebenaran; papan = salinan kerja</li><li>Satu prompt = satu perubahan (had pelan Starter)</li><li>Tiada BRS/dokumen KKM, No. KP atau <code>.env</code> ke Figma</li></ul></div>
+  </div>
+  <div class="callout tip mt16"><span class="i">💡</span><div><code>Guna subagent papan-figjam. Isu #25: salin kad profil_pengguna ke lorong "Cadangan (Dev / BA)" dan tambah lajur telefon_bimbit berwarna kuning.</code> — tutorial: <code>docs/tutorial-figma-mcp.md</code></div></div>
+  <aside class="notes"><p>Tunjuk papan kelas dan satu prompt langsung. Pautan edit papan diberi jurulatih. Jika had panggilan Figma dicapai, ubah terus di pelayar.</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Hari 8 · S17 — Lab 8.22 (14:30–16:00)</div>
   <h2>S17 · MR &amp; semakan QA</h2>
   <div class="split">
@@ -2750,7 +2764,7 @@ glab mr approve &lt;no-MR&gt;</pre></div>
     </table>
   </div>
   <div class="callout warn mt16"><span class="i">⚠️</span><div>QA membuka <b>setiap</b> <code>fail:baris</code> sendiri. Tiada bukti = AC tidak dipenuhi. Pengarang MR tidak menekan <i>Approve</i>.</div></div>
-  <aside class="notes"><p>Mulakan dengan putaran: PM pagi menjadi QA, dan seterusnya. Dev mengisi Tiga baris utama tanpa Claude. Jika runner kongsi GitLab KKM offline, Dev menyatakannya dalam MR dan menyertakan output composer semak setempat. PM memastikan papan tepat dan bersetuju susunan merge. (90 minit)</p></aside>
+  <aside class="notes"><p>Mulakan dengan pasukan baharu (isu #19): Projek dan Dev; BA mula dengan isu #20. Dev mengisi Tiga baris utama tanpa Claude. Jika runner kongsi GitLab KKM offline, Dev menyatakannya dalam MR dan menyertakan output composer semak setempat. PM memastikan papan tepat dan bersetuju susunan merge. (90 minit)</p></aside>
 </section>
 
 <section class="slide">
@@ -2767,11 +2781,11 @@ git add app/Config/Routes.php
 git rebase --continue
 git push --force-with-lease</pre></div>
     <div class="card top m-a"><span class="k">LATIHAN KONFLIK</span>
-      <ul><li>PM tetapkan susunan merge: MR dengan kurang fail dikongsi dahulu</li><li>Simpan <b>kedua-dua</b> blok kawasan; buang <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> <code>=======</code> <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code></li><li>Konflik dalam hotspot skuad lain → berhenti, panggil PM pemilik</li><li>Demo 2 minit: PM (AC) · Dev (pelayar) · QA (ujian)</li><li>Retro: baik · ubah esok · satu peraturan prompt</li></ul>
+      <ul><li>PM + floater tetapkan susunan merge: MR dengan kurang fail dikongsi dahulu</li><li>Simpan <b>kedua-dua</b> blok modul; buang <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> <code>=======</code> <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code></li><li>Konflik dalam fail panas → berhenti, panggil floater</li><li>Demo 2 minit setiap pasangan: BA (AC) · Dev (pelayar) · QA (ujian)</li><li>Retro: sticky di FigJam · baik · ubah esok · satu peraturan prompt</li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Prompt: <code>Terangkan konflik dalam app/Config/Routes.php: apa yang ditambah setiap pihak? Jangan selesaikan.</code> — Dev yang memilih baris.</div></div>
-  <aside class="notes"><p>Merge pertama oleh PM selepas QA approve. Pastikan Closes #N menutup isu. Selepas setiap merge, MR lain rebase dan QA mengesahkan semula ringkas. Hujung hari: sekurang-kurangnya satu MR setiap skuad di main dan isu retro skuad wujud. (60 minit)</p></aside>
+  <aside class="notes"><p>Merge pertama oleh PM selepas QA approve. Pastikan Closes #N menutup isu. Selepas setiap merge, MR lain rebase dan QA mengesahkan semula ringkas. Hujung hari: sekurang-kurangnya satu MR setiap pasangan di main dan isu retro wujud. (60 minit)</p></aside>
 </section>
 
 <section class="slide">
@@ -2789,31 +2803,16 @@ git push --force-with-lease</pre></div>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Hari 8 · Putaran peranan</div>
-  <h2>Setiap orang: PM sekali, QA sekali, Dev ≥ 2 kali</h2>
-  <table class="t tight">
-    <tr><th>Slot</th><th style="width:150px">PM</th><th style="width:150px">QA</th><th style="width:200px">Dev</th></tr>
-    <tr><td>Hari 8 pagi (Sprint 1)</td><td>Tempat 1</td><td>Tempat 2</td><td>Tempat 3, 4</td></tr>
-    <tr><td>Hari 8 petang (Sprint 1)</td><td>Tempat 2</td><td>Tempat 3</td><td>Tempat 4, 1</td></tr>
-    <tr><td>Hari 9 pagi (Sprint 2)</td><td>Tempat 3</td><td>Tempat 4</td><td>Tempat 1, 2</td></tr>
-    <tr><td>Hari 9 petang (Sprint 2)</td><td>Tempat 4</td><td>Tempat 1</td><td>Tempat 2, 3</td></tr>
-    <tr><td>Hari 10 (Sprint 3 + v1.1)</td><td colspan="3">Pilihan skuad — semua ke arah keluaran</td></tr>
-  </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div><b>Serah tugas dalam isu</b> sebelum setiap putaran: <i>Siap · Seterusnya · Soalan terbuka</i>. Orang seterusnya — dan Claude — membaca isu, bukan chat peribadi.</div></div>
-  <aside class="notes"><p>Nombor tempat 1–4 diumumkan jurulatih pagi ini. Putaran memastikan setiap orang merasai ketiga-tiga peranan dan penilaian capstone meliputi kualiti isu, bukti semakan dan kebersihan MR.</p></aside>
-</section>
-
-<section class="slide">
   <div class="eyebrow">Hari 8 · Hasil hari ini</div>
-  <h2>Sprint 1 siap — semak hasil skuad</h2>
+  <h2>Sprint 1 siap — semak hasil pasukan</h2>
   <ul class="checks done">
     <li><span>espkpv2 berjalan pada Laragon; <code>composer test</code> hijau; Claude Code dikongsi dimuatkan.</span></li>
     <li><span>Isu Sprint 1 <code>status::sedia</code> dengan AC Diberi/Apabila/Maka (termasuk AC akses 404).</span></li>
     <li><span>Branch <code>feat/&lt;no&gt;-…</code> dengan commit <code>Rujuk #N</code>; MR <code>Closes #N</code> dengan senarai semak diisi.</span></li>
     <li><span>Komen semakan QA dengan jadual AC ↔ kod ↔ ujian pada setiap MR.</span></li>
-    <li><span>≥ 1 MR setiap skuad di-merge ke <code>main</code>; isu retro skuad wujud.</span></li>
+    <li><span>≥ 1 MR setiap pasangan di-merge ke <code>main</code>; isu retro wujud; BA telah menyiapkan AC #20.</span></li>
   </ul>
-  <aside class="notes"><p>Esok Sprint 2: tempat 3 menjadi PM pagi. Isu susulan Sprint 1 mesti ada dalam backlog dengan label skuad dan milestone Sprint 2 sebelum pulang.</p></aside>
+  <aside class="notes"><p>Esok Sprint 2: BA menyiapkan AC #21–#26 supaya Dev boleh mula pagi. Isu susulan Sprint 1 mesti ada dalam backlog dengan label pasukan:: dan milestone Sprint 2 sebelum pulang.</p></aside>
 </section>
 
 

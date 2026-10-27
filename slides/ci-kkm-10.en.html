@@ -2632,8 +2632,8 @@ down() reverses up() · NEVER run migrate</span></pre></div>
   <div class="sessions">
     <div><i>S15</i><span>Team setup: espkpv2, shared Claude Code, issue board</span></div>
     <div><i>S16</i><span>Sprint 1 morning: issue + AC, test plan, first slice</span></div>
-    <div><i>S17</i><span>Sprint 1 afternoon (roles rotate): MR &amp; QA review</span></div>
-    <div><i>S18</i><span>Merge, conflict drill, squad demo &amp; retro</span></div>
+    <div><i>S17</i><span>Sprint 1 afternoon (2 teams: Projek &amp; Dev): MR &amp; QA review</span></div>
+    <div><i>S18</i><span>Merge, conflict drill, demo &amp; retro</span></div>
   </div>
   <div class="dayrail"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="now"></span><span></span><span></span></div>
   <div class="daynum">08</div>
@@ -2730,6 +2730,20 @@ glab auth login --hostname <gitlab-kkm></pre></div>
 </section>
 
 <section class="slide">
+  <div class="eyebrow">Day 8 · FigJam board</div>
+  <h2>Change the FigJam board with prompts: Figma MCP + <code>papan-figjam</code></h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">Git Bash · ~/latihan/espkpv2<span class="lang">bash</span></div>
+<pre class="code sm" data-lang="bash"><span class="c"># once (Git Bash)</span>
+claude mcp add --transport http --scope user figma https://mcp.figma.com/mcp
+<span class="c"># inside claude: /mcp → figma → Authenticate</span></pre></div>
+    <div class="card top m-a"><span class="k">FIGJAM</span><ul><li>ERD, Pas/Hilang/TLK workflows, issue board, ERD proposals, Retro</li><li>Repo = source of truth; board = working copy</li><li>One prompt = one change (Starter plan limit)</li><li>No BRS/KKM documents, ID numbers or <code>.env</code> into Figma</li></ul></div>
+  </div>
+  <div class="callout tip mt16"><span class="i">💡</span><div><code>Use the papan-figjam subagent. Issue #25: copy the profil_pengguna card into the "Cadangan (Dev / BA)" lane and add column telefon_bimbit in yellow.</code> — tutorial: <code>docs/tutorial-figma-mcp.en.md</code></div></div>
+  <aside class="notes"><p>Tunjuk papan kelas dan satu prompt langsung. Pautan edit papan diberi jurulatih. Jika had panggilan Figma dicapai, ubah terus di pelayar.</p></aside>
+</section>
+
+<section class="slide">
   <div class="eyebrow">Day 8 · S17 — Lab 8.22 (14:30–16:00)</div>
   <h2>S17 · MR &amp; QA review</h2>
   <div class="split">
@@ -2750,7 +2764,7 @@ glab mr approve &lt;MR-no&gt;</pre></div>
     </table>
   </div>
   <div class="callout warn mt16"><span class="i">⚠️</span><div>QA opens <b>every</b> <code>file:line</code> personally. No evidence = AC not met. The MR author never presses <i>Approve</i>.</div></div>
-  <aside class="notes"><p>Start with the rotation: the morning PM becomes QA, and so on. Devs fill in the Three key lines without Claude. If the GitLab KKM shared runners are offline, the Dev says so in the MR and attaches the local composer semak output. The PM keeps the board accurate and agrees the merge order. (90 minutes)</p></aside>
+  <aside class="notes"><p>Start with the new teams (issue #19): Projek and Dev; the BA starts with issue #20. Devs fill in the Three key lines without Claude. If the GitLab KKM shared runners are offline, the Dev says so in the MR and attaches the local composer semak output. The PM keeps the board accurate and agrees the merge order. (90 minutes)</p></aside>
 </section>
 
 <section class="slide">
@@ -2767,11 +2781,11 @@ git add app/Config/Routes.php
 git rebase --continue
 git push --force-with-lease</pre></div>
     <div class="card top m-a"><span class="k">CONFLICT DRILL</span>
-      <ul><li>PM sets the merge order: MRs touching fewer shared files first</li><li>Keep <b>both</b> area blocks; remove <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> <code>=======</code> <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code></li><li>Conflict in another squad's hotspot → stop, call the owning PM</li><li>2-minute demo: PM (AC) · Dev (browser) · QA (tests)</li><li>Retro: went well · change tomorrow · one prompt rule</li></ul>
+      <ul><li>PM + floater set the merge order: MRs touching fewer shared files first</li><li>Keep <b>both</b> module blocks; remove <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> <code>=======</code> <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code></li><li>Conflict in a hot file → stop, call the floater</li><li>2-minute demo per pair: BA (AC) · Dev (browser) · QA (tests)</li><li>Retro: sticky on FigJam · went well · change tomorrow · one prompt rule</li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Prompt: <code>Explain the conflict in app/Config/Routes.php: what did each side add? Do not resolve it.</code> — the Dev chooses the lines.</div></div>
-  <aside class="notes"><p>First merge by the PM after QA approval. Check that Closes #N closes the issue. After each merge the other MRs rebase and QA does a short re-check. End of day: at least one MR per squad on main and a squad retro issue. (60 minutes)</p></aside>
+  <aside class="notes"><p>First merge by the PM after QA approval. Check that Closes #N closes the issue. After each merge the other MRs rebase and QA does a short re-check. End of day: at least one MR per pair on main and a retro issue. (60 minutes)</p></aside>
 </section>
 
 <section class="slide">
@@ -2789,31 +2803,16 @@ git push --force-with-lease</pre></div>
 </section>
 
 <section class="slide">
-  <div class="eyebrow">Day 8 · Role rotation</div>
-  <h2>Everyone: PM once, QA once, Dev ≥ 2 times</h2>
-  <table class="t tight">
-    <tr><th>Slot</th><th style="width:150px">PM</th><th style="width:150px">QA</th><th style="width:200px">Dev</th></tr>
-    <tr><td>Day 8 morning (Sprint 1)</td><td>Seat 1</td><td>Seat 2</td><td>Seats 3, 4</td></tr>
-    <tr><td>Day 8 afternoon (Sprint 1)</td><td>Seat 2</td><td>Seat 3</td><td>Seats 4, 1</td></tr>
-    <tr><td>Day 9 morning (Sprint 2)</td><td>Seat 3</td><td>Seat 4</td><td>Seats 1, 2</td></tr>
-    <tr><td>Day 9 afternoon (Sprint 2)</td><td>Seat 4</td><td>Seat 1</td><td>Seats 2, 3</td></tr>
-    <tr><td>Day 10 (Sprint 3 + v1.1)</td><td colspan="3">Squad's choice — everyone towards the release</td></tr>
-  </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div><b>Hand over in the issue</b> before every rotation: <i>Done · Next · Open questions</i>. The next person — and Claude — reads the issue, not a private chat.</div></div>
-  <aside class="notes"><p>The trainer announces seats 1–4 this morning. Rotation gives everyone all three roles, and capstone assessment covers issue quality, review evidence and MR hygiene.</p></aside>
-</section>
-
-<section class="slide">
   <div class="eyebrow">Day 8 · Today's outputs</div>
-  <h2>Sprint 1 done — check squad outputs</h2>
+  <h2>Sprint 1 done — check team outputs</h2>
   <ul class="checks done">
     <li><span>espkpv2 runs on Laragon; <code>composer test</code> green; shared Claude Code config loaded.</span></li>
     <li><span>Sprint 1 issue <code>status::sedia</code> with Given/When/Then AC (including the 404 access AC).</span></li>
     <li><span>Branch <code>feat/&lt;no&gt;-…</code> with <code>Rujuk #N</code> commits; MR <code>Closes #N</code> with a filled checklist.</span></li>
     <li><span>A QA review comment with an AC ↔ code ↔ test table on every MR.</span></li>
-    <li><span>≥ 1 MR per squad merged to <code>main</code>; squad retro issue exists.</span></li>
+    <li><span>≥ 1 MR per pair merged to <code>main</code>; retro issue exists; the BA has finished the AC for #20.</span></li>
   </ul>
-  <aside class="notes"><p>Tomorrow is Sprint 2: seat 3 becomes the morning PM. Sprint 1 follow-up issues must be in the backlog with a squad label and the Sprint 2 milestone before going home.</p></aside>
+  <aside class="notes"><p>Tomorrow is Sprint 2: the BA finishes the AC for #21–#26 so Devs can start in the morning. Sprint 1 follow-up issues must be in the backlog with a pasukan:: label and the Sprint 2 milestone before going home.</p></aside>
 </section>
 
 

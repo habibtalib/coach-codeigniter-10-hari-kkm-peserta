@@ -132,7 +132,7 @@ Tiga peranan bermula **serentak** pada isu yang sama:
 
 ## S17 — Sprint 1 (Petang): MR, Semakan QA & Papan (14:30–16:00)
 
-**Mulai sesi ini: 2 pasukan tetap** (isu #19). **Projek** — PM `hafez.husin`, BA `jumaidi`, QA `khairol` & `mdanial`. **Dev** — pasangan 1 `noraini`+`Zuriyani` (#1), 2 `NURASMA`+`rifa` (#10, #12), 3 `cpchin`+`wahida` (#16), 4 `sukri`+`huda` (#20 selepas AC), floater `juhaida`. Penyerahan berlaku **dalam isu**: pemilik isu pagi menulis komen "Serah tugas" (branch, apa siap, seterusnya) sebelum 14:30. Label `pasukan::projek|dev` menunjukkan siapa bertindak; `pasangan::N` menunjukkan pasangan Dev.
+**Mulai sesi ini: 2 pasukan tetap** — nama dalam isu #19. **Projek** (4): PM, BA, 2 QA. **Dev** (9): pasangan 1 (#1), 2 (#10, #12), 3 (#16), 4 (#20 selepas AC) dan floater. Penyerahan berlaku **dalam isu**: pemilik isu pagi menulis komen "Serah tugas" (branch, apa siap, seterusnya) sebelum 14:30. Label `pasukan::projek|dev` menunjukkan siapa bertindak; `pasangan::N` menunjukkan pasangan Dev.
 
 Aliran MR:
 

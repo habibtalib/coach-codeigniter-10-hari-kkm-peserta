@@ -132,7 +132,7 @@ The three roles start **at the same time** on the same issue:
 
 ## S17 — Sprint 1 (Afternoon): MR, QA Review & Board (14:30–16:00)
 
-**From this session: 2 fixed teams** (issue #19). **Projek** — PM `hafez.husin`, BA `jumaidi`, QA `khairol` & `mdanial`. **Dev** — pair 1 `noraini`+`Zuriyani` (#1), 2 `NURASMA`+`rifa` (#10, #12), 3 `cpchin`+`wahida` (#16), 4 `sukri`+`huda` (#20 once its AC is ready), floater `juhaida`. The handover happens **in the issue**: the morning owner writes a "Handover" comment (branch, done, next) before 14:30. The `pasukan::projek|dev` label shows who acts; `pasangan::N` shows the Dev pair.
+**From this session: 2 fixed teams** — names in issue #19. **Projek** (4): PM, BA, 2 QA. **Dev** (9): pair 1 (#1), 2 (#10, #12), 3 (#16), 4 (#20 once its AC is ready) and a floater. The handover happens **in the issue**: the morning owner writes a "Handover" comment (branch, done, next) before 14:30. The `pasukan::projek|dev` label shows who acts; `pasangan::N` shows the Dev pair.
 
 MR flow:
 
