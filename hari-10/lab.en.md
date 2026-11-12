@@ -83,6 +83,135 @@ Prepare the v1.1.0 release from a green `main`: a CHANGELOG where every line lin
 
 ---
 
+## Lab 10.23 — CI/CD: Deploy to Staging from the Pipeline (S8–S9)
+
+### 🎯 Objective
+Add a **CD** stage to the espkpv2 pipeline: a manual `deploy-staging` job, only on `main` or a `v*` tag, that runs after `semak` and `ujian` pass, builds the app in `production` mode, runs migrations and reference data, and proves the app is alive with smoke tests. Then run it for the `v1.1.0` tag and read GitLab's *Environments* page.
+
+### Prerequisites
+- A green `main` (`composer test` and the latest MR pipeline pass).
+- A Jira card `KAN-<n>: CI deploy-staging` in Sprint 3 + v1.1, *Assignee* the floater; QA as the MR reviewer.
+- Slides *Day 10 · CI/CD*.
+
+### Steps
+
+1. **Understand the existing pipeline (everyone, 5 minutes).** Open `.gitlab-ci.yml`. Answer: how many *stages*? Which jobs run on an MR? Why are `semak-kod` and `ujian` skipped when an MR only changes `docs/`?
+
+2. **Branch (floater, S8 before 12:30).**
+
+   ```bash
+   git switch main && git pull
+   git switch -c ci/KAN-<n>-deploy-staging
+   ```
+
+3. **Add the `deploy` stage.** Under `stages:` add `- deploy` after `- test`. Under `workflow: rules:` add `- if: $CI_COMMIT_TAG` after `- if: $CI_COMMIT_BRANCH`, so pipelines also run for tags.
+
+4. **Add the job** at the end of `.gitlab-ci.yml`:
+
+   ```yaml
+   deploy-staging:
+     extends: .php
+     stage: deploy
+     services:
+       - name: mysql:8.4
+         alias: mysql
+     variables:
+       MYSQL_DATABASE: espkp_staging
+       MYSQL_ROOT_PASSWORD: root
+       CI_ENVIRONMENT: production
+       app_baseURL: "http://localhost:8080/"
+       database_default_hostname: mysql
+       database_default_database: espkp_staging
+       database_default_username: root
+       database_default_password: root
+       database_default_DBDriver: MySQLi
+     environment:
+       name: staging
+       deployment_tier: staging
+     rules:
+       - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
+         when: manual
+       - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+         when: manual
+     script:
+       - composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+       - php spark migrate --all
+       # Data rujukan sahaja: tiada akaun latihan atau data demo di staging.
+       - php spark db:seed KodRujukanSeeder
+       - php -S 0.0.0.0:8080 -t public vendor/codeigniter4/framework/system/rewrite.php > serve.log 2>&1 &
+       - sleep 3
+       # Ujian asap: halaman awam 200, halaman dilindungi dialih ke log masuk, tiada Debug Toolbar (mod production).
+       - test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/login)" = 200
+       - test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/papan-pemuka)" = 302
+       - test "$(curl -s http://localhost:8080/login | grep -c 'DEBUG-VIEW')" = 0
+       - echo "Staging $CI_COMMIT_SHORT_SHA sedia (${CI_COMMIT_TAG:-$CI_COMMIT_BRANCH})"
+     artifacts:
+       when: always
+       paths: [serve.log, writable/logs/]
+       expire_in: 7 days
+   ```
+
+   Read each block and explain it to your partner:
+   - `extends: .php` — reuses the PHP + Composer setup of the `ujian` job; the `rules` here **replace** the template's `rules`.
+   - `CI_ENVIRONMENT: production` — no Debug Toolbar, errors not shown; the same as a real staging server.
+   - `when: manual` — the pipeline does not deploy by itself; someone presses ▶.
+   - `KodRujukanSeeder` only — **no** `9001010100NN` training accounts and no demo data on staging.
+   - Three smoke tests: `/login` 200, `/papan-pemuka` 302 (protected), no `DEBUG-VIEW`.
+
+5. **Test locally first (production mode).** Move `.env` aside so the environment variables are used:
+
+   ```bash
+   mv .env .env.simpan
+   export CI_ENVIRONMENT=production app_baseURL=http://localhost:8098/ \
+     database_default_hostname=127.0.0.1 database_default_database=espkp_staging \
+     database_default_username=root database_default_password= \
+     encryption_key="hex2bin:$(php -r 'echo bin2hex(random_bytes(32));')"
+   php spark migrate --all && php spark db:seed KodRujukanSeeder
+   php -S 127.0.0.1:8098 -t public vendor/codeigniter4/framework/system/rewrite.php &
+   curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8098/login         # 200
+   curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8098/papan-pemuka  # 302
+   kill %1; mv .env.simpan .env
+   ```
+
+   Create an empty `espkp_staging` database first (HeidiSQL or `CREATE DATABASE`). Never use your dev database.
+
+6. **Lint, commit, MR.**
+
+   ```bash
+   glab ci lint .gitlab-ci.yml
+   git add .gitlab-ci.yml
+   git commit -m "ci: job deploy-staging manual pada main/tag v*" -m "Rujuk KAN-<n>"
+   git push -u origin ci/KAN-<n>-deploy-staging
+   ```
+
+   MR `KAN-<n>: CI deploy-staging`. The MR pipeline does **not** show `deploy-staging` — correct, because `rules` only allow `main` and tags. QA reviews with `/semak-mr <no>` and this list: manual? no production job? no secrets in the YAML? reference data only? The PM merges before the 12:30 freeze.
+
+7. **Deploy `main` (PM, after the merge).** *Build → Pipelines* → latest `main` pipeline → after `ujian` is green, press ▶ on `deploy-staging`. Open the job log: the last line reads `Staging <sha> sedia (main)`.
+
+8. **Deploy the release (S9, after Lab 10.21 step 4).** The `v1.1.0` tag triggers a tag pipeline. The trainer (Maintainer — `v*` tags are protected) presses ▶ on `deploy-staging`. Open *Deployments → Environments → staging*: two deployments (`main`, `v1.1.0`) with the commit and who pressed it.
+
+9. **Rollback (discuss, 5 minutes).** On the *staging* page every older deployment has a **Re-deploy** button: rollback = rerun the deploy job for an older commit. Discuss: what does rollback **not** undo? (migrations that already ran — that is why `down()` must be reversible, or a new migration fixes it).
+
+10. **From simulation to a real staging server (discuss).** This job starts the app inside the runner and throws it away after the job. A real staging adds one step: ship the build to a server (e.g. `docker compose build && up -d` over SSH). The SSH key goes in a *CI/CD Variable* marked **Protected + Masked**, never in the YAML. Production: no job in this training pipeline; follow the department's change procedure.
+
+### ✅ Checkpoint
+- [ ] MR `KAN-<n>: CI deploy-staging` merged; `glab ci lint` passes and the MR pipeline does not show `deploy-staging`.
+- [ ] Local smoke tests in production mode: `/login` 200, `/papan-pemuka` 302, no training accounts in `users`.
+- [ ] The `deploy-staging` job is green for `main` and for the `v1.1.0` tag; *Environments → staging* shows both.
+- [ ] I can explain rollback with *Re-deploy* and what it does not undo.
+
+### 🧯 Troubleshooting
+| Symptom | Cause | Fix |
+|---|---|---|
+| No `deploy-staging` in the `main` pipeline | Wrong `rules`, or no `- deploy` under `stages:` | `glab ci lint`; check `$CI_DEFAULT_BRANCH` and the `stages` list |
+| No pipeline for the `v1.1.0` tag | `workflow: rules` only allows branches | Add `- if: $CI_COMMIT_TAG` (step 3) |
+| The ▶ button is grey on the tag pipeline | Only Maintainers can run jobs on protected `v*` tags | The trainer presses ▶ |
+| `test … = 302` fails: got 200 or 500 | Empty database (migration failed) or the `session` filter changed | Open the `writable/logs/` and `serve.log` artifacts of the job |
+| Locally the app still uses the dev database | `.env` is read first and overrides the environment variables | Move `.env` aside (step 5) |
+| `DatabaseSeeder tidak boleh dijalankan dalam production` | Running the demo seeder on staging | Use `KodRujukanSeeder` only |
+
+---
+
 ## Lab 10.22 — Team Capstone Demo & Reflection (S10–S11)
 
 ### 🎯 Objective

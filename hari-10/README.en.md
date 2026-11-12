@@ -28,7 +28,7 @@ By the end of today, participants can:
 | 08:30–09:00 | — | Stand-up of the Projek and Dev teams | — |
 | 09:00–12:30 | S8 | Sprint 3: final features & critical bugs · **feature freeze 12:30** | O10 · [Lab 10.20](./lab.en.md#lab-1020--sprint-3-final-features--freeze-s8) |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–15:15 | S9 | Release v1.1.0: stabilise, CHANGELOG, release notes, tag | O11 · [Lab 10.21](./lab.en.md#lab-1021--release-v110-s9) |
+| 14:30–15:15 | S9 | Release v1.1.0: stabilise, CHANGELOG, release notes, tag | O11 · [Lab 10.21](./lab.en.md#lab-1021--release-v110-s9) · [Lab 10.23](./lab.en.md#lab-1023--cicd-deploy-to-staging-from-the-pipeline-s8s9) |
 | 15:15–16:30 | S10 | Team capstone demo to the system owner | O12, O13 · [Lab 10.22](./lab.en.md#lab-1022--team-capstone-demo--reflection-s10s11) |
 | 16:30–17:00 | S11 | Team retro & Claude Code reflection, closing | O13 · [Lab 10.22](./lab.en.md#lab-1022--team-capstone-demo--reflection-s10s11) |
 
@@ -76,6 +76,8 @@ The **release PM** (the Projek team's PM) leads these steps with help from the B
 
    The CHANGELOG goes in through a `docs/changelog-v1.1.0` MR like any other change.
 3. **Tag and Release.** `v*` tags are protected (Maintainers only): the release PM reads the release notes to the class, then the trainer creates the annotated tag and the GitLab Release on the green `main`.
+
+**CI/CD to staging ([Lab 10.23](./lab.en.md#lab-1023--cicd-deploy-to-staging-from-the-pipeline-s8s9)).** The floater adds a manual `deploy-staging` job to `.gitlab-ci.yml` through an MR before the freeze (S8). After the `v1.1.0` tag, the trainer presses ▶ on `deploy-staging` in the tag pipeline: the app is built in `production` mode, migrations and reference data run, and smoke tests prove `/login` is 200 and a protected page is 302. *Environments → staging* shows every deployment and a *Re-deploy* button for rollback. Production never comes from the training pipeline.
 
 ### ✅ Checkpoint S9
 - `CHANGELOG.md` with a 1.1.0 section on `main`; every line matches a real MR.

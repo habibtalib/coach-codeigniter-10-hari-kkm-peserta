@@ -28,7 +28,7 @@ Di akhir hari ini, peserta boleh:
 | 08:30–09:00 | — | Stand-up pasukan Projek dan Dev | — |
 | 09:00–12:30 | S8 | Sprint 3: ciri terakhir & pepijat kritikal · **pembekuan ciri 12:30** | O10 · [Lab 10.20](./lab.md#lab-1020--sprint-3-ciri-terakhir--pembekuan-s8) |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–15:15 | S9 | Keluaran v1.1.0: stabil, CHANGELOG, nota keluaran, tag | O11 · [Lab 10.21](./lab.md#lab-1021--keluaran-v110-s9) |
+| 14:30–15:15 | S9 | Keluaran v1.1.0: stabil, CHANGELOG, nota keluaran, tag | O11 · [Lab 10.21](./lab.md#lab-1021--keluaran-v110-s9) · [Lab 10.23](./lab.md#lab-1023--cicd-deploy-ke-staging-dari-pipeline-s8s9) |
 | 15:15–16:30 | S10 | Demo capstone pasukan kepada pemilik sistem | O12, O13 · [Lab 10.22](./lab.md#lab-1022--demo-capstone-pasukan--refleksi-s10s11) |
 | 16:30–17:00 | S11 | Retro pasukan & refleksi Claude Code, penutup | O13 · [Lab 10.22](./lab.md#lab-1022--demo-capstone-pasukan--refleksi-s10s11) |
 
@@ -76,6 +76,8 @@ Stand-up 08:30 dalam pasukan masing-masing (Projek dan Dev kekal sama; isu #19).
 
    CHANGELOG masuk melalui MR `docs/changelog-v1.1.0` seperti perubahan lain.
 3. **Tag dan Release.** Tag `v*` dilindungi (Maintainer sahaja): PM keluaran membaca nota keluaran kepada kelas, kemudian jurulatih mencipta tag beranotasi dan Release GitLab pada `main` yang hijau.
+
+**CI/CD ke staging ([Lab 10.23](./lab.md#lab-1023--cicd-deploy-ke-staging-dari-pipeline-s8s9)).** Floater menambah job manual `deploy-staging` pada `.gitlab-ci.yml` melalui MR sebelum pembekuan (S8). Selepas tag `v1.1.0`, jurulatih menekan ▶ pada `deploy-staging` dalam pipeline tag: aplikasi dibina dalam mod `production`, migration dan data rujukan dijalankan, dan ujian asap membuktikan `/login` 200 dan halaman dilindungi 302. *Environments → staging* menunjukkan setiap deployment dan butang *Re-deploy* untuk rollback. Production tidak pernah dari pipeline latihan.
 
 ### ✅ Checkpoint S9
 - `CHANGELOG.md` dengan bahagian 1.1.0 di `main`; setiap baris sepadan dengan MR sebenar.

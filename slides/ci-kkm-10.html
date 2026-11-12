@@ -3204,170 +3204,6 @@ $routes-&gt;get(<span class="s">'semua'</span>, ..., [<span class="s">'filter'</
   <aside class="notes"><p>Demo prompt 2 secara langsung dalam espkpv2. Kaitkan dengan semakan kod: setiap MR yang menambah route mesti menunjukkan filter + ujian tidak-boleh. Kuiz cepat: (1) pengguna dalam uks_pas dan pemohon — kebenaran gabungan atau persilangan? (2) kenapa 404 bukan 403? (3) di mana matriks sebenar disimpan?</p></aside>
 </section>
 
-<section class="slide dark divider" data-label="Hari 9 · Deploy ke staging">
-  <div class="eyebrow">Hari 9 · Tambahan — Pipeline deploy GitLab</div>
-  <h1>Deploy eSPKP ke staging secara automatik</h1>
-  <div><span class="chip m-tlk">merge ke main → semak → ujian → deploy:staging</span></div>
-  <div class="sessions">
-    <div><i>1</i><span>Dua cara: kunci SSH vs runner di pelayan staging</span></div>
-    <div><i>2</i><span>Pasang &amp; daftar runner projek (shell executor)</span></div>
-    <div><i>3</i><span>Job <code>deploy:staging</code> dalam <code>.gitlab-ci.yml</code> + skrip deploy</span></div>
-    <div><i>4</i><span>Rollback, keselamatan &amp; senarai semak</span></div>
-  </div>
-  <aside class="notes"><p>Pipeline sedia ada (semak-kod, ujian, SAST) hanya menyemak. Tambahan ini menutup kitaran: kod yang lulus di main terus berada di staging untuk pemilik sistem menguji. Contoh berdasarkan repo espkpv2 (deploy/ Docker Compose). Production kekal deploy manual oleh pentadbir pelayan.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Hari 9 · Deploy — pilih cara</div>
-  <h2>Kunci SSH atau runner di pelayan?</h2>
-  <table class="t tight">
-    <tr><th style="width:230px"></th><th>A · Kunci SSH dari runner kongsi</th><th>B · Runner di pelayan staging (disyorkan)</th></tr>
-    <tr><td>Bagaimana</td><td>Job di runner kongsi <code>ssh</code>/<code>rsync</code> ke staging</td><td>Runner pada pelayan staging menjalankan job di situ</td></tr>
-    <tr><td>Rahsia dalam GitLab</td><td>Kunci peribadi SSH (pemboleh ubah CI/CD jenis <i>File</i>)</td><td><b>Tiada</b> — runner klon kod dengan <code>CI_JOB_TOKEN</code> sementara</td></tr>
-    <tr><td>Rangkaian</td><td>Runner kongsi perlu sampai ke port 22 staging (biasanya disekat dalam rangkaian KKM)</td><td>Hanya <b>keluar</b> dari staging ke GitLab (HTTPS 443) — tiada port masuk dibuka</td></tr>
-    <tr><td>Risiko utama</td><td>Kunci bocor = akses ke pelayan</td><td>Pengguna <code>gitlab-runner</code> dalam kumpulan <code>docker</code> = setara root pada VM itu</td></tr>
-    <tr><td>Sesuai bila</td><td>Tidak dibenarkan memasang perisian pada pelayan</td><td>Staging ialah VM khusus projek ini</td></tr>
-  </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div><b>Deploy key</b> GitLab (kunci awam, baca sahaja) dan <b>deploy token</b> ialah untuk pelayan <i>menarik</i> kod — bukan untuk pipeline masuk ke pelayan. Dengan cara B kita tidak perlu kedua-duanya.</div></div>
-  <aside class="notes"><p>Syor B kerana: tiada kunci peribadi disimpan dalam GitLab, tiada port SSH perlu dibuka kepada runner kongsi, dan sambungan hanya keluar ke codeforge. Cara A ditunjukkan sebagai sandaran di slaid kemudian. Tekankan perbezaan deploy key (pelayan tarik) vs kunci SSH dalam CI (pipeline tolak).</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Hari 9 · Deploy — aliran</div>
-  <h2>Dari MR ke staging</h2>
-  <div class="flow"><div class="node"><span class="k">MR</span><b>cawangan isu</b><span>semak-kod · ujian (runner kongsi)</span></div><div class="arr">→</div><div class="node"><span class="k">MERGE</span><b>main (dilindungi)</b><span>QA approve</span></div><div class="arr">→</div><div class="node hot"><span class="k">RUNNER STAGING</span><b>deploy:staging</b><span>tag <code>espkp-staging</code></span></div><div class="arr">→</div><div class="node"><span class="k">ENVIRONMENT</span><b>staging</b><span>URL · sejarah · rollback</span></div></div>
-  <div class="grid c3 mt16">
-    <div class="card top m-tlk"><span class="k">TAG</span><h3>Job pergi ke runner yang betul</h3><p><code>tags: [espkp-staging]</code> — hanya runner staging mengambil job ini. Runner itu <b>tidak</b> ambil job tanpa tag.</p></div>
-    <div class="card top m-pas"><span class="k">RULES</span><h3>Hanya dari main</h3><p>Deploy berjalan selepas merge ke <code>main</code> dan selepas <code>ujian</code> lulus. Cawangan lain tidak pernah deploy.</p></div>
-    <div class="card top m-stat"><span class="k">ENVIRONMENT</span><h3>Jejak setiap deploy</h3><p><i>Operate → Environments → staging</i>: commit mana sedang berjalan, siapa deploy, butang <i>Rollback</i>.</p></div>
-  </div>
-  <aside class="notes"><p>Tunjuk dalam GitLab: Settings → Repository → Protected branches (main), Operate → Environments. Pipeline MR kekal di runner kongsi; hanya job deploy pergi ke runner staging.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Hari 9 · Deploy — pasang runner</div>
-  <h2>Runner projek pada pelayan staging</h2>
-  <div class="split">
-    <div class="stack">
-      <div class="card side m-tlk"><h3>1 · Cipta di GitLab</h3><p><i>Settings → CI/CD → Runners → New project runner</i>: tag <code>espkp-staging</code>, nyahtanda <i>Run untagged jobs</i>, tanda <i>Protected</i>. Salin token <code>glrt-…</code>.</p></div>
-      <div class="card side m-pas"><h3>2 · Daftar di pelayan</h3><p>Executor <code>shell</code>. Pengguna <code>gitlab-runner</code> ditambah ke kumpulan <code>docker</code>.</p></div>
-      <div class="card side m-stat"><h3>3 · Sedia folder</h3><p><code>/srv/espkp-staging</code> milik <code>gitlab-runner</code>, dengan <code>.env</code> staging (dibuat sekali oleh pentadbir, tidak pernah dalam Git).</p></div>
-    </div>
-    <div class="codewrap"><div class="codebar">pelayan staging (sebagai root)<span class="lang">bash</span></div>
-<pre class="code sm" data-lang="bash"># pasang gitlab-runner (pakej rasmi GitLab)
-curl -L https://packages.gitlab.com/install/repositories/\
-  runner/gitlab-runner/script.rpm.sh | bash
-dnf install -y gitlab-runner
-
-gitlab-runner register --non-interactive \
-  --url https://codeforge.moh.gov.my \
-  --token "$RUNNER_TOKEN" \
-  --executor shell \
-  --description espkp-staging
-
-usermod -aG docker gitlab-runner
-install -d -o gitlab-runner -m 750 /srv/espkp-staging
-# .env staging: salin daripada .env.example, isi nilai staging
-systemctl enable --now gitlab-runner</pre></div>
-  </div>
-  <div class="callout warn mt16"><span class="i">⚠️</span><div>Kumpulan <code>docker</code> = kuasa root pada VM ini. Gunakan VM staging khusus, bukan pelayan yang dikongsi dengan sistem lain.</div></div>
-  <aside class="notes"><p>Token runner (glrt-) hanya ditaip sekali di pelayan — jangan tampal dalam isu atau chat. Pelayan RHEL/Oracle: guna script.rpm.sh; Ubuntu: script.deb.sh + apt. Semak dengan gitlab-runner verify dan lihat runner hijau di Settings → CI/CD → Runners.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Hari 9 · Deploy — <code>.gitlab-ci.yml</code></div>
-  <h2>Tambah peringkat <code>deploy</code></h2>
-  <div class="split">
-  <div class="codewrap"><div class="codebar">.gitlab-ci.yml (tambahan)<span class="lang">yaml</span></div>
-<pre class="code sm" data-lang="yaml">stages: [semak, test, deploy]
-
-deploy:staging:
-  stage: deploy
-  tags: [espkp-staging]   # runner staging sahaja
-  needs: [ujian]          # ujian mesti lulus
-  resource_group: staging # satu deploy sekali
-  environment:
-    name: staging
-    url: https://espkp-staging.contoh.gov.my
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  script:
-    - ./deploy/staging.sh</pre></div>
-    <div class="stack">
-    <div class="card side m-tlk"><h3><code>needs: [ujian]</code></h3><p>Tiada deploy jika ujian gagal.</p></div>
-    <div class="card side m-pas"><h3><code>resource_group</code></h3><p>Dua merge serentak tidak bertembung di pelayan.</p></div>
-    <div class="card side m-stat"><h3>Tiada <code>image:</code></h3><p>Executor <code>shell</code> berjalan terus di pelayan, bukan dalam bekas.</p></div>
-    </div>
-  </div>
-  <aside class="notes"><p>Job ini tidak extends .php kerana ia tidak memerlukan PHP dalam imej — semuanya dibina oleh deploy/Dockerfile. Tukar URL kepada domain staging sebenar. Untuk deploy manual sahaja (butang), tambah when: manual dalam rule.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Hari 9 · Deploy — skrip</div>
-  <h2>Skrip deploy: salin, bina, mula, semak</h2>
-  <div class="codewrap"><div class="codebar">deploy/staging.sh<span class="lang">bash</span></div>
-<pre class="code sm" data-lang="bash">#!/usr/bin/env bash
-set -euo pipefail
-DEST=/srv/espkp-staging; DC="docker compose -f deploy/docker-compose.yml"
-# 1. salin kod commit ini — kekalkan .env &amp; writable/ pelayan
-rsync -a --delete --exclude .git --exclude .env --exclude writable/ ./ "$DEST/"
-cd "$DEST"; export TAG="$CI_COMMIT_SHORT_SHA"
-# 2. bina &amp; mula semula (entrypoint jalankan migrate)
-$DC build &amp;&amp; $DC up -d
-# 3. semakan kesihatan — gagal = pipeline merah
-for i in $(seq 30); do curl -fsS -o /dev/null http://localhost:8080/ &amp;&amp; exit 0; sleep 2; done
-$DC logs --tail 50; exit 1</pre></div>
-  <div class="callout tip mt16"><span class="i">💡</span><div><code>deploy/entrypoint.sh</code> sudah menjalankan <code>php spark migrate --all</code> setiap kali bekas bermula — skrip deploy tidak perlu migrate sendiri.</div></div>
-  <aside class="notes"><p>chmod +x deploy/staging.sh sebelum commit (git update-index --chmod=+x). Port 8080 contoh — ikut port yang dipetakan dalam compose staging. Jika compose guna Traefik, semak melalui URL staging. TAG dalam compose: image: espkp:${TAG:-latest} supaya imej lama masih ada untuk rollback.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Hari 9 · Deploy — sandaran cara A</div>
-  <h2>Jika runner tidak boleh dipasang: kunci SSH, diikat ketat</h2>
-  <div class="split">
-    <div class="stack">
-      <div class="card side m-tlk"><h3>Kunci khusus deploy</h3><p><code>ssh-keygen -t ed25519 -N "" -C deploy-staging</code>. Kunci awam dalam <code>authorized_keys</code> pengguna <code>deploy</code> (bukan root), dihadkan kepada satu arahan.</p></div>
-      <div class="card side m-pas"><h3>Pemboleh ubah CI/CD</h3><p><code>SSH_PRIVATE_KEY</code> jenis <b>File</b>, <b>Protected</b>, environment <code>staging</code>. <code>SSH_KNOWN_HOSTS</code> = output <code>ssh-keyscan</code> yang disemak — jangan matikan semakan hos.</p></div>
-      <div class="card side m-stat"><h3>Prasyarat rangkaian</h3><p>Runner kongsi mesti boleh sampai ke port 22 staging. Dalam rangkaian KKM ini selalunya disekat — sebab itu cara B disyorkan.</p></div>
-    </div>
-    <div class="codewrap"><div class="codebar">~deploy/.ssh/authorized_keys · job CI<span class="lang">text</span></div>
-<pre class="code sm" data-lang="text">command="/srv/deploy.sh",restrict ssh-ed25519 AAAA…
-
-deploy:staging:
-  stage: deploy
-  image: alpine:3.20
-  environment: staging
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  before_script:
-    - apk add --no-cache openssh-client
-    - install -m 700 -d ~/.ssh
-    - echo "$SSH_KNOWN_HOSTS" &gt; ~/.ssh/known_hosts
-  script:
-    - ssh -i "$SSH_PRIVATE_KEY" deploy@staging "$CI_COMMIT_SHA"</pre></div>
-  </div>
-  <aside class="notes"><p>restrict + command= bermaksud kunci itu hanya boleh menjalankan skrip deploy, tiada shell, tiada port forwarding — jika bocor, kesannya terhad. deploy.sh di pelayan membuat git fetch + checkout SHA yang diberi (repo di pelayan klon dengan deploy key baca sahaja), kemudian docker compose up. Kunci berbilang baris tidak boleh di-mask — sebab itu jenis File + Protected.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Hari 9 · Deploy — keselamatan &amp; rollback</div>
-  <h2>Sebelum hidupkan deploy automatik</h2>
-  <div class="grid c2">
-    <ul class="checks">
-      <li><span><b>main</b> &amp; <b>environment staging</b> dilindungi (siapa boleh merge / deploy).</span></li>
-      <li><span><b>Runner</b> Protected + bertag sahaja.</span></li>
-      <li><span><b><code>.env</code></b> hanya di pelayan; tiada <code>set -x</code> dalam job.</span></li>
-      <li><span><b>Data staging sintetik</b>, bukan data pemohon sebenar.</span></li>
-    </ul>
-    <div class="stack">
-      <div class="card side m-tlk"><h3>Rollback</h3><p><i>Operate → Environments → staging</i> → pilih deploy sebelum → <b>Rollback</b>. Job lama dijalankan semula dengan commit lamanya.</p></div>
-      <div class="card side m-stat"><h3>Migration sehala</h3><p>Rollback kod tidak membatalkan migration. Tulis migration yang serasi ke belakang, atau jalankan <code>php spark migrate:rollback</code> dengan sengaja.</p></div>
-    </div>
-  </div>
-  <div class="callout warn mt16"><span class="i">⚠️</span><div>Production <b>tidak</b> menggunakan pipeline ini. Deploy production kekal manual oleh pentadbir pelayan, mengikut prosedur jabatan.</div></div>
-  <aside class="notes"><p>Latihan ringkas: dalam pasukan, tulis job deploy:staging dalam MR, minta QA semak rules/tags/environment, merge, lihat pipeline sampai ke staging, kemudian cuba Rollback ke deploy sebelum. Jika VM staging belum ada, jurulatih tunjuk demo pada pelayan latihan.</p></aside>
-</section>
-
 <section class="slide dark divider" data-label="Hari 10 · Keluaran &amp; Capstone">
   <div class="eyebrow">Hari 10 · Fasa C — Keluar &amp; Serah</div>
   <h1>Hari 10 — Sprint 3, v1.1.0 &amp; Capstone Pasukan</h1>
@@ -3419,6 +3255,71 @@ setiap MR dengan !no dan KAN-n. Jangan tulis fail.</pre></div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Baris CHANGELOG tanpa <code>!no</code> dan <code>#isu</code> = tanda Claude mereka perubahan. Buang.</div></div>
   <aside class="notes"><p>PM keluaran ialah PM pasukan Projek, dibantu BA dan floater. Checkpoint: CHANGELOG.md bahagian 1.1.0 di main dengan setiap baris sepadan MR sebenar; tag v1.1.0 dan Release GitLab wujud.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 10 · CI/CD — Lab 10.23</div>
+  <h2>CI membuktikan kod betul; CD menghantarnya ke staging</h2>
+  <div class="flow"><div class="node"><span class="k">MR / PUSH</span><b>semak</b><span>lint · cs · phpstan</span></div><div class="arr">→</div><div class="node"><span class="k">CI</span><b>test</b><span>PHPUnit · MySQL 8.4</span></div><div class="arr">→</div><div class="node hot"><span class="k">CD · MANUAL ▶</span><b>deploy-staging</b><span>main · tag v*</span></div><div class="arr">→</div><div class="node"><span class="k">BUKAN DALAM PIPELINE</span><b>production</b><span>prosedur perubahan jabatan</span></div></div>
+  <div class="grid c3 mt16">
+    <div class="card side m-tlk"><h3>Continuous Integration</h3><p>Setiap MR: kod disemak dan diuji secara automatik. Merah → tidak merge.</p></div>
+    <div class="card side m-pas"><h3>Continuous Delivery</h3><p>Setiap <code>main</code> / tag <b>boleh</b> dihantar ke staging dengan satu klik — selepas ujian lulus.</p></div>
+    <div class="card side m-stat"><h3>Kenapa manual?</h3><p>Manusia memilih bila. Pipeline tidak deploy sendiri dan tidak pernah ke production.</p></div>
+  </div>
+  <aside class="notes"><p>espkpv2 hari ini: stage semak + test + SAST. Lab 10.23 menambah stage deploy dengan job deploy-staging. Continuous Deployment (automatik ke production) sengaja tidak diajar — untuk sistem kerajaan, production melalui kelulusan dan prosedur perubahan.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 10 · CI/CD — <code>.gitlab-ci.yml</code></div>
+  <h2>Job <code>deploy-staging</code>: manual, production mode, ujian asap</h2>
+  <div class="codewrap"><div class="codebar">.gitlab-ci.yml (dipendekkan)<span class="lang">yaml</span></div>
+<pre class="code sm" data-lang="yaml"><span class="v">stages</span>: [semak, test, deploy]
+<span class="v">deploy-staging</span>:
+  <span class="v">extends</span>: .php                    <span class="c"># PHP + Composer sama seperti ujian</span>
+  <span class="v">stage</span>: deploy
+  <span class="v">services</span>: [{ name: mysql:8.4, alias: mysql }]
+  <span class="v">variables</span>: { CI_ENVIRONMENT: production, database_default_hostname: mysql, ... }
+  <span class="v">environment</span>: { name: staging, deployment_tier: staging }
+  <span class="v">rules</span>:
+    - <span class="v">if</span>: <span class="s">$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/</span>
+      <span class="v">when</span>: manual
+    - <span class="v">if</span>: <span class="s">$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH</span>
+      <span class="v">when</span>: manual
+  <span class="v">script</span>:
+    - composer install --no-dev --optimize-autoloader
+    - php spark migrate --all
+    - php spark db:seed KodRujukanSeeder   <span class="c"># data rujukan sahaja</span>
+    - php -S 0.0.0.0:8080 -t public ... &amp;
+    - test "$(curl ... /login)" = 200       <span class="c"># awam</span>
+    - test "$(curl ... /papan-pemuka)" = 302 <span class="c"># dilindungi</span></pre></div>
+  <aside class="notes"><p>Teks penuh dalam Lab 10.23 langkah 4 — sudah diuji pada runner GitLab KKM. Tekankan: rules menggantikan rules templat .php; pipeline MR tidak menunjukkan job ini; tag v* dilindungi jadi hanya Maintainer menekan ▶ untuk keluaran. Tiada rahsia dalam YAML: kata laluan root di sini hanya untuk service MySQL sementara dalam runner.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 10 · CI/CD — persekitaran</div>
+  <h2>Dev, staging, production: siapa, data apa, bagaimana</h2>
+  <table class="t tight">
+    <tr><th style="width:170px">Persekitaran</th><th style="width:230px"><code>CI_ENVIRONMENT</code></th><th style="width:300px">Data</th><th>Siapa / bagaimana</th></tr>
+    <tr><td><b>dev</b></td><td><code>development</code> · Debug Toolbar, TAC di skrin</td><td>Demo + akaun latihan <code>9001010100NN</code></td><td>Setiap pembangun, <code>php spark serve</code></td></tr>
+    <tr><td><b>staging</b></td><td><code>production</code> · tiada toolbar, ralat disorok</td><td>Data rujukan sahaja (<code>KodRujukanSeeder</code>)</td><td>Pipeline, job manual ▶ selepas ujian lulus</td></tr>
+    <tr><td><b>production</b></td><td><code>production</code></td><td>Data sebenar — tiada seeder demo, tiada akaun latihan</td><td>Prosedur perubahan + kelulusan jabatan, <b>bukan</b> pipeline latihan</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div><code>DatabaseSeeder</code> menolak untuk berjalan dalam <code>production</code> — penghalang yang sengaja. Staging menguji kod yang <b>sama</b> dalam mod yang <b>sama</b> seperti production.</div></div>
+  <aside class="notes"><p>Kaitkan dengan senarai semak keselamatan K10 (mod pengeluaran untuk staging) dan bahagian A README Hari 10. Soalan: kenapa staging tidak guna akaun Latihan@2026? (kata laluan diketahui umum, dan staging sering boleh dicapai dari rangkaian jabatan).</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 10 · CI/CD — selamat &amp; rollback</div>
+  <h2>Deploy selamat: lima peraturan</h2>
+  <div class="grid c3">
+    <div class="card top m-tlk"><span class="k">1 · HIJAU DAHULU</span><p>Stage <code>deploy</code> hanya berjalan selepas <code>semak</code> + <code>test</code> lulus.</p></div>
+    <div class="card top m-pas"><span class="k">2 · MANUAL</span><p><code>when: manual</code> — manusia memilih bila; tag <code>v*</code> dilindungi (Maintainer).</p></div>
+    <div class="card top m-stat"><span class="k">3 · TIADA RAHSIA DALAM YAML</span><p>Kunci SSH / kata laluan server → <i>CI/CD Variables</i> <b>Protected + Masked</b>.</p></div>
+    <div class="card top m-tlk"><span class="k">4 · ROLLBACK</span><p><i>Environments → staging → Re-deploy</i> commit lama. Migration <b>tidak</b> diundur sendiri.</p></div>
+    <div class="card top m-pas"><span class="k">5 · UJIAN ASAP</span><p>Deploy belum siap sehingga <code>/login</code> 200 dan halaman dilindungi 302.</p></div>
+    <div class="card top m-stat"><span class="k">STAGING SEBENAR</span><p>Tambah satu langkah: hantar binaan ke server (<code>docker compose up -d</code> melalui SSH).</p></div>
+  </div>
+  <aside class="notes"><p>Lab 10.23 menjalankan staging sementara dalam runner (tiada server, tiada kunci) supaya semua peserta boleh mencuba dengan selamat. Langkah ke server sebenar ialah perubahan kecil pada script yang sama, ditambah variable dilindungi. Demo: buka Deployments → Environments → staging selepas tag v1.1.0.</p></aside>
 </section>
 
 <section class="slide">

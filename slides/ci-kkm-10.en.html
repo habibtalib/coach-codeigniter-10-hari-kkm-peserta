@@ -3204,170 +3204,6 @@ $routes-&gt;get(<span class="s">'semua'</span>, ..., [<span class="s">'filter'</
   <aside class="notes"><p>Demo prompt 2 live in espkpv2. Link it to code review: every MR that adds a route must show the filter + a cannot-test. Quick quiz: (1) a user in uks_pas and pemohon — union or intersection of permissions? (2) why 404 and not 403? (3) where is the real matrix stored?</p></aside>
 </section>
 
-<section class="slide dark divider" data-label="Day 9 · Deploy to staging">
-  <div class="eyebrow">Day 9 · Extra — GitLab deploy pipeline</div>
-  <h1>Deploy eSPKP to staging automatically</h1>
-  <div><span class="chip m-tlk">merge to main → lint → test → deploy:staging</span></div>
-  <div class="sessions">
-    <div><i>1</i><span>Two ways: SSH key vs a runner on the staging server</span></div>
-    <div><i>2</i><span>Install &amp; register a project runner (shell executor)</span></div>
-    <div><i>3</i><span><code>deploy:staging</code> job in <code>.gitlab-ci.yml</code> + deploy script</span></div>
-    <div><i>4</i><span>Rollback, security &amp; checklist</span></div>
-  </div>
-  <aside class="notes"><p>Pipeline sedia ada (semak-kod, ujian, SAST) hanya menyemak. Tambahan ini menutup kitaran: kod yang lulus di main terus berada di staging untuk pemilik sistem menguji. Contoh berdasarkan repo espkpv2 (deploy/ Docker Compose). Production kekal deploy manual oleh pentadbir pelayan.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 9 · Deploy — choose a method</div>
-  <h2>SSH key or a runner on the server?</h2>
-  <table class="t tight">
-    <tr><th style="width:230px"></th><th>A · SSH key from the shared runner</th><th>B · Runner on the staging server (recommended)</th></tr>
-    <tr><td>How</td><td>A job on the shared runner <code>ssh</code>/<code>rsync</code>s into staging</td><td>A runner on the staging server runs the job there</td></tr>
-    <tr><td>Secret in GitLab</td><td>SSH private key (CI/CD variable of type <i>File</i>)</td><td><b>None</b> — the runner clones with a short-lived <code>CI_JOB_TOKEN</code></td></tr>
-    <tr><td>Network</td><td>Shared runner must reach staging port 22 (usually blocked inside the KKM network)</td><td>Only <b>outbound</b> from staging to GitLab (HTTPS 443) — no inbound port opened</td></tr>
-    <tr><td>Main risk</td><td>Leaked key = access to the server</td><td><code>gitlab-runner</code> user in the <code>docker</code> group = root-equivalent on that VM</td></tr>
-    <tr><td>Use when</td><td>You may not install software on the server</td><td>Staging is a VM dedicated to this project</td></tr>
-  </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div>GitLab <b>deploy keys</b> (public key, read-only) and <b>deploy tokens</b> let a server <i>pull</i> code — they are not for the pipeline to get into the server. Method B needs neither.</div></div>
-  <aside class="notes"><p>Syor B kerana: tiada kunci peribadi disimpan dalam GitLab, tiada port SSH perlu dibuka kepada runner kongsi, dan sambungan hanya keluar ke codeforge. Cara A ditunjukkan sebagai sandaran di slaid kemudian. Tekankan perbezaan deploy key (pelayan tarik) vs kunci SSH dalam CI (pipeline tolak).</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 9 · Deploy — flow</div>
-  <h2>From MR to staging</h2>
-  <div class="flow"><div class="node"><span class="k">MR</span><b>issue branch</b><span>lint · test (shared runner)</span></div><div class="arr">→</div><div class="node"><span class="k">MERGE</span><b>main (protected)</b><span>QA approves</span></div><div class="arr">→</div><div class="node hot"><span class="k">STAGING RUNNER</span><b>deploy:staging</b><span>tag <code>espkp-staging</code></span></div><div class="arr">→</div><div class="node"><span class="k">ENVIRONMENT</span><b>staging</b><span>URL · history · rollback</span></div></div>
-  <div class="grid c3 mt16">
-    <div class="card top m-tlk"><span class="k">TAG</span><h3>The job reaches the right runner</h3><p><code>tags: [espkp-staging]</code> — only the staging runner picks it up. That runner does <b>not</b> take untagged jobs.</p></div>
-    <div class="card top m-pas"><span class="k">RULES</span><h3>Only from main</h3><p>Deploy runs after a merge to <code>main</code> and after <code>ujian</code> passes. Other branches never deploy.</p></div>
-    <div class="card top m-stat"><span class="k">ENVIRONMENT</span><h3>Every deploy is tracked</h3><p><i>Operate → Environments → staging</i>: which commit is live, who deployed, a <i>Rollback</i> button.</p></div>
-  </div>
-  <aside class="notes"><p>Tunjuk dalam GitLab: Settings → Repository → Protected branches (main), Operate → Environments. Pipeline MR kekal di runner kongsi; hanya job deploy pergi ke runner staging.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 9 · Deploy — install the runner</div>
-  <h2>A project runner on the staging server</h2>
-  <div class="split">
-    <div class="stack">
-      <div class="card side m-tlk"><h3>1 · Create in GitLab</h3><p><i>Settings → CI/CD → Runners → New project runner</i>: tag <code>espkp-staging</code>, untick <i>Run untagged jobs</i>, tick <i>Protected</i>. Copy the <code>glrt-…</code> token.</p></div>
-      <div class="card side m-pas"><h3>2 · Register on the server</h3><p><code>shell</code> executor. Add the <code>gitlab-runner</code> user to the <code>docker</code> group.</p></div>
-      <div class="card side m-stat"><h3>3 · Prepare the folder</h3><p><code>/srv/espkp-staging</code> owned by <code>gitlab-runner</code>, with the staging <code>.env</code> (created once by the admin, never in Git).</p></div>
-    </div>
-    <div class="codewrap"><div class="codebar">staging server (as root)<span class="lang">bash</span></div>
-<pre class="code sm" data-lang="bash"># install gitlab-runner (official GitLab package)
-curl -L https://packages.gitlab.com/install/repositories/\
-  runner/gitlab-runner/script.rpm.sh | bash
-dnf install -y gitlab-runner
-
-gitlab-runner register --non-interactive \
-  --url https://codeforge.moh.gov.my \
-  --token "$RUNNER_TOKEN" \
-  --executor shell \
-  --description espkp-staging
-
-usermod -aG docker gitlab-runner
-install -d -o gitlab-runner -m 750 /srv/espkp-staging
-# staging .env: copy from .env.example, fill in staging values
-systemctl enable --now gitlab-runner</pre></div>
-  </div>
-  <div class="callout warn mt16"><span class="i">⚠️</span><div>The <code>docker</code> group = root power on this VM. Use a dedicated staging VM, not a server shared with other systems.</div></div>
-  <aside class="notes"><p>Token runner (glrt-) hanya ditaip sekali di pelayan — jangan tampal dalam isu atau chat. Pelayan RHEL/Oracle: guna script.rpm.sh; Ubuntu: script.deb.sh + apt. Semak dengan gitlab-runner verify dan lihat runner hijau di Settings → CI/CD → Runners.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 9 · Deploy — <code>.gitlab-ci.yml</code></div>
-  <h2>Add a <code>deploy</code> stage</h2>
-  <div class="split">
-  <div class="codewrap"><div class="codebar">.gitlab-ci.yml (addition)<span class="lang">yaml</span></div>
-<pre class="code sm" data-lang="yaml">stages: [semak, test, deploy]
-
-deploy:staging:
-  stage: deploy
-  tags: [espkp-staging]   # staging runner only
-  needs: [ujian]          # tests must pass
-  resource_group: staging # one deploy at a time
-  environment:
-    name: staging
-    url: https://espkp-staging.contoh.gov.my
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  script:
-    - ./deploy/staging.sh</pre></div>
-    <div class="stack">
-    <div class="card side m-tlk"><h3><code>needs: [ujian]</code></h3><p>No deploy if tests fail.</p></div>
-    <div class="card side m-pas"><h3><code>resource_group</code></h3><p>Two merges at once don't collide on the server.</p></div>
-    <div class="card side m-stat"><h3>No <code>image:</code></h3><p>The <code>shell</code> executor runs directly on the server, not in a container.</p></div>
-    </div>
-  </div>
-  <aside class="notes"><p>Job ini tidak extends .php kerana ia tidak memerlukan PHP dalam imej — semuanya dibina oleh deploy/Dockerfile. Tukar URL kepada domain staging sebenar. Untuk deploy manual sahaja (butang), tambah when: manual dalam rule.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 9 · Deploy — script</div>
-  <h2>Deploy script: copy, build, start, check</h2>
-  <div class="codewrap"><div class="codebar">deploy/staging.sh<span class="lang">bash</span></div>
-<pre class="code sm" data-lang="bash">#!/usr/bin/env bash
-set -euo pipefail
-DEST=/srv/espkp-staging; DC="docker compose -f deploy/docker-compose.yml"
-# 1. copy this commit's code — keep the server's .env &amp; writable/
-rsync -a --delete --exclude .git --exclude .env --exclude writable/ ./ "$DEST/"
-cd "$DEST"; export TAG="$CI_COMMIT_SHORT_SHA"
-# 2. build &amp; restart (entrypoint runs migrate)
-$DC build &amp;&amp; $DC up -d
-# 3. health check — failure = red pipeline
-for i in $(seq 30); do curl -fsS -o /dev/null http://localhost:8080/ &amp;&amp; exit 0; sleep 2; done
-$DC logs --tail 50; exit 1</pre></div>
-  <div class="callout tip mt16"><span class="i">💡</span><div><code>deploy/entrypoint.sh</code> already runs <code>php spark migrate --all</code> every time the container starts — the deploy script doesn't migrate itself.</div></div>
-  <aside class="notes"><p>chmod +x deploy/staging.sh sebelum commit (git update-index --chmod=+x). Port 8080 contoh — ikut port yang dipetakan dalam compose staging. Jika compose guna Traefik, semak melalui URL staging. TAG dalam compose: image: espkp:${TAG:-latest} supaya imej lama masih ada untuk rollback.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 9 · Deploy — fallback method A</div>
-  <h2>If you can't install a runner: an SSH key, locked down</h2>
-  <div class="split">
-    <div class="stack">
-      <div class="card side m-tlk"><h3>A deploy-only key</h3><p><code>ssh-keygen -t ed25519 -N "" -C deploy-staging</code>. Public key in the <code>authorized_keys</code> of a <code>deploy</code> user (not root), limited to one command.</p></div>
-      <div class="card side m-pas"><h3>CI/CD variables</h3><p><code>SSH_PRIVATE_KEY</code> of type <b>File</b>, <b>Protected</b>, environment <code>staging</code>. <code>SSH_KNOWN_HOSTS</code> = checked <code>ssh-keyscan</code> output — never turn off host checking.</p></div>
-      <div class="card side m-stat"><h3>Network prerequisite</h3><p>The shared runner must reach staging port 22. Inside the KKM network that is often blocked — which is why method B is recommended.</p></div>
-    </div>
-    <div class="codewrap"><div class="codebar">~deploy/.ssh/authorized_keys · CI job<span class="lang">text</span></div>
-<pre class="code sm" data-lang="text">command="/srv/deploy.sh",restrict ssh-ed25519 AAAA…
-
-deploy:staging:
-  stage: deploy
-  image: alpine:3.20
-  environment: staging
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  before_script:
-    - apk add --no-cache openssh-client
-    - install -m 700 -d ~/.ssh
-    - echo "$SSH_KNOWN_HOSTS" &gt; ~/.ssh/known_hosts
-  script:
-    - ssh -i "$SSH_PRIVATE_KEY" deploy@staging "$CI_COMMIT_SHA"</pre></div>
-  </div>
-  <aside class="notes"><p>restrict + command= bermaksud kunci itu hanya boleh menjalankan skrip deploy, tiada shell, tiada port forwarding — jika bocor, kesannya terhad. deploy.sh di pelayan membuat git fetch + checkout SHA yang diberi (repo di pelayan klon dengan deploy key baca sahaja), kemudian docker compose up. Kunci berbilang baris tidak boleh di-mask — sebab itu jenis File + Protected.</p></aside>
-</section>
-
-<section class="slide">
-  <div class="eyebrow">Day 9 · Deploy — security &amp; rollback</div>
-  <h2>Before turning on automatic deploys</h2>
-  <div class="grid c2">
-    <ul class="checks">
-      <li><span><b>main</b> &amp; the <b>staging environment</b> are protected (who may merge / deploy).</span></li>
-      <li><span><b>Runner</b> Protected + tagged only.</span></li>
-      <li><span><b><code>.env</code></b> only on the server; no <code>set -x</code> in jobs.</span></li>
-      <li><span><b>Synthetic staging data</b>, never real applicant data.</span></li>
-    </ul>
-    <div class="stack">
-      <div class="card side m-tlk"><h3>Rollback</h3><p><i>Operate → Environments → staging</i> → pick the previous deploy → <b>Rollback</b>. The old job re-runs with its old commit.</p></div>
-      <div class="card side m-stat"><h3>Migrations are one-way</h3><p>Rolling back code does not undo migrations. Write backward-compatible migrations, or run <code>php spark migrate:rollback</code> deliberately.</p></div>
-    </div>
-  </div>
-  <div class="callout warn mt16"><span class="i">⚠️</span><div>Production does <b>not</b> use this pipeline. Production deploys stay manual by the server admin, following the department's procedure.</div></div>
-  <aside class="notes"><p>Latihan ringkas: dalam pasukan, tulis job deploy:staging dalam MR, minta QA semak rules/tags/environment, merge, lihat pipeline sampai ke staging, kemudian cuba Rollback ke deploy sebelum. Jika VM staging belum ada, jurulatih tunjuk demo pada pelayan latihan.</p></aside>
-</section>
-
 <section class="slide dark divider" data-label="Day 10 · Release &amp; Capstone">
   <div class="eyebrow">Day 10 · Phase C — Release &amp; Hand Over</div>
   <h1>Day 10 — Sprint 3, v1.1.0 &amp; Team Capstone</h1>
@@ -3419,6 +3255,71 @@ MR with !no and KAN-n. Do not write any file.</pre></div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>A CHANGELOG line without <code>!no</code> and <code>#issue</code> is a sign that Claude invented a change. Remove it.</div></div>
   <aside class="notes"><p>The release PM is the Projek team's PM, helped by the BA and the floater. Checkpoint: CHANGELOG.md 1.1.0 section on main with every line matching a real MR; the v1.1.0 tag and GitLab Release exist.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 10 · CI/CD — Lab 10.23</div>
+  <h2>CI proves the code is right; CD ships it to staging</h2>
+  <div class="flow"><div class="node"><span class="k">MR / PUSH</span><b>semak</b><span>lint · cs · phpstan</span></div><div class="arr">→</div><div class="node"><span class="k">CI</span><b>test</b><span>PHPUnit · MySQL 8.4</span></div><div class="arr">→</div><div class="node hot"><span class="k">CD · MANUAL ▶</span><b>deploy-staging</b><span>main · tag v*</span></div><div class="arr">→</div><div class="node"><span class="k">NOT IN THE PIPELINE</span><b>production</b><span>department change procedure</span></div></div>
+  <div class="grid c3 mt16">
+    <div class="card side m-tlk"><h3>Continuous Integration</h3><p>Every MR: code is checked and tested automatically. Red → no merge.</p></div>
+    <div class="card side m-pas"><h3>Continuous Delivery</h3><p>Every <code>main</code> / tag <b>can</b> be shipped to staging in one click — after the tests pass.</p></div>
+    <div class="card side m-stat"><h3>Why manual?</h3><p>A person chooses when. The pipeline never deploys by itself and never to production.</p></div>
+  </div>
+  <aside class="notes"><p>espkpv2 today: semak + test + SAST stages. Lab 10.23 adds a deploy stage with the deploy-staging job. Continuous Deployment (automatic to production) is deliberately not taught — for a government system, production goes through approval and change procedure.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 10 · CI/CD — <code>.gitlab-ci.yml</code></div>
+  <h2>Job <code>deploy-staging</code>: manual, production mode, smoke tests</h2>
+  <div class="codewrap"><div class="codebar">.gitlab-ci.yml (shortened)<span class="lang">yaml</span></div>
+<pre class="code sm" data-lang="yaml"><span class="v">stages</span>: [semak, test, deploy]
+<span class="v">deploy-staging</span>:
+  <span class="v">extends</span>: .php                    <span class="c"># same PHP + Composer as ujian</span>
+  <span class="v">stage</span>: deploy
+  <span class="v">services</span>: [{ name: mysql:8.4, alias: mysql }]
+  <span class="v">variables</span>: { CI_ENVIRONMENT: production, database_default_hostname: mysql, ... }
+  <span class="v">environment</span>: { name: staging, deployment_tier: staging }
+  <span class="v">rules</span>:
+    - <span class="v">if</span>: <span class="s">$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/</span>
+      <span class="v">when</span>: manual
+    - <span class="v">if</span>: <span class="s">$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH</span>
+      <span class="v">when</span>: manual
+  <span class="v">script</span>:
+    - composer install --no-dev --optimize-autoloader
+    - php spark migrate --all
+    - php spark db:seed KodRujukanSeeder   <span class="c"># reference data only</span>
+    - php -S 0.0.0.0:8080 -t public ... &amp;
+    - test "$(curl ... /login)" = 200       <span class="c"># public</span>
+    - test "$(curl ... /papan-pemuka)" = 302 <span class="c"># protected</span></pre></div>
+  <aside class="notes"><p>Full text in Lab 10.23 step 4 — already tested on the GitLab KKM runner. Stress: rules replace the .php template rules; the MR pipeline does not show this job; v* tags are protected so only a Maintainer presses ▶ for a release. No secrets in the YAML: the root password here is only for the throwaway MySQL service inside the runner.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 10 · CI/CD — environments</div>
+  <h2>Dev, staging, production: who, what data, how</h2>
+  <table class="t tight">
+    <tr><th style="width:170px">Environment</th><th style="width:230px"><code>CI_ENVIRONMENT</code></th><th style="width:300px">Data</th><th>Who / how</th></tr>
+    <tr><td><b>dev</b></td><td><code>development</code> · Debug Toolbar, TAC on screen</td><td>Demo + training accounts <code>9001010100NN</code></td><td>Every developer, <code>php spark serve</code></td></tr>
+    <tr><td><b>staging</b></td><td><code>production</code> · no toolbar, errors hidden</td><td>Reference data only (<code>KodRujukanSeeder</code>)</td><td>Pipeline, manual ▶ job after the tests pass</td></tr>
+    <tr><td><b>production</b></td><td><code>production</code></td><td>Real data — no demo seeder, no training accounts</td><td>Department change procedure + approval, <b>not</b> the training pipeline</td></tr>
+  </table>
+  <div class="callout tip mt16"><span class="i">💡</span><div><code>DatabaseSeeder</code> refuses to run in <code>production</code> — a deliberate guard. Staging tests the <b>same</b> code in the <b>same</b> mode as production.</div></div>
+  <aside class="notes"><p>Link to security checklist K10 (production mode for staging) and section A of the Day 10 README. Question: why does staging not use the Latihan@2026 accounts? (the password is public, and staging is often reachable from the department network).</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 10 · CI/CD — safety &amp; rollback</div>
+  <h2>Safe deploys: five rules</h2>
+  <div class="grid c3">
+    <div class="card top m-tlk"><span class="k">1 · GREEN FIRST</span><p>Stage <code>deploy</code> only runs after <code>semak</code> + <code>test</code> pass.</p></div>
+    <div class="card top m-pas"><span class="k">2 · MANUAL</span><p><code>when: manual</code> — a person chooses when; <code>v*</code> tags are protected (Maintainer).</p></div>
+    <div class="card top m-stat"><span class="k">3 · NO SECRETS IN YAML</span><p>SSH key / server password → <i>CI/CD Variables</i> <b>Protected + Masked</b>.</p></div>
+    <div class="card top m-tlk"><span class="k">4 · ROLLBACK</span><p><i>Environments → staging → Re-deploy</i> an older commit. Migrations are <b>not</b> undone by themselves.</p></div>
+    <div class="card top m-pas"><span class="k">5 · SMOKE TESTS</span><p>A deploy is not done until <code>/login</code> is 200 and a protected page is 302.</p></div>
+    <div class="card top m-stat"><span class="k">A REAL STAGING</span><p>Add one step: ship the build to a server (<code>docker compose up -d</code> over SSH).</p></div>
+  </div>
+  <aside class="notes"><p>Lab 10.23 runs a throwaway staging inside the runner (no server, no keys) so every trainee can try it safely. Moving to a real server is a small change to the same script, plus a protected variable. Demo: open Deployments → Environments → staging after the v1.1.0 tag.</p></aside>
 </section>
 
 <section class="slide">
