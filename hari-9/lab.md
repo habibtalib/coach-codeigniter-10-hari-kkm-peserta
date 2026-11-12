@@ -209,6 +209,142 @@ Me-merge Sprint 2 mengikut susunan sync, **membuktikan** `main` hijau dengan PHP
 
 ---
 
+## Lab 9.24 — Shield & RBAC dalam espkpv2 (tambahan)
+
+### 🎯 Objektif
+Membaca peta kebenaran sebenar espkpv2 (kumpulan → kebenaran → route), melihat sendiri tiga lapis kawalan akses (filter route, `can()`, polisi pemilikan), mengubah matriks di `/admin/peranan` dan mengembalikannya, kemudian menulis ujian akses "boleh" dan "tidak boleh". Slaid: *Hari 9 · Shield & RBAC*.
+
+### Prasyarat
+- Klon `~/latihan/espkpv2` dengan `main` terkini, database dev dan database ujian seperti Lab 9.23 langkah 2.
+- Akaun latihan `9001010100NN`, kata laluan `Latihan@2026`: 01/08 pemohon · 02 urus setia · 03 penyelia · 04 UKS · 05 pelulus · 06 pentadbir · 07 wakil.
+
+### Langkah
+
+1. **Kemas kini dan jalankan.**
+
+   ```bash
+   cd ~/latihan/espkpv2
+   git switch main && git pull
+   composer install
+   php spark migrate --all
+   php spark serve
+   ```
+
+2. **Baca konfigurasi (10 minit).** Buka `app/Config/AuthGroups.php`. Jawab dalam nota anda:
+   - Berapa kumpulan dalam `$groups` dan berapa kebenaran dalam `$permissions`?
+   - Kumpulan mana yang ada `kad.urus`? Dan `permohonan.lihat_semua`?
+   - Kenapa `superadmin` tiada `permohonan.lihat_semua`?
+   - Apa fungsi `$kunci`?
+
+3. **Peta route dan filter.** Dalam terminal kedua:
+
+   ```bash
+   php spark routes | grep -E "kad|laporan|admin/peranan"
+   ```
+
+   Lajur *Before Filters* menunjukkan rantai `session … permission:kad.urus`. Cari satu route yang filternya ada **dua** kebenaran dipisah koma, dan terangkan maksud koma (ATAU).
+
+4. **Lapis 1 — filter route (pelayar).** Log masuk sebagai **01** dan buka `/kad`, `/laporan` dan `/admin/peranan`: setiap satu dialih ke papan pemuka dengan mesej. Log keluar, log masuk sebagai **04** dan buka `/kad` dan `/laporan`: dibenarkan.
+
+5. **Lapis 3 — pemilikan (404).** Sebagai **01**, hantar satu Pas Baharu dan salin URL butirannya (`/permohonan/<uuid>`). Log masuk sebagai **08** dan tampal URL itu: **404**, bukan 403. Log masuk sebagai **04**: dibenarkan (`permohonan.lihat_semua`). Buka `app/Libraries/PermohonanPolicy.php` dan tunjukkan baris `bolehLihat()` yang memberi keputusan untuk 08 dan untuk 04.
+
+6. **Matriks boleh disunting (pentadbir).** Log masuk sebagai **06** → `/admin/peranan`:
+   1. Cuba nyahtanda sel berkunci (`pemohon` → `pas.mohon`): tidak boleh. Kemudian tanda `permohonan.lulus_pas` pada `uks_pas` → Simpan: ditolak oleh peraturan empat mata (`AuthGroups::$bercanggah`) — penyemak dan pelulus mesti orang berbeza.
+   2. Buang `laporan.lihat` daripada `uks_tlk` **sahaja** → Simpan. Log masuk sebagai **04** dan buka `/laporan`: masih dibenarkan. Kenapa? (04 ada `uks_pas` + `uks_tlk` — kebenaran ialah **gabungan**.)
+   3. Sebagai 06, buka `/admin/audit`: rekod perubahan matriks dengan nilai lama dan baharu.
+   4. **Set semula ke lalai** di `/admin/peranan`. Sahkan matriks kembali seperti `AuthGroups::$matrix`.
+
+7. **Ujian akses (berpasangan).** Pada branch latihan (tidak di-MR):
+
+   ```bash
+   git switch -c latihan/<nama>/rbac
+   ```
+
+   Cipta `tests/feature/AksesRbacLatihanTest.php`:
+
+   ```php
+   <?php
+
+   namespace Tests\Feature;
+
+   use App\Enums\JenisPermohonan;
+   use CodeIgniter\Exceptions\PageNotFoundException;
+   use Tests\Support\UjianCiri;
+
+   /**
+    * @internal
+    */
+   final class AksesRbacLatihanTest extends UjianCiri
+   {
+       public function testKebenaranIkutKumpulan(): void
+       {
+           $uks     = $this->pengguna('04');
+           $pemohon = $this->pengguna('01');
+
+           $this->assertTrue($uks->can('kad.urus'));
+           $this->assertTrue($uks->can('laporan.lihat'));
+           $this->assertFalse($pemohon->can('kad.urus'));
+           $this->assertTrue($pemohon->can('pas.mohon'));
+       }
+
+       public function testFilterRouteMenolakTanpaKebenaran(): void
+       {
+           $this->actingAs($this->pengguna('04'))->get('kad')->assertOK();
+           $this->actingAs($this->pengguna('01'))->get('kad')->assertRedirectTo(site_url('papan-pemuka'));
+           $this->actingAs($this->pengguna('01'))->get('admin/peranan')->assertRedirectTo(site_url('papan-pemuka'));
+       }
+
+       public function testPemohonLainMendapat404(): void
+       {
+           $p = $this->hantar(JenisPermohonan::PasBaharu, $this->pengguna('01'));
+
+           $this->actingAs($this->pengguna('01'))->get("permohonan/{$p->uuid}")->assertOK();
+           $this->actingAs($this->pengguna('04'))->get("permohonan/{$p->uuid}")->assertOK();
+
+           $this->expectException(PageNotFoundException::class);
+           $this->actingAs($this->pengguna('08'))->get("permohonan/{$p->uuid}");
+       }
+   }
+   ```
+
+   ```bash
+   vendor/bin/phpunit tests/feature/AksesRbacLatihanTest.php
+   ```
+
+   Hijau → **mutasi**: dalam `app/Config/Routes.php`, buang sementara `'filter' => 'permission:kad.urus'` daripada kumpulan `kad`. Jalankan semula: `testFilterRouteMenolakTanpaKebenaran` mesti gagal. Pulihkan (`git checkout app/Config/Routes.php`) dan sahkan hijau semula.
+
+8. **Tambah satu kes sendiri.** Pilih satu daripada:
+   - **03** (penyelia) tidak boleh membuka `/kad` dan `/admin/audit`.
+   - **05** (pelulus) boleh membuka `/laporan` tetapi tidak `/admin/peranan`.
+   - **07** (wakil) boleh membuka `/pekerja`; **01** dialih.
+
+9. **Audit dengan Claude Code (mod Plan, baca sahaja).**
+
+   ```text
+   Baca app/Config/Routes.php dan app/Config/Filters.php. Senaraikan route POST yang hanya dilindungi 'session' global tanpa permission:. Untuk setiap satu, tunjukkan baris dalam controller yang menyemak can() atau PermohonanPolicy. Baca sahaja; jangan ubah fail.
+   ```
+
+   Semak sendiri sekurang-kurangnya satu jawapan Claude dengan membuka fail yang disebut. Jika anda menemui route tanpa semakan, tulis kad Bug Jira (data sintetik, tanpa teks BRS) — jangan baiki dalam lab ini.
+
+10. **Kemas.** `git switch main`. Branch `latihan/<nama>/rbac` kekal setempat; jangan push ke `main`.
+
+### ✅ Checkpoint
+- [ ] Saya boleh menyebut bilangan kumpulan dan kebenaran dalam `AuthGroups.php`, dan kumpulan yang ada `kad.urus`.
+- [ ] 01 dialih dari `/kad`; 08 mendapat 404 untuk permohonan 01; 04 dibenarkan kedua-duanya.
+- [ ] Perubahan matriks di `/admin/peranan` direkodkan dalam `/admin/audit`, dan matriks diset semula ke lalai.
+- [ ] `AksesRbacLatihanTest` hijau dengan kes sendiri, dan mutasi filter `kad` menyebabkan satu ujian gagal.
+
+### 🧯 Masalah lazim
+| Gejala | Punca | Penyelesaian |
+|---|---|---|
+| Pegawai 02–06 dialih ke `/akaun/keselamatan` | 2FA wajib diaktifkan dalam `.env` | Daftar TOTP sekali, atau tanya jurulatih tentang `keselamatan.wajibAktif` |
+| `Dihentikan: … pangkalan data berakhiran _test` | Database ujian tidak berakhir `_test` atau sama dengan dev | `database.tests.database = espkp_contoh_test` dalam `.env` |
+| 04 masih boleh buka `/laporan` selepas matriks diubah | `uks_pas` masih memberi `laporan.lihat` — kebenaran ialah gabungan | Itulah tujuan langkah 6.2; buang daripada kedua-dua kumpulan jika mahu menolak |
+| `/admin/peranan` menolak simpan: matriks telah diubah | Rakan lain menyimpan matriks pada database yang sama | Muat semula halaman; satu orang sahaja mengubah matriks pada satu masa |
+| Ujian lulus walaupun filter dibuang | Ujian hanya menyemak `assertOK()` untuk pengguna yang dibenarkan | Uji arah "tidak boleh" juga (`assertRedirectTo` / 404) |
+
+---
+
 ## Semakan kendiri — akhir hari
 
 **Kerja pasukan (hari ini):** `glab mr list --merged -R aplikasi-baharu/espkpv2`; dalam Claude: `JQL project = KAN AND sprint in openSprints()` dan `project = KAN AND type = Bug AND created >= startOfDay()`.

@@ -33,6 +33,7 @@ Di akhir hari ini, peserta boleh:
 | 12:30–14:30 | — | Makan tengah hari | — |
 | 14:30–16:00 | S15 | MR, semakan QA & ujian eksploratori antara pasangan | O17 · [Lab 9.22](./lab.md#lab-922--mr-semakan--ujian-eksploratori-s15) |
 | 16:00–17:00 | S16 | Merge, `main` hijau (PHPUnit + E2E), demo sprint & retro | O18 · [Lab 9.23](./lab.md#lab-923--merge-main-hijau-demo-sprint--retro-s16) |
+| Tambahan | — | Shield & RBAC: slaid *Hari 9 · Shield & RBAC* + lab kendiri (permintaan peserta; masa lapang atau kerja rumah) | [Lab 9.24](./lab.md#lab-924--shield--rbac-dalam-espkpv2-tambahan) |
 
 **Isu Sprint 2** (kad Jira dalam *Sprint 2 (Hari 9)*; nombor # di bawah ialah isu GitLab KKM yang dipautkan dalam setiap kad) + isu susulan Sprint 1. Cadangan agihan — PM memutuskan dan menetapkan label `pasangan-N` dalam Jira:
 

@@ -33,6 +33,7 @@ By the end of today, trainees can:
 | 12:30–14:30 | — | Lunch | — |
 | 14:30–16:00 | S15 | MR, QA review & exploratory testing between pairs | O17 · [Lab 9.22](./lab.en.md#lab-922--mr-review--exploratory-testing-s15) |
 | 16:00–17:00 | S16 | Merge, green `main` (PHPUnit + E2E), sprint demo & retro | O18 · [Lab 9.23](./lab.en.md#lab-923--merge-green-main-sprint-demo--retro-s16) |
+| Extra | — | Shield & RBAC: slides *Day 9 · Shield & RBAC* + self-paced lab (trainee request; spare time or homework) | [Lab 9.24](./lab.en.md#lab-924--shield--rbac-in-espkpv2-extra) |
 
 **Sprint 2 issues** (Jira cards in *Sprint 2 (Hari 9)*; the # numbers below are the GitLab KKM issues linked in each card) + Sprint 1 follow-ups. Suggested split — the PM decides and sets the `pasangan-N` label in Jira:
 
