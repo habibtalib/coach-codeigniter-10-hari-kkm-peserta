@@ -2996,6 +2996,197 @@ npm run e2e</pre></div>
 
 <!-- ============================ DAY 10 ============================ -->
 
+<section class="slide dark divider" data-label="Day 9 · Shield &amp; RBAC">
+  <div class="eyebrow">Day 9 · Extra — Shield &amp; RBAC</div>
+  <h1>CodeIgniter Shield &amp; RBAC in eSPKP</h1>
+  <div><span class="chip m-stat">who you are · what you can do · whose records you can see</span></div>
+  <div class="sessions">
+    <div><i>1</i><span>Authentication vs authorization · Shield tables</span></div>
+    <div><i>2</i><span>RBAC: user → group → permission · the matrix</span></div>
+    <div><i>3</i><span>Three layers of control: route filter · <code>can()</code> · ownership policy</span></div>
+    <div><i>4</i><span>Add a new permission · access tests · Claude prompts</span></div>
+  </div>
+  <aside class="notes"><p>Trainee request: understand Shield and RBAC in more depth. Every example comes from espkpv2 main (Shield v1.4). Open the real files in the editor while explaining: app/Config/AuthGroups.php, Config/Filters.php, Config/Routes.php, Libraries/PermohonanPolicy.php, tests/feature/AksesTest.php.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · Shield — basics</div>
+  <h2>Authentication ≠ authorization</h2>
+  <div class="grid c3">
+    <div class="card top m-tlk"><span class="k">AUTHENTICATION</span><h3>Who are you?</h3><p>Log in with No. KP + password, 2FA (TOTP / passkey). Shield: <code>auth()-&gt;loggedIn()</code>, <code>auth()-&gt;user()</code>.</p></div>
+    <div class="card top m-pas"><span class="k">AUTHORIZATION</span><h3>What can you do?</h3><p>Groups &amp; permissions: <code>$user-&gt;can('kad.urus')</code>. This is RBAC.</p></div>
+    <div class="card top m-stat"><span class="k">OBJECT-LEVEL</span><h3>Which records?</h3><p>Can you see <b>this</b> application? Shield does not know — <code>PermohonanPolicy</code> decides.</p></div>
+  </div>
+  <table class="t tight mt16">
+    <tr><th style="width:260px">Shield table</th><th>Holds</th></tr>
+    <tr><td><code>users</code></td><td>accounts (+ public <code>uuid</code> in eSPKP)</td></tr>
+    <tr><td><code>auth_identities</code></td><td>hashed passwords, TOTP secrets, tokens — never plain text</td></tr>
+    <tr><td><code>auth_groups_users</code></td><td>one row = one user in one group (a user can have several)</td></tr>
+    <tr><td><code>auth_permissions_users</code></td><td>permissions given directly to a user (unused in eSPKP — everything goes through groups)</td></tr>
+    <tr><td><code>auth_logins</code> · <code>settings</code></td><td>login attempt log · the matrix edited at <code>/admin/peranan</code></td></tr>
+  </table>
+  <aside class="notes"><p>Stress the third layer: many think a permission is enough. UKS has permohonan.proses_pas, but applicants 01 and 08 both have pas.mohon — same permission, different records. That is the policy's job, not Shield's.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · RBAC</div>
+  <h2>User → group → permission</h2>
+  <div class="flow"><div class="node"><span class="k">USER</span><b>9001010100 04</b><span>UKS account</span></div><div class="arr">→</div><div class="node hot"><span class="k">GROUP (ROLE)</span><b>uks_pas + uks_tlk</b><span>auth_groups_users</span></div><div class="arr">→</div><div class="node hot"><span class="k">PERMISSION</span><b>permohonan.proses_pas · kad.urus · laporan.lihat …</b><span>matrix</span></div><div class="arr">→</div><div class="node"><span class="k">CHECK</span><b><code>can('kad.urus')</code></b><span>true / false</span></div></div>
+  <div class="grid c3 mt16">
+    <div class="card side m-tlk"><h3>Check permissions, not groups</h3><p><code>can('laporan.lihat')</code> stays correct when a new group is added. <code>inGroup('uks_pas')</code> breaks when roles change.</p></div>
+    <div class="card side m-pas"><h3>Union</h3><p>A user in two groups gets the <b>union</b> of all their permissions. Shield has no "deny".</p></div>
+    <div class="card side m-stat"><h3>Least privilege</h3><p>Superadmin does <b>not</b> have <code>permohonan.lihat_semua</code>: only approved applications (to cancel) and aggregate reports.</p></div>
+  </div>
+  <aside class="notes"><p>eSPKP: 12 groups, 20 permissions. Permission names follow module.action (pas.mohon, permohonan.lulus_pas, admin.kod). Shield also supports admin.* wildcards in the matrix — eSPKP avoids them on purpose so every permission is explicit.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · RBAC — <code>Config/AuthGroups.php</code></div>
+  <h2>Groups, the permission list and the default matrix</h2>
+  <div class="codewrap"><div class="codebar">app/Config/AuthGroups.php (shortened)<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">public</span> <span class="v">array</span> $groups = [
+    <span class="s">'pemohon'</span>     =&gt; [<span class="s">'title'</span> =&gt; <span class="s">'Pemohon'</span>, ...],
+    <span class="s">'uks_pas'</span>     =&gt; [<span class="s">'title'</span> =&gt; <span class="s">'Penyemak Pas'</span>, ...],
+    <span class="s">'pelulus_pas'</span> =&gt; [<span class="s">'title'</span> =&gt; <span class="s">'Pelulus Pas'</span>, ...],   <span class="c">// + 9 more</span>
+];
+<span class="k">public</span> <span class="v">array</span> $permissions = [
+    <span class="s">'pas.mohon'</span>             =&gt; <span class="s">'Memohon Pas Keselamatan'</span>,
+    <span class="s">'permohonan.proses_pas'</span> =&gt; <span class="s">'Penyemakan Pas (UKS)'</span>,
+    <span class="s">'kad.urus'</span>              =&gt; <span class="s">'No. siri, cetak &amp; serahan kad'</span>,   <span class="c">// 20 in total</span>
+];
+<span class="k">public</span> <span class="v">array</span> $matrix = [   <span class="c">// DEFAULT — edits are stored in the settings table</span>
+    <span class="s">'pemohon'</span> =&gt; [<span class="s">'pas.mohon'</span>, <span class="s">'tlk.mohon'</span>],
+    <span class="s">'uks_pas'</span> =&gt; [<span class="s">'pas.mohon'</span>, <span class="s">'tlk.mohon'</span>, <span class="s">'permohonan.proses_pas'</span>,
+                  <span class="s">'permohonan.lihat_semua'</span>, <span class="s">'kad.urus'</span>, <span class="s">'laporan.lihat'</span>],
+];
+<span class="k">public</span> <span class="v">array</span> $kunci = [ <span class="s">'pemohon'</span> =&gt; [<span class="s">'pas.mohon'</span>], ... ];  <span class="c">// cells that cannot be removed</span></pre></div>
+  <aside class="notes"><p>Three arrays: groups (who), permissions (what), matrix (who can do what). $kunci protects cells the workflow depends on, and superadmin so the admin cannot lock themselves out. defaultGroup = the group for self-registration.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · RBAC — an editable matrix</div>
+  <h2><code>/admin/peranan</code>: the admin changes the matrix without a deploy</h2>
+  <div class="split">
+    <div class="stack">
+      <div class="card side m-tlk"><h3>Stored in <code>settings</code></h3><p>Shield reads <code>setting('AuthGroups.matrix')</code>. Never read <code>config('AuthGroups')-&gt;matrix</code> directly — that is only the default.</p></div>
+      <div class="card side m-pas"><h3>Roles in the <code>peranan</code> table</h3><p>The group list comes from <code>service('peranan')</code>: <code>semua()</code>, <code>aktif()</code>, <code>pegawai()</code>.</p></div>
+      <div class="card side m-stat"><h3>Validated &amp; audited</h3><p><code>MatriksKebenaran</code> rejects unknown groups/permissions, keeps <code>$kunci</code>, logs the old/new diff in <code>log_audit</code>, and can reset to the default.</p></div>
+    </div>
+    <div class="codewrap"><div class="codebar">save flow<span class="lang">text</span></div>
+<pre class="code sm" data-lang="text">POST /admin/peranan  (permission:admin.pengguna)
+  → MatriksKebenaran::daripadaInput()   reject unknown values
+  → semak()                             $bercanggah rules
+  → save setting('AuthGroups.matrix')
+  → audit: kebenaran.ubah (old → new)
+  → clear statistics / menu cache</pre></div>
+  </div>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>A new permission in code must be added to <code>$permissions</code> <b>and</b> the matrix — <code>KonfigurasiKebenaranTest</code> fails if one is missing.</div></div>
+  <aside class="notes"><p>Demo: log in as 06, open /admin/peranan, show a locked cell (cannot be unticked), change one cell, save, open /admin/audit for the diff record. Reset to default after the demo.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · Access control — layer 1</div>
+  <h2>Filters: deny by default, open each route</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">app/Config/Filters.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">public</span> <span class="v">array</span> $globals = [<span class="s">'before'</span> =&gt; [
+    <span class="s">'csrf'</span>,
+    <span class="s">'session'</span>  =&gt; [<span class="s">'except'</span> =&gt; [<span class="s">'/'</span>, <span class="s">'login*'</span>, <span class="s">'daftar*'</span>, ...]],
+    <span class="s">'sesiSah'</span>, <span class="s">'force-reset'</span>, <span class="s">'wajib2fa'</span>,
+]];</pre></div>
+    <div class="codewrap"><div class="codebar">app/Config/Routes.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php">$routes-&gt;group(<span class="s">'kad'</span>,
+    [<span class="s">'filter'</span> =&gt; <span class="s">'permission:kad.urus'</span>], ...);
+$routes-&gt;group(<span class="s">'laporan'</span>,
+    [<span class="s">'filter'</span> =&gt; <span class="s">'permission:laporan.lihat'</span>], ...);
+<span class="c">// comma = OR (any one is enough)</span>
+$routes-&gt;get(<span class="s">'semua'</span>, ..., [<span class="s">'filter'</span> =&gt;
+    <span class="s">'permission:permohonan.lihat_semua,permohonan.batal'</span>]);</pre></div>
+  </div>
+  <div class="grid c3 mt16">
+    <div class="card flat"><span class="k">session</span><p>Global: every route needs a login except the public list.</p></div>
+    <div class="card flat"><span class="k">permission:x,y</span><p>Per route: passes with <b>any one</b>. Fails → redirect to the dashboard + message.</p></div>
+    <div class="card flat"><span class="k">auto-routing OFF</span><p>Only written routes exist — no controller "slips past" a filter.</p></div>
+  </div>
+  <aside class="notes"><p>Question: a new POST route without a permission filter — who can call it? Answer: anyone logged in (global session only). That is why every route in a module block needs a filter. Avoid group: filters — use permission:.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · Access control — layers 2 &amp; 3</div>
+  <h2>In code: <code>can()</code> for actions, the policy for records</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">app/Libraries/PermohonanPolicy.php (shortened)<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">public function</span> <span class="f">bolehLihat</span>(Permohonan $p, User $user): bool
+{
+    <span class="k">if</span> ($p-&gt;milik((int) $user-&gt;id))           <span class="k">return</span> <span class="v">true</span>;
+    <span class="k">if</span> ($user-&gt;can(<span class="s">'permohonan.lihat_semua'</span>)) <span class="k">return</span> <span class="v">true</span>;
+    <span class="k">if</span> ($user-&gt;can(<span class="s">'permohonan.semak'</span>)
+        &amp;&amp; $p-&gt;bahagian_id === $this-&gt;bahagian($user)) <span class="k">return</span> <span class="v">true</span>;
+    <span class="k">if</span> ($user-&gt;can(<span class="s">'permohonan.sokong'</span>))
+        <span class="k">return</span> $p-&gt;penyelia_id === (int) $user-&gt;id;
+    <span class="k">return</span> <span class="v">false</span>;
+}</pre></div>
+    <div class="stack">
+      <div class="card side m-tlk"><h3>404, not 403</h3><p><code>bolehLihatAtau404()</code> — a user without access cannot tell the record exists.</p></div>
+      <div class="card side m-pas"><h3>Owners don't act</h3><p><code>bolehBertindakSebagai()</code>: an applicant cannot support or approve their own application (segregation of duties).</p></div>
+      <div class="card side m-stat"><h3>Views = convenience</h3><p>Hide buttons with <code>can()</code> in the view, but the server <b>still</b> checks. A hidden button is not a security control.</p></div>
+    </div>
+  </div>
+  <aside class="notes"><p>Full path: route filter → BaseController::permohonanAtau404() → AliranKerja::cari → PermohonanPolicy. AliranKerja::tersedia() also reads Peringkat → permission from Config/Aliran.php, so action buttons and server checks come from one table. UUIDs in URLs stop id guessing, but the policy is still required.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · RBAC — practice</div>
+  <h2>Add a new permission: 6 steps</h2>
+  <table class="t tight">
+    <tr><th style="width:60px">#</th><th style="width:330px">Step</th><th>Example: <code>laporan.eksport</code></th></tr>
+    <tr><td>1</td><td><code>AuthGroups::$permissions</code></td><td><code>'laporan.eksport' =&gt; 'Eksport PDF/XLSX'</code></td></tr>
+    <tr><td>2</td><td><code>AuthGroups::$matrix</code> (default) + the matrix in <code>settings</code></td><td><code>uks_pas</code>, <code>pelulus_pas</code>; on an existing server the admin ticks it at <code>/admin/peranan</code></td></tr>
+    <tr><td>3</td><td>Route filter</td><td><code>'filter' =&gt; 'permission:laporan.eksport'</code></td></tr>
+    <tr><td>4</td><td>Check in the service / policy if it depends on the record</td><td><code>$user-&gt;can('laporan.eksport')</code></td></tr>
+    <tr><td>5</td><td>View: hide the button</td><td><code>&lt;?php if (auth()-&gt;user()-&gt;can('laporan.eksport')): ?&gt;</code></td></tr>
+    <tr><td>6</td><td>Tests: has access <b>and</b> no access</td><td>approver 05 → 200 · applicant 01 → redirect / 404</td></tr>
+  </table>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div><code>Config/Auth*.php</code> and <code>Filters.php</code> are <b>hot files</b>: one open MR at a time. Ask <code>semak-espkp</code> for a review before the MR.</div></div>
+  <aside class="notes"><p>Step 2 is often missed: the default matrix only applies while settings has not been edited. On a server whose matrix was already changed, the admin must tick the new cell at /admin/peranan (or a data migration adds it). Discuss with the PM who decides — it is a system-owner decision.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · RBAC — access tests</div>
+  <h2>Test both directions: can <b>and</b> cannot</h2>
+  <div class="codewrap"><div class="codebar">tests/feature/AksesTest.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">public function</span> <span class="f">testPemohonTiadaAksesBarisanDanPentadbiran</span>(): void
+{
+    $pemohon = $this-&gt;pengguna(<span class="s">'01'</span>);
+    $this-&gt;actingAs($pemohon)-&gt;get(<span class="s">'kad'</span>)-&gt;assertRedirectTo(site_url(<span class="s">'papan-pemuka'</span>));
+    $this-&gt;actingAs($pemohon)-&gt;get(<span class="s">'laporan'</span>)-&gt;assertRedirectTo(site_url(<span class="s">'papan-pemuka'</span>));
+}
+
+<span class="k">public function</span> <span class="f">testPermohonanOrangLainMemulangkan404</span>(): void
+{
+    $p = $this-&gt;hantar(JenisPermohonan::PasBaharu, $this-&gt;pengguna(<span class="s">'01'</span>));
+    $this-&gt;actingAs($this-&gt;pengguna(<span class="s">'01'</span>))-&gt;get(<span class="s">"permohonan/{$p-&gt;uuid}"</span>)-&gt;assertOK();
+    $this-&gt;expectException(PageNotFoundException::class);
+    $this-&gt;actingAs($this-&gt;pengguna(<span class="s">'08'</span>))-&gt;get(<span class="s">"permohonan/{$p-&gt;uuid}"</span>);  <span class="c">// another applicant</span>
+}</pre></div>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Training accounts: 01/08 applicant · 02 urus setia · 03 penyelia · 04 UKS · 05 approver · 06 admin · 07 wakil. Every new route: at least one "can" account and one "cannot".</div></div>
+  <aside class="notes"><p>Run: vendor/bin/phpunit tests/feature/AksesTest.php. Ask trainees: for the feature you built this week, which account should be refused? Does that test exist?</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Day 9 · Shield &amp; RBAC — with Claude Code</div>
+  <h2>Audit access with Claude (Plan mode, read only)</h2>
+  <table class="t tight">
+    <tr><th style="width:220px">Goal</th><th>Prompt</th></tr>
+    <tr><td><b>Access map</b></td><td><code>Read Config/Routes.php and Filters.php. Table: route, method, permission filter, groups that hold that permission (per the AuthGroups matrix). Read only.</code></td></tr>
+    <tr><td><b>Exposed routes</b></td><td><code>List POST/GET routes protected only by the global 'session' without permission:. For each, does the controller check can() or the policy?</code></td></tr>
+    <tr><td><b>IDOR</b></td><td><code>For every controller that takes (:uuid), show the line that calls bolehLihatAtau404 or the policy. Flag the ones without it.</code></td></tr>
+    <tr><td><b>Missing tests</b></td><td><code>/agents penguji-espkp: find AuthGroups permissions with no "cannot" test in tests/feature.</code></td></tr>
+  </table>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Claude suggests; <b>you</b> confirm with tests. Changing the default matrix or <code>$kunci</code> is a system-owner decision — record it in the Jira card, don't guess.</div></div>
+  <aside class="notes"><p>Demo prompt 2 live in espkpv2. Link it to code review: every MR that adds a route must show the filter + a cannot-test. Quick quiz: (1) a user in uks_pas and pemohon — union or intersection of permissions? (2) why 404 and not 403? (3) where is the real matrix stored?</p></aside>
+</section>
+
 <section class="slide dark divider" data-label="Day 10 · Release &amp; Capstone">
   <div class="eyebrow">Day 10 · Phase C — Release &amp; Hand Over</div>
   <h1>Day 10 — Sprint 3, v1.1.0 &amp; Team Capstone</h1>

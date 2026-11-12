@@ -2996,6 +2996,197 @@ npm run e2e</pre></div>
 
 <!-- ============================ HARI 10 ============================ -->
 
+<section class="slide dark divider" data-label="Hari 9 · Shield &amp; RBAC">
+  <div class="eyebrow">Hari 9 · Tambahan — Shield &amp; RBAC</div>
+  <h1>CodeIgniter Shield &amp; RBAC dalam eSPKP</h1>
+  <div><span class="chip m-stat">siapa anda · apa anda boleh buat · rekod siapa anda boleh lihat</span></div>
+  <div class="sessions">
+    <div><i>1</i><span>Pengesahan vs kebenaran · jadual Shield</span></div>
+    <div><i>2</i><span>RBAC: pengguna → kumpulan → kebenaran · matriks</span></div>
+    <div><i>3</i><span>Tiga lapis kawalan: filter route · <code>can()</code> · polisi pemilikan</span></div>
+    <div><i>4</i><span>Tambah kebenaran baharu · ujian akses · prompt Claude</span></div>
+  </div>
+  <aside class="notes"><p>Permintaan peserta: faham Shield dan RBAC dengan lebih mendalam. Semua contoh daripada repo espkpv2 main (Shield v1.4). Buka fail sebenar dalam editor semasa menerangkan: app/Config/AuthGroups.php, Config/Filters.php, Config/Routes.php, Libraries/PermohonanPolicy.php, tests/feature/AksesTest.php.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · Shield — asas</div>
+  <h2>Pengesahan ≠ kebenaran</h2>
+  <div class="grid c3">
+    <div class="card top m-tlk"><span class="k">AUTHENTICATION</span><h3>Siapa anda?</h3><p>Log masuk No. KP + kata laluan, 2FA (TOTP / passkey). Shield: <code>auth()-&gt;loggedIn()</code>, <code>auth()-&gt;user()</code>.</p></div>
+    <div class="card top m-pas"><span class="k">AUTHORIZATION</span><h3>Apa anda boleh buat?</h3><p>Kumpulan &amp; kebenaran: <code>$user-&gt;can('kad.urus')</code>. Ini RBAC.</p></div>
+    <div class="card top m-stat"><span class="k">OBJECT-LEVEL</span><h3>Rekod mana?</h3><p>Boleh lihat permohonan <b>ini</b>? Shield tidak tahu — <code>PermohonanPolicy</code> yang tentukan.</p></div>
+  </div>
+  <table class="t tight mt16">
+    <tr><th style="width:260px">Jadual Shield</th><th>Isi</th></tr>
+    <tr><td><code>users</code></td><td>akaun (+ <code>uuid</code> awam dalam eSPKP)</td></tr>
+    <tr><td><code>auth_identities</code></td><td>kata laluan di-hash, rahsia TOTP, token — tidak pernah teks biasa</td></tr>
+    <tr><td><code>auth_groups_users</code></td><td>satu baris = satu pengguna dalam satu kumpulan (pengguna boleh ada beberapa)</td></tr>
+    <tr><td><code>auth_permissions_users</code></td><td>kebenaran terus kepada pengguna (eSPKP tidak guna — semua melalui kumpulan)</td></tr>
+    <tr><td><code>auth_logins</code> · <code>settings</code></td><td>log cubaan masuk · matriks yang disunting di <code>/admin/peranan</code></td></tr>
+  </table>
+  <aside class="notes"><p>Tekankan lapisan ketiga: ramai menyangka permission sudah cukup. UKS ada permohonan.proses_pas, tetapi pemohon 01 dan 08 kedua-duanya ada pas.mohon — kebenaran sama, rekod berbeza. Itu tugas polisi, bukan Shield.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · RBAC</div>
+  <h2>Pengguna → kumpulan → kebenaran</h2>
+  <div class="flow"><div class="node"><span class="k">PENGGUNA</span><b>9001010100 04</b><span>akaun UKS</span></div><div class="arr">→</div><div class="node hot"><span class="k">KUMPULAN (PERANAN)</span><b>uks_pas + uks_tlk</b><span>auth_groups_users</span></div><div class="arr">→</div><div class="node hot"><span class="k">KEBENARAN</span><b>permohonan.proses_pas · kad.urus · laporan.lihat …</b><span>matriks</span></div><div class="arr">→</div><div class="node"><span class="k">SEMAKAN</span><b><code>can('kad.urus')</code></b><span>true / false</span></div></div>
+  <div class="grid c3 mt16">
+    <div class="card side m-tlk"><h3>Semak kebenaran, bukan kumpulan</h3><p><code>can('laporan.lihat')</code> kekal betul walaupun kumpulan baharu ditambah. <code>inGroup('uks_pas')</code> pecah apabila peranan berubah.</p></div>
+    <div class="card side m-pas"><h3>Kesatuan (union)</h3><p>Pengguna dengan dua kumpulan mendapat <b>gabungan</b> semua kebenaran. Tiada "tolak" dalam Shield.</p></div>
+    <div class="card side m-stat"><h3>Privilej minimum</h3><p>Superadmin <b>tidak</b> ada <code>permohonan.lihat_semua</code>: hanya permohonan Lulus (untuk batal) dan laporan agregat.</p></div>
+  </div>
+  <aside class="notes"><p>eSPKP: 12 kumpulan, 20 kebenaran. Nama kebenaran ikut pola modul.tindakan (pas.mohon, permohonan.lulus_pas, admin.kod). Shield juga menyokong wildcard admin.* dalam matriks — eSPKP sengaja tidak guna supaya setiap kebenaran jelas.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · RBAC — <code>Config/AuthGroups.php</code></div>
+  <h2>Kumpulan, senarai kebenaran dan matriks lalai</h2>
+  <div class="codewrap"><div class="codebar">app/Config/AuthGroups.php (dipendekkan)<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">public</span> <span class="v">array</span> $groups = [
+    <span class="s">'pemohon'</span>     =&gt; [<span class="s">'title'</span> =&gt; <span class="s">'Pemohon'</span>, ...],
+    <span class="s">'uks_pas'</span>     =&gt; [<span class="s">'title'</span> =&gt; <span class="s">'Penyemak Pas'</span>, ...],
+    <span class="s">'pelulus_pas'</span> =&gt; [<span class="s">'title'</span> =&gt; <span class="s">'Pelulus Pas'</span>, ...],   <span class="c">// + 9 lagi</span>
+];
+<span class="k">public</span> <span class="v">array</span> $permissions = [
+    <span class="s">'pas.mohon'</span>             =&gt; <span class="s">'Memohon Pas Keselamatan'</span>,
+    <span class="s">'permohonan.proses_pas'</span> =&gt; <span class="s">'Penyemakan Pas (UKS)'</span>,
+    <span class="s">'kad.urus'</span>              =&gt; <span class="s">'No. siri, cetak &amp; serahan kad'</span>,   <span class="c">// 20 semuanya</span>
+];
+<span class="k">public</span> <span class="v">array</span> $matrix = [   <span class="c">// LALAI — suntingan disimpan dalam jadual settings</span>
+    <span class="s">'pemohon'</span> =&gt; [<span class="s">'pas.mohon'</span>, <span class="s">'tlk.mohon'</span>],
+    <span class="s">'uks_pas'</span> =&gt; [<span class="s">'pas.mohon'</span>, <span class="s">'tlk.mohon'</span>, <span class="s">'permohonan.proses_pas'</span>,
+                  <span class="s">'permohonan.lihat_semua'</span>, <span class="s">'kad.urus'</span>, <span class="s">'laporan.lihat'</span>],
+];
+<span class="k">public</span> <span class="v">array</span> $kunci = [ <span class="s">'pemohon'</span> =&gt; [<span class="s">'pas.mohon'</span>], ... ];  <span class="c">// sel tidak boleh dibuang</span></pre></div>
+  <aside class="notes"><p>Tiga tatasusunan: groups (siapa), permissions (apa), matrix (siapa boleh apa). $kunci melindungi sel yang aliran kerja bergantung kepadanya, dan superadmin supaya pentadbir tidak terkunci keluar. defaultGroup = kumpulan untuk pendaftaran sendiri.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · RBAC — matriks boleh disunting</div>
+  <h2><code>/admin/peranan</code>: pentadbir mengubah matriks tanpa deploy</h2>
+  <div class="split">
+    <div class="stack">
+      <div class="card side m-tlk"><h3>Disimpan dalam <code>settings</code></h3><p>Shield membaca <code>setting('AuthGroups.matrix')</code>. Jangan baca <code>config('AuthGroups')-&gt;matrix</code> terus — itu nilai lalai sahaja.</p></div>
+      <div class="card side m-pas"><h3>Peranan dalam jadual <code>peranan</code></h3><p>Senarai kumpulan melalui <code>service('peranan')</code>: <code>semua()</code>, <code>aktif()</code>, <code>pegawai()</code>.</p></div>
+      <div class="card side m-stat"><h3>Disemak &amp; diaudit</h3><p><code>MatriksKebenaran</code> menolak kumpulan/kebenaran asing, mengekalkan <code>$kunci</code>, merekod beza lama/baharu dalam <code>log_audit</code>, dan boleh set semula ke lalai.</p></div>
+    </div>
+    <div class="codewrap"><div class="codebar">aliran simpan<span class="lang">text</span></div>
+<pre class="code sm" data-lang="text">POST /admin/peranan  (permission:admin.pengguna)
+  → MatriksKebenaran::daripadaInput()   tolak nilai asing
+  → semak()                             peraturan $bercanggah
+  → simpan setting('AuthGroups.matrix')
+  → audit: kebenaran.ubah (lama → baharu)
+  → kosongkan cache statistik / menu</pre></div>
+  </div>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Kebenaran baharu dalam kod perlu ditambah ke <code>$permissions</code> <b>dan</b> matriks — <code>KonfigurasiKebenaranTest</code> akan gagal jika tertinggal.</div></div>
+  <aside class="notes"><p>Demo: log masuk 06, buka /admin/peranan, tunjuk sel berkunci (tidak boleh dinyahtanda), ubah satu sel, simpan, buka /admin/audit untuk rekod beza. Set semula ke lalai selepas demo.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · Kawalan akses — lapis 1</div>
+  <h2>Filter: tolak secara lalai, buka setiap route</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">app/Config/Filters.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">public</span> <span class="v">array</span> $globals = [<span class="s">'before'</span> =&gt; [
+    <span class="s">'csrf'</span>,
+    <span class="s">'session'</span>  =&gt; [<span class="s">'except'</span> =&gt; [<span class="s">'/'</span>, <span class="s">'login*'</span>, <span class="s">'daftar*'</span>, ...]],
+    <span class="s">'sesiSah'</span>, <span class="s">'force-reset'</span>, <span class="s">'wajib2fa'</span>,
+]];</pre></div>
+    <div class="codewrap"><div class="codebar">app/Config/Routes.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php">$routes-&gt;group(<span class="s">'kad'</span>,
+    [<span class="s">'filter'</span> =&gt; <span class="s">'permission:kad.urus'</span>], ...);
+$routes-&gt;group(<span class="s">'laporan'</span>,
+    [<span class="s">'filter'</span> =&gt; <span class="s">'permission:laporan.lihat'</span>], ...);
+<span class="c">// koma = ATAU (mana-mana satu cukup)</span>
+$routes-&gt;get(<span class="s">'semua'</span>, ..., [<span class="s">'filter'</span> =&gt;
+    <span class="s">'permission:permohonan.lihat_semua,permohonan.batal'</span>]);</pre></div>
+  </div>
+  <div class="grid c3 mt16">
+    <div class="card flat"><span class="k">session</span><p>Global: setiap route perlu log masuk kecuali senarai awam.</p></div>
+    <div class="card flat"><span class="k">permission:x,y</span><p>Per route: lulus jika ada <b>salah satu</b>. Gagal → dialih ke papan pemuka + mesej.</p></div>
+    <div class="card flat"><span class="k">auto-routing OFF</span><p>Hanya route yang ditulis wujud — tiada controller "terlepas" filter.</p></div>
+  </div>
+  <aside class="notes"><p>Soalan: route POST baharu tanpa filter permission — siapa boleh panggil? Jawapan: sesiapa yang log masuk (session global sahaja). Sebab itu setiap route dalam blok modul mesti ada filter. Elakkan filter group: — guna permission:.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · Kawalan akses — lapis 2 &amp; 3</div>
+  <h2>Dalam kod: <code>can()</code> untuk tindakan, polisi untuk rekod</h2>
+  <div class="split">
+    <div class="codewrap"><div class="codebar">app/Libraries/PermohonanPolicy.php (dipendekkan)<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">public function</span> <span class="f">bolehLihat</span>(Permohonan $p, User $user): bool
+{
+    <span class="k">if</span> ($p-&gt;milik((int) $user-&gt;id))           <span class="k">return</span> <span class="v">true</span>;
+    <span class="k">if</span> ($user-&gt;can(<span class="s">'permohonan.lihat_semua'</span>)) <span class="k">return</span> <span class="v">true</span>;
+    <span class="k">if</span> ($user-&gt;can(<span class="s">'permohonan.semak'</span>)
+        &amp;&amp; $p-&gt;bahagian_id === $this-&gt;bahagian($user)) <span class="k">return</span> <span class="v">true</span>;
+    <span class="k">if</span> ($user-&gt;can(<span class="s">'permohonan.sokong'</span>))
+        <span class="k">return</span> $p-&gt;penyelia_id === (int) $user-&gt;id;
+    <span class="k">return</span> <span class="v">false</span>;
+}</pre></div>
+    <div class="stack">
+      <div class="card side m-tlk"><h3>404, bukan 403</h3><p><code>bolehLihatAtau404()</code> — pengguna tanpa akses tidak tahu rekod itu wujud.</p></div>
+      <div class="card side m-pas"><h3>Pemilik tidak bertindak</h3><p><code>bolehBertindakSebagai()</code>: pemohon tidak boleh menyokong / meluluskan permohonan sendiri (pengasingan tugas).</p></div>
+      <div class="card side m-stat"><h3>Paparan = keselesaan</h3><p>Sorok butang dengan <code>can()</code> dalam view, tetapi server <b>tetap</b> menyemak. Butang tersorok bukan kawalan keselamatan.</p></div>
+    </div>
+  </div>
+  <aside class="notes"><p>Laluan penuh: filter route → BaseController::permohonanAtau404() → AliranKerja::cari → PermohonanPolicy. AliranKerja::tersedia() juga membaca Peringkat → kebenaran dari Config/Aliran.php, jadi butang tindakan dan semakan server datang daripada satu jadual. UUID dalam URL mengelak teka id, tetapi polisi tetap wajib.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · RBAC — amalan</div>
+  <h2>Tambah kebenaran baharu: 6 langkah</h2>
+  <table class="t tight">
+    <tr><th style="width:60px">#</th><th style="width:330px">Langkah</th><th>Contoh: <code>laporan.eksport</code></th></tr>
+    <tr><td>1</td><td><code>AuthGroups::$permissions</code></td><td><code>'laporan.eksport' =&gt; 'Eksport PDF/XLSX'</code></td></tr>
+    <tr><td>2</td><td><code>AuthGroups::$matrix</code> (lalai) + matriks dalam <code>settings</code></td><td><code>uks_pas</code>, <code>pelulus_pas</code>; pentadbir tanda di <code>/admin/peranan</code> pada server sedia ada</td></tr>
+    <tr><td>3</td><td>Filter route</td><td><code>'filter' =&gt; 'permission:laporan.eksport'</code></td></tr>
+    <tr><td>4</td><td>Semakan dalam service / polisi jika ikut rekod</td><td><code>$user-&gt;can('laporan.eksport')</code></td></tr>
+    <tr><td>5</td><td>View: sorok butang</td><td><code>&lt;?php if (auth()-&gt;user()-&gt;can('laporan.eksport')): ?&gt;</code></td></tr>
+    <tr><td>6</td><td>Ujian: ada akses <b>dan</b> tiada akses</td><td>pelulus 05 → 200 · pemohon 01 → dialih / 404</td></tr>
+  </table>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div><code>Config/Auth*.php</code> dan <code>Filters.php</code> ialah <b>fail panas</b>: satu MR terbuka pada satu masa. Minta semakan <code>semak-espkp</code> sebelum MR.</div></div>
+  <aside class="notes"><p>Langkah 2 sering terlepas: matriks lalai hanya terpakai jika settings belum disunting. Pada server yang matriksnya sudah diubah, pentadbir perlu menanda sel baharu di /admin/peranan (atau migration data yang menambah sel). Bincang dengan PM siapa yang memutuskan — itu keputusan pemilik sistem.</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · RBAC — ujian akses</div>
+  <h2>Uji kedua-dua arah: boleh <b>dan</b> tidak boleh</h2>
+  <div class="codewrap"><div class="codebar">tests/feature/AksesTest.php<span class="lang">php</span></div>
+<pre class="code sm" data-lang="php"><span class="k">public function</span> <span class="f">testPemohonTiadaAksesBarisanDanPentadbiran</span>(): void
+{
+    $pemohon = $this-&gt;pengguna(<span class="s">'01'</span>);
+    $this-&gt;actingAs($pemohon)-&gt;get(<span class="s">'kad'</span>)-&gt;assertRedirectTo(site_url(<span class="s">'papan-pemuka'</span>));
+    $this-&gt;actingAs($pemohon)-&gt;get(<span class="s">'laporan'</span>)-&gt;assertRedirectTo(site_url(<span class="s">'papan-pemuka'</span>));
+}
+
+<span class="k">public function</span> <span class="f">testPermohonanOrangLainMemulangkan404</span>(): void
+{
+    $p = $this-&gt;hantar(JenisPermohonan::PasBaharu, $this-&gt;pengguna(<span class="s">'01'</span>));
+    $this-&gt;actingAs($this-&gt;pengguna(<span class="s">'01'</span>))-&gt;get(<span class="s">"permohonan/{$p-&gt;uuid}"</span>)-&gt;assertOK();
+    $this-&gt;expectException(PageNotFoundException::class);
+    $this-&gt;actingAs($this-&gt;pengguna(<span class="s">'08'</span>))-&gt;get(<span class="s">"permohonan/{$p-&gt;uuid}"</span>);  <span class="c">// pemohon lain</span>
+}</pre></div>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Akaun latihan: 01/08 pemohon · 02 urus setia · 03 penyelia · 04 UKS · 05 pelulus · 06 pentadbir · 07 wakil. Setiap route baharu: sekurang-kurangnya satu akaun "boleh" dan satu "tidak boleh".</div></div>
+  <aside class="notes"><p>Jalankan: vendor/bin/phpunit tests/feature/AksesTest.php. Tanya peserta: untuk ciri yang anda bina minggu ini, akaun mana yang patut ditolak? Adakah ujiannya wujud?</p></aside>
+</section>
+
+<section class="slide">
+  <div class="eyebrow">Hari 9 · Shield &amp; RBAC — dengan Claude Code</div>
+  <h2>Audit akses dengan Claude (mod Plan, baca sahaja)</h2>
+  <table class="t tight">
+    <tr><th style="width:220px">Tujuan</th><th>Prompt</th></tr>
+    <tr><td><b>Peta akses</b></td><td><code>Baca Config/Routes.php dan Filters.php. Jadual: route, kaedah, filter permission, kumpulan yang ada kebenaran itu (ikut AuthGroups matrix). Baca sahaja.</code></td></tr>
+    <tr><td><b>Route terdedah</b></td><td><code>Senaraikan route POST/GET yang hanya dilindungi 'session' global tanpa permission:. Untuk setiap satu, adakah controller menyemak can() atau polisi?</code></td></tr>
+    <tr><td><b>IDOR</b></td><td><code>Untuk setiap controller yang menerima (:uuid), tunjukkan baris yang memanggil bolehLihatAtau404 atau polisi. Tandakan yang tiada.</code></td></tr>
+    <tr><td><b>Ujian hilang</b></td><td><code>/agents penguji-espkp: cari kebenaran dalam AuthGroups yang tiada ujian "tidak boleh" dalam tests/feature.</code></td></tr>
+  </table>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Claude mencadangkan; <b>anda</b> mengesahkan dengan ujian. Perubahan matriks lalai atau <code>$kunci</code> ialah keputusan pemilik sistem — rekod dalam kad Jira, bukan teka.</div></div>
+  <aside class="notes"><p>Demo prompt 2 secara langsung dalam espkpv2. Kaitkan dengan semakan kod: setiap MR yang menambah route mesti menunjukkan filter + ujian tidak-boleh. Kuiz cepat: (1) pengguna dalam uks_pas dan pemohon — kebenaran gabungan atau persilangan? (2) kenapa 404 bukan 403? (3) di mana matriks sebenar disimpan?</p></aside>
+</section>
+
 <section class="slide dark divider" data-label="Hari 10 · Keluaran &amp; Capstone">
   <div class="eyebrow">Hari 10 · Fasa C — Keluar &amp; Serah</div>
   <h1>Hari 10 — Sprint 3, v1.1.0 &amp; Capstone Pasukan</h1>
