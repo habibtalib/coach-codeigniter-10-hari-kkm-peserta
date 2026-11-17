@@ -3206,11 +3206,11 @@ $routes-&gt;get(<span class="s">'semua'</span>, ..., [<span class="s">'filter'</
 
 <section class="slide dark divider" data-label="Hari 10 · Keluaran &amp; Capstone">
   <div class="eyebrow">Hari 10 · Fasa C — Keluar &amp; Serah</div>
-  <h1>Hari 10 — Sprint 3, v1.1.0 &amp; Capstone Pasukan</h1>
-  <div><span class="chip m-stat">Pembekuan 12:30 · v1.1.0 · demo Projek &amp; pasangan Dev</span></div>
+  <h1>Hari 10 — Sprint 3, v1.2.0 &amp; Capstone Pasukan</h1>
+  <div><span class="chip m-stat">Pembekuan 12:30 · v1.2.0 · demo Projek &amp; pasangan Dev</span></div>
   <div class="sessions">
     <div><i>S8</i><span>Sprint 3: ciri terakhir &amp; pepijat kritikal — pembekuan 12:30</span></div>
-    <div><i>S9</i><span>Keluaran v1.1.0: stabil, CHANGELOG, tag &amp; Release</span></div>
+    <div><i>S9</i><span>Keluaran v1.2.0: stabil, CHANGELOG, tag &amp; Release</span></div>
     <div><i>S10</i><span>Demo capstone pasukan kepada pemilik sistem</span></div>
     <div><i>S11</i><span>Retro pasukan &amp; refleksi Claude Code</span></div>
   </div>
@@ -3231,7 +3231,7 @@ $routes-&gt;get(<span class="s">'semua'</span>, ..., [<span class="s">'filter'</
       <tr><td><b>12:30</b></td><td><b>Pembekuan ciri</b> — selepas ini hanya <code>fix/…</code></td></tr>
     </table>
     <div class="card top m-a"><span class="k">ISU SPRINT 3</span>
-      <ul><li>#14 E2E &amp; dokumentasi · #15 Sejarah log masuk · #18 Kad KPI</li><li>#27–#32 jurang BRS Sprint 3 (AC oleh BA semalam)</li><li>Agihan ikut label <code>pasangan::N</code></li><li>+ pepijat kritikal &amp; isu susulan dalam skop v1.1.0</li></ul>
+      <ul><li>#14 E2E &amp; dokumentasi · #15 Sejarah log masuk · #18 Kad KPI</li><li>#27–#32 jurang BRS Sprint 3 (AC oleh BA semalam)</li><li>Agihan ikut label <code>pasangan::N</code></li><li>+ pepijat kritikal &amp; isu susulan dalam skop v1.2.0</li></ul>
     </div>
   </div>
   <div class="callout warn mt16"><span class="i">⚠️</span><div>MR ciri yang belum di-merge pada 12:30 → isu kekal terbuka, alih ke backlog dengan komen. Jangan merge tanpa semakan QA untuk "sempat".</div></div>
@@ -3240,95 +3240,97 @@ $routes-&gt;get(<span class="s">'semua'</span>, ..., [<span class="s">'filter'</
 
 <section class="slide">
   <div class="eyebrow">Hari 10 · S9 — Lab 10.21 (14:30–15:15)</div>
-  <h2>S9 · Keluaran v1.1.0</h2>
+  <h2>S9 · Keluaran v1.2.0</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">PM keluaran · mod Plan<span class="lang">prompt</span></div>
-<pre class="code sm" data-lang="text">Guna Jira: JQL project = KAN AND
-fixVersion = v1.1.0 AND statusCategory = Done.
-Padankan setiap kad dengan MR KAN-n daripada
-glab mr list --merged. Draf "## [1.1.0] -
-2026-10-30" (Keep a Changelog), satu baris
-setiap MR dengan !no dan KAN-n. Jangan tulis fail.</pre></div>
+<pre class="code sm" data-lang="text">Jalankan git log --first-parent --merges
+v1.1.0..main (MR sejak 12/11). Ambil !no dan
+KAN-n; semak kad dalam Jira. Draf
+"## [1.2.0] - 2026-11-18" (Keep a Changelog),
+satu baris setiap MR dengan !no dan KAN-n.
+Jangan tulis fail.</pre></div>
     <div class="card top m-stat"><span class="k">LANGKAH KELUARAN</span>
-      <ul><li><b>Stabil:</b> <code>composer test</code> + E2E hijau pada <code>main</code></li><li><b>CHANGELOG:</b> setiap baris disemak terhadap MR sebenar; masuk melalui MR <code>docs/changelog-v1.1.0</code></li><li><b>Tag:</b> <code>v*</code> dilindungi — PM keluaran baca nota keluaran, <b>jurulatih</b> cipta tag beranotasi</li><li><b>Release</b> GitLab pada <code>v1.1.0</code></li><li><b>Jira:</b> <i>Releases</i> → <code>v1.1.0</code> → Release</li></ul>
+      <ul><li><b>Stabil:</b> <code>composer test</code> + E2E hijau pada <code>main</code></li><li><b>CHANGELOG:</b> setiap baris disemak terhadap MR sebenar; masuk melalui MR <code>docs/changelog-v1.2.0</code></li><li><b>Tag:</b> <code>v*</code> dilindungi — PM keluaran baca nota keluaran, <b>jurulatih</b> cipta tag beranotasi</li><li><b>Release</b> GitLab pada <code>v1.2.0</code></li><li><b>Jira:</b> cipta <code>v1.2.0</code>, alih kad Done selepas 12/11, Release <code>v1.1.0</code> + <code>v1.2.0</code></li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Baris CHANGELOG tanpa <code>!no</code> dan <code>#isu</code> = tanda Claude mereka perubahan. Buang.</div></div>
-  <aside class="notes"><p>PM keluaran ialah PM pasukan Projek, dibantu BA dan floater. Checkpoint: CHANGELOG.md bahagian 1.1.0 di main dengan setiap baris sepadan MR sebenar; tag v1.1.0 dan Release GitLab wujud.</p></aside>
+  <aside class="notes"><p>PM keluaran ialah PM pasukan Projek, dibantu BA dan floater. Checkpoint: CHANGELOG.md bahagian 1.2.0 di main dengan setiap baris sepadan MR sebenar; tag v1.2.0 dan Release GitLab wujud.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Hari 10 · CI/CD — Lab 10.23</div>
-  <h2>CI membuktikan kod betul; CD menghantarnya ke staging</h2>
-  <div class="flow"><div class="node"><span class="k">MR / PUSH</span><b>semak</b><span>lint · cs · phpstan</span></div><div class="arr">→</div><div class="node"><span class="k">CI</span><b>test</b><span>PHPUnit · MySQL 8.4</span></div><div class="arr">→</div><div class="node hot"><span class="k">CD · MANUAL ▶</span><b>deploy-staging</b><span>main · tag v*</span></div><div class="arr">→</div><div class="node"><span class="k">BUKAN DALAM PIPELINE</span><b>production</b><span>prosedur perubahan jabatan</span></div></div>
+  <h2>CI menguji; CD menghantar satu imej ke staging &amp; production</h2>
+  <div class="flow"><div class="node"><span class="k">MR / PUSH</span><b>semak · test</b><span>lint · phpstan · PHPUnit</span></div><div class="arr">→</div><div class="node"><span class="k">MAIN · TAG v*</span><b>bina-imej</b><span>Kaniko → Harbor</span></div><div class="arr">→</div><div class="node hot"><span class="k">AUTOMATIK</span><b>deploy-staging</b><span>app + MySQL</span></div><div class="arr">→</div><div class="node"><span class="k">TAG v* · MANUAL ▶</span><b>deploy-production</b><span>app + MySQL luaran</span></div></div>
   <div class="grid c3 mt16">
-    <div class="card side m-tlk"><h3>Continuous Integration</h3><p>Setiap MR: kod disemak dan diuji secara automatik. Merah → tidak merge.</p></div>
-    <div class="card side m-pas"><h3>Continuous Delivery</h3><p>Setiap <code>main</code> / tag <b>boleh</b> dihantar ke staging dengan satu klik — selepas ujian lulus.</p></div>
-    <div class="card side m-stat"><h3>Kenapa manual?</h3><p>Manusia memilih bila. Pipeline tidak deploy sendiri dan tidak pernah ke production.</p></div>
+    <div class="card side m-tlk"><h3>Bina sekali</h3><p>Satu imej setiap commit: <code>:&lt;sha&gt;</code>, dan <code>:v1.2.0</code> untuk tag. Staging dan production menjalankan imej yang <b>sama</b>.</p></div>
+    <div class="card side m-pas"><h3>Staging automatik</h3><p>Setiap <code>main</code> yang hijau sampai ke staging sendiri — pepijat ditemui sebelum keluaran.</p></div>
+    <div class="card side m-stat"><h3>Production manual</h3><p>Hanya tag <code>v*</code>, selepas staging hijau, apabila Maintainer menekan ▶.</p></div>
   </div>
-  <aside class="notes"><p>espkpv2 hari ini: stage semak + test + SAST. Lab 10.23 menambah stage deploy dengan job deploy-staging. Continuous Deployment (automatik ke production) sengaja tidak diajar — untuk sistem kerajaan, production melalui kelulusan dan prosedur perubahan.</p></aside>
+  <aside class="notes"><p>MR !238 (KAN-204) menggantikan job deploy-staging lama yang membina di server. Kaniko membina tanpa Docker daemon, jadi runner tidak perlu privileged. Dalam kelas ini Harbor dan dua VM ialah simulasi pada server latihan; untuk KKM hanya pemboleh ubah CI dan persediaan VM berubah (docs/deploy-vm.md).</p></aside>
 </section>
+
 
 <section class="slide">
   <div class="eyebrow">Hari 10 · CI/CD — <code>.gitlab-ci.yml</code></div>
-  <h2>Job <code>deploy-staging</code>: manual, production mode, ujian asap</h2>
+  <h2>Tiga job CD: bina, staging, production</h2>
   <div class="codewrap"><div class="codebar">.gitlab-ci.yml (dipendekkan)<span class="lang">yaml</span></div>
-<pre class="code sm" data-lang="yaml"><span class="v">stages</span>: [semak, test, deploy]
+<pre class="code sm" data-lang="yaml"><span class="v">stages</span>: [semak, test, build, staging, production]
+<span class="v">bina-imej</span>:                          <span class="c"># main + tag v*</span>
+  <span class="v">image</span>: gcr.io/kaniko-project/executor:v1.23.2-debug
+  <span class="v">script</span>: [ /kaniko/executor ... --destination $IMEJ:$CI_COMMIT_SHORT_SHA ]
+<span class="v">.deploy-vm</span>:                         <span class="c"># SSH ke pintu pada VM</span>
+  <span class="v">script</span>: [ ssh $SSH_USER@$SSH_HOST <span class="s">"deploy $PINTU_ENV $TAG"</span> ]
 <span class="v">deploy-staging</span>:
-  <span class="v">extends</span>: .php                    <span class="c"># PHP + Composer sama seperti ujian</span>
-  <span class="v">stage</span>: deploy
-  <span class="v">services</span>: [{ name: mysql:8.4, alias: mysql }]
-  <span class="v">variables</span>: { CI_ENVIRONMENT: production, database_default_hostname: mysql, ... }
-  <span class="v">environment</span>: { name: staging, deployment_tier: staging }
+  <span class="v">extends</span>: .deploy-vm
+  <span class="v">needs</span>: [bina-imej]                 <span class="c"># automatik</span>
+  <span class="v">variables</span>: { PINTU_ENV: staging, TAG: $CI_COMMIT_SHORT_SHA, VM: STAGING }
+<span class="v">deploy-production</span>:
+  <span class="v">extends</span>: .deploy-vm
+  <span class="v">needs</span>: [bina-imej, deploy-staging]
   <span class="v">rules</span>:
     - <span class="v">if</span>: <span class="s">$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/</span>
-      <span class="v">when</span>: manual
-    - <span class="v">if</span>: <span class="s">$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH</span>
-      <span class="v">when</span>: manual
-  <span class="v">script</span>:
-    - composer install --no-dev --optimize-autoloader
-    - php spark migrate --all
-    - php spark db:seed KodRujukanSeeder   <span class="c"># data rujukan sahaja</span>
-    - php -S 0.0.0.0:8080 -t public ... &amp;
-    - test "$(curl ... /login)" = 200       <span class="c"># awam</span>
-    - test "$(curl ... /papan-pemuka)" = 302 <span class="c"># dilindungi</span></pre></div>
-  <aside class="notes"><p>Teks penuh dalam Lab 10.23 langkah 4 — sudah diuji pada runner GitLab KKM. Tekankan: rules menggantikan rules templat .php; pipeline MR tidak menunjukkan job ini; tag v* dilindungi jadi hanya Maintainer menekan ▶ untuk keluaran. Tiada rahsia dalam YAML: kata laluan root di sini hanya untuk service MySQL sementara dalam runner.</p></aside>
+      <span class="v">when</span>: manual                     <span class="c"># Maintainer menekan ▶</span>
+  <span class="v">variables</span>: { PINTU_ENV: production, TAG: $CI_COMMIT_TAG, VM: PROD }</pre></div>
+  <aside class="notes"><p>Teks penuh dalam MR !238. Tunjukkan: CI tidak menghantar kod, compose atau .env ke VM — hanya nama persekitaran dan tag imej. Pemboleh ubah HARBOR_*, STAGING_SSH_*, PROD_SSH_* semuanya Protected, jadi pipeline branch ciri tidak dapat membacanya. Pipeline tag kekal "blocked" sehingga production diluluskan (allow_failure: false).</p></aside>
 </section>
+
 
 <section class="slide">
   <div class="eyebrow">Hari 10 · CI/CD — persekitaran</div>
-  <h2>Dev, staging, production: siapa, data apa, bagaimana</h2>
+  <h2>Dev, staging, production: compose, data, siapa</h2>
   <table class="t tight">
-    <tr><th style="width:170px">Persekitaran</th><th style="width:230px"><code>CI_ENVIRONMENT</code></th><th style="width:300px">Data</th><th>Siapa / bagaimana</th></tr>
-    <tr><td><b>dev</b></td><td><code>development</code> · Debug Toolbar, TAC di skrin</td><td>Demo + akaun latihan <code>9001010100NN</code></td><td>Setiap pembangun, <code>php spark serve</code></td></tr>
-    <tr><td><b>staging</b></td><td><code>production</code> · tiada toolbar, ralat disorok</td><td>Data rujukan sahaja (<code>KodRujukanSeeder</code>)</td><td>Pipeline, job manual ▶ selepas ujian lulus</td></tr>
-    <tr><td><b>production</b></td><td><code>production</code></td><td>Data sebenar — tiada seeder demo, tiada akaun latihan</td><td>Prosedur perubahan + kelulusan jabatan, <b>bukan</b> pipeline latihan</td></tr>
+    <tr><th style="width:150px">Persekitaran</th><th style="width:270px">Pada VM</th><th style="width:270px">Data</th><th>Bila / siapa</th></tr>
+    <tr><td><b>dev</b></td><td><code>php spark serve</code> · <code>development</code></td><td>Demo + akaun latihan <code>9001010100NN</code></td><td>Setiap pembangun</td></tr>
+    <tr><td><b>staging</b></td><td>compose: <code>app</code> + <code>mysql</code> + <code>jadual</code></td><td>MySQL dalam stack; data ujian</td><td>Automatik selepas setiap <code>main</code> / tag hijau</td></tr>
+    <tr><td><b>production</b></td><td>compose: <code>app</code> + <code>jadual</code> · <code>production</code></td><td><b>MySQL luaran</b> (server DB jabatan, TLS) — tiada seeder demo</td><td>Tag <code>v*</code> sahaja, manual ▶ oleh Maintainer</td></tr>
   </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div><code>DatabaseSeeder</code> menolak untuk berjalan dalam <code>production</code> — penghalang yang sengaja. Staging menguji kod yang <b>sama</b> dalam mod yang <b>sama</b> seperti production.</div></div>
-  <aside class="notes"><p>Kaitkan dengan senarai semak keselamatan K10 (mod pengeluaran untuk staging) dan bahagian A README Hari 10. Soalan: kenapa staging tidak guna akaun Latihan@2026? (kata laluan diketahui umum, dan staging sering boleh dicapai dari rangkaian jabatan).</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div>Repo imej, fail compose dan <code>.env</code> (kata laluan DB, kunci penyulitan) tinggal <b>pada VM</b>. GitLab hanya tahu tag mana yang perlu dijalankan.</div></div>
+  <aside class="notes"><p>Production tidak mempunyai bekas mysql: DB ialah server jabatan yang diurus berasingan dan disandarkan oleh pasukan DB. Soalan: kenapa staging tidak guna akaun Latihan@2026? (kata laluan diketahui umum, dan staging sering boleh dicapai dari rangkaian jabatan).</p></aside>
 </section>
 
+
 <section class="slide">
-  <div class="eyebrow">Hari 10 · CI/CD — selamat &amp; rollback</div>
-  <h2>Deploy selamat: lima peraturan</h2>
+  <div class="eyebrow">Hari 10 · CI/CD — pintu deploy &amp; rollback</div>
+  <h2>Deploy selamat: enam peraturan</h2>
   <div class="grid c3">
-    <div class="card top m-tlk"><span class="k">1 · HIJAU DAHULU</span><p>Stage <code>deploy</code> hanya berjalan selepas <code>semak</code> + <code>test</code> lulus.</p></div>
-    <div class="card top m-pas"><span class="k">2 · MANUAL</span><p><code>when: manual</code> — manusia memilih bila; tag <code>v*</code> dilindungi (Maintainer).</p></div>
-    <div class="card top m-stat"><span class="k">3 · TIADA RAHSIA DALAM YAML</span><p>Kunci SSH / kata laluan server → <i>CI/CD Variables</i> <b>Protected + Masked</b>.</p></div>
-    <div class="card top m-tlk"><span class="k">4 · ROLLBACK</span><p><i>Environments → staging → Re-deploy</i> commit lama. Migration <b>tidak</b> diundur sendiri.</p></div>
-    <div class="card top m-pas"><span class="k">5 · UJIAN ASAP</span><p>Deploy belum siap sehingga <code>/login</code> 200 dan halaman dilindungi 302.</p></div>
-    <div class="card top m-stat"><span class="k">STAGING SEBENAR</span><p>Tambah satu langkah: hantar binaan ke server (<code>docker compose up -d</code> melalui SSH).</p></div>
+    <div class="card top m-tlk"><span class="k">1 · PINTU, BUKAN SHELL</span><p>Kunci CI hanya boleh <code>deploy</code> · <code>rollback</code> · <code>status</code> (<i>forced command</i>); tag disemak dengan regex.</p></div>
+    <div class="card top m-pas"><span class="k">2 · TIADA RAHSIA DALAM YAML</span><p><i>CI/CD Variables</i> <b>Protected + Masked</b>; <code>.env</code> pada VM sahaja.</p></div>
+    <div class="card top m-stat"><span class="k">3 · TARIK DAHULU</span><p>Tag tiada dalam Harbor → deploy berhenti, tiada apa berubah.</p></div>
+    <div class="card top m-tlk"><span class="k">4 · SANDARAN DB</span><p><code>mysqldump</code> sebelum setiap deploy; 7 terakhir disimpan pada VM.</p></div>
+    <div class="card top m-pas"><span class="k">5 · SEMAK &amp; ROLLBACK</span><p><code>/login</code> gagal dalam 5 minit → kembali ke tag lama secara automatik. Migration <b>tidak</b> diundur.</p></div>
+    <div class="card top m-stat"><span class="k">6 · PRODUCTION MANUAL</span><p>Tag <code>v*</code> dilindungi; hanya Maintainer menekan ▶, selepas staging hijau.</p></div>
   </div>
-  <aside class="notes"><p>Lab 10.23 menjalankan staging sementara dalam runner (tiada server, tiada kunci) supaya semua peserta boleh mencuba dengan selamat. Langkah ke server sebenar ialah perubahan kecil pada script yang sama, ditambah variable dilindungi. Demo: buka Deployments → Environments → staging selepas tag v1.1.0.</p></aside>
+  <aside class="notes"><p>Semua enam diuji pada simulasi: tag tiada ditolak tanpa perubahan, imej rosak dikembalikan secara automatik, arahan seperti id, bash, ;id dan ../ ditolak. Demo: selepas tag v1.2.0, buka Deployments → Environments; Re-deploy pada deployment lama = rollback manual.</p></aside>
 </section>
+
 
 <section class="slide">
   <div class="eyebrow">Hari 10 · S10 — Lab 10.22 (15:15–16:30)</div>
   <h2>S10 · Demo capstone: Projek + setiap pasangan Dev</h2>
   <table class="t tight">
     <tr><th style="width:110px">Minit</th><th style="width:130px">Siapa</th><th>Apa</th></tr>
-    <tr><td>0–12</td><td><b>Projek</b></td><td>PM: backlog BRS → isu → AC, keputusan pemilik, apa tidak masuk v1.1.0 · BA: satu isu BRS → AC · QA: ujian yang membuktikan AC, pepijat ditangkap, E2E</td></tr>
-    <tr><td>12–52</td><td><b>Dev</b></td><td>10 minit setiap pasangan: ciri pada <code>v1.1.0</code> dengan akaun berbeza — termasuk satu yang menerima <b>404</b>; MR &amp; ujian</td></tr>
+    <tr><td>0–12</td><td><b>Projek</b></td><td>PM: backlog BRS → isu → AC, keputusan pemilik, apa tidak masuk v1.2.0 · BA: satu isu BRS → AC · QA: ujian yang membuktikan AC, pepijat ditangkap, E2E</td></tr>
+    <tr><td>12–52</td><td><b>Dev</b></td><td>10 minit setiap pasangan: ciri pada <code>v1.2.0</code> dengan akaun berbeza — termasuk satu yang menerima <b>404</b>; MR &amp; ujian</td></tr>
     <tr><td>52–57</td><td><b>Floater</b></td><td>Job CI, konflik diselesaikan, E2E</td></tr>
     <tr><td>57–75</td><td><b>Panel</b></td><td>Setiap ahli terangkan satu baris kerjanya — kod, ujian atau AC — <b>tanpa Claude</b></td></tr>
   </table>
@@ -3351,7 +3353,7 @@ setiap MR dengan !no dan KAN-n. Jangan tulis fail.</pre></div>
     <div class="card flat side m-tlk"><span class="k">INDIVIDU</span><h3 class="mb0">Hasil setiap peranan</h3></div>
     <div class="card flat side m-stat"><span class="k">INDIVIDU</span><h3 class="mb0">Disiplin AI</h3></div>
   </div>
-  <p class="small muted mt16">Sijil: markah pasukan × 2.5 ≥ 60, tiada gate kritikal gagal pada <code>v1.1.0</code>, dan "terangkan baris sendiri" lulus.</p>
+  <p class="small muted mt16">Sijil: markah pasukan × 2.5 ≥ 60, tiada gate kritikal gagal pada <code>v1.2.0</code>, dan "terangkan baris sendiri" lulus.</p>
   <aside class="notes"><p>Ringkasan docs/rubrik-capstone.md bahagian 8. Disiplin AI: tiada commit dalam mod auto atau bypass, tiada rahsia atau data sebenar dalam isu, MR atau prompt.</p></aside>
 </section>
 
@@ -3383,15 +3385,15 @@ setiap MR dengan !no dan KAN-n. Jangan tulis fail.</pre></div>
 
 <section class="slide">
   <div class="eyebrow">Hari 10 · Hasil hari ini</div>
-  <h2>v1.1.0 dikeluarkan — semak hasil pasukan</h2>
+  <h2>v1.2.0 dikeluarkan — semak hasil pasukan</h2>
   <ul class="checks done">
     <li><span>Isu Sprint 3 ditutup atau dialih ke backlog dengan sebab sebelum 12:30.</span></li>
-    <li><span><code>CHANGELOG.md</code> 1.1.0 melalui MR; tag <code>v1.1.0</code> + Release pada <code>main</code> yang hijau.</span></li>
+    <li><span><code>CHANGELOG.md</code> 1.2.0 melalui MR; tag <code>v1.2.0</code> + Release pada <code>main</code> yang hijau.</span></li>
     <li><span>Demo capstone Projek + setiap pasangan Dev; helaian markah pasukan diisi.</span></li>
     <li><span>Setiap ahli menerangkan satu baris sendiri tanpa Claude.</span></li>
     <li><span>Komen retro akhir setiap ahli — <b>Sistem dikeluarkan sebagai pasukan</b> 🎓</span></li>
   </ul>
-  <aside class="notes"><p>Tutup dengan pautan Release v1.1.0 di GitLab KKM: ini hasil 12 orang, tiga sprint dan tiga peranan.</p></aside>
+  <aside class="notes"><p>Tutup dengan pautan Release v1.2.0 di GitLab KKM: ini hasil 12 orang, tiga sprint dan tiga peranan.</p></aside>
 </section>
 
 

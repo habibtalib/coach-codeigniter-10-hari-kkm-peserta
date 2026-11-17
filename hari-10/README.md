@@ -1,8 +1,8 @@
-# Hari 10 — Kerja Pasukan: Sprint 3, Keluaran v1.1.0 & Capstone Pasukan
+# Hari 10 — Kerja Pasukan: Sprint 3, Keluaran v1.2.0 & Capstone Pasukan
 
 [← Jadual](../JADUAL.md) · [👥 Peranan pasukan](../docs/peranan-pasukan.md) · [🧪 Lab Hari 10](./lab.md) · [📋 Rubrik Capstone](../docs/rubrik-capstone.md) · [← Hari 9](../hari-9/README.md)
 
-> **Hari terakhir.** Pagi: Sprint 3 — ciri terakhir dan pepijat kritikal, dengan **pembekuan ciri** pada 12:30. Petang: pasukan menstabilkan `main`, menyediakan **keluaran v1.1.0** (CHANGELOG, nota keluaran, tag), dan pasukan Projek serta setiap pasangan Dev mendemokan kerja mereka kepada pemilik sistem. Setiap ahli mesti boleh menerangkan kod yang di-commit atas namanya — tanpa Claude.
+> **Hari terakhir.** Pagi: Sprint 3 — ciri terakhir dan pepijat kritikal, dengan **pembekuan ciri** pada 12:30. Petang: pasukan menstabilkan `main`, menyediakan **keluaran v1.2.0** (CHANGELOG, nota keluaran, tag), dan pasukan Projek serta setiap pasangan Dev mendemokan kerja mereka kepada pemilik sistem. Setiap ahli mesti boleh menerangkan kod yang di-commit atas namanya — tanpa Claude.
 
 ---
 
@@ -13,7 +13,7 @@ Di akhir hari ini, peserta boleh:
 | # | Objektif (boleh diukur) | Sesi | Bukti |
 |---|------------------------|------|-------|
 | O10 | **Menyiapkan** isu Sprint 3 (setiap pasangan Dev) dan pepijat kritikal sebelum pembekuan ciri, melalui MR dengan semakan QA | S8 | Kad Sprint 3 Jira *Done* atau dialih ke backlog dengan sebab; `main` hijau |
-| O11 | **Menyediakan** keluaran v1.1.0: CHANGELOG daripada MR yang di-merge, nota keluaran, dan tag beranotasi pada `main` yang hijau | S9 | MR CHANGELOG di-merge; tag `v1.1.0` + Release GitLab |
+| O11 | **Menyediakan** keluaran v1.2.0: CHANGELOG daripada MR yang di-merge, nota keluaran, dan tag beranotasi pada `main` yang hijau | S9 | MR CHANGELOG di-merge; tag `v1.2.0` + Release GitLab |
 | O12 | **Mendemokan** hasil pasukan kepada pemilik sistem dengan bukti peranan: backlog & AC (PM, BA), ujian yang membuktikan AC (QA), ciri berjalan (pasangan Dev) | S10 | Demo Projek 12 minit + 10 minit setiap pasangan; helaian markah pasukan |
 | O13 | **Menerangkan** satu baris kod yang di-commit sendiri tanpa Claude, dan **menilai** bila bantuan AI mempercepat atau melambatkan pasukan | S10–S11 | Soalan panel dijawab; refleksi dalam isu retro akhir |
 
@@ -28,11 +28,11 @@ Di akhir hari ini, peserta boleh:
 | 08:30–09:00 | — | Stand-up pasukan Projek dan Dev | — |
 | 09:00–12:30 | S8 | Sprint 3: ciri terakhir & pepijat kritikal · **pembekuan ciri 12:30** | O10 · [Lab 10.20](./lab.md#lab-1020--sprint-3-ciri-terakhir--pembekuan-s8) |
 | 12:30–14:30 | — | Makan tengah hari | — |
-| 14:30–15:15 | S9 | Keluaran v1.1.0: stabil, CHANGELOG, nota keluaran, tag | O11 · [Lab 10.21](./lab.md#lab-1021--keluaran-v110-s9) · [Lab 10.23](./lab.md#lab-1023--cicd-deploy-ke-staging-dari-pipeline-s8s9) |
+| 14:30–15:15 | S9 | Keluaran v1.2.0: stabil, CHANGELOG, nota keluaran, tag | O11 · [Lab 10.21](./lab.md#lab-1021--keluaran-v120-s9) · [Lab 10.23](./lab.md#lab-1023--cicd-harbor--staging--production-s8s9) |
 | 15:15–16:30 | S10 | Demo capstone pasukan kepada pemilik sistem | O12, O13 · [Lab 10.22](./lab.md#lab-1022--demo-capstone-pasukan--refleksi-s10s11) |
 | 16:30–17:00 | S11 | Retro pasukan & refleksi Claude Code, penutup | O13 · [Lab 10.22](./lab.md#lab-1022--demo-capstone-pasukan--refleksi-s10s11) |
 
-**Kad Sprint 3** (sprint Jira *Sprint 3 + v1.1 (Hari 10)*, *Fix version* `v1.1.0`; nombor # = isu GitLab KKM yang dipautkan): #14 E2E & dokumentasi aliran; B — #15 Sejarah log masuk dalam profil; C — #18 Kad KPI kadar kelulusan; ditambah pepijat kritikal dan isu susulan yang PM masukkan dalam skop v1.1.0 semalam.
+**Kad Sprint 3** (sprint Jira aktif *Sprint 4*, *Fix version* `v1.1.0` → `v1.2.0` dalam Lab 10.21; nombor # = isu GitLab KKM yang dipautkan): #14 E2E & dokumentasi aliran; B — #15 Sejarah log masuk dalam profil; C — #18 Kad KPI kadar kelulusan; ditambah pepijat kritikal dan isu susulan yang PM masukkan dalam skop v1.2.0 semalam.
 
 ---
 
@@ -55,7 +55,7 @@ Stand-up 08:30 dalam pasukan masing-masing (Projek dan Dev kekal sama; isu #19).
 | 09:00–09:30 | PM: papan Jira Sprint 3 (JQL, *Assignee*); QA: pelan ujian; Dev: `/ciri-baharu` |
 | 09:30–11:30 | Slice demi slice; pepijat kritikal didahulukan |
 | 11:30–12:15 | MR, `/semak-mr`, merge mengikut susunan PM |
-| **12:30** | **Pembekuan ciri.** MR ciri yang belum di-merge → kad Jira keluar daripada sprint dan versi `v1.1.0`, kekal dalam backlog dengan komen. Selepas ini hanya `fix/…` |
+| **12:30** | **Pembekuan ciri.** MR ciri yang belum di-merge → kad Jira keluar daripada sprint dan versi `v1.2.0`, kekal dalam backlog dengan komen. Selepas ini hanya `fix/…` |
 
 ### ✅ Checkpoint S8
 - Setiap kad Sprint 3 Jira *Done* **atau** dialih ke backlog dengan sebab.
@@ -63,7 +63,7 @@ Stand-up 08:30 dalam pasukan masing-masing (Projek dan Dev kekal sama; isu #19).
 
 ---
 
-## S9 — Keluaran v1.1.0 (14:30–15:15)
+## S9 — Keluaran v1.2.0 (14:30–15:15)
 
 **PM keluaran** (PM pasukan Projek) memandu langkah ini dengan bantuan BA dan floater:
 
@@ -71,17 +71,17 @@ Stand-up 08:30 dalam pasukan masing-masing (Projek dan Dev kekal sama; isu #19).
 2. **CHANGELOG.** Claude mendraf daripada MR yang di-merge; PM keluaran menyemak setiap baris terhadap MR sebenar:
 
    ```text
-   Guna Jira: kad JQL project = KAN AND fixVersion = v1.1.0 AND statusCategory = Done. Padankan setiap kad dengan MR KAN-<n>: … daripada glab mr list --merged (Hari 8: Closes #N). Draf bahagian "## [1.1.0] - 2026-10-30" untuk CHANGELOG.md (format Keep a Changelog: Ditambah, Diubah, Dibaiki, Keselamatan), satu baris setiap MR dengan !no dan #isu. Jangan tulis fail.
+   Jalankan git log --first-parent --merges v1.1.0..main untuk MR sejak v1.1.0 (12/11); ambil !no dan KAN-n, dan semak ringkasan kad dalam Jira. Draf bahagian "## [1.2.0] - 2026-11-18" untuk CHANGELOG.md (format Keep a Changelog: Ditambah, Diubah, Dibaiki, Keselamatan), satu baris setiap MR dengan !no dan KAN-n. Jangan tulis fail.
    ```
 
-   CHANGELOG masuk melalui MR `docs/changelog-v1.1.0` seperti perubahan lain.
+   CHANGELOG masuk melalui MR `docs/changelog-v1.2.0` seperti perubahan lain.
 3. **Tag dan Release.** Tag `v*` dilindungi (Maintainer sahaja): PM keluaran membaca nota keluaran kepada kelas, kemudian jurulatih mencipta tag beranotasi dan Release GitLab pada `main` yang hijau.
 
-**CI/CD ke staging ([Lab 10.23](./lab.md#lab-1023--cicd-deploy-ke-staging-dari-pipeline-s8s9)).** Floater menambah job manual `deploy-staging` pada `.gitlab-ci.yml` melalui MR sebelum pembekuan (S8). Selepas tag `v1.1.0`, jurulatih menekan ▶ pada `deploy-staging` dalam pipeline tag: aplikasi dibina dalam mod `production`, migration dan data rujukan dijalankan, dan ujian asap membuktikan `/login` 200 dan halaman dilindungi 302. *Environments → staging* menunjukkan setiap deployment dan butang *Re-deploy* untuk rollback. Production tidak pernah dari pipeline latihan.
+**CI/CD ke staging dan production ([Lab 10.23](./lab.md#lab-1023--cicd-harbor--staging--production-s8s9)).** MR !238 (KAN-204) menambah tiga job selepas `ujian`. `bina-imej` membina imej sekali dan menolaknya ke Harbor. `deploy-staging` menghantar setiap `main` dan tag ke VM staging (app + MySQL) secara automatik. `deploy-production` menghantar tag `v*` ke VM production (app + MySQL luaran) apabila jurulatih menekan ▶. CI hanya memilih tag imej; pintu deploy pada VM mengambil sandaran DB, menjalankan `up -d`, menyemak `/login`, dan kembali ke tag lama jika gagal. QA dan floater menyemak MR !238 sebelum pembekuan (S8); selepas tag `v1.2.0`, kelas mengikuti pipeline tag hingga production (S9). Dalam kelas ini Harbor dan VM ialah simulasi pada server latihan.
 
 ### ✅ Checkpoint S9
-- `CHANGELOG.md` dengan bahagian 1.1.0 di `main`; setiap baris sepadan dengan MR sebenar.
-- Tag `v1.1.0` dan Release GitLab wujud.
+- `CHANGELOG.md` dengan bahagian 1.2.0 di `main`; setiap baris sepadan dengan MR sebenar.
+- Tag `v1.2.0` dan Release GitLab wujud.
 
 ---
 
@@ -91,8 +91,8 @@ Dua bahagian kepada pemilik sistem (jurulatih) dan panel, **75 minit** keseluruh
 
 | Minit | Siapa | Apa |
 |---|---|---|
-| 0–12 | Pasukan Projek | PM: papan Jira dan backlog merentas 3 sprint (BRS → isu GitLab KKM → kad Jira → AC), laporan versi `v1.1.0`, keputusan pemilik (#33), apa yang tidak masuk v1.1.0 dan kenapa. BA: satu isu daripada keperluan BRS hingga AC. QA: ujian yang membuktikan AC, satu pepijat yang ditangkap sebelum merge, hasil E2E |
-| 12–52 | Pasukan Dev, 10 minit setiap pasangan | Ciri berjalan pada `v1.1.0` di pelayar dengan akaun latihan berbeza (termasuk satu yang mesti menerima 404), MR dan ujiannya, perubahan ERD/aliran di papan FigJam |
+| 0–12 | Pasukan Projek | PM: papan Jira dan backlog merentas 3 sprint (BRS → isu GitLab KKM → kad Jira → AC), laporan versi `v1.2.0`, keputusan pemilik (#33), apa yang tidak masuk v1.2.0 dan kenapa. BA: satu isu daripada keperluan BRS hingga AC. QA: ujian yang membuktikan AC, satu pepijat yang ditangkap sebelum merge, hasil E2E |
+| 12–52 | Pasukan Dev, 10 minit setiap pasangan | Ciri berjalan pada `v1.2.0` di pelayar dengan akaun latihan berbeza (termasuk satu yang mesti menerima 404), MR dan ujiannya, perubahan ERD/aliran di papan FigJam |
 | 52–57 | Floater | Job CI, konflik yang diselesaikan, E2E pada `main` |
 | 57–75 | Panel | Setiap ahli menerangkan satu baris kerjanya **tanpa Claude**: Dev dan QA — baris kod/ujian yang di-commit (`git log --author`); BA dan PM — satu AC dan sebab ia boleh diuji |
 
@@ -123,7 +123,7 @@ Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) §H. Selepas pemb
 | PM · skop | AI-23 + `Guna Jira: kad sprint semasa yang belum Done; untuk setiap satu, status MR KAN-<n> dalam glab mr list. Senaraikan yang berisiko tidak siap sebelum 12:30, dengan sebab.` | Keputusan alih ke backlog dibuat PM, dicatat dalam komen kad | 10.20 |
 | Dev · pepijat | `Ujian ini gagal: <output>. Reproduce dahulu: tulis ujian gagal yang menunjukkan pepijat, jangan baiki lagi.` → AI-30 untuk pembetulan | Ujian merah → pembetulan → hijau | 10.20 |
 | QA · semak | AI-27 `/semak-mr <no>`; selepas pembekuan: `Adakah MR ini hanya membaiki pepijat #<N>, tanpa ciri baharu?` | Diff hanya menyentuh fail pepijat | 10.20 |
-| PM keluaran · CHANGELOG | Prompt CHANGELOG dalam S9 (versi Jira `v1.1.0` + `glab mr list --merged`) | Setiap baris sepadan dengan MR sebenar | 10.21 |
+| PM keluaran · CHANGELOG | Prompt CHANGELOG dalam S9 (`git log --merges v1.1.0..main` + kad Jira) | Setiap baris sepadan dengan MR sebenar | 10.21 |
 | Semua · demo | `Tanya saya 3 soalan tentang baris <fail:baris> yang saya commit, seperti panel capstone. Jangan beri jawapan.` | Jawab tanpa melihat Claude | 10.22 |
 
 ---
@@ -133,7 +133,7 @@ Prompt penuh: [`pustaka-prompt.md`](../docs/pustaka-prompt.md) §H. Selepas pemb
 **Kerja pasukan (hari ini):**
 
 - [ ] Kad Sprint 3 Jira *Done* atau dialih ke backlog dengan sebab sebelum pembekuan 12:30
-- [ ] `CHANGELOG.md` bahagian 1.1.0 di-merge melalui MR; tag `v1.1.0` dan Release GitLab pada `main` yang hijau
+- [ ] `CHANGELOG.md` bahagian 1.2.0 di-merge melalui MR; tag `v1.2.0` dan Release GitLab pada `main` yang hijau
 - [ ] Demo capstone: Projek 12 minit + setiap pasangan Dev 10 minit; helaian markah pasukan diisi
 - [ ] Setiap ahli menerangkan satu baris yang di-commit sendiri tanpa Claude
 - [ ] Komen retro akhir setiap ahli
@@ -185,11 +185,11 @@ Kelebihan: dashboard segar serta-merta selepas perubahan status (tiada kekelirua
 (1) Reproduce dengan langkah & data tepat; (2) tulis ujian yang **gagal**; (3) baiki dengan perubahan minimum; (4) ujian itu dan semua ujian lain lulus; (5) commit `FIX:` dan kemas kini log pepijat. Langkah 2 membuktikan ujian benar-benar mengesan pepijat — ujian yang tidak pernah dilihat gagal mungkin tidak menguji apa-apa, dan ia menjadi pengawal regresi selama-lamanya.
 </details>
 
-6. Pada 12:20, pasangan 3 hampir siap kad KPI #18 tetapi QA belum menyemak. PM mencadangkan merge dahulu, semak kemudian, supaya ia masuk v1.1.0. Apa keputusan yang betul?
+6. Pada 12:20, pasangan 3 hampir siap kad KPI #18 tetapi QA belum menyemak. PM mencadangkan merge dahulu, semak kemudian, supaya ia masuk v1.2.0. Apa keputusan yang betul?
 
 <details><summary>Jawapan</summary>
 
-Jangan merge tanpa semakan. Pembekuan ciri dan semakan QA wujud supaya `main` yang dikeluarkan boleh dipercayai. #18 dialih ke backlog (keluaran seterusnya, cth v1.2.0) dengan komen status; demo boleh menunjukkannya dari branch sebagai "akan datang", bukan sebagai sebahagian v1.1.0.
+Jangan merge tanpa semakan. Pembekuan ciri dan semakan QA wujud supaya `main` yang dikeluarkan boleh dipercayai. #18 dialih ke backlog (keluaran seterusnya, cth v1.3.0) dengan komen status; demo boleh menunjukkannya dari branch sebagai "akan datang", bukan sebagai sebahagian v1.2.0.
 </details>
 
 7. Claude mendraf CHANGELOG dengan baris "Dibaiki: had cubaan log masuk". Tiada MR dalam tiga milestone yang menyentuh `HadCubaan`. Apa yang berlaku, dan apa tindakan PM keluaran?

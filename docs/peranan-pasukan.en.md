@@ -13,7 +13,7 @@
 
 The `pasukan::` label shows who acts **now**: an issue moves Projek → Dev → Projek.
 
-**Backlog:** existing issues (#1, #8–#18) + BRS gaps (#20–#32, from the review of the original KKM documents) + #33 system-owner questions. Sprint 1 = Day 8, Sprint 2 = Day 9, Sprint 3 + the v1.1.0 release = Day 10.
+**Backlog:** existing issues (#1, #8–#18) + BRS gaps (#20–#32, from the review of the original KKM documents) + #33 system-owner questions. Sprint 1 = Day 8, Sprint 2 = Day 9, Sprint 3 + the v1.2.0 release = Day 10.
 
 **Jira from Day 9.** The backlog (stories, AC, sprints, board, version `v1.1.0`) moves to the class Jira Cloud (space `KAN`); code, MRs and CI stay on GitLab KKM, and the GitLab KKM issues stay as the BRS reference. The Jira key goes in the branch (`feat/KAN-<n>-…`), commits (`Rujuk KAN-<n>`) and MR title. Claude reads and writes Jira through the `atlassian` MCP ([tutorial](./tutorial-jira-mcp.en.md)); it writes only after you say yes. Jira Free = 10 seats: the trainer, Projek (4), one per Dev pair and the floater. Jira is an external service: a card holds only the summary, user story, AC and the GitLab KKM link — no BRS text or real names.
 

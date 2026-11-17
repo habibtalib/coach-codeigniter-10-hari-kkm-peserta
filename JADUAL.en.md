@@ -131,13 +131,13 @@
 
 > ℹ️ The individual Reports module sessions (S1–S12, Labs 9.1–9.13) are in the Day 9 Appendix as reference.
 
-## Day 10 — Team Work: Sprint 3, Release v1.1.0 & Capstone · [notes](./hari-10/README.md)
+## Day 10 — Team Work: Sprint 3, Release v1.2.0 & Capstone · [notes](./hari-10/README.md)
 
 | Time | Session | Activity | Session objective |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Stand-up of the Projek and Dev teams | — |
 | 09:00–12:30 | S8 | Sprint 3 in Jira: cards from #14, #15, #18, #27–#32 (by `pasangan-N`) + critical bugs · **feature freeze 12:30** | Lab 10.20: cards *Done* or moved with a reason; `main` green |
-| 14:30–15:15 | S9 | Release v1.1.0 | Lab 10.21: CHANGELOG (Jira version `v1.1.0` + MRs) through an MR, tag `v1.1.0` + Release, Jira version released |
+| 14:30–15:15 | S9 | Release v1.2.0 | Lab 10.21: CHANGELOG (Jira version `v1.2.0` + MRs) through an MR, tag `v1.2.0` + Release, Jira version released |
 | 15:15–16:30 | S10 | Capstone demo (Projek 12 minutes + 10 minutes per Dev pair) | Lab 10.22: PM · BA · QA · Dev pairs · work-line questions for every member ([rubric](./docs/rubrik-capstone.en.md) §8) |
 | 16:30–17:00 | S11 | Team retro & Claude Code reflection, closing | Lab 10.22: every member's final retro comment |
 

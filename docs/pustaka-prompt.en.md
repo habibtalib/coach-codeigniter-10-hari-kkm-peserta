@@ -606,7 +606,7 @@ Draft a Jira Bug card for KAN from this observation: <steps, expected, actual, a
 ### AI-36 — Release PM: CHANGELOG from the Jira version
 
 ```prompt title="AI-36"
-Use Jira: the cards from JQL project = KAN AND fixVersion = v1.1.0 AND statusCategory = Done. Match each card with its KAN-<n>: … MR in glab mr list --merged. Draft the CHANGELOG 1.1.0 section (Added, Changed, Fixed, Security), one line per MR with the !no and KAN-n. Cards without an MR and MRs without a card → a separate list. Do not write files.
+Use Jira: the cards from JQL project = KAN AND fixVersion = v1.2.0 AND statusCategory = Done. Match each card with its KAN-<n>: … MR in glab mr list --merged. Draft the CHANGELOG 1.2.0 section (Added, Changed, Fixed, Security), one line per MR with the !no and KAN-n. Cards without an MR and MRs without a card → a separate list. Do not write files.
 ```
 
 - **After:** remove every line that cannot be linked to a real MR.

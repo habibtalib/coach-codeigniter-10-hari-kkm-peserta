@@ -1,11 +1,11 @@
-# Lab Hari 10 — Kerja Pasukan: Sprint 3, Keluaran v1.1.0 & Capstone Pasukan
+# Lab Hari 10 — Kerja Pasukan: Sprint 3, Keluaran v1.2.0 & Capstone Pasukan
 
 [← README](./README.md) · [Jadual](../JADUAL.md) · [👥 Peranan pasukan](../docs/peranan-pasukan.md) · [📋 Rubrik Capstone](../docs/rubrik-capstone.md)
 
 | Lab | Sesi | Masa | Hasil |
 |-----|------|------|-------|
 | 10.20 | S8 | 09:00–12:30 | Kad Sprint 3 Jira *Done* atau dialih; `main` hijau pada pembekuan ciri |
-| 10.21 | S9 | 14:30–15:15 | MR CHANGELOG 1.1.0 (daripada versi Jira `v1.1.0` + MR sebenar), tag `v1.1.0` + Release, versi Jira dikeluarkan |
+| 10.21 | S9 | 14:30–15:15 | MR CHANGELOG 1.2.0 (daripada versi Jira `v1.2.0` + MR sebenar), tag `v1.2.0` + Release, versi Jira dikeluarkan |
 | 10.22 | S10–S11 | 15:15–17:00 | Demo capstone pasukan, soalan baris kerja, retro akhir |
 
 > ℹ️ Repo: `aplikasi-baharu/espkpv2`. Backlog dalam Jira (space `KAN`, [tutorial Jira MCP](../docs/tutorial-jira-mcp.md)); kod, MR dan CI di GitLab KKM. Mekanik kad → branch → MR → merge seperti [Lab 8.21–8.23](../hari-8/lab.md#lab-821--sprint-1-pagi-isu-pelan-ujian--slice-pertama-s16). Lab individu Statistik & capstone (10.1–10.12) dalam [Lampiran](#lampiran--lab-individu-statistik--capstone-rujukan).
@@ -41,17 +41,17 @@ Menyiapkan isu Sprint 3 setiap pasangan dan pepijat kritikal melalui MR yang dis
 
 4. **MR dan merge (11:30–12:15).** `/semak-mr <no>` oleh QA → approve → PM merge mengikut susunan → kad *Done*.
 
-5. **Pembekuan (12:30).** MR ciri yang belum di-merge: tukar ke draf, komen *"Dialih ke backlog selepas pembekuan v1.1.0: <status, apa tinggal>"* pada MR dan kad Jira; kad keluar daripada sprint dan *Fix version* dibuang. Selepas 12:30, hanya branch `fix/…` boleh di-merge.
+5. **Pembekuan (12:30).** MR ciri yang belum di-merge: tukar ke draf, komen *"Dialih ke backlog selepas pembekuan v1.2.0: <status, apa tinggal>"* pada MR dan kad Jira; kad keluar daripada sprint dan *Fix version* dibuang. Selepas 12:30, hanya branch `fix/…` boleh di-merge.
 
 ### ✅ Checkpoint
 - [ ] Setiap kad Sprint 3 Jira *Done* atau dialih dengan komen; `composer test` hijau pada `main` selepas merge terakhir.
 
 ---
 
-## Lab 10.21 — Keluaran v1.1.0 (S9)
+## Lab 10.21 — Keluaran v1.2.0 (S9)
 
 ### 🎯 Objektif
-Menyediakan keluaran v1.1.0 daripada `main` yang hijau: CHANGELOG yang setiap barisnya dipautkan kepada MR sebenar, nota keluaran, tag beranotasi dan Release GitLab.
+Menyediakan keluaran v1.2.0 daripada `main` yang hijau: CHANGELOG yang setiap barisnya dipautkan kepada MR sebenar, nota keluaran, tag beranotasi dan Release GitLab.
 
 ### Langkah
 
@@ -60,169 +60,112 @@ Menyediakan keluaran v1.1.0 daripada `main` yang hijau: CHANGELOG yang setiap ba
 2. **Draf CHANGELOG (PM keluaran, 15 minit).** Mod *Plan*:
 
    ```text
-   Guna Jira: senaraikan kad dengan JQL project = KAN AND fixVersion = v1.1.0 AND statusCategory = Done (kunci, ringkasan, jenis). Kemudian jalankan glab mr list --merged dan padankan setiap kad dengan MR KAN-<n>: … (Hari 8: MR dengan Closes #N). Draf CHANGELOG.md dengan tajuk "# Changelog" dan bahagian "## [1.1.0] - 2026-10-30" (format Keep a Changelog: Ditambah, Diubah, Dibaiki, Keselamatan). Satu baris setiap MR dengan !no dan KAN-n atau #isu. Kad tanpa MR → senaraikan berasingan. Jangan tulis fail.
+   Jalankan git log --first-parent --merges --format='%h|%s|%b' v1.1.0..main: setiap rekod ialah satu MR yang di-merge sejak keluaran v1.1.0 (12/11); ambil !no daripada "See merge request …!NNN" dan KAN-n daripada nama branch. Guna Jira untuk ringkasan dan jenis setiap kad (JQL project = KAN AND key in (…)). Draf CHANGELOG.md dengan tajuk "# Changelog", bahagian "## [1.2.0] - 2026-11-18" (format Keep a Changelog: Ditambah, Diubah, Dibaiki, Keselamatan) dan satu baris "## [1.2.0] - 2026-11-12" yang merujuk Release GitLab v1.1.0. Satu baris setiap MR dengan !no dan KAN-n. MR tanpa kad → senaraikan berasingan. Jangan tulis fail.
    ```
 
    BA dan wakil setiap pasangan menyemak baris isu mereka terhadap MR sebenar. Baris tanpa MR → buang.
 
-3. **MR CHANGELOG.** Branch `docs/changelog-v1.1.0`, tampal CHANGELOG yang disemak, MR dengan QA sebagai penyemak, PM keluaran merge.
+3. **MR CHANGELOG.** Branch `docs/changelog-v1.2.0`, tampal CHANGELOG yang disemak, MR dengan QA sebagai penyemak, PM keluaran merge.
 
 4. **Tag dan Release (jurulatih, di hadapan kelas).** Tag `v*` dilindungi (Maintainer). PM keluaran membaca nota keluaran; jurulatih menjalankan:
 
    ```bash
    git switch main && git pull --ff-only
-   git tag -a v1.1.0 -m "v1.1.0: satu permohonan terbuka, peringatan Pindaan, RPT-10, sejarah log masuk, dasar kata laluan"
-   git push origin v1.1.0
-   glab release create v1.1.0 --notes-file nota-v1.1.0.md
+   git tag -a v1.2.0 -m "v1.2.0: <3–5 perubahan utama daripada CHANGELOG>"
+   git push origin v1.2.0
+   glab release create v1.2.0 --notes-file nota-v1.2.0.md
    ```
 
-5. **Versi Jira (PM keluaran).** Selepas tag: Jira → *Releases* → `v1.1.0` → **Release** (tarikh 30/10). Kad dalam versi yang belum *Done* → pindah ke versi seterusnya atau backlog, dengan komen.
+   Push tag memulakan pipeline tag: imej `v1.2.0` ke Harbor, staging, kemudian production ([Lab 10.23](#lab-1023--cicd-harbor--staging--production-s8s9) langkah 5–6).
+
+5. **Versi Jira (PM keluaran).** Tag `v1.1.0` dibuat pada 12/11, tetapi versi Jira `v1.1.0` belum dikeluarkan dan masih memegang kad yang siap selepas itu. Jira → *Releases* → cipta `v1.2.0` (tarikh 18/11). Kad `project = KAN AND fixVersion = v1.1.0 AND statusCategory = Done AND resolved >= 2026-11-12` → *Fix version* `v1.2.0` (bulk edit). Kemudian **Release** `v1.1.0` (tarikh 12/11) dan `v1.2.0` (tarikh 18/11). Kad yang belum *Done* → versi seterusnya atau backlog, dengan komen.
 
 ### ✅ Checkpoint
-- [ ] `glab release view v1.1.0` menunjukkan nota keluaran; `CHANGELOG.md` di `main`; versi Jira `v1.1.0` berstatus *Released*.
+- [ ] `glab release view v1.2.0` menunjukkan nota keluaran; `CHANGELOG.md` di `main`; versi Jira `v1.2.0` berstatus *Released*.
 
 ---
 
-## Lab 10.23 — CI/CD: Deploy ke Staging dari Pipeline (S8–S9)
+## Lab 10.23 — CI/CD: Harbor → Staging → Production (S8–S9)
 
 ### 🎯 Objektif
-Menambah peringkat **CD** pada pipeline espkpv2: job `deploy-staging` yang manual, hanya pada `main` atau tag `v*`, berjalan selepas `semak` dan `ujian` lulus, membina aplikasi dalam mod `production`, menjalankan migration dan data rujukan, dan membuktikan aplikasi hidup dengan ujian asap. Kemudian menjalankannya untuk tag `v1.1.0` dan membaca halaman *Environments* GitLab.
+Membaca dan menjalankan pipeline CD espkpv2 (KAN-204, MR !238). Imej aplikasi dibina **sekali** dan ditolak ke **Harbor**. Staging (app + MySQL dalam compose pada VM staging) di-deploy secara automatik. Production (app sahaja, MySQL luaran) di-deploy secara manual, hanya untuk tag `v*`. Anda menerangkan pintu deploy, rollback automatik dan pemboleh ubah CI yang dilindungi, kemudian menghantar `v1.2.0` ke staging dan production.
 
 ### Prasyarat
-- `main` hijau (`composer test` dan pipeline MR terakhir lulus).
-- Kad Jira `KAN-<n>: CI deploy-staging` dalam Sprint 3 + v1.1, *Assignee* floater; QA sebagai penyemak MR.
+- `main` hijau. MR !238 `KAN-204: CD GitLab → Harbor → VM` terbuka; floater dan QA sebagai penyemak.
+- Pemboleh ubah CI `HARBOR_*`, `STAGING_*` dan `PROD_*` sudah ditetapkan oleh jurulatih (*Protected*). Dalam kelas ini Harbor dan dua VM ialah **simulasi** pada server latihan; KKM menukar nilainya kepada Harbor dan VM sebenar (`docs/deploy-vm.md`) tanpa mengubah `.gitlab-ci.yml`.
 - Slaid *Hari 10 · CI/CD*.
 
 ### Langkah
 
-1. **Faham pipeline sedia ada (semua, 5 minit).** Buka `.gitlab-ci.yml`. Jawab: berapa *stage*? Job mana yang berjalan pada MR? Kenapa `semak-kod` dan `ujian` dilangkau apabila MR hanya mengubah `docs/`?
+1. **Peta pipeline (semua, 10 minit).** Sebelum merge: `git fetch origin && git switch --detach origin/ci/harbor-vm`. Selepas merge: `main`. Mod *Plan*:
 
-2. **Branch (floater, S8 sebelum 12:30).**
-
-   ```bash
-   git switch main && git pull
-   git switch -c ci/KAN-<n>-deploy-staging
+   ```text
+   Baca .gitlab-ci.yml, deploy/vm/espkp-pintu dan docs/deploy-vm.md. Buat jadual: job, stage, bila berjalan (MR / main / tag v*), automatik atau manual, apa yang dihantar ke mana. Kemudian terangkan dalam 5 baris kenapa imej dibina sekali sahaja dan kenapa CI tidak menghantar fail compose atau .env ke VM. Jangan ubah fail.
    ```
 
-3. **Tambah stage `deploy`.** Dalam `stages:` tambah baris `- deploy` selepas `- test`. Dalam `workflow: rules:` tambah `- if: $CI_COMMIT_TAG` selepas `- if: $CI_COMMIT_BRANCH`, supaya pipeline juga berjalan untuk tag.
+   Semak jadual Claude dengan jadual ini:
 
-4. **Tambah job** di hujung `.gitlab-ci.yml`:
+   | Job | Stage | MR | `main` | Tag `v*` |
+   |---|---|---|---|---|
+   | `semak-kod`, `ujian` | semak, test | ✓ | ✓ | ✓ |
+   | `bina-imej` | build | – | ✓ `:<sha>` | ✓ `:<sha>` + `:v1.2.0` |
+   | `deploy-staging` | staging | – | automatik | automatik |
+   | `deploy-production` | production | – | – | **manual ▶** |
 
-   ```yaml
-   deploy-staging:
-     extends: .php
-     stage: deploy
-     services:
-       - name: mysql:8.4
-         alias: mysql
-     variables:
-       MYSQL_DATABASE: espkp_staging
-       MYSQL_ROOT_PASSWORD: root
-       CI_ENVIRONMENT: production
-       app_baseURL: "http://localhost:8080/"
-       database_default_hostname: mysql
-       database_default_database: espkp_staging
-       database_default_username: root
-       database_default_password: root
-       database_default_DBDriver: MySQLi
-     environment:
-       name: staging
-       deployment_tier: staging
-     rules:
-       - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/
-         when: manual
-       - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-         when: manual
-     script:
-       - composer install --no-dev --optimize-autoloader --no-interaction --no-progress
-       - php spark migrate --all
-       # Data rujukan sahaja: tiada akaun latihan atau data demo di staging.
-       - php spark db:seed KodRujukanSeeder
-       - php -S 0.0.0.0:8080 -t public vendor/codeigniter4/framework/system/rewrite.php > serve.log 2>&1 &
-       - sleep 3
-       # Ujian asap: halaman awam 200, halaman dilindungi dialih ke log masuk, tiada Debug Toolbar (mod production).
-       - test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/login)" = 200
-       - test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/papan-pemuka)" = 302
-       - test "$(curl -s http://localhost:8080/login | grep -c 'DEBUG-VIEW')" = 0
-       - echo "Staging $CI_COMMIT_SHORT_SHA sedia (${CI_COMMIT_TAG:-$CI_COMMIT_BRANCH})"
-     artifacts:
-       when: always
-       paths: [serve.log, writable/logs/]
-       expire_in: 7 days
+2. **Pintu deploy (pasangan, 10 minit).** CI tidak mendapat shell pada VM. Kunci SSH CI hanya boleh menjalankan `deploy/vm/espkp-pintu` (*forced command*). Mod *Plan*:
+
+   ```text
+   Dalam deploy/vm/espkp-pintu: senaraikan setiap semakan input dan setiap langkah deploy dengan nombor baris. Apa berlaku jika (a) tag tiada dalam Harbor, (b) imej baharu gagal /login, (c) arahan ialah "deploy staging v1.2.0; id"? Jawab dengan baris kod, jangan teka.
    ```
 
-   Baca setiap blok dan terangkan kepada pasangan anda:
-   - `extends: .php` — guna semula pemasangan PHP + Composer job `ujian`; `rules` di sini **menggantikan** `rules` templat.
-   - `CI_ENVIRONMENT: production` — tiada Debug Toolbar, ralat tidak dipapar; sama seperti staging sebenar.
-   - `when: manual` — pipeline tidak deploy sendiri; seseorang menekan ▶.
-   - `KodRujukanSeeder` sahaja — **tiada** akaun latihan `9001010100NN` dan tiada data demo di staging.
-   - Tiga ujian asap: `/login` 200, `/papan-pemuka` 302 (dilindungi), tiada `DEBUG-VIEW`.
+   Jawapan yang dijangka: (a) `gagal menarik …`, tiada apa berubah; (b) `semakan kesihatan /login gagal`, VM kembali ke tag lama secara automatik, job merah; (c) `tag tidak sah`, tiada apa dijalankan.
 
-5. **Uji setempat dahulu (mod production).** Alihkan `.env` sementara supaya pemboleh ubah persekitaran digunakan:
+3. **Semak MR !238 (QA + floater, S8 sebelum 12:30).** `/semak-mr 238` dan senarai ini: tiada rahsia dalam YAML (nama pemboleh ubah sahaja)? `deploy-production` manual dan hanya pada tag? Kunci hos disemak (tiada `StrictHostKeyChecking=no`)? `deploy-staging` menunggu `bina-imej`? Pipeline MR hijau? QA approve dengan bukti `fail:baris`; PM merge sebelum pembekuan.
 
-   ```bash
-   mv .env .env.simpan
-   export CI_ENVIRONMENT=production app_baseURL=http://localhost:8098/ \
-     database_default_hostname=127.0.0.1 database_default_database=espkp_staging \
-     database_default_username=root database_default_password= \
-     encryption_key="hex2bin:$(php -r 'echo bin2hex(random_bytes(32));')"
-   php spark migrate --all && php spark db:seed KodRujukanSeeder
-   php -S 127.0.0.1:8098 -t public vendor/codeigniter4/framework/system/rewrite.php &
-   curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8098/login         # 200
-   curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8098/papan-pemuka  # 302
-   kill %1; mv .env.simpan .env
-   ```
+4. **Pipeline `main` pertama (PM, selepas merge).** *CI/CD → Pipelines* → pipeline `main` terbaru: `semak-kod` → `ujian` → `bina-imej` → `deploy-staging` (automatik). Dalam log `bina-imej` cari `Imej …/espkp:<sha> … ditolak ke Harbor`. Dalam log `deploy-staging`, output `status staging` menunjukkan tag `<sha>` dan service `app`, `mysql`, `jadual` *running*. *Deployments → Environments → staging* → **Open**.
 
-   Cipta database `espkp_staging` kosong dahulu (HeidiSQL atau `CREATE DATABASE`). Jangan guna database dev anda.
+5. **Keluaran ke staging (S9, selepas Lab 10.21 langkah 4).** Tag `v1.2.0` mencetuskan pipeline tag. `bina-imej` menolak imej yang sama dengan dua tag (`:<sha>` dan `:v1.2.0`); `deploy-staging` berjalan sendiri. Pipeline berstatus *blocked* — ia menunggu production.
 
-6. **Lint, commit, MR.**
+6. **Production (jurulatih, Maintainer).** Dalam pipeline tag, jurulatih menekan ▶ pada `deploy-production`. Baca log bersama kelas: sandaran MySQL luaran dahulu, kemudian `up -d`, semakan kesihatan `/login`, dan `status production` (service `app` dan `jadual` sahaja — tiada `mysql`). *Environments* kini menunjukkan staging dan production pada `v1.2.0`.
 
-   ```bash
-   glab ci lint .gitlab-ci.yml
-   git add .gitlab-ci.yml
-   git commit -m "ci: job deploy-staging manual pada main/tag v*" -m "Rujuk KAN-<n>"
-   git push -u origin ci/KAN-<n>-deploy-staging
-   ```
+7. **Rollback (bincang, 5 minit).** Dua lapis:
+   - **Automatik:** imej yang gagal `/login` dalam 5 minit → pintu kembali ke tag sebelumnya; job merah, VM tidak pernah kekal rosak.
+   - **Manual:** *Environments → staging* → deployment lama → **Re-deploy** = job deploy dijalankan semula dengan tag lama.
 
-   MR `KAN-<n>: CI deploy-staging`. Pipeline MR **tidak** menunjukkan `deploy-staging` — betul, kerana `rules` hanya membenarkan `main` dan tag. QA menyemak dengan `/semak-mr <no>` dan senarai ini: manual? tiada job production? tiada rahsia dalam YAML? data rujukan sahaja? PM merge sebelum pembekuan 12:30.
+   Apa yang **tidak** dipulihkan? Migration yang sudah berjalan. Sebab itu pintu mengambil sandaran DB sebelum setiap deploy (`sandaran/` pada VM, 7 terakhir), dan memulihkannya ialah keputusan manusia.
 
-7. **Deploy `main` (PM, selepas merge).** *Build → Pipelines* → pipeline `main` terbaru → selepas `ujian` hijau, tekan ▶ pada `deploy-staging`. Buka log job: baris akhir `Staging <sha> sedia (main)`.
-
-8. **Deploy keluaran (S9, selepas Lab 10.21 langkah 4).** Tag `v1.1.0` mencetuskan pipeline tag. Jurulatih (Maintainer — tag `v*` dilindungi) menekan ▶ pada `deploy-staging`. Buka *Deployments → Environments → staging*: dua deployment (`main`, `v1.1.0`) dengan commit dan siapa yang menekan.
-
-9. **Rollback (bincang, 5 minit).** Pada halaman *staging*, setiap deployment lama ada butang **Re-deploy**: rollback = jalankan semula job deploy untuk commit lama. Bincang: apa yang **tidak** dipulihkan oleh rollback? (migration yang sudah berjalan — sebab itu `down()` mesti boleh diterbalikkan, atau migration baharu yang membetulkan).
-
-10. **Daripada simulasi kepada staging sebenar (bincang).** Job ini memulakan aplikasi dalam runner dan memadamnya selepas job. Staging sebenar menambah satu langkah: hantar binaan ke server (cth `docker compose build && up -d` melalui SSH). Kunci SSH masuk sebagai *CI/CD Variable* yang **Protected + Masked**, bukan dalam YAML. Production: tiada job dalam pipeline latihan ini; ikut prosedur perubahan jabatan.
+8. **Pemboleh ubah CI (baca, 5 minit).** Jurulatih membuka *Settings → CI/CD → Variables* di skrin (nama sahaja): `HARBOR_HOST`, `HARBOR_PROJECT`, `HARBOR_USER`, `HARBOR_PASSWORD` (akaun robot Harbor, *push* sahaja); `STAGING_SSH_HOST`, `_USER`, `_PORT`, `_KEY` (File), `_KNOWN_HOSTS` (File); `PROD_SSH_*` yang sama; `STAGING_URL`, `PROD_URL`. Semua *Protected*: pipeline daripada branch ciri tidak dapat membacanya. Kata laluan DB dan kunci penyulitan tiada dalam GitLab langsung — ia dalam `.env` pada VM. Soalan: untuk berpindah ke Harbor dan VM sebenar KKM, apa yang berubah dalam `.gitlab-ci.yml`? (Tiada. Hanya pemboleh ubah dan persediaan VM.)
 
 ### ✅ Checkpoint
-- [ ] MR `KAN-<n>: CI deploy-staging` di-merge; `glab ci lint` lulus dan pipeline MR tidak menunjukkan `deploy-staging`.
-- [ ] Ujian asap setempat dalam mod production: `/login` 200, `/papan-pemuka` 302, tiada akaun latihan dalam `users`.
-- [ ] Job `deploy-staging` hijau untuk `main` dan untuk tag `v1.1.0`; halaman *Environments → staging* menunjukkan kedua-duanya.
-- [ ] Saya boleh menerangkan rollback dengan *Re-deploy* dan apa yang tidak dipulihkan olehnya.
+- [ ] Saya boleh mengisi jadual job langkah 1 tanpa melihat, dan menerangkan kenapa imej dibina sekali sahaja.
+- [ ] MR !238 disemak QA dengan bukti dan di-merge; pipeline `main` hijau hingga `deploy-staging`.
+- [ ] Pipeline tag `v1.2.0`: `bina-imej` dan `deploy-staging` hijau; `deploy-production` ditekan jurulatih dan hijau; *Environments* menunjukkan staging dan production pada `v1.2.0`.
+- [ ] Saya boleh menerangkan tiga arahan pintu, rollback automatik, dan apa yang tidak dipulihkan oleh rollback.
 
 ### 🧯 Masalah lazim
 | Gejala | Punca | Penyelesaian |
 |---|---|---|
-| `deploy-staging` tiada dalam pipeline `main` | `rules` salah, atau tiada `- deploy` dalam `stages:` | `glab ci lint`; semak `$CI_DEFAULT_BRANCH` dan senarai `stages` |
-| Tiada pipeline untuk tag `v1.1.0` | `workflow: rules` hanya membenarkan branch | Tambah `- if: $CI_COMMIT_TAG` (langkah 3) |
-| Butang ▶ kelabu pada pipeline tag | Hanya Maintainer boleh menjalankan job pada tag dilindungi `v*` | Jurulatih menekan ▶ |
-| `test … = 302` gagal: dapat 200 atau 500 | Database kosong (migration gagal) atau filter `session` diubah | Buka artifak `writable/logs/` dan `serve.log` daripada job |
-| Setempat: aplikasi masih guna database dev | `.env` dibaca dahulu dan mengatasi pemboleh ubah persekitaran | Alihkan `.env` sementara (langkah 5) |
-| `DatabaseSeeder tidak boleh dijalankan dalam production` | Menjalankan seeder demo di staging | Guna `KodRujukanSeeder` sahaja |
+| `HARBOR_* belum ditetapkan` dalam `bina-imej` | Pemboleh ubah *Protected* tidak dihantar ke branch yang tidak dilindungi | Imej hanya dibina pada `main` dan tag `v*`; semak *Protected branches/tags* |
+| `STAGING_SSH_HOST belum ditetapkan` | Nama pemboleh ubah salah, atau `_KEY` / `_KNOWN_HOSTS` bukan jenis *File* | *Settings → CI/CD → Variables*: nama tepat, jenis *File* |
+| `Host key verification failed` | VM dibina semula; `_KNOWN_HOSTS` lama | `ssh-keyscan -p <port> <host>` → kemas kini pemboleh ubah |
+| `gagal menarik …/espkp:<tag>` | VM belum `docker login` ke Harbor, atau tag belum ditolak | `docs/deploy-vm.md` bahagian VM; semak `bina-imej` hijau |
+| `semakan kesihatan /login gagal` | Imej baharu rosak (migration, `.env`) | Baca 40 baris log dalam job; VM sudah kembali ke tag lama; baiki melalui MR baharu |
+| ▶ `deploy-production` kelabu | Hanya Maintainer boleh menjalankan job pada tag dilindungi `v*` | Jurulatih menekan ▶ |
+| Tiada `deploy-production` dalam pipeline | Pipeline `main`, bukan tag; atau tag bukan `vX.Y.Z` | `git tag -a v1.2.0` |
 
 ---
 
 ## Lab 10.22 — Demo Capstone Pasukan & Refleksi (S10–S11)
 
 ### 🎯 Objektif
-Mendemokan hasil pasukan pada `v1.1.0` dengan bukti setiap peranan, **menerangkan** satu baris kerja sendiri (kod, ujian atau AC) tanpa Claude, dan merefleksi penggunaan Claude Code dalam pasukan.
+Mendemokan hasil pasukan pada `v1.2.0` dengan bukti setiap peranan, **menerangkan** satu baris kerja sendiri (kod, ujian atau AC) tanpa Claude, dan merefleksi penggunaan Claude Code dalam pasukan.
 
 ### Langkah
 
-1. **Persediaan (10 minit, sebelum giliran).** `git switch --detach v1.1.0`, `php spark migrate --all`, `php spark serve`. Setiap ahli memilih satu baris yang di-commit sendiri:
+1. **Persediaan (10 minit, sebelum giliran).** `git switch --detach v1.2.0`, `php spark migrate --all`, `php spark serve`. Setiap ahli memilih satu baris yang di-commit sendiri:
 
    ```bash
-   git log --author="<nama anda>" --oneline v1.1.0
+   git log --author="<nama anda>" --oneline v1.2.0
    ```
 
    Latih diri (Claude tidak boleh memberi jawapan):
@@ -243,10 +186,10 @@ Mendemokan hasil pasukan pada `v1.1.0` dengan bukti setiap peranan, **menerangka
 
 ## Semakan kendiri — akhir hari
 
-**Kerja pasukan (hari ini):** `glab release view v1.1.0 -R aplikasi-baharu/espkpv2`; dalam Claude: `JQL project = KAN AND fixVersion = v1.1.0`.
+**Kerja pasukan (hari ini):** `glab release view v1.2.0 -R aplikasi-baharu/espkpv2`; dalam Claude: `JQL project = KAN AND fixVersion = v1.2.0`.
 
 - [ ] Kad Sprint 3 pasukan saya *Done* atau dialih ke backlog Jira dengan sebab sebelum pembekuan (Lab 10.20).
-- [ ] `CHANGELOG.md` 1.1.0 di-merge dan setiap baris sepadan dengan MR sebenar; tag `v1.1.0` wujud dan versi Jira `v1.1.0` dikeluarkan (Lab 10.21).
+- [ ] `CHANGELOG.md` 1.2.0 di-merge dan setiap baris sepadan dengan MR sebenar; tag `v1.2.0` wujud dan versi Jira `v1.2.0` dikeluarkan (Lab 10.21).
 - [ ] Saya menerangkan satu baris kerja saya (kod, ujian atau AC) tanpa Claude semasa demo (Lab 10.22).
 - [ ] Komen retro akhir saya ditambah dalam isu retro pasukan (Lab 10.22).
 

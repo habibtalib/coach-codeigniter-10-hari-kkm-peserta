@@ -13,7 +13,7 @@
 
 Label `pasukan::` menunjukkan siapa bertindak **sekarang**: isu bergerak Projek → Dev → Projek.
 
-**Backlog:** isu sedia ada (#1, #8–#18) + jurang BRS (#20–#32, daripada semakan dokumen asal KKM) + #33 soalan pemilik sistem. Sprint 1 = Hari 8, Sprint 2 = Hari 9, Sprint 3 + keluaran v1.1.0 = Hari 10.
+**Backlog:** isu sedia ada (#1, #8–#18) + jurang BRS (#20–#32, daripada semakan dokumen asal KKM) + #33 soalan pemilik sistem. Sprint 1 = Hari 8, Sprint 2 = Hari 9, Sprint 3 + keluaran v1.2.0 = Hari 10.
 
 **Jira mulai Hari 9.** Backlog (story, AC, sprint, papan, versi `v1.1.0`) berpindah ke Jira Cloud kelas (space `KAN`); kod, MR dan CI kekal di GitLab KKM, dan isu GitLab KKM kekal sebagai rujukan BRS. Kunci Jira dalam branch (`feat/KAN-<n>-…`), commit (`Rujuk KAN-<n>`) dan tajuk MR. Claude membaca dan menulis Jira melalui MCP `atlassian` ([tutorial](./tutorial-jira-mcp.md)); menulis hanya selepas anda berkata ya. Jira Free = 10 kerusi: jurulatih, Projek (4), seorang setiap pasangan Dev dan floater. Jira ialah perkhidmatan luar: kad mengandungi ringkasan, cerita pengguna, AC dan pautan GitLab KKM sahaja — tiada teks BRS atau nama sebenar.
 

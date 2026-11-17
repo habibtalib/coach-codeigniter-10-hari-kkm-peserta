@@ -131,13 +131,13 @@
 
 > ℹ️ Sesi Modul Laporan individu (S1–S12, Lab 9.1–9.13) berada dalam Lampiran Hari 9 sebagai rujukan.
 
-## Hari 10 — Kerja Pasukan: Sprint 3, Keluaran v1.1.0 & Capstone · [nota](./hari-10/README.md)
+## Hari 10 — Kerja Pasukan: Sprint 3, Keluaran v1.2.0 & Capstone · [nota](./hari-10/README.md)
 
 | Masa | Sesi | Aktiviti | Objektif sesi |
 |------|------|----------|---------------|
 | 08:30–09:00 | — | Stand-up pasukan Projek dan Dev | — |
 | 09:00–12:30 | S8 | Sprint 3 dalam Jira: kad daripada #14, #15, #18, #27–#32 (ikut `pasangan-N`) + pepijat kritikal · **pembekuan ciri 12:30** | Lab 10.20: kad *Done* atau dialih dengan sebab; `main` hijau |
-| 14:30–15:15 | S9 | Keluaran v1.1.0 | Lab 10.21: CHANGELOG (versi Jira `v1.1.0` + MR) melalui MR, tag `v1.1.0` + Release, versi Jira dikeluarkan |
+| 14:30–15:15 | S9 | Keluaran v1.2.0 | Lab 10.21: CHANGELOG (versi Jira `v1.2.0` + MR) melalui MR, tag `v1.2.0` + Release, versi Jira dikeluarkan |
 | 15:15–16:30 | S10 | Demo capstone (Projek 12 minit + 10 minit setiap pasangan Dev) | Lab 10.22: PM · BA · QA · pasangan Dev · soalan baris kerja setiap ahli ([rubrik](./docs/rubrik-capstone.md) §8) |
 | 16:30–17:00 | S11 | Retro pasukan & refleksi Claude Code, penutup | Lab 10.22: komen retro akhir setiap ahli |
 

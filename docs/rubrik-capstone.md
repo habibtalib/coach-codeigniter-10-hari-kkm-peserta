@@ -161,13 +161,13 @@ Kriteria sijil tamat kursus (Hari 10 README §4.3) menggunakan rubrik ini sepert
 
 ## 8. Capstone pasukan (mod pasukan, Hari 8–10)
 
-> Untuk kohort yang bekerja sebagai pasukan dalam espkpv2 ([`peranan-pasukan.md`](peranan-pasukan.md)). Demo dibuat oleh **pasukan Projek** (12 minit) dan **setiap pasangan Dev** (10 minit) pada Hari 10 S10, pada tag `v1.1.0`; markah pasukan (§8.1) diberi kepada kelas sebagai satu pasukan dan markah individu (§8.2) kepada setiap ahli. Kohort yang menggunakan 3 skuad memberi §8.1 setiap skuad.
+> Untuk kohort yang bekerja sebagai pasukan dalam espkpv2 ([`peranan-pasukan.md`](peranan-pasukan.md)). Demo dibuat oleh **pasukan Projek** (12 minit) dan **setiap pasangan Dev** (10 minit) pada Hari 10 S10, pada tag `v1.2.0`; markah pasukan (§8.1) diberi kepada kelas sebagai satu pasukan dan markah individu (§8.2) kepada setiap ahli. Kohort yang menggunakan 3 skuad memberi §8.1 setiap skuad.
 
 ### 8.1 Markah pasukan (40)
 
 | Kriteria | Tahap 1 (0–4) | Tahap 2 (5–7) | Tahap 3 (8–10) |
 |---|---|---|---|
-| **P · Isu & AC** (PM, BA) | AC kabur atau tiada; skop berubah tanpa rekod | AC boleh diuji; keputusan skop dalam isu atau kad Jira | AC Diberi/Apabila/Maka termasuk akses 404 dan kes sempadan; soalan pemilik direkod dan dijawab; sprint dan versi `v1.1.0` dalam Jira tepat dengan apa yang di-merge |
+| **P · Isu & AC** (PM, BA) | AC kabur atau tiada; skop berubah tanpa rekod | AC boleh diuji; keputusan skop dalam isu atau kad Jira | AC Diberi/Apabila/Maka termasuk akses 404 dan kes sempadan; soalan pemilik direkod dan dijawab; sprint dan versi `v1.2.0` dalam Jira tepat dengan apa yang di-merge |
 | **Q · Bukti semakan** (QA) | MR di-merge tanpa komen semakan | Komen semakan dengan jadual AC | Setiap AC ada `fail:baris` + ujian; ≥ 1 pepijat ditangkap sebelum merge; ujian eksploratori antara pasangan |
 | **D · MR & ujian** (Dev) | MR besar, tiada `Closes #N` / kunci Jira, ujian tiada | MR kecil dengan `Rujuk #N` / `Rujuk KAN-<n>` dan `Closes #N` / `KAN-<n>: …`, ujian hijau | Slice kecil, senarai semak dengan bukti, ujian negatif (404/peranan), `main` hijau selepas merge |
 | **K · Kerjasama** | Fail panas diubah oleh dua MR serentak tanpa selaras; konflik merosakkan kerja lain | Sync direkod dalam isu #19; konflik diselesaikan | Susunan merge dipatuhi; serah tugas dalam isu; retro dengan tindakan konkrit |
@@ -184,6 +184,6 @@ Kriteria sijil tamat kursus (Hari 10 README §4.3) menggunakan rubrik ini sepert
 
 | Kriteria sijil | Sumber (mod pasukan) |
 |---|---|
-| #2 Modul didemo | M1 TLK individu (Hari 5–6) + ciri pasangan/pasukan dalam `v1.1.0` didemo (§8.1 D ≥ Tahap 2) |
-| #3 Markah ≥ 60 dan tiada gate gagal | §8.1 dinormalkan kepada 100 (× 2.5) ≥ 60; gate kritikal §2 terpakai pada `v1.1.0` |
+| #2 Modul didemo | M1 TLK individu (Hari 5–6) + ciri pasangan/pasukan dalam `v1.2.0` didemo (§8.1 D ≥ Tahap 2) |
+| #3 Markah ≥ 60 dan tiada gate gagal | §8.1 dinormalkan kepada 100 (× 2.5) ≥ 60; gate kritikal §2 terpakai pada `v1.2.0` |
 | #4 Menerangkan satu baris kod | §8.2 *Terangkan baris sendiri* lulus |

@@ -1,8 +1,8 @@
-# Day 10 — Team Work: Sprint 3, Release v1.1.0 & Team Capstone
+# Day 10 — Team Work: Sprint 3, Release v1.2.0 & Team Capstone
 
 [← Schedule](../JADUAL.en.md) · [👥 Team roles](../docs/peranan-pasukan.en.md) · [🧪 Day 10 Lab](./lab.en.md) · [📋 Capstone Rubric](../docs/rubrik-capstone.en.md) · [← Day 9](../hari-9/README.en.md)
 
-> **The last day.** Morning: Sprint 3 — final features and critical bugs, with a **feature freeze** at 12:30. Afternoon: the team stabilises `main`, prepares the **v1.1.0 release** (CHANGELOG, release notes, tag), and the Projek team and every Dev pair demo their work to the system owner. Every member must be able to explain the code committed under their name — without Claude.
+> **The last day.** Morning: Sprint 3 — final features and critical bugs, with a **feature freeze** at 12:30. Afternoon: the team stabilises `main`, prepares the **v1.2.0 release** (CHANGELOG, release notes, tag), and the Projek team and every Dev pair demo their work to the system owner. Every member must be able to explain the code committed under their name — without Claude.
 
 ---
 
@@ -13,7 +13,7 @@ By the end of today, participants can:
 | # | Objective (measurable) | Session | Evidence |
 |---|------------------------|---------|----------|
 | O10 | **Finish** the Sprint 3 issues (every Dev pair) and critical bugs before the feature freeze, through MRs with QA review | S8 | Sprint 3 Jira cards *Done* or moved to the backlog with a reason; `main` green |
-| O11 | **Prepare** the v1.1.0 release: a CHANGELOG from the merged MRs, release notes, and an annotated tag on a green `main` | S9 | CHANGELOG MR merged; tag `v1.1.0` + GitLab Release |
+| O11 | **Prepare** the v1.2.0 release: a CHANGELOG from the merged MRs, release notes, and an annotated tag on a green `main` | S9 | CHANGELOG MR merged; tag `v1.2.0` + GitLab Release |
 | O12 | **Demo** the team's result to the system owner with role evidence: backlog & AC (PM, BA), the tests that prove the AC (QA), the running feature (Dev pairs) | S10 | 12-minute Projek demo + 10 minutes per pair; team score sheet |
 | O13 | **Explain** one line of code you committed yourself without Claude, and **evaluate** when AI help sped up or slowed down the team | S10–S11 | Panel question answered; reflection in the final retro issue |
 
@@ -28,11 +28,11 @@ By the end of today, participants can:
 | 08:30–09:00 | — | Stand-up of the Projek and Dev teams | — |
 | 09:00–12:30 | S8 | Sprint 3: final features & critical bugs · **feature freeze 12:30** | O10 · [Lab 10.20](./lab.en.md#lab-1020--sprint-3-final-features--freeze-s8) |
 | 12:30–14:30 | — | Lunch | — |
-| 14:30–15:15 | S9 | Release v1.1.0: stabilise, CHANGELOG, release notes, tag | O11 · [Lab 10.21](./lab.en.md#lab-1021--release-v110-s9) · [Lab 10.23](./lab.en.md#lab-1023--cicd-deploy-to-staging-from-the-pipeline-s8s9) |
+| 14:30–15:15 | S9 | Release v1.2.0: stabilise, CHANGELOG, release notes, tag | O11 · [Lab 10.21](./lab.en.md#lab-1021--release-v120-s9) · [Lab 10.23](./lab.en.md#lab-1023--cicd-harbor--staging--production-s8s9) |
 | 15:15–16:30 | S10 | Team capstone demo to the system owner | O12, O13 · [Lab 10.22](./lab.en.md#lab-1022--team-capstone-demo--reflection-s10s11) |
 | 16:30–17:00 | S11 | Team retro & Claude Code reflection, closing | O13 · [Lab 10.22](./lab.en.md#lab-1022--team-capstone-demo--reflection-s10s11) |
 
-**Sprint 3 cards** (Jira sprint *Sprint 3 + v1.1 (Hari 10)*, *Fix version* `v1.1.0`; # numbers = the linked GitLab KKM issues): #14 workflow E2E & documentation; B — #15 Login history in the profile; C — #18 Approval-rate KPI card; plus the critical bugs and follow-up issues the PMs put in the v1.1.0 scope yesterday.
+**Sprint 3 cards** (the active Jira sprint *Sprint 4*, *Fix version* `v1.1.0` → `v1.2.0` in Lab 10.21; # numbers = the linked GitLab KKM issues): #14 workflow E2E & documentation; B — #15 Login history in the profile; C — #18 Approval-rate KPI card; plus the critical bugs and follow-up issues the PMs put in the v1.2.0 scope yesterday.
 
 ---
 
@@ -55,7 +55,7 @@ Stand-up at 08:30 within each team (Projek and Dev stay the same; issue #19). Th
 | 09:00–09:30 | PM: the Sprint 3 Jira board (JQL, *Assignee*); QA: test plan; Dev: `/ciri-baharu` |
 | 09:30–11:30 | Slice by slice; critical bugs first |
 | 11:30–12:15 | MR, `/semak-mr`, merge in the PM's order |
-| **12:30** | **Feature freeze.** Feature MRs not yet merged → the Jira card leaves the sprint and version `v1.1.0`, stays in the backlog with a comment. After this only `fix/…` |
+| **12:30** | **Feature freeze.** Feature MRs not yet merged → the Jira card leaves the sprint and version `v1.2.0`, stays in the backlog with a comment. After this only `fix/…` |
 
 ### ✅ Checkpoint S8
 - Every Sprint 3 Jira card is *Done* **or** moved to the backlog with a reason.
@@ -63,7 +63,7 @@ Stand-up at 08:30 within each team (Projek and Dev stay the same; issue #19). Th
 
 ---
 
-## S9 — Release v1.1.0 (14:30–15:15)
+## S9 — Release v1.2.0 (14:30–15:15)
 
 The **release PM** (the Projek team's PM) leads these steps with help from the BA and the floater:
 
@@ -71,17 +71,17 @@ The **release PM** (the Projek team's PM) leads these steps with help from the B
 2. **CHANGELOG.** Claude drafts it from the merged MRs; the release PM checks every line against the real MRs:
 
    ```text
-   Use Jira: the cards from JQL project = KAN AND fixVersion = v1.1.0 AND statusCategory = Done. Match each card with its KAN-<n>: … MR from glab mr list --merged (Day 8: Closes #N). Draft a "## [1.1.0] - 2026-10-30" section for CHANGELOG.md (Keep a Changelog format: Added, Changed, Fixed, Security), one line per MR with the !no and #issue. Do not write files.
+   Run git log --first-parent --merges v1.1.0..main for the MRs since v1.1.0 (12/11); take the !no and KAN-n, and check each card's summary in Jira. Draft a "## [1.2.0] - 2026-11-18" section for CHANGELOG.md (Keep a Changelog format: Added, Changed, Fixed, Security), one line per MR with the !no and KAN-n. Do not write files.
    ```
 
-   The CHANGELOG goes in through a `docs/changelog-v1.1.0` MR like any other change.
+   The CHANGELOG goes in through a `docs/changelog-v1.2.0` MR like any other change.
 3. **Tag and Release.** `v*` tags are protected (Maintainers only): the release PM reads the release notes to the class, then the trainer creates the annotated tag and the GitLab Release on the green `main`.
 
-**CI/CD to staging ([Lab 10.23](./lab.en.md#lab-1023--cicd-deploy-to-staging-from-the-pipeline-s8s9)).** The floater adds a manual `deploy-staging` job to `.gitlab-ci.yml` through an MR before the freeze (S8). After the `v1.1.0` tag, the trainer presses ▶ on `deploy-staging` in the tag pipeline: the app is built in `production` mode, migrations and reference data run, and smoke tests prove `/login` is 200 and a protected page is 302. *Environments → staging* shows every deployment and a *Re-deploy* button for rollback. Production never comes from the training pipeline.
+**CI/CD to staging and production ([Lab 10.23](./lab.en.md#lab-1023--cicd-harbor--staging--production-s8s9)).** MR !238 (KAN-204) adds three jobs after `ujian`. `bina-imej` builds the image once and pushes it to Harbor. `deploy-staging` ships every `main` and tag to the staging VM (app + MySQL) automatically. `deploy-production` ships `v*` tags to the production VM (app + external MySQL) when the trainer presses ▶. CI only picks the image tag; the deploy gate on the VM backs up the DB, runs `up -d`, checks `/login`, and goes back to the old tag on failure. QA and the floater review MR !238 before the freeze (S8); after the `v1.2.0` tag, the class follows the tag pipeline through to production (S9). In this class Harbor and the VMs are a simulation on the training server.
 
 ### ✅ Checkpoint S9
-- `CHANGELOG.md` with a 1.1.0 section on `main`; every line matches a real MR.
-- Tag `v1.1.0` and a GitLab Release exist.
+- `CHANGELOG.md` with a 1.2.0 section on `main`; every line matches a real MR.
+- Tag `v1.2.0` and a GitLab Release exist.
 
 ---
 
@@ -91,8 +91,8 @@ Two parts for the system owner (the trainer) and the panel, **75 minutes** in to
 
 | Minutes | Who | What |
 |---|---|---|
-| 0–12 | Projek team | PM: the Jira board and the backlog across 3 sprints (BRS → GitLab KKM issue → Jira card → AC), the version `v1.1.0` report, owner decisions (#33), what did not make v1.1.0 and why. BA: one issue from the BRS requirement to the AC. QA: the tests that prove the AC, one bug caught before merge, the E2E result |
-| 12–52 | Dev team, 10 minutes per pair | The feature running on `v1.1.0` in the browser with different training accounts (including one that must get a 404), its MR and tests, the ERD/workflow changes on the FigJam board |
+| 0–12 | Projek team | PM: the Jira board and the backlog across 3 sprints (BRS → GitLab KKM issue → Jira card → AC), the version `v1.2.0` report, owner decisions (#33), what did not make v1.2.0 and why. BA: one issue from the BRS requirement to the AC. QA: the tests that prove the AC, one bug caught before merge, the E2E result |
+| 12–52 | Dev team, 10 minutes per pair | The feature running on `v1.2.0` in the browser with different training accounts (including one that must get a 404), its MR and tests, the ERD/workflow changes on the FigJam board |
 | 52–57 | Floater | CI job, conflicts resolved, E2E on `main` |
 | 57–75 | Panel | Every member explains one line of their work **without Claude**: Dev and QA — a committed code/test line (`git log --author`); BA and PM — one AC and why it is testable |
 
@@ -123,7 +123,7 @@ Full prompts: [`pustaka-prompt.en.md`](../docs/pustaka-prompt.en.md) §H. After 
 | PM · scope | AI-23 + `Use Jira: the current sprint cards not Done; for each, the status of the KAN-<n> MR in glab mr list. List those at risk of not finishing before 12:30, with reasons.` | The decision to move to the backlog is made by the PM and recorded in a card comment | 10.20 |
 | Dev · bug | `This test fails: <output>. Reproduce first: write a failing test that shows the bug, do not fix it yet.` → AI-30 for the fix | Red test → fix → green | 10.20 |
 | QA · review | AI-27 `/semak-mr <no>`; after the freeze: `Does this MR only fix bug #<N>, with no new feature?` | The diff only touches the bug's files | 10.20 |
-| Release PM · CHANGELOG | The CHANGELOG prompt in S9 (Jira version `v1.1.0` + `glab mr list --merged`) | Every line matches a real MR | 10.21 |
+| Release PM · CHANGELOG | The CHANGELOG prompt in S9 (`git log --merges v1.1.0..main` + Jira cards) | Every line matches a real MR | 10.21 |
 | Everyone · demo | `Ask me 3 questions about the line <file:line> I committed, like the capstone panel. Do not give the answers.` | Answer without looking at Claude | 10.22 |
 
 ---
@@ -133,7 +133,7 @@ Full prompts: [`pustaka-prompt.en.md`](../docs/pustaka-prompt.en.md) §H. After 
 **Team work (today):**
 
 - [ ] The Sprint 3 Jira cards *Done* or moved to the backlog with a reason before the 12:30 freeze
-- [ ] `CHANGELOG.md` 1.1.0 section merged through an MR; tag `v1.1.0` and a GitLab Release on a green `main`
+- [ ] `CHANGELOG.md` 1.2.0 section merged through an MR; tag `v1.2.0` and a GitLab Release on a green `main`
 - [ ] Capstone demo: Projek 12 minutes + every Dev pair 10 minutes; team score sheet filled in
 - [ ] Every member explains one line they committed themselves without Claude
 - [ ] Every member's comment in the final retro
@@ -185,11 +185,11 @@ Advantage: the dashboard is fresh immediately after a status change (no "I appro
 (1) Reproduce with exact steps & data; (2) write a **failing** test; (3) fix with a minimal change; (4) that test and all other tests pass; (5) commit `FIX:` and update the bug log. Step 2 proves the test really detects the bug — a test that has never been seen failing may not test anything, and it becomes a regression guard forever.
 </details>
 
-6. At 12:20, pair 3 has almost finished the #18 KPI card but QA has not reviewed it. The PM suggests merging first and reviewing later, so it makes v1.1.0. What is the right decision?
+6. At 12:20, pair 3 has almost finished the #18 KPI card but QA has not reviewed it. The PM suggests merging first and reviewing later, so it makes v1.2.0. What is the right decision?
 
 <details><summary>Answer</summary>
 
-Do not merge without a review. The feature freeze and the QA review exist so the released `main` can be trusted. #18 moves to the backlog (the next release, e.g. v1.2.0) with a status comment; the demo can show it from the branch as "coming next", not as part of v1.1.0.
+Do not merge without a review. The feature freeze and the QA review exist so the released `main` can be trusted. #18 moves to the backlog (the next release, e.g. v1.3.0) with a status comment; the demo can show it from the branch as "coming next", not as part of v1.2.0.
 </details>
 
 7. Claude drafts the CHANGELOG with the line "Fixed: login attempt limit". No MR in the three milestones touches `HadCubaan`. What happened, and what does the release PM do?

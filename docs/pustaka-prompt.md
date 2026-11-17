@@ -606,7 +606,7 @@ Draf kad Bug Jira untuk KAN daripada pemerhatian ini: <langkah, jangkaan, sebena
 ### AI-36 — PM keluaran: CHANGELOG daripada versi Jira
 
 ```prompt title="AI-36"
-Guna Jira: kad JQL project = KAN AND fixVersion = v1.1.0 AND statusCategory = Done. Padankan setiap kad dengan MR KAN-<n>: … dalam glab mr list --merged. Draf bahagian CHANGELOG 1.1.0 (Ditambah, Diubah, Dibaiki, Keselamatan), satu baris setiap MR dengan !no dan KAN-n. Kad tanpa MR dan MR tanpa kad → senarai berasingan. Jangan tulis fail.
+Guna Jira: kad JQL project = KAN AND fixVersion = v1.2.0 AND statusCategory = Done. Padankan setiap kad dengan MR KAN-<n>: … dalam glab mr list --merged. Draf bahagian CHANGELOG 1.2.0 (Ditambah, Diubah, Dibaiki, Keselamatan), satu baris setiap MR dengan !no dan KAN-n. Kad tanpa MR dan MR tanpa kad → senarai berasingan. Jangan tulis fail.
 ```
 
 - **Selepas:** buang setiap baris yang tidak dapat dipautkan kepada MR sebenar.

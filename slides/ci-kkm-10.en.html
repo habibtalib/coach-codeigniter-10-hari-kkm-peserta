@@ -3206,11 +3206,11 @@ $routes-&gt;get(<span class="s">'semua'</span>, ..., [<span class="s">'filter'</
 
 <section class="slide dark divider" data-label="Day 10 · Release &amp; Capstone">
   <div class="eyebrow">Day 10 · Phase C — Release &amp; Hand Over</div>
-  <h1>Day 10 — Sprint 3, v1.1.0 &amp; Team Capstone</h1>
-  <div><span class="chip m-stat">Freeze 12:30 · v1.1.0 · Projek &amp; Dev pair demos</span></div>
+  <h1>Day 10 — Sprint 3, v1.2.0 &amp; Team Capstone</h1>
+  <div><span class="chip m-stat">Freeze 12:30 · v1.2.0 · Projek &amp; Dev pair demos</span></div>
   <div class="sessions">
     <div><i>S8</i><span>Sprint 3: last features &amp; critical bugs — freeze 12:30</span></div>
-    <div><i>S9</i><span>Release v1.1.0: stabilise, CHANGELOG, tag &amp; Release</span></div>
+    <div><i>S9</i><span>Release v1.2.0: stabilise, CHANGELOG, tag &amp; Release</span></div>
     <div><i>S10</i><span>Team capstone demo to the system owner</span></div>
     <div><i>S11</i><span>Team retro &amp; Claude Code reflection</span></div>
   </div>
@@ -3231,7 +3231,7 @@ $routes-&gt;get(<span class="s">'semua'</span>, ..., [<span class="s">'filter'</
       <tr><td><b>12:30</b></td><td><b>Feature freeze</b> — only <code>fix/…</code> after this</td></tr>
     </table>
     <div class="card top m-a"><span class="k">SPRINT 3 ISSUES</span>
-      <ul><li>#14 E2E &amp; docs · #15 Login history · #18 KPI card</li><li>#27–#32 Sprint 3 BRS gaps (AC by the BA yesterday)</li><li>Split by the <code>pasangan::N</code> label</li><li>+ critical bugs &amp; follow-ups in the v1.1.0 scope</li></ul>
+      <ul><li>#14 E2E &amp; docs · #15 Login history · #18 KPI card</li><li>#27–#32 Sprint 3 BRS gaps (AC by the BA yesterday)</li><li>Split by the <code>pasangan::N</code> label</li><li>+ critical bugs &amp; follow-ups in the v1.2.0 scope</li></ul>
     </div>
   </div>
   <div class="callout warn mt16"><span class="i">⚠️</span><div>Feature MRs not merged by 12:30 → the issue stays open and moves to the backlog with a comment. Never merge without QA review just to "make it".</div></div>
@@ -3240,95 +3240,97 @@ $routes-&gt;get(<span class="s">'semua'</span>, ..., [<span class="s">'filter'</
 
 <section class="slide">
   <div class="eyebrow">Day 10 · S9 — Lab 10.21 (14:30–15:15)</div>
-  <h2>S9 · Release v1.1.0</h2>
+  <h2>S9 · Release v1.2.0</h2>
   <div class="split">
     <div class="codewrap"><div class="codebar">Release PM · Plan mode<span class="lang">prompt</span></div>
-<pre class="code sm" data-lang="text">Use Jira: JQL project = KAN AND
-fixVersion = v1.1.0 AND statusCategory = Done.
-Match each card with its KAN-n MR from
-glab mr list --merged. Draft "## [1.1.0] -
-2026-10-30" (Keep a Changelog), one line per
-MR with !no and KAN-n. Do not write any file.</pre></div>
+<pre class="code sm" data-lang="text">Run git log --first-parent --merges
+v1.1.0..main (MRs since 12/11). Take the !no
+and KAN-n; check the cards in Jira. Draft
+"## [1.2.0] - 2026-11-18" (Keep a Changelog),
+one line per MR with !no and KAN-n.
+Do not write any file.</pre></div>
     <div class="card top m-stat"><span class="k">RELEASE STEPS</span>
-      <ul><li><b>Stabilise:</b> <code>composer test</code> + E2E green on <code>main</code></li><li><b>CHANGELOG:</b> every line checked against a real MR; lands via MR <code>docs/changelog-v1.1.0</code></li><li><b>Tag:</b> <code>v*</code> is protected — the release PM reads the notes, the <b>trainer</b> creates the annotated tag</li><li>GitLab <b>Release</b> on <code>v1.1.0</code></li><li><b>Jira:</b> <i>Releases</i> → <code>v1.1.0</code> → Release</li></ul>
+      <ul><li><b>Stabilise:</b> <code>composer test</code> + E2E green on <code>main</code></li><li><b>CHANGELOG:</b> every line checked against a real MR; lands via MR <code>docs/changelog-v1.2.0</code></li><li><b>Tag:</b> <code>v*</code> is protected — the release PM reads the notes, the <b>trainer</b> creates the annotated tag</li><li>GitLab <b>Release</b> on <code>v1.2.0</code></li><li><b>Jira:</b> create <code>v1.2.0</code>, move cards Done after 12/11, Release <code>v1.1.0</code> + <code>v1.2.0</code></li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>A CHANGELOG line without <code>!no</code> and <code>#issue</code> is a sign that Claude invented a change. Remove it.</div></div>
-  <aside class="notes"><p>The release PM is the Projek team's PM, helped by the BA and the floater. Checkpoint: CHANGELOG.md 1.1.0 section on main with every line matching a real MR; the v1.1.0 tag and GitLab Release exist.</p></aside>
+  <aside class="notes"><p>The release PM is the Projek team's PM, helped by the BA and the floater. Checkpoint: CHANGELOG.md 1.2.0 section on main with every line matching a real MR; the v1.2.0 tag and GitLab Release exist.</p></aside>
 </section>
 
 <section class="slide">
   <div class="eyebrow">Day 10 · CI/CD — Lab 10.23</div>
-  <h2>CI proves the code is right; CD ships it to staging</h2>
-  <div class="flow"><div class="node"><span class="k">MR / PUSH</span><b>semak</b><span>lint · cs · phpstan</span></div><div class="arr">→</div><div class="node"><span class="k">CI</span><b>test</b><span>PHPUnit · MySQL 8.4</span></div><div class="arr">→</div><div class="node hot"><span class="k">CD · MANUAL ▶</span><b>deploy-staging</b><span>main · tag v*</span></div><div class="arr">→</div><div class="node"><span class="k">NOT IN THE PIPELINE</span><b>production</b><span>department change procedure</span></div></div>
+  <h2>CI tests; CD ships one image to staging &amp; production</h2>
+  <div class="flow"><div class="node"><span class="k">MR / PUSH</span><b>semak · test</b><span>lint · phpstan · PHPUnit</span></div><div class="arr">→</div><div class="node"><span class="k">MAIN · TAG v*</span><b>bina-imej</b><span>Kaniko → Harbor</span></div><div class="arr">→</div><div class="node hot"><span class="k">AUTOMATIC</span><b>deploy-staging</b><span>app + MySQL</span></div><div class="arr">→</div><div class="node"><span class="k">TAG v* · MANUAL ▶</span><b>deploy-production</b><span>app + external MySQL</span></div></div>
   <div class="grid c3 mt16">
-    <div class="card side m-tlk"><h3>Continuous Integration</h3><p>Every MR: code is checked and tested automatically. Red → no merge.</p></div>
-    <div class="card side m-pas"><h3>Continuous Delivery</h3><p>Every <code>main</code> / tag <b>can</b> be shipped to staging in one click — after the tests pass.</p></div>
-    <div class="card side m-stat"><h3>Why manual?</h3><p>A person chooses when. The pipeline never deploys by itself and never to production.</p></div>
+    <div class="card side m-tlk"><h3>Build once</h3><p>One image per commit: <code>:&lt;sha&gt;</code>, plus <code>:v1.2.0</code> for a tag. Staging and production run the <b>same</b> image.</p></div>
+    <div class="card side m-pas"><h3>Staging automatic</h3><p>Every green <code>main</code> reaches staging by itself — bugs show up before the release.</p></div>
+    <div class="card side m-stat"><h3>Production manual</h3><p><code>v*</code> tags only, after staging is green, when a Maintainer presses ▶.</p></div>
   </div>
-  <aside class="notes"><p>espkpv2 today: semak + test + SAST stages. Lab 10.23 adds a deploy stage with the deploy-staging job. Continuous Deployment (automatic to production) is deliberately not taught — for a government system, production goes through approval and change procedure.</p></aside>
+  <aside class="notes"><p>MR !238 (KAN-204) replaces the old deploy-staging job that built on the server. Kaniko builds without a Docker daemon, so the runner does not need to be privileged. In this class Harbor and the two VMs are a simulation on the training server; for KKM only the CI variables and the VM setup change (docs/deploy-vm.md).</p></aside>
 </section>
+
 
 <section class="slide">
   <div class="eyebrow">Day 10 · CI/CD — <code>.gitlab-ci.yml</code></div>
-  <h2>Job <code>deploy-staging</code>: manual, production mode, smoke tests</h2>
+  <h2>Three CD jobs: build, staging, production</h2>
   <div class="codewrap"><div class="codebar">.gitlab-ci.yml (shortened)<span class="lang">yaml</span></div>
-<pre class="code sm" data-lang="yaml"><span class="v">stages</span>: [semak, test, deploy]
+<pre class="code sm" data-lang="yaml"><span class="v">stages</span>: [semak, test, build, staging, production]
+<span class="v">bina-imej</span>:                          <span class="c"># main + tag v*</span>
+  <span class="v">image</span>: gcr.io/kaniko-project/executor:v1.23.2-debug
+  <span class="v">script</span>: [ /kaniko/executor ... --destination $IMEJ:$CI_COMMIT_SHORT_SHA ]
+<span class="v">.deploy-vm</span>:                         <span class="c"># SSH to the gate on the VM</span>
+  <span class="v">script</span>: [ ssh $SSH_USER@$SSH_HOST <span class="s">"deploy $PINTU_ENV $TAG"</span> ]
 <span class="v">deploy-staging</span>:
-  <span class="v">extends</span>: .php                    <span class="c"># same PHP + Composer as ujian</span>
-  <span class="v">stage</span>: deploy
-  <span class="v">services</span>: [{ name: mysql:8.4, alias: mysql }]
-  <span class="v">variables</span>: { CI_ENVIRONMENT: production, database_default_hostname: mysql, ... }
-  <span class="v">environment</span>: { name: staging, deployment_tier: staging }
+  <span class="v">extends</span>: .deploy-vm
+  <span class="v">needs</span>: [bina-imej]                 <span class="c"># automatic</span>
+  <span class="v">variables</span>: { PINTU_ENV: staging, TAG: $CI_COMMIT_SHORT_SHA, VM: STAGING }
+<span class="v">deploy-production</span>:
+  <span class="v">extends</span>: .deploy-vm
+  <span class="v">needs</span>: [bina-imej, deploy-staging]
   <span class="v">rules</span>:
     - <span class="v">if</span>: <span class="s">$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/</span>
-      <span class="v">when</span>: manual
-    - <span class="v">if</span>: <span class="s">$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH</span>
-      <span class="v">when</span>: manual
-  <span class="v">script</span>:
-    - composer install --no-dev --optimize-autoloader
-    - php spark migrate --all
-    - php spark db:seed KodRujukanSeeder   <span class="c"># reference data only</span>
-    - php -S 0.0.0.0:8080 -t public ... &amp;
-    - test "$(curl ... /login)" = 200       <span class="c"># public</span>
-    - test "$(curl ... /papan-pemuka)" = 302 <span class="c"># protected</span></pre></div>
-  <aside class="notes"><p>Full text in Lab 10.23 step 4 — already tested on the GitLab KKM runner. Stress: rules replace the .php template rules; the MR pipeline does not show this job; v* tags are protected so only a Maintainer presses ▶ for a release. No secrets in the YAML: the root password here is only for the throwaway MySQL service inside the runner.</p></aside>
+      <span class="v">when</span>: manual                     <span class="c"># a Maintainer presses ▶</span>
+  <span class="v">variables</span>: { PINTU_ENV: production, TAG: $CI_COMMIT_TAG, VM: PROD }</pre></div>
+  <aside class="notes"><p>Full text in MR !238. Show: CI does not send code, compose or .env to the VM — only the environment name and the image tag. HARBOR_*, STAGING_SSH_* and PROD_SSH_* are all Protected, so a feature-branch pipeline cannot read them. The tag pipeline stays "blocked" until production is approved (allow_failure: false).</p></aside>
 </section>
+
 
 <section class="slide">
   <div class="eyebrow">Day 10 · CI/CD — environments</div>
-  <h2>Dev, staging, production: who, what data, how</h2>
+  <h2>Dev, staging, production: compose, data, who</h2>
   <table class="t tight">
-    <tr><th style="width:170px">Environment</th><th style="width:230px"><code>CI_ENVIRONMENT</code></th><th style="width:300px">Data</th><th>Who / how</th></tr>
-    <tr><td><b>dev</b></td><td><code>development</code> · Debug Toolbar, TAC on screen</td><td>Demo + training accounts <code>9001010100NN</code></td><td>Every developer, <code>php spark serve</code></td></tr>
-    <tr><td><b>staging</b></td><td><code>production</code> · no toolbar, errors hidden</td><td>Reference data only (<code>KodRujukanSeeder</code>)</td><td>Pipeline, manual ▶ job after the tests pass</td></tr>
-    <tr><td><b>production</b></td><td><code>production</code></td><td>Real data — no demo seeder, no training accounts</td><td>Department change procedure + approval, <b>not</b> the training pipeline</td></tr>
+    <tr><th style="width:150px">Environment</th><th style="width:270px">On the VM</th><th style="width:270px">Data</th><th>When / who</th></tr>
+    <tr><td><b>dev</b></td><td><code>php spark serve</code> · <code>development</code></td><td>Demo + training accounts <code>9001010100NN</code></td><td>Every developer</td></tr>
+    <tr><td><b>staging</b></td><td>compose: <code>app</code> + <code>mysql</code> + <code>jadual</code></td><td>MySQL in the stack; test data</td><td>Automatic after every green <code>main</code> / tag</td></tr>
+    <tr><td><b>production</b></td><td>compose: <code>app</code> + <code>jadual</code> · <code>production</code></td><td><b>External MySQL</b> (the department DB server, TLS) — no demo seeder</td><td><code>v*</code> tags only, manual ▶ by a Maintainer</td></tr>
   </table>
-  <div class="callout tip mt16"><span class="i">💡</span><div><code>DatabaseSeeder</code> refuses to run in <code>production</code> — a deliberate guard. Staging tests the <b>same</b> code in the <b>same</b> mode as production.</div></div>
-  <aside class="notes"><p>Link to security checklist K10 (production mode for staging) and section A of the Day 10 README. Question: why does staging not use the Latihan@2026 accounts? (the password is public, and staging is often reachable from the department network).</p></aside>
+  <div class="callout tip mt16"><span class="i">💡</span><div>The image repo, the compose file and <code>.env</code> (DB password, encryption key) live <b>on the VM</b>. GitLab only knows which tag to run.</div></div>
+  <aside class="notes"><p>Production has no mysql container: the DB is a department server managed separately and backed up by the DB team. Question: why does staging not use the Latihan@2026 accounts? (the password is publicly known, and staging is often reachable from the department network).</p></aside>
 </section>
 
+
 <section class="slide">
-  <div class="eyebrow">Day 10 · CI/CD — safety &amp; rollback</div>
-  <h2>Safe deploys: five rules</h2>
+  <div class="eyebrow">Day 10 · CI/CD — deploy gate &amp; rollback</div>
+  <h2>Safe deploys: six rules</h2>
   <div class="grid c3">
-    <div class="card top m-tlk"><span class="k">1 · GREEN FIRST</span><p>Stage <code>deploy</code> only runs after <code>semak</code> + <code>test</code> pass.</p></div>
-    <div class="card top m-pas"><span class="k">2 · MANUAL</span><p><code>when: manual</code> — a person chooses when; <code>v*</code> tags are protected (Maintainer).</p></div>
-    <div class="card top m-stat"><span class="k">3 · NO SECRETS IN YAML</span><p>SSH key / server password → <i>CI/CD Variables</i> <b>Protected + Masked</b>.</p></div>
-    <div class="card top m-tlk"><span class="k">4 · ROLLBACK</span><p><i>Environments → staging → Re-deploy</i> an older commit. Migrations are <b>not</b> undone by themselves.</p></div>
-    <div class="card top m-pas"><span class="k">5 · SMOKE TESTS</span><p>A deploy is not done until <code>/login</code> is 200 and a protected page is 302.</p></div>
-    <div class="card top m-stat"><span class="k">A REAL STAGING</span><p>Add one step: ship the build to a server (<code>docker compose up -d</code> over SSH).</p></div>
+    <div class="card top m-tlk"><span class="k">1 · A GATE, NOT A SHELL</span><p>The CI key can only <code>deploy</code> · <code>rollback</code> · <code>status</code> (<i>forced command</i>); the tag is checked with a regex.</p></div>
+    <div class="card top m-pas"><span class="k">2 · NO SECRETS IN YAML</span><p><i>CI/CD Variables</i> <b>Protected + Masked</b>; <code>.env</code> on the VM only.</p></div>
+    <div class="card top m-stat"><span class="k">3 · PULL FIRST</span><p>Tag not in Harbor → the deploy stops, nothing changes.</p></div>
+    <div class="card top m-tlk"><span class="k">4 · DB BACKUP</span><p><code>mysqldump</code> before every deploy; the last 7 are kept on the VM.</p></div>
+    <div class="card top m-pas"><span class="k">5 · CHECK &amp; ROLL BACK</span><p><code>/login</code> fails within 5 minutes → back to the old tag automatically. Migrations are <b>not</b> undone.</p></div>
+    <div class="card top m-stat"><span class="k">6 · PRODUCTION MANUAL</span><p><code>v*</code> tags are protected; only a Maintainer presses ▶, after staging is green.</p></div>
   </div>
-  <aside class="notes"><p>Lab 10.23 runs a throwaway staging inside the runner (no server, no keys) so every trainee can try it safely. Moving to a real server is a small change to the same script, plus a protected variable. Demo: open Deployments → Environments → staging after the v1.1.0 tag.</p></aside>
+  <aside class="notes"><p>All six were tested on the simulation: a missing tag is refused with no change, a broken image is rolled back automatically, commands such as id, bash, ;id and ../ are refused. Demo: after the v1.2.0 tag, open Deployments → Environments; Re-deploy on an older deployment = a manual rollback.</p></aside>
 </section>
+
 
 <section class="slide">
   <div class="eyebrow">Day 10 · S10 — Lab 10.22 (15:15–16:30)</div>
   <h2>S10 · Capstone demo: Projek + every Dev pair</h2>
   <table class="t tight">
     <tr><th style="width:110px">Minutes</th><th style="width:130px">Who</th><th>What</th></tr>
-    <tr><td>0–12</td><td><b>Projek</b></td><td>PM: BRS backlog → issue → AC, owner decisions, what did not make v1.1.0 · BA: one BRS issue → AC · QA: tests proving the AC, a bug caught, E2E</td></tr>
-    <tr><td>12–52</td><td><b>Dev</b></td><td>10 minutes per pair: the feature on <code>v1.1.0</code> with different accounts — including one that gets <b>404</b>; MR &amp; tests</td></tr>
+    <tr><td>0–12</td><td><b>Projek</b></td><td>PM: BRS backlog → issue → AC, owner decisions, what did not make v1.2.0 · BA: one BRS issue → AC · QA: tests proving the AC, a bug caught, E2E</td></tr>
+    <tr><td>12–52</td><td><b>Dev</b></td><td>10 minutes per pair: the feature on <code>v1.2.0</code> with different accounts — including one that gets <b>404</b>; MR &amp; tests</td></tr>
     <tr><td>52–57</td><td><b>Floater</b></td><td>CI job, conflicts resolved, E2E</td></tr>
     <tr><td>57–75</td><td><b>Panel</b></td><td>Each member explains one line of their work — code, test or AC — <b>without Claude</b></td></tr>
   </table>
@@ -3351,7 +3353,7 @@ MR with !no and KAN-n. Do not write any file.</pre></div>
     <div class="card flat side m-tlk"><span class="k">INDIVIDUAL</span><h3 class="mb0">Output from each role</h3></div>
     <div class="card flat side m-stat"><span class="k">INDIVIDUAL</span><h3 class="mb0">AI discipline</h3></div>
   </div>
-  <p class="small muted mt16">Certificate: team score × 2.5 ≥ 60, no critical gate failed on <code>v1.1.0</code>, and "explain your own line" passed.</p>
+  <p class="small muted mt16">Certificate: team score × 2.5 ≥ 60, no critical gate failed on <code>v1.2.0</code>, and "explain your own line" passed.</p>
   <aside class="notes"><p>Summary of docs/rubrik-capstone.md section 8. AI discipline: no commits made in auto or bypass mode, no secrets or real data in issues, MRs or prompts.</p></aside>
 </section>
 
@@ -3383,15 +3385,15 @@ MR with !no and KAN-n. Do not write any file.</pre></div>
 
 <section class="slide">
   <div class="eyebrow">Day 10 · Today's outputs</div>
-  <h2>v1.1.0 released — check team outputs</h2>
+  <h2>v1.2.0 released — check team outputs</h2>
   <ul class="checks done">
     <li><span>Sprint 3 issues closed or moved to the backlog with a reason before 12:30.</span></li>
-    <li><span><code>CHANGELOG.md</code> 1.1.0 via MR; tag <code>v1.1.0</code> + Release on a green <code>main</code>.</span></li>
+    <li><span><code>CHANGELOG.md</code> 1.2.0 via MR; tag <code>v1.2.0</code> + Release on a green <code>main</code>.</span></li>
     <li><span>Capstone demo by Projek + every Dev pair; team score sheet filled in.</span></li>
     <li><span>Every member explains one of their own lines without Claude.</span></li>
     <li><span>Every member's final retro comment — <b>a system released as a team</b> 🎓</span></li>
   </ul>
-  <aside class="notes"><p>Close with the link to the v1.1.0 Release on GitLab KKM: this is the work of 12 people, three sprints and three roles.</p></aside>
+  <aside class="notes"><p>Close with the link to the v1.2.0 Release on GitLab KKM: this is the work of 12 people, three sprints and three roles.</p></aside>
 </section>
 
 
