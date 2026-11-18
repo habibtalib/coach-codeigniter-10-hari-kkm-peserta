@@ -3325,6 +3325,68 @@ Jangan tulis fail.</pre></div>
 
 
 <section class="slide">
+  <div class="eyebrow">Hari 10 · Deployment — runbook v1.2.0</div>
+  <h2>Deploy production: sebelum, semasa, siapa</h2>
+  <div class="split">
+    <table class="t tight">
+      <tr><th style="width:40px">#</th><th>Langkah</th><th style="width:120px">Siapa</th></tr>
+      <tr><td>1</td><td><code>main</code> hijau · CHANGELOG 1.2.0 di-merge · tiada MR terbuka dalam skop</td><td>PM keluaran</td></tr>
+      <tr><td>2</td><td>Staging pada <code>main</code> terkini disemak ikut senarai asap (slaid seterusnya)</td><td>QA</td></tr>
+      <tr><td>3</td><td>Pemilik sistem dimaklumkan: masa deploy, apa berubah, tempoh gangguan (± 1 minit)</td><td>PM</td></tr>
+      <tr><td>4</td><td><code>git tag -a v1.2.0</code> → pipeline tag → <code>bina-imej</code> → <code>deploy-staging</code></td><td>Jurulatih</td></tr>
+      <tr><td>5</td><td>Staging pada <code>v1.2.0</code> hijau → ▶ <code>deploy-production</code></td><td>Maintainer</td></tr>
+      <tr><td>6</td><td>Baca log job bersama kelas; rekod masa mula/tamat dalam isu keluaran</td><td>Semua</td></tr>
+    </table>
+    <div class="codewrap"><div class="codebar">log deploy-production (dipendekkan)<span class="lang">text</span></div>
+<pre class="code sm" data-lang="text">[pintu] deploy production: …/espkp:v1.2.0
+        (semasa: v1.1.0)
+[pintu] sandaran DB: …/backup/…-v1.2.0.sql.gz
+ ✔ app     Started
+ ✔ jadual  Started
+[pintu] OK: production menjalankan …:v1.2.0
+imej:    …/espkp:v1.2.0
+sebelum: v1.1.0
+app      running   Up 40 seconds
+jadual   running   Up 40 seconds</pre></div>
+  </div>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Tiada ▶ jika staging merah, ada MR "sempat" yang belum disemak, atau pemilik belum dimaklumkan. Deploy hari Jumaat petang = tiada siapa memantau.</div></div>
+  <aside class="notes"><p>Urutan dalam log mengikut espkp-pintu: tarik imej dahulu (gagal → tiada apa berubah), sandaran DB, up -d (entrypoint menjalankan migrate), semakan /login, kemudian status. "sebelum: v1.1.0" ialah tag yang digunakan rollback. Production tiada bekas mysql — DB luaran disandarkan dengan klien mysqldump.</p></aside>
+</section>
+
+
+<section class="slide">
+  <div class="eyebrow">Hari 10 · Selepas deploy — 30 minit pertama</div>
+  <h2>Ujian asap: sahkan, jangan andaikan</h2>
+  <div class="grid c3">
+    <div class="card top m-tlk"><span class="k">1 · PLATFORM (0–5 MIN)</span><ul><li>Job hijau; <code>status production</code> = <code>v1.2.0</code></li><li><i>Environments</i>: staging &amp; production pada <code>v1.2.0</code></li><li><code>PROD_URL/login</code> dibuka melalui HTTPS</li></ul></div>
+    <div class="card top m-pas"><span class="k">2 · FUNGSI (5–20 MIN)</span><ul><li>Log masuk akaun asap setiap peranan</li><li>M1 TLK, M2 Pas, M4 Statistik dibuka; satu ciri baharu v1.2.0</li><li>Satu URL tanpa kebenaran → <b>404</b></li><li>Baca sahaja — tiada data ujian dalam production</li></ul></div>
+    <div class="card top m-stat"><span class="k">3 · ISYARAT (20–30 MIN)</span><ul><li>Log app: tiada <code>CRITICAL</code> / <code>ERROR</code> baharu</li><li>Bekas <code>app</code>, <code>jadual</code> tidak restart</li><li>Tiada aduan pengguna; masa respons biasa</li></ul></div>
+  </div>
+  <div class="grid c2 mt16">
+    <div class="callout tip"><span class="i">✅</span><div><b>Teruskan:</b> semua hijau → rekod "asap lulus" + masa dalam isu keluaran.</div></div>
+    <div class="callout warn"><span class="i">↩️</span><div><b>Rollback:</b> fungsi teras rosak, 500 berulang, atau 404 bocor jadi 200 → <i>Environments → production</i> → <code>v1.1.0</code> → <b>Re-deploy</b>. Jangan baiki terus di VM.</div></div>
+  </div>
+  <aside class="notes"><p>Senarai asap QA ialah AC paling penting, bukan ujian penuh — ujian penuh sudah dibuat di staging. Log app di VM: docker compose -p espkp-production logs --since 30m app (pentadbir VM; CI hanya ada status). Keputusan rollback diambil dalam 30 minit, bukan selepas pengguna mengadu. Rollback tidak mengundur migration: jika data rosak, sandaran dalam backup/ dipulihkan oleh pentadbir DB atas keputusan pemilik.</p></aside>
+</section>
+
+
+<section class="slide">
+  <div class="eyebrow">Hari 10 · Selepas deploy — tutup keluaran</div>
+  <h2>Keluaran belum siap sehingga ia ditutup</h2>
+  <div class="split">
+    <div class="card top m-a"><span class="k">TUTUP V1.2.0 (HARI INI)</span>
+      <ul><li><b>Release</b> GitLab pada <code>v1.2.0</code>: nota = bahagian CHANGELOG</li><li><b>Jira:</b> Release <code>v1.2.0</code>; kad tidak siap → versi seterusnya</li><li><b>Makluman</b> kepada pemilik &amp; pengguna: apa baharu, apa berubah, siapa dihubungi</li><li><b>Isu keluaran</b> ditutup: masa deploy, asap lulus, pautan pipeline</li></ul>
+    </div>
+    <div class="card top m-stat"><span class="k">HYPERCARE (1–3 HARI)</span>
+      <ul><li>Pantau log &amp; aduan setiap pagi</li><li>Pepijat → isu <code>jenis::pepijat</code> + label <code>v1.2.0</code>, dengan langkah ulang</li><li>Tiada ciri baharu ke production dalam tempoh ini</li></ul>
+    </div>
+  </div>
+  <div class="flow mt16"><div class="node"><span class="k">PEPIJAT</span><b>isu + AC</b><span>langkah ulang</span></div><div class="arr">→</div><div class="node"><span class="k">FIX/…</span><b>MR + ujian</b><span>QA semak</span></div><div class="arr">→</div><div class="node"><span class="k">MAIN</span><b>staging</b><span>automatik</span></div><div class="arr">→</div><div class="node hot"><span class="k">TAG v1.2.1</span><b>production ▶</b><span>runbook sama</span></div></div>
+  <aside class="notes"><p>Hotfix melalui laluan yang sama — tiada jalan pintas ke VM, tiada edit dalam bekas. Versi tampalan (v1.2.1) untuk pembaikan sahaja; ciri baharu menunggu v1.3.0. Retro S11 merangkumi deploy ini: apa yang perlu diautomasikan seterusnya (cth ujian asap sebagai job CI selepas deploy-production).</p></aside>
+</section>
+
+
+<section class="slide">
   <div class="eyebrow">Hari 10 · S10 — Lab 10.22 (15:15–16:30)</div>
   <h2>S10 · Demo capstone: Projek + setiap pasangan Dev</h2>
   <table class="t tight">

@@ -3325,6 +3325,68 @@ Do not write any file.</pre></div>
 
 
 <section class="slide">
+  <div class="eyebrow">Day 10 · Deployment — v1.2.0 runbook</div>
+  <h2>Production deploy: before, during, who</h2>
+  <div class="split">
+    <table class="t tight">
+      <tr><th style="width:40px">#</th><th>Step</th><th style="width:120px">Who</th></tr>
+      <tr><td>1</td><td><code>main</code> green · CHANGELOG 1.2.0 merged · no open MRs in scope</td><td>Release PM</td></tr>
+      <tr><td>2</td><td>Staging on the latest <code>main</code> checked against the smoke list (next slide)</td><td>QA</td></tr>
+      <tr><td>3</td><td>System owner told: deploy time, what changes, downtime (± 1 minute)</td><td>PM</td></tr>
+      <tr><td>4</td><td><code>git tag -a v1.2.0</code> → tag pipeline → <code>bina-imej</code> → <code>deploy-staging</code></td><td>Trainer</td></tr>
+      <tr><td>5</td><td>Staging on <code>v1.2.0</code> green → ▶ <code>deploy-production</code></td><td>Maintainer</td></tr>
+      <tr><td>6</td><td>Read the job log with the class; record start/end time in the release issue</td><td>Everyone</td></tr>
+    </table>
+    <div class="codewrap"><div class="codebar">deploy-production log (shortened)<span class="lang">text</span></div>
+<pre class="code sm" data-lang="text">[pintu] deploy production: …/espkp:v1.2.0
+        (semasa: v1.1.0)
+[pintu] sandaran DB: …/backup/…-v1.2.0.sql.gz
+ ✔ app     Started
+ ✔ jadual  Started
+[pintu] OK: production menjalankan …:v1.2.0
+imej:    …/espkp:v1.2.0
+sebelum: v1.1.0
+app      running   Up 40 seconds
+jadual   running   Up 40 seconds</pre></div>
+  </div>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>No ▶ if staging is red, a "just in time" MR is unreviewed, or the owner has not been told. A Friday-evening deploy = nobody watching.</div></div>
+  <aside class="notes"><p>The log order follows espkp-pintu: pull the image first (failure → nothing changes), DB backup, up -d (the entrypoint runs migrate), the /login check, then status. "sebelum: v1.1.0" is the tag a rollback uses. Production has no mysql container — the external DB is backed up with the mysqldump client.</p></aside>
+</section>
+
+
+<section class="slide">
+  <div class="eyebrow">Day 10 · After the deploy — first 30 minutes</div>
+  <h2>Smoke test: verify, don't assume</h2>
+  <div class="grid c3">
+    <div class="card top m-tlk"><span class="k">1 · PLATFORM (0–5 MIN)</span><ul><li>Job green; <code>status production</code> = <code>v1.2.0</code></li><li><i>Environments</i>: staging &amp; production on <code>v1.2.0</code></li><li><code>PROD_URL/login</code> opens over HTTPS</li></ul></div>
+    <div class="card top m-pas"><span class="k">2 · FUNCTION (5–20 MIN)</span><ul><li>Sign in with a smoke account for each role</li><li>M1 TLK, M2 Pas, M4 Statistik open; one new v1.2.0 feature</li><li>One URL without permission → <b>404</b></li><li>Read only — no test data in production</li></ul></div>
+    <div class="card top m-stat"><span class="k">3 · SIGNALS (20–30 MIN)</span><ul><li>App log: no new <code>CRITICAL</code> / <code>ERROR</code></li><li><code>app</code>, <code>jadual</code> containers not restarting</li><li>No user complaints; normal response times</li></ul></div>
+  </div>
+  <div class="grid c2 mt16">
+    <div class="callout tip"><span class="i">✅</span><div><b>Carry on:</b> all green → record "smoke passed" + time in the release issue.</div></div>
+    <div class="callout warn"><span class="i">↩️</span><div><b>Roll back:</b> core function broken, repeated 500s, or a 404 leaks as 200 → <i>Environments → production</i> → <code>v1.1.0</code> → <b>Re-deploy</b>. Never fix directly on the VM.</div></div>
+  </div>
+  <aside class="notes"><p>QA's smoke list is the most important ACs, not a full test — the full test was done on staging. App log on the VM: docker compose -p espkp-production logs --since 30m app (VM admin; CI only has status). The rollback decision is made within 30 minutes, not after users complain. A rollback does not undo migrations: if data is damaged, the DB admin restores the backup in backup/ on the owner's decision.</p></aside>
+</section>
+
+
+<section class="slide">
+  <div class="eyebrow">Day 10 · After the deploy — close the release</div>
+  <h2>A release is not done until it is closed</h2>
+  <div class="split">
+    <div class="card top m-a"><span class="k">CLOSE V1.2.0 (TODAY)</span>
+      <ul><li><b>GitLab Release</b> on <code>v1.2.0</code>: notes = the CHANGELOG section</li><li><b>Jira:</b> Release <code>v1.2.0</code>; unfinished cards → next version</li><li><b>Notice</b> to the owner &amp; users: what is new, what changed, who to contact</li><li><b>Release issue</b> closed: deploy time, smoke passed, pipeline link</li></ul>
+    </div>
+    <div class="card top m-stat"><span class="k">HYPERCARE (1–3 DAYS)</span>
+      <ul><li>Check logs &amp; complaints every morning</li><li>Bug → issue <code>jenis::pepijat</code> + label <code>v1.2.0</code>, with repro steps</li><li>No new features to production in this window</li></ul>
+    </div>
+  </div>
+  <div class="flow mt16"><div class="node"><span class="k">BUG</span><b>issue + AC</b><span>repro steps</span></div><div class="arr">→</div><div class="node"><span class="k">FIX/…</span><b>MR + test</b><span>QA review</span></div><div class="arr">→</div><div class="node"><span class="k">MAIN</span><b>staging</b><span>automatic</span></div><div class="arr">→</div><div class="node hot"><span class="k">TAG v1.2.1</span><b>production ▶</b><span>same runbook</span></div></div>
+  <aside class="notes"><p>A hotfix takes the same path — no shortcut to the VM, no edits inside the container. A patch version (v1.2.1) is for fixes only; new features wait for v1.3.0. The S11 retro covers this deploy: what to automate next (e.g. the smoke test as a CI job after deploy-production).</p></aside>
+</section>
+
+
+<section class="slide">
   <div class="eyebrow">Day 10 · S10 — Lab 10.22 (15:15–16:30)</div>
   <h2>S10 · Capstone demo: Projek + every Dev pair</h2>
   <table class="t tight">
