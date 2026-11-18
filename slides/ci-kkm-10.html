@@ -3250,7 +3250,7 @@ KAN-n; semak kad dalam Jira. Draf
 satu baris setiap MR dengan !no dan KAN-n.
 Jangan tulis fail.</pre></div>
     <div class="card top m-stat"><span class="k">LANGKAH KELUARAN</span>
-      <ul><li><b>Stabil:</b> <code>composer test</code> + E2E hijau pada <code>main</code></li><li><b>CHANGELOG:</b> setiap baris disemak terhadap MR sebenar; masuk melalui MR <code>docs/changelog-v1.2.0</code></li><li><b>Tag:</b> <code>v*</code> dilindungi — PM keluaran baca nota keluaran, <b>jurulatih</b> cipta tag beranotasi</li><li><b>Release</b> GitLab pada <code>v1.2.0</code></li><li><b>Jira:</b> cipta <code>v1.2.0</code>, alih kad Done selepas 12/11, Release <code>v1.1.0</code> + <code>v1.2.0</code></li></ul>
+      <ul><li><b>Stabil:</b> <code>composer test</code> + E2E hijau pada <code>main</code>; MR !239 di-merge, <code>imbas-imej</code> hijau</li><li><b>CHANGELOG:</b> setiap baris disemak terhadap MR sebenar; masuk melalui MR <code>docs/changelog-v1.2.0</code></li><li><b>Tag:</b> <code>v*</code> dilindungi — PM keluaran baca nota keluaran, <b>jurulatih</b> cipta tag beranotasi</li><li><b>Release</b> GitLab pada <code>v1.2.0</code></li><li><b>Jira:</b> cipta <code>v1.2.0</code>, alih kad Done selepas 12/11, Release <code>v1.1.0</code> + <code>v1.2.0</code></li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>Baris CHANGELOG tanpa <code>!no</code> dan <code>#isu</code> = tanda Claude mereka perubahan. Buang.</div></div>
@@ -3335,7 +3335,7 @@ Jangan tulis fail.</pre></div>
   <div class="grid c3">
     <div class="card top m-tlk"><span class="k">1 · PINTU, BUKAN SHELL</span><p>Kunci CI hanya boleh <code>deploy</code> · <code>rollback</code> · <code>status</code> (<i>forced command</i>); tag disemak dengan regex.</p></div>
     <div class="card top m-pas"><span class="k">2 · TIADA RAHSIA DALAM YAML</span><p><i>CI/CD Variables</i> <b>Protected + Masked</b>; <code>.env</code> pada VM sahaja.</p></div>
-    <div class="card top m-stat"><span class="k">3 · TARIK DAHULU</span><p>Tag tiada dalam Harbor → deploy berhenti, tiada apa berubah.</p></div>
+    <div class="card top m-stat"><span class="k">3 · IMBAS &amp; TARIK DAHULU</span><p>CVE HIGH/CRITICAL boleh dibaiki → tiada deploy. Tag tiada dalam Harbor → tiada apa berubah.</p></div>
     <div class="card top m-tlk"><span class="k">4 · SANDARAN DB</span><p><code>mysqldump</code> sebelum setiap deploy; 7 terakhir disimpan pada VM.</p></div>
     <div class="card top m-pas"><span class="k">5 · SEMAK &amp; ROLLBACK</span><p><code>/login</code> gagal dalam 5 minit → kembali ke tag lama secara automatik. Migration <b>tidak</b> diundur.</p></div>
     <div class="card top m-stat"><span class="k">6 · PRODUCTION MANUAL</span><p>Tag <code>v*</code> dilindungi; hanya Maintainer menekan ▶, selepas staging hijau.</p></div>
@@ -3350,7 +3350,7 @@ Jangan tulis fail.</pre></div>
   <div class="split">
     <table class="t tight">
       <tr><th style="width:40px">#</th><th>Langkah</th><th style="width:120px">Siapa</th></tr>
-      <tr><td>1</td><td><code>main</code> hijau · CHANGELOG 1.2.0 di-merge · tiada MR terbuka dalam skop</td><td>PM keluaran</td></tr>
+      <tr><td>1</td><td><code>main</code> hijau termasuk <code>imbas-imej</code> · CHANGELOG 1.2.0 di-merge · tiada MR terbuka dalam skop</td><td>PM keluaran</td></tr>
       <tr><td>2</td><td>Staging pada <code>main</code> terkini disemak ikut senarai asap (slaid seterusnya)</td><td>QA</td></tr>
       <tr><td>3</td><td>Pemilik sistem dimaklumkan: masa deploy, apa berubah, tempoh gangguan (± 1 minit)</td><td>PM</td></tr>
       <tr><td>4</td><td><code>git tag -a v1.2.0</code> → pipeline tag → <code>bina-imej</code> → <code>imbas-imej</code> → <code>deploy-staging</code></td><td>Jurulatih</td></tr>
@@ -3398,7 +3398,7 @@ jadual   running   Up 40 seconds</pre></div>
       <ul><li><b>Release</b> GitLab pada <code>v1.2.0</code>: nota = bahagian CHANGELOG</li><li><b>Jira:</b> Release <code>v1.2.0</code>; kad tidak siap → versi seterusnya</li><li><b>Makluman</b> kepada pemilik &amp; pengguna: apa baharu, apa berubah, siapa dihubungi</li><li><b>Isu keluaran</b> ditutup: masa deploy, asap lulus, pautan pipeline</li></ul>
     </div>
     <div class="card top m-stat"><span class="k">HYPERCARE (1–3 HARI)</span>
-      <ul><li>Pantau log &amp; aduan setiap pagi</li><li>Pepijat → isu <code>jenis::pepijat</code> + label <code>v1.2.0</code>, dengan langkah ulang</li><li>Tiada ciri baharu ke production dalam tempoh ini</li></ul>
+      <ul><li>Pantau log &amp; aduan setiap pagi; imbasan semula Harbor — CVE baharu → bina semula, <code>v1.2.1</code></li><li>Pepijat → isu <code>jenis::pepijat</code> + label <code>v1.2.0</code>, dengan langkah ulang</li><li>Tiada ciri baharu ke production dalam tempoh ini</li></ul>
     </div>
   </div>
   <div class="flow mt16"><div class="node"><span class="k">PEPIJAT</span><b>isu + AC</b><span>langkah ulang</span></div><div class="arr">→</div><div class="node"><span class="k">FIX/…</span><b>MR + ujian</b><span>QA semak</span></div><div class="arr">→</div><div class="node"><span class="k">MAIN</span><b>staging</b><span>automatik</span></div><div class="arr">→</div><div class="node hot"><span class="k">TAG v1.2.1</span><b>production ▶</b><span>runbook sama</span></div></div>

@@ -3250,7 +3250,7 @@ and KAN-n; check the cards in Jira. Draft
 one line per MR with !no and KAN-n.
 Do not write any file.</pre></div>
     <div class="card top m-stat"><span class="k">RELEASE STEPS</span>
-      <ul><li><b>Stabilise:</b> <code>composer test</code> + E2E green on <code>main</code></li><li><b>CHANGELOG:</b> every line checked against a real MR; lands via MR <code>docs/changelog-v1.2.0</code></li><li><b>Tag:</b> <code>v*</code> is protected — the release PM reads the notes, the <b>trainer</b> creates the annotated tag</li><li>GitLab <b>Release</b> on <code>v1.2.0</code></li><li><b>Jira:</b> create <code>v1.2.0</code>, move cards Done after 12/11, Release <code>v1.1.0</code> + <code>v1.2.0</code></li></ul>
+      <ul><li><b>Stabilise:</b> <code>composer test</code> + E2E green on <code>main</code>; MR !239 merged, <code>imbas-imej</code> green</li><li><b>CHANGELOG:</b> every line checked against a real MR; lands via MR <code>docs/changelog-v1.2.0</code></li><li><b>Tag:</b> <code>v*</code> is protected — the release PM reads the notes, the <b>trainer</b> creates the annotated tag</li><li>GitLab <b>Release</b> on <code>v1.2.0</code></li><li><b>Jira:</b> create <code>v1.2.0</code>, move cards Done after 12/11, Release <code>v1.1.0</code> + <code>v1.2.0</code></li></ul>
     </div>
   </div>
   <div class="callout tip mt16"><span class="i">💡</span><div>A CHANGELOG line without <code>!no</code> and <code>#issue</code> is a sign that Claude invented a change. Remove it.</div></div>
@@ -3335,7 +3335,7 @@ Do not write any file.</pre></div>
   <div class="grid c3">
     <div class="card top m-tlk"><span class="k">1 · A GATE, NOT A SHELL</span><p>The CI key can only <code>deploy</code> · <code>rollback</code> · <code>status</code> (<i>forced command</i>); the tag is checked with a regex.</p></div>
     <div class="card top m-pas"><span class="k">2 · NO SECRETS IN YAML</span><p><i>CI/CD Variables</i> <b>Protected + Masked</b>; <code>.env</code> on the VM only.</p></div>
-    <div class="card top m-stat"><span class="k">3 · PULL FIRST</span><p>Tag not in Harbor → the deploy stops, nothing changes.</p></div>
+    <div class="card top m-stat"><span class="k">3 · SCAN &amp; PULL FIRST</span><p>Fixable HIGH/CRITICAL CVE → no deploy. Tag not in Harbor → nothing changes.</p></div>
     <div class="card top m-tlk"><span class="k">4 · DB BACKUP</span><p><code>mysqldump</code> before every deploy; the last 7 are kept on the VM.</p></div>
     <div class="card top m-pas"><span class="k">5 · CHECK &amp; ROLL BACK</span><p><code>/login</code> fails within 5 minutes → back to the old tag automatically. Migrations are <b>not</b> undone.</p></div>
     <div class="card top m-stat"><span class="k">6 · PRODUCTION MANUAL</span><p><code>v*</code> tags are protected; only a Maintainer presses ▶, after staging is green.</p></div>
@@ -3350,7 +3350,7 @@ Do not write any file.</pre></div>
   <div class="split">
     <table class="t tight">
       <tr><th style="width:40px">#</th><th>Step</th><th style="width:120px">Who</th></tr>
-      <tr><td>1</td><td><code>main</code> green · CHANGELOG 1.2.0 merged · no open MRs in scope</td><td>Release PM</td></tr>
+      <tr><td>1</td><td><code>main</code> green incl. <code>imbas-imej</code> · CHANGELOG 1.2.0 merged · no open MRs in scope</td><td>Release PM</td></tr>
       <tr><td>2</td><td>Staging on the latest <code>main</code> checked against the smoke list (next slide)</td><td>QA</td></tr>
       <tr><td>3</td><td>System owner told: deploy time, what changes, downtime (± 1 minute)</td><td>PM</td></tr>
       <tr><td>4</td><td><code>git tag -a v1.2.0</code> → tag pipeline → <code>bina-imej</code> → <code>imbas-imej</code> → <code>deploy-staging</code></td><td>Trainer</td></tr>
@@ -3398,7 +3398,7 @@ jadual   running   Up 40 seconds</pre></div>
       <ul><li><b>GitLab Release</b> on <code>v1.2.0</code>: notes = the CHANGELOG section</li><li><b>Jira:</b> Release <code>v1.2.0</code>; unfinished cards → next version</li><li><b>Notice</b> to the owner &amp; users: what is new, what changed, who to contact</li><li><b>Release issue</b> closed: deploy time, smoke passed, pipeline link</li></ul>
     </div>
     <div class="card top m-stat"><span class="k">HYPERCARE (1–3 DAYS)</span>
-      <ul><li>Check logs &amp; complaints every morning</li><li>Bug → issue <code>jenis::pepijat</code> + label <code>v1.2.0</code>, with repro steps</li><li>No new features to production in this window</li></ul>
+      <ul><li>Check logs &amp; complaints every morning; Harbor re-scans — new CVE → rebuild, <code>v1.2.1</code></li><li>Bug → issue <code>jenis::pepijat</code> + label <code>v1.2.0</code>, with repro steps</li><li>No new features to production in this window</li></ul>
     </div>
   </div>
   <div class="flow mt16"><div class="node"><span class="k">BUG</span><b>issue + AC</b><span>repro steps</span></div><div class="arr">→</div><div class="node"><span class="k">FIX/…</span><b>MR + test</b><span>QA review</span></div><div class="arr">→</div><div class="node"><span class="k">MAIN</span><b>staging</b><span>automatic</span></div><div class="arr">→</div><div class="node hot"><span class="k">TAG v1.2.1</span><b>production ▶</b><span>same runbook</span></div></div>
