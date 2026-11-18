@@ -109,6 +109,7 @@ Membaca dan menjalankan pipeline CD espkpv2 (KAN-204, MR !238). Imej aplikasi di
    |---|---|---|---|---|
    | `semak-kod`, `ujian` | semak, test | ✓ | ✓ | ✓ |
    | `bina-imej` | build | – | ✓ `:<sha>` | ✓ `:<sha>` + `:v1.2.0` |
+   | `imbas-imej` | imbas | – | ✓ Trivy | ✓ Trivy |
    | `deploy-staging` | staging | – | automatik | automatik |
    | `deploy-production` | production | – | – | **manual ▶** |
 
@@ -122,7 +123,7 @@ Membaca dan menjalankan pipeline CD espkpv2 (KAN-204, MR !238). Imej aplikasi di
 
 3. **Semak MR !238 (QA + floater, S8 sebelum 12:30).** `/semak-mr 238` dan senarai ini: tiada rahsia dalam YAML (nama pemboleh ubah sahaja)? `deploy-production` manual dan hanya pada tag? Kunci hos disemak (tiada `StrictHostKeyChecking=no`)? `deploy-staging` menunggu `bina-imej`? Pipeline MR hijau? QA approve dengan bukti `fail:baris`; PM merge sebelum pembekuan.
 
-4. **Pipeline `main` pertama (PM, selepas merge).** *CI/CD → Pipelines* → pipeline `main` terbaru: `semak-kod` → `ujian` → `bina-imej` → `deploy-staging` (automatik). Dalam log `bina-imej` cari `Imej …/espkp:<sha> … ditolak ke Harbor`. Dalam log `deploy-staging`, output `status staging` menunjukkan tag `<sha>` dan service `app`, `mysql`, `jadual` *running*. *Deployments → Environments → staging* → **Open**.
+4. **Pipeline `main` pertama (PM, selepas merge).** *CI/CD → Pipelines* → pipeline `main` terbaru: `semak-kod` → `ujian` → `bina-imej` → `imbas-imej` → `deploy-staging` (automatik). Dalam log `imbas-imej` baris terakhir `Total: 0 (HIGH: 0, CRITICAL: 0)`. Dalam log `bina-imej` cari `Imej …/espkp:<sha> … ditolak ke Harbor`. Dalam log `deploy-staging`, output `status staging` menunjukkan tag `<sha>` dan service `app`, `mysql`, `jadual` *running*. *Deployments → Environments → staging* → **Open**.
 
 5. **Keluaran ke staging (S9, selepas Lab 10.21 langkah 4).** Tag `v1.2.0` mencetuskan pipeline tag. `bina-imej` menolak imej yang sama dengan dua tag (`:<sha>` dan `:v1.2.0`); `deploy-staging` berjalan sendiri. Pipeline berstatus *blocked* — ia menunggu production.
 
@@ -136,6 +137,19 @@ Membaca dan menjalankan pipeline CD espkpv2 (KAN-204, MR !238). Imej aplikasi di
 
 8. **Pemboleh ubah CI (baca, 5 minit).** Jurulatih membuka *Settings → CI/CD → Variables* di skrin (nama sahaja): `HARBOR_HOST`, `HARBOR_PROJECT`, `HARBOR_USER`, `HARBOR_PASSWORD` (akaun robot Harbor, *push* sahaja); `STAGING_SSH_HOST`, `_USER`, `_PORT`, `_KEY` (File), `_KNOWN_HOSTS` (File); `PROD_SSH_*` yang sama; `STAGING_URL`, `PROD_URL`. Semua *Protected*: pipeline daripada branch ciri tidak dapat membacanya. Kata laluan DB dan kunci penyulitan tiada dalam GitLab langsung — ia dalam `.env` pada VM. Soalan: untuk berpindah ke Harbor dan VM sebenar KKM, apa yang berubah dalam `.gitlab-ci.yml`? (Tiada. Hanya pemboleh ubah dan persediaan VM.)
 
+9. **Imbasan CVE (QA + floater semak MR !239, kemudian semua baca, 10 minit).** Imej `main` selepas MR !238 (`ed841d9f`) mempunyai 10 CVE yang sudah ada pembaikan: 4 CRITICAL (apache2 mod_http2) dan 6 HIGH (linux-libc-dev). MR !239 menambah dua semakan dan menampal imej:
+   - `semak-kod`: `composer audit --locked --no-dev` — pakej PHP production dengan advisori → merah.
+   - Stage `imbas`: job `imbas-imej` (Trivy) membaca `espkp:<sha>` dari Harbor. CVE **HIGH/CRITICAL yang ada pembaikan** → job merah, `deploy-staging` dan `deploy-production` tidak berjalan. Laporan penuh: artifak `trivy-imej.txt`.
+   - `deploy/Dockerfile`: `apt-get upgrade` dan pakej `-dev` dibuang selepas sambungan PHP dibina → 0 CVE HIGH/CRITICAL.
+
+   Mod *Plan*:
+
+   ```text
+   Baca .gitlab-ci.yml (semak-kod, imbas-imej, needs deploy-staging/production), deploy/Dockerfile dan bahagian "Imbasan kerentanan" dalam docs/deploy-vm.md. Terangkan dengan nombor baris: (a) apa berlaku jika imej ada CVE CRITICAL yang sudah dibaiki, (b) yang belum dibaiki, (c) advisori dalam pakej dev sahaja. Kenapa Harbor juga perlu "Prevent vulnerable images"? Jangan ubah fail.
+   ```
+
+   Jawapan yang dijangka: (a) `imbas-imej` merah, tiada deploy; (b) dilaporkan sahaja (`--ignore-unfixed`); (c) amaran dalam `semak-kod`, job hijau. Harbor menyekat `docker pull` pada VM walaupun pipeline dilangkau, dan mengimbas semula imej lama apabila CVE baharu diterbitkan. QA approve MR !239 dengan bukti; PM merge **sebelum tag `v1.2.0`** supaya keluaran melalui imbasan.
+
 ### ✅ Checkpoint
 - [ ] Saya boleh mengisi jadual job langkah 1 tanpa melihat, dan menerangkan kenapa imej dibina sekali sahaja.
 - [ ] MR !238 disemak QA dengan bukti dan di-merge; pipeline `main` hijau hingga `deploy-staging`.
@@ -148,6 +162,8 @@ Membaca dan menjalankan pipeline CD espkpv2 (KAN-204, MR !238). Imej aplikasi di
 | `HARBOR_* belum ditetapkan` dalam `bina-imej` | Pemboleh ubah *Protected* tidak dihantar ke branch yang tidak dilindungi | Imej hanya dibina pada `main` dan tag `v*`; semak *Protected branches/tags* |
 | `STAGING_SSH_HOST belum ditetapkan` | Nama pemboleh ubah salah, atau `_KEY` / `_KNOWN_HOSTS` bukan jenis *File* | *Settings → CI/CD → Variables*: nama tepat, jenis *File* |
 | `Host key verification failed` | VM dibina semula; `_KNOWN_HOSTS` lama | `ssh-keyscan -p <port> <host>` → kemas kini pemboleh ubah |
+| `imbas-imej` merah: `Total: N (HIGH: …, CRITICAL: …)` | Imej ada CVE yang sudah ada pembaikan | Baca `trivy-imej.txt`: pakej OS → bina semula (Dockerfile `apt-get upgrade`); pakej Composer → `composer update <pakej>` melalui MR. Pengecualian hanya dalam `.trivyignore` dengan sebab + tarikh tamat, disemak QA |
+| `semak-kod` merah selepas `composer audit` | Pakej production dalam `composer.lock` ada advisori | `composer update <pakej>` → MR; semak CHANGELOG pakej |
 | `gagal menarik …/espkp:<tag>` | VM belum `docker login` ke Harbor, atau tag belum ditolak | `docs/deploy-vm.md` bahagian VM; semak `bina-imej` hijau |
 | `semakan kesihatan /login gagal` | Imej baharu rosak (migration, `.env`) | Baca 40 baris log dalam job; VM sudah kembali ke tag lama; baiki melalui MR baharu |
 | ▶ `deploy-production` kelabu | Hanya Maintainer boleh menjalankan job pada tag dilindungi `v*` | Jurulatih menekan ▶ |

@@ -109,6 +109,7 @@ Read and run the espkpv2 CD pipeline (KAN-204, MR !238). The app image is built 
    |---|---|---|---|---|
    | `semak-kod`, `ujian` | semak, test | ✓ | ✓ | ✓ |
    | `bina-imej` | build | – | ✓ `:<sha>` | ✓ `:<sha>` + `:v1.2.0` |
+   | `imbas-imej` | imbas | – | ✓ Trivy | ✓ Trivy |
    | `deploy-staging` | staging | – | automatic | automatic |
    | `deploy-production` | production | – | – | **manual ▶** |
 
@@ -122,7 +123,7 @@ Read and run the espkpv2 CD pipeline (KAN-204, MR !238). The app image is built 
 
 3. **Review MR !238 (QA + floater, S8 before 12:30).** `/semak-mr 238` and this list: no secrets in the YAML (variable names only)? `deploy-production` manual and on tags only? Host key checked (no `StrictHostKeyChecking=no`)? `deploy-staging` waits for `bina-imej`? MR pipeline green? QA approves with `file:line` evidence; the PM merges before the freeze.
 
-4. **First `main` pipeline (PM, after the merge).** *CI/CD → Pipelines* → latest `main` pipeline: `semak-kod` → `ujian` → `bina-imej` → `deploy-staging` (automatic). In the `bina-imej` log find `Imej …/espkp:<sha> … ditolak ke Harbor`. In the `deploy-staging` log, the `status staging` output shows tag `<sha>` and the `app`, `mysql`, `jadual` services *running*. *Deployments → Environments → staging* → **Open**.
+4. **First `main` pipeline (PM, after the merge).** *CI/CD → Pipelines* → latest `main` pipeline: `semak-kod` → `ujian` → `bina-imej` → `imbas-imej` → `deploy-staging` (automatic). In the `imbas-imej` log the last line is `Total: 0 (HIGH: 0, CRITICAL: 0)`. In the `bina-imej` log find `Imej …/espkp:<sha> … ditolak ke Harbor`. In the `deploy-staging` log, the `status staging` output shows tag `<sha>` and the `app`, `mysql`, `jadual` services *running*. *Deployments → Environments → staging* → **Open**.
 
 5. **Release to staging (S9, after Lab 10.21 step 4).** The `v1.2.0` tag starts a tag pipeline. `bina-imej` pushes the same image with two tags (`:<sha>` and `:v1.2.0`); `deploy-staging` runs on its own. The pipeline is *blocked* — it waits for production.
 
@@ -136,6 +137,19 @@ Read and run the espkpv2 CD pipeline (KAN-204, MR !238). The app image is built 
 
 8. **CI variables (read, 5 minutes).** The trainer opens *Settings → CI/CD → Variables* on screen (names only): `HARBOR_HOST`, `HARBOR_PROJECT`, `HARBOR_USER`, `HARBOR_PASSWORD` (a Harbor robot account, *push* only); `STAGING_SSH_HOST`, `_USER`, `_PORT`, `_KEY` (File), `_KNOWN_HOSTS` (File); the same `PROD_SSH_*`; `STAGING_URL`, `PROD_URL`. All *Protected*: a pipeline from a feature branch cannot read them. The DB password and the encryption key are not in GitLab at all — they live in `.env` on the VM. Question: to move to KKM's real Harbor and VMs, what changes in `.gitlab-ci.yml`? (Nothing. Only the variables and the VM setup.)
 
+9. **CVE scanning (QA + floater review MR !239, then everyone reads, 10 minutes).** The `main` image after MR !238 (`ed841d9f`) has 10 CVEs that already have a fix: 4 CRITICAL (apache2 mod_http2) and 6 HIGH (linux-libc-dev). MR !239 adds two checks and patches the image:
+   - `semak-kod`: `composer audit --locked --no-dev` — a production PHP package with an advisory → red.
+   - Stage `imbas`: the `imbas-imej` job (Trivy) reads `espkp:<sha>` from Harbor. **HIGH/CRITICAL CVEs that have a fix** → the job is red, `deploy-staging` and `deploy-production` do not run. Full report: the `trivy-imej.txt` artifact.
+   - `deploy/Dockerfile`: `apt-get upgrade` and the `-dev` packages removed after the PHP extensions are built → 0 HIGH/CRITICAL CVEs.
+
+   *Plan* mode:
+
+   ```text
+   Baca .gitlab-ci.yml (semak-kod, imbas-imej, needs deploy-staging/production), deploy/Dockerfile dan bahagian "Imbasan kerentanan" dalam docs/deploy-vm.md. Terangkan dengan nombor baris: (a) apa berlaku jika imej ada CVE CRITICAL yang sudah dibaiki, (b) yang belum dibaiki, (c) advisori dalam pakej dev sahaja. Kenapa Harbor juga perlu "Prevent vulnerable images"? Jangan ubah fail.
+   ```
+
+   Expected answers: (a) `imbas-imej` red, no deploy; (b) reported only (`--ignore-unfixed`); (c) a warning in `semak-kod`, the job stays green. Harbor blocks `docker pull` on the VM even if the pipeline is skipped, and re-scans old images when new CVEs are published. QA approves MR !239 with evidence; the PM merges **before the `v1.2.0` tag** so the release goes through the scan.
+
 ### ✅ Checkpoint
 - [ ] I can fill in the step 1 job table without looking, and explain why the image is built only once.
 - [ ] MR !238 reviewed by QA with evidence and merged; the `main` pipeline is green through `deploy-staging`.
@@ -148,6 +162,8 @@ Read and run the espkpv2 CD pipeline (KAN-204, MR !238). The app image is built 
 | `HARBOR_* belum ditetapkan` in `bina-imej` | *Protected* variables are not passed to an unprotected branch | The image is built only on `main` and `v*` tags; check *Protected branches/tags* |
 | `STAGING_SSH_HOST belum ditetapkan` | Wrong variable name, or `_KEY` / `_KNOWN_HOSTS` is not of type *File* | *Settings → CI/CD → Variables*: exact name, type *File* |
 | `Host key verification failed` | The VM was rebuilt; `_KNOWN_HOSTS` is stale | `ssh-keyscan -p <port> <host>` → update the variable |
+| `imbas-imej` red: `Total: N (HIGH: …, CRITICAL: …)` | The image has CVEs that already have a fix | Read `trivy-imej.txt`: OS package → rebuild (Dockerfile `apt-get upgrade`); Composer package → `composer update <package>` through an MR. Exceptions only in `.trivyignore` with a reason + expiry date, reviewed by QA |
+| `semak-kod` red after `composer audit` | A production package in `composer.lock` has an advisory | `composer update <package>` → MR; check the package CHANGELOG |
 | `gagal menarik …/espkp:<tag>` | The VM has not run `docker login` to Harbor, or the tag was never pushed | `docs/deploy-vm.md` VM section; check `bina-imej` is green |
 | `semakan kesihatan /login gagal` | The new image is broken (migration, `.env`) | Read the 40 log lines in the job; the VM is already back on the old tag; fix through a new MR |
 | ▶ `deploy-production` is grey | Only a Maintainer can run jobs on protected `v*` tags | The trainer presses ▶ |

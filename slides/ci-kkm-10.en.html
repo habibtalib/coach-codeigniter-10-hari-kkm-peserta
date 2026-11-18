@@ -3260,7 +3260,7 @@ Do not write any file.</pre></div>
 <section class="slide">
   <div class="eyebrow">Day 10 · CI/CD — Lab 10.23</div>
   <h2>CI tests; CD ships one image to staging &amp; production</h2>
-  <div class="flow"><div class="node"><span class="k">MR / PUSH</span><b>semak · test</b><span>lint · phpstan · PHPUnit</span></div><div class="arr">→</div><div class="node"><span class="k">MAIN · TAG v*</span><b>bina-imej</b><span>Kaniko → Harbor</span></div><div class="arr">→</div><div class="node hot"><span class="k">AUTOMATIC</span><b>deploy-staging</b><span>app + MySQL</span></div><div class="arr">→</div><div class="node"><span class="k">TAG v* · MANUAL ▶</span><b>deploy-production</b><span>app + external MySQL</span></div></div>
+  <div class="flow"><div class="node"><span class="k">MR / PUSH</span><b>semak · test</b><span>lint · phpstan · PHPUnit</span></div><div class="arr">→</div><div class="node"><span class="k">MAIN · TAG v*</span><b>bina-imej</b><span>Kaniko → Harbor</span></div><div class="arr">→</div><div class="node"><span class="k">CVE</span><b>imbas-imej</b><span>Trivy · HIGH/CRIT</span></div><div class="arr">→</div><div class="node hot"><span class="k">AUTOMATIC</span><b>deploy-staging</b><span>app + MySQL</span></div><div class="arr">→</div><div class="node"><span class="k">TAG v* · MANUAL ▶</span><b>deploy-production</b><span>app + external MySQL</span></div></div>
   <div class="grid c3 mt16">
     <div class="card side m-tlk"><h3>Build once</h3><p>One image per commit: <code>:&lt;sha&gt;</code>, plus <code>:v1.2.0</code> for a tag. Staging and production run the <b>same</b> image.</p></div>
     <div class="card side m-pas"><h3>Staging automatic</h3><p>Every green <code>main</code> reaches staging by itself — bugs show up before the release.</p></div>
@@ -3272,21 +3272,22 @@ Do not write any file.</pre></div>
 
 <section class="slide">
   <div class="eyebrow">Day 10 · CI/CD — <code>.gitlab-ci.yml</code></div>
-  <h2>Three CD jobs: build, staging, production</h2>
+  <h2>Four CD jobs: build, scan, staging, production</h2>
   <div class="codewrap"><div class="codebar">.gitlab-ci.yml (shortened)<span class="lang">yaml</span></div>
-<pre class="code sm" data-lang="yaml"><span class="v">stages</span>: [semak, test, build, staging, production]
+<pre class="code sm" data-lang="yaml"><span class="v">stages</span>: [semak, test, build, imbas, staging, production]
 <span class="v">bina-imej</span>:                          <span class="c"># main + tag v*</span>
-  <span class="v">image</span>: gcr.io/kaniko-project/executor:v1.23.2-debug
   <span class="v">script</span>: [ /kaniko/executor ... --destination $IMEJ:$CI_COMMIT_SHORT_SHA ]
+<span class="v">imbas-imej</span>:                         <span class="c"># Trivy: fixable HIGH/CRITICAL → red</span>
+  <span class="v">script</span>: [ trivy image --ignore-unfixed --severity HIGH,CRITICAL --exit-code 1 $IMEJ:$SHA ]
 <span class="v">.deploy-vm</span>:                         <span class="c"># SSH to the gate on the VM</span>
   <span class="v">script</span>: [ ssh $SSH_USER@$SSH_HOST <span class="s">"deploy $PINTU_ENV $TAG"</span> ]
 <span class="v">deploy-staging</span>:
   <span class="v">extends</span>: .deploy-vm
-  <span class="v">needs</span>: [bina-imej]                 <span class="c"># automatic</span>
+  <span class="v">needs</span>: [bina-imej, imbas-imej]     <span class="c"># automatic</span>
   <span class="v">variables</span>: { PINTU_ENV: staging, TAG: $CI_COMMIT_SHORT_SHA, VM: STAGING }
 <span class="v">deploy-production</span>:
   <span class="v">extends</span>: .deploy-vm
-  <span class="v">needs</span>: [bina-imej, deploy-staging]
+  <span class="v">needs</span>: [bina-imej, imbas-imej, deploy-staging]
   <span class="v">rules</span>:
     - <span class="v">if</span>: <span class="s">$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/</span>
       <span class="v">when</span>: manual                     <span class="c"># a Maintainer presses ▶</span>
@@ -3306,6 +3307,25 @@ Do not write any file.</pre></div>
   </table>
   <div class="callout tip mt16"><span class="i">💡</span><div>The image repo, the compose file and <code>.env</code> (DB password, encryption key) live <b>on the VM</b>. GitLab only knows which tag to run.</div></div>
   <aside class="notes"><p>Production has no mysql container: the DB is a department server managed separately and backed up by the DB team. Question: why does staging not use the Latihan@2026 accounts? (the password is publicly known, and staging is often reachable from the department network).</p></aside>
+</section>
+
+
+<section class="slide">
+  <div class="eyebrow">Day 10 · CI/CD — CVE scanning (MR !239)</div>
+  <h2>Scan before deploy: fixable CVEs block</h2>
+  <table class="t tight">
+    <tr><th style="width:190px">Layer</th><th style="width:330px">What</th><th>Blocks</th></tr>
+    <tr><td><code>semak-kod</code></td><td><code>composer audit --locked --no-dev</code></td><td>A production PHP package with an advisory → MR red (dev: warning)</td></tr>
+    <tr><td><code>imbas-imej</code> · stage <code>imbas</code></td><td>Trivy reads <code>espkp:&lt;sha&gt;</code> from Harbor</td><td>HIGH/CRITICAL <b>with a fix</b> → no staging/production deploy</td></tr>
+    <tr><td><b>Harbor</b></td><td>Scan on push + scheduled re-scans</td><td><i>Prevent vulnerable images</i> → <code>docker pull</code> on the VM refused</td></tr>
+  </table>
+  <div class="grid c3 mt16">
+    <div class="card side m-stat"><h3>Before</h3><p><code>main</code> image <code>ed841d9f</code>: <b>10</b> fixable CVEs — 4 CRITICAL apache2 (mod_http2 RCE), 6 HIGH linux-libc-dev.</p></div>
+    <div class="card side m-pas"><h3>Fix</h3><p><code>apt-get upgrade</code> + remove the <code>-dev</code> packages after the PHP extensions are built. Composer: <code>composer update &lt;package&gt;</code>.</p></div>
+    <div class="card side m-tlk"><h3>After</h3><p><code>Total: 0 (HIGH: 0, CRITICAL: 0)</code> · Apache 2.4.71 · 641 → 597 MB.</p></div>
+  </div>
+  <div class="callout warn mt16"><span class="i">⚠️</span><div>Never ignore a CVE just to get through. Exceptions only in <code>.trivyignore</code> with a reason, a Jira card and an expiry date — through an MR reviewed by QA.</div></div>
+  <aside class="notes"><p>Trivy ialah enjin yang sama dalam CI dan Harbor. CI memberitahu pembangun dalam aliran MR; Harbor ialah pintu terakhir jabatan dan mengimbas semula imej lama apabila CVE baharu diterbitkan. --ignore-unfixed: CVE tanpa pembaikan dilaporkan sahaja (artifak trivy-imej.txt). Rangkaian tertutup KKM: TRIVY_DB_REPOSITORY ke proksi Harbor (docs/deploy-vm.md). Merge MR !239 sebelum tag v1.2.0. OWASP Dependency-Check tidak perlu (lemah untuk PHP); ZAP baseline pada staging = cadangan susulan.</p></aside>
 </section>
 
 
@@ -3333,7 +3353,7 @@ Do not write any file.</pre></div>
       <tr><td>1</td><td><code>main</code> green · CHANGELOG 1.2.0 merged · no open MRs in scope</td><td>Release PM</td></tr>
       <tr><td>2</td><td>Staging on the latest <code>main</code> checked against the smoke list (next slide)</td><td>QA</td></tr>
       <tr><td>3</td><td>System owner told: deploy time, what changes, downtime (± 1 minute)</td><td>PM</td></tr>
-      <tr><td>4</td><td><code>git tag -a v1.2.0</code> → tag pipeline → <code>bina-imej</code> → <code>deploy-staging</code></td><td>Trainer</td></tr>
+      <tr><td>4</td><td><code>git tag -a v1.2.0</code> → tag pipeline → <code>bina-imej</code> → <code>imbas-imej</code> → <code>deploy-staging</code></td><td>Trainer</td></tr>
       <tr><td>5</td><td>Staging on <code>v1.2.0</code> green → ▶ <code>deploy-production</code></td><td>Maintainer</td></tr>
       <tr><td>6</td><td>Read the job log with the class; record start/end time in the release issue</td><td>Everyone</td></tr>
     </table>
